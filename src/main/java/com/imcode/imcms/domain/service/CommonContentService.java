@@ -6,8 +6,9 @@ import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
-public interface CommonContentService extends VersionedContentService<CommonContent>, DeleterByDocumentId {
+public interface CommonContentService extends VersionedContentService, DeleterByDocumentId {
     /**
      * Get document's common contents for all languages
      * If common content of non working version is {@code null} it creates new common content based on working.
@@ -41,5 +42,7 @@ public interface CommonContentService extends VersionedContentService<CommonCont
      * Not saves to DB.
      */
     List<CommonContent> createCommonContents();
+
+    Set<CommonContent> getByVersion(Version version);
 
 }

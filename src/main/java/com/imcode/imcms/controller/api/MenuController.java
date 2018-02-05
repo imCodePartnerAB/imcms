@@ -23,7 +23,7 @@ public class MenuController {
 
     @GetMapping
     public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu) {
-        return menuService.getMenuItemsOf(menu.getMenuIndex(), menu.getDocId());
+        return menuService.getMenuItemsOf(menu.getMenuIndex(), menu.getDocId(), Imcms.getUser().getLanguage());
     }
 
     @PostMapping

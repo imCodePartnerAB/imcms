@@ -23,10 +23,11 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service("imageService")
-class DefaultImageService extends AbstractVersionedContentService<Image, ImageDTO, ImageRepository> implements ImageService {
+class DefaultImageService extends AbstractVersionedContentService<Image, ImageRepository> implements ImageService {
 
     private final VersionService versionService;
     private final LanguageService languageService;
@@ -99,6 +100,14 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
         return Math.min(minIndex, -1);
     }
 
+    @Override
+    public Set<ImageDTO> getByVersion(Version version) {
+        return repository.findByVersion(version)
+                .stream()
+                .map(imageToImageDTO)
+                .collect(Collectors.toSet());
+    }
+
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
                               Function<Integer, Version> versionReceiver) {
 
@@ -157,13 +166,10 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageDT
     }
 
     @Override
-    protected ImageDTO mapToDTO(Image jpa) {
-        return imageToImageDTO.apply(jpa);
-    }
-
-    @Override
-    protected Image mapToJpaWithoutId(ImageDTO dto, Version version) {
-        final Language language = languageService.findByCode(dto.getLangCode());
-        return imageDtoToImage.apply(dto, version, language);
+    protected Image removeId(Image image, Version version) {
+        final Image newImage = new Image(image);
+        newImage.setId(null);
+        newImage.setVersion(version);
+        return newImage;
     }
 }

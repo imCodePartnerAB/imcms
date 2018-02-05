@@ -22,7 +22,7 @@ import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
 @Service
 @Transactional
 public class DefaultCommonContentService
-        extends AbstractVersionedContentService<CommonContentJPA, CommonContent, CommonContentRepository>
+        extends AbstractVersionedContentService<CommonContentJPA, CommonContentRepository>
         implements CommonContentService {
 
     private final LanguageService languageService;
@@ -118,6 +118,14 @@ public class DefaultCommonContentService
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Set<CommonContent> getByVersion(Version version) {
+        return repository.findByVersion(version)
+                .stream()
+                .map(CommonContentDTO::new)
+                .collect(Collectors.toSet());
+    }
+
     private CommonContent createFrom(Language languageDTO) {
         return Value.with(new CommonContentDTO(), commonContentDTO -> {
             commonContentDTO.setEnabled(true);
@@ -132,14 +140,11 @@ public class DefaultCommonContentService
     }
 
     @Override
-    protected CommonContent mapToDTO(CommonContentJPA jpa) {
-        return new CommonContentDTO(jpa);
-    }
+    protected CommonContentJPA removeId(CommonContentJPA dto, Version version) {
+        final CommonContentJPA newCommonContent = new CommonContentJPA(dto);
+        newCommonContent.setId(null);
+        newCommonContent.setVersionNo(version.getNo());
 
-    @Override
-    protected CommonContentJPA mapToJpaWithoutId(CommonContent dto, Version version) {
-        dto.setId(null);
-        dto.setVersionNo(version.getNo());
-        return new CommonContentJPA(dto);
+        return newCommonContent;
     }
 }

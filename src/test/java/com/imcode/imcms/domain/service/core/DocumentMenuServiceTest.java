@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
@@ -46,6 +47,9 @@ public class DocumentMenuServiceTest {
 
     @Autowired
     private DocumentMenuService documentMenuService;
+
+    @Autowired
+    private LanguageDataInitializer languageDataInitializer;
 
     private Meta meta;
 
@@ -114,7 +118,8 @@ public class DocumentMenuServiceTest {
 
         documentService.save(documentDTO);
 
-        assertEquals(documentMenuService.getDocumentTitle(meta.getId()), testHeadline);
+        assertEquals(documentMenuService.getDocumentTitle(meta.getId(), languageDataInitializer.createData().get(0)),
+                testHeadline);
     }
 
     @Test

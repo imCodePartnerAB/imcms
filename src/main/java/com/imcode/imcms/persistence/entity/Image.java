@@ -67,4 +67,14 @@ public class Image extends VersionedI18nContent {
     @Column(name = "archive_image_id")
     private Long archiveImageId;
 
+    public Image(Image from) {
+        setId(from.getId());
+        setVersion(from.getVersion());
+        setLanguage(from.getLanguage());
+        setIndex(from.getIndex());
+        setFormat(from.getFormat());
+    }
+
+    public Image() {
+    }
 }

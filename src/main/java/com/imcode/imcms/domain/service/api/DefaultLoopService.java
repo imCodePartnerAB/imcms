@@ -17,10 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service("loopService")
-class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, LoopRepository> implements LoopService {
+class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, LoopRepository> implements LoopService {
 
     private final VersionService versionService;
 
@@ -74,18 +75,15 @@ class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, Loop, 
     }
 
     @Override
-    protected Loop mapToDTO(LoopJPA jpa) {
-        return new LoopDTO(jpa);
-    }
-
-    @Override
-    protected LoopJPA mapToJpaWithoutId(Loop dto, Version version) {
+    protected LoopJPA removeId(LoopJPA dto, Version version) {
         return new LoopJPA(dto, version);
     }
 
-    @Override
     public Set<Loop> getByVersion(Version version) {
-        return super.getByVersion(version); // note: to make method transactional
+        return repository.findByVersion(version)
+                .stream()
+                .map(LoopDTO::new)
+                .collect(Collectors.toSet());
     }
 
     @Override

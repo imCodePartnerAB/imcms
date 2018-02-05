@@ -2,17 +2,20 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
+import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Component
@@ -24,17 +27,20 @@ public class MenuDataInitializer extends TestDataCleaner {
 
     private final MenuRepository menuRepository;
     private final VersionDataInitializer versionDataInitializer;
-    private final Function<Menu, MenuDTO> menuToMenuDTO;
+    private final BiFunction<Menu, Language, MenuDTO> menuToMenuDTO;
+    private final LanguageService languageService;
     private Menu savedMenu;
     private Version version;
 
     public MenuDataInitializer(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer,
-                               Function<Menu, MenuDTO> menuToMenuDTO) {
+                               BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
+                               LanguageService languageService) {
         super(menuRepository);
         this.menuRepository = menuRepository;
         this.versionDataInitializer = versionDataInitializer;
         this.menuToMenuDTO = menuToMenuDTO;
+        this.languageService = languageService;
     }
 
     public MenuDTO createData(boolean withMenuItems) {
@@ -64,7 +70,9 @@ public class MenuDataInitializer extends TestDataCleaner {
             savedMenu.setMenuItems(new ArrayList<>());
         }
 
-        return menuToMenuDTO.apply(savedMenu);
+        // eng
+
+        return menuToMenuDTO.apply(savedMenu, languageService.findByCode(Imcms.getUser().getLanguage()));
     }
 
     public Version getVersion() {

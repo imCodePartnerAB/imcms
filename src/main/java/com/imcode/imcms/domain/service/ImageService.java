@@ -3,10 +3,11 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.Set;
 
-public interface ImageService extends VersionedContentService<ImageDTO>, DeleterByDocumentId {
+public interface ImageService extends VersionedContentService, DeleterByDocumentId {
 
     ImageDTO getImage(ImageDTO dataHolder);
 
@@ -22,4 +23,6 @@ public interface ImageService extends VersionedContentService<ImageDTO>, Deleter
     Set<String> getPublicImageLinks(int docId, Language language);
 
     Integer getFreeIndexForImageInTextEditor(Integer docId);
+
+    Set<ImageDTO> getByVersion(Version version);
 }

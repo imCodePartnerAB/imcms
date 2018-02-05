@@ -14,12 +14,13 @@
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
 <%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.MenuService"--%>
+<%--@elvariable id="language" type="java.lang.String"--%>
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
 <c:set var="menuItems" value="${isEditMode or isPreviewMode
-     ? menuService.getMenuItemsOf(index, targetDocId)
-     : menuService.getPublicMenuItemsOf(index, targetDocId)}" scope="request"/>
+     ? menuService.getMenuItemsOf(index, targetDocId, language)
+     : menuService.getPublicMenuItemsOf(index, targetDocId, language)}" scope="request"/>
 
 <c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
 <c:remove var="menuItems"/>

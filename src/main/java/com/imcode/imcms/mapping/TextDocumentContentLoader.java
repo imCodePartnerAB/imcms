@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
@@ -234,12 +233,6 @@ public class TextDocumentContentLoader {
         return loopService.getByVersion(version).stream().collect(toMap(Loop::getIndex, loop -> loop));
     }
 
-
-    public Map<Integer, MenuDTO> getMenus(VersionRef versionRef) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-
-        return menuService.getByVersion(version).stream().collect(toMap(MenuDTO::getMenuIndex, menu -> menu));
-    }
 
     private TextDomainObject toDomainObject(TextJPA jpaText) {
         return (jpaText == null) ? null : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());

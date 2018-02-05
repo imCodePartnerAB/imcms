@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -41,22 +42,22 @@ import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__I
 class MappingConfig {
 
     @Bean
-    public Function<MenuItem, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
-        return new Function<MenuItem, MenuItemDTO>() {
+    public BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO(DocumentMenuService documentMenuService) {
+        return new BiFunction<MenuItem, Language, MenuItemDTO>() {
             @Override
-            public MenuItemDTO apply(MenuItem menuItem) {
+            public MenuItemDTO apply(MenuItem menuItem, Language language) {
                 final Integer documentId = menuItem.getDocumentId();
 
                 final MenuItemDTO menuItemDTO = new MenuItemDTO();
                 menuItemDTO.setDocumentId(documentId);
                 menuItemDTO.setType(documentMenuService.getDocumentType(documentId));
-                menuItemDTO.setTitle(documentMenuService.getDocumentTitle(documentId));
+                menuItemDTO.setTitle(documentMenuService.getDocumentTitle(documentId, language));
                 menuItemDTO.setLink(documentMenuService.getDocumentLink(documentId));
                 menuItemDTO.setTarget(documentMenuService.getDocumentTarget(documentId));
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
-                        .map(this)
+                        .map(menuItem1 -> this.apply(menuItem1, language))
                         .collect(Collectors.toList());
 
                 menuItemDTO.setChildren(children);
@@ -66,12 +67,33 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Menu, MenuDTO> menuToMenuDTO(Function<MenuItem, MenuItemDTO> menuItemToMenuItemDTO) {
-        return menu -> {
+    public UnaryOperator<MenuItem> toMenuItemsWithoutId() {
+        return new UnaryOperator<MenuItem>() {
+            @Override
+            public MenuItem apply(MenuItem menuItem) {
+                menuItem.setId(null);
+
+                final List<MenuItem> newChildren = menuItem.getChildren()
+                        .stream()
+                        .map(this)
+                        .collect(Collectors.toList());
+
+                menuItem.setChildren(newChildren);
+
+                return menuItem;
+            }
+        };
+    }
+
+    @Bean
+    public BiFunction<Menu, Language, MenuDTO> menuToMenuDTO(BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDTO) {
+        return (menu, language) -> {
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
-            menuDTO.setMenuItems(menu.getMenuItems().stream().map(menuItemToMenuItemDTO).collect(Collectors.toList()));
+            menuDTO.setMenuItems(menu.getMenuItems()
+                    .stream()
+                    .map(menuItem -> menuItemToMenuItemDTO.apply(menuItem, language)).collect(Collectors.toList()));
 
             return menuDTO;
         };

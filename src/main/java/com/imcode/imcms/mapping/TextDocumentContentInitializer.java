@@ -58,10 +58,6 @@ public class TextDocumentContentInitializer {
     }
 
 
-    public void initMenus(TextDocumentDomainObject document) {
-        document.setMenus(contentLoader.getMenus(document.getVersionRef()));
-    }
-
     private void initContentLoops(TextDocumentDomainObject document) {
         document.setLoops(contentLoader.getLoops(document.getVersionRef()));
     }

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 class DefaultDocumentFileService
-        extends AbstractVersionedContentService<DocumentFileJPA, DocumentFile, DocumentFileRepository>
+        extends AbstractVersionedContentService<DocumentFileJPA, DocumentFileRepository>
         implements DocumentFileService {
 
     public static final Logger LOG = Logger.getLogger(DefaultDocumentFileService.class);
@@ -97,12 +97,7 @@ class DefaultDocumentFileService
     }
 
     @Override
-    protected DocumentFile mapToDTO(DocumentFileJPA documentFileJPA) {
-        return new DocumentFileDTO(documentFileJPA);
-    }
-
-    @Override
-    protected DocumentFileJPA mapToJpaWithoutId(DocumentFile documentFile, Version version) {
+    protected DocumentFileJPA removeId(DocumentFileJPA documentFile, Version version) {
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA(documentFile);
         documentFileJPA.setVersionIndex(version.getNo());
         documentFileJPA.setId(null);

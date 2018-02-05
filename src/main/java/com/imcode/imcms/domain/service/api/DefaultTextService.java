@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service("textService")
-class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, TextRepository> implements TextService {
+class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRepository> implements TextService {
 
     private final LanguageService languageService;
     private final VersionService versionService;
@@ -89,6 +89,14 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
                 .collect(Collectors.toSet());
     }
 
+    @Override
+    public Set<Text> getByVersion(Version version) {
+        return repository.findByVersion(version)
+                .stream()
+                .map(TextDTO::new)
+                .collect(Collectors.toSet());
+    }
+
     private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
                          Function<Integer, Version> versionReceiver) {
 
@@ -125,12 +133,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, Text, 
     }
 
     @Override
-    protected Text mapToDTO(TextJPA entity) {
-        return new TextDTO(entity);
-    }
-
-    @Override
-    protected TextJPA mapToJpaWithoutId(Text entity, Version version) {
+    protected TextJPA removeId(TextJPA entity, Version version) {
         final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(entity.getLangCode()));
         return new TextJPA(entity, version, languageJPA);
     }

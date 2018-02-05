@@ -6,13 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
-public abstract class AbstractVersionedContentService<JPA, DTO, Repository extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>>
-        implements VersionedContentService<DTO> {
+public abstract class AbstractVersionedContentService<JPA, Repository extends VersionedContentRepository<JPA> & JpaRepository<JPA, Integer>>
+        implements VersionedContentService {
 
     protected final Repository repository;
 
@@ -23,21 +21,13 @@ public abstract class AbstractVersionedContentService<JPA, DTO, Repository exten
         this.repository = repository;
     }
 
-    protected abstract DTO mapToDTO(JPA jpa);
-
-    protected abstract JPA mapToJpaWithoutId(DTO dto, Version version);
-
-    @Override
-    public Set<DTO> getByVersion(Version version) {
-        return repository.findByVersion(version).stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toSet());
-    }
+    protected abstract JPA removeId(JPA dto, Version version);
 
     @Override
     public void createVersionedContent(Version workingVersion, Version newVersion) {
-        final List<JPA> forSave = getByVersion(workingVersion).stream()
-                .map(jpa -> mapToJpaWithoutId(jpa, newVersion))
+        final List<JPA> forSave = repository.findByVersion(workingVersion)
+                .stream()
+                .map(jpa -> removeId(jpa, newVersion))
                 .collect(toList());
 
         repository.save(forSave);

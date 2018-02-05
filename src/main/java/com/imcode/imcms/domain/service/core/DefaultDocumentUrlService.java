@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class DefaultDocumentUrlService
-        extends AbstractVersionedContentService<DocumentUrlJPA, DocumentURL, DocumentUrlRepository>
+        extends AbstractVersionedContentService<DocumentUrlJPA, DocumentUrlRepository>
         implements DocumentUrlService {
 
     private final VersionService versionService;
@@ -52,12 +52,7 @@ public class DefaultDocumentUrlService
     }
 
     @Override
-    protected DocumentURL mapToDTO(DocumentUrlJPA documentUrlJPA) {
-        return new DocumentUrlDTO(documentUrlJPA);
-    }
-
-    @Override
-    protected DocumentUrlJPA mapToJpaWithoutId(DocumentURL documentURL, Version version) {
+    protected DocumentUrlJPA removeId(DocumentUrlJPA documentURL, Version version) {
         final DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA(documentURL, version);
         documentUrlJPA.setId(null);
 

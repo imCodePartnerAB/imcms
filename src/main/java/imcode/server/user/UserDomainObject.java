@@ -5,6 +5,7 @@ import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import imcode.server.Imcms;
+import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TemplateGroupDomainObject;
@@ -431,6 +432,10 @@ public class UserDomainObject implements Cloneable, Serializable {
      */
     public void setTemplateGroup(TemplateGroupDomainObject templateGroup) {
         this.templateGroup = templateGroup;
+    }
+
+    public String getLanguage() {
+        return LanguageMapper.convert639_2to639_1(languageIso639_2);
     }
 
     /**

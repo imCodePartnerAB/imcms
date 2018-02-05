@@ -61,7 +61,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     @Override
-    public String getDocumentTitle(int documentId) {
+    public String getDocumentTitle(int documentId, Language language) {
         final Version latestVersion = versionService.getLatestVersion(documentId);
 
         // note: for current user language, may be wong!

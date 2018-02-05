@@ -140,6 +140,11 @@ public class DocumentServiceTest {
         if (testSolrFolder.mkdirs()) {
             FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
         }
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(RoleId.SUPERADMIN);
+        user.setLanguageIso639_2("eng");
+        Imcms.setUser(user); // means current user is admin now
     }
 
     @Test
@@ -176,10 +181,6 @@ public class DocumentServiceTest {
 
     @Test
     public void save_With_Target_Expect_Saved() {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
-        Imcms.setUser(user); // means current user is admin now
-
         final String testTarget = "_test";
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
