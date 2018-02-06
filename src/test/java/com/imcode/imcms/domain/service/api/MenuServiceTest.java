@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -186,6 +187,38 @@ public class MenuServiceTest {
         assertEquals(1, menuByVersion.size());
         assertEquals(workingVersionMenu, menuByVersion.iterator().next());
 
+    }
+
+    @Test
+    public void getMenuItems_MenuNoAndDocIdAndUserLanguage_Expect_MenuItemsIsReturnedWithTitleOfUsersLanguage() {
+        final MenuDTO menu = menuDataInitializer.createData(true);
+
+        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
+
+        final String language = Imcms.getUser().getLanguage();
+        final String titleTest = language.equals("en") ? "headline_en" : "headline_se";
+
+        final List<MenuItemDTO> menuItems = menuService
+                .getMenuItems(menu.getMenuIndex(), menu.getDocId(), language);
+
+        assertEquals(menu.getMenuItems().size(), menuItems.size());
+
+        menuItems
+                .stream()
+                .map(new UnaryOperator<MenuItemDTO>() {
+                    @Override
+                    public MenuItemDTO apply(MenuItemDTO menuItemDTO) {
+                        assertEquals(titleTest, menuItemDTO.getTitle());
+
+                        menuItemDTO.getChildren()
+                                .stream()
+                                .map(this)
+                                .collect(Collectors.toList());
+
+                        return menuItemDTO;
+                    }
+                })
+                .collect(Collectors.toList());
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
