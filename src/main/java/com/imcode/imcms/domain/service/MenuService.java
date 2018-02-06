@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Set;
 
 public interface MenuService extends VersionedContentService, DeleterByDocumentId {
-    List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId, String language);
 
-    List<MenuItemDTO> getPublicMenuItemsOf(int menuIndex, int docId, String language);
+    List<MenuItemDTO> getMenuItems(int menuIndex, int docId, String language);
+
+    List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language);
+
+    List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language);
 
     MenuDTO saveFrom(MenuDTO menuDTO);
 

@@ -7,7 +7,6 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
@@ -62,9 +61,6 @@ public class MenuServiceTest {
 
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
-
-    @Autowired
-    private CommonContentService commonContentService;
 
     @Before
     public void setUp() throws Exception {
@@ -200,8 +196,8 @@ public class MenuServiceTest {
         commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
 
         final List<MenuItemDTO> menuItemDtosOfMenu = isAll
-                ? menuService.getMenuItemsOf(menu.getMenuIndex(), menu.getDocId(), code)
-                : menuService.getPublicMenuItemsOf(menu.getMenuIndex(), menu.getDocId(), code);
+                ? menuService.getVisibleMenuItems(menu.getMenuIndex(), menu.getDocId(), code)
+                : menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), code);
 
         assertEquals(menuDataInitializer.getMenuItemDtoList().size(), menuItemDtosOfMenu.size());
         assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().size());
@@ -212,8 +208,8 @@ public class MenuServiceTest {
         final String code = languageDataInitializer.createData().get(0).getCode();
         versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
         final List<MenuItemDTO> menuItems = isAll
-                ? menuService.getMenuItemsOf(WORKING_VERSION_NO, DOC_ID, code)
-                : menuService.getPublicMenuItemsOf(WORKING_VERSION_NO, DOC_ID, code);
+                ? menuService.getVisibleMenuItems(WORKING_VERSION_NO, DOC_ID, code)
+                : menuService.getPublicMenuItems(WORKING_VERSION_NO, DOC_ID, code);
         assertTrue(menuItems.isEmpty());
     }
 

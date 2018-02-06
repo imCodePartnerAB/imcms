@@ -34,12 +34,14 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private final BiFunction<Menu, Language, MenuDTO> menuSaver;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private LanguageService languageService;
+    private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
     private TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
     DefaultMenuService(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
                        @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
+                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
                        LanguageService languageService,
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
@@ -51,6 +53,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         this.documentMenuService = documentMenuService;
         this.menuItemToMenuItemDtoWithLang = menuItemToMenuItemDtoWithLang;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
+        this.menuItemToDTO = menuItemToDTO;
         this.languageService = languageService;
         this.menuToMenuDTO = menuToMenuDTO;
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
@@ -58,13 +61,18 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId, String language) {
-        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language);
+    public List<MenuItemDTO> getMenuItems(int menuIndex, int docId, String language) {
+        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItemsOf(int menuIndex, int docId, String language) {
-        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language);
+    public List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language) {
+        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
+    }
+
+    @Override
+    public List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language) {
+        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
     }
 
     @Override
@@ -130,7 +138,9 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         return menu;
     }
 
-    private List<MenuItemDTO> getMenuItemsOf(int menuIndex, int docId, MenuItemsStatus status, String langCode) {
+    private List<MenuItemDTO> getMenuItemsOf(
+            int menuIndex, int docId, MenuItemsStatus status, String langCode, boolean isVisible
+    ) {
         final Version version = versionService.getVersion(docId, status.equals(MenuItemsStatus.ALL)
                 ? versionService::getDocumentWorkingVersion : versionService::getLatestVersion);
 
@@ -138,11 +148,15 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
 
+        final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible ?
+                menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version) :
+                menuItem -> menuItemToDTO.apply(menuItem, language);
+
         return Optional.ofNullable(menu)
                 .map(Menu::getMenuItems)
                 .orElseGet(ArrayList::new)
                 .stream()
-                .map(menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version))
+                .map(menuItemFunction)
                 .filter(menuItemDTO -> menuItemDTO != null &&
                         ((status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user)))
                 .collect(Collectors.toList());

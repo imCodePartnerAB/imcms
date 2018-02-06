@@ -19,8 +19,8 @@
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
 <c:set var="menuItems" value="${isEditMode or isPreviewMode
-     ? menuService.getMenuItemsOf(index, targetDocId, language)
-     : menuService.getPublicMenuItemsOf(index, targetDocId, language)}" scope="request"/>
+     ? menuService.getVisibleMenuItems(index, targetDocId, language)
+     : menuService.getPublicMenuItems(index, targetDocId, language)}" scope="request"/>
 
 <c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
 <c:remove var="menuItems"/>
