@@ -1,11 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
@@ -57,6 +59,12 @@ public class MenuServiceTest {
 
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
+
+    @Autowired
+    private CommonContentDataInitializer commonContentDataInitializer;
+
+    @Autowired
+    private CommonContentService commonContentService;
 
     @Before
     public void setUp() throws Exception {
@@ -188,6 +196,8 @@ public class MenuServiceTest {
         final MenuDTO menu = menuDataInitializer.createData(true);
 
         final String code = languageDataInitializer.createData().get(0).getCode();
+
+        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
 
         final List<MenuItemDTO> menuItemDtosOfMenu = isAll
                 ? menuService.getMenuItemsOf(menu.getMenuIndex(), menu.getDocId(), code)

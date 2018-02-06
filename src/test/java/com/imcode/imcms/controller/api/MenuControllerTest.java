@@ -1,10 +1,12 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
@@ -19,6 +21,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.function.UnaryOperator;
+import java.util.stream.Collectors;
+
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -29,6 +34,11 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
+
+    private static final int DOC_ID = 1001;
+    private static final int WORKING_VERSION_NO = 0;
+    @Autowired
+    private CommonContentDataInitializer commonContentDataInitializer;
 
     @Before
     public void setUp() throws Exception {
@@ -51,6 +61,26 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExists_Expect_MenuItemsDtosJson() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true);
+
+        menu.getMenuItems()
+                .stream()
+                .map(new UnaryOperator<MenuItemDTO>() {
+                    @Override
+                    public MenuItemDTO apply(MenuItemDTO menuItemDTO) {
+                        menuItemDTO.setTitle("headline_en");
+
+                        menuItemDTO.getChildren()
+                                .stream()
+                                .map(this)
+                                .collect(Collectors.toList());
+
+                        return menuItemDTO;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
+
         final String expectedMenuItemDtos = asJson(menu.getMenuItems());
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
