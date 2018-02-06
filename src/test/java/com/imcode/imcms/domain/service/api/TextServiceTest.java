@@ -7,11 +7,9 @@ import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -57,6 +55,9 @@ public class TextServiceTest {
 
     @Autowired
     private TextRepository textRepository;
+
+    @Autowired
+    private TextHistoryRepository textHistoryRepository;
 
     @BeforeClass
     public static void setUser() {
@@ -182,6 +183,26 @@ public class TextServiceTest {
     }
 
     @Test
+    public void saveText_When_InLoopAndTextValueIsTheSame_Expect_TextAndTextHistoryAreNotUpdated() {
+        testSavingTextInLoopWithoutUpdating(true);
+    }
+
+    @Test
+    public void saveText_When_InLoopAndTextValueIsNew_Expect_TextAndTextHistoryAreUpdated() {
+        testSavingTextInLoopWithUpdating(true);
+    }
+
+    @Test
+    public void saveText_When_NotInLoopAndTextValueIsTheSame_Expect_TextAndTextHistoryAreNotUpdated() {
+        testSavingTextInLoopWithoutUpdating(false);
+    }
+
+    @Test
+    public void saveText_When_NotInLoopAndTextValueIsNew_Expect_TextAndTextHistoryAreUpdated() {
+        testSavingTextInLoopWithUpdating(false);
+    }
+
+    @Test
     public void deleteByDocId() {
         createTexts();
 
@@ -274,5 +295,66 @@ public class TextServiceTest {
         text.setVersion(version);
 
         return text;
+    }
+
+    private void testSavingTextInLoopWithoutUpdating(boolean inLoop) {
+        final int index = 1;
+        final String languageCode = languages.get(0).getCode();
+        final LoopEntryRefDTO loopEntryRefDTO = inLoop ?
+                new LoopEntryRefDTO(1, 1) :
+                null;
+
+        final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
+        textDTO.setText("test");
+        textDTO.setType(PLAIN_TEXT);
+
+        textService.save(textDTO);
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(1, textHistoryRepository.findAll().size());
+
+        // save with the same text
+        textService.save(textDTO);
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(1, textHistoryRepository.findAll().size());
+    }
+
+    private void testSavingTextInLoopWithUpdating(boolean inLoop) {
+        final int index = 1;
+        final String languageCode = languages.get(0).getCode();
+        final LoopEntryRefDTO loopEntryRefDTO = inLoop ?
+                new LoopEntryRefDTO(1, 1) :
+                null;
+
+        final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
+        textDTO.setText("test");
+        textDTO.setType(PLAIN_TEXT);
+
+        textService.save(textDTO);
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(1, textHistoryRepository.findAll().size());
+
+        // save with new text
+        final String newTestValue = "new test value";
+        textDTO.setText(newTestValue);
+
+        textService.save(textDTO);
+
+        final List<TextHistoryJPA> all = textHistoryRepository.findAll();
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(2, all.size());
+
+        final int maxTextHistoryId = all
+                .stream()
+                .mapToInt(TextHistoryJPA::getId)
+                .max()
+                .getAsInt();
+
+        final String actualText = textHistoryRepository.findOne(maxTextHistoryId).getText();
+
+        assertEquals(newTestValue, actualText);
     }
 }

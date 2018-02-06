@@ -62,15 +62,19 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final Integer docId = text.getDocId();
         final Version version = versionService.getDocumentWorkingVersion(docId);
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
-        final TextJPA textJPA = new TextJPA(text, version, language);
-        final Integer textId = getTextId(text, version, language);
 
-        textJPA.setId(textId);
+        final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
 
-        repository.save(textJPA);
-        super.updateWorkingVersion(docId);
+        if (textJPA == null || !textJPA.getText().equals(text.getText())) {
+            final TextJPA newTextJPA = new TextJPA(text, version, language);
+            newTextJPA.setId(textJPA == null ? null : textJPA.getId());
 
-        textHistoryService.save(text);
+            repository.save(newTextJPA);
+
+            super.updateWorkingVersion(docId);
+
+            textHistoryService.save(text);
+        }
     }
 
     @Override
