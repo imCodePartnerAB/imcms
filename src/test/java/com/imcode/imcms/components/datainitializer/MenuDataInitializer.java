@@ -70,8 +70,6 @@ public class MenuDataInitializer extends TestDataCleaner {
             savedMenu.setMenuItems(new ArrayList<>());
         }
 
-        // eng
-
         return menuToMenuDTO.apply(savedMenu, languageService.findByCode(Imcms.getUser().getLanguage()));
     }
 
