@@ -7,13 +7,15 @@ import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.model.*;
-import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Loop;
+import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.TextDocumentTemplate;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Config;
@@ -29,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -103,6 +106,13 @@ public class DocumentServiceTest {
 
     @Autowired
     private VersionRepository versionRepository;
+
+    @Autowired
+    @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
+    private MenuRepository menuRepository;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Autowired
     private MenuDataInitializer menuDataInitializer;
@@ -640,17 +650,17 @@ public class DocumentServiceTest {
         assertEquals(1, loopByVersion.size());
         assertEquals(index, new ArrayList<>(loopByVersion).get(0).getIndex());
 
-        final Set<MenuDTO> menuByVersion = menuService.getByVersion(latestVersion);
+        final List<Menu> menuByVersion = menuRepository.findByVersion(latestVersion);
         assertNotNull(menuByVersion);
         assertEquals(1, menuByVersion.size());
-        assertEquals(index, new ArrayList<>(menuByVersion).get(0).getMenuIndex());
+        assertEquals(index, new ArrayList<>(menuByVersion).get(0).getNo());
 
-        final Set<ImageDTO> imageByVersion = imageService.getByVersion(latestVersion);
+        final List<Image> imageByVersion = imageRepository.findByVersion(latestVersion);
         assertNotNull(imageByVersion);
         assertEquals(1, imageByVersion.size());
         assertEquals(index, new ArrayList<>(imageByVersion).get(0).getIndex());
 
-        final Set<Text> textByVersion = textService.getByVersion(latestVersion);
+        final List<TextJPA> textByVersion = textRepository.findByVersion(latestVersion);
         assertNotNull(textByVersion);
         assertEquals(1, textByVersion.size());
         assertEquals(index, new ArrayList<>(textByVersion).get(0).getIndex());
@@ -715,17 +725,17 @@ public class DocumentServiceTest {
         assertEquals(1, loopByVersion.size());
         assertEquals(index, new ArrayList<>(loopByVersion).get(0).getIndex());
 
-        final Set<MenuDTO> menuByVersion = menuService.getByVersion(newVersion);
+        final List<Menu> menuByVersion = menuRepository.findByVersion(newVersion);
         assertNotNull(menuByVersion);
         assertEquals(1, menuByVersion.size());
-        assertEquals(index, new ArrayList<>(menuByVersion).get(0).getMenuIndex());
+        assertEquals(index, new ArrayList<>(menuByVersion).get(0).getNo());
 
-        final Set<ImageDTO> imageByVersion = imageService.getByVersion(newVersion);
+        final List<Image> imageByVersion = imageRepository.findByVersion(newVersion);
         assertNotNull(imageByVersion);
         assertEquals(1, imageByVersion.size());
         assertEquals(index, new ArrayList<>(imageByVersion).get(0).getIndex());
 
-        final Set<Text> textByVersion = textService.getByVersion(newVersion);
+        final List<TextJPA> textByVersion = textRepository.findByVersion(newVersion);
         assertNotNull(textByVersion);
         assertEquals(1, textByVersion.size());
         assertEquals(index, new ArrayList<>(textByVersion).get(0).getIndex());

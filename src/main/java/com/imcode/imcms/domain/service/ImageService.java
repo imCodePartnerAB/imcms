@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.Set;
 
@@ -22,5 +21,4 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
      */
     Set<String> getPublicImageLinks(int docId, Language language);
 
-    Set<ImageDTO> getByVersion(Version version);
 }

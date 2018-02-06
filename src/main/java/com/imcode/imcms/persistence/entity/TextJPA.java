@@ -51,6 +51,10 @@ public class TextJPA extends Text {
         setLanguage(language);
     }
 
+    public TextJPA(TextJPA from, Version version) {
+        this(from, version, from.language);
+    }
+
     @Override
     public Integer getDocId() {
         return version.getDocId();

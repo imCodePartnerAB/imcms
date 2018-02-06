@@ -58,18 +58,7 @@ public class MenuDataInitializer extends TestDataCleaner {
     }
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version) {
-        final Menu menu = new Menu();
-        menu.setVersion(version);
-        menu.setNo(menuIndex);
-        savedMenu = menuRepository.saveAndFlush(menu);
-
-        if (withMenuItems) {
-            addMenuItemsTo(savedMenu);
-
-        } else {
-            savedMenu.setMenuItems(new ArrayList<>());
-        }
-
+        createDataEntity(withMenuItems, menuIndex, version);
         return menuToMenuDTO.apply(savedMenu, languageService.findByCode(Imcms.getUser().getLanguage()));
     }
 
@@ -89,6 +78,27 @@ public class MenuDataInitializer extends TestDataCleaner {
     public void cleanRepositories() {
         versionDataInitializer.cleanRepositories();
         super.cleanRepositories();
+    }
+
+    public Menu createDataEntity(boolean withMenuItems) {
+        version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
+        return createDataEntity(withMenuItems, MENU_INDEX, version);
+    }
+
+    private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version) {
+        final Menu menu = new Menu();
+        menu.setVersion(version);
+        menu.setNo(menuIndex);
+        savedMenu = menuRepository.saveAndFlush(menu);
+
+        if (withMenuItems) {
+            addMenuItemsTo(savedMenu);
+
+        } else {
+            savedMenu.setMenuItems(new ArrayList<>());
+        }
+
+        return savedMenu;
     }
 
     private MenuItemDTO mapMenuItems(MenuItem menuItem) {
@@ -132,5 +142,4 @@ public class MenuDataInitializer extends TestDataCleaner {
         menuItem.setDocumentId(DOC_ID);
         return menuItem;
     }
-
 }

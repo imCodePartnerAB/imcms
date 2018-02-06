@@ -23,7 +23,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Transactional
 @Service("imageService")
@@ -109,14 +108,6 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     private Integer getFreeIndexForImageInTextEditor(Integer docId) {
         final int minIndex = Optional.ofNullable(repository.findMinIndexByVersion(docId)).orElse(0);
         return Math.min(minIndex, 0) - 1;
-    }
-
-    @Override
-    public Set<ImageDTO> getByVersion(Version version) {
-        return repository.findByVersion(version)
-                .stream()
-                .map(imageToImageDTO)
-                .collect(Collectors.toSet());
     }
 
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,

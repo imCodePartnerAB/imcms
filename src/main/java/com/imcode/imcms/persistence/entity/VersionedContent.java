@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -11,6 +12,7 @@ import javax.validation.constraints.NotNull;
 @Setter
 @EqualsAndHashCode
 @MappedSuperclass
+@ToString
 public abstract class VersionedContent {
 
     @Id

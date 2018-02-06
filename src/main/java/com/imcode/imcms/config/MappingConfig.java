@@ -30,7 +30,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 /**
@@ -69,8 +69,7 @@ class MappingConfig {
         return new UnaryOperator<MenuItem>() {
             @Override
             public MenuItem apply(MenuItem menuItem) {
-                MenuItem newMenuItem = new MenuItem(menuItem);
-                newMenuItem.setId(null);
+                final MenuItem newMenuItem = new MenuItem(menuItem);
 
                 final List<MenuItem> newChildren = menuItem.getChildren()
                         .stream()
@@ -90,7 +89,7 @@ class MappingConfig {
             BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
             LanguageService languageService,
             VersionService versionService,
-            DocumentMenuService defaultDocumentMenuService
+            DocumentMenuService documentMenuService
     ) {
         return new TernaryFunction<MenuItem, Language, Version, MenuItemDTO>() {
 
@@ -98,8 +97,8 @@ class MappingConfig {
             public MenuItemDTO apply(final MenuItem menuItem, final Language language, final Version version) {
 
                 final Integer docId = menuItem.getDocumentId();
-                final List<CommonContent> enabledCommonContents =
-                        commonContentService.getByVersion(versionService.getLatestVersion(docId))
+                final Version latestVersion = versionService.getLatestVersion(docId);
+                final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
                                 .stream()
                                 .filter(CommonContent::isEnabled)
                                 .collect(Collectors.toList());
@@ -108,27 +107,27 @@ class MappingConfig {
                     return null;
                 }
 
-                final Optional<CommonContent> commonContentWithLanguage = enabledCommonContents.stream()
-                        .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
-                        .findFirst();
+                final boolean isLanguageDisabled = enabledCommonContents.stream()
+                        .noneMatch(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()));
 
-                final MenuItemDTO menuItemDTO;
-                final UserDomainObject user = Imcms.getUser();
+                final Language menuLanguage;
 
-                Language withLanguage = language;
+                if (isLanguageDisabled) {
 
-                final Meta.DisabledLanguageShowMode disabledLanguageShowMode = defaultDocumentMenuService
-                        .getDisabledLanguageShowMode(docId);
+                    final boolean isShowInDefaultLanguage = documentMenuService.getDisabledLanguageShowMode(docId)
+                            .equals(SHOW_IN_DEFAULT_LANGUAGE);
 
-                if (!commonContentWithLanguage.isPresent()) {
-                    if (disabledLanguageShowMode.toString().equals(SHOW_IN_DEFAULT_LANGUAGE.toString())) {
-                        withLanguage = languageService.findByCode(user.getLanguage());
+                    if (isShowInDefaultLanguage) {
+                        menuLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
+
                     } else {
                         return null;
                     }
+                } else {
+                    menuLanguage = language;
                 }
 
-                menuItemDTO = menuItemToDTO.apply(menuItem, withLanguage);
+                final MenuItemDTO menuItemDTO = menuItemToDTO.apply(menuItem, menuLanguage);
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()

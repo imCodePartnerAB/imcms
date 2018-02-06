@@ -37,9 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 
@@ -212,37 +210,33 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void getByVersion() {
-        int i = TEST_IMAGE_INDEX;
-
-        final Set<ImageDTO> expected = Stream.of(
-                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX),
-                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX),
-                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX),
-                imageDataInitializer.createData(++i, TEST_DOC_ID, VERSION_INDEX))
-                .map(imageToImageDTO)
-                .collect(Collectors.toSet());
-
-        final Set<ImageDTO> actual = imageService.getByVersion(workingVersion);
-
-        assertEquals(actual.size(), expected.size());
-        assertEquals(actual, expected);
-    }
-
-    @Test
     public void createVersionedContent() {
         int testImageIndex = TEST_IMAGE_INDEX;
-        final ImageDTO workingVersionImage = imageToImageDTO.apply(
-                imageDataInitializer.createData(++testImageIndex, TEST_DOC_ID, VERSION_INDEX));
+        final Image workingVersionImage = imageDataInitializer.createData(++testImageIndex, TEST_DOC_ID, VERSION_INDEX);
 
         final Version latestVersion = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
 
         imageService.createVersionedContent(workingVersion, latestVersion);
 
-        final Set<ImageDTO> latestVersionImages = imageService.getByVersion(latestVersion);
+        final List<Image> latestVersionImages = imageRepository.findByVersion(latestVersion);
 
         assertEquals(1, latestVersionImages.size());
-        assertTrue(latestVersionImages.contains(workingVersionImage));
+
+        final Image image = latestVersionImages.get(0);
+
+        assertEquals(workingVersionImage.getGeneratedFilename(), image.getGeneratedFilename());
+        assertEquals(workingVersionImage.getName(), image.getName());
+        assertEquals(workingVersionImage.getUrl(), image.getUrl());
+        assertEquals(workingVersionImage.getAlign(), image.getAlign());
+        assertEquals(workingVersionImage.getAlternateText(), image.getAlternateText());
+        assertEquals(workingVersionImage.getLinkUrl(), image.getLinkUrl());
+        assertEquals(workingVersionImage.getIndex(), image.getIndex());
+        assertEquals(workingVersionImage.getHeight(), image.getHeight());
+        assertEquals(workingVersionImage.getWidth(), image.getWidth());
+        assertEquals(workingVersionImage.getLoopEntryRef(), image.getLoopEntryRef());
+        assertEquals(workingVersionImage.getCropRegion(), image.getCropRegion());
+        assertEquals(workingVersionImage.getLanguage(), image.getLanguage());
+        assertEquals(workingVersionImage.getVersion().getDocId(), image.getVersion().getDocId());
     }
 
     @Test

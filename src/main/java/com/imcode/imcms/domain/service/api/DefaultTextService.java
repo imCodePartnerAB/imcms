@@ -93,14 +93,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
                 .collect(Collectors.toSet());
     }
 
-    @Override
-    public Set<Text> getByVersion(Version version) {
-        return repository.findByVersion(version)
-                .stream()
-                .map(TextDTO::new)
-                .collect(Collectors.toSet());
-    }
-
     private Text getText(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
                          Function<Integer, Version> versionReceiver) {
 
@@ -138,7 +130,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
     @Override
     protected TextJPA removeId(TextJPA entity, Version version) {
-        final LanguageJPA languageJPA = new LanguageJPA(languageService.findByCode(entity.getLangCode()));
-        return new TextJPA(entity, version, languageJPA);
+        return new TextJPA(entity, version);
     }
 }

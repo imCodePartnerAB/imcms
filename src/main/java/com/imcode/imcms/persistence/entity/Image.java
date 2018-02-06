@@ -1,8 +1,10 @@
 package com.imcode.imcms.persistence.entity;
 
 import imcode.util.image.Format;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -10,6 +12,8 @@ import javax.persistence.*;
 @Table(name = "imcms_text_doc_images")
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Image extends VersionedI18nContent {
 
     @Column(name = "`index`")
@@ -68,7 +72,6 @@ public class Image extends VersionedI18nContent {
     private Long archiveImageId;
 
     public Image(Image from) {
-        setId(from.getId());
         setVersion(from.getVersion());
         setLanguage(from.getLanguage());
         setIndex(from.getIndex());

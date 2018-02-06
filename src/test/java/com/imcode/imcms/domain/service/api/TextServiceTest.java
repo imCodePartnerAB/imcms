@@ -222,29 +222,25 @@ public class TextServiceTest {
     }
 
     @Test
-    public void getByVersion() {
-        final Set<Text> expected = createTexts(),
-                actual = textService.getByVersion(workingVersion);
-
-        assertEquals(expected.size(), actual.size());
-        assertEquals(expected, actual);
-    }
-
-    @Test
     public void createVersionedContent() {
         final int index = 1;
         final TextJPA text = createText(index, languages.get(0), workingVersion);
         textRepository.saveAndFlush(text);
 
-        final TextDTO workingVersionText = new TextDTO(text);
-
         textService.createVersionedContent(workingVersion, latestVersion);
 
-        final Set<Text> byVersion = textService.getByVersion(latestVersion);
+        final List<TextJPA> byVersion = textRepository.findByVersion(latestVersion);
 
         assertNotNull(byVersion);
         assertEquals(1, byVersion.size());
-        assertTrue(byVersion.contains(workingVersionText));
+
+        final TextJPA textJPA = byVersion.get(0);
+
+        assertEquals(text.getIndex(), textJPA.getIndex());
+        assertEquals(text.getDocId(), textJPA.getDocId());
+        assertEquals(text.getLanguage(), textJPA.getLanguage());
+        assertEquals(text.getText(), textJPA.getText());
+        assertEquals(text.getLoopEntryRef(), textJPA.getLoopEntryRef());
     }
 
     @Test

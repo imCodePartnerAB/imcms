@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -92,14 +91,6 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     }
 
     @Override
-    public Set<MenuDTO> getByVersion(Version version) {
-        return repository.findByVersion(version)
-                .stream()
-                .map(menu -> menuToMenuDTO.apply(menu, languageService.findByCode("en"))) // TODO language?
-                .collect(Collectors.toSet());
-    }
-
-    @Override
     @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
@@ -107,11 +98,12 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
 
     @Override
     protected Menu removeId(Menu jpa, Version newVersion) {
-        final Menu menu = new Menu(jpa);
+        final Menu menu = new Menu();
         menu.setId(null);
+        menu.setNo(jpa.getNo());
         menu.setVersion(newVersion);
 
-        final List<MenuItem> newMenuItems = menu.getMenuItems()
+        final List<MenuItem> newMenuItems = jpa.getMenuItems()
                 .stream()
                 .map(toMenuItemsWithoutId)
                 .collect(Collectors.toList());

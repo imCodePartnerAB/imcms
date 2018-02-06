@@ -1,8 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -14,6 +12,8 @@ import java.util.List;
 @Setter
 @Getter
 @NoArgsConstructor
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class Menu extends VersionedContent {
 
     @NotNull
@@ -25,9 +25,4 @@ public class Menu extends VersionedContent {
     @OrderBy("sortOrder")
     private List<MenuItem> menuItems;
 
-    public Menu(Menu from) {
-        setVersion(from.getVersion());
-        setNo(from.no);
-        setMenuItems(from.getMenuItems());
-    }
 }
