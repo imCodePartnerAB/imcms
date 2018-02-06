@@ -8,6 +8,7 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,27 +29,27 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
-    private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDto;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
     private final BiFunction<Menu, Language, MenuDTO> menuToMenuDTO;
     private final BiFunction<Menu, Language, MenuDTO> menuSaver;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private LanguageService languageService;
+    private TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
     DefaultMenuService(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
                        @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
-                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDto,
                        Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
                        LanguageService languageService,
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
-                       UnaryOperator<MenuItem> toMenuItemsWithoutId) {
+                       UnaryOperator<MenuItem> toMenuItemsWithoutId,
+                       TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang) {
 
         super(menuRepository);
         this.versionService = versionService;
         this.documentMenuService = documentMenuService;
-        this.menuItemToDto = menuItemToDto;
+        this.menuItemToMenuItemDtoWithLang = menuItemToMenuItemDtoWithLang;
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
         this.languageService = languageService;
         this.menuToMenuDTO = menuToMenuDTO;
@@ -102,12 +103,12 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         menu.setId(null);
         menu.setVersion(newVersion);
 
-        final List<MenuItem> collect = menu.getMenuItems()
+        final List<MenuItem> newMenuItems = menu.getMenuItems()
                 .stream()
                 .map(toMenuItemsWithoutId)
                 .collect(Collectors.toList());
 
-        menu.setMenuItems(collect);
+        menu.setMenuItems(newMenuItems);
 
         return menu;
     }
@@ -141,8 +142,9 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .map(Menu::getMenuItems)
                 .orElseGet(ArrayList::new)
                 .stream()
-                .map(menuItem -> menuItemToDto.apply(menuItem, language))
-                .filter(menuItemDTO -> (status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user))
+                .map(menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version))
+                .filter(menuItemDTO -> menuItemDTO != null &&
+                        ((status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user)))
                 .collect(Collectors.toList());
     }
 

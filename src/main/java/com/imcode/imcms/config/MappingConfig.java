@@ -1,10 +1,7 @@
 package com.imcode.imcms.config;
 
 import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
@@ -33,6 +30,7 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
 
 /**
@@ -71,16 +69,76 @@ class MappingConfig {
         return new UnaryOperator<MenuItem>() {
             @Override
             public MenuItem apply(MenuItem menuItem) {
-                menuItem.setId(null);
+                MenuItem newMenuItem = new MenuItem(menuItem);
+                newMenuItem.setId(null);
 
                 final List<MenuItem> newChildren = menuItem.getChildren()
                         .stream()
                         .map(this)
                         .collect(Collectors.toList());
 
-                menuItem.setChildren(newChildren);
+                newMenuItem.setChildren(newChildren);
 
-                return menuItem;
+                return newMenuItem;
+            }
+        };
+    }
+
+    @Bean
+    public TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang(
+            CommonContentService commonContentService,
+            BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
+            LanguageService languageService,
+            VersionService versionService,
+            DocumentMenuService defaultDocumentMenuService
+    ) {
+        return new TernaryFunction<MenuItem, Language, Version, MenuItemDTO>() {
+
+            @Override
+            public MenuItemDTO apply(final MenuItem menuItem, final Language language, final Version version) {
+
+                final Integer docId = menuItem.getDocumentId();
+                final List<CommonContent> enabledCommonContents =
+                        commonContentService.getByVersion(versionService.getLatestVersion(docId))
+                                .stream()
+                                .filter(CommonContent::isEnabled)
+                                .collect(Collectors.toList());
+
+                if (enabledCommonContents.size() == 0) {
+                    return null;
+                }
+
+                final Optional<CommonContent> commonContentWithLanguage = enabledCommonContents.stream()
+                        .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
+                        .findFirst();
+
+                final MenuItemDTO menuItemDTO;
+                final UserDomainObject user = Imcms.getUser();
+
+                Language withLanguage = language;
+
+                final Meta.DisabledLanguageShowMode disabledLanguageShowMode = defaultDocumentMenuService
+                        .getDisabledLanguageShowMode(docId);
+
+                if (!commonContentWithLanguage.isPresent()) {
+                    if (disabledLanguageShowMode.toString().equals(SHOW_IN_DEFAULT_LANGUAGE.toString())) {
+                        withLanguage = languageService.findByCode(user.getLanguage());
+                    } else {
+                        return null;
+                    }
+                }
+
+                menuItemDTO = menuItemToDTO.apply(menuItem, withLanguage);
+
+                final List<MenuItemDTO> children = menuItem.getChildren()
+                        .stream()
+                        .map(menuItem1 -> this.apply(menuItem1, language, version))
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toList());
+
+                menuItemDTO.setChildren(children);
+
+                return menuItemDTO;
             }
         };
     }
