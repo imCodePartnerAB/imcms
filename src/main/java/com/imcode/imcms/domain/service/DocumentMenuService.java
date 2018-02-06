@@ -14,4 +14,6 @@ public interface DocumentMenuService {
     String getDocumentLink(int documentId);
 
     Meta.DocumentType getDocumentType(int documentId);
+
+    Meta.DisabledLanguageShowMode getDisabledLanguageShowMode(int documentId);
 }
