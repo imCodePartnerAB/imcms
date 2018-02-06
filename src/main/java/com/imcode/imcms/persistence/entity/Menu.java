@@ -26,7 +26,6 @@ public class Menu extends VersionedContent {
     private List<MenuItem> menuItems;
 
     public Menu(Menu from) {
-        setId(from.getId());
         setVersion(from.getVersion());
         setNo(from.no);
         setMenuItems(from.getMenuItems());

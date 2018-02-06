@@ -28,4 +28,8 @@ public class MenuItem {
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
 
+    public MenuItem(MenuItem from) {
+        setDocumentId(from.getDocumentId());
+        setSortOrder(from.getSortOrder());
+    }
 }

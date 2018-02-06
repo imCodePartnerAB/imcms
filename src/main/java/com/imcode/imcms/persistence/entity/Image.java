@@ -73,6 +73,7 @@ public class Image extends VersionedI18nContent {
         setLanguage(from.getLanguage());
         setIndex(from.getIndex());
         setFormat(from.getFormat());
+        setLoopEntryRef(from.getLoopEntryRef());
     }
 
     public Image() {
