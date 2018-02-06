@@ -142,23 +142,24 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
             int menuIndex, int docId, MenuItemsStatus status, String langCode, boolean isVisible
     ) {
         final Version version = versionService.getVersion(docId, status.equals(MenuItemsStatus.ALL)
-                ? versionService::getDocumentWorkingVersion : versionService::getLatestVersion);
+                ? versionService::getDocumentWorkingVersion
+                : versionService::getLatestVersion);
 
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
         final UserDomainObject user = Imcms.getUser();
 
-        final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible ?
-                menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version) :
-                menuItem -> menuItemToDTO.apply(menuItem, language);
+        final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
+                ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version)
+                : menuItem -> menuItemToDTO.apply(menuItem, language);
 
         return Optional.ofNullable(menu)
                 .map(Menu::getMenuItems)
                 .orElseGet(ArrayList::new)
                 .stream()
                 .map(menuItemFunction)
-                .filter(menuItemDTO -> menuItemDTO != null &&
-                        ((status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user)))
+                .filter(menuItemDTO -> (menuItemDTO != null)
+                        && ((status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user)))
                 .collect(Collectors.toList());
     }
 
