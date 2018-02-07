@@ -820,6 +820,11 @@ Imcms.define("imcms-image-editor-builder",
             // direct reassign because $.extend skip 'undefined' but it's needed!
             imageData.cropRegion = image.cropRegion;
             $.extend(imageData, image);
+
+            if (imageData.inText) {
+                $tag.attr("data-index", imageData.index);
+            }
+
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
         }

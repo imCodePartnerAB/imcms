@@ -49,5 +49,6 @@ public class ImageDTO extends ImageData {
 
     public ImageDTO(ImageDTO from) {
         this(from.index, from.docId, from.loopEntryRef, from.langCode);
+        this.inText = from.inText;
     }
 }

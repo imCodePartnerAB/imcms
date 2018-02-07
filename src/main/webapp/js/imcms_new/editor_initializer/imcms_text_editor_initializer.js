@@ -75,16 +75,20 @@ Imcms.define("imcms-text-editor-initializer",
                 onclick: function () {
                     var uniqueId = Date.now();
                     var tagHTML = '<div id="' + uniqueId + '"><div class="imcms-editor-content"><img></div></div>';
-                    var imageDTO = $(this.$el).parents(".imcms-editor-area--text")
+                    var textDTO = $(this.$el).parents(".imcms-editor-area--text")
                         .find(".imcms-editor-content--text")
                         .data();
+                    var imageDTO = $.extend({inText: true}, textDTO);
 
                     imageDTO.index = null;
-                    imageDTO.inText = true;
 
                     tinyMCE.activeEditor.execCommand('mceInsertContent', false, tagHTML);
 
                     var $tag = $(tinyMCE.activeEditor.getBody()).find("#" + uniqueId);
+
+                    $tag.attr("data-doc-id", imageDTO.docId);
+                    $tag.attr("data-lang-code", imageDTO.langCode);
+                    $tag.attr("data-index", imageDTO.index);
 
                     imageEditorBuilder.setTag($tag).build(imageDTO);
                 }
