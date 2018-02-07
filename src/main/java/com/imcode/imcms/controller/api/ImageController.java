@@ -34,4 +34,15 @@ public class ImageController {
 
         imageService.saveImage(image);
     }
+
+    @DeleteMapping
+    public void deleteImage(@RequestBody ImageDTO image) {
+
+        // todo: create annotation instead of copying this each time!
+        if (!Imcms.getUser().isSuperAdmin()) {
+            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
+        }
+
+        imageService.saveImage(new ImageDTO(image));
+    }
 }
