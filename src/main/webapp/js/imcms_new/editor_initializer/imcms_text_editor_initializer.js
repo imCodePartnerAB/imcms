@@ -20,7 +20,7 @@ Imcms.define("imcms-text-editor-initializer",
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            textsRestApi.create(textDTO).success(function () { // todo: unfocus current editor, maybe
+            textsRestApi.create(textDTO).success(function () {
                 events.trigger("imcms-version-modified");
             });
         }
@@ -74,7 +74,7 @@ Imcms.define("imcms-text-editor-initializer",
                 tooltip: 'Add Image',
                 onclick: function () {
                     var uniqueId = Date.now();
-                    var tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text">\n'
+                    var tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text imcms-editor-area--image">\n'
                         + '   <div class="imcms-editor-content">\n'
                         + '       <img>\n'
                         + '   </div>\n'
