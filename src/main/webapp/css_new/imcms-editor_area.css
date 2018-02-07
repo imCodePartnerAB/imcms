@@ -113,3 +113,13 @@
     right: auto;
     left: 5px;
 }
+
+.imcms-image-in-text {
+    position: relative;
+    display: inline-block;
+    padding-right: 26px;
+}
+
+.imcms-image-in-text .imcms-editor-content {
+    display: inline-block;
+}

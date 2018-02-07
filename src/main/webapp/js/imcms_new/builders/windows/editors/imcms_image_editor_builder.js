@@ -431,7 +431,7 @@ Imcms.define("imcms-image-editor-builder",
             /** @namespace imageDTO.generatedFilePath */
 
             if (imageDTO.generatedFilePath !== "") {
-                imageDTO.generatedFilePath = imcms.contextPath + imageDTO.generatedFilePath
+                imageDTO.generatedFilePath = location.origin + imcms.contextPath + imageDTO.generatedFilePath
             }
 
             $tag.find(".imcms-editor-content>img").attr("src", imageDTO.generatedFilePath);
@@ -828,6 +828,11 @@ Imcms.define("imcms-image-editor-builder",
             // direct reassign because $.extend skip 'undefined' but it's needed!
             imageData.cropRegion = image.cropRegion;
             $.extend(imageData, image);
+
+            if (imageData.inText) {
+                $tag.attr("data-index", imageData.index);
+            }
+
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
         }

@@ -8,10 +8,12 @@
 Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
-        "imcms-text-history-window-builder", "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder"
+        "imcms-text-history-window-builder", "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder",
+        "imcms-image-editor-builder"
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistoryBuilder, textValidationAPI,
-              textValidationBuilder) {
+              textValidationBuilder, imageEditorBuilder) {
+
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         function saveContent(editor) {
@@ -71,7 +73,59 @@ Imcms.define("imcms-text-editor-initializer",
                 icon: 'imcms-image--in-text-editor-icon',
                 tooltip: 'Add Image',
                 onclick: function () {
-                    // todo: implement here
+                    var uniqueId = Date.now();
+                    var tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text">\n'
+                        + '   <div class="imcms-editor-content">\n'
+                        + '       <img>\n'
+                        + '   </div>\n'
+                        + '</div>\n';
+
+                    var textDTO = $(this.$el).parents(".imcms-editor-area--text")
+                        .find(".imcms-editor-content--text")
+                        .data();
+
+                    var imageDTO = $.extend({inText: true}, textDTO);
+                    imageDTO.index = null;
+
+                    tinyMCE.activeEditor.execCommand('mceInsertContent', false, tagHTML);
+
+                    function openEditor() {
+                        var $this = $(this);
+                        var $tag = $this.parents(".imcms-image-in-text");
+                        var imageDTO = { // $.data() is not used because of strange behavior in this case
+                            docId: $tag.attr("data-doc-id"),
+                            langCode: $tag.attr("data-lang-code"),
+                            inText: true,
+                            index: $tag.attr("data-index")
+                        };
+
+                        imageEditorBuilder.setTag($tag).build(imageDTO);
+
+                        $this.css("display", "block");
+                    }
+
+                    var $tag = $(tinyMCE.activeEditor.getBody()).find("#" + uniqueId);
+                    var $editorControl = $("<div>", {
+                        "class": "imcms-editor-area__control-edit imcms-control imcms-control--edit"
+                        + " imcms-control--image",
+                        html: $("<div>", {
+                            "class": "imcms-editor-area__control-title",
+                            text: "Image Editor"
+                        }),
+                        click: openEditor
+                    });
+                    var $editorControlWrapper = $("<div>", {
+                        "class": "imcms-editor-area__control-wrap",
+                        html: $editorControl
+                    });
+
+                    $tag.append($editorControlWrapper);
+                    $tag.attr("data-doc-id", imageDTO.docId);
+                    $tag.attr("data-lang-code", imageDTO.langCode);
+                    $tag.attr("data-in-text", true);
+                    $tag.attr("data-index", imageDTO.index);
+
+                    openEditor.call($editorControl[0]);
                 }
             });
 
@@ -79,6 +133,7 @@ Imcms.define("imcms-text-editor-initializer",
 
         var inlineEditorConfig = {
             skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
+            convert_urls: false,
             cache_suffix: '?v=0.0.1',
             branding: false,
             skin: 'white',
