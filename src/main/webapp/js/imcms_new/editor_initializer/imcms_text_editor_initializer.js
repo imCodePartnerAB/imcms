@@ -8,10 +8,12 @@
 Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
-        "imcms-text-history-window-builder", "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder"
+        "imcms-text-history-window-builder", "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder",
+        "imcms-image-editor-builder"
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistoryBuilder, textValidationAPI,
-              textValidationBuilder) {
+              textValidationBuilder, imageEditorBuilder) {
+
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
         function saveContent(editor) {
@@ -71,7 +73,20 @@ Imcms.define("imcms-text-editor-initializer",
                 icon: 'imcms-image--in-text-editor-icon',
                 tooltip: 'Add Image',
                 onclick: function () {
-                    // todo: implement here
+                    var uniqueId = Date.now();
+                    var tagHTML = '<div id="' + uniqueId + '"><div class="imcms-editor-content"><img></div></div>';
+                    var imageDTO = $(this.$el).parents(".imcms-editor-area--text")
+                        .find(".imcms-editor-content--text")
+                        .data();
+
+                    imageDTO.index = null;
+                    imageDTO.inText = true;
+
+                    tinyMCE.activeEditor.execCommand('mceInsertContent', false, tagHTML);
+
+                    var $tag = $(tinyMCE.activeEditor.getBody()).find("#" + uniqueId);
+
+                    imageEditorBuilder.setTag($tag).build(imageDTO);
                 }
             });
 
