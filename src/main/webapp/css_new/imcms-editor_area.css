@@ -123,3 +123,8 @@
 .imcms-image-in-text .imcms-editor-content {
     display: inline-block;
 }
+
+.imcms-editor-area--text:hover .imcms-editor-area__control-edit,
+.imcms-editor-area--active .imcms-editor-area__control-edit {
+    display: block;
+}
