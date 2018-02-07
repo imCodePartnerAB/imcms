@@ -436,7 +436,15 @@ Imcms.define("imcms-image-editor-builder",
                 filePath = location.origin + imcms.contextPath + filePath;
             }
 
-            $tag.find(".imcms-editor-content>img").attr("src", filePath);
+            var $image = $tag.find(".imcms-editor-content>img").first();
+
+            if ($image.length) {
+                $image.attr("src", filePath);
+
+                if ($image.attr("data-mce-src")) {
+                    $image.attr("data-mce-src", filePath);
+                }
+            }
         }
 
         function buildRightSide(imageEditorBlockClass) {
