@@ -21,4 +21,5 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
      */
     Set<String> getPublicImageLinks(int docId, Language language);
 
+    void deleteImage(ImageDTO imageDTO);
 }

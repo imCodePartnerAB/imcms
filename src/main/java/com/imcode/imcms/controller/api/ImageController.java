@@ -43,6 +43,6 @@ public class ImageController {
             throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
         }
 
-        imageService.saveImage(new ImageDTO(image));
+        imageService.deleteImage(image);
     }
 }

@@ -98,6 +98,24 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
         return repository.findNonEmptyImageLinkUrlByVersionAndLanguage(latestVersion, new LanguageJPA(language));
     }
 
+    @Override
+    public void deleteImage(ImageDTO imageDTO) {
+        final Integer docId = imageDTO.getDocId();
+        final Version version = versionService.getDocumentWorkingVersion(docId);
+        final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
+
+        final Integer imageId = getImageId(imageDTO, version, language);
+
+        if (imageId != null) {
+            final Image image = imageDtoToImage.apply(new ImageDTO(imageDTO), version, language);
+            image.setId(imageId);
+
+            repository.save(image);
+
+            super.updateWorkingVersion(docId);
+        }
+    }
+
     private ImageDTO getEmptyDtoForTextEditor(ImageDTO dataHolder) {
         final ImageDTO emptyDTO = new ImageDTO(dataHolder);
         emptyDTO.setIndex(getFreeIndexForImageInTextEditor(dataHolder.getDocId()));
