@@ -429,7 +429,8 @@ Imcms.define("imcms-image-editor-builder",
 
         function reloadImageOnPage(imageDTO) {
             /** @namespace imageDTO.generatedFilePath */
-            $tag.find(".imcms-editor-content>img").attr("src", imcms.contextPath + imageDTO.generatedFilePath);
+            $tag.find(".imcms-editor-content>img")
+                .attr("src", location.origin + imcms.contextPath + imageDTO.generatedFilePath);
         }
 
         function buildRightSide(imageEditorBlockClass) {
