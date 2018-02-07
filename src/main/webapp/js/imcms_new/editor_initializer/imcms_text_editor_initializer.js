@@ -100,8 +100,6 @@ Imcms.define("imcms-text-editor-initializer",
                         };
 
                         imageEditorBuilder.setTag($tag).build(imageDTO);
-
-                        $this.css("display", "block");
                     }
 
                     var $tag = $(tinyMCE.activeEditor.getBody()).find("#" + uniqueId);
