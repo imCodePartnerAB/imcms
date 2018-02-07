@@ -192,8 +192,10 @@ class MappingConfig {
             dto.setLangCode(image.getLanguage().getCode());
             dto.setPath(image.getUrl());
 
-            final String generatedFilePath = (image.getGeneratedFilename() == null)
-                    ? "" : imagesPath + "generated/" + image.getGeneratedFilename();
+            final String generatedFilePath = (image.getGeneratedFilename() == null ||
+                    image.getGeneratedFilename().equals("")) ?
+                    "" :
+                    imagesPath + "generated/" + image.getGeneratedFilename();
 
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFilename(image.getGeneratedFilename());
