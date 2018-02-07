@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.repository.ImageRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -48,6 +49,9 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
+
+    @Autowired
+    private ImageRepository imageRepository;
 
     @Override
     protected String controllerPath() {
@@ -191,5 +195,72 @@ public class ImageControllerTest extends AbstractControllerTest {
         imageDTO.setWidth(100);
 
         assertEquals(imageDTO, imageDtoChangedResult);
+    }
+
+    @Test
+    public void deleteImageContent_When_InLoopAndImageExists_Expect_ImageContentIsDeleted() throws Exception {
+        testDeletingImage_WhenImageExists(true);
+    }
+
+    @Test
+    public void deleteImageContent_When_NotInLoopAndImageExists_Expect_ImageContentIsDeleted() throws Exception {
+        testDeletingImage_WhenImageExists(false);
+    }
+
+    @Test
+    public void deleteImageContent_When_InLoopAndImageDoesNotExist_Expect_ImageIsNotSavedInDatabase() throws Exception {
+        testDeletingImage_WhenImageDoesNotExist(true);
+    }
+
+    @Test
+    public void deleteImageContent_When_NotInLoopAndImageDoesNotExist_Expect_ImageIsNotSavedInDatabase()
+            throws Exception {
+
+        testDeletingImage_WhenImageDoesNotExist(false);
+    }
+
+    private void testDeletingImage_WhenImageExists(boolean inLoop) throws Exception {
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+
+        final Image image = inLoop
+                ? imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef)
+                : imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+
+        image.setGeneratedFilename("testGeneratedFilename");
+        imageRepository.save(image);
+
+        assertEquals(1, imageRepository.findAll().size());
+
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final String expected = asJson(new ImageDTO(imageDTO));
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(1, imageRepository.findAll().size());
+
+        final ImageDTO actualImageDTO = imageToImageDTO.apply(imageRepository.findOne(image.getId()));
+        actualImageDTO.setUrl("");
+
+        assertEquals(expected, asJson(actualImageDTO));
+    }
+
+    private void testDeletingImage_WhenImageDoesNotExist(boolean inLoop) throws Exception {
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+
+        final Image image = inLoop
+                ? imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef)
+                : imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        imageRepository.delete(image);
+
+        assertEquals(0, imageRepository.findAll().size());
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(0, imageRepository.findAll().size());
     }
 }
