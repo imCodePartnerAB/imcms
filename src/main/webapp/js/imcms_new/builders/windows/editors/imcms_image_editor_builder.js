@@ -430,11 +430,13 @@ Imcms.define("imcms-image-editor-builder",
         function reloadImageOnPage(imageDTO) {
             /** @namespace imageDTO.generatedFilePath */
 
-            if (imageDTO.generatedFilePath !== "") {
-                imageDTO.generatedFilePath = location.origin + imcms.contextPath + imageDTO.generatedFilePath
+            var filePath = imageDTO.generatedFilePath;
+
+            if (filePath !== "") {
+                filePath = location.origin + imcms.contextPath + filePath;
             }
 
-            $tag.find(".imcms-editor-content>img").attr("src", imageDTO.generatedFilePath);
+            $tag.find(".imcms-editor-content>img").attr("src", filePath);
         }
 
         function buildRightSide(imageEditorBlockClass) {
