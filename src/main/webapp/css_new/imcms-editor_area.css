@@ -114,6 +114,17 @@
     left: 5px;
 }
 
+.imcms-editor-area--text .imcms-image-in-text {
+    border-radius: 5px;
+    margin: 2px;
+    padding: 5px 26px 5px 5px;
+}
+
+.imcms-editor-area--text .imcms-image-in-text:hover {
+    border: 2px solid rgba(0, 149, 217, 0.58);
+    margin: 0;
+}
+
 .imcms-image-in-text {
     position: relative;
     display: inline-block;
