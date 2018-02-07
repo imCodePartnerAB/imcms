@@ -429,7 +429,12 @@ Imcms.define("imcms-image-editor-builder",
 
         function reloadImageOnPage(imageDTO) {
             /** @namespace imageDTO.generatedFilePath */
-            $tag.find(".imcms-editor-content>img").attr("src", imcms.contextPath + imageDTO.generatedFilePath);
+
+            if (imageDTO.generatedFilePath !== "") {
+                imageDTO.generatedFilePath = imcms.contextPath + imageDTO.generatedFilePath
+            }
+
+            $tag.find(".imcms-editor-content>img").attr("src", imageDTO.generatedFilePath);
         }
 
         function buildRightSide(imageEditorBlockClass) {
@@ -683,8 +688,11 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function removeAndClose() {
-                // fixme: just closing for now, should be remove and close
                 imageWindowBuilder.closeWindow();
+
+                imageRestApi.remove(imageData)
+                    .success(onImageSaved)
+                    .error(console.error.bind(console));
             }
 
             function onImageSaved() {
