@@ -453,6 +453,8 @@ Imcms.define("imcms-image-editor-builder",
             }
         }
 
+        var $langFlags;
+
         function buildRightSide(imageEditorBlockClass) {
 
             function buildSelectImageBtnContainer() {
@@ -478,7 +480,7 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildImageLangFlags() {
-                imageData.langCode = "en"; // by default
+                imageData.langCode = imcms.language.code;
 
                 return components.flags.flagsContainer(function (language) {
                     return ["<div>", {
@@ -687,7 +689,7 @@ Imcms.define("imcms-image-editor-builder",
                 var $selectImageBtnContainer = buildSelectImageBtnContainer();
                 var $altTextBox = buildAltTextBox();
                 var $imageLinkTextBox = buildImageLinkTextBox();
-                var $langFlags = buildImageLangFlags();
+                $langFlags = buildImageLangFlags();
                 var $allLangs = buildAllLanguagesCheckbox();
                 var $advancedControls = buildAdvancedControls();
                 var $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
@@ -717,7 +719,7 @@ Imcms.define("imcms-image-editor-builder",
                 var imageRequestData = {
                     docId: imageData.docId,
                     index: imageData.index,
-                    langCode: imageData.langCode
+                    langCode: imcms.language.code
                 };
 
                 /** @namespace imageData.loopEntryRef */
@@ -867,6 +869,9 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             $.extend(imageData, opts);
+
+            $langFlags.setActive(imcms.language.code);
+
             imageRestApi.read(opts).done(fillData);
         }
 

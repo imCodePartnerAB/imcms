@@ -70,6 +70,16 @@ Imcms.define("imcms-flags-builder",
                     $result.append(flags);
                 });
 
+                $result.setActive = function (langCode) {
+                    var $flags = $(this);
+
+                    var activeClass = "imcms-flag--active";
+                    var languageFlagClass = "imcms-flag--" + langCode;
+
+                    $flags.find("." + activeClass).removeClass(activeClass);
+                    $flags.find("." + languageFlagClass).addClass(activeClass);
+                };
+
                 return $result;
             }
         }
