@@ -432,13 +432,19 @@ Imcms.define("imcms-image-editor-builder",
 
             var filePath = imageDTO.generatedFilePath;
 
-            if (filePath !== "") {
+            if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
             }
 
             var $image = $tag.find(".imcms-editor-content>img").first();
 
             if ($image.length) {
+
+                if (!filePath && $tag.hasClass("imcms-image-in-text")) {
+                    $tag.detach();
+                    return;
+                }
+
                 $image.attr("src", filePath);
 
                 if ($image.attr("data-mce-src")) {
