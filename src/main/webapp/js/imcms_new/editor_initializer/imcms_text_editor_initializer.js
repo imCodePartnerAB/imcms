@@ -7,9 +7,11 @@
 Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
-        "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin"
+        "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
+        "imcms-modal-window-builder"
     ],
-    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText) {
+    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
+              modalWindowBuilder) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -19,6 +21,7 @@ Imcms.define("imcms-text-editor-initializer",
 
             textsRestApi.create(textDTO).success(function () {
                 events.trigger("imcms-version-modified");
+                editor.setDirty(false);
             });
         }
 
@@ -29,6 +32,7 @@ Imcms.define("imcms-text-editor-initializer",
             branding: false,
             skin: 'white',
             inline: true,
+            inline_boundaries: false,
             toolbar_items_size: 'small',
             content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
             plugins: ['autolink link lists hr code fullscreen save table contextmenu'],
@@ -65,10 +69,28 @@ Imcms.define("imcms-text-editor-initializer",
                 .css("display", "block");
         }
 
+        /** @function editor.target.isDirty */
+        function onEditorBlur(editor) {
+            if (!editor.target.isDirty()) {
+                return;
+            }
+
+            modalWindowBuilder.buildModalWindow("Save changes?", function (saveChanges) {
+                if (saveChanges) {
+                    saveContent(editor.target);
+                }
+            })
+        }
+
+        function initSaveContentConfirmation(editor) {
+            editor.on('blur', onEditorBlur);
+        }
+
         function prepareEditor(editor) {
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
             showEditButton(editor.$());
+            initSaveContentConfirmation(editor);
         }
 
         function toggleFocusEditArea(e) {
