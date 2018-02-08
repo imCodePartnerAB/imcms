@@ -737,7 +737,7 @@ Imcms.define("imcms-image-editor-builder",
             function saveAndClose() {
                 imageWindowBuilder.closeWindow();
 
-                imageData.allLanguages = $allLanguagesCheckBox.find("input").is(':checked');
+                imageData.allLanguages = $allLanguagesCheckBox.isChecked();
 
                 imageRestApi.create(imageData)
                     .success(onImageSaved)
