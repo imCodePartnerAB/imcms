@@ -71,6 +71,9 @@ public class Image extends VersionedI18nContent {
     @Column(name = "archive_image_id")
     private Long archiveImageId;
 
+    @Column(name = "all_languages", columnDefinition = "tinyint")
+    private boolean allLanguages;
+
     public Image(Image from) {
         setVersion(from.getVersion());
         setLanguage(from.getLanguage());

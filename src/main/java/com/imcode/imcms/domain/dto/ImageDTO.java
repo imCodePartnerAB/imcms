@@ -17,6 +17,7 @@ public class ImageDTO extends ImageData {
     private Integer index;
     private Integer docId;
     private boolean inText;
+    private boolean allLanguages;
 
     /**
      * Two-letter language code ISO-639-1
