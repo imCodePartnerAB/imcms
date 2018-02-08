@@ -454,6 +454,7 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         var $langFlags;
+        var $allLanguagesCheckBox;
 
         function buildRightSide(imageEditorBlockClass) {
 
@@ -493,7 +494,7 @@ Imcms.define("imcms-image-editor-builder",
 
             function buildAllLanguagesCheckbox() {
                 return components.checkboxes.checkboxContainer("<div>", [
-                    components.checkboxes.imcmsCheckbox("<div>", {
+                    $allLanguagesCheckBox = components.checkboxes.imcmsCheckbox("<div>", {
                         name: "allLanguages",
                         text: "All languages"
                     })
@@ -735,6 +736,8 @@ Imcms.define("imcms-image-editor-builder",
 
             function saveAndClose() {
                 imageWindowBuilder.closeWindow();
+
+                imageData.allLanguages = $allLanguagesCheckBox.find("input").is(':checked');
 
                 imageRestApi.create(imageData)
                     .success(onImageSaved)
