@@ -2,17 +2,14 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 01.09.17
  *
- * @namespace tinyMCE.activeEditor
  * @namespace tinyMCE.activeEditor.getContent
  */
 Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
-        "imcms-text-history-window-builder", "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder",
-        "imcms-image-editor-builder"
+        "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin"
     ],
-    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistoryBuilder, textValidationAPI,
-              textValidationBuilder, imageEditorBuilder) {
+    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -23,110 +20,6 @@ Imcms.define("imcms-text-editor-initializer",
             textsRestApi.create(textDTO).success(function () {
                 events.trigger("imcms-version-modified");
             });
-        }
-
-        function addTextHistoryButton(editor) {
-
-            editor.addButton('text_history', {
-                icon: 'imcms-text-history-icon',
-                tooltip: 'Show text history',
-                onclick: function () {
-                    var textDTO = $(this.$el).parents(".imcms-editor-area--text")
-                        .find(".imcms-editor-content--text")
-                        .data();
-
-                    textHistoryBuilder.buildTextHistory(textDTO);
-                }
-            });
-        }
-
-        function addW3cValidationButton(editor) {
-
-            editor.addButton('w3c_validation', {
-                icon: 'imcms-w3c-text-validation-icon',
-                tooltip: 'Validate Content over W3C',
-                onclick: function () {
-                    var content = tinyMCE.activeEditor.getContent();
-                    var $icon = $(this.$el).find(".mce-ico")
-                        .removeAttr("class")
-                        .attr("class", "mce-ico mce-i-imcms-w3c-text-validation-processing-icon");
-
-                    textValidationAPI.validate({content: content}).done(function (validationResult) {
-                        var iconClass = validationResult.valid
-                            ? "mce-i-imcms-w3c-text-validation-valid-icon"
-                            : "mce-i-imcms-w3c-text-validation-invalid-icon";
-
-                        $icon.removeAttr("class").attr("class", "mce-ico " + iconClass);
-
-                        if (!validationResult.valid) {
-                            textValidationBuilder.buildTextValidationFailWindow(validationResult);
-                        }
-                    });
-                }
-            });
-
-        }
-
-        function addImageEditorButton(editor) {
-
-            editor.addButton('image_editor', {
-                icon: 'imcms-image--in-text-editor-icon',
-                tooltip: 'Add Image',
-                onclick: function () {
-                    var uniqueId = Date.now();
-                    var tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text imcms-editor-area--image">\n'
-                        + '   <div class="imcms-editor-content">\n'
-                        + '       <img>\n'
-                        + '   </div>\n'
-                        + '</div>\n';
-
-                    var textDTO = $(this.$el).parents(".imcms-editor-area--text")
-                        .find(".imcms-editor-content--text")
-                        .data();
-
-                    var imageDTO = $.extend({inText: true}, textDTO);
-                    imageDTO.index = null;
-
-                    tinyMCE.activeEditor.execCommand('mceInsertContent', false, tagHTML);
-
-                    function openEditor() {
-                        var $this = $(this);
-                        var $tag = $this.parents(".imcms-image-in-text");
-                        var imageDTO = { // $.data() is not used because of strange behavior in this case
-                            docId: $tag.attr("data-doc-id"),
-                            langCode: $tag.attr("data-lang-code"),
-                            inText: true,
-                            index: $tag.attr("data-index")
-                        };
-
-                        imageEditorBuilder.setTag($tag).build(imageDTO);
-                    }
-
-                    var $tag = $(tinyMCE.activeEditor.getBody()).find("#" + uniqueId);
-                    var $editorControl = $("<div>", {
-                        "class": "imcms-editor-area__control-edit imcms-control imcms-control--edit"
-                        + " imcms-control--image",
-                        html: $("<div>", {
-                            "class": "imcms-editor-area__control-title",
-                            text: "Image Editor"
-                        }),
-                        click: openEditor
-                    });
-                    var $editorControlWrapper = $("<div>", {
-                        "class": "imcms-editor-area__control-wrap",
-                        html: $editorControl
-                    });
-
-                    $tag.append($editorControlWrapper);
-                    $tag.attr("data-doc-id", imageDTO.docId);
-                    $tag.attr("data-lang-code", imageDTO.langCode);
-                    $tag.attr("data-in-text", true);
-                    $tag.attr("data-index", imageDTO.index);
-
-                    openEditor.call($editorControl[0]);
-                }
-            });
-
         }
 
         var inlineEditorConfig = {
@@ -147,9 +40,9 @@ Imcms.define("imcms-text-editor-initializer",
             init_instance_callback: prepareEditor,
             save_onsavecallback: saveContent,
             setup: function (editor) {
-                addTextHistoryButton(editor);
-                addW3cValidationButton(editor);
-                addImageEditorButton(editor);
+                textHistory.initTextHistory(editor);
+                textValidation.initTextValidation(editor);
+                imageInText.initImageInText(editor);
             }
         };
 
