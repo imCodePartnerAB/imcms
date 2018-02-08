@@ -75,15 +75,16 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     public void saveImage(ImageDTO imageDTO) {
         final Integer docId = imageDTO.getDocId();
         final Version version = versionService.getDocumentWorkingVersion(docId);
-        final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
 
         generateImage(imageDTO);
 
-        final Image image = imageDtoToImage.apply(imageDTO, version, language);
-        final Integer imageId = getImageId(imageDTO, version, language);
+        if (imageDTO.isAllLanguages()) {
+            languageService.getAll().forEach(language -> saveImage(imageDTO, new LanguageJPA(language), version));
+        } else {
+            final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
+            saveImage(imageDTO, language, version);
+        }
 
-        image.setId(imageId);
-        repository.save(image);
         super.updateWorkingVersion(docId);
     }
 
@@ -176,6 +177,14 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
     private Collection<Image> getAllGeneratedImages() {
         return repository.findAllGeneratedImages();
+    }
+
+    private void saveImage(ImageDTO imageDTO, LanguageJPA language, Version version) {
+        final Image image = imageDtoToImage.apply(imageDTO, version, language);
+        final Integer imageId = getImageId(imageDTO, version, language);
+
+        image.setId(imageId);
+        repository.save(image);
     }
 
     @PostConstruct
