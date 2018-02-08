@@ -1,3 +1,5 @@
+/** @namespace tinyMCE.activeEditor.setContent */
+/** @namespace tinyMCE.activeEditor.setDirty */
 /**
  * Text history window builder in text editor.
  *
