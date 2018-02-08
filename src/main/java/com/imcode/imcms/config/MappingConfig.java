@@ -191,6 +191,7 @@ class MappingConfig {
             dto.setDocId(image.getVersion().getDocId());
             dto.setLangCode(image.getLanguage().getCode());
             dto.setPath(image.getUrl());
+            dto.setAllLanguages(image.isAllLanguages());
 
             final boolean filenameExists = (image.getGeneratedFilename() != null)
                     && !image.getGeneratedFilename().equals("");
@@ -227,6 +228,7 @@ class MappingConfig {
             Optional.ofNullable(imageDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(image::setLoopEntryRef);
             image.setFormat(imageDTO.getFormat());
             image.setCropRegion(new ImageCropRegionJPA(imageDTO.getCropRegion()));
+            image.setAllLanguages(imageDTO.isAllLanguages());
 
             return image;
         };
