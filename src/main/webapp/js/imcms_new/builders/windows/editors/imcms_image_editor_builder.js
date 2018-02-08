@@ -856,6 +856,10 @@ Imcms.define("imcms-image-editor-builder",
 
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
+
+            if (image.allLanguages !== undefined) {
+                $allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
+            }
         }
 
         function loadData(opts) {
