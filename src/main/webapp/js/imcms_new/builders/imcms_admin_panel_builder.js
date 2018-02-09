@@ -203,6 +203,13 @@ Imcms.define("imcms-admin-panel-builder",
                     return;
                 }
 
+                events.on("enable admin panel", function () {
+                    isPanelEnabled = true;
+                });
+                events.on("disable admin panel", function () {
+                    isPanelEnabled = false;
+                });
+
                 $panel = $("<div>", {
                     "class": "imcms-admin",
                     html: createAdminPanel(opts)
@@ -213,12 +220,6 @@ Imcms.define("imcms-admin-panel-builder",
                 $("body").prepend($panel);
 
                 events.on("imcms-version-modified", highlightPublishButton)
-            },
-            disablePanel: function () {
-                isPanelEnabled = false;
-            },
-            enablePanel: function () {
-                isPanelEnabled = true;
             }
         }
     }

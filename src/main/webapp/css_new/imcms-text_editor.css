@@ -80,24 +80,37 @@
     margin-top: 8px;
 }
 
-.tw-fullscreen-inline {
+.imcms-mce-fullscreen-inline {
+    background-color: white;
     position: fixed !important;
-    top: 0 !important;
+    top: 32px !important;
     left: 0 !important;
     width: 100% !important;
-    height: 90% !important;
-    max-height: 90% !important;
+    height: calc(100% - 33px) !important;
     z-index: 99 !important;
     padding: 2% !important;
     overflow: auto !important;
+    outline: none;
 }
 
 .mce-fullscreen-toolbar {
+    height: 33px !important;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    height: 10% !important;
-    max-height: 10% !important;
     z-index: 99 !important;
+}
+
+.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel {
+    top: -1px !important;
+    height: 30px !important;
+    display: block !important;
+}
+
+.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout,
+.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout .mce-toolbar-grp.mce-container.mce-panel.mce-abs-layout-item.mce-first.mce-last,
+.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout .mce-toolbar-grp.mce-container.mce-panel.mce-abs-layout-item.mce-first.mce-last .mce-container-body.mce-stack-layout {
+    height: 30px !important;
+    width: 100% !important;
 }
