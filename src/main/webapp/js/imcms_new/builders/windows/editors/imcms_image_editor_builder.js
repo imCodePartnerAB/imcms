@@ -806,6 +806,18 @@ Imcms.define("imcms-image-editor-builder",
             });
 
             if (!imageData.path) {
+                imageDataContainers.$image.removeAttr("src");
+                imageDataContainers.$image.removeAttr("style");
+
+                imageDataContainers.$cropImg.removeAttr("src");
+                imageDataContainers.$cropImg.removeAttr("style");
+
+                $.each(imageDataContainers.angles, function (angleKey, angle) {
+                    angle.css({
+                        "display": "none"
+                    })
+                });
+
                 return;
             }
 
