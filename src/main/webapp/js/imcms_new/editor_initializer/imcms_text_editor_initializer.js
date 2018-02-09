@@ -74,19 +74,19 @@ Imcms.define("imcms-text-editor-initializer",
                 .css("display", "block");
         }
 
-        /** @function editor.target.isDirty */
-        function onEditorBlur(editor) {
+        /** @function event.target.isDirty */
+        function onEditorBlur(event) {
             if (!blurEnabled) {
                 return;
             }
 
-            if (!editor.target.isDirty()) {
+            if (!event.target.isDirty()) {
                 return;
             }
 
             modalWindowBuilder.buildModalWindow("Save changes?", function (saveChanges) {
                 if (saveChanges) {
-                    saveContent(editor.target);
+                    saveContent(event.target);
                 }
             })
         }

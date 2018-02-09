@@ -21,13 +21,35 @@ Imcms.define(
             });
         }
 
+        function setEnablingStrategy() {
+            var button = this;
+
+            events.on("disable discard changes button", function () {
+                button.disabled(true);
+            });
+
+            events.on("enable discard changes button", function () {
+                button.disabled(false);
+            });
+        }
+
         return {
             pluginName: 'discard-changes',
             initDiscardChanges: function (editor) {
                 editor.addButton(this.pluginName, {
                     icon: 'imcms-discard-changes-icon',
                     tooltip: 'Discard changes',
-                    onclick: onDiscardChangesClick
+                    onclick: onDiscardChangesClick,
+                    onPostRender: setEnablingStrategy
+                });
+
+                editor.on('NodeChange', function () {
+                    if (tinyMCE.activeEditor.isDirty()) {
+                        events.trigger("enable discard changes button");
+
+                    } else {
+                        events.trigger("disable discard changes button");
+                    }
                 });
             }
         };
