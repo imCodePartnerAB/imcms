@@ -198,12 +198,12 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImageContent_When_InLoopAndImageExists_Expect_ImageContentIsDeleted() throws Exception {
+    public void deleteImage_When_InLoopAndImageExists_Expect_ImageIsDeleted() throws Exception {
         testDeletingImage_WhenImageExists(true);
     }
 
     @Test
-    public void deleteImageContent_When_NotInLoopAndImageExists_Expect_ImageContentIsDeleted() throws Exception {
+    public void deleteImage_When_NotInLoopAndImageExists_Expect_ImageIsDeleted() throws Exception {
         testDeletingImage_WhenImageExists(false);
     }
 
@@ -232,17 +232,11 @@ public class ImageControllerTest extends AbstractControllerTest {
         assertEquals(1, imageRepository.findAll().size());
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
-        final String expected = asJson(new ImageDTO(imageDTO));
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
         performRequestBuilderExpectedOk(requestBuilder);
 
-        assertEquals(1, imageRepository.findAll().size());
-
-        final ImageDTO actualImageDTO = imageToImageDTO.apply(imageRepository.findOne(image.getId()));
-        actualImageDTO.setUrl("");
-
-        assertEquals(expected, asJson(actualImageDTO));
+        assertEquals(0, imageRepository.findAll().size());
     }
 
     private void testDeletingImage_WhenImageDoesNotExist(boolean inLoop) throws Exception {

@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -109,10 +110,26 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
         final Integer imageId = getImageId(imageDTO, version, language);
 
         if (imageId != null) {
-            final Image image = imageDtoToImage.apply(new ImageDTO(imageDTO), version, language);
-            image.setId(imageId);
 
-            repository.save(image);
+            if (imageDTO.isAllLanguages()) {
+                final LoopEntryRefDTO loopEntryRef = imageDTO.getLoopEntryRef();
+                final Integer index = imageDTO.getIndex();
+
+                languageService.getAll()
+                        .stream()
+                        .map(LanguageJPA::new)
+                        .forEach(languageJPA -> {
+                            final Image image = getImage(index, version, languageJPA, loopEntryRef);
+                            repository.delete(image);
+                        });
+            } else {
+                final Image apply = imageDtoToImage.apply(imageDTO, version, language);
+                apply.setId(imageId);
+
+                repository.delete(apply);
+
+                updateImagesWithDifferentLangCode(imageDTO, version);
+            }
 
             super.updateWorkingVersion(docId);
         }
