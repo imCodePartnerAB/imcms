@@ -8,10 +8,10 @@ Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
         "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
-        "imcms-modal-window-builder"
+        "imcms-modal-window-builder", "imcms-text-full-screen-plugin"
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
-              modalWindowBuilder) {
+              modalWindowBuilder, fullScreenPlugin) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -24,6 +24,8 @@ Imcms.define("imcms-text-editor-initializer",
                 editor.setDirty(false);
             });
         }
+
+        fullScreenPlugin.initFullScreen();
 
         var inlineEditorConfig = {
             skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
