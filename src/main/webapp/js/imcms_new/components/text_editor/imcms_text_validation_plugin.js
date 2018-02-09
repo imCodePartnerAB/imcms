@@ -29,6 +29,7 @@ Imcms.define(
         };
 
         return {
+            puginName: 'w3c_validation',
             initTextValidation: function (editor) {
                 editor.addButton('w3c_validation', {
                     icon: 'imcms-w3c-text-validation-icon',

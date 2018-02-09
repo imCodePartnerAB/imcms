@@ -7,6 +7,7 @@ Imcms.define(
     ["jquery", "tinyMCE", "imcms-events"],
     function ($, tinyMCE, events) {
         return {
+            pluginName: 'fullscreen',
             initFullScreen: function () {
                 /** @namespace tinyMCE.PluginManager */
                 tinyMCE.PluginManager.add('fullscreen', function (editor) {

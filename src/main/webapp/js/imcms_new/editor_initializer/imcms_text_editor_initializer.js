@@ -37,10 +37,11 @@ Imcms.define("imcms-text-editor-initializer",
             inline_boundaries: false,
             toolbar_items_size: 'small',
             content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
-            plugins: ['autolink link lists hr code fullscreen save table contextmenu'],
-            toolbar: 'code | bold italic underline | bullist numlist | hr |' +
-            ' alignleft aligncenter alignright alignjustify | link image_editor | text_history w3c_validation |' +
-            ' fullscreen | save',
+            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save table contextmenu'],
+            toolbar: 'code | bold italic underline | bullist numlist | hr |'
+            + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
+            + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
+            + ' | save',
             menubar: false,
             statusbar: false,
             init_instance_callback: prepareEditor,

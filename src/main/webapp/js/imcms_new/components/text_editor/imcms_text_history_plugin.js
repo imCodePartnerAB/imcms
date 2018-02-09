@@ -10,6 +10,7 @@ Imcms.define(
     ["imcms-text-history-window-builder", "jquery"],
     function (textHistoryBuilder, $) {
         return {
+            pluginName: 'text_history',
             initTextHistory: function (editor) {
                 editor.addButton('text_history', {
                     icon: 'imcms-text-history-icon',
