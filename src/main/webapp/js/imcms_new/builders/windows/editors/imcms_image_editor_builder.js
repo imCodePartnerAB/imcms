@@ -713,6 +713,8 @@ Imcms.define("imcms-image-editor-builder",
             function removeAndClose() {
                 imageWindowBuilder.closeWindow();
 
+                imageData.allLanguages = $allLanguagesCheckBox.isChecked();
+
                 imageRestApi.remove(imageData)
                     .success(onImageSaved)
                     .error(console.error.bind(console));
