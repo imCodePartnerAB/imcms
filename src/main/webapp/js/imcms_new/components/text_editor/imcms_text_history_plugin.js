@@ -12,7 +12,7 @@ Imcms.define(
         return {
             pluginName: 'text_history',
             initTextHistory: function (editor) {
-                editor.addButton('text_history', {
+                editor.addButton(this.pluginName, {
                     icon: 'imcms-text-history-icon',
                     tooltip: 'Show text history',
                     onclick: function () {
