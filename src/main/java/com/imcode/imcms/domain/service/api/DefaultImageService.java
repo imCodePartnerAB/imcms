@@ -123,10 +123,10 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
                             repository.delete(image);
                         });
             } else {
-                final Image apply = imageDtoToImage.apply(imageDTO, version, language);
-                apply.setId(imageId);
+                final Image image = imageDtoToImage.apply(imageDTO, version, language);
+                image.setId(imageId);
 
-                repository.delete(apply);
+                repository.delete(image);
 
                 updateImagesWithDifferentLangCode(imageDTO, version);
             }
