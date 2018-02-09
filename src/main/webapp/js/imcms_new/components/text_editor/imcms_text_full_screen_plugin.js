@@ -4,8 +4,8 @@
  */
 Imcms.define(
     "imcms-text-full-screen-plugin",
-    ["jquery", "tinyMCE", "imcms-admin-panel-builder"],
-    function ($, tinyMCE, adminPanel) {
+    ["jquery", "tinyMCE", "imcms-events"],
+    function ($, tinyMCE, events) {
         return {
             initFullScreen: function () {
                 /** @namespace tinyMCE.PluginManager */
@@ -16,13 +16,13 @@ Imcms.define(
                         var $body = $("body");
 
                         if ($editorBody.hasClass('imcms-mce-fullscreen-inline')) {
-                            adminPanel.enablePanel();
+                            events.trigger("enable admin panel");
                             $editorBody.removeClass('imcms-mce-fullscreen-inline');
                             $toolBar.removeClass("mce-fullscreen-toolbar");
                             $body.css('overflow', 'auto');
 
                         } else {
-                            adminPanel.disablePanel();
+                            events.trigger("disable admin panel");
                             $editorBody.addClass('imcms-mce-fullscreen-inline');
                             $toolBar.addClass("mce-fullscreen-toolbar");
                             $body.css('overflow', 'hidden');
