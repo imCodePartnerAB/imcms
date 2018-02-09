@@ -81,6 +81,7 @@
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
             "imcms-text-validation-plugin": "components/text_editor/imcms_text_validation_plugin.js",
+            "imcms-text-full-screen-plugin": "components/text_editor/imcms_text_full_screen_plugin.js",
             // </text editor components>
             // editors initializer
             "imcms-text-editor-initializer": "editor_initializer/imcms_text_editor_initializer.js",
