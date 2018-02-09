@@ -77,9 +77,11 @@
             "imcms-jquery-element-reload": "components/imcms_jquery_element_reload.js",
             "imcms-jquery-string-selector": "components/imcms_jquery_string_selector.js",
             "imcms-dom-attributes-extractor": "components/imcms_dom_attributes_extractor.js",
-            "imcms-text-history-plugin": "components/imcms_text_history_plugin.js",
-            "imcms-text-validation-plugin": "components/imcms_text_validation_plugin.js",
-            "imcms-image-in-text-plugin": "components/imcms_image_in_text_plugin.js",
+            // <text editor components>
+            "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
+            "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
+            "imcms-text-validation-plugin": "components/text_editor/imcms_text_validation_plugin.js",
+            // </text editor components>
             // editors initializer
             "imcms-text-editor-initializer": "editor_initializer/imcms_text_editor_initializer.js",
             "imcms-editors-initializer": "editor_initializer/imcms_editors_initializer.js",
