@@ -21,6 +21,7 @@ Imcms.define("imcms-text-editor-initializer",
 
             textsRestApi.create(textDTO).success(function () {
                 events.trigger("imcms-version-modified");
+                tinyMCE.activeEditor.startContent = tinyMCE.activeEditor.getContent();
                 editor.setDirty(false);
             });
         }
