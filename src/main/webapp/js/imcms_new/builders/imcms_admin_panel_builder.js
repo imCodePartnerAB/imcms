@@ -53,58 +53,58 @@ Imcms.define("imcms-admin-panel-builder",
                 publishVersionButtonModifiers = imcms.isVersioningAllowed && imcms.document.hasNewerVersion
                     ? ["has-newer-version"] : [],
                 buttons = [
-                {
-                    name: 'public',
-                    tag: '<a>',
-                    href: imcms.contextPath + '/' + imcms.document.id,
-                    content: 'public',
-                    modifiers: ["public"]
-                }, {
-                    name: 'edit',
-                    tag: '<a>',
+                    {
+                        name: 'public',
+                        tag: '<a>',
+                        href: imcms.contextPath + '/' + imcms.document.id,
+                        content: 'public',
+                        modifiers: ["public"]
+                    }, {
+                        name: 'edit',
+                        tag: '<a>',
                         href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id,
-                    content: 'edit',
-                    modifiers: ["edit"]
-                }, {
-                    name: 'preview',
+                        content: 'edit',
+                        modifiers: ["edit"]
+                    }, {
+                        name: 'preview',
                         tag: "<a>",
                         href: imcms.contextPath + '/api/viewDoc/' + imcms.document.id + "?working-preview=true",
-                    content: "preview",
+                        content: "preview",
                         modifiers: ["preview"].concat(versionedContentModifiers)
-                }, {
-                    name: 'publish_offline',
-                    tag: "<li>",
-                    content: "publish offline",
+                    }, {
+                        name: 'publish_offline',
+                        tag: "<li>",
+                        content: "publish offline",
                         onClick: publishDoc,
                         modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers)
-                }, {
-                    name: 'page_info',
-                    tag: "<li>",
-                    content: "page info",
-                    onClick: showPageInfo,
-                    modifiers: ["page-info"]
-                }, {
-                    name: 'document',
-                    tag: "<li>",
-                    content: "document",
-                    onClick: initDocumentEditor,
-                    modifiers: ["document"]
-                }, {
-                    name: 'admin',
+                    }, {
+                        name: 'page_info',
+                        tag: "<li>",
+                        content: "page info",
+                        onClick: showPageInfo,
+                        modifiers: ["page-info"]
+                    }, {
+                        name: 'document',
+                        tag: "<li>",
+                        content: "document",
+                        onClick: initDocumentEditor,
+                        modifiers: ["document"]
+                    }, {
+                        name: 'admin',
                         tag: "<a>",
                         href: imcms.contextPath + "/servlet/AdminManager",
-                    content: "admin",
-                    modifiers: ["admin"]
-                }, {
-                    name: 'logout',
+                        content: "admin",
+                        modifiers: ["admin"]
+                    }, {
+                        name: 'logout',
                         tag: "<a>",
                         href: imcms.contextPath + "/servlet/LogOut",
-                    content: componentsBuilder.buttons.positiveButton({
-                        text: "log out"
-                    }),
-                    modifiers: ["logout"]
-                }
-            ].map(buildPanelButton);
+                        content: componentsBuilder.buttons.positiveButton({
+                            text: "log out"
+                        }),
+                        modifiers: ["logout"]
+                    }
+                ].map(buildPanelButton);
 
             var $buttonsWrapper = $("<ul>").append(buttons);
 
