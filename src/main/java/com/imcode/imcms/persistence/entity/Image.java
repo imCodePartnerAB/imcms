@@ -1,20 +1,34 @@
 package com.imcode.imcms.persistence.entity;
 
 import imcode.util.image.Format;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
+@Data
 @Entity
+@NoArgsConstructor
 @Table(name = "imcms_text_doc_images")
-@Getter
-@Setter
-@EqualsAndHashCode(callSuper = true)
-@ToString(callSuper = true)
-public class Image extends VersionedI18nContent {
+public class Image {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
+            @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
+    })
+    private Version version;
+
+    @NotNull
+    @ManyToOne
+    @JoinColumn(name = "language_id")
+    private LanguageJPA language;
 
     @Column(name = "`index`")
     private Integer index;
@@ -74,14 +88,30 @@ public class Image extends VersionedI18nContent {
     @Column(name = "all_languages", columnDefinition = "tinyint")
     private boolean allLanguages;
 
-    public Image(Image from) {
-        setVersion(from.getVersion());
-        setLanguage(from.getLanguage());
-        setIndex(from.getIndex());
-        setFormat(from.getFormat());
-        setLoopEntryRef(from.getLoopEntryRef());
-    }
-
-    public Image() {
+    public Image(Image from, Version version) {
+        this.version = version;
+        this.language = from.language;
+        this.index = from.index;
+        this.format = from.format;
+        this.loopEntryRef = from.loopEntryRef;
+        this.width = from.width;
+        this.height = from.height;
+        this.border = from.border;
+        this.align = from.align;
+        this.alternateText = from.alternateText;
+        this.lowResolutionUrl = from.lowResolutionUrl;
+        this.verticalSpace = from.verticalSpace;
+        this.horizontalSpace = from.horizontalSpace;
+        this.target = from.target;
+        this.linkUrl = from.linkUrl;
+        this.url = from.url;
+        this.name = from.name;
+        this.type = from.type;
+        this.cropRegion = from.cropRegion;
+        this.rotateAngle = from.rotateAngle;
+        this.generatedFilename = from.generatedFilename;
+        this.resize = from.resize;
+        this.archiveImageId = from.archiveImageId;
+        this.allLanguages = from.allLanguages;
     }
 }

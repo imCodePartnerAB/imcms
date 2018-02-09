@@ -226,9 +226,6 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
     @Override
     protected Image removeId(Image image, Version version) {
-        final Image newImage = new Image(image);
-        newImage.setId(null);
-        newImage.setVersion(version);
-        return newImage;
+        return new Image(image, version);
     }
 }
