@@ -487,6 +487,10 @@ Imcms.define("imcms-image-editor-builder",
                     return ["<div>", {
                         click: function () {
                             imageData.langCode = language.code;
+
+                            var imageRequestData = getImageRequestData(imageData.langCode);
+
+                            imageRestApi.read(imageRequestData).done(fillData);
                         }
                     }];
                 });
@@ -714,13 +718,11 @@ Imcms.define("imcms-image-editor-builder",
                     .error(console.error.bind(console));
             }
 
-            function onImageSaved() {
-                events.trigger("imcms-version-modified");
-
+            function getImageRequestData(langCode) {
                 var imageRequestData = {
                     docId: imageData.docId,
                     index: imageData.index,
-                    langCode: imcms.language.code
+                    langCode: langCode
                 };
 
                 /** @namespace imageData.loopEntryRef */
@@ -728,6 +730,14 @@ Imcms.define("imcms-image-editor-builder",
                     imageRequestData["loopEntryRef.loopEntryIndex"] = imageData["loopEntryRef.loopEntryIndex"];
                     imageRequestData["loopEntryRef.loopIndex"] = imageData["loopEntryRef.loopIndex"];
                 }
+
+                return imageRequestData;
+            }
+
+            function onImageSaved() {
+                events.trigger("imcms-version-modified");
+
+                var imageRequestData = getImageRequestData(imcms.language.code);
 
                 imageRestApi.read(imageRequestData)
                     .success(reloadImageOnPage)
