@@ -71,7 +71,7 @@ Imcms.define("imcms-document-editor-builder",
                 }
 
                 documentList.forEach(function (document) {
-                    $documentsList.append(buildDocument(document, documentEditorOptions));
+                    $documentsList.append(buildDocument(document, currentEditorOptions));
                 });
             });
         }
@@ -82,7 +82,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function buildBodyHeadTools() {
             function addDocumentToList(document) {
-                var $document = buildDocument(document, documentEditorOptions);
+                var $document = buildDocument(document, currentEditorOptions);
                 $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
             }
 
@@ -360,7 +360,7 @@ Imcms.define("imcms-document-editor-builder",
             var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
 
             if ($oldDocumentElement.length === 1) {
-                var $newDocumentElement = buildDocument(document, documentEditorOptions);
+                var $newDocumentElement = buildDocument(document, currentEditorOptions);
                 $oldDocumentElement.replaceWith($newDocumentElement);
             }
         }
@@ -682,9 +682,9 @@ Imcms.define("imcms-document-editor-builder",
             return documentsListBEM.makeBlockElement("document-items", $documentItem);
         }
 
-        function buildDocumentList(documentList, opts) {
+        function buildDocumentList(documentList) {
             var $blockElements = documentList.map(function (document) {
-                return buildDocumentItemContainer(document, opts);
+                return buildDocumentItemContainer(document, currentEditorOptions);
             });
 
             return new BEM({
@@ -696,7 +696,8 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildEditorBody(documentList, opts) {
-            $documentsList = buildDocumentList(documentList, opts);
+            currentEditorOptions = opts;
+            $documentsList = buildDocumentList(documentList);
 
             $documentsList.scroll(function () {
                 var $this = $(this);
@@ -770,16 +771,17 @@ Imcms.define("imcms-document-editor-builder",
             });
         }
 
-        var documentEditorOptions = {
-            editEnable: true,
-            removeEnable: false // todo: maybe should be replaced with archivationEnable in future
-        };
+        var currentEditorOptions;
 
         function loadData() {
-            loadDocumentEditorContent($documentsContainer, documentEditorOptions);
+            loadDocumentEditorContent($documentsContainer, {
+                editEnable: true,
+                removeEnable: false // todo: maybe should be replaced with archivationEnable in future
+            });
         }
 
         function clearData() {
+            searchQueryObj[pageNumber] = currentPage = 0;
             $editorBody.detach();
         }
 
@@ -792,6 +794,7 @@ Imcms.define("imcms-document-editor-builder",
         return {
             buildBody: buildBody,
             loadDocumentEditorContent: loadDocumentEditorContent,
+            clearData: clearData,
             build: function () {
                 documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
             }

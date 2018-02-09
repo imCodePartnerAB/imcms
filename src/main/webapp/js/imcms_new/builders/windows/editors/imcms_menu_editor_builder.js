@@ -627,6 +627,7 @@ Imcms.define("imcms-menu-editor-builder",
         function clearData() {
             $title.text("Menu Editor");
             $menuElementsContainer.add($documentsContainer).empty();
+            documentEditorBuilder.clearData();
         }
 
         var menuWindowBuilder = new WindowBuilder({
