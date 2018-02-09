@@ -9,9 +9,9 @@
 Imcms.define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery",
-        "imcms-texts-history-rest-api", "tinyMCE"
+        "imcms-texts-history-rest-api", "tinyMCE", "imcms-events"
     ],
-    function (WindowBuilder, BEM, components, $, textsHistoryRestAPI, tinyMCE) {
+    function (WindowBuilder, BEM, components, $, textsHistoryRestAPI, tinyMCE, events) {
 
         var $historyListContainer, $textHistoryView;
 
@@ -188,6 +188,7 @@ Imcms.define("imcms-text-history-window-builder",
         }
 
         function clearData() {
+            events.trigger("enable text editor blur");
             $historyListContainer.empty();
             $textHistoryView.html('');
             textHistoryWindowBuilder.$editor.find(".imcms-buttons")
@@ -204,6 +205,7 @@ Imcms.define("imcms-text-history-window-builder",
 
         return {
             buildTextHistory: function (textData) {
+                events.trigger("disable text editor blur");
                 textHistoryWindowBuilder.buildWindowWithShadow.applyAsync(arguments, textHistoryWindowBuilder);
             }
         };

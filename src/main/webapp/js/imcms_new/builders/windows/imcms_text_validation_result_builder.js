@@ -3,9 +3,10 @@
  * @date 31.01.18
  * @namespace validationResult.data.warnings
  */
-Imcms.define("imcms-text-validation-result-builder",
-    ["imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery"],
-    function (WindowBuilder, BEM, components, $) {
+Imcms.define(
+    "imcms-text-validation-result-builder",
+    ["imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-events"],
+    function (WindowBuilder, BEM, components, $, events) {
 
         var $validationResultContainer;
 
@@ -69,6 +70,7 @@ Imcms.define("imcms-text-validation-result-builder",
         }
 
         function clearData() {
+            events.trigger("enable text editor blur");
             $validationResultContainer.empty();
         }
 
@@ -80,6 +82,7 @@ Imcms.define("imcms-text-validation-result-builder",
 
         return {
             buildTextValidationFailWindow: function (validationResult) {
+                events.trigger("disable text editor blur");
                 textValidationFailWindowBuilder.buildWindowWithShadow.applyAsync(
                     arguments, textValidationFailWindowBuilder
                 );

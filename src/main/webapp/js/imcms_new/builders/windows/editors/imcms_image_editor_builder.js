@@ -893,6 +893,7 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function clearData() {
+            events.trigger("enable text editor blur");
             imageCropper.destroyImageCropper();
             imageDataContainers.$image.removeAttr("src");
             imageDataContainers.$cropArea.find("img").removeAttr("src");
@@ -912,6 +913,7 @@ Imcms.define("imcms-image-editor-builder",
                 return this;
             },
             build: function (opts) {
+                events.trigger("disable text editor blur");
                 imageWindowBuilder.buildWindow.applyAsync(arguments, imageWindowBuilder);
             }
         };

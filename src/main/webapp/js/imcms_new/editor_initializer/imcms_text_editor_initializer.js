@@ -73,6 +73,10 @@ Imcms.define("imcms-text-editor-initializer",
 
         /** @function editor.target.isDirty */
         function onEditorBlur(editor) {
+            if (!blurEnabled) {
+                return;
+            }
+
             if (!editor.target.isDirty()) {
                 return;
             }
@@ -84,7 +88,15 @@ Imcms.define("imcms-text-editor-initializer",
             })
         }
 
+        var blurEnabled = true;
+
         function initSaveContentConfirmation(editor) {
+            events.on("disable text editor blur", function () {
+                blurEnabled = false;
+            });
+            events.on("enable text editor blur", function () {
+                blurEnabled = true;
+            });
             editor.on('blur', onEditorBlur);
         }
 
