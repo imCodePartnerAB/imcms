@@ -168,6 +168,29 @@ public class ImageServiceTest {
     }
 
     @Test
+    public void saveImage_When_flagAllLanguagesIsFalse_Expect_ImagesWithDiffLanguageHaveFlagAllLanguageSetToFalse() {
+        final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
+
+        languageService.getAll().forEach(language -> {
+            final Image image = imageDataInitializer
+                    .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, null);
+
+            image.setAllLanguages(true);
+            imageRepository.save(image);
+        });
+
+        assertEquals(languageRepository.findAll().size(), imageRepository.findAll().size());
+        imageRepository.findAll().forEach(image -> assertTrue(image.isAllLanguages()));
+
+        final Image newImage = imageRepository.findAll().get(0);
+        newImage.setAllLanguages(false);
+
+        imageService.saveImage(imageToImageDTO.apply(newImage));
+
+        imageRepository.findAll().forEach(image -> assertFalse(image.isAllLanguages()));
+    }
+
+    @Test
     public void saveImage_When_NotInLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() {
 
         final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);

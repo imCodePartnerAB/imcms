@@ -83,6 +83,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
         } else {
             final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
             saveImage(imageDTO, language, version);
+            updateImagesWithDifferentLangCode(imageDTO, version);
         }
 
         super.updateWorkingVersion(docId);
@@ -115,6 +116,18 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
             super.updateWorkingVersion(docId);
         }
+    }
+
+    private void updateImagesWithDifferentLangCode(ImageDTO imageDTO, Version version) {
+        languageService.getAll().forEach(language -> {
+            final LanguageJPA languageJPA = new LanguageJPA(language);
+            final Image image = getImage(imageDTO.getIndex(), version, languageJPA, imageDTO.getLoopEntryRef());
+
+            if (image != null) {
+                image.setAllLanguages(false);
+                repository.save(image);
+            }
+        });
     }
 
     private ImageDTO getEmptyDtoForTextEditor(ImageDTO dataHolder) {
