@@ -6,8 +6,10 @@
     <%--@elvariable id="hasNewerVersion" type="boolean"--%>
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
+    <%--@elvariable id="userLanguage" type="java.lang.String"--%>
 
     Imcms = {
+        userLanguage: "${userLanguage}",
         contextPath: "${pageContext.request.contextPath}",
         imagesPath: "${imagesPath}",
         version: "${version}",
@@ -66,6 +68,8 @@
             "imcms-tests": "imcms_tests.js",
             // events
             "imcms-events": "events/imcms_events.js",
+            // languages support
+            "imcms-i18n-texts": "i18n/imcms_i18n_texts.js",
             // components
             "imcms-document-types": "components/imcms_document_types.js",
             "imcms-calendar": "components/imcms_calendar.js",
