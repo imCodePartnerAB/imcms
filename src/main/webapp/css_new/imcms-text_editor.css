@@ -40,6 +40,12 @@
     background-size: 16px;
 }
 
+.mce-i-imcms-discard-changes-icon {
+    padding-top: 2px;
+    background: url("../images_new/text_editor/ic_cancel.png") no-repeat;
+    background-size: 16px;
+}
+
 .mce-i-imcms-text-history-icon {
     padding-top: 2px;
     background: url("../images_new/text_editor/text_history.png") no-repeat;

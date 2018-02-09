@@ -8,10 +8,10 @@ Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
         "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
-        "imcms-modal-window-builder", "imcms-text-full-screen-plugin"
+        "imcms-modal-window-builder", "imcms-text-full-screen-plugin", "imcms-text-discard-changes-plugin"
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
-              modalWindowBuilder, fullScreenPlugin) {
+              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -41,7 +41,7 @@ Imcms.define("imcms-text-editor-initializer",
             toolbar: 'code | bold italic underline | bullist numlist | hr |'
             + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
             + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
-            + ' | save',
+            + ' | save ' + discardChangesPlugin.pluginName,
             menubar: false,
             statusbar: false,
             init_instance_callback: prepareEditor,
@@ -50,6 +50,7 @@ Imcms.define("imcms-text-editor-initializer",
                 textHistory.initTextHistory(editor);
                 textValidation.initTextValidation(editor);
                 imageInText.initImageInText(editor);
+                discardChangesPlugin.initDiscardChanges(editor);
             }
         };
 
