@@ -484,9 +484,8 @@ Imcms.define("imcms-menu-editor-builder",
             ;
 
             level = parseInt(level) + 1;
-            var submenus = $btn.parents(".imcms-menu-items")
+            var submenus = $btn.closest(".imcms-menu-items")
                 .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]");
-
             if (!submenus.is(":animated")) {
                 submenus.each(function () {
                         $(this).slideToggle();
