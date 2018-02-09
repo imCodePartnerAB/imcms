@@ -10,6 +10,8 @@ import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -78,6 +80,9 @@ public class ImageServiceTest {
     @Autowired
     private LanguageRepository languageRepository;
 
+    @Autowired
+    private LanguageService languageService;
+
     @Before
     public void setUp() throws Exception {
         workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
@@ -135,6 +140,78 @@ public class ImageServiceTest {
         final ImageDTO result = imageService.getImage(TEST_IMAGE_DTO);
 
         assertEquals(result, imageDTO);
+    }
+
+    @Test
+    public void saveImage_When_InLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() {
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        image.setAllLanguages(true);
+
+        final ImageDTO expected = imageToImageDTO.apply(image);
+
+        imageService.saveImage(expected);
+
+        final List<Language> languages = languageService.getAll();
+
+        assertEquals(2, languages.size());
+
+        languages.forEach(language -> {
+            final ImageDTO actual = imageService
+                    .getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, language.getCode(), loopEntryRef);
+
+            expected.setLangCode(language.getCode());
+
+            assertEquals(expected, actual);
+        });
+    }
+
+    @Test
+    public void saveImage_When_flagAllLanguagesIsFalse_Expect_ImagesWithDiffLanguageHaveFlagAllLanguageSetToFalse() {
+        final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
+
+        languageService.getAll().forEach(language -> {
+            final Image image = imageDataInitializer
+                    .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, null);
+
+            image.setAllLanguages(true);
+            imageRepository.save(image);
+        });
+
+        assertEquals(languageRepository.findAll().size(), imageRepository.findAll().size());
+        imageRepository.findAll().forEach(image -> assertTrue(image.isAllLanguages()));
+
+        final Image newImage = imageRepository.findAll().get(0);
+        newImage.setAllLanguages(false);
+
+        imageService.saveImage(imageToImageDTO.apply(newImage));
+
+        imageRepository.findAll().forEach(image -> assertFalse(image.isAllLanguages()));
+    }
+
+    @Test
+    public void saveImage_When_NotInLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() {
+
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
+        image.setAllLanguages(true);
+
+        final ImageDTO expected = imageToImageDTO.apply(image);
+
+        imageService.saveImage(expected);
+
+        final List<Language> languages = languageService.getAll();
+
+        assertEquals(2, languages.size());
+
+        languages.forEach(language -> {
+            final ImageDTO actual = imageService
+                    .getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, language.getCode(), null);
+
+            expected.setLangCode(language.getCode());
+
+            assertEquals(expected, actual);
+        });
     }
 
     @Test
