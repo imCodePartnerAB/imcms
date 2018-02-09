@@ -15,15 +15,15 @@ Imcms.define(
                         var $toolBar = $editorBody.parent().children(".imcms-editor-area__text-toolbar");
                         var $body = $("body");
 
-                        if ($editorBody.hasClass('tw-fullscreen-inline')) {
+                        if ($editorBody.hasClass('imcms-mce-fullscreen-inline')) {
                             adminPanel.enablePanel();
-                            $editorBody.removeClass('tw-fullscreen-inline');
+                            $editorBody.removeClass('imcms-mce-fullscreen-inline');
                             $toolBar.removeClass("mce-fullscreen-toolbar");
                             $body.css('overflow', 'auto');
 
                         } else {
                             adminPanel.disablePanel();
-                            $editorBody.addClass('tw-fullscreen-inline');
+                            $editorBody.addClass('imcms-mce-fullscreen-inline');
                             $toolBar.addClass("mce-fullscreen-toolbar");
                             $body.css('overflow', 'hidden');
                         }

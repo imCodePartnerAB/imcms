@@ -80,7 +80,7 @@
     margin-top: 8px;
 }
 
-.tw-fullscreen-inline {
+.imcms-mce-fullscreen-inline {
     background-color: white;
     position: fixed !important;
     top: 32px !important;
@@ -105,31 +105,12 @@
 .mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel {
     top: -1px !important;
     height: 30px !important;
+    display: block !important;
 }
 
-.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout {
-    height: 30px !important;
-    width: 100% !important;
-}
-
-.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout .mce-toolbar-grp.mce-container.mce-panel.mce-abs-layout-item.mce-first.mce-last {
-    height: 30px !important;
-    width: 100% !important;
-}
-
+.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout,
+.mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout .mce-toolbar-grp.mce-container.mce-panel.mce-abs-layout-item.mce-first.mce-last,
 .mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel .mce-container-body.mce-abs-layout .mce-toolbar-grp.mce-container.mce-panel.mce-abs-layout-item.mce-first.mce-last .mce-container-body.mce-stack-layout {
     height: 30px !important;
     width: 100% !important;
 }
-
-
-
-
-
-
-
-
-
-
-
-
