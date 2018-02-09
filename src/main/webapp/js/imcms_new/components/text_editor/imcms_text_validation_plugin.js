@@ -29,9 +29,9 @@ Imcms.define(
         };
 
         return {
-            puginName: 'w3c_validation',
+            pluginName: 'w3c_validation',
             initTextValidation: function (editor) {
-                editor.addButton('w3c_validation', {
+                editor.addButton(this.pluginName, {
                     icon: 'imcms-w3c-text-validation-icon',
                     tooltip: 'Validate Content over W3C',
                     onclick: onTextValidationClick

@@ -9,8 +9,9 @@ Imcms.define(
         return {
             pluginName: 'fullscreen',
             initFullScreen: function () {
+                var name = this.pluginName;
                 /** @namespace tinyMCE.PluginManager */
-                tinyMCE.PluginManager.add('fullscreen', function (editor) {
+                tinyMCE.PluginManager.add(name, function (editor) {
                     editor.addCommand('mceFullscreen', function () {
                         var $editorBody = $(editor.getBody());
                         var $toolBar = $editorBody.parent().children(".imcms-editor-area__text-toolbar");
@@ -30,7 +31,7 @@ Imcms.define(
                         }
                         editor.focus();
                     });
-                    editor.addButton('fullscreen', {
+                    editor.addButton(name, {
                         icon: 'fullscreen',
                         cmd: 'mceFullscreen',
                         title: 'Fullscreen'

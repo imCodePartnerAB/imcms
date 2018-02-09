@@ -64,7 +64,7 @@ Imcms.define(
         return {
             pluginName: 'image_editor',
             initImageInText: function (editor) {
-                editor.addButton('image_editor', {
+                editor.addButton(this.pluginName, {
                     icon: 'imcms-image--in-text-editor-icon',
                     tooltip: 'Add Image',
                     onclick: onPluginButtonClicked
