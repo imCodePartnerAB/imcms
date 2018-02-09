@@ -5,10 +5,13 @@
 Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
-        "jquery", "imcms", "imcms-events", "imcms-languages-rest-api"
+        "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-i18n-texts"
     ],
-    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi) {
+    function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
+              texts) {
         var $panel;
+
+        texts = texts.panel;
 
         var panelSensitivePixels = 15;
 
@@ -57,50 +60,50 @@ Imcms.define("imcms-admin-panel-builder",
                         name: 'public',
                         tag: '<a>',
                         href: imcms.contextPath + '/' + imcms.document.id,
-                        content: 'public',
+                        content: texts.public,
                         modifiers: ["public"]
                     }, {
                         name: 'edit',
                         tag: '<a>',
                         href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id,
-                        content: 'edit',
+                        content: texts.edit,
                         modifiers: ["edit"]
                     }, {
                         name: 'preview',
                         tag: "<a>",
                         href: imcms.contextPath + '/api/viewDoc/' + imcms.document.id + "?working-preview=true",
-                        content: "preview",
+                        content: texts.preview,
                         modifiers: ["preview"].concat(versionedContentModifiers)
                     }, {
                         name: 'publish_offline',
                         tag: "<li>",
-                        content: "publish offline",
+                        content: texts.publish,
                         onClick: publishDoc,
                         modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers)
                     }, {
                         name: 'page_info',
                         tag: "<li>",
-                        content: "page info",
+                        content: texts.pageInfo,
                         onClick: showPageInfo,
                         modifiers: ["page-info"]
                     }, {
                         name: 'document',
                         tag: "<li>",
-                        content: "document",
+                        content: texts.document,
                         onClick: initDocumentEditor,
                         modifiers: ["document"]
                     }, {
                         name: 'admin',
                         tag: "<a>",
                         href: imcms.contextPath + "/servlet/AdminManager",
-                        content: "admin",
+                        content: texts.admin,
                         modifiers: ["admin"]
                     }, {
                         name: 'logout',
                         tag: "<a>",
                         href: imcms.contextPath + "/servlet/LogOut",
                         content: componentsBuilder.buttons.positiveButton({
-                            text: "log out"
+                            text: texts.logout
                         }),
                         modifiers: ["logout"]
                     }

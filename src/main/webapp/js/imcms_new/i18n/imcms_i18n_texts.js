@@ -9,14 +9,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
     var texts = {
         "sv": {
             panel: {
-                public: "",
-                edit: "",
-                preview: "",
-                publish: "",
-                pageInfo: "",
-                document: "",
-                admin: "",
-                logout: ""
+                public: "offentlig",
+                edit: "redigera",
+                preview: "förhandsvisning",
+                publish: "publicera offline",
+                pageInfo: "sida info",
+                document: "dokumentera",
+                admin: "administration",
+                logout: "logga ut"
             }
         },
         "en": {
