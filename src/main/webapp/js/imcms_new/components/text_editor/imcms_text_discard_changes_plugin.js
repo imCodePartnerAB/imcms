@@ -36,6 +36,7 @@ Imcms.define(
         return {
             pluginName: 'discard-changes',
             initDiscardChanges: function (editor) {
+
                 editor.addButton(this.pluginName, {
                     icon: 'imcms-discard-changes-icon',
                     tooltip: 'Discard changes',
@@ -44,12 +45,11 @@ Imcms.define(
                 });
 
                 editor.on('NodeChange', function () {
-                    if (tinyMCE.activeEditor.isDirty()) {
-                        events.trigger("enable discard changes button");
+                    var eventName = (tinyMCE.activeEditor.isDirty())
+                        ? "enable discard changes button"
+                        : "disable discard changes button";
 
-                    } else {
-                        events.trigger("disable discard changes button");
-                    }
+                    events.trigger(eventName);
                 });
             }
         };
