@@ -122,6 +122,7 @@ public class ViewDocumentController {
 
         mav.setViewName(viewName);
 
+        mav.addObject("userLanguage", user.getLanguage());
         mav.addObject("currentDocument", textDocument);
         mav.addObject("language", language);
         mav.addObject("isAdmin", user.isAdmin());
