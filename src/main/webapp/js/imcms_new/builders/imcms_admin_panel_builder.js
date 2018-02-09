@@ -12,6 +12,8 @@ Imcms.define("imcms-admin-panel-builder",
 
         var panelSensitivePixels = 15;
 
+        var isPanelEnabled = true; // by default
+
         function publishDoc() {
             events.trigger("imcms-publish-new-version-current-doc");
         }
@@ -158,7 +160,7 @@ Imcms.define("imcms-admin-panel-builder",
         function setShowPanelRule() {
             var $body = $("body");
             $(document).mousemove(function (event) {
-                if ((event.clientY >= 0) && (event.clientY <= panelSensitivePixels)) {
+                if (isPanelEnabled && (event.clientY >= 0) && (event.clientY <= panelSensitivePixels)) {
                     if ($(window).scrollTop() === 0) {
                         $body.css({"top": "90px"})
                     } else {
@@ -211,6 +213,12 @@ Imcms.define("imcms-admin-panel-builder",
                 $("body").prepend($panel);
 
                 events.on("imcms-version-modified", highlightPublishButton)
+            },
+            disablePanel: function () {
+                isPanelEnabled = false;
+            },
+            enablePanel: function () {
+                isPanelEnabled = true;
             }
         }
     }
