@@ -6,9 +6,13 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -25,10 +29,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -52,6 +56,12 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Autowired
     private ImageRepository imageRepository;
+
+    @Autowired
+    private ImageService imageService;
+
+    @Autowired
+    private LanguageRepository languageRepository;
 
     @Override
     protected String controllerPath() {
@@ -198,6 +208,30 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void saveImage_When_InLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() throws Exception {
+        saveImageWhenAllLanguagesFlagIsSet(true);
+    }
+
+    @Test
+    public void saveImage_When_NotInLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() throws Exception {
+        saveImageWhenAllLanguagesFlagIsSet(false);
+    }
+
+    @Test
+    public void saveImage_When_InLoopAndFlagAllLanguagesIsFalse_Expect_ImagesWithDiffLangCodeHaveFalseFlag()
+            throws Exception {
+
+        saveImageWhenAllLanguagesFlagIsNotSet(true);
+    }
+
+    @Test
+    public void saveImage_When_NotInLoopAndFlagAllLanguagesIsFalse_Expect_ImagesWithDiffLangCodeHaveFalseFlag()
+            throws Exception {
+
+        saveImageWhenAllLanguagesFlagIsNotSet(false);
+    }
+
+    @Test
     public void deleteImage_When_InLoopAndImageExists_Expect_ImageIsDeleted() throws Exception {
         testDeletingImage_WhenImageExists(true);
     }
@@ -217,6 +251,96 @@ public class ImageControllerTest extends AbstractControllerTest {
             throws Exception {
 
         testDeletingImage_WhenImageDoesNotExist(false);
+    }
+
+    @Test
+    public void deleteImage_When_InLoopAndAllLanguagesFlagIsSet_Expect_AllImagesWithDiffLangCodeAreDeleted()
+            throws Exception {
+
+        deleteImageWhenAllLanguagesFlagIsSet(true);
+    }
+
+    @Test
+    public void deleteImage_When_NotInLoopAndAllLanguagesFlagIsSet_Expect_AllImagesWithDiffLangCodeAreDeleted()
+            throws Exception {
+
+        deleteImageWhenAllLanguagesFlagIsSet(false);
+    }
+
+    @Test
+    public void deleteImage_When_InLoopAndAllLanguagesIsNotSet_Expect_AllImagesWithDiffLangCodeHaveFalseFlag()
+            throws Exception {
+
+        deleteImageWhenAllLanguagesFlagIsNotSet(true);
+    }
+
+    @Test
+    public void deleteImage_When_NotInLoopAndAllLanguagesIsNotSet_Expect_AllImagesWithDiffLangCodeHaveFalseFlag()
+            throws Exception {
+
+        deleteImageWhenAllLanguagesFlagIsNotSet(false);
+    }
+
+    private void deleteImageWhenAllLanguagesFlagIsSet(boolean inLoop) throws Exception {
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+
+        final LoopEntryRefJPA loopEntryRefJPA = inLoop
+                ? new LoopEntryRefJPA(1, 1)
+                : null;
+
+        languageRepository.findAll()
+                .forEach(language -> {
+                    final Image image = imageDataInitializer
+                            .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
+
+                    image.setAllLanguages(true);
+                    imageRepository.save(image);
+                });
+
+        final List<Image> images = imageRepository.findAll();
+
+        assertEquals(languageRepository.findAll().size(), images.size());
+
+        final ImageDTO imageDTO = imageToImageDTO.apply(images.get(0));
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(0, imageRepository.findAll().size());
+    }
+
+    private void deleteImageWhenAllLanguagesFlagIsNotSet(boolean inLoop) throws Exception {
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+
+        final LoopEntryRefJPA loopEntryRefJPA = inLoop
+                ? new LoopEntryRefJPA(1, 1)
+                : null;
+
+        languageRepository.findAll()
+                .forEach(language -> {
+                    final Image image = imageDataInitializer
+                            .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
+
+                    image.setAllLanguages(true);
+                    imageRepository.save(image);
+                });
+
+        final List<Image> images = imageRepository.findAll();
+
+        assertEquals(languageRepository.findAll().size(), images.size());
+
+        final Image image = images.get(0);
+        image.setAllLanguages(false);
+
+        imageRepository.save(image);
+
+        final ImageDTO imageDTO = imageToImageDTO.apply(images.get(0));
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        imageRepository.findAll()
+                .forEach(imageJPA -> assertFalse(imageJPA.isAllLanguages()));
     }
 
     private void testDeletingImage_WhenImageExists(boolean inLoop) throws Exception {
@@ -256,5 +380,57 @@ public class ImageControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectedOk(requestBuilder);
 
         assertEquals(0, imageRepository.findAll().size());
+    }
+
+    private void saveImageWhenAllLanguagesFlagIsNotSet(boolean inLoop) throws Exception {
+        final LoopEntryRefJPA loopEntryRef = inLoop
+                ? new LoopEntryRefJPA(1, 1)
+                : null;
+
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+
+        languageRepository.findAll().forEach(language -> {
+            final Image image = imageDataInitializer
+                    .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRef);
+
+            image.setAllLanguages(true);
+            imageRepository.save(image);
+        });
+
+        imageRepository.findAll().forEach(image -> assertTrue(image.isAllLanguages()));
+
+        final Image newImage = imageRepository.findAll().get(0);
+        newImage.setAllLanguages(false);
+
+        final ImageDTO imageDTO = imageToImageDTO.apply(newImage);
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageDTO);
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        imageRepository.findAll().forEach(image -> assertFalse(image.isAllLanguages()));
+    }
+
+    private void saveImageWhenAllLanguagesFlagIsSet(boolean inLoop) throws Exception {
+        final LoopEntryRefJPA loopEntryRef = inLoop
+                ? new LoopEntryRefJPA(1, 1)
+                : null;
+
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
+        image.setAllLanguages(true);
+
+        final ImageDTO expected = imageToImageDTO.apply(image);
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(expected);
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        languageRepository.findAll()
+                .forEach(language -> {
+                    final ImageDTO actual = imageService
+                            .getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, language.getCode(), loopEntryRef);
+
+                    expected.setLangCode(language.getCode());
+
+                    assertEquals(expected, actual);
+                });
     }
 }
