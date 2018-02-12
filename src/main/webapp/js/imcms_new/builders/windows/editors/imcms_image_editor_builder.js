@@ -440,8 +440,8 @@ Imcms.define("imcms-image-editor-builder",
 
             if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
-
                 $image.attr("alt", imageDTO.alternateText);
+
             } else {
                 $image.removeAttr("alt");
             }
@@ -458,6 +458,7 @@ Imcms.define("imcms-image-editor-builder",
 
                 if ($image.attr("data-mce-src")) {
                     $image.attr("data-mce-src", filePath);
+                    tinyMCE.activeEditor.setDirty(true);
                 }
             }
         }
@@ -772,8 +773,8 @@ Imcms.define("imcms-image-editor-builder",
             function saveAndClose() {
                 if (!$altText.$input.val()) {
                     var question = "Alternate text is missing. Are you sure to continue?";
-
                     modalWindowBuilder.buildModalWindow(question, callBackAltText);
+
                 } else {
                     callBackAltText(true);
                 }
