@@ -1,8 +1,14 @@
 /** @namespace document.restrictedPermissions */
 
-Imcms.define("imcms-permissions-tab-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-document-types"],
-    function (BEM, components, tabContentBuilder, docTypes) {
+Imcms.define(
+    "imcms-permissions-tab-builder",
+    [
+        "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-document-types",
+        "imcms-i18n-texts"
+    ],
+    function (BEM, components, tabContentBuilder, docTypes, texts) {
+
+        texts = texts.pageInfo.permissions;
 
         var defaultPermissions = [{
             permission: "RESTRICTED_1"
@@ -29,19 +35,19 @@ Imcms.define("imcms-permissions-tab-builder",
         function createRestrictedCheckboxes(permissionSetName) {
             return mapCheckboxesFromAttributesArray([{
                 name: editText + "_" + permissionSetName,
-                text: "Edit text"
+                text: texts.editText
             }, {
                 name: editMenu + "_" + permissionSetName,
-                text: "Edit menu"
+                text: texts.editMenu
             }, {
                 name: editImage + "_" + permissionSetName,
-                text: "Edit image"
+                text: texts.editImage
             }, {
                 name: editLoop + "_" + permissionSetName,
-                text: "Edit loop"
+                text: texts.editLoop
             }, {
                 name: editDocInfo + "_" + permissionSetName,
-                text: "Edit doc info"
+                text: texts.editDocInfo
             }]);
         }
 
@@ -63,7 +69,7 @@ Imcms.define("imcms-permissions-tab-builder",
         });
 
         return {
-            name: "permissions",
+            name: texts.name,
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
                 return docType === docTypes.TEXT;

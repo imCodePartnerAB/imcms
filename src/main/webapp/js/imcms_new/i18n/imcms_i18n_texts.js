@@ -20,6 +20,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             },
             pageInfo: {
                 title: {
+                    name: "Titel",
                     title: "Titel",
                     menuText: "Titel",
                     linkToImage: "Meny text",
@@ -64,7 +65,57 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         dateTimeTitle: "Sparat slutet av publikationen datum-tid"
                     },
                     publisher: "Utgivare",
-                    currentVersion: "Aktuell version:"
+                    currentVersion: "Aktuell version:",
+                    versionHasChanges: "Denna offline version har ändringar.",
+                    publishMessage: "Vänligen tryck \"Spara och publicera den här versionen\" för att publicera som: version"
+                },
+                appearance: {
+                    name: "Utseende",
+                    template: "Mall",
+                    defaultChildTemplate: "Standard barnmall"
+                },
+                keywords: {
+                    name: "Nyckelord",
+                    title: "Nyckelord",
+                    placeholder: "nyckelord",
+                    add: "TILLÄGGA+",
+                    disableSearch: "Inaktivera sökningen"
+                },
+                categories: {
+                    name: "Kategorier"
+                },
+                access: {
+                    name: "Tillgång",
+                    role: "roll",
+                    view: "se",
+                    edit: "redigera",
+                    restricted_1: "begränsad 1",
+                    restricted_2: "begränsad 2",
+                    addRole: "Lägg till roll"
+                },
+                permissions: {
+                    name: "Tillstånd",
+                    editText: "Redigera text",
+                    editMenu: "Redigera meny",
+                    editImage: "Redigera bild",
+                    editLoop: "Redigera loop",
+                    editDocInfo: "Redigera dok info"
+                },
+                status: {
+                    name: "Status",
+                    created: "Skapad",
+                    modified: "Ändrad",
+                    archived: "Arkiverat",
+                    published: "Publicerat",
+                    publicationEnd: "Publiceringsänden",
+                    by: "Av"
+                },
+                file: {
+                    name: "Files",
+                    upload: "Ladda upp",
+                    id: "ID",
+                    fileName: "Namn",
+                    isDefault: "Standard"
                 }
             }
         },
@@ -126,7 +177,57 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         dateTimeTitle: "Saved publication end date-time"
                     },
                     publisher: "Publisher",
-                    currentVersion: "Current version:"
+                    currentVersion: "Current version:",
+                    versionHasChanges: "This offline version has changes.",
+                    publishMessage: "Please press \"Save and publish this version\" to publish as: version "
+                },
+                appearance: {
+                    name: "Appearance",
+                    template: "Template",
+                    defaultChildTemplate: "Default child template"
+                },
+                keywords: {
+                    name: "Keywords",
+                    title: "Keywords",
+                    placeholder: "keyword",
+                    add: "ADD+",
+                    disableSearch: "Disable search"
+                },
+                categories: {
+                    name: "Categories"
+                },
+                access: {
+                    name: "Access",
+                    role: "role",
+                    view: "view",
+                    edit: "edit",
+                    restricted_1: "restricted 1",
+                    restricted_2: "restricted 2",
+                    addRole: "Add role"
+                },
+                permissions: {
+                    name: "Permissions",
+                    editText: "Edit text",
+                    editMenu: "Edit menu",
+                    editImage: "Edit image",
+                    editLoop: "Edit loop",
+                    editDocInfo: "Edit doc info"
+                },
+                status: {
+                    name: "Status",
+                    created: "Created",
+                    modified: "Modified",
+                    archived: "Archived",
+                    published: "Published",
+                    publicationEnd: "Publication end",
+                    by: "By"
+                },
+                file: {
+                    name: "Files",
+                    upload: "Upload",
+                    id: "ID",
+                    fileName: "Name",
+                    isDefault: "Default"
                 }
             }
         }

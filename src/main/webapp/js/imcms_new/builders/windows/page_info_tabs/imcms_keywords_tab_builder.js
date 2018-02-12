@@ -1,12 +1,13 @@
 Imcms.define("imcms-keywords-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder",
-        "imcms-page-info-tab-form-builder"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-i18n-texts"
     ],
-    function (BEM, components, tabContentBuilder) {
+    function (BEM, components, tabContentBuilder, texts) {
+
+        texts = texts.pageInfo.keywords;
 
         return {
-            name: "keywords",
+            name: texts.name,
             data: {},
             tabIndex: null,
             isDocumentTypeSupported: function () {
@@ -22,14 +23,14 @@ Imcms.define("imcms-keywords-tab-builder",
                 this.tabIndex = index;
                 this.data.$keywordsBox = components.keywords.keywordsBox("<div>", {
                     "input-id": "keyword",
-                    title: "Keywords",
-                    placeholder: "keyword",
-                    "button-text": "ADD+"
+                    title: texts.title,
+                    placeholder: texts.placeholder,
+                    "button-text": texts.add
                 });
                 this.data.$searchDisableCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
                     id: "isSearchDisabled",
                     name: "isSearchDisabled",
-                    text: "Disable search"
+                    text: texts.disableSearch
                 });
                 var $checkboxField = components.checkboxes.checkboxContainerField("<div>", [
                     this.data.$searchDisableCheckbox
