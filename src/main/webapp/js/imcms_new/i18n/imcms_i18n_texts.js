@@ -64,7 +64,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         dateTimeTitle: "Sparat slutet av publikationen datum-tid"
                     },
                     publisher: "Utgivare",
-                    currentVersion: "Aktuell version:"
+                    currentVersion: "Aktuell version:",
+                    versionHasChanges: "Denna offline version har ändringar.",
+                    publishMessage: "Vänligen tryck \"Spara och publicera den här versionen\" för att publicera som: version"
                 },
                 appearance: {
                     name: "Utseende",
@@ -131,7 +133,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         dateTimeTitle: "Saved publication end date-time"
                     },
                     publisher: "Publisher",
-                    currentVersion: "Current version:"
+                    currentVersion: "Current version:",
+                    versionHasChanges: "This offline version has changes.",
+                    publishMessage: "Please press \"Save and publish this version\" to publish as: version "
                 },
                 appearance: {
                     name: "Appearance",

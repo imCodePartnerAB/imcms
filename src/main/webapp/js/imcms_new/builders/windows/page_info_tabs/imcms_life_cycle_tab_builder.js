@@ -160,13 +160,11 @@ Imcms.define("imcms-life-cycle-tab-builder",
         }
 
         function buildDocVersionsInfoRow() {
-            // todo implement appearance logic for this text
-            var $offlineVersionInfo = components.texts.infoText("<div>", "This offline version has changes.");
+            var $offlineVersionInfo = components.texts.infoText("<div>", texts.versionHasChanges);
             var $nextVersionIndex = components.texts.infoText("<span>", "", {id: "document-next-version"});
 
-            tabData.$savingVersionInfo = components.texts.infoText(
-                "<div>", "Please press \"Save and publish this version\" to publish as: version "
-            ).append($nextVersionIndex);
+            tabData.$savingVersionInfo = components.texts.infoText("<div>", texts.publishMessage)
+                .append($nextVersionIndex);
 
             return tabData.$hasNewerVersionInfoBlock = lifeCycleInnerStructureBEM.buildBlock("<div>", [
                 {"item": $offlineVersionInfo},
