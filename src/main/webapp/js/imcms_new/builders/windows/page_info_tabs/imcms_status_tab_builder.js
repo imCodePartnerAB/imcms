@@ -1,16 +1,18 @@
 Imcms.define("imcms-status-tab-builder",
     [
-        "imcms-date-picker", "imcms-time-picker", "imcms-bem-builder", "imcms-components-builder",
+        "imcms-date-picker", "imcms-time-picker", "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts",
         "imcms-page-info-tab-form-builder", "jquery"
     ],
-    function (DatePicker, TimePicker, BEM, components, tabContentBuilder, $) {
+    function (DatePicker, TimePicker, BEM, components, texts, tabContentBuilder, $) {
+
+        texts = texts.pageInfo.status;
 
         var tabData = {};
 
         function buildRowBlock($dateTimeField, $doneByInput) {
             $dateTimeField.modifiers = ["col-3", "float-l"];
 
-            var $doneBy = buildLabelWithInputs("By", [$doneByInput]);
+            var $doneBy = buildLabelWithInputs(texts.by, [$doneByInput]);
             $doneBy.modifiers = ["col-2-3", "float-l"];
 
             return new BEM({
@@ -72,15 +74,15 @@ Imcms.define("imcms-status-tab-builder",
         }
 
         var statusTabs = [
-            {title: "Created", dataTitle: "created"},
-            {title: "Modified", dataTitle: "modified"},
-            {title: "Archived", dataTitle: "archived"},
-            {title: "Published", dataTitle: "published"},
-            {title: "Publication end", dataTitle: "publicationEnd"}
+            {title: texts.created, dataTitle: "created"},
+            {title: texts.modified, dataTitle: "modified"},
+            {title: texts.archived, dataTitle: "archived"},
+            {title: texts.published, dataTitle: "published"},
+            {title: texts.publicationEnd, dataTitle: "publicationEnd"}
         ];
 
         return {
-            name: "status",
+            name: texts.name,
             tabIndex: null,
             isDocumentTypeSupported: function () {
                 return true; // all supported

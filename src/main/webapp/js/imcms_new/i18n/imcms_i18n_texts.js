@@ -100,6 +100,15 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     editImage: "Redigera bild",
                     editLoop: "Redigera loop",
                     editDocInfo: "Redigera dok info"
+                },
+                status: {
+                    name: "Status",
+                    created: "Skapad",
+                    modified: "Ändrad",
+                    archived: "Arkiverat",
+                    published: "Publicerat",
+                    publicationEnd: "Publiceringsänden",
+                    by: "Av"
                 }
             }
         },
@@ -196,6 +205,15 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     editImage: "Edit image",
                     editLoop: "Edit loop",
                     editDocInfo: "Edit doc info"
+                },
+                status: {
+                    name: "Status",
+                    created: "Created",
+                    modified: "Modified",
+                    archived: "Archived",
+                    published: "Published",
+                    publicationEnd: "Publication end",
+                    by: "By"
                 }
             }
         }
