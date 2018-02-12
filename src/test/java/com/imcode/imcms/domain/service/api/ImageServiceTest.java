@@ -186,6 +186,8 @@ public class ImageServiceTest {
             img.setName("img1");
             img.setWidth(100);
             img.setHeight(100);
+            img.setAlternateText("");
+            img.setLinkUrl("");
         });
 
         imageService.saveImage(imageDTO);
@@ -213,6 +215,8 @@ public class ImageServiceTest {
             img.setWidth(100);
             img.setHeight(100);
             img.setCropRegion(cropRegion);
+            img.setAlternateText("");
+            img.setLinkUrl("");
         });
 
         imageService.saveImage(imageDTO);
