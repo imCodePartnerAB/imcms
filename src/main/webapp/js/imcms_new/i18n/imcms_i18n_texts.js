@@ -116,6 +116,10 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     id: "ID",
                     fileName: "Namn",
                     isDefault: "Standard"
+                },
+                url: {
+                    name: "URL",
+                    title: "URL"
                 }
             }
         },
@@ -228,6 +232,10 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     id: "ID",
                     fileName: "Name",
                     isDefault: "Default"
+                },
+                url: {
+                    name: "URL",
+                    title: "URL"
                 }
             }
         }

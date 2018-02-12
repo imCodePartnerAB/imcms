@@ -7,14 +7,16 @@
  */
 Imcms.define("imcms-url-tab-builder",
     [
-        "imcms-components-builder", "imcms-document-types", "imcms-page-info-tab-form-builder"
+        "imcms-components-builder", "imcms-document-types", "imcms-page-info-tab-form-builder", "imcms-i18n-texts"
     ],
-    function (components, docTypes, tabContentBuilder) {
+    function (components, docTypes, tabContentBuilder, texts) {
+
+        texts = texts.pageInfo.url;
 
         var tabData = {}, $urlInputContainer;
 
         return {
-            name: "url",
+            name: texts.name,
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
                 return docType === docTypes.URL;
@@ -30,7 +32,7 @@ Imcms.define("imcms-url-tab-builder",
 
                 $urlInputContainer = components.texts.textField("<div>", {
                     name: "url",
-                    text: "URL"
+                    text: texts.title
                 });
 
                 return tabContentBuilder.buildFormBlock([$urlInputContainer], index);
