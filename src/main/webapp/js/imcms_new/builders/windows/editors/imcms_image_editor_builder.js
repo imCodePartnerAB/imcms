@@ -440,10 +440,20 @@ Imcms.define("imcms-image-editor-builder",
 
             if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
+
                 $image.attr("alt", imageDTO.alternateText);
 
+                var linkUrl = imageDTO.linkUrl;
+                if (linkUrl) {
+                    if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
+                        linkUrl = "//" + linkUrl;
+                    }
+
+                    $image.parent().attr("href", linkUrl);
+                }
             } else {
                 $image.removeAttr("alt");
+                $image.parent().removeAttr("href");
             }
 
             if ($image.length) {
@@ -466,6 +476,7 @@ Imcms.define("imcms-image-editor-builder",
         var $langFlags;
         var $allLanguagesCheckBox;
         var $altText;
+        var $imgLink;
 
         function buildRightSide(imageEditorBlockClass) {
 
@@ -485,7 +496,7 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildImageLinkTextBox() {
-                return components.texts.textBox("<div>", {
+                return $imgLink = components.texts.textBox("<div>", {
                     text: "Image link",
                     name: "imageLink"
                 });
@@ -763,6 +774,7 @@ Imcms.define("imcms-image-editor-builder",
 
                     imageData.allLanguages = $allLanguagesCheckBox.isChecked();
                     imageData.alternateText = $altText.$input.val();
+                    imageData.linkUrl = $imgLink.$input.val();
 
                     imageRestApi.create(imageData)
                         .success(onImageSaved)
@@ -906,6 +918,7 @@ Imcms.define("imcms-image-editor-builder",
             fillLeftSideData(imageData);
 
             $altText.$input.val(image.alternateText);
+            $imgLink.$input.val(image.linkUrl);
 
             if (image.allLanguages !== undefined) {
                 $allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
