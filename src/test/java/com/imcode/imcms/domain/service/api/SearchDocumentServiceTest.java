@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -141,7 +142,7 @@ public class SearchDocumentServiceTest {
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(user); // means current user is admin now
 
-//        Thread.sleep(TimeUnit.SECONDS.toMillis(2)); // to let solr init, not sure 2 sec is exact time
+        Thread.sleep(TimeUnit.SECONDS.toMillis(1)); // to let solr init
     }
 
     @Test
@@ -209,6 +210,7 @@ public class SearchDocumentServiceTest {
                 docIds.add(documentService.save(documentDTO));
             }
 
+            waitForIndexUpdates();
             waitForIndexUpdates();
 
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
@@ -496,6 +498,7 @@ public class SearchDocumentServiceTest {
             // save documents
             docs.forEach(documentService::save);
 
+            waitForIndexUpdates();
             waitForIndexUpdates();
 
             final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
