@@ -65,6 +65,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     },
                     publisher: "Utgivare",
                     currentVersion: "Aktuell version:"
+                },
+                appearance: {
+                    name: "Utseende",
+                    template: "Mall",
+                    defaultChildTemplate: "Standard barnmall"
                 }
             }
         },
@@ -127,6 +132,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     },
                     publisher: "Publisher",
                     currentVersion: "Current version:"
+                },
+                appearance: {
+                    name: "Appearance",
+                    template: "Template",
+                    defaultChildTemplate: "Default child template"
                 }
             }
         }

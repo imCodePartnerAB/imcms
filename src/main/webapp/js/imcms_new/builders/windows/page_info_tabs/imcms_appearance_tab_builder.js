@@ -1,12 +1,14 @@
 Imcms.define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
-        "imcms-page-info-tab-form-builder"
+        "imcms-page-info-tab-form-builder", "imcms-i18n-texts"
     ],
-    function (BEM, components, templatesRestApi, docTypes, tabContentBuilder) {
+    function (BEM, components, templatesRestApi, docTypes, tabContentBuilder, texts) {
+
+        texts = texts.pageInfo.appearance;
 
         return {
-            name: "appearance",
+            name: texts.name,
             data: {},
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
@@ -22,13 +24,13 @@ Imcms.define("imcms-appearance-tab-builder",
                 this.tabIndex = index;
                 var $templateSelectContainer = components.selects.selectContainer("<div>", {
                         name: "template",
-                        text: "Template"
+                        text: texts.template
                     }),
                     $templateSelect = $templateSelectContainer.getSelect(),
 
                     $defaultChildTemplateSelectContainer = components.selects.selectContainer("<div>", {
                         name: "childTemplate",
-                        text: "Default child template"
+                        text: texts.defaultChildTemplate
                     }),
                     $defaultChildTemplateSelect = $defaultChildTemplateSelectContainer.getSelect();
 
