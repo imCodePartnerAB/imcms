@@ -440,6 +440,8 @@ Imcms.define("imcms-image-editor-builder",
 
             if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
+
+                $image.attr("alt", imageDTO.alternateText);
             } else {
                 $image.removeAttr("alt");
             }
