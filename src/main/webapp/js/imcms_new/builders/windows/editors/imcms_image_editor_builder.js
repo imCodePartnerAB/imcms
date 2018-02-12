@@ -6,12 +6,14 @@ Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
         "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms", "tinyMCE",
-        "imcms-modal-window-builder"
+        "imcms-modal-window-builder", "imcms-i18n-texts"
     ],
     function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms, tinyMCE,
-              modalWindowBuilder) {
+              modalWindowBuilder, texts) {
 
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
+
+        texts = texts.editors.image;
 
         var imageDataContainers = {},
             imageData = {};
@@ -24,13 +26,13 @@ Imcms.define("imcms-image-editor-builder",
                     panelAnimationOpts[panelOpts.panelSide] = "-" + panelOpts.newPanelSideValue + "px";
                     panelOpts.$panel.animate(panelAnimationOpts, 300);
                     panelOpts.$btn.data("state", false);
-                    panelOpts.$btn.text("show bottom panel");
+                    panelOpts.$btn.text(texts.panels.bottom.show);
 
                 } else {
                     panelAnimationOpts[panelOpts.panelSide] = 0;
                     panelOpts.$panel.animate(panelAnimationOpts, 300);
                     panelOpts.$btn.data("state", true);
-                    panelOpts.$btn.text("hide bottom panel");
+                    panelOpts.$btn.text(texts.panels.bottom.hide);
                 }
             }
 
@@ -40,8 +42,8 @@ Imcms.define("imcms-image-editor-builder",
                     newPanelSideValue: $rightSidePanel.width(),
                     $panel: $rightSidePanel,
                     panelSide: "right",
-                    textHide: "hide right panel",
-                    textShow: "show right panel"
+                    textHide: texts.panels.right.hide,
+                    textShow: texts.panels.right.show
                 });
             }
 
@@ -51,8 +53,8 @@ Imcms.define("imcms-image-editor-builder",
                     newPanelSideValue: $bottomPanel.height(),
                     $panel: $bottomPanel,
                     panelSide: "bottom",
-                    textHide: "hide bottom panel",
-                    textShow: "show bottom panel"
+                    textHide: texts.panels.bottom.hide,
+                    textShow: texts.panels.bottom.show
                 });
             }
 
@@ -93,7 +95,7 @@ Imcms.define("imcms-image-editor-builder",
 
             var $showHideBottomPanelBtn = components.buttons.neutralButton({
                 "class": "imcms-image-characteristic",
-                text: "Show bottom panel",
+                text: texts.panels.bottom.show,
                 click: showHideBottomPanel
             });
 
@@ -101,7 +103,7 @@ Imcms.define("imcms-image-editor-builder",
 
             var $showHideRightPanelBtn = components.buttons.neutralButton({
                 "class": "imcms-image-characteristic",
-                text: "Show right panel",
+                text: texts.panels.right.show,
                 click: showHideRightPanel
             });
 
@@ -266,13 +268,13 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildEditSizeControls() {
-                var $title = components.texts.titleText("<div>", "Display size");
+                var $title = components.texts.titleText("<div>", texts.displaySize);
 
                 var $heightControlInput = components.texts.textNumber("<div>", {
                     name: "height",
-                    placeholder: "Height",
+                    placeholder: texts.height,
                     text: "H",
-                    error: "Error text"
+                    error: "Error"
                 });
 
                 var $proportionsBtn = components.buttons.proportionsButton({
@@ -284,9 +286,9 @@ Imcms.define("imcms-image-editor-builder",
 
                 var $widthControlInput = components.texts.textNumber("<div>", {
                     name: "width",
-                    placeholder: "Width",
+                    placeholder: texts.width,
                     text: "W",
-                    error: "Error text"
+                    error: "Error"
                 });
 
                 return new BEM({
@@ -392,11 +394,11 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildSwitchViewControls() {
-                var $preview = components.texts.titleText("<div>", "Preview", {
+                var $preview = components.texts.titleText("<div>", texts.preview, {
                     "data-tab": "prev",
                     click: toggleImgArea
                 });
-                var $origin = components.texts.titleText("<div>", "Original", {
+                var $origin = components.texts.titleText("<div>", texts.original, {
                     "data-tab": "origin",
                     click: toggleImgArea
                 });
@@ -471,7 +473,7 @@ Imcms.define("imcms-image-editor-builder",
 
             function buildSelectImageBtnContainer() {
                 var $selectImageBtn = components.buttons.neutralButton({
-                    text: "Select Image",
+                    text: texts.selectImage,
                     click: contentManager.build.bind(contentManager, fillData)
                 });
                 return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
@@ -479,14 +481,14 @@ Imcms.define("imcms-image-editor-builder",
 
             function buildAltTextBox() {
                 return $altText = components.texts.textBox("<div>", {
-                    text: "Alt text",
+                    text: texts.altText,
                     name: "altText"
                 });
             }
 
             function buildImageLinkTextBox() {
                 return components.texts.textBox("<div>", {
-                    text: "Image link",
+                    text: texts.imageLink,
                     name: "imageLink"
                 });
             }
@@ -511,7 +513,7 @@ Imcms.define("imcms-image-editor-builder",
                 return components.checkboxes.checkboxContainer("<div>", [
                     $allLanguagesCheckBox = components.checkboxes.imcmsCheckbox("<div>", {
                         name: "allLanguages",
-                        text: "All languages"
+                        text: texts.allLangs
                     })
                 ]);
             }
@@ -519,18 +521,18 @@ Imcms.define("imcms-image-editor-builder",
             function buildAdvancedModeBtn($advancedControls) {
                 return components.buttons.buttonsContainer("<div>", [
                     components.buttons.negativeButton({
-                        text: "Advanced",
+                        text: texts.advanced,
                         "data-state": "false",
                         click: function () {
                             var $btn = $(this);
 
                             if ($btn.attr("data-state") === "false") {
                                 $advancedControls.css("display", "block");
-                                $btn.attr("data-state", "true").text("Simple");
+                                $btn.attr("data-state", "true").text(texts.simple);
 
                             } else {
                                 $advancedControls.css("display", "none");
-                                $btn.attr("data-state", "false").text("Advanced");
+                                $btn.attr("data-state", "false").text(texts.advanced);
                             }
                         }
                     })
@@ -543,7 +545,7 @@ Imcms.define("imcms-image-editor-builder",
                 }
 
                 // todo: implement onClick!
-                var $alignNoneBtn = buildAlignButton(["align-none", "align-active"]).text("None");
+                var $alignNoneBtn = buildAlignButton(["align-none", "align-active"]).text(texts.none);
                 var $alignTopBtn = buildAlignButton(["align-top"]);
                 var $alignCenterBtn = buildAlignButton(["align-center"]);
                 var $alignBottomBtn = buildAlignButton(["align-bottom"]);
@@ -565,26 +567,26 @@ Imcms.define("imcms-image-editor-builder",
                     {
                         id: "image-space-top",
                         name: "top",
-                        placeholder: "top"
+                        placeholder: texts.top
                     }, {
                         id: "image-space-right",
                         name: "right",
-                        placeholder: "right"
+                        placeholder: texts.right
                     }, {
                         id: "image-space-bottom",
                         name: "bottom",
-                        placeholder: "bottom"
+                        placeholder: texts.bottom
                     }, {
                         id: "image-space-left",
                         name: "left",
-                        placeholder: "left"
+                        placeholder: texts.left
                     }
-                ], {text: "Space around image (h-vspace)"});
+                ], {text: texts.spaceAround});
             }
 
             function buildCropCoordinatesText(advancedModeBEM) {
                 return advancedModeBEM.buildElement("title", "<div>")
-                    .append("Crop Coordinates (W:")
+                    .append(texts.cropCoords + " (W:")
                     .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"}))
                     .append(" H:")
                     .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"}))
@@ -596,28 +598,28 @@ Imcms.define("imcms-image-editor-builder",
                     name: "cropX0",
                     placeholder: "X",
                     text: "X",
-                    error: "Error text"
+                    error: "Error"
                 });
 
                 var $yCropCoord = components.texts.textNumber("<div>", {
                     name: "cropY0",
                     placeholder: "Y",
                     text: "Y",
-                    error: "Error text"
+                    error: "Error"
                 });
 
                 var $x1CropCoord = components.texts.textNumber("<div>", {
                     name: "cropX1",
                     placeholder: "X1",
                     text: "X1",
-                    error: "Error text"
+                    error: "Error"
                 });
 
                 var $y1CropCoord = components.texts.textNumber("<div>", {
                     name: "cropY1",
                     placeholder: "Y1",
                     text: "Y1",
-                    error: "Error text"
+                    error: "Error"
                 });
 
                 return new BEM({
@@ -633,7 +635,7 @@ Imcms.define("imcms-image-editor-builder",
 
             function buildFileFormatSelect() {
                 return components.selects.imcmsSelect("<div>", {
-                    text: "File format",
+                    text: texts.fileFormat,
                     name: "fileFormat"
                 }, [{
                     text: "GIF",
@@ -668,14 +670,14 @@ Imcms.define("imcms-image-editor-builder",
                     }
                 });
 
-                var $textAlignmentBtnsTitle = advancedModeBEM.buildElement("title", "<div>", {text: "Text alignment"});
+                var $textAlignmentBtnsTitle = advancedModeBEM.buildElement("title", "<div>", {text: texts.alignment});
                 var $textAlignmentBtnsContainer = buildTextAlignmentBtnsContainer();
                 var $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
                 var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
                 var $cropCoordinatesContainer = buildCropCoordinatesContainer();
                 var $fileFormat = buildFileFormatSelect();
                 var $showExifBtn = components.buttons.neutralButton({
-                    text: "Show exif",
+                    text: texts.exif.button,
                     click: showExif
                 });
 
@@ -772,8 +774,7 @@ Imcms.define("imcms-image-editor-builder",
 
             function saveAndClose() {
                 if (!$altText.$input.val()) {
-                    var question = "Alternate text is missing. Are you sure to continue?";
-                    modalWindowBuilder.buildModalWindow(question, callBackAltText);
+                    modalWindowBuilder.buildModalWindow(texts.altTextConfirm, callBackAltText);
 
                 } else {
                     callBackAltText(true);
@@ -782,18 +783,17 @@ Imcms.define("imcms-image-editor-builder",
 
             function buildFooter() {
                 var $removeAndCloseButton = components.buttons.negativeButton({
-                    text: "remove and close",
+                    text: texts.removeAndClose,
                     click: removeAndClose
                 });
 
                 var $saveAndCloseButton = components.buttons.saveButton({
-                    text: "save and close",
+                    text: texts.saveAndClose,
                     click: saveAndClose
                 });
 
                 return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
             }
-
 
             var $editableControls = buildEditableControls();
             var $footer = buildFooter().addClass(imageEditorBlockClass + BEM.getBlockSeparator() + "footer");
@@ -807,7 +807,7 @@ Imcms.define("imcms-image-editor-builder",
             return new BEM({
                 block: imageEditorBlockClass,
                 elements: {
-                    "head": imageWindowBuilder.buildHead("Image Editor"),
+                    "head": imageWindowBuilder.buildHead(texts.title),
                     "image-characteristics": buildBodyHead(),
                     "left-side": buildLeftSide(),
                     "right-side": $rightSidePanel = buildRightSide(imageEditorBlockClass)

@@ -180,6 +180,46 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     removeFolderMessage: "Vill du ta bort mapp \"",
                     newFolderName: "Nytt mappnamn",
                     add: "TILLÄGGA+"
+                },
+                image: {
+                    title: "Bildredigerare",
+                    panels: {
+                        bottom: {
+                            hide: "Dölj bottenpanelen",
+                            show: "Visa bottenpanelen"
+                        },
+                        right: {
+                            hide: "Dölj höger panel",
+                            show: "Visa rätt panel"
+                        }
+                    },
+                    displaySize: "Skärmstorlek",
+                    height: "Höjd",
+                    width: "Bredd",
+                    preview: "Förhandsvisning",
+                    original: "Original",
+                    selectImage: "Välj bild",
+                    altText: "Alt text",
+                    imageLink: "Bildlänk",
+                    allLangs: "Alla språk",
+                    advanced: "Avancerad",
+                    simple: "Enkel",
+                    none: "Ingen",
+                    top: "topp",
+                    right: "höger",
+                    bottom: "botten",
+                    left: "vänster",
+                    spaceAround: "Space around image",
+                    cropCoords: "Crop Coordinates",
+                    fileFormat: "Filformat",
+                    alignment: "Textjustering",
+                    altTextConfirm: "Alternativ text saknas. Är du säker på att fortsätta?",
+                    removeAndClose: "Ta bort och stäng",
+                    saveAndClose: "Spara och stäng",
+                    exif: {
+                        button: "Visa exif"
+                        // todo: implement rest part
+                    }
                 }
             }
         },
@@ -356,6 +396,46 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     removeFolderMessage: "Do you want to remove folder \"",
                     newFolderName: "New folder name",
                     add: "ADD+"
+                },
+                image: {
+                    title: "Image Editor",
+                    panels: {
+                        bottom: {
+                            hide: "Hide bottom panel",
+                            show: "Show bottom panel"
+                        },
+                        right: {
+                            hide: "Hide right panel",
+                            show: "Show right panel"
+                        }
+                    },
+                    displaySize: "Display size",
+                    height: "Height",
+                    width: "Width",
+                    preview: "Preview",
+                    original: "Original",
+                    selectImage: "Select Image",
+                    altText: "Alt text",
+                    imageLink: "Image link",
+                    allLangs: "All languages",
+                    advanced: "Advanced",
+                    simple: "Simple",
+                    none: "None",
+                    top: "top",
+                    right: "right",
+                    bottom: "bottom",
+                    left: "left",
+                    spaceAround: "Space around image",
+                    cropCoords: "Crop Coordinates",
+                    fileFormat: "File format",
+                    alignment: "Text alignment",
+                    altTextConfirm: "Alternate text is missing. Are you sure to continue?",
+                    removeAndClose: "Remove and close",
+                    saveAndClose: "Save and close",
+                    exif: {
+                        button: "Show exif"
+                        // todo: implement rest part
+                    }
                 }
             }
         }
