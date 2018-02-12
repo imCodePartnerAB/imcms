@@ -17,6 +17,55 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 document: "dokumentera",
                 admin: "administration",
                 logout: "logga ut"
+            },
+            pageInfo: {
+                title: {
+                    title: "Titel",
+                    menuText: "Titel",
+                    linkToImage: "Meny text",
+                    linkToImagePlaceholder: "Länk till bild",
+                    chooseImage: "Bildväg",
+                    showIn: "välja...",
+                    sameFrame: "Visa in",
+                    newWindow: "Samma ram",
+                    replaceAll: "Nytt fönster",
+                    alias: "Ersätt alla",
+                    aliasPlaceholder: "Dokument alias",
+                    missingLangRule: "detta-dokument-alias",
+                    showInDefault: "Om det begärda språket saknas:",
+                    doNotShow: "Visa i standardspråk om det är aktiverat"
+                },
+                lifeCycle: {
+                    name: "Livscykel",
+                    status: {
+                        title: "Status",
+                        inProcess: "Pågående",
+                        disapproved: "Ej godkänd",
+                        approved: "Godkänd"
+                    },
+                    now: "Nu",
+                    clear: "Klar",
+                    published: {
+                        title: "Publicerat",
+                        dateTitle: "Ange publicerat datum",
+                        timeTitle: "Ange publicerad tid",
+                        dateTimeTitle: "Sparade datum och tid för publicering"
+                    },
+                    archived: {
+                        title: "Arkiverat ",
+                        dateTitle: "Ange arkiverat datum",
+                        timeTitle: "Ange arkiverad tid",
+                        dateTimeTitle: "Sparade arkiverad datum-tid"
+                    },
+                    publicationEnd: {
+                        title: "Publiceringsänden",
+                        dateTitle: "Ange publikationsslut datum",
+                        timeTitle: "Ange publikationsslut tid",
+                        dateTimeTitle: "Sparat slutet av publikationen datum-tid"
+                    },
+                    publisher: "Utgivare",
+                    currentVersion: "Aktuell version:"
+                }
             }
         },
         "en": {
@@ -29,6 +78,56 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 document: "document",
                 admin: "admin",
                 logout: "log out"
+            },
+            pageInfo: {
+                title: {
+                    name: "Title",
+                    title: "Title",
+                    menuText: "Menu text",
+                    linkToImage: "Link to image",
+                    linkToImagePlaceholder: "Image path",
+                    chooseImage: "choose...",
+                    showIn: "Show in",
+                    sameFrame: "Same frame",
+                    newWindow: "New window",
+                    replaceAll: "Replace all",
+                    alias: "Document alias",
+                    aliasPlaceholder: "this-doc-alias",
+                    missingLangRuleTitle: "If requested language is missing:",
+                    showInDefault: "Show in default language if enabled",
+                    doNotShow: "Don't show at all"
+                },
+                lifeCycle: {
+                    name: "Life Cycle",
+                    status: {
+                        title: "Status",
+                        inProcess: "In Process",
+                        disapproved: "Disapproved",
+                        approved: "Approved"
+                    },
+                    now: "Now",
+                    clear: "Clear",
+                    published: {
+                        title: "Published",
+                        dateTitle: "Set published date",
+                        timeTitle: "Set published time",
+                        dateTimeTitle: "Saved publish date-time"
+                    },
+                    archived: {
+                        title: "Archived",
+                        dateTitle: "Set archived date",
+                        timeTitle: "Set archived time",
+                        dateTimeTitle: "Saved archived date-time"
+                    },
+                    publicationEnd: {
+                        title: "Publication end",
+                        dateTitle: "Set publication end date",
+                        timeTitle: "Set publication end time",
+                        dateTimeTitle: "Saved publication end date-time"
+                    },
+                    publisher: "Publisher",
+                    currentVersion: "Current version:"
+                }
             }
         }
     };
