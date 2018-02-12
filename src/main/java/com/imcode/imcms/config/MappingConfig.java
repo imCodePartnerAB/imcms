@@ -208,6 +208,7 @@ class MappingConfig {
             Optional.ofNullable(image.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(dto::setLoopEntryRef);
             dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
             dto.setInText(image.isInText());
+            dto.setAlternateText(image.getAlternateText());
 
             return dto;
         };
@@ -231,6 +232,7 @@ class MappingConfig {
             image.setCropRegion(new ImageCropRegionJPA(imageDTO.getCropRegion()));
             image.setAllLanguages(imageDTO.isAllLanguages());
             image.setInText(imageDTO.isInText());
+            image.setAlternateText(imageDTO.getAlternateText());
 
             return image;
         };
