@@ -431,15 +431,18 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function reloadImageOnPage(imageDTO) {
+
+            var $image = $tag.find(".imcms-editor-content>img").first();
+
             /** @namespace imageDTO.generatedFilePath */
 
             var filePath = imageDTO.generatedFilePath;
 
             if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
+            } else {
+                $image.removeAttr("alt");
             }
-
-            var $image = $tag.find(".imcms-editor-content>img").first();
 
             if ($image.length) {
 
