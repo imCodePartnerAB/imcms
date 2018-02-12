@@ -109,6 +109,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     published: "Publicerat",
                     publicationEnd: "Publiceringsänden",
                     by: "Av"
+                },
+                file: {
+                    name: "Files",
+                    upload: "Ladda upp",
+                    id: "ID",
+                    fileName: "Namn",
+                    isDefault: "Standard"
                 }
             }
         },
@@ -214,6 +221,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     published: "Published",
                     publicationEnd: "Publication end",
                     by: "By"
+                },
+                file: {
+                    name: "Files",
+                    upload: "Upload",
+                    id: "ID",
+                    fileName: "Name",
+                    isDefault: "Default"
                 }
             }
         }

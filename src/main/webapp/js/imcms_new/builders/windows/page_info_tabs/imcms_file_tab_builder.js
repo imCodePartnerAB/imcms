@@ -7,9 +7,11 @@
 Imcms.define("imcms-file-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-page-info-tab-form-builder",
-        "imcms-controls-builder", "jquery"
+        "imcms-controls-builder", "jquery", "imcms-i18n-texts"
     ],
-    function (BEM, components, docTypes, tabContentBuilder, controls, $) {
+    function (BEM, components, docTypes, tabContentBuilder, controls, $, texts) {
+
+        texts = texts.pageInfo.file;
 
         var $filesListContainerBody, $fileInput;
 
@@ -25,9 +27,9 @@ Imcms.define("imcms-file-tab-builder",
                 }
             });
 
-            var $idTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: "ID"});
-            var $nameTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: "Name"});
-            var $isDefaultFileTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: "Default"});
+            var $idTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.id});
+            var $nameTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.fileName});
+            var $isDefaultFileTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.isDefault});
 
             return filesContainerHeadBEM.buildBlock("<div>", [
                 {"title": $idTitle},
@@ -104,7 +106,7 @@ Imcms.define("imcms-file-tab-builder",
         var tabData = {};
 
         return {
-            name: "files",
+            name: texts.name,
             tabIndex: null,
             isDocumentTypeSupported: function (docType) {
                 return docType === docTypes.FILE;
@@ -138,7 +140,7 @@ Imcms.define("imcms-file-tab-builder",
                 var $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
 
                 var $uploadNewFilesButton = components.buttons.positiveButton({
-                    text: "Upload",
+                    text: texts.upload,
                     click: function () {
                         $fileInput.click();
                     }
