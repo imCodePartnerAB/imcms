@@ -429,7 +429,7 @@ Imcms.define("imcms-menu-editor-builder",
 
         function buildFooter() {
             var $saveAndClose = components.buttons.saveButton({
-                    text: "Save and close",
+                    text: texts.saveAndClose,
                     click: saveAndClose
                 }),
                 $dataInput = primitivesBuilder.imcmsInput({

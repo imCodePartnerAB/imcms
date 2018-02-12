@@ -155,7 +155,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     title: "Menyredigerare",
                     id: "ID",
                     docTitle: "Titel",
-                    removeConfirmation: "Vill du ta bort menyalternativet \""
+                    removeConfirmation: "Vill du ta bort menyalternativet \"",
+                    saveAndClose: "Spara och stäng"
                 }
             }
         },
@@ -307,7 +308,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     title: "Menu Editor",
                     id: "ID",
                     docTitle: "Title",
-                    removeConfirmation: "Do you want to remove menu item \""
+                    removeConfirmation: "Do you want to remove menu item \"",
+                    saveAndClose: "Save and close"
                 }
             }
         }
