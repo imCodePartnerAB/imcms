@@ -72,6 +72,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: "Utseende",
                     template: "Mall",
                     defaultChildTemplate: "Standard barnmall"
+                },
+                keywords: {
+                    name: "Nyckelord",
+                    title: "Nyckelord",
+                    placeholder: "nyckelord",
+                    disableSearch: "Inaktivera sökningen"
                 }
             }
         },
@@ -141,6 +147,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: "Appearance",
                     template: "Template",
                     defaultChildTemplate: "Default child template"
+                },
+                keywords: {
+                    name: "Keywords",
+                    title: "Keywords",
+                    placeholder: "keyword",
+                    disableSearch: "Disable search"
                 }
             }
         }
