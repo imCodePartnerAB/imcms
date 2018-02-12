@@ -144,6 +144,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         alias: "Alias",
                         type: "Typ"
                     }
+                },
+                newDocument: {
+                    title: "Skapa nytt dokument",
+                    textDoc: "Textdokument",
+                    fileDoc: "File Document",
+                    urlDoc: "URL-dokument"
                 }
             }
         },
@@ -284,6 +290,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         alias: "Alias",
                         type: "Type"
                     }
+                },
+                newDocument: {
+                    title: "Create new document",
+                    textDoc: "Text Document",
+                    fileDoc: "File Document",
+                    urlDoc: "URL document"
                 }
             }
         }

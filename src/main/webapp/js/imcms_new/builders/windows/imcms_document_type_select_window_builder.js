@@ -5,9 +5,11 @@
 Imcms.define("imcms-document-type-select-window-builder",
     [
         "imcms-page-info-builder", "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-document-types"
+        "imcms-document-types", "imcms-i18n-texts"
     ],
-    function (pageInfoBuilder, WindowBuilder, BEM, components, docTypes) {
+    function (pageInfoBuilder, WindowBuilder, BEM, components, docTypes, texts) {
+
+        texts = texts.editors.newDocument;
 
         function buildBody(onDocTypeSelected) {
             function buildButton(type, text) {
@@ -23,9 +25,9 @@ Imcms.define("imcms-document-type-select-window-builder",
             return new BEM({
                 block: "imcms-document-type",
                 elements: {
-                    "text-doc": buildButton(docTypes.TEXT, "Text Document"),
-                    "file-doc": buildButton(docTypes.FILE, "File Document"),
-                    "url-doc": buildButton(docTypes.URL, "URL document")
+                    "text-doc": buildButton(docTypes.TEXT, texts.textDoc),
+                    "file-doc": buildButton(docTypes.FILE, texts.fileDoc),
+                    "url-doc": buildButton(docTypes.URL, texts.urlDoc)
                 }
             }).buildBlockStructure("<div>");
         }
@@ -34,7 +36,7 @@ Imcms.define("imcms-document-type-select-window-builder",
             return new BEM({
                 block: "imcms-document-type-select-window",
                 elements: {
-                    "head": documentTypeSelectWindowBuilder.buildHead("Create new document"),
+                    "head": documentTypeSelectWindowBuilder.buildHead(texts.title),
                     "body": buildBody(onDocTypeSelected)
                 }
             }).buildBlockStructure("<div>");
