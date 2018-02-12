@@ -162,6 +162,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     docTitle: "Titel",
                     removeConfirmation: "Vill du ta bort menyalternativet \"",
                     saveAndClose: "Spara och stäng"
+                },
+                loop: {
+                    title: "Loop Editor",
+                    createNew: "Skapa ny",
+                    saveAndClose: "Spara och stäng",
+                    id: "ID",
+                    content: "textinnehåll",
+                    isEnabled: "är aktiverad"
                 }
             }
         },
@@ -320,6 +328,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     docTitle: "Title",
                     removeConfirmation: "Do you want to remove menu item \"",
                     saveAndClose: "Save and close"
+                },
+                loop: {
+                    title: "Loop Editor",
+                    createNew: "Create New",
+                    saveAndClose: "Save and close",
+                    id: "ID",
+                    content: "text content",
+                    isEnabled: "is enabled"
                 }
             }
         }
