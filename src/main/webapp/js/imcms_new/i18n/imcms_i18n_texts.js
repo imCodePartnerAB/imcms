@@ -228,6 +228,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 writeToText: "Skriv till textfält",
                 viewSource: "Visa källa",
                 viewText: "Visa text"
+            },
+            textValidation: {
+                title: "Valideringsresultat",
+                ok: "OK",
+                output: "Valideringsutgång: ",
+                errors: " Fel",
+                warnings: " Varningar"
             }
         },
         "en": {
@@ -451,6 +458,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 writeToText: "Write to text field",
                 viewSource: "View Source",
                 viewText: "View Text"
+            },
+            textValidation: {
+                title: "Validation Result",
+                ok: "OK",
+                output: "Validation Output: ",
+                errors: " Errors",
+                warnings: " Warnings"
             }
         }
     };
