@@ -1,9 +1,11 @@
 Imcms.define("imcms-categories-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api",
+        "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts",
         "imcms-page-info-tab-form-builder"
     ],
-    function (BEM, components, categoriesRestApi, tabContentBuilder) {
+    function (BEM, components, categoriesRestApi, texts, tabContentBuilder) {
+
+        texts = texts.pageInfo.categories;
 
         var tabData = {};
 
@@ -104,7 +106,7 @@ Imcms.define("imcms-categories-tab-builder",
         }
 
         return {
-            name: "categories",
+            name: texts.name,
             tabIndex: null,
             isDocumentTypeSupported: function () {
                 return true; // all supported

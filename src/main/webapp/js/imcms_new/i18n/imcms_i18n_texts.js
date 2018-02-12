@@ -20,6 +20,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             },
             pageInfo: {
                 title: {
+                    name: "Titel",
                     title: "Titel",
                     menuText: "Titel",
                     linkToImage: "Meny text",
@@ -79,6 +80,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     placeholder: "nyckelord",
                     add: "TILLÄGGA+",
                     disableSearch: "Inaktivera sökningen"
+                },
+                categories: {
+                    name: "Kategorier"
                 }
             }
         },
@@ -155,6 +159,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     placeholder: "keyword",
                     add: "ADD+",
                     disableSearch: "Disable search"
+                },
+                categories: {
+                    name: "Categories"
                 }
             }
         }
