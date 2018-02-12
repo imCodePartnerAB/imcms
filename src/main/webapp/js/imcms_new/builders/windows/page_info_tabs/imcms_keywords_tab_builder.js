@@ -25,7 +25,7 @@ Imcms.define("imcms-keywords-tab-builder",
                     "input-id": "keyword",
                     title: texts.title,
                     placeholder: texts.placeholder,
-                    "button-text": "ADD+"
+                    "button-text": texts.add
                 });
                 this.data.$searchDisableCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
                     id: "isSearchDisabled",

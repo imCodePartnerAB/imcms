@@ -77,6 +77,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: "Nyckelord",
                     title: "Nyckelord",
                     placeholder: "nyckelord",
+                    add: "TILLÄGGA+",
                     disableSearch: "Inaktivera sökningen"
                 }
             }
@@ -152,6 +153,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: "Keywords",
                     title: "Keywords",
                     placeholder: "keyword",
+                    add: "ADD+",
                     disableSearch: "Disable search"
                 }
             }
