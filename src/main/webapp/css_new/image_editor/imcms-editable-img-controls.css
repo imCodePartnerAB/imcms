@@ -1,7 +1,7 @@
 .imcms-editable-img-controls {
     display: block;
     overflow: hidden;
-    padding-right: 42px;
+    /*padding-right: 42px;*/
     padding-left: 42px;
     width: 100%;
     height: 125px;
@@ -19,7 +19,7 @@
 }
 
 .imcms-editable-img-controls__control-scale-n-rotate {
-    width: 50%;
+    width: 35%;
 }
 
 .imcms-editable-img-controls__control-view {
@@ -36,9 +36,11 @@
     line-height: 41px;
     text-align: center;
     text-transform: uppercase;
-    float: left;
+    float: right;
     position: relative;
-    width: 50%;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*width: 50%;*/
 }
 
 .imcms-editable-img-control-tabs__tab:after {
@@ -62,26 +64,26 @@
 
 @media screen and (max-width: 1500px) {
     .imcms-editable-img-controls__control-view {
-        width: 15%;
+        width: 25%;
     }
 }
 
 @media screen and (max-width: 1300px) {
     .imcms-editable-img-controls__control-view {
-        width: 20%;
+        width: 30%;
     }
 
     .imcms-editable-img-controls__control-scale-n-rotate {
-        width: 40%;
+        width: 30%;
     }
 }
 
 @media screen and (max-width: 1150px) {
     .imcms-editable-img-controls__control-view {
-        width: 17%;
+        width: 27%;
     }
 
     .imcms-editable-img-controls__control-scale-n-rotate {
-        width: 37%;
+        width: 30%;
     }
 }
