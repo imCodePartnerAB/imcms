@@ -130,6 +130,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     saveAndPublish: "spara och publicera den här versionen"
                 }
             },
+            modal: {
+                title: "Bekräftelse",
+                yes: "Ja",
+                no: "Nej"
+            },
             editors: {
                 document: {
                     title: "Dokumenthanterare",
@@ -282,6 +287,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     cancel: "cancel",
                     saveAndPublish: "save and publish this version"
                 }
+            },
+            modal: {
+                title: "Confirmation",
+                yes: "Yes",
+                no: "No"
             },
             editors: {
                 document: {

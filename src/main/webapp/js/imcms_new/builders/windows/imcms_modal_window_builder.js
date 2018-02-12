@@ -1,7 +1,10 @@
-Imcms.define("imcms-modal-window-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "jquery"],
-    function (BEM, components, $) {
+Imcms.define(
+    "imcms-modal-window-builder",
+    ["imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts"],
+    function (BEM, components, $, texts) {
         var $modal, $shadow;
+
+        texts = texts.modal;
 
         function createModalWindow(question, callback) {
             function closeModal() {
@@ -12,7 +15,7 @@ Imcms.define("imcms-modal-window-builder",
                 return new BEM({
                     block: "imcms-head",
                     elements: {
-                        "title": components.texts.titleText("<div>", "Confirmation")
+                        "title": components.texts.titleText("<div>", texts.title)
                     }
                 }).buildBlockStructure("<div>");
             }
@@ -28,7 +31,7 @@ Imcms.define("imcms-modal-window-builder",
 
             function buildFooter(callback) {
                 var $yesButton = components.buttons.positiveButton({
-                    text: "Yes",
+                    text: texts.yes,
                     click: function () {
                         callback(true);
                         closeModal();
@@ -36,7 +39,7 @@ Imcms.define("imcms-modal-window-builder",
                 });
 
                 var $noButton = components.buttons.negativeButton({
-                    text: "No",
+                    text: texts.no,
                     click: function () {
                         callback(false);
                         closeModal();
