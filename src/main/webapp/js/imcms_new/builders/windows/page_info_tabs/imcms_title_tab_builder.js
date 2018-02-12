@@ -1,6 +1,12 @@
 Imcms.define("imcms-title-tab-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-choose-image-builder"],
-    function (BEM, components, tabFormBuilder, chooseImage) {
+    [
+        "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder",
+        "imcms-choose-image-builder", "imcms-i18n-texts"
+    ],
+    function (BEM, components, tabFormBuilder, chooseImage, texts) {
+
+        texts = texts.pageInfo.title;
+
         var pageInfoInnerStructureBEM = new BEM({
             block: "imcms-field",
             elements: {
@@ -34,12 +40,12 @@ Imcms.define("imcms-title-tab-builder",
                 $checkboxContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"checkboxes": $checkboxWrapper}]),
                 $pageTitle = components.texts.textBox("<div>", {
                     name: "title",
-                    text: "Title",
+                    text: texts.title,
                     value: commonContent.headline
                 }),
                 $pageTitleContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-box": $pageTitle}]),
                 $menuText = components.texts.textArea("<div>", {
-                    text: "Menu text",
+                    text: texts.menuText,
                     html: commonContent.menuText,
                     name: "menu-text"
                 }),
@@ -48,9 +54,9 @@ Imcms.define("imcms-title-tab-builder",
                     id: "path-to-image",
                     name: "image",
                     value: commonContent.menuImageURL,
-                    placeholder: "Image path",
-                    "label-text": "Link to image",
-                    "button-text": "choose...",
+                    placeholder: texts.linkToImagePlaceholder,
+                    "label-text": texts.linkToImage,
+                    "button-text": texts.chooseImage,
                     click: function (selectedImage) {
                         $linkToImage.setValue(selectedImage.path);
                     }
@@ -73,16 +79,16 @@ Imcms.define("imcms-title-tab-builder",
         function buildSelectTargetForDocumentLink() {
             tabData.$showIn = components.selects.imcmsSelect("<div>", {
                 id: "show-in",
-                text: "Show in",
+                text: texts.showIn,
                 name: "show-in"
             }, [{
-                text: "Same frame",
+                text: texts.sameFrame,
                 "data-value": "_self"
             }, {
-                text: "New window",
+                text: texts.newWindow,
                 "data-value": "_blank"
             }, {
-                text: "Replace all",
+                text: texts.replaceAll,
                 "data-value": "_top"
             }]);
 
@@ -92,8 +98,8 @@ Imcms.define("imcms-title-tab-builder",
         function buildDocumentAliasBlock() {
             tabData.$documentAlias = components.texts.textBox("<div>", {
                 name: "alias",
-                text: "Document alias",
-                placeholder: "this-doc-alias"
+                text: texts.alias,
+                placeholder: texts.aliasPlaceholder
             });
 
             return pageInfoInnerStructureBEM.buildBlock("<div>", [
@@ -102,16 +108,16 @@ Imcms.define("imcms-title-tab-builder",
         }
 
         function buildBlockForMissingLangSetting() {
-            var $languagesTitle = components.texts.titleText("<div>", "If requested language is missing:");
+            var $languagesTitle = components.texts.titleText("<div>", texts.missingLangRuleTitle);
 
             tabData.$showDefaultLang = components.radios.imcmsRadio("<div>", {
-                text: "Show in default language if enabled",
+                text: texts.showInDefault,
                 name: "langSetting",
                 value: "SHOW_IN_DEFAULT_LANGUAGE",
                 checked: "checked" // default value
             });
             tabData.$doNotShow = components.radios.imcmsRadio("<div>", {
-                text: "Don't show at all",
+                text: texts.doNotShow,
                 name: "langSetting",
                 value: "DO_NOT_SHOW"
             });
@@ -125,7 +131,7 @@ Imcms.define("imcms-title-tab-builder",
 
         return {
 
-            name: "title",
+            name: texts.name,
 
             tabIndex: null,
 
