@@ -19,6 +19,7 @@ public class ImageDTO extends ImageData {
     private boolean inText;
     private boolean allLanguages;
     private String alternateText;
+    private String linkUrl;
 
     /**
      * Two-letter language code ISO-639-1
@@ -26,7 +27,6 @@ public class ImageDTO extends ImageData {
     private String langCode;
     private String name;
     private String path;
-    private String url;
     private LoopEntryRefDTO loopEntryRef;
     private String generatedFilePath;
 
@@ -37,7 +37,7 @@ public class ImageDTO extends ImageData {
         this.langCode = langCode;
         this.name = "";
         this.path = "";
-        this.url = "";
+        this.linkUrl = "";
         this.generatedFilePath = "";
         this.generatedFilename = "";
         this.alternateText = "";
