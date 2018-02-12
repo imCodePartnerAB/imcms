@@ -56,6 +56,7 @@ public class ViewDocumentControllerTest {
     @Before
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user);
 
