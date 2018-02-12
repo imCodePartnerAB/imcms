@@ -221,6 +221,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         // todo: implement rest part
                     }
                 }
+            },
+            textHistory: {
+                title: "Texthistorik",
+                cancel: "Annullera",
+                writeToText: "Skriv till textfält",
+                viewSource: "Visa källa",
+                viewText: "Visa text"
             }
         },
         "en": {
@@ -437,6 +444,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         // todo: implement rest part
                     }
                 }
+            },
+            textHistory: {
+                title: "Text history",
+                cancel: "Cancel",
+                writeToText: "Write to text field",
+                viewSource: "View Source",
+                viewText: "View Text"
             }
         }
     };
