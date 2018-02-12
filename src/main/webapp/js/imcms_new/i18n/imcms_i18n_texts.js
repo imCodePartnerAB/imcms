@@ -83,6 +83,15 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 },
                 categories: {
                     name: "Kategorier"
+                },
+                access: {
+                    name: "Tillgång",
+                    role: "roll",
+                    view: "se",
+                    edit: "redigera",
+                    restricted_1: "begränsad 1",
+                    restricted_2: "begränsad 2",
+                    addRole: "Lägg till roll"
                 }
             }
         },
@@ -162,6 +171,15 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 },
                 categories: {
                     name: "Categories"
+                },
+                access: {
+                    name: "Access",
+                    role: "role",
+                    view: "view",
+                    edit: "edit",
+                    restricted_1: "restricted 1",
+                    restricted_2: "restricted 2",
+                    addRole: "Add role"
                 }
             }
         }

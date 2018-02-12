@@ -1,9 +1,11 @@
 Imcms.define("imcms-access-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-page-info-tab-form-builder",
-        "imcms-uuid-generator", "jquery"
+        "imcms-uuid-generator", "jquery", "imcms-i18n-texts"
     ],
-    function (BEM, components, rolesRestApi, tabContentBuilder, uuidGenerator, $) {
+    function (BEM, components, rolesRestApi, tabContentBuilder, uuidGenerator, $, texts) {
+
+        texts = texts.pageInfo.access;
 
         var storedRoleIdsPerRoles;
         var storedRoles;
@@ -98,7 +100,7 @@ Imcms.define("imcms-access-tab-builder",
         var tabData = {};
 
         return {
-            name: "access",
+            name: texts.name,
             tabIndex: null,
             isDocumentTypeSupported: function () {
                 return true; // all supported
@@ -114,7 +116,7 @@ Imcms.define("imcms-access-tab-builder",
                 var $addRoleSelect = components.selects.imcmsSelect("<div>");
 
                 var $addRoleButton = components.buttons.neutralButton({
-                        text: "Add role",
+                        text: texts.addRole,
                         click: function () {
                             var id = $addRoleSelect.getSelectedValue();
                             var role = {
@@ -171,11 +173,11 @@ Imcms.define("imcms-access-tab-builder",
                     });
                 }
 
-                var $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: "role"}),
-                    $titleView = rolesBEM.buildBlockElement("title", "<div>", {text: "view"}),
-                    $titleEdit = rolesBEM.buildBlockElement("title", "<div>", {text: "edit"}),
-                    $titleRestricted1 = rolesBEM.buildBlockElement("title", "<div>", {text: "restricted 1"}),
-                    $titleRestricted2 = rolesBEM.buildBlockElement("title", "<div>", {text: "restricted 2"}),
+                var $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: texts.role}),
+                    $titleView = rolesBEM.buildBlockElement("title", "<div>", {text: texts.view}),
+                    $titleEdit = rolesBEM.buildBlockElement("title", "<div>", {text: texts.edit}),
+                    $titleRestricted1 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_1}),
+                    $titleRestricted2 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_2}),
                     $rolesHead = $("<div>", {
                         html: [$titleRole, $titleView, $titleEdit, $titleRestricted1, $titleRestricted2]
                     }),
