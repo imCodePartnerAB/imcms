@@ -92,6 +92,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     restricted_1: "begränsad 1",
                     restricted_2: "begränsad 2",
                     addRole: "Lägg till roll"
+                },
+                permissions: {
+                    name: "Tillstånd",
+                    editText: "Redigera text",
+                    editMenu: "Redigera meny",
+                    editImage: "Redigera bild",
+                    editLoop: "Redigera loop",
+                    editDocInfo: "Redigera dok info"
                 }
             }
         },
@@ -180,6 +188,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     restricted_1: "restricted 1",
                     restricted_2: "restricted 2",
                     addRole: "Add role"
+                },
+                permissions: {
+                    name: "Permissions",
+                    editText: "Edit text",
+                    editMenu: "Edit menu",
+                    editImage: "Edit image",
+                    editLoop: "Edit loop",
+                    editDocInfo: "Edit doc info"
                 }
             }
         }
