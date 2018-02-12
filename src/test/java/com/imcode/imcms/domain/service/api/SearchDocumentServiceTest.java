@@ -450,7 +450,7 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void search_When_SpecifiedPageRequest_Expect_Fount() throws InterruptedException {
+    public void search_When_SpecifiedPageRequest_Expect_Found() throws InterruptedException {
         // create documents
         final List<TextDocumentDTO> docs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
