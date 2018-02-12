@@ -6,10 +6,12 @@ Imcms.define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
-        "imcms-modal-window-builder"
+        "imcms-modal-window-builder", "imcms-i18n-texts"
     ],
     function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
-              modalWindowBuilder) {
+              modalWindowBuilder, texts) {
+
+        texts = texts.pageInfo;
 
         var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
@@ -111,24 +113,24 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function confirmSaving() {
-            modalWindowBuilder.buildModalWindow("Save changes?", function (isUserConfirmedSaving) {
+            modalWindowBuilder.buildModalWindow(texts.confirmMessage, function (isUserConfirmedSaving) {
                 isUserConfirmedSaving ? saveAndClose() : "do nothing =)";
             });
         }
 
         function buildPageInfoFooterButtons() {
             var $saveBtn = components.buttons.positiveButton({
-                text: "ok",
+                text: texts.buttons.ok,
                 click: confirmSaving
             });
 
             var $cancelBtn = components.buttons.negativeButton({
-                text: "cancel",
+                text: texts.buttons.cancel,
                 click: closePageInfo
             });
 
             $saveAndPublishBtn = components.buttons.saveButton({
-                text: "save and publish this version",
+                text: texts.buttons.saveAndPublish,
                 click: saveAndPublish,
                 style: "display: none;"
             });
@@ -165,7 +167,7 @@ Imcms.define("imcms-page-info-builder",
 
             documentsRestApi.read(requestData).done(function (document) {
                 documentDTO = document;
-                $title.text((document.id) ? "document " + document.id : "new document");
+                $title.text((document.id) ? (texts.document + " " + document.id) : texts.newDocument);
 
                 pageInfoTabs.tabBuilders.forEach(function (tab) {
                     if (tab.isDocumentTypeSupported(document.type)) {

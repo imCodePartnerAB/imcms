@@ -19,6 +19,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 logout: "logga ut"
             },
             pageInfo: {
+                document: "Dokumentera",
+                newDocument: "Nytt dokument",
+                confirmMessage: "Spara ändringar?",
                 title: {
                     name: "Titel",
                     title: "Titel",
@@ -120,6 +123,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 url: {
                     name: "URL",
                     title: "URL"
+                },
+                buttons: {
+                    ok: "ok",
+                    cancel: "annullera",
+                    saveAndPublish: "spara och publicera den här versionen"
                 }
             }
         },
@@ -135,6 +143,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 logout: "log out"
             },
             pageInfo: {
+                document: "Document",
+                newDocument: "New Document",
+                confirmMessage: "Save changes?",
                 title: {
                     name: "Title",
                     title: "Title",
@@ -236,6 +247,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 url: {
                     name: "URL",
                     title: "URL"
+                },
+                buttons: {
+                    ok: "ok",
+                    cancel: "cancel",
+                    saveAndPublish: "save and publish this version"
                 }
             }
         }
