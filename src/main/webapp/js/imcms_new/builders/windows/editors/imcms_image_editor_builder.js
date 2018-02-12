@@ -432,6 +432,27 @@ Imcms.define("imcms-image-editor-builder",
             return $("<div>").append($editableImageArea, $previewImageArea, $bottomPanel);
         }
 
+        function setOrRemoveAltAttribute($image, imageDTO) {
+            if (imageDTO.alternateText) {
+                $image.attr("alt", imageDTO.alternateText);
+            } else {
+                $image.removeAttr("alt");
+            }
+        }
+
+        function setOrRemoveHrefAttribute($image, imageDTO) {
+            var linkUrl = imageDTO.linkUrl;
+            if (linkUrl) {
+                if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
+                    linkUrl = "//" + linkUrl;
+                }
+
+                $image.parent().attr("href", linkUrl);
+            } else {
+                $image.parent().removeAttr("href");
+            }
+        }
+
         function reloadImageOnPage(imageDTO) {
 
             var $image = $tag.find(".imcms-editor-content>a>img").first();
@@ -443,16 +464,8 @@ Imcms.define("imcms-image-editor-builder",
             if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
 
-                $image.attr("alt", imageDTO.alternateText);
-
-                var linkUrl = imageDTO.linkUrl;
-                if (linkUrl) {
-                    if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
-                        linkUrl = "//" + linkUrl;
-                    }
-
-                    $image.parent().attr("href", linkUrl);
-                }
+                setOrRemoveAltAttribute($image, imageDTO);
+                setOrRemoveHrefAttribute($image, imageDTO);
             } else {
                 $image.removeAttr("alt");
                 $image.parent().removeAttr("href");
