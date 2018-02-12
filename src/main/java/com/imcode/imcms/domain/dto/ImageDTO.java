@@ -18,6 +18,7 @@ public class ImageDTO extends ImageData {
     private Integer docId;
     private boolean inText;
     private boolean allLanguages;
+    private String alternateText;
 
     /**
      * Two-letter language code ISO-639-1
@@ -39,6 +40,7 @@ public class ImageDTO extends ImageData {
         this.url = "";
         this.generatedFilePath = "";
         this.generatedFilename = "";
+        this.alternateText = "";
         this.format = Format.JPEG;
         this.width = 0;
         this.height = 0;

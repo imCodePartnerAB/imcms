@@ -28,7 +28,8 @@
      : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
     <c:set var="imgPath" value="${image.generatedFilePath}"/>
     <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
-    ${pre}<img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}/>${post}
+    <c:set var="alt" value="${empty image.alternateText ? '' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
+    ${pre}<img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}${alt}/>${post}
 </c:set>
 
 <c:if test="${isEditMode}">

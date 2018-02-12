@@ -5,9 +5,12 @@
 Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms", "tinyMCE"
+        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms", "tinyMCE",
+        "imcms-modal-window-builder"
     ],
-    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms, tinyMCE) {
+    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms, tinyMCE,
+              modalWindowBuilder) {
+
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
 
         var imageDataContainers = {},
@@ -428,15 +431,20 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function reloadImageOnPage(imageDTO) {
+
+            var $image = $tag.find(".imcms-editor-content>img").first();
+
             /** @namespace imageDTO.generatedFilePath */
 
             var filePath = imageDTO.generatedFilePath;
 
             if (filePath) {
                 filePath = location.origin + imcms.contextPath + filePath;
-            }
 
-            var $image = $tag.find(".imcms-editor-content>img").first();
+                $image.attr("alt", imageDTO.alternateText);
+            } else {
+                $image.removeAttr("alt");
+            }
 
             if ($image.length) {
 
@@ -456,6 +464,7 @@ Imcms.define("imcms-image-editor-builder",
 
         var $langFlags;
         var $allLanguagesCheckBox;
+        var $altText;
 
         function buildRightSide(imageEditorBlockClass) {
 
@@ -468,7 +477,7 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             function buildAltTextBox() {
-                return components.texts.textBox("<div>", {
+                return $altText = components.texts.textBox("<div>", {
                     text: "Alt text",
                     name: "altText"
                 });
@@ -747,14 +756,27 @@ Imcms.define("imcms-image-editor-builder",
                     .error(console.error.bind(console));
             }
 
+            function callBackAltText(continueSaving) {
+                if (continueSaving) {
+                    imageWindowBuilder.closeWindow();
+
+                    imageData.allLanguages = $allLanguagesCheckBox.isChecked();
+                    imageData.alternateText = $altText.$input.val();
+
+                    imageRestApi.create(imageData)
+                        .success(onImageSaved)
+                        .error(console.error.bind(console));
+                }
+            }
+
             function saveAndClose() {
-                imageWindowBuilder.closeWindow();
+                if (!$altText.$input.val()) {
+                    var question = "Alternate text is missing. Are you sure to continue?";
 
-                imageData.allLanguages = $allLanguagesCheckBox.isChecked();
-
-                imageRestApi.create(imageData)
-                    .success(onImageSaved)
-                    .error(console.error.bind(console));
+                    modalWindowBuilder.buildModalWindow(question, callBackAltText);
+                } else {
+                    callBackAltText(true);
+                }
             }
 
             function buildFooter() {
@@ -881,6 +903,8 @@ Imcms.define("imcms-image-editor-builder",
 
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
+
+            $altText.$input.val(image.alternateText);
 
             if (image.allLanguages !== undefined) {
                 $allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
