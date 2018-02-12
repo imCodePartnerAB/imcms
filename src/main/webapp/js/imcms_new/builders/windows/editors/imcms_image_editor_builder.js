@@ -432,7 +432,7 @@ Imcms.define("imcms-image-editor-builder",
 
         function reloadImageOnPage(imageDTO) {
 
-            var $image = $tag.find(".imcms-editor-content>img").first();
+            var $image = $tag.find(".imcms-editor-content>a>img").first();
 
             /** @namespace imageDTO.generatedFilePath */
 

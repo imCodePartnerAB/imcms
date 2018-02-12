@@ -29,7 +29,7 @@
     <c:set var="imgPath" value="${image.generatedFilePath}"/>
     <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
     <c:set var="alt" value="${empty image.alternateText ? '' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
-    ${pre}<img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}${alt}/>${post}
+    ${pre}<a><img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}${alt}/></a>${post}
 </c:set>
 
 <c:if test="${isEditMode}">
