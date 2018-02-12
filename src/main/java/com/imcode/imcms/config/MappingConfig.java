@@ -209,6 +209,7 @@ class MappingConfig {
             dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
             dto.setInText(image.isInText());
             dto.setAlternateText(image.getAlternateText());
+            dto.setLinkUrl(image.getLinkUrl());
 
             return dto;
         };
@@ -233,6 +234,7 @@ class MappingConfig {
             image.setAllLanguages(imageDTO.isAllLanguages());
             image.setInText(imageDTO.isInText());
             image.setAlternateText(imageDTO.getAlternateText());
+            image.setLinkUrl(imageDTO.getLinkUrl());
 
             return image;
         };
