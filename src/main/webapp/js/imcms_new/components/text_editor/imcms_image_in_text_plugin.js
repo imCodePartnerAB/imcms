@@ -11,7 +11,9 @@ Imcms.define(
             var uniqueId = Date.now();
             var tagHTML = '<div id="' + uniqueId + '" class="imcms-image-in-text imcms-editor-area--image">\n'
                 + '   <div class="imcms-editor-content">\n'
-                + '       <img>\n'
+                + '       <a>\n'
+                + '         <img>\n'
+                + '       </a>\n'
                 + '   </div>\n'
                 + '</div>\n';
 
