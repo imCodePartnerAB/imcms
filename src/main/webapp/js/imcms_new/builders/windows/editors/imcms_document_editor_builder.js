@@ -7,10 +7,12 @@ Imcms.define("imcms-document-editor-builder",
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
-        "imcms-document-type-select-window-builder"
+        "imcms-document-type-select-window-builder", "imcms-i18n-texts"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
-              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder) {
+              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts) {
+
+        texts = texts.editors.document;
 
         var isMouseDown = false,
             mouseCoords = {
@@ -93,7 +95,7 @@ Imcms.define("imcms-document-editor-builder",
 
             function buildNewDocButton() {
                 return components.buttons.negativeButton({
-                    text: "New",
+                    text: texts.newDoc,
                     click: onNewDocButtonClick
                 });
             }
@@ -103,8 +105,8 @@ Imcms.define("imcms-document-editor-builder",
                 var $textField = components.texts.textField("<div>", {
                     id: "searchText",
                     name: "search",
-                    placeholder: "Type to find document",
-                    text: "Free text"
+                    placeholder: texts.freeTextPlaceholder,
+                    text: texts.freeText
                 });
 
                 $textField.$input.on("input", function () {
@@ -133,7 +135,7 @@ Imcms.define("imcms-document-editor-builder",
                 var $usersFilterSelectContainer = components.selects.selectContainer("<div>", {
                     id: "users-filter",
                     name: "users-filter",
-                    text: "Owner",
+                    text: texts.owner,
                     emptySelect: true,
                     onSelected: onSelected
                 });
@@ -164,7 +166,7 @@ Imcms.define("imcms-document-editor-builder",
                 var $categoriesFilterSelectContainer = components.selects.selectContainer("<div>", {
                     id: "categories-filter",
                     name: "categories-filter",
-                    text: "Category",
+                    text: texts.category,
                     emptySelect: true,
                     onSelected: onSelected
                 });
@@ -252,7 +254,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function buildDocumentListTitlesRow() {
             var $idColumnHead = $("<div>", {
-                text: "id",
+                text: texts.sort.id,
                 click: function () {
                     onClickSorting(defaultSortPropertyValue);
                 }
@@ -260,7 +262,7 @@ Imcms.define("imcms-document-editor-builder",
             $idColumnHead.modifiers = ["col-2"];
 
             var $titleColumnHead = $("<div>", {
-                text: "Title",
+                text: texts.sort.title,
                 click: function () {
                     onClickSorting("meta_headline");
                 }
@@ -268,14 +270,14 @@ Imcms.define("imcms-document-editor-builder",
             $titleColumnHead.modifiers = ["col-5"];
 
             var $aliasColumnHead = $("<div>", {
-                text: "Alias",
+                text: texts.sort.alias,
                 click: function () {
                     onClickSorting("alias");
                 }
             });
             $aliasColumnHead.modifiers = ["col-3"];
 
-            var $typeColumnHead = $("<div>", {text: "Type"});
+            var $typeColumnHead = $("<div>", {text: texts.sort.type});
             $typeColumnHead.modifiers = ["col-2"];
 
             return new BEM({
@@ -723,7 +725,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function buildHead() {
-            return documentWindowBuilder.buildHead("Document Manager");
+            return documentWindowBuilder.buildHead(texts.title);
         }
 
         function buildFooter() {

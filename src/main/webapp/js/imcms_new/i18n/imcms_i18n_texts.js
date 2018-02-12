@@ -129,6 +129,22 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     cancel: "annullera",
                     saveAndPublish: "spara och publicera den här versionen"
                 }
+            },
+            editors: {
+                document: {
+                    title: "Dokumenthanterare",
+                    newDoc: "Ny",
+                    freeText: "Fri text",
+                    freeTextPlaceholder: "Skriv för att hitta dokument",
+                    owner: "Ägare",
+                    category: "Kategori",
+                    sort: {
+                        id: "ID",
+                        title: "Titel",
+                        alias: "Alias",
+                        type: "Typ"
+                    }
+                }
             }
         },
         "en": {
@@ -252,6 +268,22 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     ok: "ok",
                     cancel: "cancel",
                     saveAndPublish: "save and publish this version"
+                }
+            },
+            editors: {
+                document: {
+                    title: "Document Manager",
+                    newDoc: "New",
+                    freeText: "Free text",
+                    freeTextPlaceholder: "Type to find document",
+                    owner: "Owner",
+                    category: "Category",
+                    sort: {
+                        id: "ID",
+                        title: "Title",
+                        alias: "Alias",
+                        type: "Type"
+                    }
                 }
             }
         }
