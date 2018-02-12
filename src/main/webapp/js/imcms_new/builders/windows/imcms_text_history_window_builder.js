@@ -8,12 +8,13 @@
  */
 Imcms.define("imcms-text-history-window-builder",
     [
-        "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery",
+        "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
         "imcms-texts-history-rest-api", "tinyMCE", "imcms-events"
     ],
-    function (WindowBuilder, BEM, components, $, textsHistoryRestAPI, tinyMCE, events) {
+    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, tinyMCE, events) {
 
         var $historyListContainer, $textHistoryView;
+        texts = texts.textHistory;
 
         function onWriteToTextField() {
             var textButton = textHistoryWindowBuilder.$editor.find(".view-text-button")[0];
@@ -31,12 +32,12 @@ Imcms.define("imcms-text-history-window-builder",
         function buildFooter() {
             return textHistoryWindowBuilder.buildFooter([
                 components.buttons.negativeButton({
-                    text: "Cancel",
+                    text: texts.cancel,
                     "class": "imcms-text-history-cancel",
                     click: onCancel
                 }),
                 components.buttons.saveButton({
-                    text: "Write to text field",
+                    text: texts.writeToText,
                     "style": "display: none;",
                     click: onWriteToTextField
                 })
@@ -71,13 +72,13 @@ Imcms.define("imcms-text-history-window-builder",
                 components.buttons.negativeButton({
                     "class": "view-source-button",
                     "style": "display: none;",
-                    text: "View Source",
+                    text: texts.viewSource,
                     click: viewSource
                 }),
                 components.buttons.negativeButton({
                     "class": "view-text-button",
                     "style": "display: none;",
-                    text: "View Text",
+                    text: texts.viewText,
                     click: viewText
                 })
             ]);
@@ -101,7 +102,7 @@ Imcms.define("imcms-text-history-window-builder",
             return new BEM({
                 block: "imcms-pop-up-modal",
                 elements: {
-                    "head": textHistoryWindowBuilder.buildHead("Text history"),
+                    "head": textHistoryWindowBuilder.buildHead(texts.title),
                     "left-side": $historyListContainer = buildHistoryListContainer(),
                     "right-side": buildHistoryView(),
                     "footer": buildFooter()
@@ -146,6 +147,7 @@ Imcms.define("imcms-text-history-window-builder",
         }
 
         function buildTextHistoriesForDate(textHistoriesForDate) {
+            /** @namespace textHistory.modifiedBy.username */
             return textHistoriesForDate.map(function (textHistory) {
                 var $textHistoryUnit = $("<div>", {
                     "class": "text-history-unit",

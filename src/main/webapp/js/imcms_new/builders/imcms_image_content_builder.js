@@ -5,15 +5,17 @@
 Imcms.define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-primitives-builder", "imcms-controls-builder", "imcms-modal-window-builder", "jquery"
+        "imcms-primitives-builder", "imcms-controls-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts"
     ],
-    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, controlsBuilder, modalWindow, $) {
+    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, controlsBuilder, modalWindow, $, texts) {
         var OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         var SUBFOLDER_CLASS = "imcms-folders__subfolder";
         var ACTIVE_FOLDER_CLASS = "imcms-folder--active";
         var FOLDER_CREATION_BLOCK_ID = "imcms-folder-create-block";
         var ROOT_FOLDER_LEVEL = 0;
         var activeFolder;
+
+        texts = texts.editors.content;
 
         var $foldersContainer, $imagesContainer, selectedImage;
 
@@ -149,7 +151,7 @@ Imcms.define("imcms-image-content-builder",
                 }
             };
 
-            modalWindow.buildModalWindow("Do you want to remove folder \"" + name + "\"?", onAnswer);
+            modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
         }
 
         function buildFolderRenamingBlock(folder, level) {
@@ -214,11 +216,11 @@ Imcms.define("imcms-image-content-builder",
             var $folderNameInput = primitives.imcmsInput({
                 "class": "imcms-input",
                 value: opts.previousFolderName,
-                placeholder: "New folder name"
+                placeholder: texts.newFolderName
             });
             var $confirmBtn = components.buttons.neutralButton({
                 "class": "imcms-button",
-                text: "add+",
+                text: texts.add,
                 click: function () {
                     var folderName = $folderNameInput.val();
 
@@ -398,6 +400,7 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function buildImageDescription(imageFile) {
+            /** @namespace imageFile.uploaded */
             return new BEM({
                 block: "imcms-choose-img-description",
                 elements: {

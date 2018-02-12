@@ -5,15 +5,19 @@
  */
 Imcms.define(
     "imcms-text-validation-result-builder",
-    ["imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-events"],
-    function (WindowBuilder, BEM, components, $, events) {
+    [
+        "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-events",
+        "imcms-i18n-texts"
+    ],
+    function (WindowBuilder, BEM, components, $, events, texts) {
 
         var $validationResultContainer;
+        texts = texts.textValidation;
 
         function buildFooter() {
             return textValidationFailWindowBuilder.buildFooter([
                 components.buttons.saveButton({
-                    text: "OK",
+                    text: texts.ok,
                     click: textValidationFailWindowBuilder.closeWindow.bind(textValidationFailWindowBuilder)
                 })
             ]);
@@ -27,7 +31,7 @@ Imcms.define(
             return new BEM({
                 block: "imcms-pop-up-modal",
                 elements: {
-                    "head": textValidationFailWindowBuilder.buildHead("Validation Result Dialog"),
+                    "head": textValidationFailWindowBuilder.buildHead(texts.title),
                     "body": $validationResultContainer = buildValidationResultContainer(),
                     "footer": buildFooter()
                 }
@@ -53,13 +57,13 @@ Imcms.define(
 
             var $wrapper = $("<div>"),
                 $content = $("<div>").addClass("imcms-w3c-errors"),
-                $errorsTitle = $("<h2>").text("Validation Output: " + validationResult.data.errors.length + " Errors");
+                $errorsTitle = $("<h2>").text(texts.output + validationResult.data.errors.length + texts.errors);
 
             $content.append($errorsTitle);
 
             validationResult.data.errors.forEach(appendValidationFailRow);
 
-            var $warningsTitle = $("<h2>").text("Validation Output: " + validationResult.data.warnings.length + " Warnings");
+            var $warningsTitle = $("<h2>").text(texts.output + validationResult.data.warnings.length + texts.warnings);
 
             $content.append($warningsTitle);
 

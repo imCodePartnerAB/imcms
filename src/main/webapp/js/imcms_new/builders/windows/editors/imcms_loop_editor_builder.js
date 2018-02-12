@@ -5,10 +5,12 @@
 Imcms.define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder",
-        "imcms-controls-builder", "jquery", "imcms-events"
+        "imcms-controls-builder", "jquery", "imcms-events", "imcms-i18n-texts"
     ],
-    function (BEM, components, loopREST, WindowBuilder, controls, $, events) {
+    function (BEM, components, loopREST, WindowBuilder, controls, $, events, texts) {
         var $title, $body, $listItems;
+
+        texts = texts.editors.loop;
 
         var modifiers = {
             ID: ["col-1", "id"],
@@ -93,16 +95,16 @@ Imcms.define("imcms-loop-editor-builder",
                     .error(console.error.bind(console));
             }
 
-            var $head = loopWindowBuilder.buildHead("Loop Editor");
+            var $head = loopWindowBuilder.buildHead(texts.title);
             $title = $head.find(".imcms-title");
 
             var $footer = loopWindowBuilder.buildFooter([
                 components.buttons.positiveButton({
-                    text: "Create new",
+                    text: texts.createNew,
                     click: onCreateNewClicked
                 }),
                 components.buttons.saveButton({
-                    text: "Save and close",
+                    text: texts.saveAndClose,
                     click: onSaveAndCloseClicked
                 })
             ]);
@@ -118,13 +120,13 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function buildTitles() {
-            var $id = $("<div>", {text: "id"});
+            var $id = $("<div>", {text: texts.id});
             $id.modifiers = modifiers.ID;
 
-            var $content = $("<div>", {text: "text content"});
+            var $content = $("<div>", {text: texts.content});
             $content.modifiers = modifiers.CONTENT;
 
-            var $isEnabled = $("<div>", {text: "is enabled"});
+            var $isEnabled = $("<div>", {text: texts.isEnabled});
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
