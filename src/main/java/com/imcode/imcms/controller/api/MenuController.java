@@ -3,8 +3,9 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +28,8 @@ public class MenuController {
     }
 
     @PostMapping
+    @CheckAccess(AccessType.MENU)
     public MenuDTO saveMenu(@RequestBody MenuDTO menu) {
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         return menuService.saveFrom(menu);
     }
 

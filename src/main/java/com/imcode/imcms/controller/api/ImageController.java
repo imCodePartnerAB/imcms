@@ -2,8 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.service.ImageService;
-import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,24 +25,14 @@ public class ImageController {
     }
 
     @PostMapping
+    @CheckAccess(AccessType.IMAGE)
     public void saveImage(@RequestBody ImageDTO image) {
-
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         imageService.saveImage(image);
     }
 
     @DeleteMapping
+    @CheckAccess(AccessType.IMAGE)
     public void deleteImage(@RequestBody ImageDTO image) {
-
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         imageService.deleteImage(image);
     }
 }

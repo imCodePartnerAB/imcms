@@ -2,8 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.service.ImageFolderService;
-import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,32 +33,20 @@ public class ImageFolderController {
     }
 
     @PostMapping
+    @CheckAccess(AccessType.IMAGE)
     public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) {
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         return imageFolderService.createImageFolder(folderToCreate);
     }
 
     @PutMapping
+    @CheckAccess(AccessType.IMAGE)
     public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) {
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         return imageFolderService.renameFolder(folderToRename);
     }
 
     @DeleteMapping
+    @CheckAccess(AccessType.IMAGE)
     public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IOException {
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         return imageFolderService.deleteFolder(folderToDelete);
     }
 }

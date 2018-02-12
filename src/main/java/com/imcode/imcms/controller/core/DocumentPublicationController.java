@@ -2,9 +2,8 @@ package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.domain.service.TypedDocumentService;
 import com.imcode.imcms.model.Document;
+import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,18 +25,10 @@ public class DocumentPublicationController {
         this.documentService = documentService;
     }
 
+    @CheckAccess
     @RequestMapping("/{docIdentifier}")
     public RedirectView publishDocument(@PathVariable("docIdentifier") int docId) {
-
-        final UserDomainObject user = Imcms.getUser();
-
-        // todo: create annotation instead of copying this each time!
-        if (!user.isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to publish documents.");
-        }
-
-        documentService.publishDocument(docId, user.getId());
-
+        documentService.publishDocument(docId, Imcms.getUser().getId());
         return new RedirectView("/" + docId, true);
     }
 

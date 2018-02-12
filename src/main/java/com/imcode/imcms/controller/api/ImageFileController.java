@@ -2,8 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.service.ImageFileService;
-import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,25 +28,15 @@ public class ImageFileController {
     }
 
     @PostMapping
+    @CheckAccess(AccessType.IMAGE)
     public List<ImageFileDTO> saveNewImageFiles(@RequestParam(required = false) String folder,
                                                 @RequestParam List<MultipartFile> files) throws IOException {
-
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         return imageFileService.saveNewImageFiles(folder, files);
     }
 
     @DeleteMapping
+    @CheckAccess(AccessType.IMAGE)
     public boolean deleteImage(@RequestBody ImageFileDTO imageFileDTO) throws IOException {
-
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         return imageFileService.deleteImage(imageFileDTO);
     }
 }

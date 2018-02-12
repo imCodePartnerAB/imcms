@@ -5,8 +5,8 @@ import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.TypedDocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
-import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,26 +41,16 @@ class DocumentController {
      * @return saved document's id
      */
     @PostMapping
+    @CheckAccess(AccessType.DOC_INFO)
     public int save(@RequestBody UberDocumentDTO saveMe) {
-
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
-        }
-
         return documentService.save(saveMe);
     }
 
     @DeleteMapping
+//    @CheckAccess(AccessType.DOC_INFO)
     public void delete(@RequestBody DocumentDTO deleteMe) { // todo: change to receive only id
 
         throw new NotImplementedException("Document deletion is disabled for now...");
-
-        // todo: create annotation instead of copying this each time!
-//        if (!Imcms.getUser().isSuperAdmin()) {
-//            throw new NoPermissionToEditDocumentException("User do not have access to change document structure.");
-//        }
-//
 //        documentService.delete(deleteMe);
     }
 }

@@ -2,8 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
-import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,13 +22,8 @@ public class TextController {
     }
 
     @PostMapping
+    @CheckAccess(AccessType.TEXT)
     public void saveText(@ModelAttribute TextDTO textDTO) {
-
-        // todo: create annotation instead of copying this each time!
-        if (!Imcms.getUser().isSuperAdmin()) {
-            throw new NoPermissionToEditDocumentException("User do not have access to change image structure.");
-        }
-
         textService.save(textDTO);
     }
 }
