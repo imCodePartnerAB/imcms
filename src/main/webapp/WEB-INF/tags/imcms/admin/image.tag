@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ attribute name="no" required="false" %><%-- old index name --%>
 <%@ attribute name="index" required="false" %>
@@ -29,7 +30,28 @@
     <c:set var="imgPath" value="${image.generatedFilePath}"/>
     <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
     <c:set var="alt" value="${empty image.alternateText ? '' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
-    ${pre}<a><img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}${alt}/></a>${post}
+
+    <c:choose>
+        <c:when test="${empty image.linkUrl}">
+            <c:set var="href" value=""/>
+        </c:when>
+        <c:otherwise>
+            <c:choose>
+                <c:when test="${fn:startsWith(image.linkUrl, '//') || fn:startsWith(image.linkUrl, 'http')}">
+                    <c:set var="href" value="${'href=\"'.concat(image.linkUrl).concat('\"')}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="href" value="${'href=\"'.concat('//').concat(image.linkUrl).concat('\"')}"/>
+                </c:otherwise>
+            </c:choose>
+        </c:otherwise>
+    </c:choose>
+
+    ${pre}
+    <a ${href}>
+        <img src="${empty imgPath ? '' : contextPath}${imgPath}"${style}${alt}/>
+    </a>
+    ${post}
 </c:set>
 
 <c:if test="${isEditMode}">
