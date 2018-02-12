@@ -5,9 +5,9 @@
 Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms"
+        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms", "tinyMCE"
     ],
-    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms) {
+    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms, tinyMCE) {
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
 
         var imageDataContainers = {},
@@ -442,6 +442,7 @@ Imcms.define("imcms-image-editor-builder",
 
                 if (!filePath && $tag.hasClass("imcms-image-in-text")) {
                     $tag.detach();
+                    tinyMCE.activeEditor.setDirty(true);
                     return;
                 }
 
