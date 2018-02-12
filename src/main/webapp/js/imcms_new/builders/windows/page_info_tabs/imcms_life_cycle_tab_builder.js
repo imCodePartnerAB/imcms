@@ -1,9 +1,11 @@
 Imcms.define("imcms-life-cycle-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api",
-        "imcms-page-info-tab-form-builder", "imcms"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms-page-info-tab-form-builder",
+        "imcms", "imcms-i18n-texts"
     ],
-    function (BEM, components, usersRestApi, tabContentBuilder, imcms) {
+    function (BEM, components, usersRestApi, tabContentBuilder, imcms, texsts) {
+
+        texsts = texsts.pageInfo.lifeCycle;
 
         var lifeCycleInnerStructureBEM = new BEM({
                 block: "imcms-field",
@@ -20,16 +22,16 @@ Imcms.define("imcms-life-cycle-tab-builder",
         function buildDocStatusSelect() {
             tabData.$docStatusSelect = components.selects.imcmsSelect("<div>", {
                 id: "doc-status",
-                text: "Status",
+                text: texsts.status.title,
                 name: "status"
             }, [{
-                text: "In Process",
+                text: texsts.status.inProcess,
                 "data-value": "NEW"
             }, {
-                text: "Disapproved",
+                text: texsts.status.disapproved,
                 "data-value": "DISAPPROVED"
             }, {
-                text: "Approved",
+                text: texsts.status.approved,
                 "data-value": "APPROVED"
             }]);
 
@@ -59,7 +61,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 $date = components.dateTime.datePickerCalendar({title: containerData.dateTitle}),
                 $time = components.dateTime.timePickerClock({title: containerData.timeTitle}),
                 $setDateTimeNowBtn = components.buttons.neutralButton({
-                    text: "Now",
+                    text: texsts.now,
                     click: function () {
                         $date.setCurrentDate();
                         $time.setCurrentTime();
@@ -67,7 +69,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 }),
                 $setDateTimeNowContainer = components.buttons.buttonsContainer("<div>", [$setDateTimeNowBtn]),
                 $clearDateTimeBtn = components.buttons.neutralButton({
-                    text: "Clear",
+                    text: texsts.clear,
                     click: function () {
                         $date.setDate('');
                         $time.setTime('');
@@ -86,30 +88,30 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
         function buildPublishedDateTimeContainer() {
             return buildDateTimeContainer({
-                title: "Published",
-                dateTitle: "Set published date",
-                timeTitle: "Set published time",
-                savedDateTimeTitle: "Saved publish date-time",
+                title: texsts.published.title,
+                dateTitle: texsts.published.dateTitle,
+                timeTitle: texsts.published.timeTitle,
+                savedDateTimeTitle: texsts.published.dateTimeTitle,
                 dataTitle: statusRowsNames[0]
             });
         }
 
         function buildArchivedDateTimeContainer() {
             return buildDateTimeContainer({
-                title: "Archived",
-                dateTitle: "Set archived date",
-                timeTitle: "Set archived time",
-                savedDateTimeTitle: "Saved archived date-time",
+                title: texsts.archived.title,
+                dateTitle: texsts.archived.dateTitle,
+                timeTitle: texsts.archived.timeTitle,
+                savedDateTimeTitle: texsts.archived.dateTimeTitle,
                 dataTitle: statusRowsNames[1]
             });
         }
 
         function buildPublishEndDateTimeContainer() {
             return buildDateTimeContainer({
-                title: "Publication end",
-                dateTitle: "Set publication end date",
-                timeTitle: "Set publication end time",
-                savedDateTimeTitle: "Saved publication end date-time",
+                title: texsts.publicationEnd.title,
+                dateTitle: texsts.publicationEnd.dateTitle,
+                timeTitle: texsts.publicationEnd.timeTitle,
+                savedDateTimeTitle: texsts.publicationEnd.dateTimeTitle,
                 dataTitle: statusRowsNames[2]
             });
         }
@@ -117,7 +119,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
         function buildPublisherSelectRow() {
             tabData.$publisherSelect = components.selects.imcmsSelect("<div>", {
                 id: "doc-publisher",
-                text: "Publisher",
+                text: texsts.publisher,
                 name: "publisher"
             });
 
@@ -136,7 +138,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
         }
 
         function buildCurrentVersionRow() {
-            var $currentVersionRowTitle = components.texts.titleText("<div>", "Current version:"),
+            var $currentVersionRowTitle = components.texts.titleText("<div>", texsts.currentVersion),
                 $docVersionSaveDateTime = components.dateTime.dateTimeReadOnly();
 
             tabData.$currentVersionNumber = components.texts.textBox("<div>", {

@@ -34,6 +34,37 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     missingLangRule: "detta-dokument-alias",
                     showInDefault: "Om det begärda språket saknas:",
                     doNotShow: "Visa i standardspråk om det är aktiverat"
+                },
+                lifeCycle: {
+                    name: "Livscykel",
+                    status: {
+                        title: "Status",
+                        inProcess: "Pågående",
+                        disapproved: "Ej godkänd",
+                        approved: "Godkänd"
+                    },
+                    now: "Nu",
+                    clear: "Klar",
+                    published: {
+                        title: "Publicerat",
+                        dateTitle: "Ange publicerat datum",
+                        timeTitle: "Ange publicerad tid",
+                        dateTimeTitle: "Sparade datum och tid för publicering"
+                    },
+                    archived: {
+                        title: "Arkiverat ",
+                        dateTitle: "Ange arkiverat datum",
+                        timeTitle: "Ange arkiverad tid",
+                        dateTimeTitle: "Sparade arkiverad datum-tid"
+                    },
+                    publicationEnd: {
+                        title: "Publiceringsänden",
+                        dateTitle: "Ange publikationsslut datum",
+                        timeTitle: "Ange publikationsslut tid",
+                        dateTimeTitle: "Sparat slutet av publikationen datum-tid"
+                    },
+                    publisher: "Utgivare",
+                    currentVersion: "Aktuell version:"
                 }
             }
         },
@@ -65,6 +96,37 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     missingLangRuleTitle: "If requested language is missing:",
                     showInDefault: "Show in default language if enabled",
                     doNotShow: "Don't show at all"
+                },
+                lifeCycle: {
+                    name: "Life Cycle",
+                    status: {
+                        title: "Status",
+                        inProcess: "In Process",
+                        disapproved: "Disapproved",
+                        approved: "Approved"
+                    },
+                    now: "Now",
+                    clear: "Clear",
+                    published: {
+                        title: "Published",
+                        dateTitle: "Set published date",
+                        timeTitle: "Set published time",
+                        dateTimeTitle: "Saved publish date-time"
+                    },
+                    archived: {
+                        title: "Archived",
+                        dateTitle: "Set archived date",
+                        timeTitle: "Set archived time",
+                        dateTimeTitle: "Saved archived date-time"
+                    },
+                    publicationEnd: {
+                        title: "Publication end",
+                        dateTitle: "Set publication end date",
+                        timeTitle: "Set publication end time",
+                        dateTimeTitle: "Saved publication end date-time"
+                    },
+                    publisher: "Publisher",
+                    currentVersion: "Current version:"
                 }
             }
         }
