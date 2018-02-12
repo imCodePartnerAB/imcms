@@ -2,11 +2,17 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 16.08.17.
  */
-Imcms.define("imcms-content-manager-builder",
-    ["imcms-bem-builder", "imcms-window-builder", "imcms-components-builder", "imcms-image-content-builder", "jquery"],
-    function (BEM, WindowBuilder, components, imageContentBuilder, $) {
+Imcms.define(
+    "imcms-content-manager-builder",
+    [
+        "imcms-bem-builder", "imcms-window-builder", "imcms-components-builder", "imcms-image-content-builder",
+        "jquery", "imcms-i18n-texts"
+    ],
+    function (BEM, WindowBuilder, components, imageContentBuilder, $, texts) {
         var $foldersContainer;
         var $imagesContainer;
+
+        texts = texts.editors.content;
 
         function buildContentManager() {
             var $footer;
@@ -18,7 +24,7 @@ Imcms.define("imcms-content-manager-builder",
             }
 
             function buildHead() {
-                return contentManagerWindowBuilder.buildHead("Content manager");
+                return contentManagerWindowBuilder.buildHead(texts.title);
             }
 
             function buildFoldersContainer() {
@@ -44,13 +50,13 @@ Imcms.define("imcms-content-manager-builder",
                         foldersLeft = 0;
                         imagesAndFooterLeft = "400px";
                         btnState = "open";
-                        btnText = "hide folders";
+                        btnText = texts.hideFolders;
 
                     } else {
                         foldersLeft = "-100%";
                         imagesAndFooterLeft = 0;
                         btnState = "close";
-                        btnText = "show folders";
+                        btnText = texts.showFolders;
                     }
 
                     $foldersContainer.animate({"left": foldersLeft}, 600);
@@ -60,7 +66,7 @@ Imcms.define("imcms-content-manager-builder",
 
                 $showHideFoldersButton = components.buttons.neutralButton({
                     id: "openCloseFolders",
-                    text: "Show folders",
+                    text: texts.showFolders,
                     "data-state": "close",
                     click: openCloseFolders
                 });
@@ -82,14 +88,14 @@ Imcms.define("imcms-content-manager-builder",
                 });
 
                 var $uploadNewImage = components.buttons.positiveButton({
-                    text: "Upload",
+                    text: texts.upload,
                     click: function () {
                         $fileInput.click();
                     }
                 });
 
                 var $saveAndClose = components.buttons.saveButton({
-                    text: "Save and close",
+                    text: texts.saveAndClose,
                     click: saveAndCloseWindow
                 });
 

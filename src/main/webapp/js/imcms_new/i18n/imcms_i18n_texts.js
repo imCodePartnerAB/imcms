@@ -170,6 +170,16 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     id: "ID",
                     content: "textinnehåll",
                     isEnabled: "är aktiverad"
+                },
+                content: {
+                    title: "Content Manager",
+                    hideFolders: "Dölj mappar",
+                    showFolders: "Visa mappar",
+                    upload: "Ladda upp",
+                    saveAndClose: "Spara och stäng",
+                    removeFolderMessage: "Vill du ta bort mapp \"",
+                    newFolderName: "Nytt mappnamn",
+                    add: "TILLÄGGA+"
                 }
             }
         },
@@ -336,6 +346,16 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     id: "ID",
                     content: "text content",
                     isEnabled: "is enabled"
+                },
+                content: {
+                    title: "Content manager",
+                    hideFolders: "Hide folders",
+                    showFolders: "Show folders",
+                    upload: "Upload",
+                    saveAndClose: "Save and close",
+                    removeFolderMessage: "Do you want to remove folder \"",
+                    newFolderName: "New folder name",
+                    add: "ADD+"
                 }
             }
         }
