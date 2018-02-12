@@ -902,7 +902,12 @@ Imcms.define("imcms-image-editor-builder",
 
             $.extend(imageData, opts);
 
-            $langFlags.setActive(imcms.language.code);
+            if (opts.inText) {
+                $langFlags.hideLangFlagsAndCheckbox();
+            } else {
+                $langFlags.showLangFlagsAndCheckbox();
+                $langFlags.setActive(imcms.language.code);
+            }
 
             imageRestApi.read(opts).done(fillData);
         }

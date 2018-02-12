@@ -61,6 +61,15 @@ Imcms.define("imcms-flags-builder",
             });
         }
 
+        function addDisplayMode(displayModeCSS) {
+            return function () {
+                var $flags = $(this);
+
+                $flags.css(displayModeCSS);
+                $flags.next().css(displayModeCSS);
+            }
+        }
+
         return {
             flagsContainer: function (flagBuilderDataProducer) {
                 var $result = flagsBEM.buildBlock("<div>", [], "flag");
@@ -79,6 +88,14 @@ Imcms.define("imcms-flags-builder",
                     $flags.find("." + activeClass).removeClass(activeClass);
                     $flags.find("." + languageFlagClass).addClass(activeClass);
                 };
+
+                $result.hideLangFlagsAndCheckbox = addDisplayMode({
+                    "display": "none"
+                });
+
+                $result.showLangFlagsAndCheckbox = addDisplayMode({
+                    "display": "block"
+                });
 
                 return $result;
             }
