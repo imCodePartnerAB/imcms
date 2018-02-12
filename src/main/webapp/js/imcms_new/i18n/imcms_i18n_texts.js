@@ -22,7 +22,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 title: {
                     title: "Titel",
                     menuText: "Titel",
-                    linkToImage: "Menytext",
+                    linkToImage: "Meny text",
                     linkToImagePlaceholder: "Länk till bild",
                     chooseImage: "Bildväg",
                     showIn: "välja...",
@@ -30,8 +30,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     newWindow: "Samma ram",
                     replaceAll: "Nytt fönster",
                     alias: "Ersätt alla",
-                    aliasPlaceholder: "Dokumentalias",
-                    missingLangRule: "detta dokument alias",
+                    aliasPlaceholder: "Dokument alias",
+                    missingLangRule: "detta-dokument-alias",
                     showInDefault: "Om det begärda språket saknas:",
                     doNotShow: "Visa i standardspråk om det är aktiverat"
                 }
