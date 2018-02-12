@@ -88,6 +88,9 @@ public class Image {
     @Column(name = "all_languages", columnDefinition = "tinyint")
     private boolean allLanguages;
 
+    @Column(name = "in_text", columnDefinition = "tinyint")
+    private boolean inText;
+
     public Image(Image from, Version version) {
         this.version = version;
         this.language = from.language;
@@ -113,5 +116,6 @@ public class Image {
         this.resize = from.resize;
         this.archiveImageId = from.archiveImageId;
         this.allLanguages = from.allLanguages;
+        this.inText = from.inText;
     }
 }
