@@ -150,6 +150,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     textDoc: "Textdokument",
                     fileDoc: "File Document",
                     urlDoc: "URL-dokument"
+                },
+                menu: {
+                    title: "Menyredigerare",
+                    id: "ID",
+                    docTitle: "Titel",
+                    removeConfirmation: "Vill du ta bort menyalternativet \""
                 }
             }
         },
@@ -296,6 +302,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     textDoc: "Text Document",
                     fileDoc: "File Document",
                     urlDoc: "URL document"
+                },
+                menu: {
+                    title: "Menu Editor",
+                    id: "ID",
+                    docTitle: "Title",
+                    removeConfirmation: "Do you want to remove menu item \""
                 }
             }
         }

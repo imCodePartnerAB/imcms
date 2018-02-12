@@ -6,10 +6,12 @@ Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
-        "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events"
+        "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts"
     ],
-    function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi,
-              controls, pageInfoBuilder, $, primitivesBuilder, reloadElement, events) {
+    function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi, controls,
+              pageInfoBuilder, $, primitivesBuilder, reloadElement, events, texts) {
+
+        texts = texts.editors.menu;
 
         var $title, $menuElementsContainer, $documentsContainer;
         var docId, menuIndex;
@@ -67,7 +69,7 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function buildHead() {
-            var $head = menuWindowBuilder.buildHead("menu editor");
+            var $head = menuWindowBuilder.buildHead(texts.title);
             $title = $head.find(".imcms-title");
 
             return $head;
@@ -457,7 +459,7 @@ Imcms.define("imcms-menu-editor-builder",
             var currentMenuItem = $(this).closest(".imcms-menu-item"),
                 currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
 
-            var question = "Do you want to remove menu item \"" + currentMenuItemName + "\"?";
+            var question = texts.removeConfirmation + currentMenuItemName + "\"?";
             imcmsModalWindow.buildModalWindow(question, function (answer) {
                 if (!answer) {
                     return;
@@ -568,11 +570,11 @@ Imcms.define("imcms-menu-editor-builder",
             function buildMenuTitlesRow() {
                 var $idColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-2",
-                    text: "id"
+                    text: texts.id
                 });
                 var $titleColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-2",
-                    text: "Title"
+                    text: texts.docTitle
                 });
 
                 return new BEM({
