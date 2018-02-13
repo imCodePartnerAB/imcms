@@ -1,11 +1,12 @@
 package com.imcode.imcms.model;
 
+import com.imcode.imcms.domain.dto.Documentable;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @NoArgsConstructor
-public abstract class Loop {
+public abstract class Loop implements Documentable {
 
     protected Loop(Loop from) {
         setIndex(from.getIndex());
@@ -20,5 +21,4 @@ public abstract class Loop {
 
     public abstract void setEntries(List<LoopEntry> entries);
 
-    public abstract Integer getDocId();
 }

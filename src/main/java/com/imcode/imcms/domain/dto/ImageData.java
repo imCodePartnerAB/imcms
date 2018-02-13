@@ -17,7 +17,7 @@ import java.util.Objects;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public abstract class ImageData implements Serializable {
+public abstract class ImageData implements Documentable, Serializable {
 
     private static final long serialVersionUID = -3077752704023867257L;
 

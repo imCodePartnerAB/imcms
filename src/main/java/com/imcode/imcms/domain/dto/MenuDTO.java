@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-public class MenuDTO implements Serializable {
+public class MenuDTO implements Documentable, Serializable {
 
     private static final long serialVersionUID = 2486639868480793796L;
 

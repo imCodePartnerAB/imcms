@@ -1,9 +1,10 @@
 package com.imcode.imcms.model;
 
+import com.imcode.imcms.domain.dto.Documentable;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public abstract class Text {
+public abstract class Text implements Documentable {
 
     protected Text(Text from) {
         setIndex(from.getIndex());
@@ -15,8 +16,6 @@ public abstract class Text {
     public abstract Integer getIndex();
 
     public abstract void setIndex(Integer index);
-
-    public abstract Integer getDocId();
 
     public abstract String getLangCode();
 
