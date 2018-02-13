@@ -6,12 +6,14 @@ import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.RoleRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 class DefaultRoleService implements RoleService {
 
     private final RoleRepository roleRepository;
