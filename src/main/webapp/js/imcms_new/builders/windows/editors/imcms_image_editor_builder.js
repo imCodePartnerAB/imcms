@@ -280,6 +280,18 @@ Imcms.define("imcms-image-editor-builder",
                     error: "Error"
                 });
 
+                $heightControlInput.find(".imcms-button--increment").click(function () {
+                    imageDataContainers.$image.height(imageDataContainers.$image.height() + 1);
+                    imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() + 1);
+                    imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() + 1);
+                });
+
+                $heightControlInput.find(".imcms-button--decrement").click(function () {
+                    imageDataContainers.$image.height(imageDataContainers.$image.height() - 1);
+                    imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() - 1);
+                    imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() - 1);
+                });
+
                 var $proportionsBtn = components.buttons.proportionsButton({
                     "data-state": "active",
                     click: function () {
@@ -292,6 +304,18 @@ Imcms.define("imcms-image-editor-builder",
                     placeholder: texts.width,
                     text: "W",
                     error: "Error"
+                });
+
+                $widthControlInput.find(".imcms-button--increment").click(function () {
+                    imageDataContainers.$image.width(imageDataContainers.$image.width() + 1);
+                    imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() + 1);
+                    imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() + 1);
+                });
+
+                $widthControlInput.find(".imcms-button--decrement").click(function () {
+                    imageDataContainers.$image.width(imageDataContainers.$image.width() - 1);
+                    imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() - 1);
+                    imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() - 1);
                 });
 
                 return new BEM({
