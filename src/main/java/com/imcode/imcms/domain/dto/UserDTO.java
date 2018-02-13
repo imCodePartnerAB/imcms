@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.persistence.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

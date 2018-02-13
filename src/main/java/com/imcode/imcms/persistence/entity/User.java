@@ -1,5 +1,7 @@
-package com.imcode.imcms.mapping.jpa;
+package com.imcode.imcms.persistence.entity;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.*;
@@ -10,7 +12,9 @@ import java.util.Objects;
 /**
  * {@see ImcmsAuthenticatorAndUserAndRoleMapper}
  */
+@Data
 @Entity
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -72,9 +76,6 @@ public class User {
     @Embedded
     private PasswordReset passwordReset;
 
-    public User() {
-    }
-
     public User(String login, String password, String email) {
         this(null, login, password, email);
     }
@@ -122,165 +123,10 @@ public class User {
                 rememberCd);
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
     public void setLogin(String login) {
         this.login = (login == null) ? null : login.trim();
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = (password == null) ? null : password.trim();
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getZip() {
-        return zip;
-    }
-
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public String getLanguageIso639_2() {
-        return languageIso639_2;
-    }
-
-    public void setLanguageIso639_2(String languageIso639_2) {
-        this.languageIso639_2 = languageIso639_2;
-    }
-
-    public boolean isExternal() {
-        return external;
-    }
-
-    public void setExternal(boolean external) {
-        this.external = external;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public PasswordType getPasswordType() {
-        return passwordType;
-    }
-
-    public void setPasswordType(PasswordType passwordType) {
-        this.passwordType = passwordType;
-    }
-
-    public PasswordReset getPasswordReset() {
-        return passwordReset;
-    }
-
-    public void setPasswordReset(PasswordReset passwordReset) {
-        this.passwordReset = passwordReset;
-    }
 
     public enum PasswordType {
         UNENCRYPTED, ENCRYPTED

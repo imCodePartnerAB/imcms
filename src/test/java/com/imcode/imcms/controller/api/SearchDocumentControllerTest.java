@@ -10,7 +10,7 @@ import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.persistence.entity.User;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.RoleId;
