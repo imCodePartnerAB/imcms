@@ -19,7 +19,7 @@
 }
 
 .imcms-crop-area__crop-img {
-    max-width: fit-content;
+    max-width: none;
     display: block;
     position: absolute;
     -webkit-user-select: none;
