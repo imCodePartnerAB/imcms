@@ -13,6 +13,9 @@ Imcms.define("imcms-image-editor-builder",
 
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
 
+        var $widthControlInput;
+        var $heightControlInput;
+
         texts = texts.editors.image;
 
         var imageDataContainers = {},
@@ -270,7 +273,7 @@ Imcms.define("imcms-image-editor-builder",
             function buildEditSizeControls() {
                 var $title = components.texts.titleText("<div>", texts.displaySize);
 
-                var $heightControlInput = components.texts.textNumber("<div>", {
+                $heightControlInput = components.texts.textNumber("<div>", {
                     name: "height",
                     placeholder: texts.height,
                     text: "H",
@@ -284,7 +287,7 @@ Imcms.define("imcms-image-editor-builder",
                     }
                 });
 
-                var $widthControlInput = components.texts.textNumber("<div>", {
+                $widthControlInput = components.texts.textNumber("<div>", {
                     name: "width",
                     placeholder: texts.width,
                     text: "W",
@@ -848,6 +851,9 @@ Imcms.define("imcms-image-editor-builder",
         }
 
         function fillLeftSideData(imageData) {
+
+            $widthControlInput.find("input").val(imageData.width);
+            $heightControlInput.find("input").val(imageData.height);
 
             imageDataContainers.$shadow.css({
                 width: imageData.width,
