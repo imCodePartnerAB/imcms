@@ -3,10 +3,9 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.api.Role;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.mapping.jpa.User.PasswordReset;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.User.PasswordReset;
 import imcode.server.user.RoleId;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,11 +48,6 @@ public class UserRepositoryTest {
         users.addAll(superAdmins);
         users.addAll(admins);
         users.addAll(defaultUsers);
-    }
-
-    @After
-    public void clearUsers() {
-        userDataInitializer.cleanRepositories(users);
     }
 
     @Test

@@ -5,9 +5,8 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.persistence.entity.User;
 import imcode.server.user.RoleId;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,11 +61,6 @@ public class UserControllerTest extends AbstractControllerTest {
         expectedUsers = adminUsers.stream()
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
-    }
-
-    @After
-    public void clearUsers() {
-        userDataInitializer.cleanRepositories(users);
     }
 
     @Test

@@ -1,6 +1,5 @@
 package com.imcode.imcms.persistence.entity;
 
-import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;

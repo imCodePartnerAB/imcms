@@ -10,7 +10,10 @@ import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.UserRoles;
+import com.imcode.imcms.persistence.repository.UserRepository;
+import com.imcode.imcms.persistence.repository.UserRolesRepository;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.RoleId;
@@ -59,6 +62,12 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
+
+    @Autowired
+    private UserRolesRepository userRolesRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected String controllerPath() {
@@ -249,7 +258,13 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
                 documentIndex.removeDocument(id);
             });
 
-            userDataInitializer.cleanRepositories(users);
+            users.forEach(user -> {
+                final List<UserRoles> userRolesByUserId = userRolesRepository.getUserRolesByUserId(user.getId());
+                userRolesRepository.delete(userRolesByUserId);
+
+                userRepository.delete(user);
+            });
+
         }
     }
 

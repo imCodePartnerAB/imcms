@@ -1,6 +1,6 @@
 package com.imcode.imcms.components.datainitializer;
 
-import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -48,12 +48,5 @@ public class UserDataInitializer extends TestDataCleaner {
         });
 
         return users;
-    }
-
-    public void cleanRepositories(List<User> users) {
-        users.forEach(user -> {
-            jdbcTemplate.update("DELETE FROM user_roles_crossref WHERE user_id = " + user.getId());
-            userRepository.delete(user.getId());
-        });
     }
 }

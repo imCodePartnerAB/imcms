@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.mapping.container.*;
-import com.imcode.imcms.mapping.jpa.User;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;

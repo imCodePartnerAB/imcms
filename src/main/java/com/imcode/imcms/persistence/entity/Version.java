@@ -1,6 +1,5 @@
 package com.imcode.imcms.persistence.entity;
 
-import com.imcode.imcms.mapping.jpa.User;
 import lombok.*;
 
 import javax.persistence.*;

@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.mapping.jpa.User;
+import com.imcode.imcms.persistence.entity.User;
 
 import java.util.List;
 
