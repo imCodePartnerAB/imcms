@@ -129,7 +129,7 @@ class DBConfig {
         properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL5InnoDBDialect");
         properties.put("hibernate.format_sql", "true");
         properties.put("hibernate.use_sql_comments", "true");
-        properties.put("hibernate.show_sql", "false");
+        properties.put("hibernate.show_sql", "true");
         properties.put("hibernate.hbm2ddl.auto", imcmsProperties.getProperty("hbm2ddl.auto"));
 
         return properties;
