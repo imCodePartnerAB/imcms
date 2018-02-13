@@ -850,8 +850,8 @@ Imcms.define("imcms-image-editor-builder",
         function fillLeftSideData(imageData) {
 
             imageDataContainers.$shadow.css({
-                width: "100%",
-                height: "100%"
+                width: imageData.width,
+                height: imageData.height
             });
 
             if (!imageData.path) {
