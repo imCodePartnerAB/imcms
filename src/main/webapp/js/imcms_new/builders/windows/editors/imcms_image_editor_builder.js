@@ -270,6 +270,34 @@ Imcms.define("imcms-image-editor-builder",
                 ]);
             }
 
+            function changeHeight(step) {
+                imageDataContainers.$image.height(imageDataContainers.$image.height() + step);
+                imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() + step);
+                imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() + step);
+            }
+
+            function incrementHeight() {
+                changeHeight(1);
+            }
+
+            function decrementHeight() {
+                changeHeight(-1)
+            }
+
+            function changeWidth(step) {
+                imageDataContainers.$image.width(imageDataContainers.$image.width() + step);
+                imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() + step);
+                imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() + step);
+            }
+
+            function incrementWidth() {
+                changeWidth(1);
+            }
+
+            function decrementWidth() {
+                changeWidth(-1)
+            }
+
             function buildEditSizeControls() {
                 var $title = components.texts.titleText("<div>", texts.displaySize);
 
@@ -280,17 +308,8 @@ Imcms.define("imcms-image-editor-builder",
                     error: "Error"
                 });
 
-                $heightControlInput.find(".imcms-button--increment").click(function () {
-                    imageDataContainers.$image.height(imageDataContainers.$image.height() + 1);
-                    imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() + 1);
-                    imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() + 1);
-                });
-
-                $heightControlInput.find(".imcms-button--decrement").click(function () {
-                    imageDataContainers.$image.height(imageDataContainers.$image.height() - 1);
-                    imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() - 1);
-                    imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() - 1);
-                });
+                $heightControlInput.find(".imcms-button--increment").click(incrementHeight);
+                $heightControlInput.find(".imcms-button--decrement").click(decrementHeight);
 
                 var $proportionsBtn = components.buttons.proportionsButton({
                     "data-state": "active",
@@ -306,17 +325,8 @@ Imcms.define("imcms-image-editor-builder",
                     error: "Error"
                 });
 
-                $widthControlInput.find(".imcms-button--increment").click(function () {
-                    imageDataContainers.$image.width(imageDataContainers.$image.width() + 1);
-                    imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() + 1);
-                    imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() + 1);
-                });
-
-                $widthControlInput.find(".imcms-button--decrement").click(function () {
-                    imageDataContainers.$image.width(imageDataContainers.$image.width() - 1);
-                    imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() - 1);
-                    imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() - 1);
-                });
+                $widthControlInput.find(".imcms-button--increment").click(incrementWidth);
+                $widthControlInput.find(".imcms-button--decrement").click(decrementWidth);
 
                 return new BEM({
                     block: "imcms-edit-size",
