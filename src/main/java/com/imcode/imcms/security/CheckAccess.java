@@ -22,7 +22,8 @@ import static com.imcode.imcms.security.AccessType.ALL;
 public @interface CheckAccess {
 
     /**
-     * Access to specified content such as all, image, text, etc.
+     * Access to specified content by {@link AccessType} such as {@code ALL},
+     * {@code IMAGE}, {@code TEXT}, etc.
      *
      * @return specified access type
      */

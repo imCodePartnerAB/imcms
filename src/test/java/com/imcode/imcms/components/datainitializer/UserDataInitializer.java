@@ -34,15 +34,18 @@ public class UserDataInitializer extends TestDataCleaner {
         return userRepository.saveAndFlush(new User(login, "dummy_pass", login + "@imcode.com"));
     }
 
-    public List<User> createData(Integer howMuch, Integer roleId) {
-        final List<User> users = IntStream.range(roleId * 100, howMuch + roleId * 100)
+    public List<User> createData(Integer howMuch, Integer... roleIds) {
+        final List<User> users = IntStream.range(roleIds[0] * 100, howMuch + roleIds[0] * 100)
                 .mapToObj(i -> new User("test" + i, "test" + i, i + "test@imcode.com"))
                 .map(userRepository::saveAndFlush)
                 .collect(Collectors.toList());
 
-        users.forEach(user ->
+        users.forEach(user -> {
+            for (Integer roleId : roleIds) {
                 jdbcTemplate.update("INSERT INTO user_roles_crossref (user_id, role_id) VALUES (?, ?)",
-                        new Object[]{user.getId(), roleId}, new int[]{Types.INTEGER, Types.INTEGER}));
+                        new Object[]{user.getId(), roleId}, new int[]{Types.INTEGER, Types.INTEGER});
+            }
+        });
 
         return users;
     }
