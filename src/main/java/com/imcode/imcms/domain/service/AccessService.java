@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.security.AccessType;
+
 /**
  * To know do the user have access to do something with some document or not.
  *
@@ -7,5 +9,5 @@ package com.imcode.imcms.domain.service;
  * 13.02.18.
  */
 public interface AccessService {
-    boolean hasUserEditAccess(int userId, Integer documentId);
+    boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType);
 }
