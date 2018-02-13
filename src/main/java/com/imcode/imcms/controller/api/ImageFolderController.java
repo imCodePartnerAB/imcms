@@ -2,7 +2,6 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.service.ImageFolderService;
-import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,19 +32,19 @@ public class ImageFolderController {
     }
 
     @PostMapping
-    @CheckAccess(AccessType.IMAGE)
+    @CheckAccess
     public boolean createImageFolder(@RequestBody ImageFolderDTO folderToCreate) {
         return imageFolderService.createImageFolder(folderToCreate);
     }
 
     @PutMapping
-    @CheckAccess(AccessType.IMAGE)
+    @CheckAccess
     public boolean renameFolder(@RequestBody ImageFolderDTO folderToRename) {
         return imageFolderService.renameFolder(folderToRename);
     }
 
     @DeleteMapping
-    @CheckAccess(AccessType.IMAGE)
+    @CheckAccess
     public boolean deleteFolder(@RequestBody ImageFolderDTO folderToDelete) throws IOException {
         return imageFolderService.deleteFolder(folderToDelete);
     }
