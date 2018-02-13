@@ -253,6 +253,14 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.googlecode.log4jdbc</groupId>
+            <artifactId>log4jdbc</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+
         <!-- End of logging configuration -->
 
         <dependency>

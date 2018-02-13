@@ -1,7 +1,26 @@
 <?xml version="1.0"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="true" threshold="${log4j.threshold}">
+<log4j:configuration xmlns:log4j="https://jakarta.apache.org/log4j/" debug="true" threshold="${log4j.threshold}">
+
+    <logger name='jdbc.sqltiming' additivity='false'>
+        <level value='info'/>
+        <appender-ref ref='CONSOLE'/>
+        <appender-ref ref="TESTFILE"/>
+    </logger>
+
+    <logger name='jdbc.connection' additivity='false'>
+        <level value='info'/>
+        <appender-ref ref='CONSOLE'/>
+        <appender-ref ref="TESTFILE"/>
+    </logger>
+
+    <!-- log4jdbc option log the jdbc results as a table -->
+    <logger name='jdbc.resultsettable' additivity='false'>
+        <level value='info'/>
+        <appender-ref ref='CONSOLE'/>
+        <appender-ref ref="TESTFILE"/>
+    </logger>
 
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <param name="Threshold" value="${log4j.console-appender.threshold}"/>
