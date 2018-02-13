@@ -6,7 +6,6 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.User.PasswordReset;
 import imcode.server.user.RoleId;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-
+@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -48,11 +48,6 @@ public class UserRepositoryTest {
         users.addAll(superAdmins);
         users.addAll(admins);
         users.addAll(defaultUsers);
-    }
-
-    @After
-    public void clearUsers() {
-        userDataInitializer.cleanRepositories(users);
     }
 
     @Test

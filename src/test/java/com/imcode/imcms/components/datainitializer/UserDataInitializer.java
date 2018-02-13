@@ -18,7 +18,7 @@ public class UserDataInitializer extends TestDataCleaner {
     private final JdbcTemplate jdbcTemplate;
 
     public UserDataInitializer(UserRepository userRepository,
-                               @Qualifier("dataSourceWithAutoCommit") DataSource dataSource) {
+                               @Qualifier("dataSource") DataSource dataSource) {
 
         this.userRepository = userRepository;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -45,12 +45,5 @@ public class UserDataInitializer extends TestDataCleaner {
                         new Object[]{user.getId(), roleId}, new int[]{Types.INTEGER, Types.INTEGER}));
 
         return users;
-    }
-
-    public void cleanRepositories(List<User> users) {
-        users.forEach(user -> {
-            jdbcTemplate.update("DELETE FROM user_roles_crossref WHERE user_id = " + user.getId());
-            userRepository.delete(user.getId());
-        });
     }
 }

@@ -7,7 +7,6 @@ import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.user.RoleId;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,11 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -60,11 +61,6 @@ public class UserControllerTest extends AbstractControllerTest {
         expectedUsers = adminUsers.stream()
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
-    }
-
-    @After
-    public void clearUsers() {
-        userDataInitializer.cleanRepositories(users);
     }
 
     @Test
