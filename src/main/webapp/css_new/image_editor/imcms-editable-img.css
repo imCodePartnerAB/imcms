@@ -53,7 +53,7 @@
 }
 
 .imcms-preview-img {
-    max-width: fit-content;
+    max-width: none;
     display: block;
     position: absolute;
     top: 2px;
