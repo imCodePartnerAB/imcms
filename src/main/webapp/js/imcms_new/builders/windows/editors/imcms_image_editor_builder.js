@@ -203,6 +203,45 @@ Imcms.define("imcms-image-editor-builder",
                     "z-index": "50",
                     "display": "block"
                 });
+
+                if ($tag.width() !== 0 && $tag.height() !== 0) {
+
+                    // change size of preview image
+                    $previewImg.width(imageDataContainers.$cropImg.width() * $tag.width() /
+                        imageDataContainers.$cropArea.width());
+
+                    $previewImg.height((imageDataContainers.$cropImg.height()) * $tag.height() /
+                        imageDataContainers.$cropArea.height());
+
+                    // change top and left properties of preview image
+                    var newTopValue = $previewImg.height() * parseInt(imageDataContainers.$cropImg.css("top"), 10) /
+                        imageDataContainers.$image.height();
+
+                    $previewImg.css({
+                        "top": newTopValue + "px"
+                    });
+
+                    var newLeftValue = $previewImg.width() * parseInt(imageDataContainers.$cropImg.css("left"), 10) /
+                        imageDataContainers.$image.width();
+
+                    $previewImg.css({
+                        "left": newLeftValue + "px"
+                    });
+
+                    // change size of preview image container
+                    $previewImgContainer.width($tag.width());
+
+                    $previewImgContainer.height($tag.height());
+
+                    // set properties of preview image container to zero
+                    $previewImgContainer.css({
+                        "margin-left": 0,
+                        "margin-top": 0,
+                        "left": 0,
+                        "top": 0
+                    });
+                }
+
             } else {
                 $previewImageArea.css({
                     "z-index": "10",
@@ -212,6 +251,9 @@ Imcms.define("imcms-image-editor-builder",
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
         }
+
+        var $previewImg;
+        var $previewImgContainer;
 
         function buildLeftSide() {
 
@@ -224,8 +266,8 @@ Imcms.define("imcms-image-editor-builder",
                     }
                 });
 
-                var $previewImgContainer = previewImageAreaBEM.buildElement("container", "<div>");
-                var $previewImg = previewImageAreaBEM.buildElement("img", "<img>");
+                $previewImgContainer = previewImageAreaBEM.buildElement("container", "<div>");
+                $previewImg = previewImageAreaBEM.buildElement("img", "<img>");
                 $previewImg.appendTo($previewImgContainer);
 
                 return previewImageAreaBEM.buildBlock("<div>", [
