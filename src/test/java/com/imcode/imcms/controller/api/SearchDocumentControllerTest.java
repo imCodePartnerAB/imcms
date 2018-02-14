@@ -110,7 +110,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
 
         try {
-            for (int i = 0; i < 30; i++) {
+            for (int i = 0; i < 15; i++) {
                 textDocumentDTOS.add(documentDataInitializer.createTextDocument());
             }
 
@@ -122,7 +122,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             waitForIndexUpdates();
 
             final int from = 0;
-            final int to = 10;
+            final int to = 5;
 
             final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(from, to)
                     .map(i -> to - i + from - 1)
@@ -134,7 +134,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
             final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                     .param("page.page", String.valueOf(1))
-                    .param("page.size", String.valueOf(20));
+                    .param("page.size", String.valueOf(10));
 
             performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedJson);
 
