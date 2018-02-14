@@ -207,30 +207,27 @@ Imcms.define("imcms-image-editor-builder",
                 if ($tag.width() !== 0 && $tag.height() !== 0) {
 
                     // change size of preview image
-                    $previewImg.width(imageDataContainers.$cropImg.width() * $tag.width() /
-                        imageDataContainers.$cropArea.width());
+                    $previewImg.width(
+                        imageDataContainers.$cropImg.width() * $tag.width() / imageDataContainers.$cropArea.width()
+                    );
 
-                    $previewImg.height((imageDataContainers.$cropImg.height()) * $tag.height() /
-                        imageDataContainers.$cropArea.height());
+                    $previewImg.height(
+                        imageDataContainers.$cropImg.height() * $tag.height() / imageDataContainers.$cropArea.height()
+                    );
 
                     // change top and left properties of preview image
-                    var newTopValue = $previewImg.height() * parseInt(imageDataContainers.$cropImg.css("top"), 10) /
-                        imageDataContainers.$image.height();
+                    var newTopValue = $previewImg.height() * parseInt(imageDataContainers.$cropImg.css("top"), 10)
+                        / imageDataContainers.$image.height();
 
-                    $previewImg.css({
-                        "top": newTopValue + "px"
-                    });
+                    $previewImg.css("top", newTopValue + "px");
 
-                    var newLeftValue = $previewImg.width() * parseInt(imageDataContainers.$cropImg.css("left"), 10) /
-                        imageDataContainers.$image.width();
+                    var newLeftValue = $previewImg.width() * parseInt(imageDataContainers.$cropImg.css("left"), 10)
+                        / imageDataContainers.$image.width();
 
-                    $previewImg.css({
-                        "left": newLeftValue + "px"
-                    });
+                    $previewImg.css("left", newLeftValue + "px");
 
                     // change size of preview image container
                     $previewImgContainer.width($tag.width());
-
                     $previewImgContainer.height($tag.height());
 
                     // set properties of preview image container to zero
@@ -241,7 +238,6 @@ Imcms.define("imcms-image-editor-builder",
                         "top": 0
                     });
                 }
-
             } else {
                 $previewImageArea.css({
                     "z-index": "10",
