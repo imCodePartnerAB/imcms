@@ -116,7 +116,7 @@ public class FileDocumentServiceTest {
 
     @Test
     public void get_When_NoFileSavedYet_Expect_Found() {
-        documentFileService.saveAll(new ArrayList<>(createdDoc.getFiles()), createdDocId);
+        documentFileService.saveAll(createdDoc.getFiles(), createdDocId);
         final FileDocumentDTO fileDocumentDTO = fileDocumentService.get(createdDocId);
 
         assertEquals(fileDocumentDTO, createdDoc);

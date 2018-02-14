@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface DocumentFileService extends DeleterByDocumentId {
 
-    List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId);
+    <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId);
 
     List<DocumentFile> getByDocId(int docId);
 

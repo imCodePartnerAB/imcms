@@ -61,7 +61,7 @@ class DefaultDocumentFileService
      * @return list of saved files
      */
     @Override
-    public List<DocumentFile> saveAll(List<DocumentFile> saveUs, int docId) {
+    public <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId) {
         setDocAndFileIds(saveUs, docId);
         resolveDuplicatedIds(saveUs);
         deleteNoMoreUsedFiles(saveUs, docId);
@@ -109,7 +109,7 @@ class DefaultDocumentFileService
         return documentFileRepository.findByDocIdAndVersionIndex(docId, Version.WORKING_VERSION_INDEX);
     }
 
-    private void resolveDuplicatedIds(List<DocumentFile> documentFiles) {
+    private <T extends DocumentFile> void resolveDuplicatedIds(List<T> documentFiles) {
         final AtomicInteger counter = new AtomicInteger();
 
         documentFiles.stream()
@@ -128,7 +128,7 @@ class DefaultDocumentFileService
                 .forEach(documentFile -> documentFile.setFileId(documentFile.getFilename() + counter.addAndGet(1)));
     }
 
-    private void setDocAndFileIds(List<DocumentFile> saveUs, int docId) {
+    private <T extends DocumentFile> void setDocAndFileIds(List<T> saveUs, int docId) {
         saveUs.forEach(documentFile -> {
             documentFile.setDocId(docId);
             final String fileId = documentFile.getFileId();
@@ -139,7 +139,7 @@ class DefaultDocumentFileService
         });
     }
 
-    private void deleteNoMoreUsedFiles(List<DocumentFile> saveUs, int docId) {
+    private <T extends DocumentFile> void deleteNoMoreUsedFiles(List<T> saveUs, int docId) {
         final Set<Integer> existingFileIds = saveUs.stream()
                 .map(DocumentFile::getId)
                 .filter(Objects::nonNull)
@@ -153,7 +153,7 @@ class DefaultDocumentFileService
         documentFileRepository.delete(noMoreNeededFiles);
     }
 
-    private void saveNewFiles(List<DocumentFile> saveUs) {
+    private <T extends DocumentFile> void saveNewFiles(List<T> saveUs) {
         // do not rewrite using Java Stream API, file transfer can be long operation. in cycle.
         for (DocumentFile documentFile : saveUs) {
             final MultipartFile file = documentFile.getMultipartFile();
@@ -183,7 +183,7 @@ class DefaultDocumentFileService
         }
     }
 
-    private List<DocumentFile> saveDocumentFiles(List<DocumentFile> saveUs) {
+    private <T extends DocumentFile> List<DocumentFile> saveDocumentFiles(List<T> saveUs) {
         return saveUs.stream()
                 .map(documentFile -> new DocumentFileDTO(
                         documentFileRepository.save(new DocumentFileJPA(documentFile))
