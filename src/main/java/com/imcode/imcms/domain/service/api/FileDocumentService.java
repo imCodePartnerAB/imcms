@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.DocumentFile;
@@ -23,17 +24,20 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
+    private final DocumentDtoFactory documentDtoFactory;
 
     public FileDocumentService(DocumentService<DocumentDTO> documentService,
+                               DocumentDtoFactory documentDtoFactory,
                                DocumentFileService documentFileService) {
 
         this.defaultDocumentService = documentService;
         this.documentFileService = documentFileService;
+        this.documentDtoFactory = documentDtoFactory;
     }
 
     @Override
     public FileDocumentDTO createEmpty() {
-        return FileDocumentDTO.createEmpty(defaultDocumentService.createEmpty());
+        return documentDtoFactory.createEmptyFileDocument();
     }
 
     @Override

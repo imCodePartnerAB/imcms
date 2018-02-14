@@ -4,6 +4,7 @@ import com.imcode.imcms.api.DocumentLanguageDisabledException;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -151,13 +152,13 @@ public class ViewDocumentControllerTest {
         metaDoc.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
         metaRepository.save(metaDoc);
 
-        textDocument.getCommonContents()
-                .stream()
+        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
+
+        commonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
-                .forEach(commonContent -> {
-                    commonContent.setEnabled(false);
-                    commonContentService.save(commonContent);
-                });
+                .forEach(commonContent -> commonContent.setEnabled(false));
+
+        commonContentService.save(docId, commonContents);
 
         try {
             mockMvc.perform(get("/viewDoc/" + docId));
@@ -178,13 +179,17 @@ public class ViewDocumentControllerTest {
 
         final Integer docId = textDocument.getId();
 
-        textDocument.getCommonContents()
-                .stream()
+        final Meta metaDoc = metaRepository.getOne(docId);
+        metaDoc.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+        metaRepository.save(metaDoc);
+
+        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
+
+        commonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
-                .forEach(commonContent -> {
-                    commonContent.setEnabled(false);
-                    commonContentService.save(commonContent);
-                });
+                .forEach(commonContent -> commonContent.setEnabled(false));
+
+        commonContentService.save(docId, commonContents);
 
         mockMvc.perform(get("/viewDoc/" + docId))
                 .andExpect(status().is(200))
@@ -209,12 +214,10 @@ public class ViewDocumentControllerTest {
         Imcms.setLanguage(language);
 
         final Integer docId = textDocument.getId();
+        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
 
-        textDocument.getCommonContents()
-                .forEach(commonContent -> {
-                    commonContent.setEnabled(false);
-                    commonContentService.save(commonContent);
-                });
+        commonContents.forEach(commonContent -> commonContent.setEnabled(false));
+        commonContentService.save(docId, commonContents);
 
         try {
             mockMvc.perform(get("/viewDoc/" + docId));
@@ -230,14 +233,13 @@ public class ViewDocumentControllerTest {
         Imcms.setLanguage(language);
 
         final Integer docId = textDocument.getId();
+        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
 
-        textDocument.getCommonContents()
-                .stream()
+        commonContents.stream()
                 .filter(commonContent -> !commonContent.getLanguage().getCode().equals(language.getCode()))
-                .forEach(commonContent -> {
-                    commonContent.setEnabled(false);
-                    commonContentService.save(commonContent);
-                });
+                .forEach(commonContent -> commonContent.setEnabled(false));
+
+        commonContentService.save(docId, commonContents);
 
         mockMvc.perform(get("/viewDoc/" + docId))
                 .andExpect(status().is(200))

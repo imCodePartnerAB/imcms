@@ -1,23 +1,20 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.document.index.DocumentIndex;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Service for work with common document entities.
@@ -34,6 +31,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final ImageService imageService;
     private final LoopService loopService;
     private final DocumentIndex documentIndex;
+    private final DocumentDtoFactory documentDtoFactory;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
 
@@ -48,6 +46,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            ImageService imageService,
                            LoopService loopService,
                            DocumentIndex documentIndex,
+                           DocumentDtoFactory documentDtoFactory,
                            List<VersionedContentService> versionedContentServices) {
 
         this.metaRepository = metaRepository;
@@ -58,6 +57,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.imageService = imageService;
         this.loopService = loopService;
         this.documentIndex = documentIndex;
+        this.documentDtoFactory = documentDtoFactory;
         this.versionedContentServices = versionedContentServices;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
@@ -75,12 +75,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO createEmpty() {
-        final List<CommonContentDTO> commonContents = commonContentService.createCommonContents()
-                .stream()
-                .map(CommonContentDTO::new)
-                .collect(Collectors.toList());
-
-        return Value.with(DocumentDTO.createEmpty(), documentDTO -> documentDTO.setCommonContents(commonContents));
+        return documentDtoFactory.createEmpty();
     }
 
     @Override
@@ -109,7 +104,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
         }
 
-        commonContentService.save(docId, new ArrayList<>(saveMe.getCommonContents()));
+        commonContentService.save(docId, saveMe.getCommonContents());
         documentIndex.reindexDocument(docId);
 
         return docId;

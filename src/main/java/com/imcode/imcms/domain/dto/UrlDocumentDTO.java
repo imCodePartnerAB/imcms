@@ -15,7 +15,7 @@ import java.io.Serializable;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UrlDocumentDTO extends Document implements Serializable {
+public class UrlDocumentDTO extends DocumentDTO implements Serializable {
 
     private static final long serialVersionUID = -8053993136553115412L;
 
@@ -34,10 +34,4 @@ public class UrlDocumentDTO extends Document implements Serializable {
         this.documentURL = from.getDocumentURL();
     }
 
-    public static UrlDocumentDTO createEmpty(Document from) {
-        final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(from);
-        urlDocumentDTO.documentURL = DocumentUrlDTO.createDefault();
-
-        return urlDocumentDTO;
-    }
 }

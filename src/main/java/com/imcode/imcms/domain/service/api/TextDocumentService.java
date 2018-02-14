@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,19 +20,21 @@ import java.util.Optional;
 public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
+    private final DocumentDtoFactory documentDtoFactory;
     private final TextDocumentTemplateService textDocumentTemplateService;
 
-    public TextDocumentService(DocumentService<DocumentDTO> documentService3,
+    public TextDocumentService(DocumentService<DocumentDTO> documentService,
+                               DocumentDtoFactory documentDtoFactory,
                                TextDocumentTemplateService textDocumentTemplateService) {
 
-        defaultDocumentService = documentService3;
+        this.defaultDocumentService = documentService;
+        this.documentDtoFactory = documentDtoFactory;
         this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
     @Override
     public TextDocumentDTO createEmpty() {
-        final DocumentDTO emptyCommonDoc = defaultDocumentService.createEmpty();
-        return TextDocumentDTO.createEmpty(emptyCommonDoc);
+        return documentDtoFactory.createEmptyTextDocument();
     }
 
     @Override

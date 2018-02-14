@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,16 +14,21 @@ import java.util.Optional;
 public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
+    private final DocumentDtoFactory documentDtoFactory;
     private final DocumentUrlService documentUrlService;
 
-    public UrlDocumentService(DocumentService<DocumentDTO> documentService, DocumentUrlService documentUrlService) {
+    public UrlDocumentService(DocumentService<DocumentDTO> documentService,
+                              DocumentDtoFactory documentDtoFactory,
+                              DocumentUrlService documentUrlService) {
+
         this.defaultDocumentService = documentService;
+        this.documentDtoFactory = documentDtoFactory;
         this.documentUrlService = documentUrlService;
     }
 
     @Override
     public UrlDocumentDTO createEmpty() {
-        return UrlDocumentDTO.createEmpty(defaultDocumentService.createEmpty());
+        return documentDtoFactory.createEmptyUrlDocument();
     }
 
     @Override

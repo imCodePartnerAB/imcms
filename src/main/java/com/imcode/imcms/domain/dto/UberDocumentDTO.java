@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class UberDocumentDTO extends Document {
+public class UberDocumentDTO extends DocumentDTO {
 
     private static final long serialVersionUID = 3380096038825841879L;
 

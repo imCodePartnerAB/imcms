@@ -15,7 +15,7 @@ import java.io.Serializable;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TextDocumentDTO extends Document implements Serializable {
+public class TextDocumentDTO extends DocumentDTO implements Serializable {
 
     private static final long serialVersionUID = -2317764204932918145L;
 
@@ -32,13 +32,6 @@ public class TextDocumentDTO extends Document implements Serializable {
     TextDocumentDTO(UberDocumentDTO from) {
         super(from);
         this.template = from.getTemplate();
-    }
-
-    public static TextDocumentDTO createEmpty(Document from) {
-        final TextDocumentDTO textDocumentDTO = new TextDocumentDTO(from);
-        textDocumentDTO.template = TextDocumentTemplateDTO.createDefault();
-
-        return textDocumentDTO;
     }
 
 }

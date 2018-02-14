@@ -32,16 +32,7 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
 
     List<CommonContent> getCommonContents(int docId, int versionNo);
 
-    void save(int docId, Collection<CommonContent> saveUs);
-
-    void save(CommonContent saveMe);
-
-    /**
-     * Creates empty CommonContent for non-existing document and for all
-     * languages with {@link Version#WORKING_VERSION_INDEX}.
-     * Not saves to DB.
-     */
-    List<CommonContent> createCommonContents();
+    <T extends CommonContent> void save(int docId, Collection<T> saveUs);
 
     Set<CommonContent> getByVersion(Version version);
 

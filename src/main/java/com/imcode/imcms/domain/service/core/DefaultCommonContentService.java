@@ -14,7 +14,10 @@ import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
@@ -71,51 +74,11 @@ public class DefaultCommonContentService
                 .collect(Collectors.toList());
     }
 
-    private Optional<CommonContent> getCommonContent(int docId, int versionNo, Language language) {
-        final CommonContentJPA commonContentJPA = repository.findByDocIdAndVersionNoAndLanguage(
-                docId, versionNo, new LanguageJPA(language)
-        );
-
-        return Optional.ofNullable(commonContentJPA).map(CommonContentDTO::new);
-    }
-
     @Override
-    public void save(int docId, Collection<CommonContent> saveUs) {
+    public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
         final Set<CommonContentJPA> toSave = saveUs.stream().map(CommonContentJPA::new).collect(Collectors.toSet());
-        saveAll(docId, toSave);
-    }
-
-    @Override
-    public void save(CommonContent saveMe) {
-        saveAll(saveMe.getDocId(), Collections.singleton(new CommonContentJPA(saveMe)));
-    }
-
-    private void saveAll(int docId, Iterable<CommonContentJPA> saveUs) {
-        repository.save(saveUs);
+        repository.save(toSave);
         super.updateWorkingVersion(docId);
-    }
-
-    private CommonContentDTO createFromWorkingVersion(int docId, int versionNo, Language language) {
-        final Optional<CommonContent> oCommonContent = getCommonContent(docId, WORKING_VERSION_INDEX, language);
-        final CommonContentJPA newCommonContent = oCommonContent.map(CommonContentJPA::new)
-                .orElseGet(() -> Value.with(new CommonContentJPA(), commonContentJPA -> {
-                    commonContentJPA.setEnabled(true);
-                    commonContentJPA.setLanguage(new LanguageJPA(language));
-                    commonContentJPA.setDocId(docId);
-                    commonContentJPA.setVersionNo(versionNo);
-                }));
-
-        newCommonContent.setVersionNo(versionNo);
-
-        return new CommonContentDTO(repository.saveAndFlush(newCommonContent));
-    }
-
-    @Override
-    public List<CommonContent> createCommonContents() {
-        return languageService.getAll()
-                .stream()
-                .map(this::createFrom)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -124,14 +87,6 @@ public class DefaultCommonContentService
                 .stream()
                 .map(CommonContentDTO::new)
                 .collect(Collectors.toSet());
-    }
-
-    private CommonContent createFrom(Language languageDTO) {
-        return Value.with(new CommonContentDTO(), commonContentDTO -> {
-            commonContentDTO.setEnabled(true);
-            commonContentDTO.setLanguage(languageDTO);
-            commonContentDTO.setVersionNo(WORKING_VERSION_INDEX);
-        });
     }
 
     @Override
@@ -146,5 +101,28 @@ public class DefaultCommonContentService
         newCommonContent.setVersionNo(version.getNo());
 
         return newCommonContent;
+    }
+
+    private Optional<CommonContent> getCommonContent(int docId, int versionNo, Language language) {
+        final CommonContentJPA commonContentJPA = repository.findByDocIdAndVersionNoAndLanguage(
+                docId, versionNo, new LanguageJPA(language)
+        );
+
+        return Optional.ofNullable(commonContentJPA).map(CommonContentDTO::new);
+    }
+
+    private CommonContent createFromWorkingVersion(int docId, int versionNo, Language language) {
+        final Optional<CommonContent> oCommonContent = getCommonContent(docId, WORKING_VERSION_INDEX, language);
+        final CommonContentJPA newCommonContent = oCommonContent.map(CommonContentJPA::new)
+                .orElseGet(() -> Value.with(new CommonContentJPA(), commonContentJPA -> {
+                    commonContentJPA.setEnabled(true);
+                    commonContentJPA.setLanguage(language);
+                    commonContentJPA.setDocId(docId);
+                    commonContentJPA.setVersionNo(versionNo);
+                }));
+
+        newCommonContent.setVersionNo(versionNo);
+
+        return new CommonContentDTO(repository.saveAndFlush(newCommonContent));
     }
 }

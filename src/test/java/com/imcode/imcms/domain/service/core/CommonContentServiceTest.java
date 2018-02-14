@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
 import org.junit.After;
@@ -95,8 +96,9 @@ public class CommonContentServiceTest {
 
         for (CommonContent content : contents) {
             content.setHeadline("test_content_headline");
-            commonContentService.save(content);
         }
+
+        commonContentService.save(DOC_ID, contents);
 
         final List<CommonContent> commonContents = new ArrayList<>();
 
@@ -111,22 +113,27 @@ public class CommonContentServiceTest {
     public void saveCommonContent_When_NotExistBefore_Expect_Saved() {
         versionDataInitializer.createData(WORKING_VERSION_INDEX, DOC_ID);
 
-        for (LanguageDTO languageDTO : languageDataInitializer.createData()) {
-            final CommonContent commonContentDTO = Value.with(new CommonContentDTO(), contentDTO -> {
-                contentDTO.setVersionNo(WORKING_VERSION_INDEX);
-                contentDTO.setEnabled(true);
-                contentDTO.setMenuImageURL("menu_image_url_test");
-                contentDTO.setMenuText("menu_text_test");
-                contentDTO.setHeadline("test_headline");
-                contentDTO.setDocId(DOC_ID);
-                contentDTO.setLanguage(languageDTO);
-            });
+        final List<CommonContent> contents = languageDataInitializer.createData()
+                .stream()
+                .map(languageDTO -> Value.with(new CommonContentDTO(), contentDTO -> {
+                    contentDTO.setVersionNo(WORKING_VERSION_INDEX);
+                    contentDTO.setEnabled(true);
+                    contentDTO.setMenuImageURL("menu_image_url_test");
+                    contentDTO.setMenuText("menu_text_test");
+                    contentDTO.setHeadline("test_headline");
+                    contentDTO.setDocId(DOC_ID);
+                    contentDTO.setLanguage(languageDTO);
+                }))
+                .collect(Collectors.toList());
 
-            commonContentService.save(commonContentDTO);
-            final CommonContent savedContent = commonContentService.getOrCreate(DOC_ID, WORKING_VERSION_INDEX, languageDTO);
-            commonContentDTO.setId(savedContent.getId());
+        commonContentService.save(DOC_ID, contents);
 
-            assertEquals(savedContent, commonContentDTO);
+        for (CommonContent commonContent : contents) {
+            final Language language = commonContent.getLanguage();
+            final CommonContent savedContent = commonContentService.getOrCreate(DOC_ID, WORKING_VERSION_INDEX, language);
+            commonContent.setId(savedContent.getId());
+
+            assertEquals(savedContent, commonContent);
         }
     }
 

@@ -7,6 +7,7 @@ import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.factory.CommonContentFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.TextDocumentTemplate;
@@ -65,19 +66,16 @@ public class DocumentControllerTest extends AbstractControllerTest {
     private TemplateService templateService;
 
     @Autowired
-    private CommonContentService commonContentService;
-
-    @Autowired
     private RoleService roleService;
-
-    @Autowired
-    private DocumentService<DocumentDTO> documentService;
 
     @Autowired
     private DocumentService<UrlDocumentDTO> urlDocumentService;
 
     @Autowired
     private MetaRepository metaRepository;
+
+    @Autowired
+    private CommonContentFactory commonContentFactory;
 
     @Override
     protected String controllerPath() {
@@ -106,12 +104,12 @@ public class DocumentControllerTest extends AbstractControllerTest {
         final UrlDocumentDTO urlDocumentDTO = fromJson(response, UrlDocumentDTO.class);
 
         final DocumentUrlDTO actualDocumentUrlDTO = urlDocumentDTO.getDocumentURL();
-        final DocumentUrlDTO expectedDocumentUrlDTO = UrlDocumentDTO.createEmpty(documentService.createEmpty()).getDocumentURL();
+        final DocumentUrlDTO expectedDocumentUrlDTO = DocumentUrlDTO.createDefault();
 
         assertNull(urlDocumentDTO.getId());
         assertEquals(urlDocumentDTO.getType(), documentType);
         assertFalse(urlDocumentDTO.getCommonContents().isEmpty());
-        assertEquals(urlDocumentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(urlDocumentDTO.getCommonContents(), commonContentFactory.createCommonContents());
         assertEquals(urlDocumentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(expectedDocumentUrlDTO, actualDocumentUrlDTO);
     }
@@ -178,7 +176,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
         assertNull(documentDTO.getId());
         assertEquals(documentDTO.getType(), documentType);
         assertFalse(documentDTO.getCommonContents().isEmpty());
-        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(documentDTO.getCommonContents(), commonContentFactory.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
     }
@@ -543,7 +541,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
         assertNull(documentDTO.getId());
         assertEquals(documentDTO.getType(), documentType);
         assertFalse(documentDTO.getCommonContents().isEmpty());
-        assertEquals(documentDTO.getCommonContents(), commonContentService.createCommonContents());
+        assertEquals(documentDTO.getCommonContents(), commonContentFactory.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertTrue(documentDTO.getFiles().isEmpty());
     }
