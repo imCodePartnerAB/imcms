@@ -1,6 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
@@ -33,7 +33,7 @@ public class DocumentUrlRepositoryTest {
     private DocumentUrlRepository documentUrlRepository;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private UrlDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -115,15 +115,15 @@ public class DocumentUrlRepositoryTest {
 
     @Test
     public void findByVersion() {
-        final DocumentUrlDTO expectedDocument = documentDataInitializer.createUrlDocument().getDocumentURL();
-        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, DEFAULT_DOC_ID);
+        final DocumentUrlDTO expectedURL = documentDataInitializer.createUrlDocument().getDocumentURL();
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, expectedURL.getDocId());
         final List<DocumentUrlJPA> byVersion = documentUrlRepository.findByVersion(version);
 
         assertEquals(1, byVersion.size());
 
-        final DocumentUrlDTO actualDocument = new DocumentUrlDTO(byVersion.get(0));
+        final DocumentUrlDTO actualURL = new DocumentUrlDTO(byVersion.get(0));
 
-        assertEquals(expectedDocument, actualDocument);
+        assertEquals(expectedURL, actualURL);
     }
 
     private List<DocumentUrlJPA> getDocumentUrlList(int number) {

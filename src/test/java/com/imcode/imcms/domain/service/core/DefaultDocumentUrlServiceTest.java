@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
@@ -41,7 +41,7 @@ public class DefaultDocumentUrlServiceTest {
     private DocumentUrlRepository documentUrlRepository;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private UrlDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;

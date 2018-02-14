@@ -1,8 +1,8 @@
 package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.DocumentLanguageDisabledException;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
+import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
@@ -42,7 +42,7 @@ public class ViewDocumentControllerTest {
     private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private TextDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private CommonContentService commonContentService;

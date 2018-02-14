@@ -80,7 +80,7 @@ public class DocumentServiceTest {
     private TemplateService templateService;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private TextDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private CommonContentService commonContentService;

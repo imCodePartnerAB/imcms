@@ -1,7 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
@@ -17,13 +16,9 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +32,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
 public class DocumentFilesControllerTest extends AbstractControllerTest {
 
     private static File testSolrFolder;
@@ -54,7 +46,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     private File filesPath;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private FileDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private Config config;

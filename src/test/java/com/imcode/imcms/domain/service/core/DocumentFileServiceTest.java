@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
@@ -42,7 +42,7 @@ public class DocumentFileServiceTest {
     private DocumentFileRepository documentFileRepository;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private FileDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;

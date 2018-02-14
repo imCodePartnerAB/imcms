@@ -1,9 +1,9 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
@@ -21,11 +21,7 @@ import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,16 +38,16 @@ import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.
 import static org.junit.Assert.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
 public class DocumentControllerTest extends AbstractControllerTest {
 
     private TextDocumentDTO createdTextDoc;
     private FileDocumentDTO createdFileDoc;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private TextDocumentDataInitializer textDocumentDataInitializer;
+
+    @Autowired
+    private FileDocumentDataInitializer fileDocumentDataInitializer;
 
     @Autowired
     private UserDataInitializer userDataInitializer;
@@ -90,8 +86,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        createdTextDoc = documentDataInitializer.createTextDocument();
-        createdFileDoc = documentDataInitializer.createFileDocument();
+        createdTextDoc = textDocumentDataInitializer.createTextDocument();
+        createdFileDoc = fileDocumentDataInitializer.createFileDocument();
 
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);

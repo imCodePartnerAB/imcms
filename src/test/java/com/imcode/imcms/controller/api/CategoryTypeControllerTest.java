@@ -1,19 +1,11 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import org.junit.After;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
 public class CategoryTypeControllerTest extends AbstractControllerTest {
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;

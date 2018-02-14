@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.*;
@@ -83,7 +83,7 @@ public class SearchDocumentServiceTest {
     private CategoryService categoryService;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private TextDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private DocumentService<TextDocumentDTO> documentService;

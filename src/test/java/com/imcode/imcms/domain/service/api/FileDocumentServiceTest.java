@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
@@ -55,7 +55,7 @@ public class FileDocumentServiceTest {
     private File filesPath;
 
     @Autowired
-    private DocumentDataInitializer documentDataInitializer;
+    private FileDocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private Config config;
