@@ -26,7 +26,7 @@ public class ImageDTO extends ImageData {
      */
     private String langCode;
     private String name;
-    private String url;
+    private String path;
     private LoopEntryRefDTO loopEntryRef;
     private String generatedFilePath;
 
@@ -46,7 +46,7 @@ public class ImageDTO extends ImageData {
         this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
         this.langCode = langCode;
         this.name = "";
-        this.url = "";
+        this.path = "";
         this.linkUrl = "";
         this.generatedFilePath = "";
         this.generatedFilename = "";

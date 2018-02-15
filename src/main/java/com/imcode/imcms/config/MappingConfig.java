@@ -187,7 +187,7 @@ class MappingConfig {
             dto.setName(image.getName());
             dto.setDocId(image.getVersion().getDocId());
             dto.setLangCode(image.getLanguage().getCode());
-            dto.setUrl(image.getUrl());
+            dto.setPath(image.getUrl());
             dto.setAllLanguages(image.isAllLanguages());
 
             final boolean filenameExists = (image.getGeneratedFilename() != null)
@@ -232,7 +232,7 @@ class MappingConfig {
             image.setLanguage(new LanguageJPA(language));
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
-            image.setUrl(imageDTO.getUrl());
+            image.setUrl(imageDTO.getPath());
             image.setName(imageDTO.getName());
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             Optional.ofNullable(imageDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(image::setLoopEntryRef);
