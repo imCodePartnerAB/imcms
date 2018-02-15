@@ -18,7 +18,7 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,5 +64,7 @@ public class SearchDocumentControllerTest {
                 .andExpect(jsonPath("$[0].documentStatus", is(expected.getDocumentStatus().toString())))
                 .andExpect(jsonPath("$[0].type", is(expected.getType().toString())))
                 .andExpect(jsonPath("$[0].alias", is(expected.getAlias())));
+
+        verify(searchDocumentService, times(1)).searchDocuments(searchQuery);
     }
 }
