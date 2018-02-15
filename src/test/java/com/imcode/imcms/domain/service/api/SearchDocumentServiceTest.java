@@ -146,7 +146,11 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void searchDocuments_When_DocId1001Requested_Expect_Found() {
+    public void searchDocuments_When_DocId1001Requested_Expect_Found() throws InterruptedException {
+        documentIndex.removeDocument(DOC_ID);
+        documentIndex.indexDocument(DOC_ID);
+        waitForIndexUpdates();
+
         final PageRequestDTO pageRequest = new PageRequestDTO(
                 0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID))
         );
