@@ -10,18 +10,21 @@ import lombok.Data;
 @Data
 public class DocumentStoredFieldsDTO {
 
-    protected Integer id;
+    private Integer id;
 
-    protected String title;
+    private String title;
 
-    protected Meta.DocumentType type;
+    private Meta.DocumentType type;
 
-    protected String alias;
+    private DocumentStatus documentStatus;
+
+    private String alias;
 
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
         title = from.headline();
-        type = Meta.DocumentType.values()[from.documentType()];
+        type = from.documentType();
+        documentStatus = from.documentStatus();
         alias = from.alias();
     }
 

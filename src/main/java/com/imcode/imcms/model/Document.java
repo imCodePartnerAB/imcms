@@ -13,7 +13,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -30,7 +33,6 @@ public abstract class Document {
     protected String alias;
     protected List<CommonContentDTO> commonContents;
     protected PublicationStatus publicationStatus;
-    protected DocumentStatus documentStatus;
     protected AuditDTO published;
     protected AuditDTO archived;
     protected AuditDTO publicationEnd;
@@ -49,7 +51,6 @@ public abstract class Document {
         type = from.type; // not sure
         target = from.target;
         alias = from.alias;
-        documentStatus = defineDocumentStatus(from);
         commonContents = from.commonContents;
         publicationStatus = from.publicationStatus;
         published = from.published;
@@ -66,53 +67,8 @@ public abstract class Document {
         roleIdToPermission = from.roleIdToPermission;
     }
 
-    private DocumentStatus defineDocumentStatus(Document from) {
-        if (PublicationStatus.NEW.equals(from.publicationStatus)) {
-            return DocumentStatus.IN_PROCESS;
-
-        } else if (PublicationStatus.DISAPPROVED.equals(from.publicationStatus)) {
-            return DocumentStatus.DISAPPROVED;
-
-        } else if (isAuditDateInPast(from.archived)) {
-            return DocumentStatus.ARCHIVED;
-
-        } else if (isAuditDateInPast(from.publicationEnd)) {
-            return DocumentStatus.PASSED;
-
-        } else if (PublicationStatus.APPROVED.equals(from.publicationStatus) && isAuditDateInPast(from.published)) {
-            return DocumentStatus.PUBLISHED;
-
-        } else if (PublicationStatus.APPROVED.equals(from.publicationStatus) && isAuditDateInFuture(from.published)) {
-            return DocumentStatus.PUBLISHED_WAITING;
-
-        } else { // should newer happen
-            return DocumentStatus.PUBLISHED;
-        }
-    }
-
-    private boolean isAuditDateInPast(AuditDTO auditToCheck) {
-        return (auditToCheck != null)
-                && (auditToCheck.getFormattedDate() != null)
-                && new Date().after(auditToCheck.getFormattedDate());
-    }
-
-    private boolean isAuditDateInFuture(AuditDTO auditToCheck) {
-        return (auditToCheck != null)
-                && (auditToCheck.getFormattedDate() != null)
-                && new Date().before(auditToCheck.getFormattedDate());
-    }
-
     public Set<RestrictedPermissionDTO> getRestrictedPermissions() {
         return (this.restrictedPermissions == null) ? null : new TreeSet<>(this.restrictedPermissions);
-    }
-
-    public enum DocumentStatus {
-        PUBLISHED,          // PublicationStatus == APPROVED and published date-time is <= than now
-        PUBLISHED_WAITING,  // PublicationStatus == APPROVED and published date-time is > than now
-        IN_PROCESS,         // PublicationStatus is NEW
-        DISAPPROVED,        // PublicationStatus is DISAPPROVED
-        ARCHIVED,           // archived date-time is <= than now
-        PASSED              // publicationEnd date-time is <= than now
     }
 
 }
