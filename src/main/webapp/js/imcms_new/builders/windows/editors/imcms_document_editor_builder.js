@@ -259,7 +259,7 @@ Imcms.define("imcms-document-editor-builder",
                     onClickSorting(defaultSortPropertyValue);
                 }
             });
-            $idColumnHead.modifiers = ["col-2"];
+            $idColumnHead.modifiers = ["col-1"];
 
             var $titleColumnHead = $("<div>", {
                 text: texts.sort.title,
@@ -278,7 +278,10 @@ Imcms.define("imcms-document-editor-builder",
             $aliasColumnHead.modifiers = ["col-3"];
 
             var $typeColumnHead = $("<div>", {text: texts.sort.type});
-            $typeColumnHead.modifiers = ["col-2"];
+            $typeColumnHead.modifiers = ["col-1"];
+
+            var $statusColumnHead = $("<div>", {text: texts.sort.status});
+            $statusColumnHead.modifiers = ["col-2"];
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -287,7 +290,8 @@ Imcms.define("imcms-document-editor-builder",
                         $idColumnHead,
                         $titleColumnHead,
                         $aliasColumnHead,
-                        $typeColumnHead
+                        $typeColumnHead,
+                        $statusColumnHead
                     ]
                 }
             }).buildBlockStructure("<div>");
@@ -618,9 +622,10 @@ Imcms.define("imcms-document-editor-builder",
             isMouseDown = false;
         });
 
+        /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
             var $docItemId = components.texts.titleText("<div>", document.id);
-            $docItemId.modifiers = ["col-2", "id"];
+            $docItemId.modifiers = ["col-1", "id"];
 
             var title = (document.commonContents) ? document.commonContents.filter(function (commonContent) {
                 return commonContent.language.code === imcms.language.code;
@@ -637,7 +642,10 @@ Imcms.define("imcms-document-editor-builder",
             $docItemAlias.modifiers = ["col-3", "alias"];
 
             var $docItemType = components.texts.titleText("<div>", document.type);
-            $docItemType.modifiers = ["col-2", "type"];
+            $docItemType.modifiers = ["col-1", "type"];
+
+            var $docStatus = components.texts.titleText("<div>", document.documentStatus);
+            $docStatus.modifiers = ["col-2", "type"];
 
             var elements = [
                 {
@@ -645,7 +653,8 @@ Imcms.define("imcms-document-editor-builder",
                         $docItemId,
                         $docItemTitle,
                         $docItemAlias,
-                        $docItemType
+                        $docItemType,
+                        $docStatus
                     ]
                 },
                 {"controls": buildDocItemControls(document, opts)}
