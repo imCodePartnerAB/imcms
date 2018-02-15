@@ -3,11 +3,13 @@ package com.imcode.imcms.domain.dto;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.document.index.DocumentStoredFields;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Document's stored fields in solr indexes
  */
 @Data
+@NoArgsConstructor
 public class DocumentStoredFieldsDTO {
 
     private Integer id;
