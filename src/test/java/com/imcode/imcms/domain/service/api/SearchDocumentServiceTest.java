@@ -146,7 +146,11 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
-    public void searchDocuments_When_DocId1001Requested_Expect_Found() {
+    public void searchDocuments_When_DocId1001Requested_Expect_Found() throws InterruptedException {
+        documentIndex.removeDocument(DOC_ID);
+        documentIndex.indexDocument(DOC_ID);
+        waitForIndexUpdates();
+
         final PageRequestDTO pageRequest = new PageRequestDTO(
                 0, 10, new Sort(new Sort.Order(DocumentIndex.FIELD__META_ID))
         );
@@ -207,7 +211,7 @@ public class SearchDocumentServiceTest {
         try {
             for (int i = 0; i < caseNumber; i++) {
                 final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
-                docIds.add(documentService.save(documentDTO));
+                docIds.add(documentService.save(documentDTO).getId());
             }
 
             waitForIndexUpdates();
@@ -557,7 +561,7 @@ public class SearchDocumentServiceTest {
 
         final List<Integer> docIds = new ArrayList<>();
 
-        textDocumentDTOS.forEach(textDocumentDTO -> docIds.add(documentService.save(textDocumentDTO)));
+        textDocumentDTOS.forEach(textDocumentDTO -> docIds.add(documentService.save(textDocumentDTO).getId()));
 
         try {
             waitForIndexUpdates();

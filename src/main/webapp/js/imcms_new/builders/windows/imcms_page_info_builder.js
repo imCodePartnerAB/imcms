@@ -82,11 +82,11 @@ Imcms.define("imcms-page-info-builder",
 
             closePageInfo();
 
-            documentsRestApi.create(documentDTO).success(function (savedDocId) {
+            documentsRestApi.create(documentDTO).success(function (savedDoc) {
 
                 if (documentDTO.newFiles) {
                     // files saved separately because of different content types and in file-doc case
-                    documentDTO.newFiles.append("docId", savedDocId);
+                    documentDTO.newFiles.append("docId", savedDoc.id);
                     docFilesAjaxApi.postFiles(documentDTO.newFiles);
                 }
 
@@ -94,14 +94,14 @@ Imcms.define("imcms-page-info-builder",
                     events.trigger("imcms-version-modified");
 
                 } else {
-                    documentDTO.id = savedDocId;
+                    documentDTO.id = savedDoc.id;
                 }
 
                 if (onDocumentSavedCallback) {
-                    onDocumentSavedCallback(documentDTO);
+                    onDocumentSavedCallback(savedDoc);
 
                 } else if (onDocumentSaved) {
-                    onDocumentSaved(documentDTO);
+                    onDocumentSaved(savedDoc);
                 }
             });
         }

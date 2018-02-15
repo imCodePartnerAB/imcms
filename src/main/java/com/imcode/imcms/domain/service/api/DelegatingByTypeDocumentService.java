@@ -53,7 +53,7 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
     }
 
     @Override
-    public int save(UberDocumentDTO saveMe) {
+    public UberDocumentDTO save(UberDocumentDTO saveMe) {
         return getCorrespondingDocumentService(saveMe.getType()).save(saveMe);
     }
 

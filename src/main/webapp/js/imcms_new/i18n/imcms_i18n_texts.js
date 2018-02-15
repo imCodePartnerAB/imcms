@@ -147,7 +147,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         id: "ID",
                         title: "Titel",
                         alias: "Alias",
-                        type: "Typ"
+                        type: "Typ",
+                        status: "Status"
                     }
                 },
                 newDocument: {
@@ -377,7 +378,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         id: "ID",
                         title: "Title",
                         alias: "Alias",
-                        type: "Type"
+                        type: "Type",
+                        status: "Status"
                     }
                 },
                 newDocument: {

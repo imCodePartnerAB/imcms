@@ -87,19 +87,14 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
     }
 
-    /**
-     * Saves document to DB.
-     *
-     * @param saveMe document to be saved
-     * @return id of saved document
-     */
     @Override
     @Transactional
-    public int save(DocumentDTO saveMe) {
+    public DocumentDTO save(DocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
         final Integer docId = documentSaver.apply(saveMe).getId();
 
         if (isNew) {
+            saveMe.setId(docId);
             versionService.create(docId);
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
         }
@@ -107,7 +102,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         commonContentService.save(docId, saveMe.getCommonContents());
         documentIndex.reindexDocument(docId);
 
-        return docId;
+        return saveMe;
     }
 
     @Override

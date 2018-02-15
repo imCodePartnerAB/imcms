@@ -209,13 +209,10 @@ public class DocumentServiceTest {
         Imcms.setUser(user); // means current user is admin now
 
         final String testTarget = "_test";
-
         final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
         emptyDocumentDTO.setTarget(testTarget);
 
-        final int saveDocId = textDocumentService.save(emptyDocumentDTO);
-        emptyDocumentDTO.setId(saveDocId);
-        final TextDocumentDTO documentDTO = textDocumentService.get(saveDocId);
+        final TextDocumentDTO documentDTO = textDocumentService.save(emptyDocumentDTO);
 
         assertEquals(documentDTO.getTarget(), testTarget);
     }

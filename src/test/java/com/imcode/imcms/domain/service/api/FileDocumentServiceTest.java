@@ -141,7 +141,7 @@ public class FileDocumentServiceTest {
         documentFileDTOS.add(new DocumentFileDTO(documentFileJPA));
         fileDocumentDTO.setFiles(documentFileDTOS);
 
-        final int savedDocId = fileDocumentService.save(fileDocumentDTO);
+        final int savedDocId = fileDocumentService.save(fileDocumentDTO).getId();
 
         assertEquals(savedDocId, createdDocId);
     }

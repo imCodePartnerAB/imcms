@@ -11,10 +11,12 @@
 .imcms-document-editor-head-tools__tool--grid-col-2,
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-editor-head-tools__tool--grid-col-4,
+.imcms-document-item__info--col-1,
 .imcms-document-item__info--col-2,
 .imcms-document-item__info--col-3,
 .imcms-document-item__info--col-4,
 .imcms-document-item__info--col-5,
+.imcms-document-list-titles__title--col-1,
 .imcms-document-list-titles__title--col-2,
 .imcms-document-list-titles__title--col-3,
 .imcms-document-list-titles__title--col-4,
@@ -58,7 +60,9 @@
     float: left;
 }
 
+.imcms-document-list-titles__title--col-1,
 .imcms-loop-list-titles__title--col-1,
+.imcms-document-item__info--col-1,
 .imcms-loop-item__info--col-1,
 .imcms-grid-coll-1 {
     width: 8.33%;

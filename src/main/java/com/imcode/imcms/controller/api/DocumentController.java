@@ -38,11 +38,11 @@ class DocumentController {
      * Simply save document.
      *
      * @param saveMe unified document, compatible with each {@link DocumentType} except HTML (yet?)
-     * @return saved document's id
+     * @return saved document
      */
     @PostMapping
     @CheckAccess(AccessType.DOC_INFO)
-    public int save(@RequestBody UberDocumentDTO saveMe) {
+    public UberDocumentDTO save(@RequestBody UberDocumentDTO saveMe) {
         return documentService.save(saveMe);
     }
 

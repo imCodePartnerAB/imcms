@@ -114,15 +114,19 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                     indexRebuildExecutor.shutdown();
 
                     try {
+                        solrServerReader.commit(true, true, true);
                         solrServerReader.shutdown();
                     } catch (Exception e) {
                         logger.warn("An error occurred while shutting down SolrServer reader.", e);
                     }
 
-                    try {
-                        solrServerWriter.shutdown();
-                    } catch (Exception e) {
-                        logger.warn("An error occurred while shutting down SolrServer writer.", e);
+                    if (!solrServerReader.equals(solrServerWriter)) {
+                        try {
+                            solrServerWriter.commit(true, true, true);
+                            solrServerWriter.shutdown();
+                        } catch (Exception e) {
+                            logger.warn("An error occurred while shutting down SolrServer writer.", e);
+                        }
                     }
 
                     logger.info("Service has been shut down.");

@@ -45,11 +45,11 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
-    public int save(TextDocumentDTO saveMe) {
+    public TextDocumentDTO save(TextDocumentDTO saveMe) {
         final boolean isNew = (saveMe.getId() == null);
         final Optional<TextDocumentTemplateDTO> oTemplate = Optional.ofNullable(saveMe.getTemplate());
 
-        final int savedDocId = defaultDocumentService.save(new DocumentDTO(saveMe));
+        final int savedDocId = defaultDocumentService.save(saveMe).getId();
 
         if (isNew) {
             oTemplate.ifPresent(textDocumentTemplateDTO -> textDocumentTemplateDTO.setDocId(savedDocId));
@@ -57,7 +57,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
         oTemplate.ifPresent(textDocumentTemplateService::save);
 
-        return savedDocId;
+        return saveMe;
     }
 
     @Override
