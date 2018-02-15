@@ -74,6 +74,7 @@ public class TextServiceTest {
     public void setUp() throws Exception {
         textRepository.deleteAll();
         textRepository.flush();
+        textHistoryRepository.deleteAll();
 
         workingVersion = versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
         latestVersion = versionDataInitializer.createData(LATEST_VERSION_NO, DOC_ID);

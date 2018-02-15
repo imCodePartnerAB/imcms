@@ -60,6 +60,7 @@ public class DefaultTextHistoryServiceTest {
 
     @Before
     public void setUp() {
+        textHistoryRepository.deleteAll();
         this.language = languageDataInitializer.createData().get(0);
         this.index = 1;
 
