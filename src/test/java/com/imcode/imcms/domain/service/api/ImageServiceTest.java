@@ -180,7 +180,7 @@ public class ImageServiceTest {
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);
-            img.setPath("img1.jpg");
+            img.setUrl("img1.jpg");
             img.setFormat(Format.JPEG);
             img.setLangCode("en");
             img.setName("img1");
@@ -188,6 +188,14 @@ public class ImageServiceTest {
             img.setHeight(100);
             img.setAlternateText("");
             img.setLinkUrl("");
+            img.setBorder(0);
+            img.setAlign("");
+            img.setLowResolutionUrl("");
+            img.setVerticalSpace(0);
+            img.setHorizontalSpace(0);
+            img.setTarget("");
+            img.setType(0);
+            img.setRotateAngle(0);
         });
 
         imageService.saveImage(imageDTO);
@@ -208,7 +216,7 @@ public class ImageServiceTest {
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);
-            img.setPath("img1.jpg");
+            img.setUrl("img1.jpg");
             img.setFormat(Format.JPEG);
             img.setLangCode("en");
             img.setName("img1");
@@ -217,6 +225,14 @@ public class ImageServiceTest {
             img.setCropRegion(cropRegion);
             img.setAlternateText("");
             img.setLinkUrl("");
+            img.setBorder(0);
+            img.setAlign("");
+            img.setLowResolutionUrl("");
+            img.setVerticalSpace(0);
+            img.setHorizontalSpace(0);
+            img.setTarget("");
+            img.setType(0);
+            img.setRotateAngle(0);
         });
 
         imageService.saveImage(imageDTO);

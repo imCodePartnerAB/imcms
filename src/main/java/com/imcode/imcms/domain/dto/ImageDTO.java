@@ -26,9 +26,19 @@ public class ImageDTO extends ImageData {
      */
     private String langCode;
     private String name;
-    private String path;
+    private String url;
     private LoopEntryRefDTO loopEntryRef;
     private String generatedFilePath;
+
+    private int border;
+    private String align;
+    private String lowResolutionUrl;
+    private int verticalSpace;
+    private int horizontalSpace;
+    private String target;
+    private int type;
+    private int rotateAngle;
+    private Long archiveImageId;
 
     public ImageDTO(Integer index, Integer docId, LoopEntryRef loopEntryRef, String langCode) {
         this.index = index;
@@ -36,7 +46,7 @@ public class ImageDTO extends ImageData {
         this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
         this.langCode = langCode;
         this.name = "";
-        this.path = "";
+        this.url = "";
         this.linkUrl = "";
         this.generatedFilePath = "";
         this.generatedFilename = "";
@@ -44,6 +54,14 @@ public class ImageDTO extends ImageData {
         this.format = Format.JPEG;
         this.width = 0;
         this.height = 0;
+        this.border = 0;
+        this.align = "";
+        this.lowResolutionUrl = "";
+        this.verticalSpace = 0;
+        this.horizontalSpace = 0;
+        this.target = "";
+        this.type = -1;
+        this.rotateAngle = 0;
     }
 
     public ImageDTO(Integer index, Integer docId) {

@@ -173,7 +173,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     }
 
     private void generateImage(ImageDTO imageDTO) {
-        String imagePath = imageDTO.getPath();
+        String imagePath = imageDTO.getUrl();
 
         if (StringUtils.isNotBlank(imagePath)) {
             imageDTO.setSource(ImcmsImageUtils.getImageSource(imagePath));

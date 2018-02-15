@@ -14,6 +14,7 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
+import imcode.util.image.Resize;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.solr.common.SolrDocument;
 import org.springframework.beans.factory.annotation.Value;
@@ -189,7 +190,7 @@ class MappingConfig {
             dto.setName(image.getName());
             dto.setDocId(image.getVersion().getDocId());
             dto.setLangCode(image.getLanguage().getCode());
-            dto.setPath(image.getUrl());
+            dto.setUrl(image.getUrl());
             dto.setAllLanguages(image.isAllLanguages());
 
             final boolean filenameExists = (image.getGeneratedFilename() != null)
@@ -209,6 +210,16 @@ class MappingConfig {
             dto.setInText(image.isInText());
             dto.setAlternateText(image.getAlternateText());
             dto.setLinkUrl(image.getLinkUrl());
+            dto.setBorder(image.getBorder());
+            dto.setAlign(image.getAlign());
+            dto.setLowResolutionUrl(image.getLowResolutionUrl());
+            dto.setVerticalSpace(image.getVerticalSpace());
+            dto.setHorizontalSpace(image.getHorizontalSpace());
+            dto.setTarget(image.getTarget());
+            dto.setType(image.getType());
+            dto.setRotateAngle(image.getRotateAngle());
+            dto.setArchiveImageId(image.getArchiveImageId());
+            dto.setResize(Resize.getByOrdinal(image.getResize()));
 
             return dto;
         };
@@ -224,7 +235,7 @@ class MappingConfig {
             image.setLanguage(new LanguageJPA(language));
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
-            image.setUrl(imageDTO.getPath());
+            image.setUrl(imageDTO.getUrl());
             image.setName(imageDTO.getName());
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             Optional.ofNullable(imageDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(image::setLoopEntryRef);
@@ -234,6 +245,16 @@ class MappingConfig {
             image.setInText(imageDTO.isInText());
             image.setAlternateText(imageDTO.getAlternateText());
             image.setLinkUrl(imageDTO.getLinkUrl());
+            image.setBorder(imageDTO.getBorder());
+            image.setAlign(imageDTO.getAlign());
+            image.setLowResolutionUrl(imageDTO.getLowResolutionUrl());
+            image.setVerticalSpace(imageDTO.getVerticalSpace());
+            image.setHorizontalSpace(imageDTO.getHorizontalSpace());
+            image.setTarget(imageDTO.getTarget());
+            image.setType(imageDTO.getType());
+            image.setRotateAngle(imageDTO.getRotateAngle());
+            image.setArchiveImageId(imageDTO.getArchiveImageId());
+            image.setResize(imageDTO.getResize() == null ? 0 : imageDTO.getResize().getOrdinal());
 
             return image;
         };
