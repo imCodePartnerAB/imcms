@@ -8,15 +8,12 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.user.UserDomainObject;
 import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.solr.common.SolrDocument;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -99,9 +96,9 @@ class MappingConfig {
                 final Integer docId = menuItem.getDocumentId();
                 final Version latestVersion = versionService.getLatestVersion(docId);
                 final List<CommonContent> enabledCommonContents = commonContentService.getByVersion(latestVersion)
-                                .stream()
-                                .filter(CommonContent::isEnabled)
-                                .collect(Collectors.toList());
+                        .stream()
+                        .filter(CommonContent::isEnabled)
+                        .collect(Collectors.toList());
 
                 if (enabledCommonContents.size() == 0) {
                     return null;
@@ -488,23 +485,6 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO() {
-        return textDocument -> {
-            SolrDocument solrDocument = new SolrDocument();
-            solrDocument.put(DocumentIndex.FIELD__META_ID, textDocument.getId());
-
-            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE, textDocument.getCommonContents().get(0).getHeadline());
-
-            solrDocument.put(DocumentIndex.FIELD__DOC_TYPE_ID, textDocument.getType().ordinal());
-            solrDocument.put(DocumentIndex.FIELD__ALIAS, textDocument.getAlias());
-
-            DocumentStoredFields from = new DocumentStoredFields(solrDocument);
-
-            return new DocumentStoredFieldsDTO(from);
-        };
-    }
-
-    @Bean
     public Function<TextHistoryJPA, TextHistoryDTO> textHistoryJpaToTextHistoryDTO(final UserService userService) {
         return textHistoryJPA -> {
             final User modifierUser = userService.getUser(textHistoryJPA.getModifierId());
@@ -517,18 +497,4 @@ class MappingConfig {
         };
     }
 
-    @Bean
-    public Function<TextHistoryDTO, TextHistoryJPA> textHistoryDtoToTextHistoryJPA(final UserService userService,
-                                                                                   final LanguageService languageService) {
-        return textHistoryDTO -> {
-            final User modifierUser = userService.getUser(textHistoryDTO.getModifierId());
-            final Language language = languageService.findByCode(textHistoryDTO.getLangCode());
-
-            final TextHistoryJPA textHistoryJPA = new TextHistoryJPA(textHistoryDTO);
-            textHistoryJPA.setLanguage(new LanguageJPA(language));
-            textHistoryJPA.setModifiedBy(modifierUser);
-
-            return textHistoryJPA;
-        };
-    }
 }
