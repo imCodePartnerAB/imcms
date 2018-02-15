@@ -49,6 +49,7 @@ public class TextHistoryJPARepositoryTest {
 
     @Before
     public void setUp() {
+        textHistoryRepository.deleteAll();
         final Language en = languageDataInitializer.createData().get(0);
         final LanguageJPA languageJPA = new LanguageJPA(en);
         final User user = userService.getUser(1);
