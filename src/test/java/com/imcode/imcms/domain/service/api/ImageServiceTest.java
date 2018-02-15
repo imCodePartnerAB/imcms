@@ -180,7 +180,7 @@ public class ImageServiceTest {
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);
-            img.setUrl("img1.jpg");
+            img.setPath("img1.jpg");
             img.setFormat(Format.JPEG);
             img.setLangCode("en");
             img.setName("img1");
@@ -216,7 +216,7 @@ public class ImageServiceTest {
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
             img.setDocId(TEST_DOC_ID);
-            img.setUrl("img1.jpg");
+            img.setPath("img1.jpg");
             img.setFormat(Format.JPEG);
             img.setLangCode("en");
             img.setName("img1");
