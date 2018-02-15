@@ -358,7 +358,9 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         $(document).on("mousemove", function (event) {
-            if (!isMouseDown) return;
+            if (!isMouseDown) {
+                return;
+            }
             moveFrame(event);
         });
 
@@ -594,7 +596,9 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         $(document).on("mouseup", function (event) {
-            if (!isMouseDown) return;
+            if (!isMouseDown) {
+                return;
+            }
             var $frame = $(".imcms-document-items--frame"),
                 frameItem = $frame.find(".imcms-document-item"),
                 insertedParent = null
@@ -622,18 +626,31 @@ Imcms.define("imcms-document-editor-builder",
             isMouseDown = false;
         });
 
+        function getDocumentStatusText(documentStatus) {
+            return {
+                PUBLISHED: texts.status.published,
+                PUBLISHED_WAITING: texts.status.publishedWaiting,
+                IN_PROCESS: texts.status.inProcess,
+                DISAPPROVED: texts.status.disapproved,
+                ARCHIVED: texts.status.archived,
+                PASSED: texts.status.passed
+
+            }[documentStatus];
+        }
+
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
             var $docItemId = components.texts.titleText("<div>", document.id);
             $docItemId.modifiers = ["col-1", "id"];
 
-            var title = (document.commonContents) ? document.commonContents.filter(function (commonContent) {
-                return commonContent.language.code === imcms.language.code;
-
-            }).map(function (commonContent) {
-                return commonContent.headline;
-
-            })[0] : document.title;
+            var title = (document.commonContents)
+                ? document.commonContents.filter(function (commonContent) {
+                        return commonContent.language.code === imcms.language.code;
+                    })
+                    .map(function (commonContent) {
+                        return commonContent.headline;
+                    })[0]
+                : document.title;
 
             var $docItemTitle = components.texts.titleText("<div>", title, {title: title});
             $docItemTitle.modifiers = ["col-5", "title"];
@@ -644,8 +661,8 @@ Imcms.define("imcms-document-editor-builder",
             var $docItemType = components.texts.titleText("<div>", document.type);
             $docItemType.modifiers = ["col-1", "type"];
 
-            var $docStatus = components.texts.titleText("<div>", document.documentStatus);
-            $docStatus.modifiers = ["col-2", "type"];
+            var $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
+            $docStatus.modifiers = ["col-2", "status"];
 
             var elements = [
                 {
@@ -675,9 +692,10 @@ Imcms.define("imcms-document-editor-builder",
         function buildDocumentItemContainer(document, opts) {
             return new BEM({
                 block: "imcms-document-items",
-                elements: {
-                    "document-item": buildDocItem(document, opts)
-                }
+                elements: [{
+                    "document-item": buildDocItem(document, opts),
+                    modifiers: [document.documentStatus.replace(/_/g, "-").toLowerCase()]
+                }]
             }).buildBlockStructure("<div>", {"data-doc-id": document.id});
         }
 
@@ -719,7 +737,8 @@ Imcms.define("imcms-document-editor-builder",
                 if (innerHeight !== scrollHeight
                     && (($this.scrollTop() + innerHeight) >= scrollHeight)
                     && (searchQueryObj[pageNumber] === currentPage)
-                ) {
+                )
+                {
                     appendDocuments(pageNumber, ++currentPage, false, false);
                 }
             });
