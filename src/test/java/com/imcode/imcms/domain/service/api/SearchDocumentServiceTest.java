@@ -211,7 +211,7 @@ public class SearchDocumentServiceTest {
         try {
             for (int i = 0; i < caseNumber; i++) {
                 final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
-                docIds.add(documentService.save(documentDTO));
+                docIds.add(documentService.save(documentDTO).getId());
             }
 
             waitForIndexUpdates();
@@ -561,7 +561,7 @@ public class SearchDocumentServiceTest {
 
         final List<Integer> docIds = new ArrayList<>();
 
-        textDocumentDTOS.forEach(textDocumentDTO -> docIds.add(documentService.save(textDocumentDTO)));
+        textDocumentDTOS.forEach(textDocumentDTO -> docIds.add(documentService.save(textDocumentDTO).getId()));
 
         try {
             waitForIndexUpdates();

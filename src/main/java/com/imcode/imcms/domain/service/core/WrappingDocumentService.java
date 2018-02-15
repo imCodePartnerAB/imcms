@@ -29,8 +29,8 @@ public class WrappingDocumentService<T extends Document> implements DocumentServ
     }
 
     @Override
-    public int save(UberDocumentDTO saveMe) {
-        return typedDocumentService.save(saveMe.toTypedDocument());
+    public UberDocumentDTO save(UberDocumentDTO saveMe) {
+        return UberDocumentDTO.of(typedDocumentService.save(saveMe.toTypedDocument()));
     }
 
     @Override

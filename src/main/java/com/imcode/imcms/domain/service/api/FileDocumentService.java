@@ -52,11 +52,11 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return fileDocument;
     }
 
-    public int save(FileDocumentDTO saveMe) {
-        final int savedDocId = defaultDocumentService.save(saveMe);
+    public FileDocumentDTO save(FileDocumentDTO saveMe) {
+        final int savedDocId = defaultDocumentService.save(saveMe).getId();
         documentFileService.saveAll(saveMe.getFiles(), savedDocId);
 
-        return savedDocId;
+        return saveMe;
     }
 
     @Override

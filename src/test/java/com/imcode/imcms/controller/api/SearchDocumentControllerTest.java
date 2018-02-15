@@ -83,7 +83,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
 
         documentIndex.removeDocument(1001); // this doc is already indexed in some cases
         final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
-        final Integer documentId = documentService.save(textDocument);
+        final Integer documentId = documentService.save(textDocument).getId();
 
         try {
             waitForIndexUpdates();
@@ -115,7 +115,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -158,7 +158,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -220,7 +220,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -284,7 +284,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -347,7 +347,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -426,7 +426,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -474,7 +474,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
             }
 
             textDocumentDTOS.forEach(textDocumentDTO -> {
-                final int id = documentService.save(textDocumentDTO);
+                final int id = documentService.save(textDocumentDTO).getId();
                 docIds.add(id);
             });
 
@@ -530,7 +530,7 @@ public class SearchDocumentControllerTest extends AbstractControllerTest {
         }
 
         textDocumentDTOS.forEach(textDocumentDTO -> {
-            final int id = documentService.save(textDocumentDTO);
+            final int id = documentService.save(textDocumentDTO).getId();
             docIds.add(id);
         });
 

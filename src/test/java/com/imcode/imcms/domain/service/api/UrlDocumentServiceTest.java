@@ -96,7 +96,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void saveUrlDocument_When_DocumentUrlDtoIsSet_Expect_DocumentUrlDtoIsSaved() {
-        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
         final List<DocumentUrlJPA> all = documentUrlRepository.findAll();
 
         assertEquals(1, all.size());
@@ -111,7 +111,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void getUrlDocumentByDocId_When_DocumentExists_Expect_Found() {
-        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
         final UrlDocumentDTO actualUrlDocumentDTO = urlDocumentService.get(savedDocId);
 
         assertNotNull(actualUrlDocumentDTO);
@@ -119,7 +119,7 @@ public class UrlDocumentServiceTest {
 
     @Test(expected = DocumentNotExistException.class)
     public void deleteUrlDocument_When_Expect_Deleted() {
-        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
 
         assertNotNull(urlDocumentService.get(savedDocId));
 
@@ -129,7 +129,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void deleteUrlDocumentWithItsDocumentUrl_When_DocumentUrlExists_Expect_DocumentUrlIsDeleted() {
-        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
 
         assertEquals(1, documentUrlRepository.findAll().size());
 
@@ -140,7 +140,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void publishUrlDocument_Expect_Published() {
-        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
         final boolean published = urlDocumentService.publishDocument(savedDocId, 1);
 
         assertEquals(true, published);
@@ -148,7 +148,7 @@ public class UrlDocumentServiceTest {
 
     @Test
     public void publishUrlDocument_Expect_NotPublished() {
-        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO);
+        final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
         final int nextVersionIndex = Version.WORKING_VERSION_INDEX + 1;
 
         // create another version

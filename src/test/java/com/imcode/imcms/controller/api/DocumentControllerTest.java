@@ -117,7 +117,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Test
     public void getUrlDocument_When_DocumentExists_Expect_Returned() throws Exception {
         final UrlDocumentDTO empty = urlDocumentService.createEmpty();
-        final int savedId = urlDocumentService.save(empty);
+        final int savedId = urlDocumentService.save(empty).getId();
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", savedId + "");

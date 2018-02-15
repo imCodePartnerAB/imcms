@@ -8,6 +8,12 @@ import com.imcode.imcms.model.Document;
  */
 public interface DocumentSaver<D extends Document> {
 
-    int save(D saveMe);
+    /**
+     * Saves document to DB.
+     *
+     * @param saveMe document to be saved
+     * @return saved document (with id if doc was new)
+     */
+    D save(D saveMe);
 
 }
