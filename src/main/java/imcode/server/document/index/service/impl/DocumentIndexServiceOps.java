@@ -17,9 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -91,17 +88,6 @@ public class DocumentIndexServiceOps {
     }
 
     public QueryResponse query(SolrServer solrServer, SolrQuery solrQuery) throws SolrServerException {
-        if (logger.isDebugEnabled()) {
-            try {
-                String decodedSolrQuery = URLDecoder.decode(solrQuery.toString(), StandardCharsets.UTF_8.name());
-                logger.debug(String.format("Searching using SOLr query: %s.", decodedSolrQuery));
-            } catch (UnsupportedEncodingException e) {
-                // should never happen
-                logger.fatal("Solr query can not be decoded", e);
-                throw new AssertionError(e);
-            }
-        }
-
         return solrServer.query(solrQuery);
     }
 
