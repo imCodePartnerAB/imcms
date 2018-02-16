@@ -149,6 +149,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         alias: "Alias",
                         type: "Typ",
                         status: "Status"
+                    },
+                    status: {
+                        published: "Godkänd, publicerad",
+                        publishedWaiting: "Godkänd, väntar",
+                        inProcess: "Ny",
+                        disapproved: "Ej godkänd",
+                        archived: "Arkiverat",
+                        passed: "Publiceringsänden"
                     }
                 },
                 newDocument: {
@@ -380,6 +388,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         alias: "Alias",
                         type: "Type",
                         status: "Status"
+                    },
+                    status: {
+                        published: "Approved, published",
+                        publishedWaiting: "Approved, waiting",
+                        inProcess: "New",
+                        disapproved: "Disapproved",
+                        archived: "Archived",
+                        passed: "Publication end"
                     }
                 },
                 newDocument: {
