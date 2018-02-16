@@ -1,4 +1,4 @@
-package com.imcode.imcms.servlet.apis;
+package com.imcode.imcms.controller.api;
 
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
