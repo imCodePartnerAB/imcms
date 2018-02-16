@@ -3,6 +3,7 @@ package com.imcode.imcms.config;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
@@ -17,12 +18,10 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.server.Config;
-import imcode.server.LanguageMapper;
-import imcode.server.LoggingDocumentIndex;
-import imcode.server.PhaseQueryFixingDocumentIndex;
+import imcode.server.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
+import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import imcode.util.io.FileUtility;
 import org.apache.commons.beanutils.BeanUtils;
@@ -136,8 +135,9 @@ class MainConfig {
     }
 
     @Bean
-    public DocumentIndex documentIndex(Database database, Config config, DocumentMapper documentMapper,
-                                       DocumentIndexServiceOps documentIndexServiceOps) {
+    public ResolvingQueryIndex documentIndex(Database database, Config config, DocumentMapper documentMapper,
+                                             DocumentIndexServiceOps documentIndexServiceOps,
+                                             DocumentSearchQueryConverter documentSearchQueryConverter) {
 
         final DocumentIndex index = DocumentIndexFactory.create(config, documentIndexServiceOps);
         final LoggingDocumentIndex documentIndex = new LoggingDocumentIndex(
@@ -147,7 +147,7 @@ class MainConfig {
 
         documentMapper.setDocumentIndex(documentIndex);
 
-        return documentIndex;
+        return new DefaultResolvingQueryIndex(documentIndex, documentSearchQueryConverter);
     }
 
     @Bean

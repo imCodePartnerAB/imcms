@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.*;
@@ -12,6 +13,10 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.UserRoles;
+import com.imcode.imcms.persistence.repository.UserRepository;
+import com.imcode.imcms.persistence.repository.UserRolesRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -34,15 +39,13 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 /**
@@ -93,6 +96,15 @@ public class SearchDocumentServiceTest {
 
     @Autowired
     private Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO;
+
+    @Autowired
+    private UserDataInitializer userDataInitializer;
+
+    @Autowired
+    private UserRolesRepository userRolesRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @BeforeClass
     public static void setMockData() {
@@ -146,6 +158,146 @@ public class SearchDocumentServiceTest {
     }
 
     @Test
+    public void checkTextDocument_When_TermIsSetAsKeyword_Expect_Found() throws Exception {
+        testKeywordOrAliasOrHeadlineForOneDocument("keyword");
+    }
+
+    @Test
+    public void checkTextDocument_When_TermIsSetAsAlias_Expect_Found() throws Exception {
+        testKeywordOrAliasOrHeadlineForOneDocument("alias");
+    }
+
+    @Test
+    public void searchTextDocument_When_TermIsSetAsHeadline_Expect_Found() throws Exception {
+        testKeywordOrAliasOrHeadlineForOneDocument("headline");
+    }
+
+    @Test
+    public void checkTextDocuments_When_TermIsSetAsKeyword_Expect_DocumentsIsFound() throws Exception {
+        testKeywordOrAliasOrHeadlineForMultipleDocuments("keyword");
+    }
+
+    @Test
+    public void checkTextDocuments_When_TermIsSetAsAlias_Expect_DocumentsIsFound() throws Exception {
+        testKeywordOrAliasOrHeadlineForMultipleDocuments("alias");
+    }
+
+    @Test
+    public void checkTextDocuments_When_TermIsSetAsTitle_Expect_DocumentsIsFound() throws Exception {
+        testKeywordOrAliasOrHeadlineForMultipleDocuments("headline");
+    }
+
+    private void testKeywordOrAliasOrHeadlineForMultipleDocuments(String field) throws Exception {
+        final int documentNumberWithSpecifiedKeyword = 6;
+        final int documentNumberWithoutKeyword = 4;
+
+        final String termText = "some_text" + new Random().nextInt(100);
+
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < documentNumberWithSpecifiedKeyword; i++) {
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+
+                setTextDocumentField(field, textDocument, termText);
+                textDocumentDTOS.add(textDocument);
+            }
+
+            for (int i = 0; i < documentNumberWithoutKeyword; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO).getId();
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
+                    .limit(documentNumberWithSpecifiedKeyword)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            Collections.reverse(documentStoredFieldsDTOS);
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setTerm(termText);
+
+            final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO);
+
+            assertEquals(documentNumberWithSpecifiedKeyword, actual.size());
+            assertEquals(documentStoredFieldsDTOS, actual);
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    private void testKeywordOrAliasOrHeadlineForOneDocument(String field) throws Exception {
+        final int documentNumber = 5;
+        final int docIdCheckingIndex = new Random().nextInt(documentNumber);
+
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < documentNumber; i++) {
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                final String termText = textDocument.getId() + field;
+
+                setTextDocumentField(field, textDocument, termText);
+                textDocumentDTOS.add(textDocument);
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO).getId();
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
+                    .skip(docIdCheckingIndex)
+                    .limit(1)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setTerm(String.valueOf(
+                    textDocumentDTOS.get(docIdCheckingIndex).getId()) + field);
+
+            final List<DocumentStoredFieldsDTO> actual = searchDocumentService.searchDocuments(searchQueryDTO);
+
+            assertEquals(1, actual.size());
+            assertEquals(documentStoredFieldsDTOS, actual);
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    private void setTextDocumentField(String field, TextDocumentDTO textDocument, String termText) {
+        switch (field) {
+            case "headline":
+                textDocument.getCommonContents().get(0).setHeadline(termText);
+                break;
+            case "alias":
+                textDocument.setAlias(termText);
+                break;
+            case "keyword":
+                textDocument.getKeywords().add(termText);
+                break;
+        }
+    }
+
+    @Test
     public void searchDocuments_When_DocId1001Requested_Expect_Found() throws InterruptedException {
         documentIndex.removeDocument(DOC_ID);
         documentIndex.indexDocument(DOC_ID);
@@ -160,6 +312,247 @@ public class SearchDocumentServiceTest {
         searchQueryDTO.setPage(pageRequest);
 
         assertEquals(1, searchDocumentService.searchDocuments(searchQueryDTO).size());
+    }
+
+    @Test
+    public void search_When_SomeAmountOfDocumentsExist_Expect_AllFound() throws Exception {
+        final int caseNumber = 15;
+        final List<Integer> docIds = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < caseNumber; i++) {
+                final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
+                docIds.add(documentService.save(documentDTO).getId());
+            }
+
+            waitForIndexUpdates();
+            waitForIndexUpdates();
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            final int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
+
+            assertEquals(caseNumber + 1, documentCount);
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastDigitOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(1);
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastTwoDigitsOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(2);
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastThreeDigitsOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(3);
+    }
+
+    @Test
+    public void searchTextDocuments_When_TermIsSetAsLastFourDigitsOfSpecifiedId_Expect_FoundDocuments() throws Exception {
+        testForLastDigits(4);
+    }
+
+    private void testForLastDigits(int lastDigitsNumber) throws Exception {
+        final int documentNumber = 12;
+
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        documentIndex.removeDocument(1001); // this doc is already indexed in some cases
+
+        for (int i = 0; i < documentNumber; i++) {
+            textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+        }
+
+        textDocumentDTOS.forEach(textDocumentDTO -> {
+            final int id = documentService.save(textDocumentDTO).getId();
+            docIds.add(id);
+        });
+
+        Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+        waitForIndexUpdates();
+
+        final String firstId = String.valueOf(docIds.get(0));
+        final String lastDigitOfFirstID = firstId.substring(firstId.length() - lastDigitsNumber);
+
+        final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = textDocumentDTOS.stream()
+                .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                .filter(doc -> String.valueOf(doc.getId()).contains(lastDigitOfFirstID))
+                .collect(Collectors.toList());
+
+        Collections.reverse(documentStoredFieldsDTOS);
+
+        try {
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setTerm(lastDigitOfFirstID);
+
+            assertEquals(documentStoredFieldsDTOS, searchDocumentService.searchDocuments(searchQueryDTO));
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    @Test
+    public void searchTextDocuments_When_UserIdSet_Expect_Found() throws Exception {
+        final int documentNumberFirstUser = 6;
+        final int documentNumberSecondUser = 4;
+
+        //create 2 users
+        final List<User> users = userDataInitializer.createData(2, RoleId.USERS_ID);
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            // create docs for 1st user
+            for (int i = 0; i < documentNumberFirstUser; i++) {
+                final AuditDTO auditDTO = new AuditDTO();
+                auditDTO.setId(users.get(0).getId());
+
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                textDocument.setCreated(auditDTO);
+
+                textDocumentDTOS.add(textDocument);
+            }
+
+            // create docs for 2st user
+            for (int i = 0; i < documentNumberSecondUser; i++) {
+                final AuditDTO auditDTO = new AuditDTO();
+                auditDTO.setId(users.get(1).getId());
+
+                final TextDocumentDTO textDocument = documentDataInitializer.createTextDocument();
+                textDocument.setCreated(auditDTO);
+
+                textDocumentDTOS.add(textDocument);
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO).getId();
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            // create query for 1st user
+            SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setUserId(users.get(0).getId());
+
+            // check document number for 1st user
+            assertEquals(documentNumberFirstUser, searchDocumentService.searchDocuments(searchQueryDTO).size());
+
+            searchQueryDTO = new SearchQueryDTO();
+            searchQueryDTO.setUserId(users.get(1).getId());
+
+            // check document number for 2st user
+            assertEquals(documentNumberSecondUser, searchDocumentService.searchDocuments(searchQueryDTO).size());
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+
+            users.forEach(user -> {
+                final List<UserRoles> userRolesByUserId = userRolesRepository.getUserRolesByUserId(user.getId());
+                userRolesRepository.delete(userRolesByUserId);
+
+                userRepository.delete(user);
+            });
+
+        }
+    }
+
+    @Test
+    public void checkTextDocumentWithMaxId_When_DefaultSearchQuerySet_Expect_isFirstFound() throws Exception {
+
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < 15; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO).getId();
+                docIds.add(id);
+            });
+
+            final OptionalInt oMax = docIds.stream()
+                    .mapToInt(id -> id)
+                    .max();
+
+            assertTrue(oMax.isPresent());
+
+            final int maxId = oMax.getAsInt();
+
+            waitForIndexUpdates();
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            assertThat(searchDocumentService.searchDocuments(searchQueryDTO).get(0).getId(), is(maxId));
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
+    }
+
+    @Test
+    public void getTextDocuments_When_SecondPageIsSet_Expect_DocumentStoredFieldsDtoJson() throws Exception {
+
+        documentIndex.removeDocument(1001); // this doc is already indexed in some cases
+        final List<Integer> docIds = new ArrayList<>();
+        final List<TextDocumentDTO> textDocumentDTOS = new ArrayList<>();
+
+        try {
+            for (int i = 0; i < 15; i++) {
+                textDocumentDTOS.add(documentDataInitializer.createTextDocument());
+            }
+
+            textDocumentDTOS.forEach(textDocumentDTO -> {
+                final int id = documentService.save(textDocumentDTO).getId();
+                docIds.add(id);
+            });
+
+            waitForIndexUpdates();
+
+            final int from = 0;
+            final int to = 5;
+
+            final List<DocumentStoredFieldsDTO> documentStoredFieldsDTOS = IntStream.range(from, to)
+                    .map(i -> to - i + from - 1)
+                    .mapToObj(textDocumentDTOS::get)
+                    .map(textDocumentDTOtoDocumentStoredFieldsDTO)
+                    .collect(Collectors.toList());
+
+            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
+
+            searchQueryDTO.setPage(new PageRequestDTO(1, 10));
+
+
+            assertEquals(documentStoredFieldsDTOS, searchDocumentService.searchDocuments(searchQueryDTO));
+
+        } finally {
+            docIds.forEach(id -> {
+                documentDataInitializer.cleanRepositories(id);
+                documentIndex.removeDocument(id);
+            });
+        }
     }
 
     @Test
@@ -200,33 +593,6 @@ public class SearchDocumentServiceTest {
 
             assertFalse(categoryService.getById(savedId).isPresent());
             assertFalse(categoryTypeService.get(savedType.getId()).isPresent());
-        }
-    }
-
-    @Test
-    public void search_When_SomeAmountOfDocumentsExist_Expect_AllFound() throws Exception {
-        final int caseNumber = 15;
-        final List<Integer> docIds = new ArrayList<>();
-
-        try {
-            for (int i = 0; i < caseNumber; i++) {
-                final TextDocumentDTO documentDTO = documentDataInitializer.createTextDocument();
-                docIds.add(documentService.save(documentDTO).getId());
-            }
-
-            waitForIndexUpdates();
-            waitForIndexUpdates();
-
-            final SearchQueryDTO searchQueryDTO = new SearchQueryDTO();
-            final int documentCount = searchDocumentService.searchDocuments(searchQueryDTO).size();
-
-            assertEquals(caseNumber + 1, documentCount);
-
-        } finally {
-            docIds.forEach(id -> {
-                documentDataInitializer.cleanRepositories(id);
-                documentIndex.removeDocument(id);
-            });
         }
     }
 
