@@ -1,8 +1,13 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.security.AccessType;
+import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.Utility;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -24,6 +29,40 @@ import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 @Controller
 @RequestMapping("/edit")
 public class EditElementController {
+
+    private final String imagesPath;
+
+    public EditElementController(@Value("${ImagePath}") String imagesPath) {
+        this.imagesPath = imagesPath;
+    }
+
+    @RequestMapping("/text")
+    @CheckAccess(AccessType.TEXT)
+    public ModelAndView editText(@RequestParam("meta-id") int metaId,
+                                 @RequestParam int index,
+                                 @RequestParam("language-code") String langCode,
+                                 @RequestParam(value = "loop-index", required = false) Integer loopIndex,
+                                 @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
+                                 HttpServletRequest request,
+                                 ModelAndView mav) {
+
+        LoopEntryRef loopEntryRef = null;
+
+        if ((loopIndex != null) && (loopEntryIndex != null)) {
+            loopEntryRef = new LoopEntryRefDTO(loopIndex, loopEntryIndex);
+        }
+
+        mav.setViewName("edit_text");
+
+        mav.addObject("targetDocId", metaId);
+        mav.addObject("index", index);
+        mav.addObject("loopEntryRef", loopEntryRef);
+        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("langCode", langCode);
+        mav.addObject("contextPath", request.getContextPath());
+
+        return mav;
+    }
 
     /**
      * Method goes to elements edition jsp.
