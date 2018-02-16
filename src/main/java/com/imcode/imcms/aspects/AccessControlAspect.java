@@ -55,6 +55,9 @@ public class AccessControlAspect {
                 case DOC_INFO:
                     if (args[0] instanceof Document) {
                         docId = ((Document) args[0]).getId();
+
+                    } else if (args[0] instanceof Integer) {
+                        docId = (Integer) args[0];
                     }
                     break;
 
@@ -64,6 +67,9 @@ public class AccessControlAspect {
                 case LOOP:
                     if (args[0] instanceof Documentable) {
                         docId = ((Documentable) args[0]).getDocId();
+
+                    } else if (args[0] instanceof Integer) {
+                        docId = (Integer) args[0];
                     }
                     break;
             }
