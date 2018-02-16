@@ -28,17 +28,17 @@ public class DefaultVersionService implements VersionService {
     }
 
     @Override
-    public Version getDocumentWorkingVersion(int docId) {
+    public Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException {
         return getVersion(docId, versionRepository::findWorking);
     }
 
     @Override
-    public Version getLatestVersion(int docId) {
+    public Version getLatestVersion(int docId) throws DocumentNotExistException {
         return getVersion(docId, versionRepository::findLatest);
     }
 
     @Override
-    public Version getVersion(int docId, Function<Integer, Version> versionReceiver) {
+    public Version getVersion(int docId, Function<Integer, Version> versionReceiver) throws DocumentNotExistException {
         return Optional.ofNullable(versionReceiver.apply(docId)).orElseThrow(DocumentNotExistException::new);
     }
 

@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.persistence.entity.Version;
 
 import java.util.List;
@@ -7,11 +8,11 @@ import java.util.function.Function;
 
 public interface VersionService extends DeleterByDocumentId {
 
-    Version getDocumentWorkingVersion(int docId);
+    Version getDocumentWorkingVersion(int docId) throws DocumentNotExistException;
 
-    Version getLatestVersion(int docId);
+    Version getLatestVersion(int docId) throws DocumentNotExistException;
 
-    Version getVersion(int docId, Function<Integer, Version> versionReceiver);
+    Version getVersion(int docId, Function<Integer, Version> versionReceiver) throws DocumentNotExistException;
 
     Version create(int docId);
 
