@@ -7,7 +7,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.service.AddDocToIndex;
 import imcode.server.document.index.service.DeleteDocFromIndex;
 import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import lombok.val;
 import org.apache.commons.lang3.NotImplementedException;
@@ -16,12 +15,9 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 import org.apache.solr.client.solrj.SolrQuery;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // translated from scala...
 public class DocumentIndexImpl implements DocumentIndex {
@@ -100,39 +96,6 @@ public class DocumentIndexImpl implements DocumentIndex {
 
     @Override
     public IndexSearchResult search(SolrQuery solrQuery, UserDomainObject searchingUser) throws IndexException {
-        final String langCode = solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE);
-        final String[] filterQueriesArr = solrQuery.getFilterQueries();
-        final String metaId = solrQuery.get(DocumentIndex.FIELD__META_ID);
-
-        final List<String> filterQueries = (filterQueriesArr == null)
-                ? new ArrayList<>() : Arrays.asList(filterQueriesArr);
-
-        final boolean hasNoLangCode = filterQueries.stream().noneMatch(s -> s.contains(DocumentIndex.FIELD__LANGUAGE_CODE + ":"));
-        final boolean hasNoMetaId = filterQueries.stream().noneMatch(s -> s.contains(DocumentIndex.FIELD__META_ID + ":"));
-
-        if ((langCode == null) && hasNoLangCode) {
-            final String defaultLangCode = Imcms.getServices().getDocumentLanguages().getDefault().getCode();
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__LANGUAGE_CODE + ":" + defaultLangCode);
-        }
-
-        if ((metaId == null) && hasNoMetaId) {
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__META_ID + ":[* TO *]");
-        }
-
-        if (!searchingUser.isSuperAdmin()) {
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":true");
-
-            final String userRoleIdsFormatted = Stream.of(searchingUser.getRoleIds())
-                    .map(RoleId::toString)
-                    .collect(Collectors.joining(" ", "(", ")"));
-
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__ROLE_ID + ":" + userRoleIdsFormatted);
-        }
-
-        if (solrQuery.getRows() == null) {
-            solrQuery.setRows(Integer.MAX_VALUE);
-        }
-
         val queryResponse = service.query(solrQuery);
         return new IndexSearchResult(solrQuery, queryResponse);
     }
