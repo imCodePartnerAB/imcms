@@ -10,7 +10,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>imcms v2</title>
+    <title>Imcms Demo Page</title>
     <!--style files-->
     <link rel="stylesheet" href="${contextPath}/demo/css/demo.css">
     <imcms:admin/>
