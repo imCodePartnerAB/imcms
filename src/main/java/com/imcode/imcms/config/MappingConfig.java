@@ -393,6 +393,8 @@ class MappingConfig {
                     .collect(Collectors.toSet());
 
             dto.setRestrictedPermissions(restrictedPermissions);
+            dto.setProperties(meta.getProperties());
+            dto.setType(meta.getDocumentType());
 
             return dto;
         };
