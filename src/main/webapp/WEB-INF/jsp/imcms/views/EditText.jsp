@@ -1,9 +1,9 @@
+<%@ page pageEncoding="UTF-8" %>
 <%--
   Page for direct text editing
   Created by Serhii from Ubrainians for Imcode
   Date: 16.02.18
 --%>
-<%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 

@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
@@ -31,9 +32,13 @@ import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 public class EditElementController {
 
     private final String imagesPath;
+    private final TextService textService;
 
-    public EditElementController(@Value("${ImagePath}") String imagesPath) {
+    public EditElementController(@Value("${ImagePath}") String imagesPath,
+                                 TextService textService) {
+
         this.imagesPath = imagesPath;
+        this.textService = textService;
     }
 
     @RequestMapping("/text")
@@ -52,8 +57,9 @@ public class EditElementController {
             loopEntryRef = new LoopEntryRefDTO(loopIndex, loopEntryIndex);
         }
 
-        mav.setViewName("edit_text");
+        mav.setViewName("EditText");
 
+        mav.addObject("textService", textService);
         mav.addObject("targetDocId", metaId);
         mav.addObject("index", index);
         mav.addObject("loopEntryRef", loopEntryRef);
