@@ -201,6 +201,7 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function clearData() {
+            events.trigger("loop editor closed");
             $title.text("Loop Editor");
             $body.empty();
         }
