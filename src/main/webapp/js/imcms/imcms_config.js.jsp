@@ -13,19 +13,19 @@
         contextPath: "${pageContext.request.contextPath}",
         imagesPath: "${imagesPath}",
         version: "${version}",
-        isEditMode: ${isEditMode},
-        isPreviewMode: ${isPreviewMode},
-        isVersioningAllowed: ${isVersioningAllowed},
+        isEditMode: ${isEditMode or false},
+        isPreviewMode: ${isPreviewMode or false},
+        isVersioningAllowed: ${isVersioningAllowed or false},
         document: {
-            id: ${currentDocument.id},
-            type: ${currentDocument.documentTypeId},
-            hasNewerVersion: ${hasNewerVersion},
+            id: ${empty currentDocument.id ? 'null' : currentDocument.id},
+            type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
+            hasNewerVersion: ${hasNewerVersion or false},
             headline: "${currentDocument.headline}"
         },
         language: {
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
-            code: "${currentDocument.language.code}"
+            code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
         },
         loadedDependencies: {},
         dependencyTree: {

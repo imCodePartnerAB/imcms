@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.view.ResourceBundleViewResolver;
 
 import javax.servlet.ServletContext;
 import java.util.Properties;
@@ -36,20 +37,20 @@ class WebConfig {
 
     @Bean
     public ViewResolver templateViewResolver() {
-        return instantiateJspViewResolver("/WEB-INF/templates/text/");
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/WEB-INF/templates/text/");
+        viewResolver.setSuffix(".jsp");
+        viewResolver.setOrder(1);
+        viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService");
+        return viewResolver;
     }
 
     @Bean
     public ViewResolver internalViewResolver() {
-        return instantiateJspViewResolver("/WEB-INF/jsp/imcms/views/");
-    }
-
-    private ViewResolver instantiateJspViewResolver(String prefix) {
-        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-        viewResolver.setViewClass(JstlView.class);
-        viewResolver.setPrefix(prefix);
-        viewResolver.setSuffix(".jsp");
-        viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService");
+        final ResourceBundleViewResolver viewResolver = new ResourceBundleViewResolver();
+        viewResolver.setBasename("views");
+        viewResolver.setOrder(0);
         return viewResolver;
     }
 

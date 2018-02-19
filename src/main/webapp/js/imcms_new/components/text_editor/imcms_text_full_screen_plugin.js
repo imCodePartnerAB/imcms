@@ -4,8 +4,15 @@
  */
 Imcms.define(
     "imcms-text-full-screen-plugin",
-    ["jquery", "tinyMCE", "imcms-events"],
-    function ($, tinyMCE, events) {
+    ["jquery", "tinyMCE", "imcms-events", "imcms"],
+    function ($, tinyMCE, events, imcms) {
+
+        function setEnablingStrategy() {
+            if (imcms.textEditorFullScreenEnabled) {
+                this.disabled(true);
+            }
+        }
+
         return {
             pluginName: 'fullscreen',
             initFullScreen: function () {
@@ -34,7 +41,8 @@ Imcms.define(
                     editor.addButton(name, {
                         icon: 'fullscreen',
                         cmd: 'mceFullscreen',
-                        title: 'Fullscreen'
+                        title: 'Fullscreen',
+                        onPostRender: setEnablingStrategy
                     });
                 });
             }
