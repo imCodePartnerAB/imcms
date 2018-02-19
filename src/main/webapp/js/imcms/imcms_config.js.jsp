@@ -25,7 +25,7 @@
         language: {
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
-            code: "${currentDocument.language.code}"
+            code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
         },
         loadedDependencies: {},
         dependencyTree: {

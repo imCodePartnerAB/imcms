@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.security.AccessType;
@@ -32,12 +33,15 @@ import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 public class EditElementController {
 
     private final String imagesPath;
+    private final ImageService imageService;
     private final TextService textService;
 
     public EditElementController(@Value("${ImagePath}") String imagesPath,
+                                 ImageService imageService,
                                  TextService textService) {
 
         this.imagesPath = imagesPath;
+        this.imageService = imageService;
         this.textService = textService;
     }
 
@@ -66,6 +70,36 @@ public class EditElementController {
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("langCode", langCode);
         mav.addObject("contextPath", request.getContextPath());
+
+        return mav;
+    }
+
+    @RequestMapping("/image")
+    @CheckAccess(AccessType.IMAGE)
+    public ModelAndView editImage(@RequestParam("meta-id") int metaId,
+                                  @RequestParam int index,
+                                  @RequestParam("language-code") String langCode,
+                                  @RequestParam(value = "loop-index", required = false) Integer loopIndex,
+                                  @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
+                                  HttpServletRequest request,
+                                  ModelAndView mav) {
+
+        LoopEntryRef loopEntryRef = null;
+
+        if ((loopIndex != null) && (loopEntryIndex != null)) {
+            loopEntryRef = new LoopEntryRefDTO(loopIndex, loopEntryIndex);
+        }
+
+        mav.setViewName("EditImage");
+
+        mav.addObject("imageService", imageService);
+        mav.addObject("targetDocId", metaId);
+        mav.addObject("index", index);
+        mav.addObject("loopEntryRef", loopEntryRef);
+        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("langCode", langCode);
+        mav.addObject("contextPath", request.getContextPath());
+        mav.addObject("imagesPath", imagesPath);
 
         return mav;
     }
