@@ -99,6 +99,23 @@ public class EditElementController {
         return mav;
     }
 
+    @RequestMapping("/menu")
+    @CheckAccess(AccessType.MENU)
+    public ModelAndView editMenu(@RequestParam("meta-id") int metaId,
+                                 @RequestParam int index,
+                                 HttpServletRequest request,
+                                 ModelAndView mav) {
+
+        mav.setViewName("EditMenu");
+
+        mav.addObject("targetDocId", metaId);
+        mav.addObject("index", index);
+        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("contextPath", request.getContextPath());
+
+        return mav;
+    }
+
     /**
      * Method goes to elements edition jsp.
      *

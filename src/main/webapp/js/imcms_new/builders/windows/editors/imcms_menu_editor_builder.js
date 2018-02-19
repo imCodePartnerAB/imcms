@@ -627,6 +627,8 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function clearData() {
+            events.trigger("menu editor closed");
+
             $title.text("Menu Editor");
             $menuElementsContainer.add($documentsContainer).empty();
             documentEditorBuilder.clearData();
