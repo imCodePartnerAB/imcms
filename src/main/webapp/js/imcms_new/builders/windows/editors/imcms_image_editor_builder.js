@@ -5,10 +5,10 @@
 Imcms.define("imcms-image-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms", "tinyMCE",
+        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",
         "imcms-modal-window-builder", "imcms-i18n-texts"
     ],
-    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms, tinyMCE,
+    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms,
               modalWindowBuilder, texts) {
 
         var $rightSidePanel, $bottomPanel, $editableImageArea, $previewImageArea;
@@ -310,7 +310,7 @@ Imcms.define("imcms-image-editor-builder",
 
             function changeHeight(step) {
                 imageDataContainers.$image.height(imageDataContainers.$image.height() + step);
-                imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() + step);
+                // imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() + step);
                 imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() + step);
             }
 
@@ -324,7 +324,7 @@ Imcms.define("imcms-image-editor-builder",
 
             function changeWidth(step) {
                 imageDataContainers.$image.width(imageDataContainers.$image.width() + step);
-                imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() + step);
+                // imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() + step);
                 imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() + step);
             }
 
@@ -550,7 +550,9 @@ Imcms.define("imcms-image-editor-builder",
 
                 if (!filePath && $tag.hasClass("imcms-image-in-text")) {
                     $tag.detach();
-                    tinyMCE.activeEditor.setDirty(true);
+                    imcms.require("tinyMCE", function (tinyMCE) {
+                        tinyMCE.activeEditor.setDirty(true);
+                    });
                     return;
                 }
 
@@ -558,7 +560,9 @@ Imcms.define("imcms-image-editor-builder",
 
                 if ($image.attr("data-mce-src")) {
                     $image.attr("data-mce-src", filePath);
-                    tinyMCE.activeEditor.setDirty(true);
+                    imcms.require("tinyMCE", function (tinyMCE) {
+                        tinyMCE.activeEditor.setDirty(true);
+                    });
                 }
             }
         }
@@ -928,8 +932,8 @@ Imcms.define("imcms-image-editor-builder",
             $heightControlInput.find("input").val(imageData.height);
 
             imageDataContainers.$shadow.css({
-                width: imageData.width,
-                height: imageData.height
+                width: "100%",
+                height: "100%"
             });
 
             if (!imageData.path) {
@@ -959,6 +963,10 @@ Imcms.define("imcms-image-editor-builder",
 
                 if (imageDataContainers.$shadow.height() < imageHeight) {
                     imageDataContainers.$shadow.height(imageHeight);
+                }
+
+                if (imageDataContainers.$shadow.width() < imageWidth) {
+                    imageDataContainers.$shadow.width(imageWidth);
                 }
 
                 imageDataContainers.$image.width(imageWidth - angleBorderSize * 2);
