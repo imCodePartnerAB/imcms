@@ -145,25 +145,33 @@ class MainConfig {
                 new PhaseQueryFixingDocumentIndex(index)
         );
 
-        documentMapper.setDocumentIndex(documentIndex);
+        final DefaultResolvingQueryIndex resolvingQueryIndex = new DefaultResolvingQueryIndex(
+                documentIndex, documentSearchQueryConverter
+        );
 
-        return new DefaultResolvingQueryIndex(documentIndex, documentSearchQueryConverter);
+        documentMapper.setDocumentIndex(resolvingQueryIndex);
+
+        return resolvingQueryIndex;
     }
 
     @Bean
     public DocumentService<TextDocumentDTO> textDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 DocumentDtoFactory documentDtoFactory,
-                                                                TextDocumentTemplateService textDocumentTemplateService) {
+                                                                TextDocumentTemplateService textDocumentTemplateService,
+                                                                TextService textService,
+                                                                ImageService imageService) {
 
-        return new TextDocumentService(documentService, documentDtoFactory, textDocumentTemplateService);
+        return new TextDocumentService(documentService,
+                documentDtoFactory, textDocumentTemplateService, imageService, textService);
     }
 
     @Bean
     public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 DocumentDtoFactory documentDtoFactory,
-                                                                DocumentFileService documentFileService) {
+                                                                DocumentFileService documentFileService,
+                                                                Config config) {
 
-        return new FileDocumentService(documentService, documentDtoFactory, documentFileService);
+        return new FileDocumentService(documentService, documentDtoFactory, documentFileService, config);
     }
 
     @Bean

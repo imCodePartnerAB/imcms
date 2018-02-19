@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.model.Document;
+import org.apache.solr.common.SolrInputDocument;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -13,4 +14,5 @@ public interface BasicDocumentService<D extends Document> extends DeleterByDocum
 
     boolean publishDocument(int docId, int userId);
 
+    SolrInputDocument index(int docId);
 }

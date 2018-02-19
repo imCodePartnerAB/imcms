@@ -12,8 +12,11 @@ import com.imcode.imcms.domain.service.core.WrappingDocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import imcode.server.document.index.service.impl.DocumentIndexer;
+import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 /**
@@ -29,16 +32,19 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
     private final DocumentService<UberDocumentDTO> wrappedTextDocumentService;
     private final DocumentService<UberDocumentDTO> wrappedFileDocumentService;
     private final DocumentService<UberDocumentDTO> wrappedUrlDocumentService;
+    private DocumentIndexer documentIndexer;
     private final MetaRepository metaRepository;
 
     DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
                                     DocumentService<FileDocumentDTO> fileDocumentService,
                                     DocumentService<UrlDocumentDTO> urlDocumentService,
+                                    DocumentIndexer documentIndexer,
                                     MetaRepository metaRepository) {
 
         this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService);
         this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
         this.wrappedUrlDocumentService = new WrappingDocumentService<>(urlDocumentService);
+        this.documentIndexer = documentIndexer;
         this.metaRepository = metaRepository;
     }
 
@@ -63,8 +69,18 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
     }
 
     @Override
+    public SolrInputDocument index(int docId) {
+        return getCorrespondingDocumentService(docId).index(docId);
+    }
+
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         getCorrespondingDocumentService(docIdToDelete).deleteByDocId(docIdToDelete);
+    }
+
+    @PostConstruct
+    private void init() {
+        documentIndexer.setDocumentService(this);
     }
 
     private DocumentService<UberDocumentDTO> getCorrespondingDocumentService(int docId) {

@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Document;
+import org.apache.solr.common.SolrInputDocument;
 
 /**
  * Wrapping around concrete document service.
@@ -36,6 +37,11 @@ public class WrappingDocumentService<T extends Document> implements DocumentServ
     @Override
     public boolean publishDocument(int docId, int userId) {
         return typedDocumentService.publishDocument(docId, userId);
+    }
+
+    @Override
+    public SolrInputDocument index(int docId) {
+        return typedDocumentService.index(docId);
     }
 
     @Override
