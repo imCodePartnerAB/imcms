@@ -5,10 +5,11 @@
  * 16.02.18
  */
 Imcms.require(
-    ["imcms-text-editor-initializer", "imcms-image-editor-initializer"],
+    ["imcms-text-editor-initializer", "imcms-image-editor-initializer", "tinyMCE"],
 
-    function (textEditorInitializer, imageEditorInitializer) {
+    function (textEditorInitializer, imageEditorInitializer, tinyMCE) {
         textEditorInitializer.initEditor();
         imageEditorInitializer.initEditor();
+        tinyMCE.activeEditor.fire("focus");
     }
 );
