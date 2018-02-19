@@ -13,13 +13,13 @@
         contextPath: "${pageContext.request.contextPath}",
         imagesPath: "${imagesPath}",
         version: "${version}",
-        isEditMode: ${isEditMode},
-        isPreviewMode: ${isPreviewMode},
-        isVersioningAllowed: ${isVersioningAllowed},
+        isEditMode: ${isEditMode or false},
+        isPreviewMode: ${isPreviewMode or false},
+        isVersioningAllowed: ${isVersioningAllowed or false},
         document: {
-            id: ${currentDocument.id},
-            type: ${currentDocument.documentTypeId},
-            hasNewerVersion: ${hasNewerVersion},
+            id: ${empty currentDocument.id ? 'null' : currentDocument.id},
+            type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
+            hasNewerVersion: ${hasNewerVersion or false},
             headline: "${currentDocument.headline}"
         },
         language: {
