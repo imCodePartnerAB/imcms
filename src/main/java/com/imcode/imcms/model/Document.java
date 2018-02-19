@@ -5,10 +5,8 @@ import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
-import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.*;
 
@@ -21,7 +19,6 @@ import java.util.*;
 public abstract class Document {
 
     protected Integer id;
-    @Setter(AccessLevel.NONE)
     protected DocumentType type;
     protected String target;
     protected String alias;
@@ -38,6 +35,7 @@ public abstract class Document {
     protected boolean searchDisabled;
     protected Set<CategoryDTO> categories;
     protected Set<RestrictedPermissionDTO> restrictedPermissions;
+    protected Map<String, String> properties;
     protected Map<Integer, Permission> roleIdToPermission;
 
     protected Document(Document from) {
