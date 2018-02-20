@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import imcode.server.Config;
+import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentStoredFields;
 import imcode.util.io.FileUtility;
@@ -67,9 +68,13 @@ public class TestConfig {
     @Bean
     public Function<TextDocumentDTO, DocumentStoredFieldsDTO> textDocumentDTOtoDocumentStoredFieldsDTO() {
         return textDocument -> {
+            final String langCode = Imcms.getUser().getLanguage();
+
             SolrDocument solrDocument = new SolrDocument();
             solrDocument.put(DocumentIndex.FIELD__META_ID, textDocument.getId());
-            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE, textDocument.getCommonContents().get(0).getHeadline());
+            solrDocument.put(DocumentIndex.FIELD__META_HEADLINE + "_" + langCode,
+                    textDocument.getCommonContents().get(0).getHeadline());
+
             solrDocument.put(DocumentIndex.FIELD__DOC_TYPE_ID, textDocument.getType().ordinal());
             solrDocument.put(DocumentIndex.FIELD__ALIAS, textDocument.getAlias());
             solrDocument.put(DocumentIndex.FIELD__STATUS, textDocument.getPublicationStatus().ordinal());
