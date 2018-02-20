@@ -8,10 +8,18 @@ import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
+import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.tika.Tika;
+import org.apache.tika.metadata.HttpHeaders;
+import org.apache.tika.metadata.Metadata;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -26,20 +34,29 @@ import java.util.stream.Collectors;
 @Transactional
 public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
+    private final Logger logger = Logger.getLogger(getClass());
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentFileService documentFileService;
     private final DocumentDtoFactory documentDtoFactory;
+    private final File filesRoot;
     private final Predicate<DocumentFileDTO> fileDocFileFilter;
+    private final Tika tika = com.imcode.imcms.util.Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
     public FileDocumentService(DocumentService<DocumentDTO> documentService,
                                DocumentDtoFactory documentDtoFactory,
                                DocumentFileService documentFileService,
+                               @Value("${FilePath}") File filesRoot,
                                Config config) {
 
         this.defaultDocumentService = documentService;
         this.documentFileService = documentFileService;
         this.documentDtoFactory = documentDtoFactory;
+        this.filesRoot = filesRoot;
         this.fileDocFileFilter = buildFileDocFilter(config);
+    }
+
+    private static String getExtension(String filename) {
+        return FilenameUtils.getExtension(org.apache.commons.lang3.StringUtils.trimToEmpty(filename)).toLowerCase();
     }
 
     @Override
@@ -73,10 +90,6 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return defaultDocumentService.publishDocument(docId, userId);
     }
 
-    private static String getExtension(String filename) {
-        return FilenameUtils.getExtension(org.apache.commons.lang3.StringUtils.trimToEmpty(filename)).toLowerCase();
-    }
-
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         defaultDocumentService.deleteByDocId(docIdToDelete);
@@ -94,13 +107,29 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
                 .filter(DocumentFileDTO::isDefaultFile)
                 .findFirst()
                 .filter(fileDocFileFilter)
-                .ifPresent(file -> {
+                .ifPresent(documentFileDTO -> {
 
-//                    if (file.isFileInputStreamSource() && !file.getFile().exists()) {
-//                        return;
-//                    }
+                    final File file = new File(filesRoot, documentFileDTO.getFilename());
 
-                    solrInputDocument.addField(DocumentIndex.FIELD__MIME_TYPE, file.getMimeType());
+                    if (!file.exists()) {
+                        return;
+                    }
+
+                    solrInputDocument.addField(DocumentIndex.FIELD__MIME_TYPE, documentFileDTO.getMimeType());
+
+                    final FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
+
+                    try (InputStream fileInputStream = fileInputStreamSource.getInputStream()) {
+                        final Metadata metadata = new Metadata();
+                        metadata.set(HttpHeaders.CONTENT_DISPOSITION, documentFileDTO.getFilename());
+                        metadata.set(HttpHeaders.CONTENT_TYPE, documentFileDTO.getMimeType());
+
+                        final String content = tika.parseToString(fileInputStream, metadata);
+                        solrInputDocument.addField(DocumentIndex.FIELD__TEXT, content);
+
+                    } catch (Exception e) {
+                        logger.error(String.format("Unable to index doc %d file '%s'.", docId, documentFileDTO), e);
+                    }
                 });
 
         return solrInputDocument;
