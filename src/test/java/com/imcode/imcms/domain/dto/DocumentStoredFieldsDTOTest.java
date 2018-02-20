@@ -1,8 +1,11 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
+import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentStoredFields;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import org.apache.solr.common.SolrDocument;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +21,10 @@ public class DocumentStoredFieldsDTOTest {
 
     @Before
     public void setUp() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng"); // user lang should exist in common content
+        user.addRoleId(RoleId.SUPERADMIN);
+        Imcms.setUser(user);
     }
 
     @Test
@@ -25,7 +32,7 @@ public class DocumentStoredFieldsDTOTest {
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.DISAPPROVED.ordinal());
         solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
-        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE, "headline");
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
 
@@ -40,7 +47,7 @@ public class DocumentStoredFieldsDTOTest {
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.NEW.ordinal());
         solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
-        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE, "headline");
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
 
@@ -56,7 +63,7 @@ public class DocumentStoredFieldsDTOTest {
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
         solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
-        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE, "headline");
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
@@ -73,7 +80,7 @@ public class DocumentStoredFieldsDTOTest {
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
         solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
-        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE, "headline");
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publicationEnd);
@@ -90,7 +97,7 @@ public class DocumentStoredFieldsDTOTest {
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
         solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
-        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE, "headline");
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
@@ -107,7 +114,7 @@ public class DocumentStoredFieldsDTOTest {
         final SolrDocument solrDocument = new SolrDocument();
         solrDocument.addField(DocumentIndex.FIELD__STATUS, PublicationStatus.APPROVED.ordinal());
         solrDocument.addField(DocumentIndex.FIELD__META_ID, 1001);
-        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE, "headline");
+        solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
