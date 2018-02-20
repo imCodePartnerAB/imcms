@@ -10,10 +10,6 @@ import org.apache.solr.common.params.CommonParams;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
@@ -22,24 +18,25 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Imcms.class})
 public class DocumentSearchQueryConverterTest {
 
     private static DocumentSearchQueryConverter documentSearchQueryConverter;
+    private static final String LANG_CODE = "en";
+
     private SearchQueryDTO searchQueryDTO;
 
     @BeforeClass
     public static void setConverter() {
         documentSearchQueryConverter = new DocumentSearchQueryConverter();
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        Imcms.setUser(user);
     }
 
     @Before
     public void setUp() {
         searchQueryDTO = new SearchQueryDTO();
-
-        PowerMockito.mockStatic(Imcms.class);
-        PowerMockito.when(Imcms.getUser()).thenReturn(new UserDomainObject(1));
     }
 
     @Test
@@ -59,7 +56,7 @@ public class DocumentSearchQueryConverterTest {
 
         final String expected = Arrays.stream(new String[]{
                 DocumentIndex.FIELD__META_ID,
-                DocumentIndex.FIELD__META_HEADLINE,
+                DocumentIndex.FIELD__META_HEADLINE + "_" + LANG_CODE,
                 DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__KEYWORD,
                 DocumentIndex.FIELD__TEXT,
