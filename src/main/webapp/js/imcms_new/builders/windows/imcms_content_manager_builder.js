@@ -6,9 +6,9 @@ Imcms.define(
     "imcms-content-manager-builder",
     [
         "imcms-bem-builder", "imcms-window-builder", "imcms-components-builder", "imcms-image-content-builder",
-        "jquery", "imcms-i18n-texts"
+        "jquery", "imcms-i18n-texts", "imcms-events", "imcms"
     ],
-    function (BEM, WindowBuilder, components, imageContentBuilder, $, texts) {
+    function (BEM, WindowBuilder, components, imageContentBuilder, $, texts, events, imcms) {
         var $foldersContainer;
         var $imagesContainer;
 
@@ -19,7 +19,7 @@ Imcms.define(
             var $showHideFoldersButton;
 
             function saveAndCloseWindow() {
-                showImageStrategy.call(showImageStrategy, imageContentBuilder.getSelectedImage());
+                showImageStrategy && showImageStrategy.call(showImageStrategy, imageContentBuilder.getSelectedImage());
                 contentManagerWindowBuilder.closeWindow();
             }
 
@@ -94,14 +94,19 @@ Imcms.define(
                     }
                 });
 
-                var $saveAndClose = components.buttons.saveButton({
-                    text: texts.saveAndClose,
-                    click: saveAndCloseWindow
-                });
+                var footerElements$ = [$showHideFoldersButton, $fileInput];
 
-                return contentManagerWindowBuilder.buildFooter([
-                    $showHideFoldersButton, $fileInput, $uploadNewImage, $saveAndClose
-                ]);
+                if (!imcms.disableContentManagerSaveButton) {
+                    var $saveAndClose = components.buttons.saveButton({
+                        text: texts.saveAndClose,
+                        click: saveAndCloseWindow
+                    });
+
+                    footerElements$.push($saveAndClose);
+                }
+
+                footerElements$.push($uploadNewImage);
+                return contentManagerWindowBuilder.buildFooter(footerElements$);
             }
 
             return new BEM({
@@ -123,6 +128,7 @@ Imcms.define(
         }
 
         function clearData() {
+            events.trigger("content manager closed");
             imageContentBuilder.clearContent();
         }
 

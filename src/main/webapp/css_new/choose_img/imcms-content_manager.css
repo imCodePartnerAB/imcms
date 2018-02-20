@@ -66,16 +66,14 @@
     position: relative;
 }
 
-.imcms-content-manager__footer .imcms-button--save {
-    position: absolute;
-    top: 48%;
-    right: 27px;
+.imcms-content-manager__footer .imcms-footer__buttons {
+    display: inline-block;
+    float: right;
 }
 
+.imcms-content-manager__footer .imcms-button--save,
 .imcms-content-manager__footer .imcms-button--positive {
-    position: absolute;
-    top: 48%;
-    right: 200px;
+    margin-top: 25px;
 }
 
 .imcms-content-manager__footer .imcms-button--neutral {

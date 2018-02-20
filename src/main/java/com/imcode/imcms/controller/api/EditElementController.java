@@ -123,11 +123,24 @@ public class EditElementController {
         return mav;
     }
 
-    @RequestMapping("/documents") // check access?
+    @CheckAccess
+    @RequestMapping("/documents")
     public ModelAndView editDocuments(HttpServletRequest request, ModelAndView mav) {
 
         mav.setViewName("EditDocuments");
 
+        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("contextPath", request.getContextPath());
+        return mav;
+    }
+
+    @CheckAccess
+    @RequestMapping("/content")
+    public ModelAndView editContent(HttpServletRequest request, ModelAndView mav) {
+
+        mav.setViewName("EditContent");
+
+        mav.addObject("imagesPath", imagesPath);
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("contextPath", request.getContextPath());
         return mav;
