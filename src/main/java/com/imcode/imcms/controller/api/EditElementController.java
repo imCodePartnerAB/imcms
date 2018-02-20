@@ -111,7 +111,7 @@ public class EditElementController {
         return mav;
     }
 
-    private void addCommonModelData(@RequestParam("meta-id") int metaId, @RequestParam int index, HttpServletRequest request, ModelAndView mav) {
+    private void addCommonModelData(int metaId, int index, HttpServletRequest request, ModelAndView mav) {
         mav.addObject("targetDocId", metaId);
         mav.addObject("index", index);
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
