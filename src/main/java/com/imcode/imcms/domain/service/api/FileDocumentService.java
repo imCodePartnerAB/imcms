@@ -8,7 +8,6 @@ import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
-import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
@@ -117,9 +117,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
                     solrInputDocument.addField(DocumentIndex.FIELD__MIME_TYPE, documentFileDTO.getMimeType());
 
-                    final FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
-
-                    try (InputStream fileInputStream = fileInputStreamSource.getInputStream()) {
+                    try (final InputStream fileInputStream = new FileInputStream(file)) {
                         final Metadata metadata = new Metadata();
                         metadata.set(HttpHeaders.CONTENT_DISPOSITION, documentFileDTO.getFilename());
                         metadata.set(HttpHeaders.CONTENT_TYPE, documentFileDTO.getMimeType());
