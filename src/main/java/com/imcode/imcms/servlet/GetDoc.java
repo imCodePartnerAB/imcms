@@ -136,8 +136,12 @@ public class GetDoc extends HttpServlet {
 
     private static void getFileDoc(FileDocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws IOException {
         final String fileId = req.getParameter(REQUEST_PARAMETER__FILE_ID);
-        final FileDocumentDomainObject fileDocument = document;
-        final FileDocumentFile file = fileDocument.getFileOrDefault(fileId);
+        final FileDocumentFile file = document.getFileOrDefault(fileId);
+
+        if (file == null) {
+            res.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
 
         try (InputStream inputStream = new BufferedInputStream(file.getInputStreamSource().getInputStream())) {
             try (ServletOutputStream out = res.getOutputStream()) {
