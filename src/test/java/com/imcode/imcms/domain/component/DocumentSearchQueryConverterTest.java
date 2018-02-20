@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.common.params.CommonParams;
@@ -13,15 +14,20 @@ import org.junit.Test;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class DocumentSearchQueryConverterTest {
 
-    private static DocumentSearchQueryConverter documentSearchQueryConverter;
+    private static final int USER_ID = 1;
     private static final String LANG_CODE = "en";
+
+    private static DocumentSearchQueryConverter documentSearchQueryConverter;
 
     private SearchQueryDTO searchQueryDTO;
 
@@ -117,5 +123,95 @@ public class DocumentSearchQueryConverterTest {
         final String expected = String.format("%s %s", expectedProperty, expectedDirection.toString().toLowerCase());
 
         assertThat(solrQuery.get(CommonParams.SORT), is(expected));
+    }
+
+    @Test
+    public void convert_When_UserIdIsNull_Expect_CorrespondingFilterNotAdded() {
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        final boolean noUserFilter = Arrays.stream(solrQuery.getFilterQueries())
+                .noneMatch(filterQueryValue -> filterQueryValue.startsWith(DocumentIndex.FIELD__CREATOR_ID));
+
+        assertTrue(noUserFilter);
+    }
+
+    @Test
+    public void convert_When_SpecifiedUserIdIsSet_Expect_CorrespondingFilterAdded() {
+        searchQueryDTO.setUserId(USER_ID);
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        final boolean isUserFilter = Arrays.stream(solrQuery.getFilterQueries())
+                .anyMatch(filterQueryValue -> filterQueryValue.equals(DocumentIndex.FIELD__CREATOR_ID + ":" + USER_ID));
+
+        assertTrue(isUserFilter);
+    }
+
+    @Test
+    public void convert_When_UserIsSuperAdmin_Expect_FiltersForSearchEnabledAndRolesIdNotAdded() {
+        final RoleId superAdminRoleId = new RoleId(0);
+
+        Imcms.getUser().addRoleId(superAdminRoleId);
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        Imcms.getUser().removeRoleId(superAdminRoleId);
+
+        final Predicate<String> predicate = filterQueryValue
+                -> filterQueryValue.startsWith(DocumentIndex.FIELD__SEARCH_ENABLED)
+                || filterQueryValue.startsWith(DocumentIndex.FIELD__ROLE_ID);
+
+        boolean noSpecifiedFilters = true;
+        if (solrQuery.getFilterQueries() != null) {
+            noSpecifiedFilters = Arrays.stream(solrQuery.getFilterQueries())
+                    .noneMatch(predicate);
+        }
+
+        assertTrue(noSpecifiedFilters);
+    }
+
+    @Test
+    public void convert_When_UserIsNotSuperAdmin_Expect_FiltersForSearchEnabledAndRolesIdAdded() {
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
+
+        assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
+        assertTrue(filters.contains(DocumentIndex.FIELD__ROLE_ID + ":(2)"));
+    }
+
+    @Test
+    public void convert_When_CategoriesIdIsNotSet_Expect_CategoryIdQueryNotExist() {
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        assertFalse(solrQuery.get(CommonParams.Q).contains(DocumentIndex.FIELD__CATEGORY_ID));
+    }
+
+    @Test
+    public void convert_When_OneCategoryIdIsSet_Expect_CategoryIdQueryExists() {
+        final int categoryId = 1;
+
+        final String expectedQuery = String.format("(*:*) AND (category_id:(%d))", categoryId);
+
+        searchQueryDTO.setCategoriesId(Collections.singletonList(1));
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        assertThat(solrQuery.get(CommonParams.Q), is(expectedQuery));
+    }
+
+    @Test
+    public void convert_When_TwoCategoriesIdIsSet_Expect_CategoryIdQueryExists() {
+        final int firstCategoryId = 1;
+        final int secondCategoryId = 2;
+
+        final String expectedQuery = String.format("(*:*) AND (category_id:(%d AND %d))",
+                firstCategoryId, secondCategoryId);
+
+        searchQueryDTO.setCategoriesId(Arrays.asList(firstCategoryId, secondCategoryId));
+
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
+
+        assertThat(solrQuery.get(CommonParams.Q), is(expectedQuery));
     }
 }
