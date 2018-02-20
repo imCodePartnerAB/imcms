@@ -4,10 +4,10 @@
  */
 Imcms.define("imcms-document-type-select-window-builder",
     [
-        "imcms-page-info-builder", "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-document-types", "imcms-i18n-texts"
+        "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "imcms-document-types",
+        "imcms-i18n-texts"
     ],
-    function (pageInfoBuilder, WindowBuilder, BEM, components, docTypes, texts) {
+    function (WindowBuilder, BEM, components, docTypes, texts) {
 
         texts = texts.editors.newDocument;
 
@@ -17,7 +17,7 @@ Imcms.define("imcms-document-type-select-window-builder",
                     text: text,
                     click: function () {
                         documentTypeSelectWindowBuilder.closeWindow();
-                        pageInfoBuilder.build(null, onDocTypeSelected, type);
+                        onDocTypeSelected(type);
                     }
                 });
             }

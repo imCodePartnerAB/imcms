@@ -58,11 +58,9 @@
                 }
             },
             "imcms-tests": "imcms_tests.js",
-            // events
-            "imcms-events": "events/imcms_events.js",
-            // languages support
-            "imcms-i18n-texts": "i18n/imcms_i18n_texts.js",
-            // components
+            "imcms-events": "events/imcms_events.js", // events
+            "imcms-i18n-texts": "i18n/imcms_i18n_texts.js", // languages support
+            // <components>
             "imcms-document-types": "components/imcms_document_types.js",
             "imcms-calendar": "components/imcms_calendar.js",
             "imcms-date-picker": "components/imcms_date_picker.js",
@@ -73,13 +71,14 @@
             "imcms-jquery-element-reload": "components/imcms_jquery_element_reload.js",
             "imcms-jquery-string-selector": "components/imcms_jquery_string_selector.js",
             "imcms-dom-attributes-extractor": "components/imcms_dom_attributes_extractor.js",
-            // <text editor components>
+            //  <text editor components>
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
             "imcms-text-validation-plugin": "components/text_editor/imcms_text_validation_plugin.js",
             "imcms-text-full-screen-plugin": "components/text_editor/imcms_text_full_screen_plugin.js",
             "imcms-text-discard-changes-plugin": "components/text_editor/imcms_text_discard_changes_plugin.js",
-            // </text editor components>
+            //  </text editor components>
+            // <components>
             // editors initializer
             "imcms-text-editor-initializer": "editor_initializer/imcms_text_editor_initializer.js",
             "imcms-editors-initializer": "editor_initializer/imcms_editors_initializer.js",
@@ -94,7 +93,7 @@
             // init strategy
             "imcms-editor-init-strategy": "editor_initializer/imcms_editor_init_strategy.js",
             // <builders>
-            // basic components builders
+            //  <builder components>
             "imcms-buttons-builder": "builders/components/imcms_buttons_builder.js",
             "imcms-flags-builder": "builders/components/imcms_flags_builder.js",
             "imcms-checkboxes-builder": "builders/components/imcms_checkboxes_builder.js",
@@ -106,39 +105,41 @@
             "imcms-keywords-builder": "builders/components/imcms_keywords_builder.js",
             "imcms-date-time-builder": "builders/components/imcms_date_time_builder.js",
             "imcms-controls-builder": "builders/components/imcms_controls_builder.js",
-            "imcms-primitives-builder": "builders/imcms_primitives_builder.js",
-            "imcms-components-builder": "builders/imcms_components_builder.js",
-            "imcms-window-components-builder": "builders/imcms_window_components_builder.js",
-            // <windows>
+            //   <page_info_tabs>
+            "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
+            "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",
+            "imcms-title-tab-builder": "builders/components/page_info_tabs/imcms_title_tab_builder.js",
+            "imcms-life-cycle-tab-builder": "builders/components/page_info_tabs/imcms_life_cycle_tab_builder.js",
+            "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",
+            "imcms-file-tab-builder": "builders/components/page_info_tabs/imcms_file_tab_builder.js",
+            "imcms-url-tab-builder": "builders/components/page_info_tabs/imcms_url_tab_builder.js",
+            "imcms-keywords-tab-builder": "builders/components/page_info_tabs/imcms_keywords_tab_builder.js",
+            "imcms-categories-tab-builder": "builders/components/page_info_tabs/imcms_categories_tab_builder.js",
+            "imcms-access-tab-builder": "builders/components/page_info_tabs/imcms_access_tab_builder.js",
+            "imcms-permissions-tab-builder": "builders/components/page_info_tabs/imcms_permissions_tab_builder.js",
+            "imcms-status-tab-builder": "builders/components/page_info_tabs/imcms_status_tab_builder.js",
+            //   </page_info_tabs>
+            //  </builder components>
+            //  <windows>
             "imcms-window-builder": "builders/windows/imcms_window_builder.js",
             "imcms-modal-window-builder": "builders/windows/imcms_modal_window_builder.js",
             "imcms-content-manager-builder": "builders/windows/imcms_content_manager_builder.js",
             "imcms-page-info-builder": "builders/windows/imcms_page_info_builder.js",
             "imcms-document-type-select-window-builder": "builders/windows/imcms_document_type_select_window_builder.js",
+            "imcms-document-profile-select-window-builder": "builders/windows/imcms_document_profile_select_window_builder.js",
             "imcms-text-history-window-builder": "builders/windows/imcms_text_history_window_builder.js",
             "imcms-text-validation-result-builder": "builders/windows/imcms_text_validation_result_builder.js",
-            //  <page_info_tabs>
-            "imcms-page-info-tabs-builder": "builders/windows/page_info_tabs/imcms_page_info_tabs_builder.js",
-            "imcms-page-info-tab-form-builder": "builders/windows/page_info_tabs/imcms_page_info_tab_form_builder.js",
-            "imcms-title-tab-builder": "builders/windows/page_info_tabs/imcms_title_tab_builder.js",
-            "imcms-life-cycle-tab-builder": "builders/windows/page_info_tabs/imcms_life_cycle_tab_builder.js",
-            "imcms-appearance-tab-builder": "builders/windows/page_info_tabs/imcms_appearance_tab_builder.js",
-            "imcms-file-tab-builder": "builders/windows/page_info_tabs/imcms_file_tab_builder.js",
-            "imcms-url-tab-builder": "builders/windows/page_info_tabs/imcms_url_tab_builder.js",
-            "imcms-keywords-tab-builder": "builders/windows/page_info_tabs/imcms_keywords_tab_builder.js",
-            "imcms-categories-tab-builder": "builders/windows/page_info_tabs/imcms_categories_tab_builder.js",
-            "imcms-access-tab-builder": "builders/windows/page_info_tabs/imcms_access_tab_builder.js",
-            "imcms-permissions-tab-builder": "builders/windows/page_info_tabs/imcms_permissions_tab_builder.js",
-            "imcms-status-tab-builder": "builders/windows/page_info_tabs/imcms_status_tab_builder.js",
-            //  </page_info_tabs>
-            //  <editors>
+            //   <editors>
             "imcms-menu-editor-builder": "builders/windows/editors/imcms_menu_editor_builder.js",
             "imcms-document-editor-builder": "builders/windows/editors/imcms_document_editor_builder.js",
             "imcms-image-editor-builder": "builders/windows/editors/imcms_image_editor_builder.js",
             "imcms-loop-editor-builder": "builders/windows/editors/imcms_loop_editor_builder.js",
-            //  </editors>
-            // </windows>
+            //   </editors>
+            //  </windows>
             // other builders
+            "imcms-primitives-builder": "builders/imcms_primitives_builder.js",
+            "imcms-components-builder": "builders/imcms_components_builder.js",
+            "imcms-window-components-builder": "builders/imcms_window_components_builder.js",
             "imcms-bem-builder": "builders/imcms_bem_builder.js",
             "imcms-image-content-builder": "builders/imcms_image_content_builder.js",
             "imcms-admin-panel-builder": "builders/imcms_admin_panel_builder.js",

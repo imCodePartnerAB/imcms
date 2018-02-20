@@ -7,11 +7,12 @@ Imcms.define("imcms-document-editor-builder",
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
-        "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events"
+        "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events",
+        "imcms-document-profile-select-window-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
-              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts,
-              events) {
+              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
+              docProfileSelectBuilder) {
 
         texts = texts.editors.document;
 
@@ -91,7 +92,10 @@ Imcms.define("imcms-document-editor-builder",
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
-                docTypeSelectBuilder.build(addDocumentToList);
+                docTypeSelectBuilder.build(function (type) {
+                    // inject docProfileSelectBuilder
+                    pageInfoBuilder.build(null, addDocumentToList, type);
+                });
             }
 
             function buildNewDocButton() {
