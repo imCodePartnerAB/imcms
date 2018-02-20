@@ -7,10 +7,11 @@ Imcms.define("imcms-document-editor-builder",
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
-        "imcms-document-type-select-window-builder", "imcms-i18n-texts"
+        "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
-              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts) {
+              categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts,
+              events) {
 
         texts = texts.editors.document;
 
@@ -811,6 +812,7 @@ Imcms.define("imcms-document-editor-builder",
         }
 
         function clearData() {
+            events.trigger("document-editor-closed");
             searchQueryObj[pageNumber] = currentPage = 0;
             $editorBody.detach();
         }

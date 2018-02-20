@@ -99,8 +99,9 @@ Imcms.define("imcms-page-info-builder",
 
                 if (onDocumentSavedCallback) {
                     onDocumentSavedCallback(savedDoc);
+                }
 
-                } else if (onDocumentSaved) {
+                if (onDocumentSaved) {
                     onDocumentSaved(savedDoc);
                 }
             });
@@ -182,6 +183,7 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function clearPageInfoData() {
+            events.trigger("page info closed");
             $saveAndPublishBtn.css("display", "none");
 
             pageInfoTabs.tabBuilders.forEach(function (tab) {
