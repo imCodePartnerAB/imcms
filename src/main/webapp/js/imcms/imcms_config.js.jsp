@@ -1,12 +1,4 @@
 <%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
-    <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
-    <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
-    <%--@elvariable id="isEditMode" type="boolean"--%>
-    <%--@elvariable id="isPreviewMode" type="boolean"--%>
-    <%--@elvariable id="hasNewerVersion" type="boolean"--%>
-    <%--@elvariable id="version" type="java.lang.String"--%>
-    <%--@elvariable id="imagesPath" type="java.lang.String"--%>
-    <%--@elvariable id="userLanguage" type="java.lang.String"--%>
 
     Imcms = {
         userLanguage: "${userLanguage}",
@@ -172,3 +164,12 @@
             "imcms-file-doc-files-rest-api": "rest/imcms_file_doc_files_rest_api.js"
         }
     };
+
+    <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
+    <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
+    <%--@elvariable id="isEditMode" type="boolean"--%>
+    <%--@elvariable id="isPreviewMode" type="boolean"--%>
+    <%--@elvariable id="hasNewerVersion" type="boolean"--%>
+    <%--@elvariable id="version" type="java.lang.String"--%>
+    <%--@elvariable id="imagesPath" type="java.lang.String"--%>
+    <%--@elvariable id="userLanguage" type="java.lang.String"--%>
