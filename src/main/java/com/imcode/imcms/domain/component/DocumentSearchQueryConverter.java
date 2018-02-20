@@ -11,9 +11,7 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -66,19 +64,6 @@ public class DocumentSearchQueryConverter {
 
         prepareSolrQueryPaging(searchQuery, solrQuery);
 
-        final String[] filterQueriesArr = solrQuery.getFilterQueries();
-        final String metaId = solrQuery.get(DocumentIndex.FIELD__META_ID);
-
-        final List<String> filterQueries = (filterQueriesArr == null)
-                ? new ArrayList<>() : Arrays.asList(filterQueriesArr);
-
-        final boolean hasNoMetaId = filterQueries.stream()
-                .noneMatch(s -> s.contains(DocumentIndex.FIELD__META_ID + ":"));
-
-        if ((metaId == null) && hasNoMetaId) {
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__META_ID + ":[* TO *]");
-        }
-
         if (!searchingUser.isSuperAdmin()) {
             solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":true");
 
@@ -87,10 +72,6 @@ public class DocumentSearchQueryConverter {
                     .collect(Collectors.joining(" ", "(", ")"));
 
             solrQuery.addFilterQuery(DocumentIndex.FIELD__ROLE_ID + ":" + userRoleIdsFormatted);
-        }
-
-        if (solrQuery.getRows() == null) {
-            solrQuery.setRows(Integer.MAX_VALUE);
         }
 
         return solrQuery;
