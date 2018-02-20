@@ -234,20 +234,59 @@ Imcms.define("imcms-document-editor-builder",
             searchQueryObj[sortDirection] = desc;
         }
 
-        function onClickSorting(bySorting) {
-            if (searchQueryObj[sortProperty] === bySorting) {
-                if (searchQueryObj[sortDirection] === asc) {
-                    searchQueryObj[sortDirection] = desc;
-                } else {
-                    if (bySorting === defaultSortPropertyValue) {
-                        searchQueryObj[sortDirection] = asc;
-                    } else {
-                        setDefaultSortProperties();
-                    }
-                }
+        function isAlreadySortedBy(bySorting) {
+            return (searchQueryObj[sortProperty] === bySorting);
+        }
+
+        function isAlreadyAscendingSorting() {
+            return (searchQueryObj[sortDirection] === asc);
+        }
+
+        function setSortingDirection(sorting) {
+            searchQueryObj[sortDirection] = sorting;
+        }
+
+        function isDefaultSorting(bySorting) {
+            return (bySorting === defaultSortPropertyValue);
+        }
+
+        function setSortBy(bySorting) {
+            searchQueryObj[sortProperty] = bySorting;
+            searchQueryObj[sortDirection] = asc;
+        }
+
+        function highlightDefaultSorting() {
+            var $defaultSortingHeader = $(".imcms-document-list-titles__title").first();
+            highlightSoring($defaultSortingHeader);
+        }
+
+        function highlightSoring($sortingHeader) {
+            $(".imcms-document-list-titles__title--active").removeClass("imcms-document-list-titles__title--active");
+            $sortingHeader.addClass("imcms-document-list-titles__title--active");
+        }
+
+        function processSameSorting(bySorting, $sortingHeader) {
+            if (isAlreadyAscendingSorting()) {
+                setSortingDirection(desc);
+                highlightSoring($sortingHeader);
+
+            } else if (isDefaultSorting(bySorting)) {
+                setSortingDirection(asc);
+                highlightSoring($sortingHeader);
+
             } else {
-                searchQueryObj[sortProperty] = bySorting;
-                searchQueryObj[sortDirection] = asc;
+                setDefaultSortProperties();
+                highlightDefaultSorting();
+            }
+        }
+
+        function onClickSorting(bySorting, $sortingHeader) {
+            if (isAlreadySortedBy(bySorting)) {
+                processSameSorting(bySorting, $sortingHeader);
+
+            } else {
+                setSortBy(bySorting);
+                highlightSoring($sortingHeader);
             }
 
             appendDocuments(sortProperty, searchQueryObj[sortProperty], true, false);
@@ -257,7 +296,7 @@ Imcms.define("imcms-document-editor-builder",
             var $idColumnHead = $("<div>", {
                 text: texts.sort.id,
                 click: function () {
-                    onClickSorting(defaultSortPropertyValue);
+                    onClickSorting(defaultSortPropertyValue, $(this));
                 }
             });
             $idColumnHead.modifiers = ["col-1"];
@@ -265,7 +304,7 @@ Imcms.define("imcms-document-editor-builder",
             var $titleColumnHead = $("<div>", {
                 text: texts.sort.title,
                 click: function () {
-                    onClickSorting("meta_headline_" + imcms.userLanguage);
+                    onClickSorting("meta_headline_" + imcms.userLanguage, $(this));
                 }
             });
             $titleColumnHead.modifiers = ["col-5"];
@@ -273,7 +312,7 @@ Imcms.define("imcms-document-editor-builder",
             var $aliasColumnHead = $("<div>", {
                 text: texts.sort.alias,
                 click: function () {
-                    onClickSorting("alias");
+                    onClickSorting("alias", $(this));
                 }
             });
             $aliasColumnHead.modifiers = ["col-3"];
@@ -774,6 +813,7 @@ Imcms.define("imcms-document-editor-builder",
             docSearchRestApi.read().done(function (documentList) {
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
+                highlightDefaultSorting();
             });
         }
 

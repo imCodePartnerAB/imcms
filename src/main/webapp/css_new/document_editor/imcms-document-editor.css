@@ -43,11 +43,14 @@
     border-bottom: 1px solid #d3d8de;
 }
 
-.imcms-document-list__title, .imcms-document-list-titles__title:hover {
+.imcms-document-list__title,
+.imcms-document-list-titles__title--active,
+.imcms-document-list-titles__title:hover {
     background-color: #ededed;
 }
 
-.imcms-document-list__title, .imcms-document-list-titles__title {
+.imcms-document-list__title,
+.imcms-document-list-titles__title {
     cursor: pointer;
     color: #2e3f47;
     font-family: 'Source Sans Pro', sans-serif;

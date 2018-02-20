@@ -392,11 +392,12 @@ Imcms.define("imcms-image-content-builder",
             });
         }
 
-        function onImageDelete(imageFile) {
+        function onImageDelete(element, imageFile) {
             imageFile.path = getFolderPath(activeFolder.$folder) + "/" + imageFile.name;
+
             imageFilesREST.remove(imageFile).done(function (response) {
-                response && $(this).parent().parent().detach();
-            }.bind(this));
+                response && $(element).parent().parent().detach();
+            });
         }
 
         function buildImageDescription(imageFile) {
@@ -407,7 +408,14 @@ Imcms.define("imcms-image-content-builder",
                     "date": $("<div>", {text: imageFile.uploaded}),
                     "button": components.buttons.closeButton({
                         click: function () {
-                            onImageDelete.call(this, imageFile);
+                            var element = this;
+                            var question = texts.removeImageConfirm + imageFile.name + " ?";
+
+                            modalWindow.buildModalWindow(question, function (isUserSure) {
+                                if (isUserSure) {
+                                    onImageDelete(element, imageFile);
+                                }
+                            });
                         }
                     }),
                     "img-title": $("<div>", {
