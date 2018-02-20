@@ -123,6 +123,16 @@ public class EditElementController {
         return mav;
     }
 
+    @RequestMapping("/documents") // check access?
+    public ModelAndView editDocuments(HttpServletRequest request, ModelAndView mav) {
+
+        mav.setViewName("EditDocuments");
+
+        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("contextPath", request.getContextPath());
+        return mav;
+    }
+
     private void addCommonModelData(int metaId, int index, HttpServletRequest request, ModelAndView mav) {
         mav.addObject("targetDocId", metaId);
         mav.addObject("index", index);
