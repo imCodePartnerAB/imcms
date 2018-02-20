@@ -169,9 +169,10 @@ class MainConfig {
     public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 DocumentDtoFactory documentDtoFactory,
                                                                 DocumentFileService documentFileService,
-                                                                Config config) {
+                                                                Config config,
+                                                                @Value("${FilePath}") File filesRoot) {
 
-        return new FileDocumentService(documentService, documentDtoFactory, documentFileService, config);
+        return new FileDocumentService(documentService, documentDtoFactory, documentFileService, filesRoot, config);
     }
 
     @Bean

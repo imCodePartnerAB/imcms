@@ -14,7 +14,6 @@ import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -45,7 +44,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     public FileDocumentService(DocumentService<DocumentDTO> documentService,
                                DocumentDtoFactory documentDtoFactory,
                                DocumentFileService documentFileService,
-                               @Value("${FilePath}") File filesRoot,
+                               File filesRoot,
                                Config config) {
 
         this.defaultDocumentService = documentService;
