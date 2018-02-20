@@ -187,6 +187,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     upload: "Ladda upp",
                     saveAndClose: "Spara och stäng",
                     removeFolderMessage: "Vill du ta bort mapp \"",
+                    removeImageConfirm: "Vill du ta bort bilden ",
                     newFolderName: "Nytt mappnamn",
                     add: "TILLÄGGA+"
                 },
@@ -426,6 +427,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     upload: "Upload",
                     saveAndClose: "Save and close",
                     removeFolderMessage: "Do you want to remove folder \"",
+                    removeImageConfirm: "Do you want to remove image ",
                     newFolderName: "New folder name",
                     add: "ADD+"
                 },
