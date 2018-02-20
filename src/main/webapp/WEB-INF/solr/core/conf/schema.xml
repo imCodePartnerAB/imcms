@@ -120,6 +120,9 @@
         <field name="parents_count" type="int" indexed="true" stored="true" default="0"/>
         <field name="children_count" type="int" indexed="true" stored="true" default="0"/>
 
+        <!-- for url-doc -->
+        <field name="url" type="text_general" indexed="true" stored="true"/>
+
         <!--                 -->
         <!-- text-doc fields -->
         <!--                 -->
