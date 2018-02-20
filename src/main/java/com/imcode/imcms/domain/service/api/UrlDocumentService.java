@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
+import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,7 +50,12 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
 
     @Override
     public SolrInputDocument index(int docId) {
-        return null;
+        final SolrInputDocument solrInputDocument = defaultDocumentService.index(docId);
+        final UrlDocumentDTO urlDocumentDTO = get(docId);
+
+        solrInputDocument.addField(DocumentIndex.FIELD_URL, urlDocumentDTO.getDocumentURL().getUrl());
+
+        return solrInputDocument;
     }
 
     @Override
