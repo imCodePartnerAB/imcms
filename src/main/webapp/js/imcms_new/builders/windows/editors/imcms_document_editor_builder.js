@@ -264,7 +264,7 @@ Imcms.define("imcms-document-editor-builder",
             var $titleColumnHead = $("<div>", {
                 text: texts.sort.title,
                 click: function () {
-                    onClickSorting("meta_headline");
+                    onClickSorting("meta_headline_" + imcms.userLanguage);
                 }
             });
             $titleColumnHead.modifiers = ["col-5"];
