@@ -48,7 +48,7 @@ public class Imcms {
      */
     private static boolean isVersioningAllowed;
 
-    private static boolean startInvoked;
+    private static volatile boolean startInvoked;
 
     public Imcms(ServletContext servletContext, ImcmsServices imcmsServices, Properties imcmsProperties) {
 
