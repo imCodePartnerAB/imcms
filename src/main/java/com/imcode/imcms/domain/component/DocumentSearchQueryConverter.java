@@ -65,23 +65,14 @@ public class DocumentSearchQueryConverter {
 
         prepareSolrQueryPaging(searchQuery, solrQuery);
 
-        final String langCode = solrQuery.get(DocumentIndex.FIELD__LANGUAGE_CODE);
         final String[] filterQueriesArr = solrQuery.getFilterQueries();
         final String metaId = solrQuery.get(DocumentIndex.FIELD__META_ID);
 
         final List<String> filterQueries = (filterQueriesArr == null)
                 ? new ArrayList<>() : Arrays.asList(filterQueriesArr);
 
-        final boolean hasNoLangCode = filterQueries.stream()
-                .noneMatch(s -> s.contains(DocumentIndex.FIELD__LANGUAGE_CODE + ":"));
-
         final boolean hasNoMetaId = filterQueries.stream()
                 .noneMatch(s -> s.contains(DocumentIndex.FIELD__META_ID + ":"));
-
-        if ((langCode == null) && hasNoLangCode) {
-            final String defaultLangCode = Imcms.getServices().getDocumentLanguages().getDefault().getCode();
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__LANGUAGE_CODE + ":" + defaultLangCode);
-        }
 
         if ((metaId == null) && hasNoMetaId) {
             solrQuery.addFilterQuery(DocumentIndex.FIELD__META_ID + ":[* TO *]");

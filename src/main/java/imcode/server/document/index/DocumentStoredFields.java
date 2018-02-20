@@ -4,6 +4,7 @@ package imcode.server.document.index;
 import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
+import imcode.server.Imcms;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Date;
@@ -28,7 +29,8 @@ public class DocumentStoredFields {
     }
 
     public String headline() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE);
+        final String language = Imcms.getUser().getLanguage();
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE + "_" + language);
     }
 
     public String alias() {

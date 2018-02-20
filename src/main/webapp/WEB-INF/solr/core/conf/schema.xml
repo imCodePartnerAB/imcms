@@ -78,7 +78,7 @@
         <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" required="true"/>
 
              <!-- language code - i.e en, se -->
-        <field name="language" type="text_general" indexed="true" stored="true" required="true"/>
+        <field name="language" type="text_general" indexed="true" stored="true" required="true" multiValued="true"/>
 
         <!--
             Should be of type int.
@@ -90,9 +90,9 @@
 
 
         <field name="role_id" type="int" indexed="true" stored="false" multiValued="true"/>
-        <field name="meta_headline" type="string" indexed="true" stored="true"/>
-        <field name="meta_headline_keyword" type="string" indexed="true" stored="false"/>
-        <field name="meta_text" type="string" indexed="true" stored="false"/>
+        <field name="meta_headline" type="string" indexed="true" stored="true" multiValued="true"/>
+        <field name="meta_headline_keyword" type="string" indexed="true" stored="false" multiValued="true"/>
+        <field name="meta_text" type="string" indexed="true" stored="false" multiValued="true"/>
         <field name="doc_type_id" type="int" indexed="true" stored="true"/>
         <field name="creator_id" type="int" indexed="true" stored="false"/>
         <field name="publisher_id" type="int" indexed="true" stored="false"/>
@@ -140,6 +140,9 @@
         <!-- text-doc field, name: text+textNo (including text in a loop) -->
         <dynamicField name="text*" type="text_general_html_strip" indexed="true" stored="false" multiValued="true"/>
 
+        <dynamicField name="meta_headline_*" type="string" indexed="true" stored="true"/>
+        <dynamicField name="meta_headline_keyword_*" type="string" indexed="true" stored="false"/>
+        <dynamicField name="meta_text_*" type="string" indexed="true" stored="false"/>
         <!-- uncomment the following to ignore any fields that don't already match an existing
              field name or dynamic field, rather than reporting them as an error.
              alternately, change the type="ignored" to some other type e.g. "text" if you want
