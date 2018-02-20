@@ -52,12 +52,9 @@ public class EditElementController {
         mav.setViewName("EditText");
 
         mav.addObject("textService", textService);
-        mav.addObject("targetDocId", metaId);
-        mav.addObject("index", index);
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("langCode", langCode);
-        mav.addObject("contextPath", request.getContextPath());
+        addCommonModelData(metaId, index, request, mav);
 
         return mav;
     }
@@ -80,13 +77,10 @@ public class EditElementController {
 
         mav.setViewName("EditImage");
 
-        mav.addObject("targetDocId", metaId);
-        mav.addObject("index", index);
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("langCode", langCode);
-        mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);
+        addCommonModelData(metaId, index, request, mav);
 
         return mav;
     }
@@ -99,11 +93,7 @@ public class EditElementController {
                                  ModelAndView mav) {
 
         mav.setViewName("EditMenu");
-
-        mav.addObject("targetDocId", metaId);
-        mav.addObject("index", index);
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
-        mav.addObject("contextPath", request.getContextPath());
+        addCommonModelData(metaId, index, request, mav);
 
         return mav;
     }
@@ -116,13 +106,16 @@ public class EditElementController {
                                  ModelAndView mav) {
 
         mav.setViewName("EditLoop");
+        addCommonModelData(metaId, index, request, mav);
 
+        return mav;
+    }
+
+    private void addCommonModelData(@RequestParam("meta-id") int metaId, @RequestParam int index, HttpServletRequest request, ModelAndView mav) {
         mav.addObject("targetDocId", metaId);
         mav.addObject("index", index);
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("contextPath", request.getContextPath());
-
-        return mav;
     }
 
 }
