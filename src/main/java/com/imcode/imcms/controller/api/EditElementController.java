@@ -111,6 +111,18 @@ public class EditElementController {
         return mav;
     }
 
+    @RequestMapping("/page-info")
+    @CheckAccess(AccessType.DOC_INFO)
+    public ModelAndView editDocInfo(@RequestParam("meta-id") int metaId, HttpServletRequest request, ModelAndView mav) {
+
+        mav.setViewName("EditDocInfo");
+
+        mav.addObject("targetDocId", metaId);
+        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
+        mav.addObject("contextPath", request.getContextPath());
+        return mav;
+    }
+
     private void addCommonModelData(int metaId, int index, HttpServletRequest request, ModelAndView mav) {
         mav.addObject("targetDocId", metaId);
         mav.addObject("index", index);
