@@ -8,6 +8,10 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * @deprecated use ProfileService
+ */
+@Deprecated
 public class ProfileMapper extends Mapper<Profile> {
 
     public ProfileMapper(Database database) {
