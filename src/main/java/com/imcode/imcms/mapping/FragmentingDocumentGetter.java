@@ -25,8 +25,8 @@ public class FragmentingDocumentGetter extends DocumentGetterWrapper {
         if (documentIds.isEmpty()) {
             return Collections.emptyList();
         }
-        List<Integer> documentIdList = new ArrayList<Integer>(documentIds);
-        CompositeList compositeDocumentList = new CompositeList();
+        List<Integer> documentIdList = new ArrayList<>(documentIds);
+        CompositeList<DocumentDomainObject> compositeDocumentList = new CompositeList<>();
         for (int i = 0; i < documentIds.size(); i += DOCUMENTS_PER_FRAGMENT) {
             int toIndex = Math.min(documentIds.size(), i + DOCUMENTS_PER_FRAGMENT);
             List<Integer> documentIdSubList = documentIdList.subList(i, toIndex);
