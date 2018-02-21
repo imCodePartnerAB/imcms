@@ -165,6 +165,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     fileDoc: "File Document",
                     urlDoc: "URL-dokument"
                 },
+                newDocumentProfile: {
+                    title: "Skapa nytt dokument",
+                    buildButton: "Bygga",
+                    selectProfile: "Välj profil",
+                    selectParent: "Välj förälder"
+                },
                 menu: {
                     title: "Menyredigerare",
                     id: "ID",
@@ -404,6 +410,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     textDoc: "Text Document",
                     fileDoc: "File Document",
                     urlDoc: "URL document"
+                },
+                newDocumentProfile: {
+                    title: "Create new document",
+                    buildButton: "Build",
+                    selectProfile: "Select profile",
+                    selectParent: "Select parent"
                 },
                 menu: {
                     title: "Menu Editor",
