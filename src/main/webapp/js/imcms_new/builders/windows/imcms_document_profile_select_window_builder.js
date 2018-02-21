@@ -4,8 +4,11 @@
  */
 Imcms.define(
     "imcms-document-profile-select-window-builder",
-    ["imcms-window-builder", "imcms-bem-builder", "imcms-i18n-texts", "imcms-components-builder"],
-    function (WindowBuilder, BEM, texts, components) {
+    [
+        "imcms-window-builder", "imcms-bem-builder", "imcms-i18n-texts", "imcms-components-builder",
+        "imcms-profiles-rest-api"
+    ],
+    function (WindowBuilder, BEM, texts, components, profilesRestApi) {
 
         texts = texts.editors.newDocumentProfile;
 
@@ -17,16 +20,16 @@ Imcms.define(
                 emptySelect: true
             });
 
-            // usersRestApi.read(null).done(function (users) {
-            //     var usersDataMapped = users.map(function (user) {
-            //         return {
-            //             text: user.username,
-            //             "data-value": user.id
-            //         }
-            //     });
-            //
-            //     components.selects.addOptionsToSelect(usersDataMapped, $profilesSelectContainer.getSelect());
-            // });
+            profilesRestApi.read().done(function (profiles) {
+                var profilesDataMapped = profiles.map(function (profile) {
+                    return {
+                        text: profile.name,
+                        "data-value": profile.id
+                    }
+                });
+
+                components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelectContainer.getSelect());
+            });
 
             return new BEM({
                 block: "imcms-profile-select",
