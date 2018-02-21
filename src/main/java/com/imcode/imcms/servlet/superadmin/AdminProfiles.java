@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.mapping.ProfileMapper;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class AdminProfiles extends HttpServlet {
 
     private Database getDatabase() {
-        return Imcms.getServices().getDatabase();
+        return new DataSourceDatabase(Imcms.getServices().getDatabaseService().getDataSource());
     }
 
     protected void doGet(HttpServletRequest request,
@@ -105,7 +106,7 @@ public class AdminProfiles extends HttpServlet {
         }
 
         public String suffixFrom(HttpServletRequest request) {
-            Map<String, String[]> parameterMap = (Map<String, String[]>) request.getParameterMap();
+            Map<String, String[]> parameterMap = request.getParameterMap();
             for (String parameterName : parameterMap.keySet()) {
                 String prefix = toString();
                 if (parameterName.startsWith(prefix)) {
