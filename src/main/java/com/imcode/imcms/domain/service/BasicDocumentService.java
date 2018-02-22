@@ -15,4 +15,6 @@ public interface BasicDocumentService<D extends Document> extends DeleterByDocum
     boolean publishDocument(int docId, int userId);
 
     SolrInputDocument index(int docId);
+
+    D copy(int docId);
 }

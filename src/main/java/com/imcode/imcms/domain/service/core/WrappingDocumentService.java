@@ -45,6 +45,11 @@ public class WrappingDocumentService<T extends Document> implements DocumentServ
     }
 
     @Override
+    public UberDocumentDTO copy(int docId) {
+        return UberDocumentDTO.of(typedDocumentService.copy(docId));
+    }
+
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         typedDocumentService.deleteByDocId(docIdToDelete);
     }

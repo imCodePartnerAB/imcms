@@ -74,6 +74,11 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
     }
 
     @Override
+    public Document copy(int docId) {
+        return getCorrespondingDocumentService(docId).copy(docId);
+    }
+
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         getCorrespondingDocumentService(docIdToDelete).deleteByDocId(docIdToDelete);
     }

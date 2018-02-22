@@ -110,6 +110,11 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
+    public TextDocumentDTO copy(int docId) {
+        return null;
+    }
+
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         textDocumentTemplateService.deleteByDocId(docIdToDelete);
         defaultDocumentService.deleteByDocId(docIdToDelete);

@@ -198,6 +198,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     @Transactional
+    public DocumentDTO copy(int docId) {
+        return null;
+    }
+
+    @Override
+    @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
         deleteDocumentContent(docIdToDelete);
         metaRepository.delete(docIdToDelete);

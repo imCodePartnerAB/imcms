@@ -59,6 +59,11 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     }
 
     @Override
+    public UrlDocumentDTO copy(int docId) {
+        return null;
+    }
+
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         defaultDocumentService.deleteByDocId(docIdToDelete);
     }
