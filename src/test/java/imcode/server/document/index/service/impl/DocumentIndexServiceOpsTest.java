@@ -44,6 +44,8 @@ public class DocumentIndexServiceOpsTest {
 
     @InjectMocks
     private DocumentIndexServiceOps documentIndexServiceOps;
+    @Mock
+    private DocumentIndexer documentIndexer;
     private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
     private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
     private static final String aliasField = DocumentIndex.FIELD__ALIAS;
@@ -52,8 +54,7 @@ public class DocumentIndexServiceOpsTest {
     private static int documentSize = 10;
     private static boolean addedInitDocuments;
     private static SolrServer solrServer;
-    @Mock
-    private DocumentIndexer documentIndexer;
+
     private SearchQueryDTO searchQueryDTO;
 
     @BeforeClass
@@ -102,6 +103,67 @@ public class DocumentIndexServiceOpsTest {
 
         assertThat(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID),
                 is(String.valueOf(getDocId(documentSize))));
+    }
+
+    @Test
+    public void reindexDocument_When_DocumentIsRemovedAndAdded_Expect_ContentUpdated() throws Exception {
+        final int id = ++documentSize;
+
+        final String headlineValue = "Headline_Testing_Value_Remove_Added";
+        final String newHeadlineValue = "Updated_Headline_Testing_Value_Remove_Added";
+
+        final SolrInputDocument solrInputDocumentOriginal = addRequiredFields(id);
+        solrInputDocumentOriginal.addField(titleField, headlineValue);
+        indexDocument(id, solrInputDocumentOriginal);
+
+        searchQueryDTO.setTerm(headlineValue);
+        SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertThat(solrDocumentList.size(), is(1));
+        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(headlineValue));
+
+        documentIndexServiceOps.deleteDocsFromIndex(solrServer, getDocId(id));
+
+        solrDocumentList = getSolrDocumentList(searchQueryDTO);
+        assertThat(solrDocumentList.size(), is(0));
+
+        final SolrInputDocument solrInputDocumentUpdated = addRequiredFields(id);
+        solrInputDocumentUpdated.addField(titleField, newHeadlineValue);
+        indexDocument(id, solrInputDocumentUpdated);
+
+        searchQueryDTO.setTerm(newHeadlineValue);
+        solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertThat(solrDocumentList.size(), is(1));
+        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(newHeadlineValue));
+    }
+
+    @Test
+    public void reindexDocument_When_DocumentIsAdded_Expect_ContentUpdated() throws Exception {
+        final int id = ++documentSize;
+
+        final String headlineValue = "Headline_Testing_Value_Added";
+        final String newHeadlineValue = "Updated_Headline_Testing_Value_Added";
+
+        final SolrInputDocument solrInputDocumentOriginal = addRequiredFields(id);
+        solrInputDocumentOriginal.addField(titleField, headlineValue);
+        indexDocument(id, solrInputDocumentOriginal);
+
+        searchQueryDTO.setTerm(headlineValue);
+        SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertThat(solrDocumentList.size(), is(1));
+        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(headlineValue));
+
+        final SolrInputDocument solrInputDocumentUpdated = addRequiredFields(id);
+        solrInputDocumentUpdated.addField(titleField, newHeadlineValue);
+        indexDocument(id, solrInputDocumentUpdated);
+
+        searchQueryDTO.setTerm(newHeadlineValue);
+        solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertThat(solrDocumentList.size(), is(1));
+        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(newHeadlineValue));
     }
 
     // these tests are for searching by term
@@ -488,8 +550,7 @@ public class DocumentIndexServiceOpsTest {
     private void addFieldToSolrDocument(SolrInputDocument solrInputDocument, String field, String value) {
         switch (field) {
             case "headline":
-                final String userLanguage = Imcms.getUser().getLanguage();
-                solrInputDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_" + userLanguage, value);
+                solrInputDocument.addField(titleField, value);
                 break;
             case "alias":
                 solrInputDocument.addField(DocumentIndex.FIELD__ALIAS, value);
