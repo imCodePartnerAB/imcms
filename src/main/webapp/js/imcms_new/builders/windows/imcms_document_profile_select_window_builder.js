@@ -122,19 +122,17 @@ Imcms.define(
                 if (selectedParentDoc) {
                     // validation here
                     windowBuilder.closeWindow();
-                    onProfileOrParentSelectedCallback(selectedParentDoc, null);
+                    onProfileOrParentSelectedCallback(selectedParentDoc);
                     return;
                 }
             }
 
             if ("profile" === checkedValue) {
-                var selectedValue = $profilesSelect.getSelectedValue();
+                var parentDocId = $profilesSelect.getSelectedValue();
 
-                if (selectedValue) {
-                    var profileId = selectedValue;
-
+                if (parentDocId) {
                     windowBuilder.closeWindow();
-                    onProfileOrParentSelectedCallback(null, profileId);
+                    onProfileOrParentSelectedCallback(parentDocId);
                 }
             }
         }

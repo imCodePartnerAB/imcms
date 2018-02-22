@@ -139,9 +139,9 @@ Imcms.define("imcms-page-info-builder",
             return [$saveAndPublishBtn, $cancelBtn, $saveBtn];
         }
 
-        function buildPageInfo(docId, onDocumentSavedCallback, docType) {
+        function buildPageInfo(docId, onDocumentSavedCallback) {
             onDocumentSaved = onDocumentSavedCallback;
-            panels = buildPageInfoPanels(docId, docType);
+            panels = buildPageInfoPanels(docId);
 
             return new BEM({
                 block: "imcms-pop-up-modal",
@@ -154,7 +154,7 @@ Imcms.define("imcms-page-info-builder",
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
 
-        function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId, profileId) {
+        function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId) {
 
             if ((docId === imcms.document.id) && imcms.document.hasNewerVersion) {
                 $saveAndPublishBtn.css("display", "block");
@@ -162,8 +162,7 @@ Imcms.define("imcms-page-info-builder",
 
             var requestData = {
                 docId: docId,
-                parentDocId: parentDocId,
-                profileId: profileId
+                parentDocId: parentDocId
             };
 
             if (docType) {
@@ -195,10 +194,10 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
-        function loadData(docId, onDocumentSavedCallback, docType, parentDocId, profileId) {
+        function loadData(docId, onDocumentSavedCallback, docType, parentDocId) {
             onDocumentSaved = onDocumentSavedCallback;
             $tabsContainer.find("[data-window-id=0]").click();
-            loadPageInfoDataFromDocumentBy(docId, docType, parentDocId, profileId);
+            loadPageInfoDataFromDocumentBy(docId, docType, parentDocId);
         }
 
         var pageInfoWindowBuilder = new WindowBuilder({
@@ -210,7 +209,7 @@ Imcms.define("imcms-page-info-builder",
         var onDocumentSaved;
 
         return {
-            build: function (docId, onDocumentSavedCallback, docType, parentDocId, profileId) {
+            build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
                 onDocumentSaved = onDocumentSavedCallback;
                 pageInfoWindowBuilder.buildWindowWithShadow.applyAsync(arguments, pageInfoWindowBuilder);
             }

@@ -93,8 +93,8 @@ Imcms.define("imcms-document-editor-builder",
             function onNewDocButtonClick(e) {
                 e.preventDefault();
                 docTypeSelectBuilder.build(function (type) {
-                    docProfileSelectBuilder.build(function (parentDocId, profileId) {
-                        pageInfoBuilder.build(null, addDocumentToList, type, parentDocId, profileId);
+                    docProfileSelectBuilder.build(function (parentDocId) {
+                        pageInfoBuilder.build(null, addDocumentToList, type, parentDocId);
                     });
                 });
             }
