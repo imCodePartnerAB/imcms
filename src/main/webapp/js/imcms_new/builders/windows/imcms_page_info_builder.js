@@ -154,13 +154,17 @@ Imcms.define("imcms-page-info-builder",
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
         }
 
-        function loadPageInfoDataFromDocumentBy(docId, docType) {
+        function loadPageInfoDataFromDocumentBy(docId, docType, parentDocId, profileId) {
 
             if ((docId === imcms.document.id) && imcms.document.hasNewerVersion) {
                 $saveAndPublishBtn.css("display", "block");
             }
 
-            var requestData = {docId: docId};
+            var requestData = {
+                docId: docId,
+                parentDocId: parentDocId,
+                profileId: profileId
+            };
 
             if (docType) {
                 requestData.type = docType;
@@ -191,10 +195,10 @@ Imcms.define("imcms-page-info-builder",
             });
         }
 
-        function loadData(docId, onDocumentSavedCallback, docType) {
+        function loadData(docId, onDocumentSavedCallback, docType, parentDocId, profileId) {
             onDocumentSaved = onDocumentSavedCallback;
             $tabsContainer.find("[data-window-id=0]").click();
-            loadPageInfoDataFromDocumentBy(docId, docType);
+            loadPageInfoDataFromDocumentBy(docId, docType, parentDocId, profileId);
         }
 
         var pageInfoWindowBuilder = new WindowBuilder({
@@ -206,7 +210,7 @@ Imcms.define("imcms-page-info-builder",
         var onDocumentSaved;
 
         return {
-            build: function (docId, onDocumentSavedCallback, docType) {
+            build: function (docId, onDocumentSavedCallback, docType, parentDocId, profileId) {
                 onDocumentSaved = onDocumentSavedCallback;
                 pageInfoWindowBuilder.buildWindowWithShadow.applyAsync(arguments, pageInfoWindowBuilder);
             }

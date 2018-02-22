@@ -12,6 +12,8 @@ Imcms.define(
 
         texts = texts.editors.newDocumentProfile;
 
+        var $radioButtonsGroup, $parentSelect, $profilesSelect;
+
         function loadProfiles($profilesSelect) {
             profilesRestApi.read().done(function (profiles) {
                 var profilesDataMapped = profiles.map(function (profile) {
@@ -34,7 +36,9 @@ Imcms.define(
                 emptySelect: true
             });
 
-            loadProfiles($profilesSelectContainer.getSelect());
+            $profilesSelect = $profilesSelectContainer.getSelect();
+
+            loadProfiles($profilesSelect);
 
             return new BEM({
                 block: "imcms-profile-select",
@@ -75,12 +79,14 @@ Imcms.define(
             var $docIdOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByParent,
                 name: "select-profile-or-doc",
-                value: "doc-id",
+                value: "docId",
                 click: function () {
                     $parentSelect.slideDown(400);
                     $profileSelect.slideUp(400);
                 }
             });
+
+            $radioButtonsGroup = components.radios.group($profilesOption, $docIdOption);
 
             return new BEM({
                 block: "new-doc-parent-options",
@@ -94,7 +100,7 @@ Imcms.define(
 
         function buildBody() {
             var $profileSelect = buildProfileSelect();
-            var $parentSelect = buildParentSelect();
+            $parentSelect = buildParentSelect();
             var $radioBlock = buildChoosingRadio($profileSelect, $parentSelect);
 
             return new BEM({
@@ -107,16 +113,37 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
+        function onSubmit() {
+            var checkedValue = $radioButtonsGroup.getCheckedValue();
+
+            if ("docId" === checkedValue) {
+                var selectedParentDoc = $parentSelect.val().trim();
+
+                if (selectedParentDoc) {
+                    // validation here
+                    windowBuilder.closeWindow();
+                    onProfileOrParentSelectedCallback(selectedParentDoc, null);
+                    return;
+                }
+            }
+
+            if ("profile" === checkedValue) {
+                var selectedValue = $profilesSelect.getSelectedValue();
+
+                if (selectedValue) {
+                    var profileId = selectedValue;
+
+                    windowBuilder.closeWindow();
+                    onProfileOrParentSelectedCallback(null, profileId);
+                }
+            }
+        }
+
         function buildFooter() {
-            var parentDocId, profileId;
             return windowBuilder.buildFooter([
                 components.buttons.positiveButton({
-                    text: texts.buildButton,
-                    click: function () {
-                        windowBuilder.closeWindow();
-                        // define stuff
-                        onProfileOrParentSelectedCallback(parentDocId, profileId);
-                    }
+                    text: texts.createDocButton,
+                    click: onSubmit
                 })
             ]);
         }
