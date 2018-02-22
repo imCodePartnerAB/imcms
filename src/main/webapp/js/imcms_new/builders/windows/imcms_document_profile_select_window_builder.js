@@ -12,14 +12,7 @@ Imcms.define(
 
         texts = texts.editors.newDocumentProfile;
 
-        function buildProfileSelect() {
-            var $profilesSelectContainer = components.selects.selectContainer("<div>", {
-                id: "doc-profiles",
-                text: texts.selectProfile,
-                name: "profile",
-                emptySelect: true
-            });
-
+        function loadProfiles($profilesSelect) {
             profilesRestApi.read().done(function (profiles) {
                 var profilesDataMapped = profiles.map(function (profile) {
                     /** @namespace profile.documentName */
@@ -29,8 +22,19 @@ Imcms.define(
                     }
                 });
 
-                components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelectContainer.getSelect());
+                components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelect);
             });
+        }
+
+        function buildProfileSelect() {
+            var $profilesSelectContainer = components.selects.selectContainer("<div>", {
+                id: "doc-profiles",
+                text: texts.selectProfile,
+                name: "profile",
+                emptySelect: true
+            });
+
+            loadProfiles($profilesSelectContainer.getSelect());
 
             return new BEM({
                 block: "imcms-profile-select",
@@ -51,15 +55,54 @@ Imcms.define(
                 elements: {
                     "text-box": $parentDocIdInput
                 }
+            }).buildBlockStructure("<div>", {"style": "display: none;"});
+        }
+
+        function buildChoosingRadio($profileSelect, $parentSelect) {
+            var $choosingTitle = components.texts.titleText("<div>", texts.chooseProfileOrParent);
+
+            var $profilesOption = components.radios.imcmsRadio("<div>", {
+                text: texts.buildByProfile,
+                name: "select-profile-or-doc",
+                value: "profile",
+                checked: true,
+                click: function () {
+                    $parentSelect.slideUp(400);
+                    $profileSelect.slideDown(400);
+                }
+            });
+
+            var $docIdOption = components.radios.imcmsRadio("<div>", {
+                text: texts.buildByParent,
+                name: "select-profile-or-doc",
+                value: "doc-id",
+                click: function () {
+                    $parentSelect.slideDown(400);
+                    $profileSelect.slideUp(400);
+                }
+            });
+
+            return new BEM({
+                block: "new-doc-parent-options",
+                elements: {
+                    "title": $choosingTitle,
+                    "by-profile": $profilesOption,
+                    "by-doc-id": $docIdOption
+                }
             }).buildBlockStructure("<div>");
         }
 
         function buildBody() {
+            var $profileSelect = buildProfileSelect();
+            var $parentSelect = buildParentSelect();
+            var $radioBlock = buildChoosingRadio($profileSelect, $parentSelect);
+
             return new BEM({
                 block: "imcms-document-profile",
                 elements: {
-                    "profile-select": buildProfileSelect(),
-                    "parent-select": buildParentSelect()
+                    "choose-the-way": $radioBlock,
+                    "profile-select": $profileSelect,
+                    "parent-select": $parentSelect
                 }
             }).buildBlockStructure("<div>");
         }
