@@ -41,19 +41,20 @@ import static org.mockito.Mockito.*;
 public class DocumentIndexServiceOpsTest {
 
     private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
+    private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
+    private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
+    private static final String aliasField = DocumentIndex.FIELD__ALIAS;
+    private static final List<String> mockData = new ArrayList<>();
+
+    private static String titleField;
+    private static int documentSize = 10;
+    private static boolean addedInitDocuments;
+    private static SolrServer solrServer;
 
     @InjectMocks
     private DocumentIndexServiceOps documentIndexServiceOps;
     @Mock
     private DocumentIndexer documentIndexer;
-    private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
-    private static final File mainSolrFolder = new File("src/main/webapp/WEB-INF/solr").getAbsoluteFile();
-    private static final String aliasField = DocumentIndex.FIELD__ALIAS;
-    private static final List<String> mockData = new ArrayList<>();
-    private static String titleField;
-    private static int documentSize = 10;
-    private static boolean addedInitDocuments;
-    private static SolrServer solrServer;
 
     private SearchQueryDTO searchQueryDTO;
 
@@ -78,6 +79,7 @@ public class DocumentIndexServiceOpsTest {
 
     @AfterClass
     public static void deleteTestSolrFolder() throws IOException {
+        solrServer.shutdown();
         FileUtility.forceDelete(testSolrFolder);
     }
 

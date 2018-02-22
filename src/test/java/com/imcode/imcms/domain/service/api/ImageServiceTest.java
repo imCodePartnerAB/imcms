@@ -211,7 +211,7 @@ public class ImageServiceTest {
     }
 
     @Test
-    public void saveImage_When_CroppingIsNotDefault_Expect_EqualCropping() throws IOException {
+    public void saveImage_When_CroppingIsNotDefault_Expect_EqualCroppingAndGeneratedImageExist() throws IOException {
         final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(10, 10, 20, 20);
         final ImageDTO imageDTO = Value.with(new ImageDTO(), img -> {
             img.setIndex(TEST_IMAGE_INDEX);
@@ -235,23 +235,24 @@ public class ImageServiceTest {
             img.setRotateAngle(0);
         });
 
-        imageService.saveImage(imageDTO);
-
-        ImageDTO result = null;
+        File generatedImage = null;
 
         try {
-            result = imageService.getImage(imageDTO);
+            imageService.saveImage(imageDTO);
+
+            final ImageDTO result = imageService.getImage(imageDTO);
 
             assertNotNull(result);
             assertEquals(result.getCropRegion(), cropRegion);
 
+            generatedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
+            assertTrue(generatedImage.exists());
+
         } finally {
-            if (result != null) {
-                final File croppedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
-                assertTrue(FileUtility.forceDelete(croppedImage));
+            if (generatedImage != null) {
+                assertTrue(FileUtility.forceDelete(generatedImage));
             }
         }
-
     }
 
     @Test
