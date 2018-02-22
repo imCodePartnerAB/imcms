@@ -12,7 +12,8 @@ Imcms.define(
 
         texts = texts.editors.newDocumentProfile;
 
-        var radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect;
+        var radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect,
+            $validationErrorBlock;
 
         function loadProfiles($profilesSelect) {
             profilesRestApi.read().done(function (profiles) {
@@ -71,6 +72,7 @@ Imcms.define(
                 value: "profile",
                 checked: true,
                 click: function () {
+                    $validationErrorBlock.slideUp(400);
                     $parentSelect.slideUp(400);
                     $profileSelect.slideDown(400);
                 }
@@ -81,6 +83,7 @@ Imcms.define(
                 name: "select-profile-or-doc",
                 value: "docId",
                 click: function () {
+                    $validationErrorBlock.slideUp(400);
                     $parentSelect.slideDown(400);
                     $profileSelect.slideUp(400);
                 }
@@ -98,9 +101,14 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
+        function buildValidationErrorBlock() {
+            return components.texts.errorText("<div>", texts.validationErrorMessage, {"style": "display: none;"});
+        }
+
         function buildBody() {
             $profileSelectBlock = buildProfileSelect();
             $parentSelect = buildParentSelect();
+            $validationErrorBlock = buildValidationErrorBlock();
             var $radioBlock = buildChoosingRadio($profileSelectBlock, $parentSelect);
 
             return new BEM({
@@ -108,7 +116,8 @@ Imcms.define(
                 elements: {
                     "choose-the-way": $radioBlock,
                     "profile-select": $profileSelectBlock,
-                    "parent-select": $parentSelect
+                    "parent-select": $parentSelect,
+                    "validation-error": $validationErrorBlock
                 }
             }).buildBlockStructure("<div>");
         }
@@ -126,18 +135,21 @@ Imcms.define(
                             onProfileOrParentSelectedCallback(selectedParentDoc);
 
                         } else {
-                            // todo: warning message
+                            $validationErrorBlock.slideDown(400);
                         }
                     });
+                } else {
+                    $validationErrorBlock.slideDown(400);
                 }
-            }
-
-            if ("profile" === checkedValue) {
+            } else if ("profile" === checkedValue) {
                 var parentDocId = $profilesSelect.getSelectedValue();
 
                 if (parentDocId) {
                     windowBuilder.closeWindow();
                     onProfileOrParentSelectedCallback(parentDocId);
+
+                } else {
+                    $validationErrorBlock.slideDown(400);
                 }
             }
         }
@@ -168,6 +180,7 @@ Imcms.define(
             $profileSelectBlock.css("display", "block");
             $parentDocIdInput.setValue('');
             $profilesSelect.selectFirst();
+            $validationErrorBlock.css("display", "none");
         }
 
         var windowBuilder = new WindowBuilder({
