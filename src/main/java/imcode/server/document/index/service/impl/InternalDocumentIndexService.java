@@ -28,8 +28,8 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
 
     private final static Logger logger = Logger.getLogger(InternalDocumentIndexService.class);
     private final static Object lock = new Object();
-    private AtomicBoolean shutdownRef = new AtomicBoolean(false);
-    private AtomicReference<DocumentIndexService> serviceRef = new AtomicReference<>(
+    private final AtomicBoolean shutdownRef = new AtomicBoolean(false);
+    private final AtomicReference<DocumentIndexService> serviceRef = new AtomicReference<>(
             new UnavailableDocumentIndexService()
     );
     private String solrHome;
