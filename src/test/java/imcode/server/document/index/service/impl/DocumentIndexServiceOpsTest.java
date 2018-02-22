@@ -374,7 +374,7 @@ public class DocumentIndexServiceOpsTest {
     private void testKeywordOrAliasOrHeadlineForOneDocument(String field) throws Exception {
         final int id = ++documentSize;
 
-        final String termValue = "test_term_value1" + field;
+        final String termValue = "test_term_valueA" + field;
 
         final SolrInputDocument solrInputDocument = addRequiredFields(id);
         addFieldToSolrDocument(solrInputDocument, field, termValue);
@@ -393,7 +393,7 @@ public class DocumentIndexServiceOpsTest {
     private void testKeywordOrAliasOrHeadlineForMultipleDocuments(String field) throws Exception {
         final List<Integer> ids = new ArrayList<>();
 
-        final String termValue = "test_term_value2" + field;
+        final String termValue = "test_term_valueB" + field;
 
         final int documentNumberWithSpecifiedKeyword = 5;
 
