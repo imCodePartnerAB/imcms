@@ -6,9 +6,9 @@ Imcms.define(
     "imcms-document-profile-select-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-i18n-texts", "imcms-components-builder",
-        "imcms-profiles-rest-api"
+        "imcms-profiles-rest-api", "imcms-document-validation-rest-api"
     ],
-    function (WindowBuilder, BEM, texts, components, profilesRestApi) {
+    function (WindowBuilder, BEM, texts, components, profilesRestApi, documentValidationAPI) {
 
         texts = texts.editors.newDocumentProfile;
 
@@ -120,10 +120,15 @@ Imcms.define(
                 var selectedParentDoc = $parentDocIdInput.getValue().trim();
 
                 if (selectedParentDoc) {
-                    // validation here
-                    windowBuilder.closeWindow();
-                    onProfileOrParentSelectedCallback(selectedParentDoc);
-                    return;
+                    documentValidationAPI.checkIsTextDocument(selectedParentDoc).success(function (isTextDoc) {
+                        if (isTextDoc) {
+                            windowBuilder.closeWindow();
+                            onProfileOrParentSelectedCallback(selectedParentDoc);
+
+                        } else {
+                            // todo: warning message
+                        }
+                    });
                 }
             }
 
