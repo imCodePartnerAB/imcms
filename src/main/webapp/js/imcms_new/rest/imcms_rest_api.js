@@ -3,15 +3,19 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
     var API_PREFIX = "/api";
 
     function logAjaxRequest(type, url, data) {
+        var withData = (data !== null && data !== undefined);
+
         console.time(url);
-        console.log("%c AJAX " + type + " call: " + url + (data ? " with request: " : ""), "color: blue;");
-        data && console.log(data);
+        console.log("%c AJAX " + type + " call: " + url + (withData ? " with request: " : ""), "color: blue;");
+        withData && console.log(data);
     }
 
     function logAjaxResponse(type, url, response) {
+        var hasResponse = (response !== null && response !== undefined);
+
         console.timeEnd(url);
-        console.log("%c AJAX " + type + " call done: " + url + (response ? " response: " : ""), "color: green;");
-        response && console.log(response);
+        console.log("%c AJAX " + type + " call done: " + url + (hasResponse ? " response: " : ""), "color: green;");
+        hasResponse && console.log(response);
     }
 
     function ajax(data, callback) {
