@@ -65,7 +65,21 @@ Imcms.define("imcms-radio-buttons-builder",
                 var $label = primitives.imcmsLabelFromObject({
                     "for": id,
                     text: attributes.text,
-                    click: attributes.click
+                    click: function () {
+
+                        if (!attributes.click) {
+                            return;
+                        }
+
+                        var args = arguments;
+                        var context = this;
+
+                        setTimeout(function () {
+                            if ($input.is(":checked")) {
+                                attributes.click.apply(context, args);
+                            }
+                        });
+                    }
                 });
                 var buildBlock = radioBEM.buildBlock(tag, [
                     {"input": $input},
