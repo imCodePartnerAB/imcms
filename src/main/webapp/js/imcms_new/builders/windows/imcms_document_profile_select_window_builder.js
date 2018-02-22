@@ -107,26 +107,27 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildFooter(onDocTypeSelected) {
+        function buildFooter() {
             var parentDocId, profileId;
             return windowBuilder.buildFooter([
                 components.buttons.positiveButton({
                     text: texts.buildButton,
                     click: function () {
+                        windowBuilder.closeWindow();
                         // define stuff
-                        onDocTypeSelected(parentDocId, profileId);
+                        onProfileOrParentSelectedCallback(parentDocId, profileId);
                     }
                 })
-            ])
+            ]);
         }
 
-        function buildProfileSelectWindow(onDocTypeSelected) {
+        function buildProfileSelectWindow() {
             return new BEM({
                 block: "imcms-document-profile-select-window",
                 elements: {
                     "head": windowBuilder.buildHead(texts.title),
                     "body": buildBody(),
-                    "footer": buildFooter(onDocTypeSelected)
+                    "footer": buildFooter()
                 }
             }).buildBlockStructure("<div>");
         }
@@ -135,9 +136,12 @@ Imcms.define(
             factory: buildProfileSelectWindow
         });
 
+        var onProfileOrParentSelectedCallback;
+
         return {
             build: function (onParentSelected) {
-                windowBuilder.buildWindowWithShadow(onParentSelected);
+                onProfileOrParentSelectedCallback = onParentSelected;
+                windowBuilder.buildWindowWithShadow();
             }
         };
     }
