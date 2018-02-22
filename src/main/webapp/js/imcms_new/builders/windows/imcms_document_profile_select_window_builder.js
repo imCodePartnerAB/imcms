@@ -12,7 +12,7 @@ Imcms.define(
 
         texts = texts.editors.newDocumentProfile;
 
-        var $radioButtonsGroup, $parentSelect, $profilesSelect;
+        var $radioButtonsGroup, $parentDocIdInput, $profilesSelect;
 
         function loadProfiles($profilesSelect) {
             profilesRestApi.read().done(function (profiles) {
@@ -49,7 +49,7 @@ Imcms.define(
         }
 
         function buildParentSelect() {
-            var $parentDocIdInput = components.texts.textBox("<div>", {
+            $parentDocIdInput = components.texts.textBox("<div>", {
                 name: "title",
                 text: texts.selectParent
             });
@@ -100,7 +100,7 @@ Imcms.define(
 
         function buildBody() {
             var $profileSelect = buildProfileSelect();
-            $parentSelect = buildParentSelect();
+            var $parentSelect = buildParentSelect();
             var $radioBlock = buildChoosingRadio($profileSelect, $parentSelect);
 
             return new BEM({
@@ -117,7 +117,7 @@ Imcms.define(
             var checkedValue = $radioButtonsGroup.getCheckedValue();
 
             if ("docId" === checkedValue) {
-                var selectedParentDoc = $parentSelect.val().trim();
+                var selectedParentDoc = $parentDocIdInput.getValue().trim();
 
                 if (selectedParentDoc) {
                     // validation here
