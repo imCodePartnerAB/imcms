@@ -16,7 +16,7 @@ public class ImageDTO extends ImageData {
     private static final long serialVersionUID = -3103155597832120014L;
     private Integer index;
     private Integer docId;
-    private boolean inText;
+    protected boolean inText;
     private boolean allLanguages;
     private String alternateText;
     private String linkUrl;
@@ -69,7 +69,19 @@ public class ImageDTO extends ImageData {
     }
 
     public ImageDTO(ImageDTO from) {
-        this(from.index, from.docId, from.loopEntryRef, from.langCode);
+        this.index = from.index;
+        this.docId = from.docId;
+        this.loopEntryRef = (from.loopEntryRef == null) ? null : new LoopEntryRefDTO(from.loopEntryRef);
+        this.langCode = from.langCode;
         this.inText = from.inText;
+        this.name = from.name;
+        this.path = from.path;
+        this.linkUrl = from.linkUrl;
+        this.generatedFilePath = from.generatedFilePath;
+        this.generatedFilename = from.generatedFilename;
+        this.alternateText = from.alternateText;
+        this.format = from.format;
+        this.width = from.width;
+        this.height = from.height;
     }
 }
