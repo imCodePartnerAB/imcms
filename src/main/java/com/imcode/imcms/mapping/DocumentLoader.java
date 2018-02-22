@@ -5,7 +5,6 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -24,21 +23,18 @@ public class DocumentLoader {
 
     private final DocumentVersionMapper versionMapper;
     private final DocumentLanguages documentLanguages;
-    private final PropertyRepository propertyRepository;
     private final MetaRepository metaRepository;
     private final DocumentContentMapper contentMapper;
     private final DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
     public DocumentLoader(DocumentVersionMapper versionMapper,
                           DocumentLanguages documentLanguages,
-                          PropertyRepository propertyRepository,
                           MetaRepository metaRepository,
                           DocumentContentMapper contentMapper,
                           DocumentContentInitializingVisitor documentContentInitializingVisitor) {
 
         this.versionMapper = versionMapper;
         this.documentLanguages = documentLanguages;
-        this.propertyRepository = propertyRepository;
         this.metaRepository = metaRepository;
         this.contentMapper = contentMapper;
         this.documentContentInitializingVisitor = documentContentInitializingVisitor;
@@ -67,13 +63,6 @@ public class DocumentLoader {
         document.accept(documentContentInitializingVisitor);
 
         return document;
-    }
-
-    /**
-     * @return doc's id or null if doc does not exists or alias is not set
-     */
-    public Integer getDocIdByAlias(final String docAlias) {
-        return propertyRepository.findDocIdByAlias(docAlias);
     }
 
     /**

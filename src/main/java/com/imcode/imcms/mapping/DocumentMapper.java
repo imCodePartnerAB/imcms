@@ -2,12 +2,12 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.*;
+import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
-import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import imcode.server.Imcms;
 import imcode.server.document.*;
@@ -22,7 +22,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.oro.text.perl.Perl5Util;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -39,18 +38,18 @@ import static imcode.server.ImcmsConstants.*;
 @Component
 public class DocumentMapper implements DocumentGetter {
 
-    private Database database;
-    private DocumentIndex documentIndex;
+    private final PropertyService propertyService;
     private final DocumentVersionMapper versionMapper;
-    private NativeQueries nativeQueries;
-    @Autowired
-    private DocumentLoader documentLoader;
-    private DocumentSaver documentSaver;
-    private CategoryMapper categoryMapper;
-    private DocumentContentMapper documentContentMapper;
-    private MenuRepository menuRepository;
-    private PropertyRepository propertyRepository;
-    private DocumentLanguages documentLanguages;
+    private final Database database;
+    private final NativeQueries nativeQueries;
+    private final DocumentLoader documentLoader;
+    private final DocumentSaver documentSaver;
+    private final CategoryMapper categoryMapper;
+    private final DocumentContentMapper documentContentMapper;
+    private final MenuRepository menuRepository;
+    private final DocumentLanguages documentLanguages;
+
+    private DocumentIndex documentIndex;
 
     @Inject
     public DocumentMapper(NativeQueries nativeQueries,
@@ -60,7 +59,7 @@ public class DocumentMapper implements DocumentGetter {
                           MenuRepository menuRepository,
                           Database database,
                           DocumentLanguages languages,
-                          PropertyRepository propertyRepository,
+                          PropertyService propertyService,
                           DocumentVersionMapper versionMapper,
                           DocumentLoader documentLoader) {
 
@@ -69,9 +68,9 @@ public class DocumentMapper implements DocumentGetter {
         this.categoryMapper = categoryMapper;
         this.documentContentMapper = documentContentMapper;
         this.menuRepository = menuRepository;
-        this.propertyRepository = propertyRepository;
         this.database = database;
         this.documentLanguages = languages;
+        this.propertyService = propertyService;
         this.versionMapper = versionMapper;
         this.documentLoader = documentLoader;
     }
@@ -404,7 +403,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public List<String> getAllDocumentAlias() {
-        return propertyRepository.findAllAliases();
+        return propertyService.findAllAliases();
     }
 
     /**
@@ -423,7 +422,7 @@ public class DocumentMapper implements DocumentGetter {
      * @param documentIdentity document id or alias
      * @return document id or null if there is no document with such identity.
      */
-    private Integer toDocumentId(String documentIdentity) {
+    public Integer toDocumentId(String documentIdentity) {
         if (documentIdentity == null) {
             return null;
         }
@@ -431,7 +430,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             return Integer.valueOf(documentIdentity);
         } catch (NumberFormatException e) {
-            return documentLoader.getDocIdByAlias(documentIdentity);
+            return propertyService.getDocIdByAlias(documentIdentity);
         }
     }
 
