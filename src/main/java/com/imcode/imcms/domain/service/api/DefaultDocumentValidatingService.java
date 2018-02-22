@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentValidatingService;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -27,7 +28,20 @@ public class DefaultDocumentValidatingService implements DocumentValidatingServi
     public boolean isTextDocument(String documentIdentifier) {
         final Integer documentId = documentMapper.toDocumentId(documentIdentifier);
 
-        return (documentId != null) && (Meta.DocumentType.TEXT == documentService.get(documentId).getType());
+        if (documentId == null) {
+            return false;
+        }
+
+        final DocumentDTO documentDTO;
+
+        try {
+            documentDTO = documentService.get(documentId);
+
+        } catch (DocumentNotExistException e) {
+            return false;
+        }
+
+        return (Meta.DocumentType.TEXT == documentDTO.getType());
     }
 
 }
