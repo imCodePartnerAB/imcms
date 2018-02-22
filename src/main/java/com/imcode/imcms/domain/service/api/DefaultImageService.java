@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.factory.ImageInTextFactory;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -32,18 +33,21 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     private final VersionService versionService;
     private final LanguageService languageService;
     private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
+    private final ImageInTextFactory imageInTextFactory;
     private final Function<Image, ImageDTO> imageToImageDTO;
 
     DefaultImageService(ImageRepository imageRepository,
                         VersionService versionService,
                         LanguageService languageService,
                         TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
+                        ImageInTextFactory imageInTextFactory,
                         Function<Image, ImageDTO> imageToImageDTO) {
 
         super(imageRepository);
         this.versionService = versionService;
         this.languageService = languageService;
         this.imageDtoToImage = imageDtoToImage;
+        this.imageInTextFactory = imageInTextFactory;
         this.imageToImageDTO = imageToImageDTO;
     }
 
@@ -51,7 +55,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     public ImageDTO getImage(ImageDTO dataHolder) {
 
         if ((dataHolder.getIndex() == null) && dataHolder.isInText()) {
-            return getEmptyDtoForTextEditor(dataHolder);
+            return imageInTextFactory.createWithIndex(dataHolder);
         }
 
         return getImage(
@@ -145,18 +149,6 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
                 repository.save(image);
             }
         });
-    }
-
-    private ImageDTO getEmptyDtoForTextEditor(ImageDTO dataHolder) {
-        final ImageDTO emptyDTO = new ImageDTO(dataHolder);
-        emptyDTO.setIndex(getFreeIndexForImageInTextEditor(dataHolder.getDocId()));
-
-        return emptyDTO;
-    }
-
-    private Integer getFreeIndexForImageInTextEditor(Integer docId) {
-        final int minIndex = Optional.ofNullable(repository.findMinIndexByVersion(docId)).orElse(0);
-        return Math.min(minIndex, 0) - 1;
     }
 
     private ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef,
