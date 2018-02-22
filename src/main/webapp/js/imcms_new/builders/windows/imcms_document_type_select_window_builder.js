@@ -11,13 +11,13 @@ Imcms.define("imcms-document-type-select-window-builder",
 
         texts = texts.editors.newDocument;
 
-        function buildBody(onDocTypeSelected) {
+        function buildBody() {
             function buildButton(type, text) {
                 return components.buttons.negativeButton({
                     text: text,
                     click: function () {
                         documentTypeSelectWindowBuilder.closeWindow();
-                        onDocTypeSelected(type);
+                        onDocTypeSelectedCallback(type);
                     }
                 });
             }
@@ -32,12 +32,12 @@ Imcms.define("imcms-document-type-select-window-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildDocumentTypeSelect(onDocTypeSelected) {
+        function buildDocumentTypeSelect() {
             return new BEM({
                 block: "imcms-document-type-select-window",
                 elements: {
                     "head": documentTypeSelectWindowBuilder.buildHead(texts.title),
-                    "body": buildBody(onDocTypeSelected)
+                    "body": buildBody()
                 }
             }).buildBlockStructure("<div>");
         }
@@ -46,9 +46,12 @@ Imcms.define("imcms-document-type-select-window-builder",
             factory: buildDocumentTypeSelect
         });
 
+        var onDocTypeSelectedCallback;
+
         return {
             build: function (onDocTypeSelected) {
-                documentTypeSelectWindowBuilder.buildWindowWithShadow(onDocTypeSelected);
+                onDocTypeSelectedCallback = onDocTypeSelected;
+                documentTypeSelectWindowBuilder.buildWindowWithShadow();
             }
         };
     }

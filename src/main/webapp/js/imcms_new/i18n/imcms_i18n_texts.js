@@ -168,6 +168,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 newDocumentProfile: {
                     title: "Skapa nytt dokument",
                     buildButton: "Bygga",
+                    chooseProfileOrParent: "Skapa via profil eller med befintligt dokument ID",
+                    buildByProfile: "Build by Profile",
+                    buildByParent: "Build by document",
                     selectProfile: "Välj profil",
                     selectParent: "Välj förälder"
                 },
@@ -414,6 +417,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 newDocumentProfile: {
                     title: "Create new document",
                     buildButton: "Build",
+                    chooseProfileOrParent: "Create by profile or by existing document ID",
+                    buildByProfile: "Build by profile",
+                    buildByParent: "Build by document",
                     selectProfile: "Select profile",
                     selectParent: "Select parent"
                 },
