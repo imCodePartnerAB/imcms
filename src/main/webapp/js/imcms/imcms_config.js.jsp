@@ -163,7 +163,8 @@
             "imcms-texts-history-rest-api": "rest/imcms_texts_history_rest_api.js",
             "imcms-texts-validation-rest-api": "rest/imcms_texts_validation_rest_api.js",
             "imcms-file-doc-files-rest-api": "rest/imcms_file_doc_files_rest_api.js",
-            "imcms-profiles-rest-api": "rest/imcms_profiles_rest_api.js"
+            "imcms-profiles-rest-api": "rest/imcms_profiles_rest_api.js",
+            "imcms-document-validation-rest-api": "/rest/imcms_document_validation_rest_api.js"
         }
     };
 
