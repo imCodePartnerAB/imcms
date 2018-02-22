@@ -330,6 +330,8 @@ public class DocumentIndexServiceOpsTest {
                 DocumentIndex.FIELD__CATEGORY_ID, secondCategoryId
         );
 
+        solrServer.commit();
+
         // checking for first category id
         searchQueryDTO.setCategoriesId(Collections.singletonList(firstCategoryId));
 
