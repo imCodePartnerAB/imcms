@@ -3,11 +3,11 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -112,8 +112,8 @@ public class DocumentMenuServiceTest {
         final DocumentDTO documentDTO = documentService.get(meta.getId());
         final String testHeadline = "test_headline";
 
-        for (CommonContentDTO commonContentDTO : documentDTO.getCommonContents()) {
-            commonContentDTO.setHeadline(testHeadline);
+        for (CommonContent commonContent : documentDTO.getCommonContents()) {
+            commonContent.setHeadline(testHeadline);
         }
 
         documentService.save(documentDTO);

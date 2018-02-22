@@ -9,8 +9,7 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.factory.CommonContentFactory;
 import com.imcode.imcms.domain.service.*;
-import com.imcode.imcms.model.Role;
-import com.imcode.imcms.model.TextDocumentTemplate;
+import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.User;
@@ -208,10 +207,10 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_When_CustomCommonContentsSet_Expect_Saved() throws Exception {
-        final List<CommonContentDTO> commonContents = createdTextDoc.getCommonContents();
+        final List<CommonContent> commonContents = createdTextDoc.getCommonContents();
 
         for (int i = 0; i < commonContents.size(); i++) {
-            CommonContentDTO commonContentDTO = commonContents.get(i);
+            CommonContent commonContentDTO = commonContents.get(i);
             commonContentDTO.setHeadline("Test headline " + i);
             commonContentDTO.setMenuText("Test menu text " + i);
             commonContentDTO.setMenuImageURL("Test menu image url " + i);
@@ -380,9 +379,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
     public void save_When_CategoriesIsSet_Expect_Saved() throws Exception {
         categoryDataInitializer.createData(50);
 
-        final Set<CategoryDTO> categories = categoryService.getAll().stream()
+        final Set<Category> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
-                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         createdTextDoc.setCategories(categories);
@@ -394,9 +392,8 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(createdTextDoc));
 
-        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
+        final Set<Category> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
-                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         createdTextDoc.setCategories(categories1);
@@ -434,7 +431,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void save_When_RestrictedPermissionsSet_Expect_Saved() throws Exception {
-        final Set<RestrictedPermissionDTO> restrictedPermissions = new HashSet<>();
+        final Set<RestrictedPermission> restrictedPermissions = new HashSet<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
         restricted1.setPermission(Permission.RESTRICTED_1);

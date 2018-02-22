@@ -7,7 +7,9 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Document that includes specific things for each document type.
@@ -32,22 +34,42 @@ public class UberDocumentDTO extends DocumentDTO {
 
     private UberDocumentDTO(Document from) {
         super(from);
-        this.type = from.getType();
+        setType(from.getType());
     }
 
     private UberDocumentDTO(TextDocumentDTO from) {
         this((Document) from);
-        this.template = from.getTemplate();
+        setTemplate(from.getTemplate());
     }
 
     private UberDocumentDTO(FileDocumentDTO from) {
         this((Document) from);
-        this.files = from.getFiles();
+        setFiles(from.getFiles());
     }
 
     private UberDocumentDTO(UrlDocumentDTO from) {
         this((Document) from);
-        this.documentURL = from.getDocumentURL();
+        setDocumentURL(from.getDocumentURL());
+    }
+
+    /**
+     * Constructor for dynamic beans generators such as Jackson library,
+     * it shows concrete types of abstract classes that should be used.
+     * Don't use it directly.
+     */
+    @SuppressWarnings("unused")
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "template", "files", "documentURL"})
+    public UberDocumentDTO(List<CommonContentDTO> commonContents,
+                           Set<CategoryDTO> categories,
+                           Set<RestrictedPermissionDTO> restrictedPermissions,
+                           TextDocumentTemplateDTO template,
+                           List<DocumentFileDTO> files,
+                           DocumentUrlDTO documentURL) {
+
+        super(commonContents, categories, restrictedPermissions);
+        this.documentURL = documentURL;
+        this.files = files;
+        this.template = template;
     }
 
     public static <T extends Document> UberDocumentDTO of(T from) {

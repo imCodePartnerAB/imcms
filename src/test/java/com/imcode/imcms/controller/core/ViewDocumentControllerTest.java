@@ -4,10 +4,10 @@ import com.imcode.imcms.api.DocumentLanguageDisabledException;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
@@ -152,7 +152,7 @@ public class ViewDocumentControllerTest {
         metaDoc.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
         metaRepository.save(metaDoc);
 
-        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
+        final List<CommonContent> commonContents = textDocument.getCommonContents();
 
         commonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
@@ -183,7 +183,7 @@ public class ViewDocumentControllerTest {
         metaDoc.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         metaRepository.save(metaDoc);
 
-        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
+        final List<CommonContent> commonContents = textDocument.getCommonContents();
 
         commonContents.stream()
                 .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
@@ -214,7 +214,7 @@ public class ViewDocumentControllerTest {
         Imcms.setLanguage(language);
 
         final Integer docId = textDocument.getId();
-        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
+        final List<CommonContent> commonContents = textDocument.getCommonContents();
 
         commonContents.forEach(commonContent -> commonContent.setEnabled(false));
         commonContentService.save(docId, commonContents);
@@ -233,7 +233,7 @@ public class ViewDocumentControllerTest {
         Imcms.setLanguage(language);
 
         final Integer docId = textDocument.getId();
-        final List<CommonContentDTO> commonContents = textDocument.getCommonContents();
+        final List<CommonContent> commonContents = textDocument.getCommonContents();
 
         commonContents.stream()
                 .filter(commonContent -> !commonContent.getLanguage().getCode().equals(language.getCode()))

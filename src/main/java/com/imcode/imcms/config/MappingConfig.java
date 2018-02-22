@@ -358,11 +358,7 @@ class MappingConfig {
             dto.setTarget(meta.getTarget());
             dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
             dto.setPublicationStatus(meta.getPublicationStatus());
-
-            Optional.ofNullable(commonContents).map(commonContents1
-                    -> commonContents1.stream().map(CommonContentDTO::new).collect(Collectors.toList()))
-                    .ifPresent(dto::setCommonContents);
-
+            dto.setCommonContents(commonContents);
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));
             dto.setPublicationEnd(auditDtoCreator.apply(meta::getDepublisherId, meta::getPublicationEndDatetime));
             dto.setArchived(auditDtoCreator.apply(meta::getArchiverId, meta::getArchivedDatetime));
@@ -374,25 +370,13 @@ class MappingConfig {
             versionAudit.setDateTime(latestVersion.getCreatedDt());
             versionAudit.setId(latestVersion.getNo());
             versionAudit.setBy(latestVersion.getModifiedBy().getLogin());
+
             dto.setCurrentVersion(versionAudit);
             dto.setSearchDisabled(meta.isSearchDisabled());
-
             dto.setKeywords(meta.getKeywords());
             dto.setRoleIdToPermission(meta.getRoleIdToPermission());
-
-            final Set<CategoryDTO> categories = meta.getCategories()
-                    .stream()
-                    .map(CategoryDTO::new)
-                    .collect(Collectors.toSet());
-
-            dto.setCategories(categories);
-
-            final Set<RestrictedPermissionDTO> restrictedPermissions = meta.getRestrictedPermissions()
-                    .stream()
-                    .map(RestrictedPermissionDTO::new)
-                    .collect(Collectors.toSet());
-
-            dto.setRestrictedPermissions(restrictedPermissions);
+            dto.setCategories(meta.getCategories());
+            dto.setRestrictedPermissions(new HashSet<>(meta.getRestrictedPermissions()));
             dto.setProperties(meta.getProperties());
             dto.setType(meta.getDocumentType());
 

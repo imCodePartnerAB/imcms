@@ -1,6 +1,7 @@
 package com.imcode.imcms.model;
 
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
@@ -8,7 +9,10 @@ import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -18,77 +22,135 @@ import java.util.*;
 @NoArgsConstructor
 public abstract class Document {
 
-    protected Integer id;
-    protected DocumentType type;
-    protected String target;
-    protected String alias;
-    protected List<CommonContentDTO> commonContents;
-    protected PublicationStatus publicationStatus;
-    protected AuditDTO published;
-    protected AuditDTO archived;
-    protected AuditDTO publicationEnd;
-    protected AuditDTO modified;
-    protected AuditDTO created;
-    protected DisabledLanguageShowMode disabledLanguageShowMode;
-    protected AuditDTO currentVersion;
-    protected Set<String> keywords;
-    protected boolean searchDisabled;
-    protected Set<CategoryDTO> categories;
-    protected Set<RestrictedPermissionDTO> restrictedPermissions;
-    protected Map<String, String> properties;
-    protected Map<Integer, Permission> roleIdToPermission;
-
     protected Document(Document from) {
-        id = from.id;
-        type = from.type; // not sure
-        target = from.target;
-        alias = from.alias;
-        commonContents = from.commonContents;
-        publicationStatus = from.publicationStatus;
-        published = from.published;
-        archived = from.archived;
-        publicationEnd = from.publicationEnd;
-        modified = from.modified;
-        created = from.created;
-        disabledLanguageShowMode = from.disabledLanguageShowMode;
-        currentVersion = from.currentVersion;
-        keywords = from.keywords;
-        searchDisabled = from.searchDisabled;
-        categories = from.categories;
-        restrictedPermissions = from.restrictedPermissions;
-        roleIdToPermission = from.roleIdToPermission;
+        setId(from.getId());
+        setType(from.getType());
+        setTarget(from.getTarget());
+        setAlias(from.getAlias());
+        setCommonContents(from.getCommonContents());
+        setPublicationStatus(from.getPublicationStatus());
+        setPublished(from.getPublished());
+        setArchived(from.getArchived());
+        setPublicationEnd(from.getPublicationEnd());
+        setModified(from.getModified());
+        setCreated(from.getCreated());
+        setDisabledLanguageShowMode(from.getDisabledLanguageShowMode());
+        setCurrentVersion(from.getCurrentVersion());
+        setKeywords(from.getKeywords());
+        setSearchDisabled(from.isSearchDisabled());
+        setCategories(from.getCategories());
+        setRestrictedPermissions(from.getRestrictedPermissions());
+        setRoleIdToPermission(from.getRoleIdToPermission());
     }
 
-    public Set<RestrictedPermissionDTO> getRestrictedPermissions() {
-        return (this.restrictedPermissions == null) ? null : new TreeSet<>(this.restrictedPermissions);
-    }
+    public abstract Integer getId();
+
+    public abstract void setId(Integer id);
+
+    public abstract DocumentType getType();
+
+    public abstract void setType(DocumentType type);
+
+    public abstract String getTarget();
+
+    public abstract void setTarget(String target);
+
+    public abstract String getAlias();
+
+    public abstract void setAlias(String alias);
+
+    public abstract List<CommonContent> getCommonContents();
+
+    public abstract void setCommonContents(List<CommonContent> commonContents);
+
+    public abstract PublicationStatus getPublicationStatus();
+
+    public abstract void setPublicationStatus(PublicationStatus publicationStatus);
+
+    public abstract AuditDTO getPublished();
+
+    public abstract void setPublished(AuditDTO published);
+
+    public abstract AuditDTO getArchived();
+
+    public abstract void setArchived(AuditDTO archived);
+
+    public abstract AuditDTO getPublicationEnd();
+
+    public abstract void setPublicationEnd(AuditDTO publicationEnd);
+
+    public abstract AuditDTO getModified();
+
+    public abstract void setModified(AuditDTO modified);
+
+    public abstract AuditDTO getCreated();
+
+    public abstract void setCreated(AuditDTO created);
+
+    public abstract DisabledLanguageShowMode getDisabledLanguageShowMode();
+
+    public abstract void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode);
+
+    public abstract AuditDTO getCurrentVersion();
+
+    public abstract void setCurrentVersion(AuditDTO currentVersion);
+
+    public abstract Set<String> getKeywords();
+
+    public abstract void setKeywords(Set<String> keywords);
+
+    public abstract boolean isSearchDisabled();
+
+    public abstract void setSearchDisabled(boolean searchDisabled);
+
+    public abstract Set<Category> getCategories();
+
+    public abstract void setCategories(Set<Category> categories);
+
+    public abstract Set<RestrictedPermission> getRestrictedPermissions();
+
+    public abstract void setRestrictedPermissions(Set<RestrictedPermission> restrictedPermissions);
+
+    public abstract Map<String, String> getProperties();
+
+    public abstract void setProperties(Map<String, String> properties);
+
+    public abstract Map<Integer, Permission> getRoleIdToPermission();
+
+    public abstract void setRoleIdToPermission(Map<Integer, Permission> roleIdToPermission);
 
     @SuppressWarnings("unused") // used on client side
     public DocumentStatus getDocumentStatus() {
+        final PublicationStatus publicationStatus = getPublicationStatus();
+
         if (PublicationStatus.NEW.equals(publicationStatus)) {
             return DocumentStatus.IN_PROCESS;
 
         } else if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
             return DocumentStatus.DISAPPROVED;
 
-        } else if (isAuditDateInPast(archived)) {
+        } else if (isAuditDateInPast(getArchived())) {
             return DocumentStatus.ARCHIVED;
 
-        } else if (isAuditDateInPast(publicationEnd)) {
+        } else if (isAuditDateInPast(getPublicationEnd())) {
             return DocumentStatus.PASSED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isAuditDateInPast(published)) {
-            return DocumentStatus.PUBLISHED;
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus)) {
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isAuditDateInFuture(published)) {
-            return DocumentStatus.PUBLISHED_WAITING;
+            final AuditDTO published = getPublished();
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isNullAuditDate(published)) {
-            return DocumentStatus.IN_PROCESS;
+            if (isAuditDateInPast(published)) {
+                return DocumentStatus.PUBLISHED;
 
-        } else { // should newer happen
-            return DocumentStatus.PUBLISHED;
+            } else if (isAuditDateInFuture(published)) {
+                return DocumentStatus.PUBLISHED_WAITING;
+
+            } else if (isNullAuditDate(published)) {
+                return DocumentStatus.IN_PROCESS;
+            }
         }
+
+        return DocumentStatus.PUBLISHED;
     }
 
     private boolean isNullAuditDate(AuditDTO auditToCheck) {

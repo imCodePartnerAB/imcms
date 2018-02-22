@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.factory;
 
 import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.stereotype.Component;
@@ -35,7 +36,7 @@ public class DocumentDtoFactory {
         documentDTO.setCategories(new HashSet<>());
         documentDTO.setRoleIdToPermission(new HashMap<>());
 
-        final Set<RestrictedPermissionDTO> restrictedPermissions = new HashSet<>();
+        final Set<RestrictedPermission> restrictedPermissions = new HashSet<>();
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
         final RestrictedPermissionDTO restricted2 = new RestrictedPermissionDTO();
         restricted1.setPermission(Meta.Permission.RESTRICTED_1);

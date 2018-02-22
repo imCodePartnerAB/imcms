@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.factory;
 
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.Value;
@@ -29,14 +30,14 @@ public class CommonContentFactory {
      * Creates empty CommonContent for non-existing document and for all
      * languages with {@link Version#WORKING_VERSION_INDEX}.
      */
-    public List<CommonContentDTO> createCommonContents() {
+    public List<CommonContent> createCommonContents() {
         return languageService.getAll()
                 .stream()
                 .map(this::createFrom)
                 .collect(Collectors.toList());
     }
 
-    private CommonContentDTO createFrom(Language languageDTO) {
+    private CommonContent createFrom(Language languageDTO) {
         return Value.with(new CommonContentDTO(), commonContentDTO -> {
             commonContentDTO.setEnabled(true);
             commonContentDTO.setLanguage(languageDTO);

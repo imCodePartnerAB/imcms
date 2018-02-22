@@ -6,10 +6,7 @@ import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Loop;
-import com.imcode.imcms.model.Role;
-import com.imcode.imcms.model.TextDocumentTemplate;
+import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
@@ -221,14 +218,14 @@ public class DocumentServiceTest {
     public void save_When_CustomCommonContentsSet_Expect_Saved() {
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
-        final List<CommonContentDTO> commonContents = documentDTO.getCommonContents();
+        final List<CommonContent> commonContents = documentDTO.getCommonContents();
 
         for (int i = 0; i < commonContents.size(); i++) {
-            CommonContentDTO commonContentDTO = commonContents.get(i);
-            commonContentDTO.setHeadline("Test headline " + i);
-            commonContentDTO.setMenuText("Test menu text " + i);
-            commonContentDTO.setMenuImageURL("Test menu image url " + i);
-            commonContentDTO.setEnabled((i % 2) == 0);
+            CommonContent commonContent = commonContents.get(i);
+            commonContent.setHeadline("Test headline " + i);
+            commonContent.setMenuText("Test menu text " + i);
+            commonContent.setMenuImageURL("Test menu image url " + i);
+            commonContent.setEnabled((i % 2) == 0);
         }
 
         textDocumentService.save(documentDTO);
@@ -413,9 +410,8 @@ public class DocumentServiceTest {
 
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
 
-        final Set<CategoryDTO> categories = categoryService.getAll().stream()
+        final Set<Category> categories = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 0)
-                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         documentDTO.setCategories(categories);
@@ -425,9 +421,8 @@ public class DocumentServiceTest {
 
         assertEquals(categories, savedDocumentDTO.getCategories());
 
-        final Set<CategoryDTO> categories1 = categoryService.getAll().stream()
+        final Set<Category> categories1 = categoryService.getAll().stream()
                 .filter(categoryDTO -> categoryDTO.getId() % 2 == 1)
-                .map(CategoryDTO::new)
                 .collect(Collectors.toSet());
 
         documentDTO.setCategories(categories1);
@@ -468,7 +463,7 @@ public class DocumentServiceTest {
     public void save_When_RestrictedPermissionsSet_Expect_Saved() {
 
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
-        final Set<RestrictedPermissionDTO> restrictedPermissions = new HashSet<>();
+        final Set<RestrictedPermission> restrictedPermissions = new HashSet<>();
 
         final RestrictedPermissionDTO restricted1 = new RestrictedPermissionDTO();
         restricted1.setPermission(Permission.RESTRICTED_1);

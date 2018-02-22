@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
@@ -141,7 +140,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, doc.getCurrentVersion().getId());
         indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled());
 
-        for (CommonContentDTO commonContent : doc.getCommonContents()) {
+        for (CommonContent commonContent : doc.getCommonContents()) {
             String headline = commonContent.getHeadline();
             String menuText = commonContent.getMenuText();
 

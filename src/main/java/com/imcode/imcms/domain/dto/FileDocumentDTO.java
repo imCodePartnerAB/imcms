@@ -8,8 +8,10 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -32,7 +34,22 @@ public class FileDocumentDTO extends DocumentDTO implements Serializable {
 
     FileDocumentDTO(UberDocumentDTO from) {
         this((Document) from);
-        this.files = from.getFiles();
+        setFiles(from.getFiles());
+    }
+
+    /**
+     * Constructor for dynamic beans generators such as Jackson library,
+     * it shows concrete types of abstract classes that should be used.
+     * Don't use it directly.
+     */
+    @SuppressWarnings("unused")
+    @ConstructorProperties({"commonContents", "categories", "restrictedPermissions", "files"})
+    public FileDocumentDTO(List<CommonContentDTO> commonContents,
+                           Set<CategoryDTO> categories,
+                           Set<RestrictedPermissionDTO> restrictedPermissions,
+                           List<DocumentFileDTO> files) {
+        super(commonContents, categories, restrictedPermissions);
+        this.files = files;
     }
 
 }
