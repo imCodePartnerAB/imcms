@@ -22,9 +22,10 @@ Imcms.define(
 
             profilesRestApi.read().done(function (profiles) {
                 var profilesDataMapped = profiles.map(function (profile) {
+                    /** @namespace profile.documentName */
                     return {
                         text: profile.name,
-                        "data-value": profile.id
+                        "data-value": profile.documentName
                     }
                 });
 
