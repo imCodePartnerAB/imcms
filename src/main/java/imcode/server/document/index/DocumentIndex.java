@@ -107,10 +107,4 @@ public interface DocumentIndex {
     DocumentIndexService getService();
 
     boolean isUpdateDone();
-
-    default void reindexDocument(int docId) {
-        removeDocument(docId);
-        indexDocument(docId);
-    }
-
 }

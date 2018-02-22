@@ -105,7 +105,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
 
         commonContentService.save(docId, saveMe.getCommonContents());
-        documentIndex.reindexDocument(docId);
+        documentIndex.indexDocument(docId);
 
         return saveMe;
     }
