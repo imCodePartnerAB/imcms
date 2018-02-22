@@ -12,7 +12,7 @@ Imcms.define(
 
         texts = texts.editors.newDocumentProfile;
 
-        var radioButtonsGroup, $parentDocIdInput, $profilesSelect;
+        var radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect;
 
         function loadProfiles($profilesSelect) {
             profilesRestApi.read().done(function (profiles) {
@@ -99,15 +99,15 @@ Imcms.define(
         }
 
         function buildBody() {
-            var $profileSelect = buildProfileSelect();
-            var $parentSelect = buildParentSelect();
-            var $radioBlock = buildChoosingRadio($profileSelect, $parentSelect);
+            $profileSelectBlock = buildProfileSelect();
+            $parentSelect = buildParentSelect();
+            var $radioBlock = buildChoosingRadio($profileSelectBlock, $parentSelect);
 
             return new BEM({
                 block: "imcms-document-profile",
                 elements: {
                     "choose-the-way": $radioBlock,
-                    "profile-select": $profileSelect,
+                    "profile-select": $profileSelectBlock,
                     "parent-select": $parentSelect
                 }
             }).buildBlockStructure("<div>");
@@ -158,7 +158,11 @@ Imcms.define(
         }
 
         function clear() {
-            // todo: clear inputs and selections
+            radioButtonsGroup.checkAmongGroup("profile");
+            $parentSelect.css("display", "none");
+            $profileSelectBlock.css("display", "block");
+            $parentDocIdInput.setValue('');
+            $profilesSelect.selectFirst();
         }
 
         var windowBuilder = new WindowBuilder({
