@@ -12,7 +12,7 @@ Imcms.define(
 
         texts = texts.editors.newDocumentProfile;
 
-        var $radioButtonsGroup, $parentDocIdInput, $profilesSelect;
+        var radioButtonsGroup, $parentDocIdInput, $profilesSelect;
 
         function loadProfiles($profilesSelect) {
             profilesRestApi.read().done(function (profiles) {
@@ -86,7 +86,7 @@ Imcms.define(
                 }
             });
 
-            $radioButtonsGroup = components.radios.group($profilesOption, $docIdOption);
+            radioButtonsGroup = components.radios.group($profilesOption, $docIdOption);
 
             return new BEM({
                 block: "new-doc-parent-options",
@@ -114,7 +114,7 @@ Imcms.define(
         }
 
         function onSubmit() {
-            var checkedValue = $radioButtonsGroup.getCheckedValue();
+            var checkedValue = radioButtonsGroup.getCheckedValue();
 
             if ("docId" === checkedValue) {
                 var selectedParentDoc = $parentDocIdInput.getValue().trim();
@@ -159,8 +159,13 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
+        function clear() {
+            // todo: clear inputs and selections
+        }
+
         var windowBuilder = new WindowBuilder({
-            factory: buildProfileSelectWindow
+            factory: buildProfileSelectWindow,
+            clearDataStrategy: clear
         });
 
         var onProfileOrParentSelectedCallback;
