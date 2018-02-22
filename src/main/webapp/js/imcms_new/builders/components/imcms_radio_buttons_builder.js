@@ -6,30 +6,6 @@ Imcms.define("imcms-radio-buttons-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-uuid-generator"],
     function (bemBuilder, primitives, uuidGenerator) {
 
-        function createGetCheckedValue(radioBlocks$) {
-            return function () {
-                return Array.prototype.reduce.call(radioBlocks$, function (prevValue, $radioBlock) {
-                    var $radio = $radioBlock.find("input");
-
-                    if ($radio.is(":checked")) {
-                        return $radio.val();
-                    }
-
-                    return prevValue;
-
-                }, null);
-            }
-        }
-
-        function apiCheckAmongGroup(radioBlocks$) {
-            return function (value) {
-                Array.prototype.forEach.call(radioBlocks$, function ($radioBlock) {
-                    var $radio = $radioBlock.find("input");
-                    ($radio.val() === value) && $radio.prop("checked", "checked");
-                });
-            }
-        }
-
         function apiSetChecked($input) {
             return function (isChecked) {
                 isChecked ? $input.prop("checked", "checked") : $input.removeProp("checked");
@@ -91,9 +67,28 @@ Imcms.define("imcms-radio-buttons-builder",
                 return buildBlock;
             },
             group: function () {
-                this.checkAmongGroup = apiCheckAmongGroup(arguments);
-                this.getCheckedValue = createGetCheckedValue(arguments);
-                return this;
+                var radioBlocks$ = Array.prototype.slice.call(arguments);
+
+                return {
+                    checkAmongGroup: function (value) {
+                        radioBlocks$.forEach(function ($radioBlock) {
+                            var $radio = $radioBlock.find("input");
+                            ($radio.val() === value) && $radio.prop("checked", "checked");
+                        });
+                    },
+                    getCheckedValue: function () {
+                        return radioBlocks$.reduce(function (prevValue, $radioBlock) {
+                            var $radio = $radioBlock.find("input");
+
+                            if ($radio.is(":checked")) {
+                                return $radio.val();
+                            }
+
+                            return prevValue;
+
+                        }, null);
+                    }
+                };
             },
             radioContainer: function (tag, elements, attributes) {
                 return containerBEM.buildBlock(tag, elements, attributes, "radio");
