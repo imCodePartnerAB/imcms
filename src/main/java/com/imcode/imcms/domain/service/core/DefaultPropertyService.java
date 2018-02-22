@@ -6,6 +6,8 @@ import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class DefaultPropertyService implements PropertyService {
@@ -26,4 +28,8 @@ public class DefaultPropertyService implements PropertyService {
         return propertyRepository.findDocIdByAlias(alias);
     }
 
+    @Override
+    public List<String> findAllAliases() {
+        return propertyRepository.findAllAliases();
+    }
 }
