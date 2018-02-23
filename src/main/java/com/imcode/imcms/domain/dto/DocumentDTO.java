@@ -103,7 +103,6 @@ public class DocumentDTO extends Document implements Serializable, Cloneable {
         cloneDocumentDTO.setPublicationEnd(new AuditDTO());
         cloneDocumentDTO.setArchived(new AuditDTO());
 
-        // set to current date when mapping from dto to meta in MappingConfig
         cloneDocumentDTO.setCreated(new AuditDTO());
         cloneDocumentDTO.setModified(new AuditDTO());
 
