@@ -24,7 +24,7 @@ public class UrlDocumentDTOTest {
     private UrlDocumentDataInitializer urlDocumentDataInitializer;
 
     @Test
-    public void cloneUrlDocumentDTO_Expect_Cloned() throws CloneNotSupportedException {
+    public void cloneUrlDocumentDTO_Expect_Cloned() {
         final UrlDocumentDTO originalUrlDocument = urlDocumentDataInitializer.createUrlDocument();
         final UrlDocumentDTO clonedUrlDocument = originalUrlDocument.clone();
 

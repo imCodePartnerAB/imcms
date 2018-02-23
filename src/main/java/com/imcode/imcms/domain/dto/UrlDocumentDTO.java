@@ -11,7 +11,6 @@ import lombok.ToString;
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -38,6 +37,25 @@ public class UrlDocumentDTO extends DocumentDTO implements Serializable {
         this.documentURL = from.getDocumentURL();
     }
 
+    @Override
+    public UrlDocumentDTO clone() {
+        UrlDocumentDTO cloneUrlDocumentDTO = null;
+
+        try {
+            cloneUrlDocumentDTO = (UrlDocumentDTO) super.clone();
+
+            final DocumentUrlDTO clonedDocumentUrlDTO = cloneUrlDocumentDTO.getDocumentURL();
+            if (clonedDocumentUrlDTO != null) {
+                cloneUrlDocumentDTO.setDocumentURL(clonedDocumentUrlDTO.clone());
+            }
+
+        } catch (CloneNotSupportedException e) {
+            // must not happened
+        }
+
+        return cloneUrlDocumentDTO;
+    }
+
     /**
      * Constructor for dynamic beans generators such as Jackson library,
      * it shows concrete types of abstract classes that should be used.
@@ -51,21 +69,5 @@ public class UrlDocumentDTO extends DocumentDTO implements Serializable {
                           DocumentUrlDTO documentURL) {
         super(commonContents, categories, restrictedPermissions);
         this.documentURL = documentURL;
-    }
-
-    @Override
-    public UrlDocumentDTO clone() throws CloneNotSupportedException {
-        final UrlDocumentDTO cloneUrlDocumentDTO = (UrlDocumentDTO) super.clone();
-
-        Optional.ofNullable(cloneUrlDocumentDTO.getDocumentURL())
-                .ifPresent(template -> {
-                    try {
-                        cloneUrlDocumentDTO.setDocumentURL(cloneUrlDocumentDTO.getDocumentURL().clone());
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-        return cloneUrlDocumentDTO;
     }
 }

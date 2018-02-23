@@ -24,7 +24,7 @@ public class TextDocumentDTOTest {
     private TextDocumentDataInitializer documentDataInitializer;
 
     @Test
-    public void cloneTextDocumentDTO_Expect_Cloned() throws CloneNotSupportedException {
+    public void cloneTextDocumentDTO_Expect_Cloned() {
         final TextDocumentDTO textDocumentDTO = documentDataInitializer.createTextDocument();
         final TextDocumentDTO cloneTextDocumentDTO = textDocumentDTO.clone();
 
