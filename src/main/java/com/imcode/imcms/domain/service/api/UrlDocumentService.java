@@ -29,7 +29,7 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     }
 
     @Override
-    public UrlDocumentDTO createEmpty() {
+    public UrlDocumentDTO createFromParent(Integer parentDocId) { // todo: use copying to create new doc based on parent
         return documentDtoFactory.createEmptyUrlDocument();
     }
 

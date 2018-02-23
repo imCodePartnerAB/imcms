@@ -7,7 +7,7 @@ import com.imcode.imcms.model.Document;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.01.18.
  */
-public interface TypedDocumentService<D extends Document> extends EmptyTypedDocumentCreatingService<D>,
+public interface TypedDocumentService<D extends Document> extends TypedDocumentCreatingService<D>,
         BasicDocumentService<D>,
         DocumentSaver<UberDocumentDTO> {
 }

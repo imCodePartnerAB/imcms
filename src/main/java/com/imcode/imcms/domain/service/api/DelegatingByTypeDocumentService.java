@@ -49,8 +49,8 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
     }
 
     @Override
-    public Document createEmpty(DocumentType type) {
-        return getCorrespondingDocumentService(type).createEmpty();
+    public Document createNewDocument(DocumentType type, Integer parentDocId) {
+        return getCorrespondingDocumentService(type).createFromParent(parentDocId);
     }
 
     @Override

@@ -59,7 +59,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     }
 
     @Override
-    public FileDocumentDTO createEmpty() {
+    public FileDocumentDTO createFromParent(Integer parentDocId) {
         return documentDtoFactory.createEmptyFileDocument();
     }
 
