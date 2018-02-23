@@ -5,6 +5,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.model.DocumentURL;
@@ -37,6 +38,9 @@ public class UrlDocumentServiceTest {
     private static final int superAdminId = 1;
 
     @Autowired
+    private DocumentDtoFactory documentDtoFactory;
+
+    @Autowired
     private DocumentService<UrlDocumentDTO> urlDocumentService;
 
     @Autowired
@@ -56,7 +60,7 @@ public class UrlDocumentServiceTest {
     @Before
     public void setUp() {
         Imcms.setUser(new UserDomainObject(superAdminId));
-        this.emptyUrlDocumentDTO = urlDocumentService.createEmpty();
+        this.emptyUrlDocumentDTO = documentDtoFactory.createEmptyUrlDocument();
     }
 
     @Test

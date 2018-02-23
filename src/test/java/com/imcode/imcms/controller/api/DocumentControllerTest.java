@@ -8,6 +8,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.factory.CommonContentFactory;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -42,6 +43,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     private TextDocumentDTO createdTextDoc;
     private FileDocumentDTO createdFileDoc;
+
+    @Autowired
+    private DocumentDtoFactory documentDtoFactory;
 
     @Autowired
     private TextDocumentDataInitializer textDocumentDataInitializer;
@@ -115,7 +119,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void getUrlDocument_When_DocumentExists_Expect_Returned() throws Exception {
-        final UrlDocumentDTO empty = urlDocumentService.createEmpty();
+        final UrlDocumentDTO empty = documentDtoFactory.createEmptyUrlDocument();
         final int savedId = urlDocumentService.save(empty).getId();
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -137,7 +141,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void saveUrlDocument_Expect_Saved() throws Exception {
-        final UrlDocumentDTO empty = urlDocumentService.createEmpty();
+        final UrlDocumentDTO empty = documentDtoFactory.createEmptyUrlDocument();
         final int beforeSavingSize = metaRepository.findAll().size();
 
         performPostWithContentExpectOk(empty);
