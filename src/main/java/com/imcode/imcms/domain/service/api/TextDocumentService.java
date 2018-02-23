@@ -76,6 +76,10 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     public TextDocumentDTO copy(int docId) {
         final TextDocumentDTO clonedTextDocumentDTO = get(docId).clone();
 
+        clonedTextDocumentDTO.getCommonContents()
+                .forEach(commonContentDTO ->
+                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+
         save(clonedTextDocumentDTO);
 
         return get(clonedTextDocumentDTO.getId());
