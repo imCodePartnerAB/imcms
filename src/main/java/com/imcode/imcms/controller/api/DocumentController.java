@@ -25,9 +25,9 @@ class DocumentController {
     }
 
     @GetMapping
-    public Document get(Integer docId, DocumentType type) {
+    public Document get(Integer docId, DocumentType type, Integer parentDocId) {
         if (docId == null) {
-            return documentService.createEmpty(type);
+            return documentService.createNewDocument(type, parentDocId);
 
         } else {
             return documentService.get(docId);

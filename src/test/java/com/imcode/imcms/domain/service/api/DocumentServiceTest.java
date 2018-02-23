@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.*;
@@ -54,6 +55,9 @@ public class DocumentServiceTest {
     private static File testSolrFolder;
 
     private TextDocumentDTO createdDoc;
+
+    @Autowired
+    private DocumentDtoFactory documentDtoFactory;
 
     @Autowired
     private DocumentService<TextDocumentDTO> textDocumentService;
@@ -170,7 +174,7 @@ public class DocumentServiceTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
 
-        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
+        final TextDocumentDTO emptyDocumentDTO = documentDtoFactory.createEmptyTextDocument();
         textDocumentService.save(emptyDocumentDTO);
     }
 
@@ -206,7 +210,7 @@ public class DocumentServiceTest {
         Imcms.setUser(user); // means current user is admin now
 
         final String testTarget = "_test";
-        final TextDocumentDTO emptyDocumentDTO = textDocumentService.createEmpty();
+        final TextDocumentDTO emptyDocumentDTO = documentDtoFactory.createEmptyTextDocument();
         emptyDocumentDTO.setTarget(testTarget);
 
         final TextDocumentDTO documentDTO = textDocumentService.save(emptyDocumentDTO);

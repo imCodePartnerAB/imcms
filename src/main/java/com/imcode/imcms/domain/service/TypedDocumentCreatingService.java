@@ -7,8 +7,8 @@ import com.imcode.imcms.persistence.entity.Meta;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.01.18.
  */
-public interface EmptyTypedDocumentCreatingService<D extends Document> {
+public interface TypedDocumentCreatingService<D extends Document> {
 
-    D createEmpty(Meta.DocumentType type);
+    D createNewDocument(Meta.DocumentType type, Integer parentDocId);
 
 }

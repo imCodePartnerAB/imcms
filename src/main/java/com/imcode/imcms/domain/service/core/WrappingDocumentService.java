@@ -20,8 +20,8 @@ public class WrappingDocumentService<T extends Document> implements DocumentServ
     }
 
     @Override
-    public UberDocumentDTO createEmpty() {
-        return UberDocumentDTO.of(typedDocumentService.createEmpty());
+    public UberDocumentDTO createFromParent(Integer parentDocId) {
+        return UberDocumentDTO.of(typedDocumentService.createFromParent(parentDocId));
     }
 
     @Override

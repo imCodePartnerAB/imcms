@@ -45,7 +45,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
-    public TextDocumentDTO createEmpty() {
+    public TextDocumentDTO createFromParent(Integer parentDocId) { // todo: use copying to create new doc based on parent
         return documentDtoFactory.createEmptyTextDocument();
     }
 

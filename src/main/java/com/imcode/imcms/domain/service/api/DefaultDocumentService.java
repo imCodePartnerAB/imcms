@@ -78,7 +78,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    public DocumentDTO createEmpty() {
+    public DocumentDTO createFromParent(Integer parentDocId) { // todo: use copying to create new doc based on parent
         return documentDtoFactory.createEmpty();
     }
 
