@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
+import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
@@ -8,7 +10,9 @@ import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.DocumentURL;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
@@ -25,8 +29,12 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -54,6 +62,12 @@ public class UrlDocumentServiceTest {
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
+
+    @Autowired
+    private CategoryDataInitializer categoryDataInitializer;
+
+    @Autowired
+    private UrlDocumentDataInitializer urlDocumentDataInitializer;
 
     private UrlDocumentDTO emptyUrlDocumentDTO;
 
@@ -161,5 +175,41 @@ public class UrlDocumentServiceTest {
         final boolean published = urlDocumentService.publishDocument(savedDocId, superAdminId);
 
         assertEquals(false, published);
+    }
+
+    @Test
+    public void copyUrlDocument_Expect_Copied() {
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
+
+        final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument();
+        urlDocumentDTO.setCategories(new HashSet<>(categories));
+        urlDocumentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
+
+        final UrlDocumentDTO originalUrlDocument = urlDocumentService.save(urlDocumentDTO);
+
+        final UrlDocumentDTO clonedUrlDocument = urlDocumentService.copy(originalUrlDocument.getId());
+
+        assertThat(metaRepository.findAll(), hasSize(3));
+
+        assertThat(clonedUrlDocument.getId(), is(not(originalUrlDocument.getId())));
+
+        assertThat(clonedUrlDocument.getDocumentURL().getDocId(),
+                is(not(originalUrlDocument.getDocumentURL().getDocId())));
+
+        final List<CommonContent> originalCommonContents = originalUrlDocument.getCommonContents();
+        final List<CommonContent> copiedCommonContents = clonedUrlDocument.getCommonContents();
+
+        IntStream.range(0, originalCommonContents.size())
+                .forEach(i -> {
+                    final CommonContent originalCommonContent = originalCommonContents.get(i);
+                    final CommonContent copiedCommonContent = copiedCommonContents.get(i);
+
+                    assertThat(copiedCommonContent.getId(), is(not(originalCommonContent.getId())));
+                    assertThat(copiedCommonContent.getDocId(), is(not(originalCommonContent.getDocId())));
+                    assertThat(copiedCommonContent.getHeadline(), is(not(originalCommonContent.getHeadline())));
+                    assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
+                });
+
+        assertThat(clonedUrlDocument.getKeywords(), is(originalUrlDocument.getKeywords()));
     }
 }

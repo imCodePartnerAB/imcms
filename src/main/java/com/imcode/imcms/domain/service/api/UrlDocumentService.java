@@ -60,7 +60,15 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
 
     @Override
     public UrlDocumentDTO copy(int docId) {
-        return null;
+        final UrlDocumentDTO clonedUrlDocumentDTO = get(docId).clone();
+
+        clonedUrlDocumentDTO.getCommonContents()
+                .forEach(commonContentDTO ->
+                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+
+        save(clonedUrlDocumentDTO);
+
+        return get(clonedUrlDocumentDTO.getId());
     }
 
     @Override
