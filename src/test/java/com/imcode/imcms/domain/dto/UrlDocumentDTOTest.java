@@ -43,7 +43,6 @@ public class UrlDocumentDTOTest {
                 .forEach(commonContent -> {
                     assertNull(commonContent.getId());
                     assertNull(commonContent.getDocId());
-                    assertTrue(commonContent.getHeadline().startsWith("(Copy/Kopia)"));
                 });
 
         final DocumentUrlDTO documentURL = originalUrlDocument.getDocumentURL();

@@ -46,7 +46,6 @@ public class FileDocumentDTOTest {
                 .forEach(commonContent -> {
                     assertNull(commonContent.getId());
                     assertNull(commonContent.getDocId());
-                    assertTrue(commonContent.getHeadline().startsWith("(Copy/Kopia)"));
                 });
 
         final List<DocumentFileDTO> originalFiles = originalFileDocument.getFiles();
