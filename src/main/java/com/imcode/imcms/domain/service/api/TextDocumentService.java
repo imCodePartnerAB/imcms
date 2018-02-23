@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
-import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
@@ -27,19 +26,16 @@ import java.util.Optional;
 public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
-    private final DocumentDtoFactory documentDtoFactory;
     private final TextDocumentTemplateService textDocumentTemplateService;
     private TextService textService;
     private ImageService imageService;
 
     public TextDocumentService(DocumentService<DocumentDTO> documentService,
-                               DocumentDtoFactory documentDtoFactory,
                                TextDocumentTemplateService textDocumentTemplateService,
                                ImageService imageService,
                                TextService textService) {
 
         this.defaultDocumentService = documentService;
-        this.documentDtoFactory = documentDtoFactory;
         this.textDocumentTemplateService = textDocumentTemplateService;
         this.imageService = imageService;
         this.textService = textService;

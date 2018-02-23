@@ -156,13 +156,11 @@ class MainConfig {
 
     @Bean
     public DocumentService<TextDocumentDTO> textDocumentService(DocumentService<DocumentDTO> documentService,
-                                                                DocumentDtoFactory documentDtoFactory,
                                                                 TextDocumentTemplateService textDocumentTemplateService,
                                                                 TextService textService,
                                                                 ImageService imageService) {
 
-        return new TextDocumentService(documentService,
-                documentDtoFactory, textDocumentTemplateService, imageService, textService);
+        return new TextDocumentService(documentService, textDocumentTemplateService, imageService, textService);
     }
 
     @Bean
