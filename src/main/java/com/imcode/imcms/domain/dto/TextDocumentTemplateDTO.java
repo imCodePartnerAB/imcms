@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TextDocumentTemplateDTO extends TextDocumentTemplate {
+public class TextDocumentTemplateDTO extends TextDocumentTemplate implements Cloneable {
 
     private Integer docId;
 
@@ -26,5 +26,13 @@ public class TextDocumentTemplateDTO extends TextDocumentTemplate {
             textDocumentTemplateDTO.templateName = DEFAULT_TEMPLATE_NAME;
             textDocumentTemplateDTO.childrenTemplateName = DEFAULT_TEMPLATE_NAME;
         });
+    }
+
+    @Override
+    protected TextDocumentTemplateDTO clone() throws CloneNotSupportedException {
+        final TextDocumentTemplateDTO cloneTextDocumentTemplateDTO = (TextDocumentTemplateDTO) super.clone();
+        cloneTextDocumentTemplateDTO.setDocId(null);
+
+        return cloneTextDocumentTemplateDTO;
     }
 }

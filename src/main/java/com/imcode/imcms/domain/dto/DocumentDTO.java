@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class DocumentDTO extends Document implements Serializable {
+public class DocumentDTO extends Document implements Serializable, Cloneable {
 
     protected static final long serialVersionUID = -1197329246115859534L;
 
@@ -91,4 +91,37 @@ public class DocumentDTO extends Document implements Serializable {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
+    @Override
+    protected DocumentDTO clone() throws CloneNotSupportedException {
+        final DocumentDTO cloneDocumentDTO = (DocumentDTO) super.clone();
+
+        cloneDocumentDTO.setId(null);
+
+        cloneDocumentDTO.setPublicationStatus(Meta.PublicationStatus.NEW);
+
+        cloneDocumentDTO.getPublished().setDateTime(new Date());
+        cloneDocumentDTO.setPublicationEnd(new AuditDTO());
+        cloneDocumentDTO.setArchived(new AuditDTO());
+
+        // set to current date when mapping from dto to meta in MappingConfig
+        cloneDocumentDTO.setCreated(new AuditDTO());
+        cloneDocumentDTO.setModified(new AuditDTO());
+
+        final List<CommonContent> copyCommonContent = cloneDocumentDTO.commonContents
+                .stream()
+                .peek(commonContentDTO -> {
+                    commonContentDTO.setId(null);
+                    commonContentDTO.setDocId(null);
+                    commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline());
+                })
+                .collect(Collectors.toList());
+
+        cloneDocumentDTO.setCommonContents(copyCommonContent);
+        cloneDocumentDTO.setKeywords(new HashSet<>(cloneDocumentDTO.keywords));
+        cloneDocumentDTO.setCategories(new HashSet<>(cloneDocumentDTO.categories));
+        cloneDocumentDTO.setRestrictedPermissions(new HashSet<>(cloneDocumentDTO.restrictedPermissions));
+        cloneDocumentDTO.setRoleIdToPermission(new HashMap<>(cloneDocumentDTO.roleIdToPermission));
+
+        return cloneDocumentDTO;
+    }
 }

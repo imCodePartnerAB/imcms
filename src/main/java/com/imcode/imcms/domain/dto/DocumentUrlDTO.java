@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class DocumentUrlDTO extends DocumentURL {
+public class DocumentUrlDTO extends DocumentURL implements Cloneable {
 
     private Integer id;
 
@@ -37,5 +37,15 @@ public class DocumentUrlDTO extends DocumentURL {
         documentUrlDTO.setUrlLanguagePrefix("");
 
         return documentUrlDTO;
+    }
+
+    @Override
+    protected DocumentUrlDTO clone() throws CloneNotSupportedException {
+        final DocumentUrlDTO cloneDocumentUrlDTO = (DocumentUrlDTO) super.clone();
+
+        cloneDocumentUrlDTO.setId(null);
+        cloneDocumentUrlDTO.setDocId(null);
+
+        return cloneDocumentUrlDTO;
     }
 }

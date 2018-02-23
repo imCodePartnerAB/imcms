@@ -11,6 +11,7 @@ import lombok.ToString;
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -52,4 +53,19 @@ public class UrlDocumentDTO extends DocumentDTO implements Serializable {
         this.documentURL = documentURL;
     }
 
+    @Override
+    public UrlDocumentDTO clone() throws CloneNotSupportedException {
+        final UrlDocumentDTO cloneUrlDocumentDTO = (UrlDocumentDTO) super.clone();
+
+        Optional.ofNullable(cloneUrlDocumentDTO.getDocumentURL())
+                .ifPresent(template -> {
+                    try {
+                        cloneUrlDocumentDTO.setDocumentURL(cloneUrlDocumentDTO.getDocumentURL().clone());
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        return cloneUrlDocumentDTO;
+    }
 }
