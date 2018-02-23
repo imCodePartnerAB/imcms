@@ -73,6 +73,15 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
+    public TextDocumentDTO copy(int docId) {
+        final TextDocumentDTO clonedTextDocumentDTO = get(docId).clone();
+
+        save(clonedTextDocumentDTO);
+
+        return get(clonedTextDocumentDTO.getId());
+    }
+
+    @Override
     public boolean publishDocument(int docId, int userId) {
         return defaultDocumentService.publishDocument(docId, userId);
     }
@@ -107,11 +116,6 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
                 });
 
         return solrInputDocument;
-    }
-
-    @Override
-    public TextDocumentDTO copy(int docId) {
-        return null;
     }
 
     @Override
