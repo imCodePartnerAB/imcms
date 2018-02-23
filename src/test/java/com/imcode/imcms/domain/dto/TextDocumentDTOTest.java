@@ -43,7 +43,6 @@ public class TextDocumentDTOTest {
                 .forEach(commonContent -> {
                     assertNull(commonContent.getId());
                     assertNull(commonContent.getDocId());
-                    assertTrue(commonContent.getHeadline().startsWith("(Copy/Kopia)"));
                 });
 
         final TextDocumentTemplateDTO originalTemplate = textDocumentDTO.getTemplate();

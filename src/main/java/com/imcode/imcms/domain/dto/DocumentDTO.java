@@ -111,7 +111,6 @@ public class DocumentDTO extends Document implements Serializable, Cloneable {
                 .peek(commonContentDTO -> {
                     commonContentDTO.setId(null);
                     commonContentDTO.setDocId(null);
-                    commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline());
                 })
                 .collect(Collectors.toList());
 
