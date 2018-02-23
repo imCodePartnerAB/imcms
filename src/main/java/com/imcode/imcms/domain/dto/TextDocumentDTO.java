@@ -39,21 +39,19 @@ public class TextDocumentDTO extends DocumentDTO implements Serializable {
 
     @Override
     public TextDocumentDTO clone() {
-        TextDocumentDTO cloneTextDocumentDTO = null;
-
         try {
-            cloneTextDocumentDTO = (TextDocumentDTO) super.clone();
+            final TextDocumentDTO cloneTextDocumentDTO = (TextDocumentDTO) super.clone();
 
             final TextDocumentTemplateDTO textDocumentTemplateDTO = cloneTextDocumentDTO.getTemplate();
             if (textDocumentTemplateDTO != null) {
                 cloneTextDocumentDTO.setTemplate(textDocumentTemplateDTO.clone());
             }
 
-        } catch (CloneNotSupportedException e) {
-            // must not happened
-        }
+            return cloneTextDocumentDTO;
 
-        return cloneTextDocumentDTO;
+        } catch (CloneNotSupportedException e) {
+            return null; // must not happened
+        }
     }
 
     /**

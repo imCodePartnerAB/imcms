@@ -63,10 +63,8 @@ public class FileDocumentDTO extends DocumentDTO implements Serializable {
                     try {
                         return documentFileDTO.clone();
                     } catch (CloneNotSupportedException e) {
-                        // must not happened
+                        return null; // must not happened
                     }
-
-                    return null; // must not happened
                 })
                 .collect(Collectors.toList());
 
