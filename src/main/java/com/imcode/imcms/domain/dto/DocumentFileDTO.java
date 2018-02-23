@@ -7,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
-public class DocumentFileDTO extends DocumentFile {
+public class DocumentFileDTO extends DocumentFile implements Cloneable {
 
     private Integer id;
 
@@ -27,5 +27,14 @@ public class DocumentFileDTO extends DocumentFile {
 
     public DocumentFileDTO(DocumentFile from) {
         super(from);
+    }
+
+    @Override
+    protected DocumentFileDTO clone() throws CloneNotSupportedException {
+        final DocumentFileDTO cloneDocumentFileDTO = (DocumentFileDTO) super.clone();
+        cloneDocumentFileDTO.setId(null);
+        cloneDocumentFileDTO.setDocId(null);
+
+        return cloneDocumentFileDTO;
     }
 }

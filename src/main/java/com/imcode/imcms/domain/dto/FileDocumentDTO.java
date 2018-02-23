@@ -12,6 +12,7 @@ import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -52,4 +53,25 @@ public class FileDocumentDTO extends DocumentDTO implements Serializable {
         this.files = files;
     }
 
+    @Override
+    public FileDocumentDTO clone() throws CloneNotSupportedException {
+        final FileDocumentDTO cloneFileDocumentDTO = (FileDocumentDTO) super.clone();
+
+        final List<DocumentFileDTO> clonedFiles = getFiles()
+                .stream()
+                .map(documentFileDTO -> {
+                    try {
+                        return documentFileDTO.clone();
+                    } catch (CloneNotSupportedException e) {
+                        // must not happened
+                    }
+
+                    return null; // must not happened
+                })
+                .collect(Collectors.toList());
+
+        cloneFileDocumentDTO.setFiles(clonedFiles);
+
+        return cloneFileDocumentDTO;
+    }
 }
