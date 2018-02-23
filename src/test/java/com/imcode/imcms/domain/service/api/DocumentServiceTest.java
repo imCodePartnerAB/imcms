@@ -40,10 +40,12 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -128,6 +130,12 @@ public class DocumentServiceTest {
 
     @Autowired
     private Config config;
+
+    @Autowired
+    private CommonContentDataInitializer commonContentDataInitializer;
+
+    @Autowired
+    private TemplateDataInitializer templateDataInitializer;
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
@@ -741,6 +749,44 @@ public class DocumentServiceTest {
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(0).getVersionNo());
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(1).getVersionNo());
 
+    }
+
+    @Test
+    public void copyTextDocument_Expect_Copied() {
+        commonContentDataInitializer.createData(1001, 0);
+
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
+        final TextDocumentTemplateJPA textTemplate =
+                templateDataInitializer.createData(1001, "test", "test");
+
+        final TextDocumentDTO textDocumentDTO = textDocumentService.get(1001);
+        textDocumentDTO.setCategories(new HashSet<>(categories));
+        textDocumentDTO.setTemplate(new TextDocumentTemplateDTO(textTemplate));
+        textDocumentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
+
+        final TextDocumentDTO originalTextDocument = textDocumentService.save(textDocumentDTO);
+
+        final TextDocumentDTO copiedTextDocument = textDocumentService.copy(1001);
+
+        assertThat(metaRepository.findAll(), hasSize(3));
+
+        assertThat(copiedTextDocument.getId(), is(not(originalTextDocument.getId())));
+        assertThat(copiedTextDocument.getTemplate().getDocId(), is(not(originalTextDocument.getTemplate().getDocId())));
+
+        final List<CommonContent> originalCommonContents = originalTextDocument.getCommonContents();
+        final List<CommonContent> copiedCommonContents = copiedTextDocument.getCommonContents();
+
+        IntStream.range(0, originalCommonContents.size())
+                .forEach(i -> {
+                    final CommonContent originalCommonContent = originalCommonContents.get(i);
+                    final CommonContent copiedCommonContent = copiedCommonContents.get(i);
+
+                    assertThat(copiedCommonContent.getId(), is(not(originalCommonContent.getId())));
+                    assertThat(copiedCommonContent.getDocId(), is(not(originalCommonContent.getDocId())));
+                    assertThat(copiedCommonContent.getHeadline(), is(not(originalCommonContent.getHeadline())));
+                });
+
+        assertThat(copiedTextDocument.getKeywords(), is(originalTextDocument.getKeywords()));
     }
 
     private void createText(int index, LanguageJPA language, Version version) {
