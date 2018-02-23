@@ -290,8 +290,10 @@ class MappingConfig {
             final Integer creatorId = Optional.ofNullable(creation.getId()).orElseGet(currentUser::getId);
             meta.setCreatorId(creatorId);
 
+            final Date currentDateTime = new Date();
+
             final Date createdDatetime = ((creation.getDate() == null) || (creation.getTime() == null))
-                    ? new Date() : creation.getFormattedDate();
+                    ? currentDateTime : creation.getFormattedDate();
 
             meta.setCreatedDatetime(createdDatetime);
 
@@ -300,7 +302,7 @@ class MappingConfig {
             meta.setModifierId(modifierId);
 
             final Date modifiedDatetime = ((modification.getDate() == null) || (modification.getTime() == null))
-                    ? new Date() : modification.getFormattedDate();
+                    ? currentDateTime : modification.getFormattedDate();
 
             meta.setModifiedDatetime(modifiedDatetime);
 
