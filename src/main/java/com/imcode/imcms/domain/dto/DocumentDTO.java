@@ -108,10 +108,7 @@ public class DocumentDTO extends Document implements Serializable, Cloneable {
 
         final List<CommonContent> copyCommonContent = cloneDocumentDTO.commonContents
                 .stream()
-                .peek(commonContentDTO -> {
-                    commonContentDTO.setId(null);
-                    commonContentDTO.setDocId(null);
-                })
+                .map(CommonContentDTO::clone)
                 .collect(Collectors.toList());
 
         cloneDocumentDTO.setCommonContents(copyCommonContent);

@@ -784,6 +784,7 @@ public class DocumentServiceTest {
                     assertThat(copiedCommonContent.getId(), is(not(originalCommonContent.getId())));
                     assertThat(copiedCommonContent.getDocId(), is(not(originalCommonContent.getDocId())));
                     assertThat(copiedCommonContent.getHeadline(), is(not(originalCommonContent.getHeadline())));
+                    assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
                 });
 
         assertThat(copiedTextDocument.getKeywords(), is(originalTextDocument.getKeywords()));
