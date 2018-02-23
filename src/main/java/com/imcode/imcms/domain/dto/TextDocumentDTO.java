@@ -11,7 +11,6 @@ import lombok.ToString;
 import java.beans.ConstructorProperties;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -39,20 +38,24 @@ public class TextDocumentDTO extends DocumentDTO implements Serializable {
     }
 
     @Override
-    public TextDocumentDTO clone() throws CloneNotSupportedException {
-        final TextDocumentDTO cloneTextDocumentDTO = (TextDocumentDTO) super.clone();
+    public TextDocumentDTO clone() {
+        TextDocumentDTO cloneTextDocumentDTO = null;
 
-        Optional.ofNullable(cloneTextDocumentDTO.getTemplate())
-                .ifPresent(template -> {
-                    try {
-                        cloneTextDocumentDTO.setTemplate(cloneTextDocumentDTO.getTemplate().clone());
-                    } catch (CloneNotSupportedException e) {
-                        e.printStackTrace();
-                    }
-                });
+        try {
+            cloneTextDocumentDTO = (TextDocumentDTO) super.clone();
+
+            final TextDocumentTemplateDTO textDocumentTemplateDTO = cloneTextDocumentDTO.getTemplate();
+            if (textDocumentTemplateDTO != null) {
+                cloneTextDocumentDTO.setTemplate(textDocumentTemplateDTO.clone());
+            }
+
+        } catch (CloneNotSupportedException e) {
+            // must not happened
+        }
 
         return cloneTextDocumentDTO;
     }
+
     /**
      * Constructor for dynamic beans generators such as Jackson library,
      * it shows concrete types of abstract classes that should be used.
