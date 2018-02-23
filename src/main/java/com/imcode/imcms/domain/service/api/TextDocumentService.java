@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +46,8 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
-    public TextDocumentDTO createFromParent(Integer parentDocId) { // todo: use copying to create new doc based on parent
-        return documentDtoFactory.createEmptyTextDocument();
+    public TextDocumentDTO createFromParent(Integer parentDocId) {
+        return Value.with(get(parentDocId).clone(), this::swapTemplateNames);
     }
 
     @Override
@@ -126,5 +127,10 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     public void deleteByDocId(Integer docIdToDelete) {
         textDocumentTemplateService.deleteByDocId(docIdToDelete);
         defaultDocumentService.deleteByDocId(docIdToDelete);
+    }
+
+    private void swapTemplateNames(TextDocumentDTO document) {
+        final TextDocumentTemplateDTO template = document.getTemplate();
+        template.setTemplateName(template.getChildrenTemplateName());
     }
 }

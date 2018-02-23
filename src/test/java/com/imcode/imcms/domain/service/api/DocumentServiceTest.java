@@ -166,6 +166,54 @@ public class DocumentServiceTest {
     }
 
     @Test
+    public void createFromParent_When_ParentExist_Expect_Created() {
+        final TextDocumentDTO childDoc = textDocumentService.createFromParent(createdDoc.getId());
+
+        assertNotNull(childDoc);
+
+        // equal things
+        assertEquals(childDoc.getType(), createdDoc.getType());
+        assertEquals(childDoc.getKeywords(), createdDoc.getKeywords());
+        assertEquals(childDoc.getCategories(), createdDoc.getCategories());
+        assertEquals(childDoc.getRestrictedPermissions(), createdDoc.getRestrictedPermissions());
+        assertEquals(childDoc.getRoleIdToPermission(), createdDoc.getRoleIdToPermission());
+        assertEquals(childDoc.getProperties(), createdDoc.getProperties());
+        assertEquals(childDoc.getTarget(), createdDoc.getTarget());
+        assertEquals(childDoc.getDisabledLanguageShowMode(), createdDoc.getDisabledLanguageShowMode());
+        assertEquals(childDoc.getDisabledLanguageShowMode(), createdDoc.getDisabledLanguageShowMode());
+        assertEquals(childDoc.getCommonContents().size(), createdDoc.getCommonContents().size());
+
+        // special things
+        assertNull(childDoc.getId());
+        assertEquals(childDoc.getAlias(), "");
+        assertEquals(childDoc.getPublicationStatus(), PublicationStatus.NEW);
+        assertEquals(childDoc.getPublicationEnd(), new AuditDTO());
+        assertEquals(childDoc.getPublished(), new AuditDTO());
+        assertEquals(childDoc.getArchived(), new AuditDTO());
+        assertEquals(childDoc.getCreated(), new AuditDTO());
+        assertEquals(childDoc.getModified(), new AuditDTO());
+        assertEquals(childDoc.getCurrentVersion().getId(), Integer.valueOf(Version.WORKING_VERSION_INDEX));
+        assertEquals(childDoc.getTemplate().getTemplateName(), createdDoc.getTemplate().getChildrenTemplateName());
+
+        final List<CommonContent> childCommonContents = childDoc.getCommonContents();
+        final List<CommonContent> commonContents = createdDoc.getCommonContents();
+
+        for (int i = 0; i < childCommonContents.size(); i++) {
+            final CommonContent childCommonContent = childCommonContents.get(i);
+            final CommonContent commonContent = commonContents.get(i);
+
+            assertEquals(childCommonContent.getLanguage(), commonContent.getLanguage());
+            assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
+            assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
+            assertEquals(childCommonContent.getMenuImageURL(), commonContent.getMenuImageURL());
+
+            assertEquals(childCommonContent.getId(), null);
+            assertEquals(childCommonContent.getDocId(), null);
+            assertEquals(childCommonContent.getVersionNo(), Integer.valueOf(Version.WORKING_VERSION_INDEX));
+        }
+    }
+
+    @Test
     public void get() {
         final TextDocumentDTO documentDTO = textDocumentService.get(createdDoc.getId());
         assertEquals(documentDTO, createdDoc);
