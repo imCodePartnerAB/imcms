@@ -5,6 +5,8 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.util.Value;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -96,15 +98,17 @@ public class DocumentDTO extends Document implements Serializable, Cloneable {
         final DocumentDTO cloneDocumentDTO = (DocumentDTO) super.clone();
 
         cloneDocumentDTO.setId(null);
-
+        cloneDocumentDTO.setAlias("");
         cloneDocumentDTO.setPublicationStatus(Meta.PublicationStatus.NEW);
 
-        cloneDocumentDTO.getPublished().setDateTime(new Date());
-        cloneDocumentDTO.setPublicationEnd(new AuditDTO());
-        cloneDocumentDTO.setArchived(new AuditDTO());
+        final AuditDTO version = Value.with(new AuditDTO(), auditDTO -> auditDTO.setId(Version.WORKING_VERSION_INDEX));
 
+        cloneDocumentDTO.setCurrentVersion(version);
         cloneDocumentDTO.setCreated(new AuditDTO());
         cloneDocumentDTO.setModified(new AuditDTO());
+        cloneDocumentDTO.setArchived(new AuditDTO());
+        cloneDocumentDTO.setPublished(new AuditDTO());
+        cloneDocumentDTO.setPublicationEnd(new AuditDTO());
 
         final List<CommonContent> copyCommonContent = cloneDocumentDTO.commonContents
                 .stream()
