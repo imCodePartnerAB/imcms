@@ -198,7 +198,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     @Transactional
     public DocumentDTO copy(int docId) {
-        return null;
+        return get(docId).clone(); // only clone without saving
     }
 
     @Override
