@@ -14,6 +14,7 @@ import com.imcode.imcms.model.*;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -168,20 +169,35 @@ public class DocumentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void get_When_IdIsNull_Expect_DefaultEmptyTextDocumentDtoReturned() throws Exception {
+    public void get_When_IdIsNullAndParentDocIdIsSet_Expect_NewTextDocumentDtoReturned() throws Exception {
         final Meta.DocumentType documentType = Meta.DocumentType.TEXT;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("type", "" + documentType);
+                .param("type", "" + documentType)
+                .param("parentDocId", "" + createdTextDoc.getId());
 
         final String response = getJsonResponse(requestBuilder);
         final TextDocumentDTO documentDTO = fromJson(response, TextDocumentDTO.class);
 
         assertNull(documentDTO.getId());
         assertEquals(documentDTO.getType(), documentType);
-        assertFalse(documentDTO.getCommonContents().isEmpty());
-        assertEquals(documentDTO.getCommonContents(), commonContentFactory.createCommonContents());
+        assertEquals(documentDTO.getCommonContents().size(), createdTextDoc.getCommonContents().size());
+
+        for (int i = 0; i < documentDTO.getCommonContents().size(); i++) {
+            final CommonContent newCommonContent = documentDTO.getCommonContents().get(i);
+            final CommonContent oldCommonContent = createdTextDoc.getCommonContents().get(i);
+
+            assertEquals(newCommonContent.getHeadline(), oldCommonContent.getHeadline());
+            assertEquals(newCommonContent.getMenuText(), oldCommonContent.getMenuText());
+            assertEquals(newCommonContent.getMenuImageURL(), oldCommonContent.getMenuImageURL());
+            assertEquals(newCommonContent.getLanguage(), oldCommonContent.getLanguage());
+
+            assertEquals(newCommonContent.getVersionNo(), Integer.valueOf(Version.WORKING_VERSION_INDEX));
+            assertNull(newCommonContent.getId());
+            assertNull(newCommonContent.getDocId());
+        }
+
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
-        assertEquals(documentDTO.getTemplate(), TextDocumentTemplateDTO.createDefault());
+        assertEquals(documentDTO.getTemplate().getTemplateName(), createdTextDoc.getTemplate().getChildrenTemplateName());
     }
 
     @Test
