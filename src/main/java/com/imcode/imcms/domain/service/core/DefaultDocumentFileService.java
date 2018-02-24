@@ -71,6 +71,11 @@ class DefaultDocumentFileService
     }
 
     @Override
+    public <T extends DocumentFile> DocumentFile save(T saveMe) {
+        return new DocumentFileDTO(documentFileRepository.save(new DocumentFileJPA(saveMe)));
+    }
+
+    @Override
     public List<DocumentFile> getByDocId(int docId) {
         return findWorkingVersionFiles(docId).stream()
                 .map(DocumentFileDTO::new)
@@ -185,9 +190,7 @@ class DefaultDocumentFileService
 
     private <T extends DocumentFile> List<DocumentFile> saveDocumentFiles(List<T> saveUs) {
         return saveUs.stream()
-                .map(documentFile -> new DocumentFileDTO(
-                        documentFileRepository.save(new DocumentFileJPA(documentFile))
-                ))
+                .map(this::save)
                 .collect(Collectors.toList());
     }
 }

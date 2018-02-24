@@ -14,6 +14,8 @@ public interface DocumentFileService extends DeleterByDocumentId {
 
     <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId);
 
+    <T extends DocumentFile> DocumentFile save(T saveMe);
+
     List<DocumentFile> getByDocId(int docId);
 
     void publishDocumentFiles(int docId);
