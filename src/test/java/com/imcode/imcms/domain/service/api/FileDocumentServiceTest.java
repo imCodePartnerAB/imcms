@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
@@ -7,10 +8,13 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.DocumentFile;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.user.RoleId;
@@ -19,6 +23,7 @@ import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +38,12 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -72,6 +81,17 @@ public class FileDocumentServiceTest {
 
     @Autowired
     private DocumentFileService documentFileService;
+
+    @Autowired
+    private CategoryDataInitializer categoryDataInitializer;
+
+    @Autowired
+    private MetaRepository metaRepository;
+
+    @BeforeClass
+    public static void setUpUser() {
+        Imcms.setUser(new UserDomainObject(1));
+    }
 
     @AfterClass
     public static void shutDownSolr() {
@@ -287,6 +307,58 @@ public class FileDocumentServiceTest {
                 savedFile.deleteOnExit();
             }
         }
+    }
+
+    @Test
+    public void copyFileDocument_Expect_Copied() {
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
+
+        final FileDocumentDTO fileDocumentDTO = createdDoc;
+        fileDocumentDTO.setCategories(new HashSet<>(categories));
+        fileDocumentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
+
+        final FileDocumentDTO originalFileDocument = fileDocumentService.save(fileDocumentDTO);
+
+        final FileDocumentDTO clonedFileDocument = fileDocumentService.copy(originalFileDocument.getId());
+
+        assertThat(metaRepository.findAll(), hasSize(3));
+
+        assertThat(clonedFileDocument.getId(), is(not(originalFileDocument.getId())));
+
+        final List<CommonContent> originalCommonContents = originalFileDocument.getCommonContents();
+        final List<CommonContent> copiedCommonContents = clonedFileDocument.getCommonContents();
+
+        IntStream.range(0, originalCommonContents.size())
+                .forEach(i -> {
+                    final CommonContent originalCommonContent = originalCommonContents.get(i);
+                    final CommonContent copiedCommonContent = copiedCommonContents.get(i);
+
+                    assertThat(copiedCommonContent.getId(), is(not(originalCommonContent.getId())));
+                    assertThat(copiedCommonContent.getDocId(), is(not(originalCommonContent.getDocId())));
+                    assertThat(copiedCommonContent.getHeadline(), is(not(originalCommonContent.getHeadline())));
+                    assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
+                });
+
+        assertThat(clonedFileDocument.getKeywords(), is(originalFileDocument.getKeywords()));
+
+        final List<DocumentFileDTO> originalFiles = originalFileDocument.getFiles();
+        final List<DocumentFileDTO> clonedFiles = clonedFileDocument.getFiles();
+
+        IntStream.range(0, originalFiles.size())
+                .forEach(i -> {
+                    final DocumentFileDTO originalDocumentFile = originalFiles.get(i);
+                    final DocumentFileDTO clonedDocumentFile = clonedFiles.get(i);
+
+                    final Integer clonedFileId = clonedDocumentFile.getId();
+                    final Integer clonedFileDocId = clonedDocumentFile.getDocId();
+
+                    assertNotNull(clonedFileId);
+                    assertNotNull(clonedFileDocId);
+
+                    assertThat(clonedFileId, is(not(originalDocumentFile.getId())));
+                    assertThat(clonedFileDocId, is(not(originalDocumentFile.getDocId())));
+                });
+
     }
 
     @Test

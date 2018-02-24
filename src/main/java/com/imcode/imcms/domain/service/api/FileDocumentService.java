@@ -85,6 +85,25 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     }
 
     @Override
+    public FileDocumentDTO copy(int docId) {
+        final FileDocumentDTO clonedFileDocumentDTO = get(docId).clone();
+
+        clonedFileDocumentDTO.getCommonContents()
+                .forEach(commonContentDTO ->
+                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+
+        final Integer clonedFileDocumentId = defaultDocumentService.save(clonedFileDocumentDTO).getId();
+
+        clonedFileDocumentDTO.getFiles()
+                .forEach(documentFileDTO -> {
+                    documentFileDTO.setDocId(clonedFileDocumentId);
+                    documentFileService.save(documentFileDTO);
+                });
+
+        return get(clonedFileDocumentId);
+    }
+
+    @Override
     public boolean publishDocument(int docId, int userId) {
         return defaultDocumentService.publishDocument(docId, userId);
     }
@@ -130,11 +149,6 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
                 });
 
         return solrInputDocument;
-    }
-
-    @Override
-    public FileDocumentDTO copy(int docId) {
-        return null;
     }
 
     private Predicate<DocumentFileDTO> buildFileDocFilter(Config config) {
