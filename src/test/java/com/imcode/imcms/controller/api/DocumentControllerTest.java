@@ -1,9 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.UserDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
@@ -36,6 +33,7 @@ import java.util.stream.IntStream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -43,6 +41,7 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     private TextDocumentDTO createdTextDoc;
     private FileDocumentDTO createdFileDoc;
+    private UrlDocumentDTO createdUrlDoc;
 
     @Autowired
     private DocumentDtoFactory documentDtoFactory;
@@ -80,6 +79,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
     @Autowired
     private CommonContentFactory commonContentFactory;
 
+    @Autowired
+    private UrlDocumentDataInitializer urlDocumentDataInitializer;
+
     @Override
     protected String controllerPath() {
         return "/documents";
@@ -89,9 +91,11 @@ public class DocumentControllerTest extends AbstractControllerTest {
     public void setUp() throws Exception {
         createdTextDoc = textDocumentDataInitializer.createTextDocument();
         createdFileDoc = fileDocumentDataInitializer.createFileDocument();
+        createdUrlDoc = urlDocumentDataInitializer.createUrlDocument();
 
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
+        user.setLanguageIso639_2("eng");
         Imcms.setUser(user); // means current user is admin now
     }
 
@@ -688,5 +692,31 @@ public class DocumentControllerTest extends AbstractControllerTest {
         assertNotNull(defaultFile);
         assertTrue(defaultFile.isDefaultFile());
         assertEquals(newDefaultFileName, defaultFile.getFilename());
+    }
+
+    @Test
+    public void copyTextDocument_Expect_Copied() throws Exception {
+        copyChecking(createdTextDoc.getId());
+    }
+
+    @Test
+    public void copyFileDocument_Expect_Copied() throws Exception {
+        copyChecking(createdFileDoc.getId());
+    }
+
+    @Test
+    public void copyUrlDocument_Expect_Copied() throws Exception {
+        copyChecking(createdUrlDoc.getId());
+    }
+
+    private void copyChecking(int docId) throws Exception {
+        final int documentNumberBeforeSaving = metaRepository.findAll().size();
+
+        final MockHttpServletRequestBuilder builder = getPutRequestBuilderWithContent(docId);
+        performRequestBuilderExpectedOk(builder);
+
+        final int documentNumberAfterSaving = metaRepository.findAll().size();
+
+        assertThat(documentNumberAfterSaving, is(documentNumberBeforeSaving + 1));
     }
 }

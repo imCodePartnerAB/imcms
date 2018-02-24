@@ -34,6 +34,12 @@ class DocumentController {
         }
     }
 
+    // TODO: move to another controller
+    @PutMapping
+    public void copy(@RequestBody Integer docId) {
+        documentService.copy(docId);
+    }
+
     /**
      * Simply save document.
      *
