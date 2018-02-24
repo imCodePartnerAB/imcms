@@ -28,7 +28,7 @@ public class FileDocumentDTOTest {
     private FileDocumentDataInitializer fileDocumentDataInitializer;
 
     @Test
-    public void cloneFileDocumentDTO_Expect_Cloned() throws CloneNotSupportedException {
+    public void cloneFileDocumentDTO_Expect_Cloned() {
         final FileDocumentDTO originalFileDocument = fileDocumentDataInitializer.createFileDocument();
         final FileDocumentDTO cloneFileDocument = originalFileDocument.clone();
 

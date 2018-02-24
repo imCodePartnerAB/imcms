@@ -38,7 +38,7 @@ public class DocumentFileDTO extends DocumentFile implements Cloneable {
 
             return cloneDocumentFileDTO;
         } catch (CloneNotSupportedException e) {
-            return null;
+            return null; // must not happened
         }
     }
 }

@@ -94,33 +94,39 @@ public class DocumentDTO extends Document implements Serializable, Cloneable {
     }
 
     @Override
-    protected DocumentDTO clone() throws CloneNotSupportedException {
-        final DocumentDTO cloneDocumentDTO = (DocumentDTO) super.clone();
+    public DocumentDTO clone() {
+        try {
+            final DocumentDTO cloneDocumentDTO = (DocumentDTO) super.clone();
 
-        cloneDocumentDTO.setId(null);
-        cloneDocumentDTO.setAlias("");
-        cloneDocumentDTO.setPublicationStatus(Meta.PublicationStatus.NEW);
+            cloneDocumentDTO.setId(null);
+            cloneDocumentDTO.setAlias("");
+            cloneDocumentDTO.setPublicationStatus(Meta.PublicationStatus.NEW);
 
-        final AuditDTO version = Value.with(new AuditDTO(), auditDTO -> auditDTO.setId(Version.WORKING_VERSION_INDEX));
+            final AuditDTO version = Value.with(
+                    new AuditDTO(), auditDTO -> auditDTO.setId(Version.WORKING_VERSION_INDEX)
+            );
 
-        cloneDocumentDTO.setCurrentVersion(version);
-        cloneDocumentDTO.setCreated(new AuditDTO());
-        cloneDocumentDTO.setModified(new AuditDTO());
-        cloneDocumentDTO.setArchived(new AuditDTO());
-        cloneDocumentDTO.setPublished(new AuditDTO());
-        cloneDocumentDTO.setPublicationEnd(new AuditDTO());
+            cloneDocumentDTO.setCurrentVersion(version);
+            cloneDocumentDTO.setCreated(new AuditDTO());
+            cloneDocumentDTO.setModified(new AuditDTO());
+            cloneDocumentDTO.setArchived(new AuditDTO());
+            cloneDocumentDTO.setPublished(new AuditDTO());
+            cloneDocumentDTO.setPublicationEnd(new AuditDTO());
 
-        final List<CommonContent> copyCommonContent = cloneDocumentDTO.commonContents
-                .stream()
-                .map(CommonContentDTO::clone)
-                .collect(Collectors.toList());
+            final List<CommonContent> copyCommonContent = cloneDocumentDTO.commonContents
+                    .stream()
+                    .map(CommonContentDTO::clone)
+                    .collect(Collectors.toList());
 
-        cloneDocumentDTO.setCommonContents(copyCommonContent);
-        cloneDocumentDTO.setKeywords(new HashSet<>(cloneDocumentDTO.keywords));
-        cloneDocumentDTO.setCategories(new HashSet<>(cloneDocumentDTO.categories));
-        cloneDocumentDTO.setRestrictedPermissions(new HashSet<>(cloneDocumentDTO.restrictedPermissions));
-        cloneDocumentDTO.setRoleIdToPermission(new HashMap<>(cloneDocumentDTO.roleIdToPermission));
+            cloneDocumentDTO.setCommonContents(copyCommonContent);
+            cloneDocumentDTO.setKeywords(new HashSet<>(cloneDocumentDTO.keywords));
+            cloneDocumentDTO.setCategories(new HashSet<>(cloneDocumentDTO.categories));
+            cloneDocumentDTO.setRestrictedPermissions(new HashSet<>(cloneDocumentDTO.restrictedPermissions));
+            cloneDocumentDTO.setRoleIdToPermission(new HashMap<>(cloneDocumentDTO.roleIdToPermission));
 
-        return cloneDocumentDTO;
+            return cloneDocumentDTO;
+        } catch (CloneNotSupportedException e) {
+            return null; // must not happened
+        }
     }
 }

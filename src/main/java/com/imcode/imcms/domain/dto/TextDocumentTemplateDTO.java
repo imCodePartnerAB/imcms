@@ -29,10 +29,16 @@ public class TextDocumentTemplateDTO extends TextDocumentTemplate implements Clo
     }
 
     @Override
-    protected TextDocumentTemplateDTO clone() throws CloneNotSupportedException {
-        final TextDocumentTemplateDTO cloneTextDocumentTemplateDTO = (TextDocumentTemplateDTO) super.clone();
-        cloneTextDocumentTemplateDTO.setDocId(null);
+    protected TextDocumentTemplateDTO clone() {
+        try {
+            final TextDocumentTemplateDTO cloneTextDocumentTemplateDTO = (TextDocumentTemplateDTO) super.clone();
 
-        return cloneTextDocumentTemplateDTO;
+            cloneTextDocumentTemplateDTO.setDocId(null);
+
+            return cloneTextDocumentTemplateDTO;
+        } catch (CloneNotSupportedException e) {
+            return null; // must not happened
+        }
+
     }
 }

@@ -39,19 +39,15 @@ public class UrlDocumentDTO extends DocumentDTO implements Serializable {
 
     @Override
     public UrlDocumentDTO clone() {
-        try {
-            final UrlDocumentDTO cloneUrlDocumentDTO = (UrlDocumentDTO) super.clone();
+        final UrlDocumentDTO cloneUrlDocumentDTO = (UrlDocumentDTO) super.clone();
 
-            final DocumentUrlDTO clonedDocumentUrlDTO = cloneUrlDocumentDTO.getDocumentURL();
-            if (clonedDocumentUrlDTO != null) {
-                cloneUrlDocumentDTO.setDocumentURL(clonedDocumentUrlDTO.clone());
-            }
-
-            return cloneUrlDocumentDTO;
-
-        } catch (CloneNotSupportedException e) {
-            return null; // must not happened
+        final DocumentUrlDTO clonedDocumentUrlDTO = cloneUrlDocumentDTO.getDocumentURL();
+        if (clonedDocumentUrlDTO != null) {
+            cloneUrlDocumentDTO.setDocumentURL(clonedDocumentUrlDTO.clone());
         }
+
+        return cloneUrlDocumentDTO;
+
     }
 
     /**

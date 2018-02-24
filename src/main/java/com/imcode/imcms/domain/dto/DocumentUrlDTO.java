@@ -40,12 +40,15 @@ public class DocumentUrlDTO extends DocumentURL implements Cloneable {
     }
 
     @Override
-    protected DocumentUrlDTO clone() throws CloneNotSupportedException {
-        final DocumentUrlDTO cloneDocumentUrlDTO = (DocumentUrlDTO) super.clone();
+    protected DocumentUrlDTO clone() {
+        try {
+            final DocumentUrlDTO cloneDocumentUrlDTO = (DocumentUrlDTO) super.clone();
+            cloneDocumentUrlDTO.setId(null);
+            cloneDocumentUrlDTO.setDocId(null);
 
-        cloneDocumentUrlDTO.setId(null);
-        cloneDocumentUrlDTO.setDocId(null);
-
-        return cloneDocumentUrlDTO;
+            return cloneDocumentUrlDTO;
+        } catch (CloneNotSupportedException e) {
+            return null; // must not happened
+        }
     }
 }
