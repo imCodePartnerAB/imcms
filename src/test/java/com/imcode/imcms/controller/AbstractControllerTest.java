@@ -122,6 +122,12 @@ public abstract class AbstractControllerTest {
                 .content(asJson(content));
     }
 
+    protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content) throws Exception {
+        return MockMvcRequestBuilders.put(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(content));
+    }
+
     private ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
         return performRequestBuilderExpectedOk(builder)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
