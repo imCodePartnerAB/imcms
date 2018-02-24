@@ -54,22 +54,20 @@ public class FileDocumentDTO extends DocumentDTO implements Serializable {
     }
 
     @Override
-    public FileDocumentDTO clone() throws CloneNotSupportedException {
-        final FileDocumentDTO cloneFileDocumentDTO = (FileDocumentDTO) super.clone();
+    public FileDocumentDTO clone() {
+        try {
+            final FileDocumentDTO cloneFileDocumentDTO = (FileDocumentDTO) super.clone();
 
-        final List<DocumentFileDTO> clonedFiles = getFiles()
-                .stream()
-                .map(documentFileDTO -> {
-                    try {
-                        return documentFileDTO.clone();
-                    } catch (CloneNotSupportedException e) {
-                        return null; // must not happened
-                    }
-                })
-                .collect(Collectors.toList());
+            final List<DocumentFileDTO> clonedFiles = getFiles()
+                    .stream()
+                    .map(DocumentFileDTO::clone)
+                    .collect(Collectors.toList());
 
-        cloneFileDocumentDTO.setFiles(clonedFiles);
+            cloneFileDocumentDTO.setFiles(clonedFiles);
 
-        return cloneFileDocumentDTO;
+            return cloneFileDocumentDTO;
+        } catch (CloneNotSupportedException e) {
+            return null; // must not happened
+        }
     }
 }

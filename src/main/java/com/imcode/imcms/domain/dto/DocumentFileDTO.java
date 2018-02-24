@@ -30,11 +30,15 @@ public class DocumentFileDTO extends DocumentFile implements Cloneable {
     }
 
     @Override
-    protected DocumentFileDTO clone() throws CloneNotSupportedException {
-        final DocumentFileDTO cloneDocumentFileDTO = (DocumentFileDTO) super.clone();
-        cloneDocumentFileDTO.setId(null);
-        cloneDocumentFileDTO.setDocId(null);
+    protected DocumentFileDTO clone() {
+        try {
+            final DocumentFileDTO cloneDocumentFileDTO = (DocumentFileDTO) super.clone();
+            cloneDocumentFileDTO.setId(null);
+            cloneDocumentFileDTO.setDocId(null);
 
-        return cloneDocumentFileDTO;
+            return cloneDocumentFileDTO;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }
