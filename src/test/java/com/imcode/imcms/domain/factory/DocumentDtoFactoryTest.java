@@ -1,9 +1,6 @@
 package com.imcode.imcms.domain.factory;
 
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.FileDocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.domain.dto.UrlDocumentDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,8 +12,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 public class DocumentDtoFactoryTest {
 
@@ -46,6 +42,8 @@ public class DocumentDtoFactoryTest {
 
         assertThat(emptyFileDocument.getType(), equalTo(Meta.DocumentType.FILE));
         assertNull(emptyFileDocument.getId());
+        assertNotNull(emptyFileDocument.getFiles());
+        assertTrue(emptyFileDocument.getFiles().isEmpty());
     }
 
     @Test
@@ -54,6 +52,7 @@ public class DocumentDtoFactoryTest {
 
         assertThat(emptyTextDocument.getType(), equalTo(Meta.DocumentType.TEXT));
         assertNull(emptyTextDocument.getId());
+        assertEquals(emptyTextDocument.getTemplate(), TextDocumentTemplateDTO.createDefault());
     }
 
     @Test
@@ -62,6 +61,7 @@ public class DocumentDtoFactoryTest {
 
         assertThat(emptyUrlDocument.getType(), equalTo(Meta.DocumentType.URL));
         assertNull(emptyUrlDocument.getId());
+        assertEquals(emptyUrlDocument.getDocumentURL(), DocumentUrlDTO.createDefault());
     }
 
 }

@@ -101,11 +101,12 @@ public class DocumentControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getUrlDocument_When_DocIdIsNull_Expect_DefaultUrlDocumentIsReturned() throws Exception {
+    public void getUrlDocument_When_DocIdIsNullAndParentDocIdSet_Expect_NewUrlDocumentReturned() throws Exception {
         final Meta.DocumentType documentType = Meta.DocumentType.URL;
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("type", documentType.toString());
+                .param("type", documentType.toString())
+                .param("parentDocId", "" + createdUrlDoc.getId());
 
         final String response = getJsonResponse(requestBuilder);
 
@@ -117,7 +118,6 @@ public class DocumentControllerTest extends AbstractControllerTest {
         assertNull(urlDocumentDTO.getId());
         assertEquals(urlDocumentDTO.getType(), documentType);
         assertFalse(urlDocumentDTO.getCommonContents().isEmpty());
-        assertEquals(urlDocumentDTO.getCommonContents(), commonContentFactory.createCommonContents());
         assertEquals(urlDocumentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertEquals(expectedDocumentUrlDTO, actualDocumentUrlDTO);
     }
@@ -551,10 +551,11 @@ public class DocumentControllerTest extends AbstractControllerTest {
 //    }
 
     @Test
-    public void createEmpty_When_FileDocTypeSet_Expect_EmptyFileDoc() throws Exception {
+    public void createNew_When_FileDocTypeAndParentDocIdSet_Expect_NewFileDoc() throws Exception {
         final Meta.DocumentType documentType = Meta.DocumentType.FILE;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("type", "" + documentType);
+                .param("type", "" + documentType)
+                .param("parentDocId", "" + createdFileDoc.getId());
 
         final String response = getJsonResponse(requestBuilder);
         final FileDocumentDTO documentDTO = fromJson(response, FileDocumentDTO.class);
@@ -562,7 +563,6 @@ public class DocumentControllerTest extends AbstractControllerTest {
         assertNull(documentDTO.getId());
         assertEquals(documentDTO.getType(), documentType);
         assertFalse(documentDTO.getCommonContents().isEmpty());
-        assertEquals(documentDTO.getCommonContents(), commonContentFactory.createCommonContents());
         assertEquals(documentDTO.getPublicationStatus(), Meta.PublicationStatus.NEW);
         assertTrue(documentDTO.getFiles().isEmpty());
     }

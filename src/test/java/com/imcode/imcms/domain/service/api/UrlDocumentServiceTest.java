@@ -78,22 +78,16 @@ public class UrlDocumentServiceTest {
     }
 
     @Test
-    public void createEmpty() {
-        final DocumentUrlDTO expectedDefaultDocumentUrlDTO = new DocumentUrlDTO();
-        expectedDefaultDocumentUrlDTO.setId(null);
-        expectedDefaultDocumentUrlDTO.setDocId(null);
-        expectedDefaultDocumentUrlDTO.setUrlFrameName("");
-        expectedDefaultDocumentUrlDTO.setUrlTarget("");
-        expectedDefaultDocumentUrlDTO.setUrl("");
-        expectedDefaultDocumentUrlDTO.setUrlText("");
-        expectedDefaultDocumentUrlDTO.setUrlLanguagePrefix("");
+    public void createFromParent() {
+        final Integer parentDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
+        final UrlDocumentDTO newDoc = urlDocumentService.createFromParent(parentDocId);
 
-        final DocumentUrlDTO actualDefaultDocumentUrlDTO = emptyUrlDocumentDTO.getDocumentURL();
-
-        assertNull(emptyUrlDocumentDTO.getId());
-        assertEquals(emptyUrlDocumentDTO.getType(), Meta.DocumentType.URL);
-        assertNotNull(actualDefaultDocumentUrlDTO);
-        assertEquals(expectedDefaultDocumentUrlDTO, actualDefaultDocumentUrlDTO);
+        assertNull(newDoc.getId());
+        assertEquals(newDoc.getType(), Meta.DocumentType.URL);
+        assertNotNull(newDoc.getDocumentURL());
+        assertEquals(newDoc.getDocumentURL().getUrl(), "");
+        assertNull(newDoc.getDocumentURL().getDocId());
+        assertNull(newDoc.getDocumentURL().getId());
     }
 
     @Test

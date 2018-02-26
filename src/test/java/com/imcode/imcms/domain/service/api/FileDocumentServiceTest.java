@@ -5,7 +5,6 @@ import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
-import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.CommonContent;
@@ -57,9 +56,6 @@ public class FileDocumentServiceTest {
 
     private FileDocumentDTO createdDoc;
     private int createdDocId;
-
-    @Autowired
-    private DocumentDtoFactory documentDtoFactory;
 
     @Value("classpath:img1.jpg")
     private File testFile;
@@ -129,13 +125,13 @@ public class FileDocumentServiceTest {
     }
 
     @Test
-    public void createEmpty() {
-        final FileDocumentDTO empty = documentDtoFactory.createEmptyFileDocument();
+    public void createFromParent() {
+        final FileDocumentDTO newDoc = fileDocumentService.createFromParent(this.createdDoc.getId());
 
-        assertNull(empty.getId());
-        assertEquals(empty.getType(), Meta.DocumentType.FILE);
-        assertNotNull(empty.getFiles());
-        assertTrue(empty.getFiles().isEmpty());
+        assertNull(newDoc.getId());
+        assertEquals(newDoc.getType(), Meta.DocumentType.FILE);
+        assertNotNull(newDoc.getFiles());
+        assertTrue(newDoc.getFiles().isEmpty());
     }
 
     @Test
