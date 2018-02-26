@@ -4,12 +4,15 @@ import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.DocumentURL;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
@@ -68,6 +72,9 @@ public class UrlDocumentServiceTest {
 
     @Autowired
     private UrlDocumentDataInitializer urlDocumentDataInitializer;
+
+    @Autowired
+    private UserService userService;
 
     private UrlDocumentDTO emptyUrlDocumentDTO;
 
@@ -204,6 +211,33 @@ public class UrlDocumentServiceTest {
                     assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
                 });
 
+        checkExistingAuditDTO(clonedUrlDocument.getCreated());
+        checkExistingAuditDTO(clonedUrlDocument.getModified());
+
+        checkNotExistingAuditDTO(clonedUrlDocument.getPublished());
+        checkNotExistingAuditDTO(clonedUrlDocument.getPublicationEnd());
+        checkNotExistingAuditDTO(clonedUrlDocument.getArchived());
+
+        final Set<Category> originalCategories = originalUrlDocument.getCategories();
+        final Set<Category> copiedCategories = clonedUrlDocument.getCategories();
+
+        assertThat(copiedCategories.size(), is(originalCategories.size()));
+        assertTrue(originalCategories.containsAll(copiedCategories));
+
         assertThat(clonedUrlDocument.getKeywords(), is(originalUrlDocument.getKeywords()));
+    }
+
+    private void checkExistingAuditDTO(AuditDTO auditDTO) {
+        assertThat(auditDTO.getId(), is(superAdminId));
+        assertThat(auditDTO.getBy(), is(userService.getUser(superAdminId).getLogin()));
+        assertNotNull(auditDTO.getDate());
+        assertNotNull(auditDTO.getTime());
+    }
+
+    private void checkNotExistingAuditDTO(AuditDTO auditDTO) {
+        assertNull(auditDTO.getId());
+        assertNull(auditDTO.getBy());
+        assertNull(auditDTO.getDate());
+        assertNull(auditDTO.getTime());
     }
 }
