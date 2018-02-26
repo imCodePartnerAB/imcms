@@ -60,13 +60,13 @@ public class DocumentIndexServiceOps {
     }
 
     public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
-        SolrInputDocument solrInputDoc = mkSolrInputDoc(docId);
+        final SolrInputDocument solrInputDoc = mkSolrInputDoc(docId);
 
         if (solrInputDoc != null) {
             solrServer.add(solrInputDoc);
             solrServer.commit(false, false, true);
 
-            logger.info(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDoc.size(), docId));
+            logger.info(String.format("Added solrInputDoc with docId %d into the index.", docId));
         }
     }
 
