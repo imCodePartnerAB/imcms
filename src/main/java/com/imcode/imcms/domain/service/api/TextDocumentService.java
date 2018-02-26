@@ -9,6 +9,7 @@ import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
@@ -71,15 +72,21 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     @Override
     public TextDocumentDTO copy(int docId) {
-        final TextDocumentDTO clonedTextDocumentDTO = get(docId).clone();
+        final int copiedDocId = defaultDocumentService.copy(docId).getId();
 
-        clonedTextDocumentDTO.getCommonContents()
-                .forEach(commonContentDTO ->
-                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+        final Optional<TextDocumentTemplate> textDocumentTemplateOptional = textDocumentTemplateService.get(docId);
 
-        save(clonedTextDocumentDTO);
+        textDocumentTemplateOptional
+                .ifPresent(textDocumentTemplate -> {
+                    final TextDocumentTemplateDTO clonedTextDocumentTemplateDTO =
+                            new TextDocumentTemplateDTO(textDocumentTemplate).clone();
 
-        return get(clonedTextDocumentDTO.getId());
+                    clonedTextDocumentTemplateDTO.setDocId(copiedDocId);
+
+                    textDocumentTemplateService.save(clonedTextDocumentTemplateDTO);
+                });
+
+        return get(copiedDocId);
     }
 
     @Override

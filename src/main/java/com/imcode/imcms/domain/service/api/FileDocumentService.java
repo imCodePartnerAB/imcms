@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.DocumentFile;
 import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.commons.io.FilenameUtils;
@@ -86,21 +87,19 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
     @Override
     public FileDocumentDTO copy(int docId) {
-        final FileDocumentDTO clonedFileDocumentDTO = get(docId).clone();
+        final int copiedDocId = defaultDocumentService.copy(docId).getId();
 
-        clonedFileDocumentDTO.getCommonContents()
-                .forEach(commonContentDTO ->
-                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+        final List<DocumentFile> originalDocumentFiles = documentFileService.getByDocId(docId);
 
-        final Integer clonedFileDocumentId = defaultDocumentService.save(clonedFileDocumentDTO).getId();
+        originalDocumentFiles
+                .forEach(documentFile -> {
+                    final DocumentFileDTO clonedDocumentFileDTO = new DocumentFileDTO(documentFile).clone();
 
-        clonedFileDocumentDTO.getFiles()
-                .forEach(documentFileDTO -> {
-                    documentFileDTO.setDocId(clonedFileDocumentId);
-                    documentFileService.save(documentFileDTO);
+                    clonedDocumentFileDTO.setDocId(copiedDocId);
+                    documentFileService.save(clonedDocumentFileDTO);
                 });
 
-        return get(clonedFileDocumentId);
+        return get(copiedDocId);
     }
 
     @Override

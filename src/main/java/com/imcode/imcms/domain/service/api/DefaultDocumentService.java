@@ -198,7 +198,15 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     @Transactional
     public DocumentDTO copy(int docId) {
-        return get(docId).clone(); // only clone without saving
+        final DocumentDTO documentDTO = get(docId);
+
+        documentDTO.getCommonContents()
+                .forEach(commonContentDTO ->
+                        commonContentDTO.setHeadline("(Copy/Kopia) " + commonContentDTO.getHeadline()));
+
+        final DocumentDTO clonedDocumentDTO = documentDTO.clone();
+
+        return save(clonedDocumentDTO);
     }
 
     @Override
