@@ -29,7 +29,7 @@ public class TextDocumentTemplateDTO extends TextDocumentTemplate implements Clo
     }
 
     @Override
-    protected TextDocumentTemplateDTO clone() {
+    public TextDocumentTemplateDTO clone() {
         try {
             final TextDocumentTemplateDTO cloneTextDocumentTemplateDTO = (TextDocumentTemplateDTO) super.clone();
 

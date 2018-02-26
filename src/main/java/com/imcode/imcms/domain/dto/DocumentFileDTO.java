@@ -30,7 +30,7 @@ public class DocumentFileDTO extends DocumentFile implements Cloneable {
     }
 
     @Override
-    protected DocumentFileDTO clone() {
+    public DocumentFileDTO clone() {
         try {
             final DocumentFileDTO cloneDocumentFileDTO = (DocumentFileDTO) super.clone();
             cloneDocumentFileDTO.setId(null);

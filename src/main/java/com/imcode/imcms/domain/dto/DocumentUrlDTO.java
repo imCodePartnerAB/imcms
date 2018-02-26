@@ -40,7 +40,7 @@ public class DocumentUrlDTO extends DocumentURL implements Cloneable {
     }
 
     @Override
-    protected DocumentUrlDTO clone() {
+    public DocumentUrlDTO clone() {
         try {
             final DocumentUrlDTO cloneDocumentUrlDTO = (DocumentUrlDTO) super.clone();
             cloneDocumentUrlDTO.setId(null);
