@@ -89,6 +89,8 @@ Imcms.define("imcms-document-editor-builder",
             $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
         }
 
+        var $textField;
+
         function buildBodyHeadTools() {
 
             function onNewDocButtonClick(e) {
@@ -109,7 +111,7 @@ Imcms.define("imcms-document-editor-builder",
 
             function buildSearchDocField() {
 
-                var $textField = components.texts.textField("<div>", {
+                $textField = components.texts.textField("<div>", {
                     id: "searchText",
                     name: "search",
                     placeholder: texts.freeTextPlaceholder,
@@ -869,7 +871,23 @@ Imcms.define("imcms-document-editor-builder",
 
         function clearData() {
             events.trigger("document-editor-closed");
+
+            // setting default values
             searchQueryObj[pageNumber] = currentPage = 0;
+            searchQueryObj[term] = "";
+            searchQueryObj[userId] = null;
+            searchQueryObj[categoriesId] = {};
+
+            delete searchQueryObj[sortProperty];
+            delete searchQueryObj[sortDirection];
+
+            // clean up
+            $textField.$input.val("");
+
+            $.find(".imcms-drop-down-list__select-item-value").forEach(function (selectItemValue) {
+                $(selectItemValue).text("None");
+            });
+
             $editorBody.detach();
         }
 
