@@ -12,7 +12,6 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -38,12 +37,10 @@ import java.io.File;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -90,9 +87,6 @@ public class DocumentServiceTest {
     private LoopService loopService;
 
     @Autowired
-    private MetaRepository metaRepository;
-
-    @Autowired
     private LoopDataInitializer loopDataInitializer;
 
     @Autowired
@@ -119,9 +113,6 @@ public class DocumentServiceTest {
 
     @Autowired
     private Config config;
-
-    @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
@@ -713,41 +704,6 @@ public class DocumentServiceTest {
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(0).getVersionNo());
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(1).getVersionNo());
 
-    }
-
-    @Test
-    public void copyDocument_Expect_Copied() {
-        commonContentDataInitializer.createData(1001, 0);
-
-        final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
-
-        final DocumentDTO DocumentDTO = documentService.get(1001);
-        DocumentDTO.setCategories(new HashSet<>(categories));
-        DocumentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
-
-        final DocumentDTO originalDocument = documentService.save(DocumentDTO);
-
-        final DocumentDTO copiedDocument = documentService.copy(1001);
-
-        assertThat(metaRepository.findAll(), hasSize(3));
-
-        assertThat(copiedDocument.getId(), is(not(originalDocument.getId())));
-
-        final List<CommonContent> originalCommonContents = originalDocument.getCommonContents();
-        final List<CommonContent> copiedCommonContents = copiedDocument.getCommonContents();
-
-        IntStream.range(0, originalCommonContents.size())
-                .forEach(i -> {
-                    final CommonContent originalCommonContent = originalCommonContents.get(i);
-                    final CommonContent copiedCommonContent = copiedCommonContents.get(i);
-
-                    assertThat(copiedCommonContent.getId(), is(not(originalCommonContent.getId())));
-                    assertThat(copiedCommonContent.getDocId(), is(not(originalCommonContent.getDocId())));
-                    assertThat(copiedCommonContent.getHeadline(), is(not(originalCommonContent.getHeadline())));
-                    assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
-                });
-
-        assertThat(copiedDocument.getKeywords(), is(originalDocument.getKeywords()));
     }
 
     private void createText(int index, LanguageJPA language, Version version) {

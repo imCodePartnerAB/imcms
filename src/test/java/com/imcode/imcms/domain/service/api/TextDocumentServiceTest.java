@@ -5,14 +5,13 @@ import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.TemplateDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
@@ -52,6 +52,8 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
 public class TextDocumentServiceTest {
+
+    private static final int userId = 1;
 
     private static File testSolrFolder;
 
@@ -87,6 +89,9 @@ public class TextDocumentServiceTest {
     @Autowired
     private DocumentDtoFactory documentDtoFactory;
 
+    @Autowired
+    private UserService userService;
+
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
 
@@ -109,7 +114,7 @@ public class TextDocumentServiceTest {
             FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
         }
 
-        final UserDomainObject user = new UserDomainObject(1);
+        final UserDomainObject user = new UserDomainObject(userId);
         user.addRoleId(RoleId.SUPERADMIN);
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user); // means current user is admin now
@@ -273,4 +278,65 @@ public class TextDocumentServiceTest {
         assertEquals(documentDTO.getTarget(), testTarget);
     }
 
+    @Test
+    public void copyDocument_Expect_Copied() {
+        commonContentDataInitializer.createData(1001, 0);
+
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(3);
+
+        final TextDocumentDTO documentDTO = documentService.get(1001);
+        documentDTO.setCategories(new HashSet<>(categories));
+        documentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
+
+        final DocumentDTO originalDocument = documentService.save(documentDTO);
+
+        final DocumentDTO copiedDocument = documentService.copy(1001);
+
+        assertThat(metaRepository.findAll(), hasSize(3));
+
+        assertThat(copiedDocument.getId(), is(not(originalDocument.getId())));
+
+        final List<CommonContent> originalCommonContents = originalDocument.getCommonContents();
+        final List<CommonContent> copiedCommonContents = copiedDocument.getCommonContents();
+
+        IntStream.range(0, originalCommonContents.size())
+                .forEach(i -> {
+                    final CommonContent originalCommonContent = originalCommonContents.get(i);
+                    final CommonContent copiedCommonContent = copiedCommonContents.get(i);
+
+                    assertThat(copiedCommonContent.getId(), is(not(originalCommonContent.getId())));
+                    assertThat(copiedCommonContent.getDocId(), is(not(originalCommonContent.getDocId())));
+                    assertThat(copiedCommonContent.getHeadline(), is(not(originalCommonContent.getHeadline())));
+                    assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
+                });
+
+        checkExistingAuditDTO(copiedDocument.getCreated());
+        checkExistingAuditDTO(copiedDocument.getModified());
+
+        checkNotExistingAuditDTO(copiedDocument.getPublished());
+        checkNotExistingAuditDTO(copiedDocument.getPublicationEnd());
+        checkNotExistingAuditDTO(copiedDocument.getArchived());
+
+        final Set<Category> originalCategories = originalDocument.getCategories();
+        final Set<Category> copiedCategories = copiedDocument.getCategories();
+
+        assertThat(copiedCategories.size(), is(originalCategories.size()));
+        assertTrue(originalCategories.containsAll(copiedCategories));
+
+        assertThat(copiedDocument.getKeywords(), is(originalDocument.getKeywords()));
+    }
+
+    private void checkExistingAuditDTO(AuditDTO auditDTO) {
+        assertThat(auditDTO.getId(), is(userId));
+        assertThat(auditDTO.getBy(), is(userService.getUser(userId).getLogin()));
+        assertNotNull(auditDTO.getDate());
+        assertNotNull(auditDTO.getTime());
+    }
+
+    private void checkNotExistingAuditDTO(AuditDTO auditDTO) {
+        assertNull(auditDTO.getId());
+        assertNull(auditDTO.getBy());
+        assertNull(auditDTO.getDate());
+        assertNull(auditDTO.getTime());
+    }
 }

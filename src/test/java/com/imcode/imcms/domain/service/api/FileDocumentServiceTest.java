@@ -3,10 +3,13 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
@@ -36,10 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.Matchers.*;
@@ -50,6 +50,8 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
 public class FileDocumentServiceTest {
+
+    private static final int userId = 1;
 
     private static File testSolrFolder;
     private static File testFilesFolder;
@@ -84,9 +86,12 @@ public class FileDocumentServiceTest {
     @Autowired
     private MetaRepository metaRepository;
 
+    @Autowired
+    private UserService userService;
+
     @BeforeClass
     public static void setUpUser() {
-        Imcms.setUser(new UserDomainObject(1));
+        Imcms.setUser(new UserDomainObject(userId));
     }
 
     @AfterClass
@@ -335,6 +340,19 @@ public class FileDocumentServiceTest {
                     assertThat(copiedCommonContent.getVersionNo(), is(Version.WORKING_VERSION_INDEX));
                 });
 
+        checkExistingAuditDTO(clonedFileDocument.getCreated());
+        checkExistingAuditDTO(clonedFileDocument.getModified());
+
+        checkNotExistingAuditDTO(clonedFileDocument.getPublished());
+        checkNotExistingAuditDTO(clonedFileDocument.getPublicationEnd());
+        checkNotExistingAuditDTO(clonedFileDocument.getArchived());
+
+        final Set<Category> originalCategories = originalFileDocument.getCategories();
+        final Set<Category> copiedCategories = clonedFileDocument.getCategories();
+
+        assertThat(copiedCategories.size(), is(originalCategories.size()));
+        assertTrue(originalCategories.containsAll(copiedCategories));
+
         assertThat(clonedFileDocument.getKeywords(), is(originalFileDocument.getKeywords()));
 
         final List<DocumentFileDTO> originalFiles = originalFileDocument.getFiles();
@@ -355,6 +373,20 @@ public class FileDocumentServiceTest {
                     assertThat(clonedFileDocId, is(not(originalDocumentFile.getDocId())));
                 });
 
+    }
+
+    private void checkExistingAuditDTO(AuditDTO auditDTO) {
+        assertThat(auditDTO.getId(), is(userId));
+        assertThat(auditDTO.getBy(), is(userService.getUser(userId).getLogin()));
+        assertNotNull(auditDTO.getDate());
+        assertNotNull(auditDTO.getTime());
+    }
+
+    private void checkNotExistingAuditDTO(AuditDTO auditDTO) {
+        assertNull(auditDTO.getId());
+        assertNull(auditDTO.getBy());
+        assertNull(auditDTO.getDate());
+        assertNull(auditDTO.getTime());
     }
 
     @Test
