@@ -40,6 +40,7 @@ public class EditElementController {
                                  @RequestParam("language-code") String langCode,
                                  @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                  @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
+                                 @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
@@ -54,7 +55,7 @@ public class EditElementController {
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("langCode", langCode);
-        addCommonModelData(metaId, index, request, mav);
+        addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;
     }
@@ -66,6 +67,7 @@ public class EditElementController {
                                   @RequestParam("language-code") String langCode,
                                   @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                   @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
+                                  @RequestParam(value = "return", required = false) String returnUrl,
                                   HttpServletRequest request,
                                   ModelAndView mav) {
 
@@ -80,7 +82,7 @@ public class EditElementController {
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("langCode", langCode);
         mav.addObject("imagesPath", imagesPath);
-        addCommonModelData(metaId, index, request, mav);
+        addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;
     }
@@ -89,11 +91,12 @@ public class EditElementController {
     @CheckAccess(AccessType.MENU)
     public ModelAndView editMenu(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
         mav.setViewName("EditMenu");
-        addCommonModelData(metaId, index, request, mav);
+        addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;
     }
@@ -102,55 +105,71 @@ public class EditElementController {
     @CheckAccess(AccessType.LOOP)
     public ModelAndView editLoop(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
+                                 @RequestParam(value = "return", required = false) String returnUrl,
                                  HttpServletRequest request,
                                  ModelAndView mav) {
 
         mav.setViewName("EditLoop");
-        addCommonModelData(metaId, index, request, mav);
+        addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;
     }
 
     @RequestMapping("/page-info")
     @CheckAccess(AccessType.DOC_INFO)
-    public ModelAndView editDocInfo(@RequestParam("meta-id") int metaId, HttpServletRequest request, ModelAndView mav) {
+    public ModelAndView editDocInfo(@RequestParam("meta-id") int metaId,
+                                    @RequestParam(value = "return", required = false) String returnUrl,
+                                    HttpServletRequest request, ModelAndView mav) {
 
         mav.setViewName("EditDocInfo");
+        addCommonModelData(metaId, returnUrl, request, mav);
 
-        mav.addObject("targetDocId", metaId);
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
-        mav.addObject("contextPath", request.getContextPath());
         return mav;
     }
 
     @CheckAccess
     @RequestMapping("/documents")
-    public ModelAndView editDocuments(HttpServletRequest request, ModelAndView mav) {
+    public ModelAndView editDocuments(HttpServletRequest request,
+                                      @RequestParam(value = "return", required = false) String returnUrl,
+                                      ModelAndView mav) {
 
         mav.setViewName("EditDocuments");
+        addCommonModelData(returnUrl, request, mav);
 
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
-        mav.addObject("contextPath", request.getContextPath());
         return mav;
     }
 
     @CheckAccess
     @RequestMapping("/content")
-    public ModelAndView editContent(HttpServletRequest request, ModelAndView mav) {
+    public ModelAndView editContent(HttpServletRequest request,
+                                    @RequestParam(value = "return", required = false) String returnUrl,
+                                    ModelAndView mav) {
 
         mav.setViewName("EditContent");
-
         mav.addObject("imagesPath", imagesPath);
-        mav.addObject("userLanguage", Imcms.getUser().getLanguage());
-        mav.addObject("contextPath", request.getContextPath());
+        addCommonModelData(returnUrl, request, mav);
+
         return mav;
     }
 
-    private void addCommonModelData(int metaId, int index, HttpServletRequest request, ModelAndView mav) {
-        mav.addObject("targetDocId", metaId);
+    private void addCommonModelData(Integer metaId, Integer index, String returnUrl, HttpServletRequest request,
+                                    ModelAndView mav) {
+
         mav.addObject("index", index);
+        addCommonModelData(metaId, returnUrl, request, mav);
+    }
+
+    private void addCommonModelData(Integer metaId, String returnUrl, HttpServletRequest request,
+                                    ModelAndView mav) {
+
+        mav.addObject("targetDocId", metaId);
+        addCommonModelData(returnUrl, request, mav);
+    }
+
+    private void addCommonModelData(String returnUrl, HttpServletRequest request, ModelAndView mav) {
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("contextPath", request.getContextPath());
+        mav.addObject("returnUrl", returnUrl);
     }
 
 }

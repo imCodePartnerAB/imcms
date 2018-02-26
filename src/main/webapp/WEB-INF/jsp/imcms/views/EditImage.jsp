@@ -14,6 +14,7 @@
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.model.LoopEntryRef"--%>
 <%--@elvariable id="langCode" type="java.lang.String"--%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
+<%--@elvariable id="returnUrl" type="java.lang.String"--%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,6 +31,7 @@
 </head>
 <body>
 
+<input type="hidden" id="return-url" value="${returnUrl}">
 <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}" data-lang-code="${langCode}"
      data-index="${index}"${empty loopEntryRef
         ? '' : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')

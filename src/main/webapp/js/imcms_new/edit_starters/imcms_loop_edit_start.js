@@ -13,7 +13,8 @@ Imcms.require(
         loopEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
 
         events.on("loop editor closed", function () {
-            location = imcms.contextPath + "/" + editorData.docId;
+            var returnUrl = $("#return-url").val();
+            location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
         });
     }
 );

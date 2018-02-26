@@ -11,7 +11,8 @@ Imcms.require(
         var docId = $("#targetDocId").val();
 
         function onPageInfoClosed() {
-            location = imcms.contextPath + "/" + docId;
+            var returnUrl = $("#return-url").val();
+            location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + docId);
         }
 
         events.on("page info closed", onPageInfoClosed);

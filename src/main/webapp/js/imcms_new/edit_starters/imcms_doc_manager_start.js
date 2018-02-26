@@ -5,11 +5,12 @@
  * 20.02.18
  */
 Imcms.require(
-    ["imcms-document-editor-builder", "imcms-events", "imcms"],
+    ["imcms-document-editor-builder", "imcms-events", "imcms", "jquery"],
 
-    function (documentEditorBuilder, events, imcms) {
+    function (documentEditorBuilder, events, imcms, $) {
         events.on("document-editor-closed", function () {
-            location = imcms.contextPath;
+            var returnUrl = $("#return-url").val();
+            location = (returnUrl) ? returnUrl : imcms.contextPath;
         });
 
         documentEditorBuilder.build();

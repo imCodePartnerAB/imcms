@@ -11,6 +11,7 @@
 <%--@elvariable id="targetDocId" type="int"--%>
 <%--@elvariable id="index" type="int"--%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
+<%--@elvariable id="returnUrl" type="java.lang.String"--%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +28,7 @@
 </head>
 <body>
 
+<input type="hidden" id="return-url" value="${returnUrl}">
 <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}" data-index="${index}">
     <div class="imcms-editor-area__content imcms-editor-content"></div>
 </div>

@@ -9,6 +9,7 @@
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
+<%--@elvariable id="returnUrl" type="java.lang.String"--%>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,5 +25,6 @@
             data-main="${contextPath}/js/imcms_new/edit_starters/imcms_doc_manager_start.js"></script>
 </head>
 <body>
+<input type="hidden" id="return-url" value="${returnUrl}">
 </body>
 </html>

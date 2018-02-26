@@ -5,12 +5,13 @@
  * 20.02.18
  */
 Imcms.require(
-    ["imcms-content-manager-builder", "imcms-events", "imcms"],
+    ["imcms-content-manager-builder", "imcms-events", "imcms", "jquery"],
 
-    function (contentManagerBuilder, events, imcms) {
+    function (contentManagerBuilder, events, imcms, $) {
         imcms.disableContentManagerSaveButton = true;
         events.on("content manager closed", function () {
-            location = imcms.contextPath;
+            var returnUrl = $("#return-url").val();
+            location = (returnUrl) ? returnUrl : imcms.contextPath;
         });
 
         contentManagerBuilder.build();

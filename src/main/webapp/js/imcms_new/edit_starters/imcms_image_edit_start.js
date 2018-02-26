@@ -9,7 +9,8 @@ Imcms.require(
 
     function (imageEditorInitData, $, events, imcms) {
         events.on("enable text editor blur", function () {
-            location = imcms.contextPath + "/" + editorData.docId;
+            var returnUrl = $("#return-url").val();
+            location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
         });
 
         var $editedTag = $(imageEditorInitData.EDIT_AREA_SELECTOR);
