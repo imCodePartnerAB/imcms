@@ -4,7 +4,6 @@ import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.factory.CommonContentFactory;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.*;
@@ -12,7 +11,10 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.DocumentFileRepository;
+import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.RoleId;
@@ -78,10 +80,16 @@ public class DocumentControllerTest extends AbstractControllerTest {
     private MetaRepository metaRepository;
 
     @Autowired
-    private CommonContentFactory commonContentFactory;
+    private UrlDocumentDataInitializer urlDocumentDataInitializer;
 
     @Autowired
-    private UrlDocumentDataInitializer urlDocumentDataInitializer;
+    private TextDocumentTemplateRepository textDocumentTemplateRepository;
+
+    @Autowired
+    private DocumentFileRepository documentFileRepository;
+
+    @Autowired
+    private DocumentUrlRepository documentUrlRepository;
 
     @Override
     protected String controllerPath() {
@@ -712,17 +720,36 @@ public class DocumentControllerTest extends AbstractControllerTest {
 
     @Test
     public void copyTextDocument_Expect_Copied() throws Exception {
+        final int documentTemplateSizeBeforeSaving = textDocumentTemplateRepository.findAll().size();
+
         copyChecking(createdTextDoc.getId());
+
+        final int documentTemplateSizeAfterSaving = textDocumentTemplateRepository.findAll().size();
+
+        assertThat(documentTemplateSizeAfterSaving, is(documentTemplateSizeBeforeSaving + 1));
     }
 
     @Test
     public void copyFileDocument_Expect_Copied() throws Exception {
+        final int documentFileSizeBeforeSaving = documentFileRepository.findAll().size();
+
         copyChecking(createdFileDoc.getId());
+
+        final int documentFileSizeAfterSaving = documentFileRepository.findAll().size();
+
+        assertThat(documentFileSizeAfterSaving,
+                is(documentFileSizeBeforeSaving + createdFileDoc.getFiles().size()));
     }
 
     @Test
     public void copyUrlDocument_Expect_Copied() throws Exception {
+        final int documentUrlSizeBeforeSaving = documentUrlRepository.findAll().size();
+
         copyChecking(createdUrlDoc.getId());
+
+        final int documentUrlSizeAfterSaving = documentUrlRepository.findAll().size();
+
+        assertThat(documentUrlSizeAfterSaving, is(documentUrlSizeBeforeSaving + 1));
     }
 
     private void copyChecking(int docId) throws Exception {
