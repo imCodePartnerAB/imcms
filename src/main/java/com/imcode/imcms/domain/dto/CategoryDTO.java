@@ -34,6 +34,6 @@ public class CategoryDTO extends Category implements Serializable {
 
     @Override
     public void setType(CategoryType type) {
-        this.type = new CategoryTypeDTO(type);
+        this.type = (type == null) ? null : new CategoryTypeDTO(type);
     }
 }
