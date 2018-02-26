@@ -210,12 +210,12 @@ public class TextDocumentServiceTest {
         final TextDocumentTemplateJPA textTemplate =
                 templateDataInitializer.createData(1001, "test", "test");
 
-        final TextDocumentDTO DocumentDTO = documentService.get(1001);
-        DocumentDTO.setCategories(new HashSet<>(categories));
-        DocumentDTO.setTemplate(new TextDocumentTemplateDTO(textTemplate));
-        DocumentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
+        final TextDocumentDTO documentDTO = documentService.get(1001);
+        documentDTO.setCategories(new HashSet<>(categories));
+        documentDTO.setTemplate(new TextDocumentTemplateDTO(textTemplate));
+        documentDTO.setKeywords(new HashSet<>(Arrays.asList("1", "2", "3")));
 
-        final TextDocumentDTO originalTextDocument = documentService.save(DocumentDTO);
+        final TextDocumentDTO originalTextDocument = documentService.save(documentDTO);
 
         final TextDocumentDTO copiedTextDocument = documentService.copy(1001);
 
