@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentFileService;
 import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.model.DocumentFile;
 import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.commons.io.FilenameUtils;
@@ -89,15 +88,7 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     public FileDocumentDTO copy(int docId) {
         final int copiedDocId = defaultDocumentService.copy(docId).getId();
 
-        final List<DocumentFile> originalDocumentFiles = documentFileService.getByDocId(docId);
-
-        originalDocumentFiles
-                .forEach(documentFile -> {
-                    final DocumentFileDTO clonedDocumentFileDTO = new DocumentFileDTO(documentFile).clone();
-
-                    clonedDocumentFileDTO.setDocId(copiedDocId);
-                    documentFileService.save(clonedDocumentFileDTO);
-                });
+        documentFileService.copy(docId, copiedDocId);
 
         return get(copiedDocId);
     }

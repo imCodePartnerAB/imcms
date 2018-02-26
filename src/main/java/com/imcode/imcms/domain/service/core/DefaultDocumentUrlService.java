@@ -52,6 +52,16 @@ public class DefaultDocumentUrlService
     }
 
     @Override
+    public void copy(int fromDocId, int toDocId) {
+        final DocumentUrlDTO originalDocumentUrlDTO = new DocumentUrlDTO(getByDocId(fromDocId));
+
+        final DocumentUrlDTO clonedDocumentUrlDTO = originalDocumentUrlDTO.clone();
+        clonedDocumentUrlDTO.setDocId(toDocId);
+
+        save(clonedDocumentUrlDTO);
+    }
+
+    @Override
     protected DocumentUrlJPA removeId(DocumentUrlJPA documentURL, Version version) {
         final DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA(documentURL, version);
         documentUrlJPA.setId(null);

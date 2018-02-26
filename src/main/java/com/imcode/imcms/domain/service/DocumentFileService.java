@@ -10,7 +10,7 @@ import java.util.List;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.12.17.
  */
-public interface DocumentFileService extends DeleterByDocumentId {
+public interface DocumentFileService extends DeleterByDocumentId, Copyable {
 
     <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId);
 

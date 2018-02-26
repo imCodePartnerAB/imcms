@@ -33,6 +33,21 @@ public class DefaultTextDocumentTemplateService implements TextDocumentTemplateS
     }
 
     @Override
+    public void copy(int fromDocId, int toDocId) {
+        final Optional<TextDocumentTemplate> textDocumentTemplateOptional = get(fromDocId);
+
+        textDocumentTemplateOptional
+                .ifPresent(textDocumentTemplate -> {
+                    final TextDocumentTemplateDTO clonedTextDocumentTemplateDTO =
+                            new TextDocumentTemplateDTO(textDocumentTemplate).clone();
+
+                    clonedTextDocumentTemplateDTO.setDocId(toDocId);
+
+                    save(clonedTextDocumentTemplateDTO);
+                });
+    }
+
+    @Override
     public void deleteByDocId(Integer docIdToDelete) {
         textDocumentTemplateRepository.deleteByDocId(docIdToDelete);
     }

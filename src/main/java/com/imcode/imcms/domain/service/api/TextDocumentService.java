@@ -9,7 +9,6 @@ import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
@@ -74,17 +73,7 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     public TextDocumentDTO copy(int docId) {
         final int copiedDocId = defaultDocumentService.copy(docId).getId();
 
-        final Optional<TextDocumentTemplate> textDocumentTemplateOptional = textDocumentTemplateService.get(docId);
-
-        textDocumentTemplateOptional
-                .ifPresent(textDocumentTemplate -> {
-                    final TextDocumentTemplateDTO clonedTextDocumentTemplateDTO =
-                            new TextDocumentTemplateDTO(textDocumentTemplate).clone();
-
-                    clonedTextDocumentTemplateDTO.setDocId(copiedDocId);
-
-                    textDocumentTemplateService.save(clonedTextDocumentTemplateDTO);
-                });
+        textDocumentTemplateService.copy(docId, copiedDocId);
 
         return get(copiedDocId);
     }
