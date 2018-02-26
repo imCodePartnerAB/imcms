@@ -98,15 +98,13 @@ class DefaultDocumentFileService
 
     @Override
     public void copy(int fromDocId, int toDocId) {
-        final List<DocumentFile> originalDocumentFiles = getByDocId(fromDocId);
 
-        originalDocumentFiles
-                .forEach(documentFile -> {
-                    final DocumentFileDTO clonedDocumentFileDTO = new DocumentFileDTO(documentFile).clone();
-                    clonedDocumentFileDTO.setDocId(toDocId);
+        getByDocId(fromDocId).forEach(documentFile -> {
+            final DocumentFileDTO clonedDocumentFileDTO = new DocumentFileDTO(documentFile).clone();
+            clonedDocumentFileDTO.setDocId(toDocId);
 
-                    save(clonedDocumentFileDTO);
-                });
+            save(clonedDocumentFileDTO);
+        });
     }
 
     @Override

@@ -34,17 +34,14 @@ public class DefaultTextDocumentTemplateService implements TextDocumentTemplateS
 
     @Override
     public void copy(int fromDocId, int toDocId) {
-        final Optional<TextDocumentTemplate> textDocumentTemplateOptional = get(fromDocId);
+        get(fromDocId).ifPresent(textDocumentTemplate -> {
+            final TextDocumentTemplateDTO clonedTextDocumentTemplateDTO =
+                    new TextDocumentTemplateDTO(textDocumentTemplate).clone();
 
-        textDocumentTemplateOptional
-                .ifPresent(textDocumentTemplate -> {
-                    final TextDocumentTemplateDTO clonedTextDocumentTemplateDTO =
-                            new TextDocumentTemplateDTO(textDocumentTemplate).clone();
+            clonedTextDocumentTemplateDTO.setDocId(toDocId);
 
-                    clonedTextDocumentTemplateDTO.setDocId(toDocId);
-
-                    save(clonedTextDocumentTemplateDTO);
-                });
+            save(clonedTextDocumentTemplateDTO);
+        });
     }
 
     @Override

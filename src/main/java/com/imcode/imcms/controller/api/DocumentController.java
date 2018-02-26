@@ -34,7 +34,7 @@ class DocumentController {
         }
     }
 
-    @RequestMapping(value = "/copy/{docId}", method = RequestMethod.POST)
+    @PostMapping("/copy/{docId}")
     public Document copy(@PathVariable final Integer docId) {
         return documentService.copy(docId);
     }
