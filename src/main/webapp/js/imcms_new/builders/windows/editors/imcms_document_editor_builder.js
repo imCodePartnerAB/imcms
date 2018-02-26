@@ -84,11 +84,12 @@ Imcms.define("imcms-document-editor-builder",
             searchQueryObj[field] = value;
         }
 
+        function addDocumentToList(document) {
+            var $document = buildDocument(document, currentEditorOptions);
+            $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
+        }
+
         function buildBodyHeadTools() {
-            function addDocumentToList(document) {
-                var $document = buildDocument(document, currentEditorOptions);
-                $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
-            }
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
@@ -431,7 +432,9 @@ Imcms.define("imcms-document-editor-builder",
 
             if (opts.copyEnable) {
                 var $controlCopy = controlsBuilder.copy(function () {
-
+                    docCopyRestApi.copy(document.id).success(function (copiedDocument) {
+                        addDocumentToList(copiedDocument);
+                    })
                 });
                 controls.push($controlCopy);
             }
