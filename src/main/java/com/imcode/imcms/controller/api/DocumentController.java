@@ -34,10 +34,9 @@ class DocumentController {
         }
     }
 
-    // TODO: move to another controller
-    @PutMapping
-    public void copy(@RequestBody Integer docId) {
-        documentService.copy(docId);
+    @RequestMapping(value = "/copy/{docId}", method = RequestMethod.POST)
+    public Document copy(@PathVariable final Integer docId) {
+        return documentService.copy(docId);
     }
 
     /**

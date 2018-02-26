@@ -728,7 +728,9 @@ public class DocumentControllerTest extends AbstractControllerTest {
     private void copyChecking(int docId) throws Exception {
         final int documentNumberBeforeSaving = metaRepository.findAll().size();
 
-        final MockHttpServletRequestBuilder builder = getPutRequestBuilderWithContent(docId);
+        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+                .post(controllerPath() + "/copy/" + docId);
+
         performRequestBuilderExpectedOk(builder);
 
         final int documentNumberAfterSaving = metaRepository.findAll().size();
