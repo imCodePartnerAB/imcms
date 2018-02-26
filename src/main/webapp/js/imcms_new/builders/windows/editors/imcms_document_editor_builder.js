@@ -700,7 +700,7 @@ Imcms.define("imcms-document-editor-builder",
 
             var title = (document.commonContents)
                 ? document.commonContents.filter(function (commonContent) {
-                        return commonContent.language.code === imcms.language.code;
+                    return commonContent.language.code === imcms.userLanguage;
                     })
                     .map(function (commonContent) {
                         return commonContent.headline;
