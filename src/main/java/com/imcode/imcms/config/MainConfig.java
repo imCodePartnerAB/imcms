@@ -8,7 +8,6 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
-import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
@@ -165,20 +164,18 @@ class MainConfig {
 
     @Bean
     public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
-                                                                DocumentDtoFactory documentDtoFactory,
                                                                 DocumentFileService documentFileService,
                                                                 Config config,
                                                                 @Value("${FilePath}") File filesRoot) {
 
-        return new FileDocumentService(documentService, documentDtoFactory, documentFileService, filesRoot, config);
+        return new FileDocumentService(documentService, documentFileService, filesRoot, config);
     }
 
     @Bean
     public DocumentService<UrlDocumentDTO> urlDocumentService(DocumentService<DocumentDTO> documentService,
-                                                              DocumentDtoFactory documentDtoFactory,
                                                               DocumentUrlService documentUrlService) {
 
-        return new UrlDocumentService(documentService, documentDtoFactory, documentUrlService);
+        return new UrlDocumentService(documentService, documentUrlService);
     }
 
     @Bean

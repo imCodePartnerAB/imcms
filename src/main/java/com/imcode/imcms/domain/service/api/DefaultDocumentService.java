@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -35,7 +34,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final ImageService imageService;
     private final LoopService loopService;
     private final DocumentIndex documentIndex;
-    private final DocumentDtoFactory documentDtoFactory;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
 
@@ -50,7 +48,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            ImageService imageService,
                            LoopService loopService,
                            DocumentIndex documentIndex,
-                           DocumentDtoFactory documentDtoFactory,
                            List<VersionedContentService> versionedContentServices) {
 
         this.metaRepository = metaRepository;
@@ -61,7 +58,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.imageService = imageService;
         this.loopService = loopService;
         this.documentIndex = documentIndex;
-        this.documentDtoFactory = documentDtoFactory;
         this.versionedContentServices = versionedContentServices;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
@@ -78,8 +74,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    public DocumentDTO createFromParent(Integer parentDocId) { // todo: use copying to create new doc based on parent
-        return documentDtoFactory.createEmpty();
+    public DocumentDTO createFromParent(Integer parentDocId) {
+        return get(parentDocId).clone();
     }
 
     @Override
