@@ -18,6 +18,10 @@
     background-image: url("../images_new/controls/icon_folder_controll_reverse_edit.png");
 }
 
+.imcms-control--copy {
+    background-image: url("../images_new/controls/icon_folder_controll_copy.png");
+}
+
 .imcms-control--remove {
     background-image: url("../images_new/controls/icon_folder_controll_reverse_remove.png");
 }

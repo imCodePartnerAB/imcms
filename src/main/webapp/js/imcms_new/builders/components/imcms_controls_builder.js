@@ -25,6 +25,9 @@ Imcms.define("imcms-controls-builder", ["imcms-bem-builder"], function (BEM) {
         create: function (onClick) {
             return buildControl("create", onClick);
         },
+        copy: function (onClick) {
+            return buildControl("copy", onClick)
+        },
         buildControlsBlock: function (tag, controls) {
             return controlsBEM.buildBlock(tag, controls, {}, "control");
         }

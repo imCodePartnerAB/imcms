@@ -429,6 +429,13 @@ Imcms.define("imcms-document-editor-builder",
                 controls.push($controlRemove);
             }
 
+            if (opts.copyEnable) {
+                var $controlCopy = controlsBuilder.copy(function () {
+
+                });
+                controls.push($controlCopy);
+            }
+
             if (opts.editEnable) {
                 var $controlEdit = controlsBuilder.edit(function () {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
@@ -852,6 +859,7 @@ Imcms.define("imcms-document-editor-builder",
         function loadData() {
             loadDocumentEditorContent($documentsContainer, {
                 editEnable: true,
+                copyEnable: true,
                 removeEnable: false // todo: maybe should be replaced with archivationEnable in future
             });
         }
