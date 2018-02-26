@@ -20,6 +20,7 @@
 
 .imcms-control--copy {
     background-image: url("../images_new/controls/icon_folder_controll_copy.png");
+    background-size: cover;
 }
 
 .imcms-control--remove {
@@ -52,6 +53,11 @@
 
 .imcms-control--edit:hover {
     background-image: url("../images_new/controls/icon_folder_controll_edit_hover.png");
+}
+
+.imcms-control--copy:hover {
+    background-image: url("../images_new/controls/icon_folder_controll_copy_hover.png");
+    background-size: cover;
 }
 
 .imcms-control--remove:hover {
