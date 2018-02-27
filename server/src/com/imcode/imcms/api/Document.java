@@ -1,8 +1,8 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.util.ChainableReversibleNullComparator;
 import com.imcode.util.CountingIterator;
-import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.document.*;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
@@ -606,6 +606,14 @@ public class Document implements Serializable {
      */
     public void setPublicationStatus(PublicationStatus publicationStatus) {
         internalDocument.setPublicationStatus(publicationStatus) ;
+    }
+
+    public Map<String, String> getProperties() {
+        return getInternal().getProperties();
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        getInternal().setProperties(properties);
     }
 
     /**
