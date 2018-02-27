@@ -15,19 +15,19 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Controller provides possibility to go to page with elements editing without going to it's docs.
+ * Provides possibility to go to any editor or manager window directly.
  * Created by Serhii from Ubrainians for Imcode
  * on 26.08.16.
  */
 @Controller
 @RequestMapping("/edit")
-public class EditElementController {
+public class DirectEditorsController {
 
     private final String imagesPath;
     private final TextService textService;
 
-    public EditElementController(@Value("${ImagePath}") String imagesPath,
-                                 TextService textService) {
+    public DirectEditorsController(@Value("${ImagePath}") String imagesPath,
+                                   TextService textService) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
