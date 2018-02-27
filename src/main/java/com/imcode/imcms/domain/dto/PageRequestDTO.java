@@ -14,27 +14,12 @@ public class PageRequestDTO {
     private Sort.Direction direction;
     private String property;
 
+    private int skip;
+
     public PageRequestDTO() {
         this.pageRequest = new PageRequest(DEFAULT_PAGE_NUMBER, DEFAULT_PAGE_SIZE);
-
-        property = DocumentIndex.FIELD__META_ID;
-        direction = Sort.Direction.DESC;
-    }
-
-    public PageRequestDTO(int page, int size) {
-        this.pageRequest = new PageRequest(page, size);
-    }
-
-    public PageRequestDTO(int page, int size, Sort sort) {
-        this.pageRequest = new PageRequest(page, size, sort);
-    }
-
-    public int getPage() {
-        return pageRequest.getPageNumber();
-    }
-
-    public void setPage(int page) {
-        pageRequest = new PageRequest(page, pageRequest.getPageSize(), pageRequest.getSort());
+        this.property = DocumentIndex.FIELD__META_ID;
+        this.direction = Sort.Direction.DESC;
     }
 
     public int getSize() {
@@ -49,6 +34,11 @@ public class PageRequestDTO {
         return pageRequest.getSort();
     }
 
+    private void setSort() {
+        final Sort sort = new Sort(new Sort.Order(this.direction, this.property));
+        pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), sort);
+    }
+
     public void setDirection(Sort.Direction direction) {
         this.direction = direction;
         setSort();
@@ -59,8 +49,11 @@ public class PageRequestDTO {
         setSort();
     }
 
-    private void setSort() {
-        final Sort sort = new Sort(new Sort.Order(this.direction, this.property));
-        pageRequest = new PageRequest(pageRequest.getPageNumber(), pageRequest.getPageSize(), sort);
+    public int getSkip() {
+        return skip;
+    }
+
+    public void setSkip(int skip) {
+        this.skip = skip;
     }
 }

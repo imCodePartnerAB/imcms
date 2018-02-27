@@ -87,7 +87,9 @@ public class DocumentSearchQueryConverterTest {
         final int expectedPage = 1;
         final int expectedSize = 10;
 
-        final PageRequestDTO pageRequestDTO = new PageRequestDTO(expectedPage, expectedSize);
+        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
+        pageRequestDTO.setSkip(expectedPage * expectedSize);
+        pageRequestDTO.setSize(expectedSize);
 
         searchQueryDTO.setPage(pageRequestDTO);
 

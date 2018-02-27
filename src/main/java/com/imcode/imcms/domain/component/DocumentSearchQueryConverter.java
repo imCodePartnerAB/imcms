@@ -84,10 +84,8 @@ public class DocumentSearchQueryConverter {
             page = new PageRequestDTO();
         }
 
-        final int pageSize = page.getSize();
-
-        solrQuery.setStart(page.getPage() * pageSize);
-        solrQuery.setRows(pageSize);
+        solrQuery.setStart(page.getSkip());
+        solrQuery.setRows(page.getSize());
 
         final Order order = Optional.ofNullable(page.getSort())
                 .orElse(DEFAULT_SORT)

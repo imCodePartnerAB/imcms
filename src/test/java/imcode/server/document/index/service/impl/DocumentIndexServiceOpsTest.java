@@ -293,7 +293,11 @@ public class DocumentIndexServiceOpsTest {
     public void getDocuments_When_SecondPageIsSet_Expect_Returned() throws Exception {
         final int pageSize = 5;
 
-        searchQueryDTO.setPage(new PageRequestDTO(1, pageSize));
+        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
+        pageRequestDTO.setSkip(pageSize);
+        pageRequestDTO.setSize(pageSize);
+
+        searchQueryDTO.setPage(pageRequestDTO);
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
@@ -315,7 +319,10 @@ public class DocumentIndexServiceOpsTest {
     public void getDocuments_When_SpecifiedPageRequest_Expect_Returned() throws Exception {
         final int pageSize = 3;
 
-        searchQueryDTO.setPage(new PageRequestDTO(0, pageSize));
+        final PageRequestDTO pageRequestDTO = new PageRequestDTO();
+        pageRequestDTO.setSize(pageSize);
+
+        searchQueryDTO.setPage(pageRequestDTO);
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
