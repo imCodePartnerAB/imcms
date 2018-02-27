@@ -2,8 +2,8 @@ package imcode.server.document;
 
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.CopyableHashMap;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.LazilyLoadedObject;
@@ -143,7 +143,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public Map<String, String> getProperties() {
-        return Collections.unmodifiableMap((Map<String, String>)attributes.properties.get()) ;
+        return new HashMap<String, String>((Map<String, String>) attributes.properties.get());
     }
 
     public String getProperty(String key) {
