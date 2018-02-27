@@ -73,6 +73,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
     private HashSet phoneNumbers = new HashSet();
 
     private Map<String, String> properties = new HashMap<String, String>();
+
+    private Date lastLogin;
     
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
@@ -823,5 +825,17 @@ public final class UserDomainObject implements Cloneable, Serializable {
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+    }
+
+    public boolean hasLastLoginDate() {
+        return (null != lastLogin);
+    }
+
+    public Date getLastLoginDate() {
+        return lastLogin;
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        this.lastLogin = lastLoginDate;
     }
 }

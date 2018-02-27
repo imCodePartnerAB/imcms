@@ -96,7 +96,9 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 + ", session_id, remember_cd"
                 + ", login_password_is_encrypted"
                 + ", login_password_reset_id"
-                + ", login_password_reset_ts" + " FROM users";
+                + ", login_password_reset_ts"
+                + ", last_login"
+                + " FROM users";
     }
 
     private static String sqlSelectUserById(ImcmsServices services) {
@@ -245,6 +247,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     void initUserFromSqlData(UserDomainObject user, String[] sqlResult) {
+        final DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
+
         user.setLoginName(sqlResult[1]);
         user.setPassword(sqlResult[2].trim(), "1".equals(sqlResult[19])
                 ? UserDomainObject.PasswordType.ENCRYPTED
@@ -261,14 +265,19 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setEmailAddress(sqlResult[12]);
         user.setLanguageIso639_2((String) ObjectUtils.defaultIfNull(sqlResult[13], services.getLanguageMapper().getDefaultLanguage()));
         user.setActive(0 != Integer.parseInt(sqlResult[14]));
-        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
         user.setCreateDate(Utility.parseDateFormat(dateFormat, sqlResult[15]));
         user.setImcmsExternal(0 != Integer.parseInt(sqlResult[16]));
         user.setSessionId(sqlResult[17]);
         user.setRememberCd(sqlResult[18]);
 
-        String passwordResetId = sqlResult[20];
-        String passwordResetTs = sqlResult[21];
+        final String passwordResetId = sqlResult[20];
+        final String passwordResetTs = sqlResult[21];
+        final String lastLogin = sqlResult[22];
+
+        if (lastLogin != null) {
+            final Date lastLoginDate = Utility.parseDateFormat(dateFormat, lastLogin);
+            user.setLastLoginDate(lastLoginDate);
+        }
 
         if (passwordResetId != null && passwordResetTs != null) {
             user.setPasswordReset(passwordResetId, Long.parseLong(passwordResetTs));
@@ -459,14 +468,27 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     + "login_password_reset_id = ?,\n"
                     + "login_password_reset_ts = ?\n"
                     + "WHERE user_id = ?", params));
+
         } catch (DatabaseException e) {
             throw new UnhandledException(e);
         }
 
+        updateUserLastLogin(user);
         updateUserRoles(user);
         removePhoneNumbers(user);
         addPhoneNumbers(user);
         updateUserProperties(user);
+    }
+
+    private void updateUserLastLogin(UserDomainObject user) {
+        final String[] params = new String[]{
+                Utility.makeSqlStringFromDate(user.getLastLoginDate()),
+                String.valueOf(user.getId())
+        };
+
+        services.getDatabase().execute(new SqlUpdateCommand(
+                "UPDATE users SET last_login = ? WHERE user_id = ?", params
+        ));
     }
 
     private void updateUserProperties(UserDomainObject user) {

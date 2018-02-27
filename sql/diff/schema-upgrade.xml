@@ -86,4 +86,9 @@
             <script location="diff-4.19-4.20-mysql.sql"/>
         </vendor>
     </diff>
+    <diff version="4.21">
+        <vendor name="mysql">
+            <script location="diff-4.20-4.21-mysql.sql"/>
+        </vendor>
+    </diff>
 </schema-upgrade>

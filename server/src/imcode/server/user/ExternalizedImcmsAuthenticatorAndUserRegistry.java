@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,13 +44,22 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     public boolean authenticate(String loginName, String password) {
         NDC.push("authenticate");
         boolean userAuthenticatesInImcms = false;
+
         if (password.length() >= ImcmsConstants.PASSWORD_MINIMUM_LENGTH) {
             userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapperAndRole.authenticate(loginName, password);
+
+            if (userAuthenticatesInImcms) {
+                final UserDomainObject user = imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
+                user.setLastLoginDate(new Date());
+                imcmsAuthenticatorAndUserMapperAndRole.saveUser(user);
+            }
         }
+
         boolean userAuthenticatesInExternal = false;
         if (!userAuthenticatesInImcms && null != externalAuthenticator && password.length() > 0) {
             userAuthenticatesInExternal = externalAuthenticator.authenticate(loginName, password);
         }
+
         NDC.pop();
         return userAuthenticatesInImcms || userAuthenticatesInExternal;
     }

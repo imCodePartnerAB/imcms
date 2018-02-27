@@ -4,6 +4,7 @@ import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -457,5 +458,13 @@ public class User {
 
     public void setProperties(Map<String, String> properties) {
         internalUser.setProperties(properties);
+    }
+
+    public Date getLastLoginDate() {
+        return internalUser.getLastLoginDate();
+    }
+
+    public void setLastLoginDate(Date lastLoginDate) {
+        internalUser.setLastLoginDate(lastLoginDate);
     }
 }
