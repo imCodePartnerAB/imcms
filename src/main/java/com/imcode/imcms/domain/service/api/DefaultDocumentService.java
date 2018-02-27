@@ -59,7 +59,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.loopService = loopService;
         this.documentIndex = documentIndex;
         this.versionedContentServices = versionedContentServices;
-        this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
+        this.documentSaver = ((Function<Meta, Meta>) metaRepository::saveAndFlush).compose(documentDtoToMeta);
     }
 
     @PostConstruct
