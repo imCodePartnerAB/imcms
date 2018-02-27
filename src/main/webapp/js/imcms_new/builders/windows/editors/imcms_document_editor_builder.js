@@ -93,6 +93,8 @@ Imcms.define("imcms-document-editor-builder",
         function addDocumentToList(document) {
             var $document = buildDocument(document, currentEditorOptions);
             $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
+
+            currentDocumentNumber += 1;
         }
 
         var $textField;
@@ -441,7 +443,6 @@ Imcms.define("imcms-document-editor-builder",
             if (opts.copyEnable) {
                 var $controlCopy = controlsBuilder.copy(function () {
                     docCopyRestApi.copy(document.id).success(function (copiedDocument) {
-                        currentDocumentNumber += 1;
                         addDocumentToList(copiedDocument);
                     })
                 });
