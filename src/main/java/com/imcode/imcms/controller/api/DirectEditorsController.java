@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
  * on 26.08.16.
  */
 @Controller
-@RequestMapping("/edit")
+@RequestMapping("/admin")
 public class DirectEditorsController {
 
     private final String imagesPath;
