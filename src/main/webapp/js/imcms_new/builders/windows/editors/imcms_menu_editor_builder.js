@@ -6,14 +6,15 @@ Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
-        "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts"
+        "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts",
+        "imcms-document-copy-rest-api", "imcms"
     ],
     function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi, controls,
-              pageInfoBuilder, $, primitivesBuilder, reloadElement, events, texts) {
+              pageInfoBuilder, $, primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms) {
 
         texts = texts.editors.menu;
 
-        var $title, $menuElementsContainer, $documentsContainer;
+        var $title, $menuElementsContainer, $documentsContainer, $documentEditor;
         var docId, menuIndex;
         // variables for drag
         var mouseCoords = {
@@ -473,11 +474,38 @@ Imcms.define("imcms-menu-editor-builder",
             var $controlRemove = controls.remove(function () {
                 removeMenuItem.call(this, menuElementTree.documentId);
             });
+
             var $controlEdit = controls.edit(function () {
                 pageInfoBuilder.build(menuElementTree.documentId, null, menuElementTree.type);
             });
 
-            return controls.buildControlsBlock("<div>", [$controlRemove, $controlEdit]);
+            var $controlCopy = controls.copy(function () {
+                docCopyRestApi.copy(menuElementTree.documentId).success(function (copiedDocument) {
+
+                    var $documentItemContainer = documentEditorBuilder
+                        .buildDocument(copiedDocument, {moveEnable: true});
+
+                    $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
+
+                    menuElementTree = {
+                        documentId: copiedDocument.id,
+                        link: "/" + copiedDocument.id,
+                        target: copiedDocument.target,
+                        type: copiedDocument.type,
+                        children: []
+                    };
+
+                    copiedDocument.commonContents.forEach(function (commonContent) {
+                        if (commonContent["language"]["code"] === imcms.userLanguage) {
+                            menuElementTree["title"] = commonContent["headline"];
+                        }
+                    });
+
+                    $menuItemsBlock.append(buildMenuItemTree(menuElementTree, 1));
+                })
+            });
+
+            return controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
         }
 
         function showHideSubmenu() {
@@ -553,6 +581,7 @@ Imcms.define("imcms-menu-editor-builder",
             return treeBlock.append($childElements);
         }
 
+        var $menuItemsBlock;
 
         function buildMenuEditorContent(menuElementsTree) {
             function buildMenuElements(menuElements) {
@@ -589,7 +618,7 @@ Imcms.define("imcms-menu-editor-builder",
                 block: "imcms-menu-list",
                 elements: {
                     "titles": buildMenuTitlesRow(),
-                    "items": buildMenuElements(menuElementsTree)
+                    "items": $menuItemsBlock = buildMenuElements(menuElementsTree)
                 }
             }).buildBlockStructure("<div>");
         }
@@ -598,7 +627,7 @@ Imcms.define("imcms-menu-editor-builder",
             var $menuElementsTree = buildMenuEditorContent(menuElementsTree);
             $menuElementsContainer.append($menuElementsTree);
 
-            var $documentEditor = documentEditorBuilder.buildBody();
+            $documentEditor = documentEditorBuilder.buildBody();
             $documentsContainer.append($documentEditor);
             documentEditorBuilder.loadDocumentEditorContent.applyAsync([$documentEditor, {moveEnable: true}]);
         }

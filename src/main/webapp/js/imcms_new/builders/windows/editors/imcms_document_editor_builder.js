@@ -911,6 +911,7 @@ Imcms.define("imcms-document-editor-builder",
             buildBody: buildBody,
             loadDocumentEditorContent: loadDocumentEditorContent,
             clearData: clearData,
+            buildDocument: buildDocument,
             build: function () {
                 documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
             }
