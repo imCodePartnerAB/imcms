@@ -34,14 +34,15 @@ Imcms.define("imcms-document-editor-builder",
 
         var $documentsContainer, $editorBody, $documentsList;
 
-        var currentPage = 0;
+        var currentDocumentNumber = 0;
 
         var term = "term";
         var userId = "userId";
         var categoriesId = "categoriesId";
-        var pageNumber = "page.page";
         var sortProperty = "page.property";
         var sortDirection = "page.direction";
+
+        var pageSkip = "page.skip";
 
         var defaultSortPropertyValue = "meta_id";
         var asc = "ASC";
@@ -51,16 +52,19 @@ Imcms.define("imcms-document-editor-builder",
             "term": "",
             "userId": null,
             "categoriesId": {},
-            "page.page": currentPage
+            "page.skip": currentDocumentNumber
         };
+
+        var sendSearchDocRequest = true;
 
         function appendDocuments(field, value, removeOldDocuments, setDefaultSort) {
             setField(field, value);
 
             if (removeOldDocuments) {
                 $documentsList.empty();
-                currentPage = 0;
-                setField(pageNumber, currentPage);
+                sendSearchDocRequest = true;
+                currentDocumentNumber = 0;
+                setField(pageSkip, currentDocumentNumber);
             }
 
             if (setDefaultSort) {
@@ -70,9 +74,11 @@ Imcms.define("imcms-document-editor-builder",
             docSearchRestApi.read(searchQueryObj).done(function (documentList) {
 
                 if (!documentList || (documentList.length === 0)) {
-                    currentPage--;
+                    sendSearchDocRequest = false;
                     return;
                 }
+
+                currentDocumentNumber += documentList.length;
 
                 documentList.forEach(function (document) {
                     $documentsList.append(buildDocument(document, currentEditorOptions));
@@ -435,6 +441,7 @@ Imcms.define("imcms-document-editor-builder",
             if (opts.copyEnable) {
                 var $controlCopy = controlsBuilder.copy(function () {
                     docCopyRestApi.copy(document.id).success(function (copiedDocument) {
+                        currentDocumentNumber += 1;
                         addDocumentToList(copiedDocument);
                     })
                 });
@@ -791,12 +798,11 @@ Imcms.define("imcms-document-editor-builder",
                 var innerHeight = $this.innerHeight();
                 var scrollHeight = this.scrollHeight;
 
-                if (innerHeight !== scrollHeight
+                if (sendSearchDocRequest
+                    && innerHeight !== scrollHeight
                     && (($this.scrollTop() + innerHeight) >= scrollHeight)
-                    && (searchQueryObj[pageNumber] === currentPage)
-                )
-                {
-                    appendDocuments(pageNumber, ++currentPage, false, false);
+                ) {
+                    appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
             });
 
@@ -828,6 +834,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function loadDocumentEditorContent($documentsContainer, opts) {
             docSearchRestApi.read().done(function (documentList) {
+                currentDocumentNumber += documentList.length;
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
                 highlightDefaultSorting();
@@ -873,10 +880,12 @@ Imcms.define("imcms-document-editor-builder",
             events.trigger("document-editor-closed");
 
             // setting default values
-            searchQueryObj[pageNumber] = currentPage = 0;
+            searchQueryObj[pageSkip] = currentDocumentNumber = 0;
             searchQueryObj[term] = "";
             searchQueryObj[userId] = null;
             searchQueryObj[categoriesId] = {};
+
+            sendSearchDocRequest = true;
 
             delete searchQueryObj[sortProperty];
             delete searchQueryObj[sortDirection];
