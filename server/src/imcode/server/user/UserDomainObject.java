@@ -827,10 +827,6 @@ public final class UserDomainObject implements Cloneable, Serializable {
         this.properties = properties;
     }
 
-    public boolean hasLastLoginDate() {
-        return (null != lastLogin);
-    }
-
     public Date getLastLoginDate() {
         return lastLogin;
     }
