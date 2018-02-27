@@ -4,6 +4,8 @@ import imcode.server.Imcms;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
+import java.util.Map;
+
 /**
  * Class describing imcms user
  */
@@ -213,11 +215,7 @@ public class User {
 
         final User user = (User)o;
 
-        if ( internalUser != null ? !internalUser.equals( user.internalUser ) : user.internalUser != null ) {
-            return false;
-        }
-
-        return true;
+        return internalUser != null ? internalUser.equals(user.internalUser) : user.internalUser == null;
     }
 
     public int hashCode() {
@@ -451,5 +449,13 @@ public class User {
      */
     public void setSessionId(String sessionId) {
         internalUser.setSessionId(sessionId);
+    }
+
+    public Map<String, String> getProperties() {
+        return internalUser.getProperties();
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        internalUser.setProperties(properties);
     }
 }

@@ -71,6 +71,8 @@ public final class UserDomainObject implements Cloneable, Serializable {
     private boolean imcmsExternal ;
 
     private HashSet phoneNumbers = new HashSet();
+
+    private Map<String, String> properties = new HashMap<String, String>();
     
     RoleIds roleIds = createRolesSetWithUserRole();
     protected RoleIds userAdminRoleIds = new RoleIds();
@@ -813,5 +815,13 @@ public final class UserDomainObject implements Cloneable, Serializable {
      */
     void setPasswordReset(String resetId, long time) {
         this.passwordReset = new PasswordReset(resetId, time);
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
     }
 }

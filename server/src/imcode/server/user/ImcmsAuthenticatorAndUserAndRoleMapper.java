@@ -15,6 +15,7 @@ import com.imcode.imcms.servlet.superadmin.AdminIpWhiteList;
 import imcode.server.ImcmsServices;
 import imcode.util.DateConstants;
 import imcode.util.Utility;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -58,6 +61,20 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_USER_SESSION = "select session_id from users where user_id = ?";
 
     private static final String SQL_UPDATE_USER_REMEMBER_CD = "UPDATE users SET remember_cd = ? WHERE user_id = ?";
+    private static final String SQL_GET_USER_PROPERTIES = "SELECT key_name, value FROM user_properties WHERE user_id=?";
+
+    private static final ResultSetHandler<Map<String, String>> USER_PROPERTIES_HANDLER = new ResultSetHandler<Map<String, String>>() {
+        public Map<String, String> handle(ResultSet rs) throws SQLException {
+            Map<String, String> userProperties = new HashMap<String, String>();
+
+            while (rs.next()) {
+                String keyName = rs.getString(1);
+                String value = rs.getString(2);
+                userProperties.put(keyName, value);
+            }
+            return userProperties;
+        }
+    };
 
     private final ImcmsServices services;
 
@@ -222,6 +239,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             initUserRoles(user);
             initUserPhoneNumbers(user);
             initUserUserAdminRoles(user);
+            initUserProperties(user);
         }
         return user;
     }
@@ -448,12 +466,34 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         updateUserRoles(user);
         removePhoneNumbers(user);
         addPhoneNumbers(user);
+        updateUserProperties(user);
+    }
+
+    private void updateUserProperties(UserDomainObject user) {
+        int userId = user.getId();
+        deleteUserProperties(userId);
+
+        final Map<String, String> properties = user.getProperties();
+
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            String[] params = new String[]{userId + "", entry.getKey(), entry.getValue()};
+            services.getDatabase().execute(new SqlUpdateCommand(
+                    "INSERT INTO user_properties (user_id, key_name, value) VALUES(?,?,?)", params
+            ));
+        }
+    }
+
+    private void deleteUserProperties(int userId) {
+        final String[] params = new String[]{userId + ""};
+        services.getDatabase().execute(new SqlUpdateCommand(
+                "DELETE FROM user_properties WHERE user_id = ?", params
+        ));
     }
 
     private void updateUserRoles(UserDomainObject newUser) {
-        Set<RoleId> newUserRoleIds = new HashSet(Arrays.asList(newUser.getRoleIds()));
+        Set<RoleId> newUserRoleIds = new HashSet<RoleId>(Arrays.asList(newUser.getRoleIds()));
         newUserRoleIds.add(RoleId.USERS);
-        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", new Integer(newUser.getId())));
+        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", newUser.getId()));
         for (RoleId roleId : newUserRoleIds) {
             updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][]{
                     {"user_id", "" + newUser.getId()},
@@ -790,6 +830,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         user.setRoleIds(getRoleReferencesForUser(user));
     }
 
+    public void initUserProperties(UserDomainObject user) {
+        user.setProperties(getUserPropertiesReferencesForUser(user));
+    }
+
     public void initUserUserAdminRoles(UserDomainObject user) {
         user.setUserAdminRolesIds(getUserAdminRolesReferencesForUser(user));
     }
@@ -832,6 +876,19 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 phoneNumbers.add(phoneNumber);
             }
             return (PhoneNumber[]) phoneNumbers.toArray(new PhoneNumber[phoneNumbers.size()]);
+        } catch (DatabaseException e) {
+            throw new UnhandledException(e);
+        }
+    }
+
+    private Map<String, String> getUserPropertiesReferencesForUser(UserDomainObject loggedOnUser) {
+        try {
+            final String[] parameters = {String.valueOf(loggedOnUser.getId())};
+
+            return services.getDatabase().execute(new SqlQueryCommand<Map<String, String>>(
+                    SQL_GET_USER_PROPERTIES, parameters, USER_PROPERTIES_HANDLER
+            ));
+
         } catch (DatabaseException e) {
             throw new UnhandledException(e);
         }
