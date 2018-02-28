@@ -7,10 +7,12 @@ Imcms.define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
         "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts",
-        "imcms-document-copy-rest-api", "imcms"
+        "imcms-document-copy-rest-api", "imcms", "imcms-document-type-select-window-builder",
+        "imcms-document-profile-select-window-builder"
     ],
     function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi, controls,
-              pageInfoBuilder, $, primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms) {
+              pageInfoBuilder, $, primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms,
+              docTypeSelectBuilder, docProfileSelectBuilder) {
 
         texts = texts.editors.menu;
 
@@ -470,6 +472,24 @@ Imcms.define("imcms-menu-editor-builder",
             });
         }
 
+        function appendNewMenuItem(document) {
+            var menuElementTree = {
+                documentId: document.id,
+                link: "/" + document.id,
+                target: document.target,
+                type: document.type,
+                children: []
+            };
+
+            document.commonContents.forEach(function (commonContent) {
+                if (commonContent["language"]["code"] === imcms.userLanguage) {
+                    menuElementTree["title"] = commonContent["headline"];
+                }
+            });
+
+            $menuItemsBlock.append(buildMenuItemTree(menuElementTree, 1));
+        }
+
         function buildMenuItemControls(menuElementTree) {
             var $controlRemove = controls.remove(function () {
                 removeMenuItem.call(this, menuElementTree.documentId);
@@ -489,21 +509,7 @@ Imcms.define("imcms-menu-editor-builder",
 
                     $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
 
-                    menuElementTree = {
-                        documentId: copiedDocument.id,
-                        link: "/" + copiedDocument.id,
-                        target: copiedDocument.target,
-                        type: copiedDocument.type,
-                        children: []
-                    };
-
-                    copiedDocument.commonContents.forEach(function (commonContent) {
-                        if (commonContent["language"]["code"] === imcms.userLanguage) {
-                            menuElementTree["title"] = commonContent["headline"];
-                        }
-                    });
-
-                    $menuItemsBlock.append(buildMenuItemTree(menuElementTree, 1));
+                    appendNewMenuItem(copiedDocument);
                 })
             });
 
@@ -625,8 +631,39 @@ Imcms.define("imcms-menu-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        function buildMenuItemNewButton() {
+            var toolBEM = new BEM({
+                block: "imcms-menu-new-button"
+            });
+
+            function buildNewDocButton() {
+                return components.buttons.negativeButton({
+                    text: texts.newDoc,
+                    click: onNewDocButtonClick
+                });
+            }
+
+            function onDocumentSaved(document) {
+                appendNewMenuItem(document);
+                documentEditorBuilder.addDocumentToList(document);
+            }
+
+            function onNewDocButtonClick(e) {
+                e.preventDefault();
+                docTypeSelectBuilder.build(function (type) {
+                    docProfileSelectBuilder.build(function (parentDocId) {
+                        pageInfoBuilder.build(null, onDocumentSaved, type, parentDocId);
+                    }, {inMenu: true});
+                });
+            }
+
+            return toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
+        }
+
         function fillEditorContent(menuElementsTree) {
             var $menuElementsTree = buildMenuEditorContent(menuElementsTree);
+
+            $menuElementsContainer.append(buildMenuItemNewButton());
             $menuElementsContainer.append($menuElementsTree);
 
             $documentEditor = documentEditorBuilder.buildBody();

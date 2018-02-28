@@ -21,6 +21,7 @@
     padding: 0 27px 0 70px;
     width: 100%;
     border-bottom: 1px solid #d3d8de;
+    float: left;
 }
 
 .imcms-menu-list__title,

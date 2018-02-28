@@ -172,10 +172,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     validationErrorMessage: "Du måste välja antingen befintlig profil eller ange TEXT-dokumentidentifierare (meta-id eller alias)",
                     buildByProfile: "Build by Profile",
                     buildByParent: "Build by document",
+                    buildByCurrentDocId: "Build by current document",
                     selectProfile: "Välj profil",
                     selectParent: "Välj förälder"
                 },
                 menu: {
+                    newDoc: "Ny",
                     title: "Menyredigerare",
                     id: "ID",
                     docTitle: "Titel",
@@ -422,10 +424,12 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     validationErrorMessage: "You have to choose either existing profile or specify TEXT document identifier (meta id or alias)",
                     buildByProfile: "Build by profile",
                     buildByParent: "Build by document",
+                    buildByCurrentDocId: "Build by current document",
                     selectProfile: "Select profile",
                     selectParent: "Select parent"
                 },
                 menu: {
+                    newDoc: "New",
                     title: "Menu Editor",
                     id: "ID",
                     docTitle: "Title",

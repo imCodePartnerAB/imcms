@@ -63,12 +63,14 @@ Imcms.define(
             }).buildBlockStructure("<div>", {"style": "display: none;"});
         }
 
+        var $currentDocIdOption;
+
         function buildChoosingRadio($profileSelect, $parentSelect) {
             var $choosingTitle = components.texts.titleText("<div>", texts.chooseProfileOrParent);
 
             var $profilesOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByProfile,
-                name: "select-profile-or-doc",
+                name: "select-profile-or-doc-or-current_doc",
                 value: "profile",
                 checked: true,
                 click: function () {
@@ -80,7 +82,7 @@ Imcms.define(
 
             var $docIdOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByParent,
-                name: "select-profile-or-doc",
+                name: "select-profile-or-doc-or-current_doc",
                 value: "docId",
                 click: function () {
                     $validationErrorBlock.slideUp(400);
@@ -89,14 +91,26 @@ Imcms.define(
                 }
             });
 
-            radioButtonsGroup = components.radios.group($profilesOption, $docIdOption);
+            $currentDocIdOption = components.radios.imcmsRadio("<div>", {
+                text: texts.buildByCurrentDocId,
+                name: "select-profile-or-doc-or-current_doc",
+                value: "currentDocId",
+                click: function () {
+                    $validationErrorBlock.slideUp(400);
+                    $parentSelect.slideUp(400);
+                    $profileSelect.slideUp(400);
+                }
+            });
+
+            radioButtonsGroup = components.radios.group($profilesOption, $docIdOption, $currentDocIdOption);
 
             return new BEM({
                 block: "new-doc-parent-options",
                 elements: {
                     "title": $choosingTitle,
                     "by-profile": $profilesOption,
-                    "by-doc-id": $docIdOption
+                    "by-doc-id": $docIdOption,
+                    "by-current-doc-id": $currentDocIdOption
                 }
             }).buildBlockStructure("<div>");
         }
@@ -151,6 +165,9 @@ Imcms.define(
                 } else {
                     $validationErrorBlock.slideDown(400);
                 }
+            } else if ("currentDocId" === checkedValue) {
+                windowBuilder.closeWindow();
+                onProfileOrParentSelectedCallback(Imcms["document"]["id"]);
             }
         }
 
@@ -183,17 +200,23 @@ Imcms.define(
             $validationErrorBlock.css("display", "none");
         }
 
+        function loadData(onParentSelected, config) {
+            var cssDisplayValue = config && config.inMenu ? "block" : "none";
+            $currentDocIdOption.css({"display":cssDisplayValue});
+        }
+
         var windowBuilder = new WindowBuilder({
             factory: buildProfileSelectWindow,
+            loadDataStrategy: loadData,
             clearDataStrategy: clear
         });
 
         var onProfileOrParentSelectedCallback;
 
         return {
-            build: function (onParentSelected) {
+            build: function (onParentSelected, config) {
                 onProfileOrParentSelectedCallback = onParentSelected;
-                windowBuilder.buildWindowWithShadow();
+                windowBuilder.buildWindowWithShadow.applyAsync(arguments, windowBuilder);
             }
         };
     }
