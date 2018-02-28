@@ -170,9 +170,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     createDocButton: "Skapa",
                     chooseProfileOrParent: "Skapa via profil eller med befintligt dokument ID",
                     validationErrorMessage: "Du måste välja antingen befintlig profil eller ange TEXT-dokumentidentifierare (meta-id eller alias)",
-                    buildByProfile: "Build by Profile",
-                    buildByParent: "Build by document",
-                    buildByCurrentDocId: "Build by current document",
+                    buildByProfile: "Bygg av profil ",
+                    buildByParent: "Bygg av dokument ",
+                    buildByCurrentDocId: "Bygg med nuvarande dokument ",
                     selectProfile: "Välj profil",
                     selectParent: "Välj förälder"
                 },
