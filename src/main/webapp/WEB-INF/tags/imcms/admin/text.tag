@@ -37,7 +37,9 @@
         data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
 </c:set>
 
-<c:if test="${isEditMode}">
+<c:set var="isEdit" value="${isEditMode and mode ne 'read'}"/>
+
+<c:if test="${isEdit}">
     <div class="imcms-editor-area imcms-editor-area--text">
         <c:if test="${not empty label}">
             <div class="imcms-editor-area__text-label">${label}</div>
@@ -52,4 +54,4 @@
         </div>
     </div>
 </c:if>
-<c:if test="${not isEditMode}">${textContent}</c:if>
+<c:if test="${not isEdit}">${textContent}</c:if>

@@ -40,16 +40,19 @@
     </imcms:menu>
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
+        <div>Text editor, mode="read" example:</div>
+        <imcms:text no="4" label="Read mode example" mode="read"/>
+
         <imcms:contentLoop index="1">
             <imcms:loop>
                 <div class="imcms-demo-content__loop-content demo-loop-content">
                     <imcms:image no="1"/>
                     <div class="demo-loop-content__text-area demo-loop-texts">
                         <div class="demo-loop-texts__text-area demo-text-area demo-text-area--left">
-                            <imcms:text no="1" label="Demo loop text 1"/>
+                            <imcms:text no="1" label="Demo loop text 1" rows="4"/>
                         </div>
                         <div class="demo-loop-texts__text-area demo-text-area demo-text-area--right">
-                            <imcms:text no="2" label="Demo loop text 2"/>
+                            <imcms:text no="2" label="Demo loop text 2" rows="4"/>
                         </div>
                     </div>
                     <br>
@@ -63,7 +66,7 @@
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="2"/>
-                <imcms:text no="2" label="Demo text 2"/>
+                <imcms:text no="2" label="Demo text 2" rows="4"/>
             </div>
             <div class="demo-row__column demo-element">
                 <imcms:image no="3"/>
