@@ -78,7 +78,7 @@ Imcms.define("imcms-document-editor-builder",
                     return;
                 }
 
-                currentDocumentNumber += documentList.length;
+                incrementDocumentNumber(documentList.length);
 
                 documentList.forEach(function (document) {
                     $documentsList.append(buildDocument(document, currentEditorOptions));
@@ -94,7 +94,7 @@ Imcms.define("imcms-document-editor-builder",
             var $document = buildDocument(document, currentEditorOptions);
             $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
 
-            currentDocumentNumber += 1;
+            incrementDocumentNumber(1);
         }
 
         var $textField;
@@ -835,7 +835,7 @@ Imcms.define("imcms-document-editor-builder",
 
         function loadDocumentEditorContent($documentsContainer, opts) {
             docSearchRestApi.read().done(function (documentList) {
-                currentDocumentNumber += documentList.length;
+                incrementDocumentNumber(documentList.length);
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
                 highlightDefaultSorting();
@@ -901,6 +901,10 @@ Imcms.define("imcms-document-editor-builder",
             $editorBody.detach();
         }
 
+        function incrementDocumentNumber(delta) {
+            currentDocumentNumber += delta;
+        }
+
         var documentWindowBuilder = new WindowBuilder({
             factory: buildDocumentEditor,
             loadDataStrategy: loadData,
@@ -912,6 +916,7 @@ Imcms.define("imcms-document-editor-builder",
             loadDocumentEditorContent: loadDocumentEditorContent,
             clearData: clearData,
             buildDocument: buildDocument,
+            incrementDocumentNumber: incrementDocumentNumber,
             build: function () {
                 documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
             }

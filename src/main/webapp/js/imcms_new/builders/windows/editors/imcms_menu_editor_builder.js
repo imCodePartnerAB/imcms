@@ -482,6 +482,8 @@ Imcms.define("imcms-menu-editor-builder",
             var $controlCopy = controls.copy(function () {
                 docCopyRestApi.copy(menuElementTree.documentId).success(function (copiedDocument) {
 
+                    documentEditorBuilder.incrementDocumentNumber(1);
+
                     var $documentItemContainer = documentEditorBuilder
                         .buildDocument(copiedDocument, {moveEnable: true});
 
