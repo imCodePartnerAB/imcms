@@ -32,7 +32,7 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
         _scrollTop: 0,
         _pageOverflow: "auto",
         buildWindowWithShadow: function (windowInitData) {
-            this.shadowBuilder = new WindowBuilder({
+            this.shadowBuilder = this.shadowBuilder || new WindowBuilder({
                 factory: function () {
                     return $("<div>", {"class": "imcms-modal-layout"});
                 }
