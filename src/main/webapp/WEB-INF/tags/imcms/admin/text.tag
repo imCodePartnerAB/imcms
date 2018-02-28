@@ -30,7 +30,7 @@
      ? textService.getText(targetDocId, index, language, loopEntryRef)
      : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
 
-<c:set var="textContent" value="${pre}${textField.text}${post}"/>
+<c:set var="textContent" value="${textField.text}"/>
 
 <c:set var="loopData">
     <c:if test="${loopEntryRef ne null}"> data-loop-entry-ref.loop-entry-index="${loopEntryRef.loopEntryIndex}"
@@ -40,7 +40,7 @@
 <c:set var="isEdit" value="${isEditMode and mode ne 'read'}"/>
 
 <c:if test="${isEdit}">
-    <div class="imcms-editor-area imcms-editor-area--text">
+    <div class="imcms-editor-area imcms-editor-area--text">${pre}
         <c:if test="${not empty label}">
             <div class="imcms-editor-area__text-label">${label}</div>
         </c:if>
@@ -52,6 +52,7 @@
                 <div class="imcms-editor-area__control-title">Text Editor</div>
             </div>
         </div>
+            ${post}
     </div>
 </c:if>
-<c:if test="${not isEdit}">${textContent}</c:if>
+<c:if test="${not isEdit and mode ne 'write'}">${pre}${textContent}${post}</c:if>

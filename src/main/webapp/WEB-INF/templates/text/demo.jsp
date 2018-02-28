@@ -40,8 +40,12 @@
     </imcms:menu>
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
+
         <div>Text editor, mode="read" example:</div>
-        <imcms:text no="4" label="Read mode example" mode="read"/>
+        <imcms:text no="4" label="Read mode example" mode="read" post="<br/>"/>
+
+        <div>Text editor, mode="write" example:</div>
+        <imcms:text no="4" label="Write mode example" mode="write" post="<br/>"/>
 
         <imcms:contentLoop index="1">
             <imcms:loop>
