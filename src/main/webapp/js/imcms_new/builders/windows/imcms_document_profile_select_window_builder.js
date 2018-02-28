@@ -6,9 +6,9 @@ Imcms.define(
     "imcms-document-profile-select-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-i18n-texts", "imcms-components-builder",
-        "imcms-profiles-rest-api", "imcms-document-validation-rest-api"
+        "imcms-profiles-rest-api", "imcms-document-validation-rest-api", "imcms"
     ],
-    function (WindowBuilder, BEM, texts, components, profilesRestApi, documentValidationAPI) {
+    function (WindowBuilder, BEM, texts, components, profilesRestApi, documentValidationAPI, imcms) {
 
         texts = texts.editors.newDocumentProfile;
 
@@ -167,7 +167,7 @@ Imcms.define(
                 }
             } else if ("currentDocId" === checkedValue) {
                 windowBuilder.closeWindow();
-                onProfileOrParentSelectedCallback(Imcms["document"]["id"]);
+                onProfileOrParentSelectedCallback(imcms.document.id);
             }
         }
 
