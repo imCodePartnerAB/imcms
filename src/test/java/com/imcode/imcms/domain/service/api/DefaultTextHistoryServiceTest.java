@@ -109,7 +109,7 @@ public class DefaultTextHistoryServiceTest {
         return IntStream.range(0, number)
                 .mapToObj(i -> {
                     final TextDTO textDTO = new TextDTO(this.index, DOC_ID, this.language.getCode(), this.loopEntryRef);
-                    textDTO.setType(Text.Type.PLAIN_TEXT);
+                    textDTO.setType(Text.Type.TEXT);
                     textDTO.setText("Long text" + i);
 
                     return textDTO;

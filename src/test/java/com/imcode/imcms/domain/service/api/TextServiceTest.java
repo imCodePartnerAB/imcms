@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
+import static com.imcode.imcms.model.Text.Type.TEXT;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -98,7 +98,7 @@ public class TextServiceTest {
                 text.setIndex(index);
                 text.setLanguage(language);
                 text.setText("test");
-                text.setType(PLAIN_TEXT);
+                text.setType(TEXT);
                 text.setVersion(workingVersion);
 
                 textRepository.save(text);
@@ -125,7 +125,7 @@ public class TextServiceTest {
                 text.setLanguage(language);
                 text.setLoopEntryRef(loopEntryRef);
                 text.setText("test");
-                text.setType(PLAIN_TEXT);
+                text.setType(TEXT);
 
                 textRepository.save(text);
                 textDTOS.add(new TextDTO(text));
@@ -146,7 +146,7 @@ public class TextServiceTest {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
                 textDTO.setText("test");
-                textDTO.setType(PLAIN_TEXT);
+                textDTO.setType(TEXT);
 
                 textDTOS.add(textDTO);
 
@@ -169,7 +169,7 @@ public class TextServiceTest {
             for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
                 final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), loopEntryRef);
                 textDTO.setText("test");
-                textDTO.setType(PLAIN_TEXT);
+                textDTO.setType(TEXT);
 
                 textDTOS.add(textDTO);
 
@@ -288,7 +288,7 @@ public class TextServiceTest {
         text.setIndex(index);
         text.setLanguage(language);
         text.setText("test");
-        text.setType(PLAIN_TEXT);
+        text.setType(TEXT);
         text.setVersion(version);
 
         return text;
@@ -303,7 +303,7 @@ public class TextServiceTest {
 
         final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
         textDTO.setText("test");
-        textDTO.setType(PLAIN_TEXT);
+        textDTO.setType(TEXT);
 
         textService.save(textDTO);
 
@@ -326,7 +326,7 @@ public class TextServiceTest {
 
         final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
         textDTO.setText("test");
-        textDTO.setType(PLAIN_TEXT);
+        textDTO.setType(TEXT);
 
         textService.save(textDTO);
 

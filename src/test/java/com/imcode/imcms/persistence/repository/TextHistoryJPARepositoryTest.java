@@ -60,7 +60,7 @@ public class TextHistoryJPARepositoryTest {
         textHistoryJPA.setModifiedBy(user);
         textHistoryJPA.setModifiedDt(new Date());
         textHistoryJPA.setLanguage(languageJPA);
-        textHistoryJPA.setType(Text.Type.PLAIN_TEXT);
+        textHistoryJPA.setType(Text.Type.TEXT);
         textHistoryJPA.setIndex(index);
         textHistoryJPA.setText("Long text");
 

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
+import static com.imcode.imcms.model.Text.Type.TEXT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @Transactional
@@ -92,7 +92,7 @@ public class TextControllerTest extends AbstractControllerTest {
                     text.setDocId(DOC_ID);
                     text.setIndex(finalIndex);
                     text.setLangCode(languageCode);
-                    text.setType(PLAIN_TEXT);
+                    text.setType(TEXT);
                     text.setText("test content " + finalIndex);
                 }));
             }
@@ -130,7 +130,7 @@ public class TextControllerTest extends AbstractControllerTest {
                     text.setIndex(finalIndex);
                     text.setLoopEntryRef(loopEntryRef);
                     text.setLangCode(languageCode);
-                    text.setType(PLAIN_TEXT);
+                    text.setType(TEXT);
                     text.setText("test content " + finalIndex);
                 }));
             }
@@ -163,7 +163,7 @@ public class TextControllerTest extends AbstractControllerTest {
                 .param("docId", "" + DOC_ID)
                 .param("index", "1")
                 .param("langCode", ENG_CODE)
-                .param("type", PLAIN_TEXT.name())
+                .param("type", TEXT.name())
                 .param("text", "testestest");
 
         performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);

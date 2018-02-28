@@ -32,6 +32,6 @@ public abstract class Text implements Documentable {
     public abstract void setLoopEntryRef(LoopEntryRef loopEntryRef);
 
     public enum Type {
-        PLAIN_TEXT, HTML
+        TEXT, HTML
     }
 }

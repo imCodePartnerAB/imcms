@@ -38,7 +38,7 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.model.Text.Type.PLAIN_TEXT;
+import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static org.junit.Assert.*;
@@ -538,7 +538,7 @@ public class DocumentServiceTest {
                 final String langCode = commonContentDTO.getLanguage().getCode();
                 final TextDTO textDTO = new TextDTO();
                 textDTO.setText("test");
-                textDTO.setType(PLAIN_TEXT);
+                textDTO.setType(TEXT);
                 textDTO.setDocId(createdDocId);
                 textDTO.setIndex(testIndex);
                 textDTO.setLoopEntryRef(loopEntryRefDTO);
@@ -711,7 +711,7 @@ public class DocumentServiceTest {
         text.setIndex(index);
         text.setLanguage(language);
         text.setText("test");
-        text.setType(PLAIN_TEXT);
+        text.setType(TEXT);
         text.setVersion(version);
 
         textRepository.saveAndFlush(text);
