@@ -36,7 +36,8 @@ ${"-->"}
 
     <c:if test="${'html'.equalsIgnoreCase(formats)}">
         <c:set var="format" value="HTML"/>
-        <c:set var="content"><p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;')}</p></c:set>
+        <c:set var="content">
+            <p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</p></c:set>
     </c:if>
 
     <c:if test="${'text'.equalsIgnoreCase(formats)}">
