@@ -159,7 +159,8 @@
     width: 100%;
 }
 
-.imcms-document-items__document-item--published-waiting {
+.imcms-document-items__document-item--published-waiting,
+.imcms-menu-items__menu-item--published-waiting {
     background-color: #90ee902b;
 }
 
@@ -167,7 +168,8 @@
     color: darkgreen;
 }
 
-.imcms-document-items__document-item--in-process {
+.imcms-document-items__document-item--in-process,
+.imcms-menu-items__menu-item--in-process {
     background-color: #fafad2c7;
 }
 
@@ -176,7 +178,9 @@
 }
 
 .imcms-document-items__document-item--disapproved,
-.imcms-document-items__document-item--passed {
+.imcms-document-items__document-item--passed,
+.imcms-menu-items__menu-item--disapproved,
+.imcms-menu-items__menu-item--passed {
     background-color: #ff000017;
 }
 
@@ -185,7 +189,8 @@
     color: red;
 }
 
-.imcms-document-items__document-item--archived {
+.imcms-document-items__document-item--archived,
+.imcms-menu-items__menu-item--archived {
     background-color: #d0e9f961;
 }
 

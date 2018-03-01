@@ -401,7 +401,7 @@ Imcms.define("imcms-menu-editor-builder",
                     type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title"),
-                    documentStatus: $dataInput.attr("data-status")
+                    documentStatus: $dataInput.attr("data-original-status")
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
                     ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
@@ -409,15 +409,9 @@ Imcms.define("imcms-menu-editor-builder",
                 $menuElement
             ;
 
-            var config = {
-                isValidStatus: true,
-                level: level
-            };
-
             if ($dataInput.attr("data-parent-id") !== "") {
                 if ($dataInput.attr("data-insert-place") === "true") {
-                    config["level"]++;
-                    $menuElement = buildMenuItemTree(menuElementsTree, config);
+                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1);
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
                     var parent = $menuElement.parent();
@@ -427,11 +421,11 @@ Imcms.define("imcms-menu-editor-builder",
                         );
                     }
                 } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, config);
+                    $menuElement = buildMenuItemTree(menuElementsTree, level);
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
                 }
             } else {
-                $menuElement = buildMenuItemTree(menuElementsTree, config);
+                $menuElement = buildMenuItemTree(menuElementsTree, level);
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
@@ -495,12 +489,7 @@ Imcms.define("imcms-menu-editor-builder",
                 }
             });
 
-            var config = {
-                level: 1,
-                isValidStatus: false
-            };
-
-            $menuItemsBlock.append(buildMenuItemTree(menuElementTree, config));
+            $menuItemsBlock.append(buildMenuItemTree(menuElementTree, 1));
         }
 
         function buildMenuItemControls(menuElementTree) {
@@ -560,21 +549,16 @@ Imcms.define("imcms-menu-editor-builder",
             return controls.buildControlsBlock("<div>", [$controlMove]);
         }
 
-        function buildMenuItems(menuElementTree, config) {
+        function buildMenuItems(menuElementTree) {
             var elements = [{controls: buildMoveControl()}];
 
             if (menuElementTree.children.length) {
                 elements.push({btn: buildChildrenTriangle()});
             }
 
-            if (!config.isValidStatus) {
-                menuElementTree.documentStatus = documentEditorBuilder
-                    .getDocumentStatusText(menuElementTree.documentStatus)
-            }
-
             var titleText = menuElementTree.documentId + " - "
                 + menuElementTree.title + " - "
-                + menuElementTree.documentStatus;
+                + documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus);
 
             elements.push({
                 info: components.texts.titleText("<div>", titleText, {
@@ -589,23 +573,24 @@ Imcms.define("imcms-menu-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildMenuItemTree(menuElementTree, config) {
+        function buildMenuItemTree(menuElementTree, level) {
             menuElementTree.children = menuElementTree.children || [];
 
             var treeBlock = new BEM({
                 block: "imcms-menu-items",
-                elements: {
-                    "menu-item": buildMenuItems(menuElementTree, config)
-                }
+                elements: [{
+                    "menu-item": buildMenuItems(menuElementTree),
+                    modifiers: [menuElementTree.documentStatus.replace(/_/g, "-").toLowerCase()]
+                }]
             }).buildBlockStructure("<div>", {
-                "data-menu-items-lvl": config.level,
+                "data-menu-items-lvl": level,
                 "data-document-id": menuElementTree.documentId
             });
 
-            ++config.level;
+            ++level;
 
             var $childElements = menuElementTree.children.map(function (childElement) {
-                return buildMenuItemTree(childElement, config).addClass("imcms-submenu-items--close");
+                return buildMenuItemTree(childElement, level).addClass("imcms-submenu-items--close");
             });
 
             return treeBlock.append($childElements);
@@ -616,10 +601,7 @@ Imcms.define("imcms-menu-editor-builder",
         function buildMenuEditorContent(menuElementsTree) {
             function buildMenuElements(menuElements) {
                 var $menuItems = menuElements.map(function (menuElement) {
-                    return buildMenuItemTree(menuElement, {
-                        level: 1,
-                        isValidStatus: false
-                    });
+                    return buildMenuItemTree(menuElement, 1);
                 });
                 return new BEM({
                     block: "imcms-menu-items-tree",
@@ -638,11 +620,15 @@ Imcms.define("imcms-menu-editor-builder",
                     "class": "imcms-grid-coll-2",
                     text: texts.docTitle
                 });
+                var $statusColumnHead = $("<div>", {
+                    "class": "imcms-grid-coll-2",
+                    text: texts.status
+                });
 
                 return new BEM({
                     block: "imcms-menu-list-titles",
                     elements: {
-                        "title": [$idColumnHead, $titleColumnHead]
+                        "title": [$idColumnHead, $titleColumnHead, $statusColumnHead]
                     }
                 }).buildBlockStructure("<div>");
             }
