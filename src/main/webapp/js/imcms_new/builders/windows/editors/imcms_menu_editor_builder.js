@@ -620,7 +620,7 @@ Imcms.define("imcms-menu-editor-builder",
             function buildMenuTitlesRow() {
                 var $idColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-8",
-                    text: texts.id + "-" + texts.docTitle
+                    text: texts.id + " - " + texts.docTitle
                 });
                 var $statusColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-2",
