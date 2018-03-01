@@ -2,7 +2,6 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -37,7 +36,6 @@ public class TextDocumentContentLoader {
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final LanguageRepository languageRepository;
     private final DocumentLanguageMapper languageMapper;
-    private final MenuService menuService;
     private final LoopService loopService;
 
     @Inject
@@ -46,7 +44,6 @@ public class TextDocumentContentLoader {
                                      TextHistoryRepository textHistoryRepository,
                                      ImageRepository imageRepository,
                                      TextDocumentTemplateRepository textDocumentTemplateRepository,
-                                     MenuService menuService,
                                      LanguageRepository languageRepository,
                                      DocumentLanguageMapper languageMapper,
                                      LoopService loopService) {
@@ -56,7 +53,6 @@ public class TextDocumentContentLoader {
         this.textHistoryRepository = textHistoryRepository;
         this.imageRepository = imageRepository;
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
-        this.menuService = menuService;
         this.languageRepository = languageRepository;
         this.languageMapper = languageMapper;
         this.loopService = loopService;

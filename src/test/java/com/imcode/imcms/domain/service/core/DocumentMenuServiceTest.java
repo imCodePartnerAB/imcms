@@ -4,10 +4,11 @@ import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.LanguageDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -28,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashMap;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -108,44 +111,42 @@ public class DocumentMenuServiceTest {
     }
 
     @Test
-    public void getDocumentTitle() {
-        final DocumentDTO documentDTO = documentService.get(meta.getId());
-        final String testHeadline = "test_headline";
+    public void getMenuItemDTO_When_AliasIsSet_Expect_AliasInLink() {
+        testMenuItemDTO(true);
+    }
 
-        for (CommonContent commonContent : documentDTO.getCommonContents()) {
-            commonContent.setHeadline(testHeadline);
+    @Test
+    public void getMenuItemDTO_When_NoAlias_Expect_DocIdInLink() {
+        testMenuItemDTO(false);
+    }
+
+    private void testMenuItemDTO(boolean aliasExist) {
+        final Integer docId = meta.getId();
+        final LanguageDTO language = languageDataInitializer.createData().get(0);
+
+        final DocumentDTO documentDTO = documentService.get(docId);
+        final String testAlias = "test_alias";
+
+        final String headline = documentDTO.getCommonContents()
+                .stream()
+                .filter(commonContent -> commonContent.getLanguage().getCode().equals(language.getCode()))
+                .findFirst()
+                .get()
+                .getHeadline();
+
+        if (aliasExist) {
+            documentDTO.setAlias(testAlias);
+            documentService.save(documentDTO);
         }
 
-        documentService.save(documentDTO);
+        final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(docId, language);
 
-        assertEquals(documentMenuService.getDocumentTitle(meta.getId(), languageDataInitializer.createData().get(0)),
-                testHeadline);
-    }
-
-    @Test
-    public void getDocumentTarget() {
-        final DocumentDTO documentDTO = documentService.get(meta.getId());
-        final String testTarget = "_target";
-        documentDTO.setTarget(testTarget);
-        documentService.save(documentDTO);
-
-        assertEquals(documentMenuService.getDocumentTarget(meta.getId()), testTarget);
-    }
-
-    @Test
-    public void getDocumentLink_When_NoAlias_Expect_DocIdInLink() {
-        final int docId = meta.getId();
-
-        assertEquals(documentMenuService.getDocumentLink(docId), "/" + meta.getId());
-    }
-
-    @Test
-    public void getDocumentLink_When_AliasIsSet_Expect_AliasInLink() {
-        final DocumentDTO documentDTO = documentService.get(meta.getId());
-        final String testAlias = "test_alias";
-        documentDTO.setAlias(testAlias);
-        documentService.save(documentDTO);
-
-        assertEquals(documentMenuService.getDocumentLink(meta.getId()), "/" + testAlias);
+        assertThat(menuItemDTO.getDocumentId(), is(docId));
+        assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
+        assertThat(menuItemDTO.getTitle(), is(headline));
+        assertThat(menuItemDTO.getLink(), is("/" + (aliasExist ? testAlias : docId)));
+        assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
+        assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
+        assertThat(menuItemDTO.getChildren(), empty());
     }
 }

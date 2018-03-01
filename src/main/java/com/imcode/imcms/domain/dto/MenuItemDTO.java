@@ -22,6 +22,8 @@ public class MenuItemDTO implements Serializable {
 
     private String link;
 
+    private DocumentStatus documentStatus;
+
     private List<MenuItemDTO> children = new ArrayList<>();
 
 }
