@@ -19,6 +19,7 @@ Function.prototype.applyAsync = function (args, context) {
 
         imcms.modules[id] = module;
         console.log("%c Module " + id + " registered.", "color: blue;");
+        runModuleLoader.applyAsync();
     }
 
     function getModule(id) {
