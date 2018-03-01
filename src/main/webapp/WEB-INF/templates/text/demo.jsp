@@ -2,7 +2,7 @@
   Created by Serhii from Ubrainians for Imcode
   Date: 15.09.17
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
 <!DOCTYPE html>
@@ -47,8 +47,13 @@
         <div>Text editor, mode="write" example:</div>
         <imcms:text no="4" label="Write mode example" mode="write" post="<br/>"/>
 
+        <br/>
         <div>Text editor, formats="text" example:</div>
         <imcms:text no="5" label="Text format example" formats="text" post="<br/>"/>
+
+        <br/>
+        <div>Text editor, formats="html" example:</div>
+        <imcms:text no="6" label="Text format example" formats="html" post="<br/>"/>
 
         <imcms:contentLoop index="1">
             <imcms:loop>

@@ -24,7 +24,9 @@ ${"-->"}
      ? textService.getText(targetDocId, index, language, loopEntryRef)
      : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
 
-<c:if test="${not isEditMode and mode ne 'write'}">${pre}${textField.text}${post}</c:if>
+<c:set var="content" value="${textField.text}"/>
+
+<c:if test="${not isEditMode and mode ne 'write'}">${pre}${content}${post}</c:if>
 <c:if test="${isEditMode and mode ne 'read'}">
 
     <c:set var="loopData">
@@ -34,6 +36,8 @@ ${"-->"}
 
     <c:if test="${'html'.equalsIgnoreCase(formats)}">
         <c:set var="format" value="HTML"/>
+        <c:set var="content">
+            <p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</p></c:set>
     </c:if>
 
     <c:if test="${'text'.equalsIgnoreCase(formats)}">
@@ -48,7 +52,7 @@ ${"-->"}
         </c:if>
         <div class="imcms-editor-area__text-toolbar"></div>
         <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}" data-doc-id="${targetDocId}"
-             data-lang-code="${language}"${typeData}${loopData}>${textField.text}</div>
+             data-lang-code="${language}"${typeData}${loopData}>${content}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                 <div class="imcms-editor-area__control-title">Text Editor</div>

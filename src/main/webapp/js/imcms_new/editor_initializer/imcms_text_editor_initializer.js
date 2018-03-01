@@ -19,6 +19,13 @@ Imcms.define("imcms-text-editor-initializer",
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
+            if (textDTO.type === "HTML") {
+                if (textDTO.text.startsWith("<p>") && textDTO.text.endsWith("</p>")) {
+                    textDTO.text = textDTO.text.substring(3, textDTO.text.length - 4);
+                }
+                textDTO.text = textDTO.text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            }
+
             textsRestApi.create(textDTO).success(function () {
                 events.trigger("imcms-version-modified");
                 editor.startContent = editor.getContent();
@@ -62,6 +69,16 @@ Imcms.define("imcms-text-editor-initializer",
             force_br_newlines: false,
             force_p_newlines: false,
             forced_root_block: '',
+            paste_as_text: true,
+            plugins: [fullScreenPlugin.pluginName + ' save paste'],
+            toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
+            + ' | save ' + discardChangesPlugin.pluginName
+        }, commonConfig);
+
+        var htmlFormatEditorConfig = $.extend({
+            forced_root_block: '',
+            force_p_newlines: false,
+            force_br_newlines: false,
             paste_as_text: true,
             plugins: [fullScreenPlugin.pluginName + ' save paste'],
             toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
@@ -152,10 +169,14 @@ Imcms.define("imcms-text-editor-initializer",
                 .find(".imcms-editor-area__text-toolbar")
                 .attr("id", toolbarId);
 
-            var config = $.extend({
+            var config = (type === 'TEXT')
+                ? textFormatEditorConfig
+                : (type === 'HTML') ? htmlFormatEditorConfig : inlineEditorConfig;
+
+            var editorConfig = $.extend({
                 selector: "#" + textAreaId,
                 fixed_toolbar_container: "#" + toolbarId
-            }, (type === 'TEXT') ? textFormatEditorConfig : inlineEditorConfig);
+            }, config);
 
             // 4.5.7 the last version compatible with IE 10
             if (Imcms.browserInfo.isIE10) {
@@ -163,7 +184,7 @@ Imcms.define("imcms-text-editor-initializer",
                 tinyMCE.suffix = ".min";
             }
 
-            tinyMCE.init(config);
+            tinyMCE.init(editorConfig);
         }
 
         return {
