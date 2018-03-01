@@ -400,7 +400,8 @@ Imcms.define("imcms-menu-editor-builder",
                 menuElementsTree = {
                     type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
-                    title: $dataInput.attr("data-title")
+                    title: $dataInput.attr("data-title"),
+                    documentStatus: $dataInput.attr("data-status")
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
                     ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
@@ -408,9 +409,15 @@ Imcms.define("imcms-menu-editor-builder",
                 $menuElement
             ;
 
+            var config = {
+                isValidStatus: true,
+                level: level
+            };
+
             if ($dataInput.attr("data-parent-id") !== "") {
                 if ($dataInput.attr("data-insert-place") === "true") {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1);
+                    config["level"]++;
+                    $menuElement = buildMenuItemTree(menuElementsTree, config);
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
                     var parent = $menuElement.parent();
@@ -420,11 +427,11 @@ Imcms.define("imcms-menu-editor-builder",
                         );
                     }
                 } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level);
+                    $menuElement = buildMenuItemTree(menuElementsTree, config);
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
                 }
             } else {
-                $menuElement = buildMenuItemTree(menuElementsTree, level);
+                $menuElement = buildMenuItemTree(menuElementsTree, config);
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
@@ -478,6 +485,7 @@ Imcms.define("imcms-menu-editor-builder",
                 link: "/" + document.id,
                 target: document.target,
                 type: document.type,
+                documentStatus: document.documentStatus,
                 children: []
             };
 
@@ -487,7 +495,12 @@ Imcms.define("imcms-menu-editor-builder",
                 }
             });
 
-            $menuItemsBlock.append(buildMenuItemTree(menuElementTree, 1));
+            var config = {
+                level: 1,
+                isValidStatus: false
+            };
+
+            $menuItemsBlock.append(buildMenuItemTree(menuElementTree, config));
         }
 
         function buildMenuItemControls(menuElementTree) {
@@ -547,15 +560,24 @@ Imcms.define("imcms-menu-editor-builder",
             return controls.buildControlsBlock("<div>", [$controlMove]);
         }
 
-        function buildMenuItems(menuElementTree) {
+        function buildMenuItems(menuElementTree, config) {
             var elements = [{controls: buildMoveControl()}];
 
             if (menuElementTree.children.length) {
                 elements.push({btn: buildChildrenTriangle()});
             }
 
+            if (!config.isValidStatus) {
+                menuElementTree.documentStatus = documentEditorBuilder
+                    .getDocumentStatusText(menuElementTree.documentStatus)
+            }
+
+            var titleText = menuElementTree.documentId + " - "
+                + menuElementTree.title + " - "
+                + menuElementTree.documentStatus;
+
             elements.push({
-                info: components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title, {
+                info: components.texts.titleText("<div>", titleText, {
                     title: menuElementTree.title
                 })
             });
@@ -567,23 +589,23 @@ Imcms.define("imcms-menu-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildMenuItemTree(menuElementTree, level) {
+        function buildMenuItemTree(menuElementTree, config) {
             menuElementTree.children = menuElementTree.children || [];
 
             var treeBlock = new BEM({
                 block: "imcms-menu-items",
                 elements: {
-                    "menu-item": buildMenuItems(menuElementTree)
+                    "menu-item": buildMenuItems(menuElementTree, config)
                 }
             }).buildBlockStructure("<div>", {
-                "data-menu-items-lvl": level,
+                "data-menu-items-lvl": config.level,
                 "data-document-id": menuElementTree.documentId
             });
 
-            ++level;
+            ++config.level;
 
             var $childElements = menuElementTree.children.map(function (childElement) {
-                return buildMenuItemTree(childElement, level).addClass("imcms-submenu-items--close");
+                return buildMenuItemTree(childElement, config).addClass("imcms-submenu-items--close");
             });
 
             return treeBlock.append($childElements);
@@ -594,7 +616,10 @@ Imcms.define("imcms-menu-editor-builder",
         function buildMenuEditorContent(menuElementsTree) {
             function buildMenuElements(menuElements) {
                 var $menuItems = menuElements.map(function (menuElement) {
-                    return buildMenuItemTree(menuElement, 1);
+                    return buildMenuItemTree(menuElement, {
+                        level: 1,
+                        isValidStatus: false
+                    });
                 });
                 return new BEM({
                     block: "imcms-menu-items-tree",

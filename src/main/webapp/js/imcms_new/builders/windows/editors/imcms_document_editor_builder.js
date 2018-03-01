@@ -398,6 +398,7 @@ Imcms.define("imcms-document-editor-builder",
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
+            frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
 
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
@@ -649,6 +650,7 @@ Imcms.define("imcms-document-editor-builder",
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
             dataInput.attr("data-type", frameItem.attr("data-type"));
+            dataInput.attr("data-status", frameItem.attr("data-status"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
@@ -918,6 +920,7 @@ Imcms.define("imcms-document-editor-builder",
             buildDocument: buildDocument,
             incrementDocumentNumber: incrementDocumentNumber,
             addDocumentToList: addDocumentToList,
+            getDocumentStatusText: getDocumentStatusText,
             build: function () {
                 documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
             }
