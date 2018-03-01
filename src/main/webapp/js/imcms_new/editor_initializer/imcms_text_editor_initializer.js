@@ -133,7 +133,15 @@ Imcms.define("imcms-text-editor-initializer",
             editor.on('blur', onEditorBlur);
         }
 
+        function setMaxRows($editor) {
+            var data = $editor.data();
+            if (data.type === 'TEXT' && data.rows) {
+                // todo: implement rows limit
+            }
+        }
+
         function prepareEditor(editor) {
+            setMaxRows($(editor.$()));
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
             showEditButton(editor.$());

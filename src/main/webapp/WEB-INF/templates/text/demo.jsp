@@ -49,7 +49,7 @@
 
         <br/>
         <div>Text editor, formats="text" example:</div>
-        <imcms:text no="5" label="Text format example" formats="text" post="<br/>"/>
+        <imcms:text no="5" label="Text format example" formats="text" post="<br/>" rows="4"/>
 
         <br/>
         <div>Text editor, formats="html" example:</div>

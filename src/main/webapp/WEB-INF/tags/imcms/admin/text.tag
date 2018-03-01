@@ -42,6 +42,9 @@ ${"-->"}
 
     <c:if test="${'text'.equalsIgnoreCase(formats)}">
         <c:set var="format" value="TEXT"/>
+        <c:if test="${not empty rows}">
+            <c:set var="rowsData" value=" data-rows=\"${rows}\""/>
+        </c:if>
     </c:if>
 
     <c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
@@ -52,7 +55,7 @@ ${"-->"}
         </c:if>
         <div class="imcms-editor-area__text-toolbar"></div>
         <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}" data-doc-id="${targetDocId}"
-             data-lang-code="${language}"${typeData}${loopData}>${content}</div>
+             data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                 <div class="imcms-editor-area__control-title">Text Editor</div>
