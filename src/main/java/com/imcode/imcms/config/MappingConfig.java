@@ -41,21 +41,15 @@ class MappingConfig {
         return new BiFunction<MenuItem, Language, MenuItemDTO>() {
             @Override
             public MenuItemDTO apply(MenuItem menuItem, Language language) {
-                final Integer documentId = menuItem.getDocumentId();
-
-                final MenuItemDTO menuItemDTO = new MenuItemDTO();
-                menuItemDTO.setDocumentId(documentId);
-                menuItemDTO.setType(documentMenuService.getDocumentType(documentId));
-                menuItemDTO.setTitle(documentMenuService.getDocumentTitle(documentId, language));
-                menuItemDTO.setLink(documentMenuService.getDocumentLink(documentId));
-                menuItemDTO.setTarget(documentMenuService.getDocumentTarget(documentId));
+                final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(menuItem.getDocumentId(), language);
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
-                        .map(menuItem1 -> this.apply(menuItem1, language))
+                        .map(menuItemChild -> this.apply(menuItemChild, language))
                         .collect(Collectors.toList());
 
                 menuItemDTO.setChildren(children);
+
                 return menuItemDTO;
             }
         };

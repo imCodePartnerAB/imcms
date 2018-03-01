@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
@@ -10,16 +12,12 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
+import java.util.*;
 
 @Service
 public class DefaultDocumentMenuService implements DocumentMenuService {
@@ -27,13 +25,16 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     private final MetaRepository metaRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
+    private TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
 
     DefaultDocumentMenuService(MetaRepository metaRepository,
                                VersionService versionService,
-                               CommonContentService commonContentService) {
+                               CommonContentService commonContentService,
+                               TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO) {
         this.metaRepository = metaRepository;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
+        this.metaToDocumentDTO = metaToDocumentDTO;
     }
 
     @Override
@@ -55,36 +56,31 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     @Override
-    public String getDocumentTitle(int documentId, Language language) {
-        final Version latestVersion = versionService.getLatestVersion(documentId);
-
-        final CommonContent existingCommonContent = commonContentService
-                .getOrCreate(documentId, latestVersion.getNo(), language);
-
-        return existingCommonContent.getHeadline();
-    }
-
-    @Override
-    public String getDocumentTarget(int documentId) {
-        return metaRepository.findTarget(documentId);
-    }
-
-    @Override
-    public String getDocumentLink(int documentId) {
-        final String alias = metaRepository.findOne(documentId)
-                .getProperties()
-                .get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
-
-        return "/" + (alias == null ? documentId : alias);
-    }
-
-    @Override
-    public Meta.DocumentType getDocumentType(int documentId) {
-        return metaRepository.findType(documentId);
-    }
-
-    @Override
     public Meta.DisabledLanguageShowMode getDisabledLanguageShowMode(int documentId) {
         return metaRepository.findOne(documentId).getDisabledLanguageShowMode();
+    }
+
+    @Override
+    public MenuItemDTO getMenuItemDTO(int docId, Language language) {
+        final Meta metaDocument = metaRepository.findOne(docId);
+
+        final Version latestVersion = versionService.getLatestVersion(docId);
+
+        final List<CommonContent> commonContentList = commonContentService
+                .getCommonContents(docId, latestVersion.getNo());
+
+        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, latestVersion, commonContentList);
+
+        final CommonContent commonContent = commonContentService.getOrCreate(docId, latestVersion.getNo(), language);
+
+        final MenuItemDTO menuItemDTO = new MenuItemDTO();
+        menuItemDTO.setDocumentId(docId);
+        menuItemDTO.setType(documentDTO.getType());
+        menuItemDTO.setTitle(commonContent.getHeadline());
+        menuItemDTO.setLink("/" + (documentDTO.getAlias() == null ? docId : documentDTO.getAlias()));
+        menuItemDTO.setTarget(documentDTO.getTarget());
+        menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
+
+        return menuItemDTO;
     }
 }
