@@ -619,12 +619,8 @@ Imcms.define("imcms-menu-editor-builder",
 
             function buildMenuTitlesRow() {
                 var $idColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-2",
-                    text: texts.id
-                });
-                var $titleColumnHead = $("<div>", {
-                    "class": "imcms-grid-coll-2",
-                    text: texts.docTitle
+                    "class": "imcms-grid-coll-8",
+                    text: texts.id + "-" + texts.docTitle
                 });
                 var $statusColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-2",
@@ -634,7 +630,7 @@ Imcms.define("imcms-menu-editor-builder",
                 return new BEM({
                     block: "imcms-menu-list-titles",
                     elements: {
-                        "title": [$idColumnHead, $titleColumnHead, $statusColumnHead]
+                        "title": [$idColumnHead, $statusColumnHead]
                     }
                 }).buildBlockStructure("<div>");
             }
