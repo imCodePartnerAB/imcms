@@ -38,6 +38,14 @@
 </c:set>
 
 <c:set var="isEdit" value="${isEditMode and mode ne 'read'}"/>
+<%--<c:set var="format" value=""/>--%>
+<c:if test="${'html'.equalsIgnoreCase(formats)}">
+    <c:set var="format" value="HTML"/>
+</c:if>
+<c:if test="${'text'.equalsIgnoreCase(formats)}">
+    <c:set var="format" value="TEXT"/>
+</c:if>
+<c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
 
 <c:if test="${isEdit}">
     <div class="imcms-editor-area imcms-editor-area--text">${pre}
@@ -46,7 +54,7 @@
         </c:if>
         <div class="imcms-editor-area__text-toolbar"></div>
         <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}" data-doc-id="${targetDocId}"
-             data-lang-code="${language}" data-type="HTML"${loopData}>${textContent}</div>
+             data-lang-code="${language}"${typeData}${loopData}>${textContent}</div>
         <div class="imcms-editor-area__control-wrap">
             <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                 <div class="imcms-editor-area__control-title">Text Editor</div>

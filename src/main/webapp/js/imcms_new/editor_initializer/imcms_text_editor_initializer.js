@@ -28,7 +28,7 @@ Imcms.define("imcms-text-editor-initializer",
 
         fullScreenPlugin.initFullScreen();
 
-        var inlineEditorConfig = {
+        var commonConfig = {
             skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
             convert_urls: false,
             cache_suffix: '?v=0.0.1',
@@ -38,11 +38,6 @@ Imcms.define("imcms-text-editor-initializer",
             inline_boundaries: false,
             toolbar_items_size: 'small',
             content_css: imcms.contextPath + '/css_new/imcms-text_editor.css',
-            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save table contextmenu'],
-            toolbar: 'code | bold italic underline | bullist numlist | hr |'
-            + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
-            + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
-            + ' | save ' + discardChangesPlugin.pluginName,
             menubar: false,
             statusbar: false,
             init_instance_callback: prepareEditor,
@@ -54,6 +49,24 @@ Imcms.define("imcms-text-editor-initializer",
                 discardChangesPlugin.initDiscardChanges(editor);
             }
         };
+
+        var inlineEditorConfig = $.extend({
+            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save table contextmenu'],
+            toolbar: 'code | bold italic underline | bullist numlist | hr |'
+            + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
+            + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
+            + ' | save ' + discardChangesPlugin.pluginName
+        }, commonConfig);
+
+        var textFormatEditorConfig = $.extend({
+            force_br_newlines: false,
+            force_p_newlines: false,
+            forced_root_block: '',
+            paste_as_text: true,
+            plugins: [fullScreenPlugin.pluginName + ' save paste'],
+            toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
+            + ' | save ' + discardChangesPlugin.pluginName
+        }, commonConfig);
 
         function clearSaveBtnText(editor) {
             delete editor.buttons.save.text;
@@ -131,7 +144,10 @@ Imcms.define("imcms-text-editor-initializer",
             var toolbarId = uuidGenerator.generateUUID();
             var textAreaId = uuidGenerator.generateUUID();
 
-            $(this).attr("id", textAreaId)
+            var $textEditor = $(this);
+            var type = $textEditor.data("type");
+
+            $textEditor.attr("id", textAreaId)
                 .closest(".imcms-editor-area--text")
                 .find(".imcms-editor-area__text-toolbar")
                 .attr("id", toolbarId);
@@ -139,7 +155,7 @@ Imcms.define("imcms-text-editor-initializer",
             var config = $.extend({
                 selector: "#" + textAreaId,
                 fixed_toolbar_container: "#" + toolbarId
-            }, inlineEditorConfig);
+            }, (type === 'TEXT') ? textFormatEditorConfig : inlineEditorConfig);
 
             // 4.5.7 the last version compatible with IE 10
             if (Imcms.browserInfo.isIE10) {

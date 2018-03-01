@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,5 +36,10 @@ public class TextDTO extends Text {
     @Override
     public void setLoopEntryRef(LoopEntryRef loopEntryRef) {
         this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefDTO(loopEntryRef);
+    }
+
+    @Override
+    public Type getType() {
+        return Optional.ofNullable(type).orElse(Type.HTML);
     }
 }
