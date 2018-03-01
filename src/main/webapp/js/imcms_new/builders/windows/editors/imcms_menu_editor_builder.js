@@ -400,7 +400,8 @@ Imcms.define("imcms-menu-editor-builder",
                 menuElementsTree = {
                     type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
-                    title: $dataInput.attr("data-title")
+                    title: $dataInput.attr("data-title"),
+                    documentStatus: $dataInput.attr("data-original-status")
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
                     ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
@@ -478,6 +479,7 @@ Imcms.define("imcms-menu-editor-builder",
                 link: "/" + document.id,
                 target: document.target,
                 type: document.type,
+                documentStatus: document.documentStatus,
                 children: []
             };
 
@@ -554,8 +556,12 @@ Imcms.define("imcms-menu-editor-builder",
                 elements.push({btn: buildChildrenTriangle()});
             }
 
+            var titleText = menuElementTree.documentId + " - "
+                + menuElementTree.title + " - "
+                + documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus);
+
             elements.push({
-                info: components.texts.titleText("<div>", menuElementTree.documentId + " - " + menuElementTree.title, {
+                info: components.texts.titleText("<div>", titleText, {
                     title: menuElementTree.title
                 })
             });
@@ -572,9 +578,10 @@ Imcms.define("imcms-menu-editor-builder",
 
             var treeBlock = new BEM({
                 block: "imcms-menu-items",
-                elements: {
-                    "menu-item": buildMenuItems(menuElementTree)
-                }
+                elements: [{
+                    "menu-item": buildMenuItems(menuElementTree),
+                    modifiers: [menuElementTree.documentStatus.replace(/_/g, "-").toLowerCase()]
+                }]
             }).buildBlockStructure("<div>", {
                 "data-menu-items-lvl": level,
                 "data-document-id": menuElementTree.documentId
@@ -613,11 +620,15 @@ Imcms.define("imcms-menu-editor-builder",
                     "class": "imcms-grid-coll-2",
                     text: texts.docTitle
                 });
+                var $statusColumnHead = $("<div>", {
+                    "class": "imcms-grid-coll-2",
+                    text: texts.status
+                });
 
                 return new BEM({
                     block: "imcms-menu-list-titles",
                     elements: {
-                        "title": [$idColumnHead, $titleColumnHead]
+                        "title": [$idColumnHead, $titleColumnHead, $statusColumnHead]
                     }
                 }).buildBlockStructure("<div>");
             }

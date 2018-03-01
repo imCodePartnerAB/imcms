@@ -398,6 +398,8 @@ Imcms.define("imcms-document-editor-builder",
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
+            frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
+            frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
 
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
@@ -649,6 +651,8 @@ Imcms.define("imcms-document-editor-builder",
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
             dataInput.attr("data-type", frameItem.attr("data-type"));
+            dataInput.attr("data-status", frameItem.attr("data-status"));
+            dataInput.attr("data-original-status", frameItem.attr("data-original-status"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
@@ -729,6 +733,10 @@ Imcms.define("imcms-document-editor-builder",
             var $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
             $docStatus.modifiers = ["col-2", "status"];
 
+            var $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
+            $originalDocStatus.modifiers = ["originalStatus"];
+            $originalDocStatus.css({"display": "none"});
+
             var elements = [
                 {
                     "info": [
@@ -736,7 +744,8 @@ Imcms.define("imcms-document-editor-builder",
                         $docItemTitle,
                         $docItemAlias,
                         $docItemType,
-                        $docStatus
+                        $docStatus,
+                        $originalDocStatus
                     ]
                 },
                 {"controls": buildDocItemControls(document, opts)}
@@ -918,6 +927,7 @@ Imcms.define("imcms-document-editor-builder",
             buildDocument: buildDocument,
             incrementDocumentNumber: incrementDocumentNumber,
             addDocumentToList: addDocumentToList,
+            getDocumentStatusText: getDocumentStatusText,
             build: function () {
                 documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
             }
