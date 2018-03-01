@@ -164,7 +164,8 @@
     background-color: #90ee902b;
 }
 
-.imcms-document-items__document-item--published-waiting .imcms-document-item__info--status {
+.imcms-document-items__document-item--published-waiting .imcms-document-item__info--status,
+.imcms-menu-items__menu-item--published-waiting .imcms-menu-item__status {
     color: darkgreen;
 }
 
@@ -173,7 +174,8 @@
     background-color: #fafad2c7;
 }
 
-.imcms-document-items__document-item--in-process .imcms-document-item__info--status {
+.imcms-document-items__document-item--in-process .imcms-document-item__info--status,
+.imcms-menu-items__menu-item--in-process .imcms-menu-item__status {
     color: darkgoldenrod;
 }
 
@@ -185,7 +187,9 @@
 }
 
 .imcms-document-items__document-item--disapproved .imcms-document-item__info--status,
-.imcms-document-items__document-item--passed .imcms-document-item__info--status {
+.imcms-document-items__document-item--passed .imcms-document-item__info--status,
+.imcms-menu-items__menu-item--disapproved .imcms-menu-item__status,
+.imcms-menu-items__menu-item--passed .imcms-menu-item__status {
     color: red;
 }
 
@@ -194,7 +198,8 @@
     background-color: #d0e9f961;
 }
 
-.imcms-document-items__document-item--archived .imcms-document-item__info--status {
+.imcms-document-items__document-item--archived .imcms-document-item__info--status,
+.imcms-menu-items__menu-item--archived .imcms-menu-item__status {
     color: blue;
 }
 

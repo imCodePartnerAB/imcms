@@ -557,14 +557,20 @@ Imcms.define("imcms-menu-editor-builder",
             }
 
             var titleText = menuElementTree.documentId + " - "
-                + menuElementTree.title + " - "
-                + documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus);
+                + menuElementTree.title;
 
             elements.push({
                 info: components.texts.titleText("<div>", titleText, {
                     title: menuElementTree.title
                 })
             });
+
+            // TODO: change it!
+            elements.push({
+                status: components.texts.titleText("<div>", documentEditorBuilder
+                    .getDocumentStatusText(menuElementTree.documentStatus))
+            });
+
             elements.push({controls: buildMenuItemControls(menuElementTree)});
 
             return new BEM({
