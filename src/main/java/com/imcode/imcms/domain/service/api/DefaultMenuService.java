@@ -29,7 +29,6 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
     private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
-    private final BiFunction<Menu, Language, MenuDTO> menuToMenuDTO;
     private final BiFunction<Menu, Language, MenuDTO> menuSaver;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private LanguageService languageService;
@@ -54,7 +53,6 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         this.menuItemDtoListToMenuItemList = menuItemDtoListToMenuItemList;
         this.menuItemToDTO = menuItemToDTO;
         this.languageService = languageService;
-        this.menuToMenuDTO = menuToMenuDTO;
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
         this.menuSaver = (menu, language) -> menuToMenuDTO.apply(menuRepository.save(menu), language);
     }
