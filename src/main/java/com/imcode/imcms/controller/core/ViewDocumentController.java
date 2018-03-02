@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -143,8 +142,6 @@ public class ViewDocumentController {
     }
 
     private String getLanguageCode() {
-        final Language language = Imcms.getLanguage();
-
-        return language.getCode();
+        return Imcms.getLanguage().getCode();
     }
 }

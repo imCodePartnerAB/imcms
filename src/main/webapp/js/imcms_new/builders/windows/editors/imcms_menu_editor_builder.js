@@ -505,8 +505,8 @@ Imcms.define("imcms-menu-editor-builder",
                 function changeTitle() {
                     var titleValue = "";
                     document.commonContents.forEach(function (commonContent) {
-                        if (commonContent["language"]["code"] === imcms.userLanguage) {
-                            titleValue = commonContent["headline"];
+                        if (commonContent.language.code === imcms.userLanguage) {
+                            titleValue = commonContent.headline;
                         }
                     });
 
