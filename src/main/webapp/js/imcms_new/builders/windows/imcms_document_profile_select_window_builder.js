@@ -72,7 +72,6 @@ Imcms.define(
                 text: texts.buildByProfile,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "profile",
-                // checked: true,
                 click: function () {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideUp(400);
@@ -108,9 +107,9 @@ Imcms.define(
                 block: "new-doc-parent-options",
                 elements: {
                     "title": $choosingTitle,
+                    "by-current-doc-id": $currentDocIdOption,
                     "by-profile": $profilesOption,
-                    "by-doc-id": $docIdOption,
-                    "by-current-doc-id": $currentDocIdOption
+                    "by-doc-id": $docIdOption
                 }
             }).buildBlockStructure("<div>");
         }
@@ -201,8 +200,11 @@ Imcms.define(
         }
 
         function loadData(onParentSelected, config) {
-            var cssDisplayValue = (config && config.inMenu) ? "block" : "none";
+            var isInMenu = config && config.inMenu;
+            var cssDisplayValue = isInMenu ? "block" : "none";
             $currentDocIdOption.css({"display":cssDisplayValue});
+
+            radioButtonsGroup.setCheckedValue(isInMenu ? "currentDocId" : "profile");
         }
 
         var windowBuilder = new WindowBuilder({

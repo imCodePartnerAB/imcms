@@ -168,11 +168,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 newDocumentProfile: {
                     title: "Skapa nytt dokument",
                     createDocButton: "Skapa",
-                    chooseProfileOrParent: "Skapa via profil eller med befintligt dokument ID",
+                    chooseProfileOrParent: "Vilka inställningar ska användas för att skapa det nya dokumentet:",
                     validationErrorMessage: "Du måste välja antingen befintlig profil eller ange TEXT-dokumentidentifierare (meta-id eller alias)",
-                    buildByProfile: "Bygg av profil ",
-                    buildByParent: "Bygg av dokument ",
-                    buildByCurrentDocId: "Bygg med nuvarande dokument ",
+                    buildByProfile: "Välj efter profil",
+                    buildByParent: "Alla textdokument ID",
+                    buildByCurrentDocId: "Detta dokument är",
                     selectProfile: "Välj profil",
                     selectParent: "Välj förälder"
                 },
@@ -421,11 +421,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 newDocumentProfile: {
                     title: "Create new document",
                     createDocButton: "Create",
-                    chooseProfileOrParent: "Create by profile or by existing document ID",
+                    chooseProfileOrParent: "What settings are to be used to create the new document:",
                     validationErrorMessage: "You have to choose either existing profile or specify TEXT document identifier (meta id or alias)",
-                    buildByProfile: "Build by profile",
-                    buildByParent: "Build by document",
-                    buildByCurrentDocId: "Build by current document",
+                    buildByProfile: "Select by profile",
+                    buildByParent: "Any text document id",
+                    buildByCurrentDocId: "This document’s",
                     selectProfile: "Select profile",
                     selectParent: "Select parent"
                 },
