@@ -84,6 +84,11 @@ public class DefaultAccessService implements AccessService {
         return true;
     }
 
+    @Override
+    public RestrictedPermission getEditPermission(int userId, int documentId) {
+        return null;
+    }
+
     private boolean hasRestrictedEditAccess(AccessType accessType, Meta meta, Permission permission) {
         return meta.getRestrictedPermissions()
                 .stream()
