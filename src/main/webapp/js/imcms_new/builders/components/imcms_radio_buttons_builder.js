@@ -70,7 +70,7 @@ Imcms.define("imcms-radio-buttons-builder",
                 var radioBlocks$ = Array.prototype.slice.call(arguments);
 
                 return {
-                    checkAmongGroup: function (value) {
+                    setCheckedValue: function (value) {
                         radioBlocks$.forEach(function ($radioBlock) {
                             var $radio = $radioBlock.find("input");
                             ($radio.val() === value) && $radio.prop("checked", "checked");

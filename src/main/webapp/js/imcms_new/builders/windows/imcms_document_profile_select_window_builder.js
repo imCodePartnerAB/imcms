@@ -72,7 +72,7 @@ Imcms.define(
                 text: texts.buildByProfile,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "profile",
-                checked: true,
+                // checked: true,
                 click: function () {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideUp(400);
@@ -192,7 +192,7 @@ Imcms.define(
         }
 
         function clear() {
-            radioButtonsGroup.checkAmongGroup("profile");
+            radioButtonsGroup.setCheckedValue("profile");
             $parentSelect.css("display", "none");
             $profileSelectBlock.css("display", "block");
             $parentDocIdInput.setValue('');

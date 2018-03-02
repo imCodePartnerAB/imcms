@@ -171,7 +171,7 @@ Imcms.define("imcms-title-tab-builder",
                 tabData.$documentAlias.setValue(document.alias);
 
                 components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
-                    .checkAmongGroup(document.disabledLanguageShowMode);
+                    .setCheckedValue(document.disabledLanguageShowMode);
             },
 
             saveData: function (documentDTO) {
