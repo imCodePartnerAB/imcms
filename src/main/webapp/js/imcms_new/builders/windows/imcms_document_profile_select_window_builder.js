@@ -15,20 +15,6 @@ Imcms.define(
         var radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect,
             $validationErrorBlock;
 
-        function loadProfiles($profilesSelect) {
-            profilesRestApi.read().done(function (profiles) {
-                var profilesDataMapped = profiles.map(function (profile) {
-                    /** @namespace profile.documentName */
-                    return {
-                        text: profile.name,
-                        "data-value": profile.documentName
-                    }
-                });
-
-                components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelect);
-            });
-        }
-
         function buildProfileSelect() {
             var $profilesSelectContainer = components.selects.selectContainer("<div>", {
                 id: "doc-profiles",
@@ -39,14 +25,12 @@ Imcms.define(
 
             $profilesSelect = $profilesSelectContainer.getSelect();
 
-            loadProfiles($profilesSelect);
-
             return new BEM({
                 block: "imcms-profile-select",
                 elements: {
                     "select": $profilesSelectContainer
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>", {"style": "display: none;"});
         }
 
         function buildParentSelect() {
@@ -63,27 +47,27 @@ Imcms.define(
             }).buildBlockStructure("<div>", {"style": "display: none;"});
         }
 
-        var $currentDocIdOption;
+        var $currentDocIdOption, $profilesOption;
 
         function buildChoosingRadio($profileSelect, $parentSelect) {
             var $choosingTitle = components.texts.titleText("<div>", texts.chooseProfileOrParent);
 
-            var $profilesOption = components.radios.imcmsRadio("<div>", {
+            $profilesOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByProfile,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "profile",
-                // checked: true,
                 click: function () {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideUp(400);
                     $profileSelect.slideDown(400);
                 }
-            });
+            }).css("display", "none");
 
             var $docIdOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByParent,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "docId",
+                checked: true,
                 click: function () {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideDown(400);
@@ -100,7 +84,7 @@ Imcms.define(
                     $parentSelect.slideUp(400);
                     $profileSelect.slideUp(400);
                 }
-            });
+            }).css("display", "none");
 
             radioButtonsGroup = components.radios.group($profilesOption, $docIdOption, $currentDocIdOption);
 
@@ -108,9 +92,9 @@ Imcms.define(
                 block: "new-doc-parent-options",
                 elements: {
                     "title": $choosingTitle,
+                    "by-current-doc-id": $currentDocIdOption,
                     "by-profile": $profilesOption,
-                    "by-doc-id": $docIdOption,
-                    "by-current-doc-id": $currentDocIdOption
+                    "by-doc-id": $docIdOption
                 }
             }).buildBlockStructure("<div>");
         }
@@ -192,17 +176,52 @@ Imcms.define(
         }
 
         function clear() {
-            radioButtonsGroup.setCheckedValue("profile");
+            radioButtonsGroup.setCheckedValue("docId");
             $parentSelect.css("display", "none");
-            $profileSelectBlock.css("display", "block");
+            $profileSelectBlock.css("display", "none");
             $parentDocIdInput.setValue('');
             $profilesSelect.selectFirst();
             $validationErrorBlock.css("display", "none");
         }
 
         function loadData(onParentSelected, config) {
-            var cssDisplayValue = (config && config.inMenu) ? "block" : "none";
-            $currentDocIdOption.css({"display":cssDisplayValue});
+            profilesRestApi.read().done(function (profiles) {
+                var profilesDataMapped = profiles.map(function (profile) {
+                    /** @namespace profile.documentName */
+                    return {
+                        text: profile.name,
+                        "data-value": profile.documentName
+                    }
+                });
+
+                var profilesExist = profilesDataMapped && profilesDataMapped.length;
+
+                if (profilesExist) {
+                    components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelect);
+                    $profilesOption && $profilesOption.css("display", "block");
+                    profilesExist = true;
+                }
+
+                var isInMenu = config && config.inMenu;
+                var cssDisplayValue = isInMenu ? "block" : "none";
+                $currentDocIdOption.css({"display": cssDisplayValue});
+
+                var checkedValue = isInMenu
+                    ? "currentDocId"
+                    : profilesExist ? "profile" : "docId";
+
+                radioButtonsGroup.setCheckedValue(checkedValue);
+
+                if (!isInMenu) {
+                    if (profilesExist) {
+                        $profileSelectBlock.css("display", "block");
+                        $profilesOption.css("display", "block");
+
+                    } else {
+                        $parentSelect.css("display", "block");
+                    }
+                }
+            });
         }
 
         var windowBuilder = new WindowBuilder({

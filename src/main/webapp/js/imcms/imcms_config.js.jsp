@@ -133,6 +133,8 @@
             "imcms-menu-editor-builder": "builders/windows/editors/imcms_menu_editor_builder.js",
             "imcms-document-editor-builder": "builders/windows/editors/imcms_document_editor_builder.js",
             "imcms-image-editor-builder": "builders/windows/editors/imcms_image_editor_builder.js",
+            "imcms-image-editor-components": "builders/windows/editors/imcms_image_editor_components.js",
+            "imcms-image-editor-right-side-builder": "builders/windows/editors/imcms_image_editor_right_side_builder.js",
             "imcms-loop-editor-builder": "builders/windows/editors/imcms_loop_editor_builder.js",
             //   </editors>
             //  </windows>
