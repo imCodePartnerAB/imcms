@@ -928,6 +928,7 @@ Imcms.define("imcms-document-editor-builder",
             incrementDocumentNumber: incrementDocumentNumber,
             addDocumentToList: addDocumentToList,
             getDocumentStatusText: getDocumentStatusText,
+            refreshDocumentInList: refreshDocumentInList,
             build: function () {
                 documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
             }

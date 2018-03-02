@@ -473,7 +473,7 @@ Imcms.define("imcms-menu-editor-builder",
             });
         }
 
-        function appendNewMenuItem(document) {
+        function getMenuElementTree(document) {
             var menuElementTree = {
                 documentId: document.id,
                 link: "/" + document.id,
@@ -489,7 +489,56 @@ Imcms.define("imcms-menu-editor-builder",
                 }
             });
 
-            $menuItemsBlock.append(buildMenuItemTree(menuElementTree, 1));
+            return menuElementTree;
+        }
+
+        function appendNewMenuItem(document) {
+            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1));
+        }
+
+        function refreshMenuItem(document) {
+            var $oldMenuItem = $menuItemsBlock
+                .find("[data-document-id=" + document.id + "]");
+
+            if ($oldMenuItem.length === 1) {
+
+                function changeTitle() {
+                    var titleValue = "";
+                    document.commonContents.forEach(function (commonContent) {
+                        if (commonContent["language"]["code"] === imcms.userLanguage) {
+                            titleValue = commonContent["headline"];
+                        }
+                    });
+
+                    var $info = $oldMenuItem.find(".imcms-menu-item__info").first();
+                    $info.text(document.id + " - " + titleValue);
+                    $info.attr("title", titleValue);
+                }
+
+                function changeStatus() {
+                    var $status = $oldMenuItem.find(".imcms-menu-item__status").first();
+                    $status.text(documentEditorBuilder.getDocumentStatusText(document.documentStatus));
+                }
+
+                function toggleClass() {
+                    var menuItemClass = "imcms-menu-items__menu-item";
+                    var $menuItem = $oldMenuItem.find("." + menuItemClass).first();
+
+                    $menuItem.removeClass(function (index, className) {
+                        return (className.match(/\imcms-menu-items__menu-item--\S+/g) || []).join(' ');
+                    });
+
+                    $menuItem.addClass(
+                        menuItemClass + "--" + document.documentStatus.replace(/_/g, "-").toLowerCase()
+                    );
+                }
+
+                changeTitle();
+                changeStatus();
+                toggleClass();
+
+                documentEditorBuilder.refreshDocumentInList(document);
+            }
         }
 
         function buildMenuItemControls(menuElementTree) {
@@ -498,7 +547,7 @@ Imcms.define("imcms-menu-editor-builder",
             });
 
             var $controlEdit = controls.edit(function () {
-                pageInfoBuilder.build(menuElementTree.documentId, null, menuElementTree.type);
+                pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
             });
 
             var $controlCopy = controls.copy(function () {
@@ -565,7 +614,6 @@ Imcms.define("imcms-menu-editor-builder",
                 })
             });
 
-            // TODO: change it!
             elements.push({
                 status: components.texts.titleText("<div>", documentEditorBuilder
                     .getDocumentStatusText(menuElementTree.documentStatus))
