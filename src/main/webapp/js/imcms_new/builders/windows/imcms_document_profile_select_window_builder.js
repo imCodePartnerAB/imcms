@@ -201,7 +201,7 @@ Imcms.define(
         }
 
         function loadData(onParentSelected, config) {
-            var cssDisplayValue = config && config.inMenu ? "block" : "none";
+            var cssDisplayValue = (config && config.inMenu) ? "block" : "none";
             $currentDocIdOption.css({"display":cssDisplayValue});
         }
 
