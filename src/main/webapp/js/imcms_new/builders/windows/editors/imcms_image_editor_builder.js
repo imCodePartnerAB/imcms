@@ -4,12 +4,11 @@
  */
 Imcms.define("imcms-image-editor-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-content-manager-builder",
-        "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",
-        "imcms-modal-window-builder", "imcms-i18n-texts"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-images-rest-api",
+        "imcms-image-cropper", "jquery", "imcms-events", "imcms", "imcms-i18n-texts", "imcms-image-editor-components"
     ],
-    function (BEM, components, WindowBuilder, contentManager, imageRestApi, imageCropper, $, events, imcms,
-              modalWindowBuilder, texts) {
+    function (BEM, components, WindowBuilder, imageRestApi, imageCropper, $, events, imcms, texts,
+              imageEditorComponents) {
 
         texts = texts.editors.image;
 
@@ -19,10 +18,6 @@ Imcms.define("imcms-image-editor-builder",
         var imageData = {};
         var $previewImg;
         var $previewImgContainer;
-        var $langFlags;
-        var $allLanguagesCheckBox;
-        var $altText;
-        var $imgLink;
 
         function toggleImgArea() {
 
@@ -144,399 +139,6 @@ Imcms.define("imcms-image-editor-builder",
 
             var $bottomPanel;
             var $rightSidePanel;
-
-            function buildRightSide(imageEditorBlockClass) {
-
-                function buildSelectImageBtnContainer() {
-                    var $selectImageBtn = components.buttons.neutralButton({
-                        text: texts.selectImage,
-                        click: contentManager.build.bind(contentManager, fillData)
-                    });
-                    return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
-                }
-
-                function buildAltTextBox() {
-                    return $altText = components.texts.textBox("<div>", {
-                        text: texts.altText,
-                        name: "altText"
-                    });
-                }
-
-                function buildImageLinkTextBox() {
-                    return $imgLink = components.texts.textBox("<div>", {
-                        text: texts.imageLink,
-                        name: "imageLink"
-                    });
-                }
-
-                function buildImageLangFlags() {
-                    imageData.langCode = imcms.language.code;
-
-                    return components.flags.flagsContainer(function (language) {
-                        return ["<div>", {
-                            click: function () {
-                                imageData.langCode = language.code;
-
-                                var imageRequestData = getImageRequestData(imageData.langCode);
-
-                                imageRestApi.read(imageRequestData).done(fillData);
-                            }
-                        }];
-                    });
-                }
-
-                function buildAllLanguagesCheckbox() {
-                    return components.checkboxes.checkboxContainer("<div>", [
-                        $allLanguagesCheckBox = components.checkboxes.imcmsCheckbox("<div>", {
-                            name: "allLanguages",
-                            text: texts.allLangs
-                        })
-                    ]);
-                }
-
-                function buildAdvancedModeBtn($advancedControls) {
-                    return components.buttons.buttonsContainer("<div>", [
-                        components.buttons.negativeButton({
-                            text: texts.advanced,
-                            "data-state": "false",
-                            click: function () {
-                                var $btn = $(this);
-
-                                if ($btn.attr("data-state") === "false") {
-                                    $advancedControls.css("display", "block");
-                                    $btn.attr("data-state", "true").text(texts.simple);
-
-                                } else {
-                                    $advancedControls.css("display", "none");
-                                    $btn.attr("data-state", "false").text(texts.advanced);
-                                }
-                            }
-                        })
-                    ]);
-                }
-
-                function buildTextAlignmentBtnsContainer() {
-                    function buildAlignButton(modifiers, onClick) {
-                        return components.buttons.imcmsButton({click: onClick}, ["align"].concat(modifiers));
-                    }
-
-                    // todo: implement onClick!
-                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"]).text(texts.none);
-                    var $alignTopBtn = buildAlignButton(["align-top"]);
-                    var $alignCenterBtn = buildAlignButton(["align-center"]);
-                    var $alignBottomBtn = buildAlignButton(["align-bottom"]);
-                    var $alignLeftBtn = buildAlignButton(["align-left"]);
-                    var $alignRightBtn = buildAlignButton(["align-right"]);
-
-                    return components.buttons.buttonsContainer("<div>", [
-                        $alignNoneBtn,
-                        $alignTopBtn,
-                        $alignCenterBtn,
-                        $alignBottomBtn,
-                        $alignLeftBtn,
-                        $alignRightBtn
-                    ]);
-                }
-
-                function buildSpaceAroundImageInputContainer() {
-                    return components.texts.pluralInput("<div>", [
-                        {
-                            id: "image-space-top",
-                            name: "top",
-                            placeholder: texts.top
-                        }, {
-                            id: "image-space-right",
-                            name: "right",
-                            placeholder: texts.right
-                        }, {
-                            id: "image-space-bottom",
-                            name: "bottom",
-                            placeholder: texts.bottom
-                        }, {
-                            id: "image-space-left",
-                            name: "left",
-                            placeholder: texts.left
-                        }
-                    ], {text: texts.spaceAround});
-                }
-
-                function buildCropCoordinatesText(advancedModeBEM) {
-                    return advancedModeBEM.buildElement("title", "<div>")
-                        .append(texts.cropCoords + " (W:")
-                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"}))
-                        .append(" H:")
-                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"}))
-                        .append(")");
-                }
-
-                function buildCropCoordinatesContainer() {
-                    var $xCropCoord = components.texts.textNumber("<div>", {
-                        name: "cropX0",
-                        placeholder: "X",
-                        text: "X",
-                        error: "Error"
-                    });
-
-                    var $yCropCoord = components.texts.textNumber("<div>", {
-                        name: "cropY0",
-                        placeholder: "Y",
-                        text: "Y",
-                        error: "Error"
-                    });
-
-                    var $x1CropCoord = components.texts.textNumber("<div>", {
-                        name: "cropX1",
-                        placeholder: "X1",
-                        text: "X1",
-                        error: "Error"
-                    });
-
-                    var $y1CropCoord = components.texts.textNumber("<div>", {
-                        name: "cropY1",
-                        placeholder: "Y1",
-                        text: "Y1",
-                        error: "Error"
-                    });
-
-                    return new BEM({
-                        block: "imcms-crop-coordinates",
-                        elements: {
-                            "x": $xCropCoord,
-                            "y": $yCropCoord,
-                            "x1": $x1CropCoord,
-                            "y1": $y1CropCoord
-                        }
-                    }).buildBlockStructure("<div>");
-                }
-
-                function buildFileFormatSelect() {
-                    return components.selects.imcmsSelect("<div>", {
-                        text: texts.fileFormat,
-                        name: "fileFormat"
-                    }, [{
-                        text: "GIF",
-                        "data-value": 0
-                    }, {
-                        text: "PNG",
-                        "data-value": 1
-                    }, {
-                        text: "PNG-24",
-                        "data-value": 2
-                    }, {
-                        text: "JPG",
-                        "data-value": 3
-                    }]);
-                }
-
-                function showExif() {
-                    // todo: implement!!!
-                }
-
-                function buildAdvancedControls() {
-                    var advancedModeBEM = new BEM({
-                        block: "imcms-advanced-mode",
-                        elements: {
-                            "title": "imcms-title",
-                            "buttons": "imcms-buttons",
-                            "space-around": "imcms-space-around",
-                            "current-crop-width": "imcms-title",
-                            "crop-coordinates": "imcms-crop-coordinates",
-                            "file-format": "imcms-select",
-                            "button": "imcms-button"
-                        }
-                    });
-
-                    var $textAlignmentBtnsTitle = advancedModeBEM.buildElement("title", "<div>", {text: texts.alignment});
-                    var $textAlignmentBtnsContainer = buildTextAlignmentBtnsContainer();
-                    var $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
-                    var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
-                    var $cropCoordinatesContainer = buildCropCoordinatesContainer();
-                    var $fileFormat = buildFileFormatSelect();
-                    var $showExifBtn = components.buttons.neutralButton({
-                        text: texts.exif.button,
-                        click: showExif
-                    });
-
-                    return advancedModeBEM.buildBlock("<div>", [
-                        {"title": $textAlignmentBtnsTitle},
-                        {"buttons": $textAlignmentBtnsContainer},
-                        {"space-around": $spaceAroundImageInputContainer},
-                        {"title": $cropCoordinatesText},
-                        {"crop-coordinates": $cropCoordinatesContainer},
-                        {"file-format": $fileFormat},
-                        {"button": $showExifBtn}
-                    ]);
-                }
-
-                function buildEditableControls() {
-                    var editableControlsBEM = new BEM({
-                        block: "imcms-editable-controls-area",
-                        elements: {
-                            "buttons": "imcms-buttons",
-                            "text-box": "imcms-text-box",
-                            "flags": "imcms-flags",
-                            "checkboxes": "imcms-checkboxes",
-                            "advanced-mode": "imcms-advanced-mode"
-                        }
-                    });
-
-                    var $selectImageBtnContainer = buildSelectImageBtnContainer();
-                    var $altTextBox = buildAltTextBox();
-                    var $imageLinkTextBox = buildImageLinkTextBox();
-                    $langFlags = buildImageLangFlags();
-                    var $allLangs = buildAllLanguagesCheckbox();
-                    var $advancedControls = buildAdvancedControls();
-                    var $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
-
-                    return editableControlsBEM.buildBlock("<div>", [
-                        {"buttons": $selectImageBtnContainer},
-                        {"text-box": $altTextBox},
-                        {"text-box": $imageLinkTextBox},
-                        {"flags": $langFlags},
-                        {"checkboxes": $allLangs},
-                        {"buttons": $advancedModeBtn},
-                        {"advanced-mode": $advancedControls}
-                    ]);
-                }
-
-                function removeAndClose() {
-                    imageWindowBuilder.closeWindow();
-
-                    imageData.allLanguages = $allLanguagesCheckBox.isChecked();
-
-                    imageRestApi.remove(imageData)
-                        .success(onImageSaved)
-                        .error(console.error.bind(console));
-                }
-
-                function getImageRequestData(langCode) {
-                    var imageRequestData = {
-                        docId: imageData.docId,
-                        index: imageData.index,
-                        langCode: langCode
-                    };
-
-                    /** @namespace imageData.loopEntryRef */
-                    if (imageData.loopEntryRef) {
-                        imageRequestData["loopEntryRef.loopEntryIndex"] = imageData["loopEntryRef.loopEntryIndex"];
-                        imageRequestData["loopEntryRef.loopIndex"] = imageData["loopEntryRef.loopIndex"];
-                    }
-
-                    return imageRequestData;
-                }
-
-                function setOrRemoveAltAttribute($image, imageDTO) {
-                    if (imageDTO.alternateText) {
-                        $image.attr("alt", imageDTO.alternateText);
-                    } else {
-                        $image.removeAttr("alt");
-                    }
-                }
-
-                function setOrRemoveHrefAttribute($image, imageDTO) {
-                    var linkUrl = imageDTO.linkUrl;
-                    if (linkUrl) {
-                        if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
-                            linkUrl = "//" + linkUrl;
-                        }
-
-                        $image.parent().attr("href", linkUrl);
-                    } else {
-                        $image.parent().removeAttr("href");
-                    }
-                }
-
-                function reloadImageOnPage(imageDTO) {
-
-                    var $image = $tag.find(".imcms-editor-content>a>img").first();
-
-                    /** @namespace imageDTO.generatedFilePath */
-
-                    var filePath = imageDTO.generatedFilePath;
-
-                    if (filePath) {
-                        filePath = location.origin + imcms.contextPath + filePath;
-
-                        setOrRemoveAltAttribute($image, imageDTO);
-                        setOrRemoveHrefAttribute($image, imageDTO);
-                    } else {
-                        $image.removeAttr("alt");
-                        $image.parent().removeAttr("href");
-                    }
-
-                    if ($image.length) {
-
-                        if (!filePath && $tag.hasClass("imcms-image-in-text")) {
-                            $tag.detach();
-                            imcms.require("tinyMCE", function (tinyMCE) {
-                                tinyMCE.activeEditor.setDirty(true);
-                            });
-                            return;
-                        }
-
-                        $image.attr("src", filePath);
-
-                        if ($image.attr("data-mce-src")) {
-                            $image.attr("data-mce-src", filePath);
-                            imcms.require("tinyMCE", function (tinyMCE) {
-                                tinyMCE.activeEditor.setDirty(true);
-                            });
-                        }
-                    }
-                }
-
-                function onImageSaved() {
-                    events.trigger("imcms-version-modified");
-
-                    var imageRequestData = getImageRequestData(imcms.language.code);
-
-                    imageRestApi.read(imageRequestData)
-                        .success(reloadImageOnPage)
-                        .error(console.error.bind(console));
-                }
-
-                function callBackAltText(continueSaving) {
-                    if (continueSaving) {
-                        imageWindowBuilder.closeWindow();
-
-                        imageData.allLanguages = $allLanguagesCheckBox.isChecked();
-                        imageData.alternateText = $altText.$input.val();
-                        imageData.linkUrl = $imgLink.$input.val();
-
-                        imageRestApi.create(imageData)
-                            .success(onImageSaved)
-                            .error(console.error.bind(console));
-                    }
-                }
-
-                function saveAndClose() {
-                    if (!$altText.$input.val()) {
-                        modalWindowBuilder.buildModalWindow(texts.altTextConfirm, callBackAltText);
-
-                    } else {
-                        callBackAltText(true);
-                    }
-                }
-
-                function buildFooter() {
-                    var $removeAndCloseButton = components.buttons.negativeButton({
-                        text: texts.removeAndClose,
-                        click: removeAndClose
-                    });
-
-                    var $saveAndCloseButton = components.buttons.saveButton({
-                        text: texts.saveAndClose,
-                        click: saveAndClose
-                    });
-
-                    return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
-                }
-
-                var $editableControls = buildEditableControls();
-                var $footer = buildFooter().addClass(imageEditorBlockClass + BEM.getBlockSeparator() + "footer");
-
-                return $("<div>").append($editableControls, $footer);
-            }
 
             function buildBodyHead() {
                 function showHidePanel(panelOpts) {
@@ -914,7 +516,14 @@ Imcms.define("imcms-image-editor-builder",
                     "head": imageWindowBuilder.buildHead(texts.title),
                     "image-characteristics": buildBodyHead(),
                     "left-side": buildLeftSide(),
-                    "right-side": $rightSidePanel = buildRightSide(imageEditorBlockClass)
+                    "right-side": $rightSidePanel = imageEditorComponents.buildRightSide({
+                        imageEditorBlockClass: imageEditorBlockClass,
+                        fillData: fillData,
+                        imageDataContainers: imageDataContainers,
+                        $tag: $tag,
+                        imageWindowBuilder: imageWindowBuilder,
+                        imageData: imageData
+                    })
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
         }
@@ -1017,11 +626,11 @@ Imcms.define("imcms-image-editor-builder",
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
 
-            $altText.$input.val(image.alternateText);
-            $imgLink.$input.val(image.linkUrl);
+            imageDataContainers.$altText.$input.val(image.alternateText);
+            imageDataContainers.$imgLink.$input.val(image.linkUrl);
 
             if (image.allLanguages !== undefined) {
-                $allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
+                imageDataContainers.$allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
             }
         }
 
@@ -1041,10 +650,10 @@ Imcms.define("imcms-image-editor-builder",
             $.extend(imageData, opts);
 
             if (opts.inText) {
-                $langFlags.hideLangFlagsAndCheckbox();
+                imageDataContainers.$langFlags.hideLangFlagsAndCheckbox();
             } else {
-                $langFlags.showLangFlagsAndCheckbox();
-                $langFlags.setActive(imcms.language.code);
+                imageDataContainers.$langFlags.showLangFlagsAndCheckbox();
+                imageDataContainers.$langFlags.setActive(imcms.language.code);
             }
 
             imageRestApi.read(opts).done(fillData);
