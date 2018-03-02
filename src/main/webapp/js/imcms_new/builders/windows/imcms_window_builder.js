@@ -58,7 +58,6 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
                 console.error(e);
                 alert("Error in window builder! Stacktrace in console.");
                 this.shadowBuilder.closeWindow();
-                // todo: build some window with error message? hide shadow? show window anyway?
             }
         },
         closeWindow: function () {
@@ -66,7 +65,9 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
             this._scrollTop = 0;
             this.$editor.css("display", "none");
 
-            this.shadowBuilder && this.shadowBuilder.closeWindow();
+            if (this.shadowBuilder) {
+                setTimeout(this.shadowBuilder.closeWindow.bind(this.shadowBuilder));
+            }
 
             if (this.clearDataStrategy) {
                 try {
