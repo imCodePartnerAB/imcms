@@ -8,23 +8,11 @@ Imcms.define(
 
         texts = texts.editors.image;
 
-        function buildRightSide(opts) {
-            return rightSideBuilder.build(opts);
-        }
-
-        function buildLeftSide(opts) {
-            return leftSideBuilder.build(opts);
-        }
-
-        function buildBodyHead(opts) {
-            return bodyHeadBuilder.build(opts);
-        }
-
         return {
             buildEditor: function (opts) {
-                var $rightSidePanel = buildRightSide(opts);
-                var $bodyHead = buildBodyHead(opts);
-                var $leftSide = buildLeftSide(opts);
+                var $bodyHead = bodyHeadBuilder.build(opts);
+                var $rightSidePanel = rightSideBuilder.build(opts);
+                var $leftSide = leftSideBuilder.build(opts);
 
                 return new BEM({
                     block: "imcms-image_editor",
