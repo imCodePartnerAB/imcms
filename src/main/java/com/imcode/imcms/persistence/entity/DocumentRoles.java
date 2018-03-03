@@ -22,7 +22,7 @@ public class DocumentRoles {
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private RoleJPA role;
 
-    @Column(name = "permission", nullable = false, columnDefinition = "VARCHAR(16)")
+    @Column(name = "permission", nullable = false)
     @Enumerated(EnumType.STRING)
     private Meta.Permission permission;
 
