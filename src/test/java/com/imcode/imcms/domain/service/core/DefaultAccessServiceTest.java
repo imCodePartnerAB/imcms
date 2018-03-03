@@ -9,7 +9,6 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.security.AccessType;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -372,19 +371,16 @@ public class DefaultAccessServiceTest {
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserHasNoRoles_Expect_ViewPermission() {
         testWhenDocumentRolesListIsEmpty();
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_DocumentHasNotRoles_Expect_ViewPermission() {
         testWhenDocumentRolesListIsEmpty();
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserAndDocumentHaveEditPermission_Expect_EditPermission() {
         final Permission editPermissionEnum = Permission.EDIT;
 
@@ -421,7 +417,6 @@ public class DefaultAccessServiceTest {
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserAndDocumentHaveOnlyViewPermission_Expect_ViewPermissionReturned() {
         final Permission viewPermission = Permission.VIEW;
 
@@ -447,7 +442,6 @@ public class DefaultAccessServiceTest {
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserAndDocumentHaveRestricted1AndRestricted2_Expect_UnionOfThem() {
         final Permission restricted1 = Permission.RESTRICTED_1;
         final Permission restricted2 = Permission.RESTRICTED_2;
@@ -505,19 +499,16 @@ public class DefaultAccessServiceTest {
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserAndDocumentHaveRestricted1Permission_Expect_Permission1Returned() {
         testRestrictedPermissionWhenUserAndDocumentHasCorrespondingOne(Permission.RESTRICTED_1);
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserAndDocumentHaveRestricted2Permission_Expect_Permission2Returned() {
         testRestrictedPermissionWhenUserAndDocumentHasCorrespondingOne(Permission.RESTRICTED_2);
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserHasRestricted1AndRestricted2ButDocumentDoesNotBoth_Expect_ViewPermission() {
         final Permission viewPermission = Permission.VIEW;
 
@@ -557,37 +548,31 @@ public class DefaultAccessServiceTest {
     }
 
     @Test
-    @Ignore
     public void getEditPerm_When_UserHasRestricted1AndRestricted2ButDocumentHasOnlyRestricted1_Expect_Restricted1() {
         testWhenUserHasAllOfThemButDocumentHasOnlySpecified(Permission.RESTRICTED_1);
     }
 
     @Test
-    @Ignore
     public void getEditPerm_When_UserHasRestricted1AndRestricted2ButDocumentHasOnlyRestricted2_Expect_Restricted2() {
         testWhenUserHasAllOfThemButDocumentHasOnlySpecified(Permission.RESTRICTED_2);
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserHasRestricted1ButDocumentHasRestricted1AndRestricted2_Expect_Restricted1() {
         testWhenDocumentHasAllOfThemButUserHasOnlySpecified(Permission.RESTRICTED_1);
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserHasRestricted2ButDocumentHasRestricted1AndRestricted2_Expect_Restricted2() {
         testWhenDocumentHasAllOfThemButUserHasOnlySpecified(Permission.RESTRICTED_2);
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserHasRestricted1ButDocumentDoesNotHaveBoth_Expect_View() {
         testWhenUserHasOneSpecifiedButDocumentDoesNotHaveBoth(Permission.RESTRICTED_1);
     }
 
     @Test
-    @Ignore
     public void getEditPermission_When_UserHasRestricted2ButDocumentDoesNotHaveBoth_Expect_View() {
         testWhenUserHasOneSpecifiedButDocumentDoesNotHaveBoth(Permission.RESTRICTED_2);
     }
@@ -627,6 +612,8 @@ public class DefaultAccessServiceTest {
     private void testWhenDocumentHasAllOfThemButUserHasOnlySpecified(Permission permissionEnum) {
         final Meta document = new Meta();
 
+        final Map<Permission, RestrictedPermissionJPA> permissionMap = new HashMap<>();
+
         final RestrictedPermissionJPA firstPermission = new RestrictedPermissionJPA();
         firstPermission.setPermission(Permission.RESTRICTED_1);
         firstPermission.setEditText(true);
@@ -643,7 +630,10 @@ public class DefaultAccessServiceTest {
         secondPermission.setEditLoop(true);
         secondPermission.setEditDocInfo(false);
 
-        document.setRestrictedPermissions(new HashSet<>(Arrays.asList(firstPermission, secondPermission)));
+        permissionMap.put(Permission.RESTRICTED_1, firstPermission);
+        permissionMap.put(Permission.RESTRICTED_2, secondPermission);
+
+        document.setRestrictedPermissions(new HashSet<>(permissionMap.values()));
 
         final DocumentRoles firstDocumentRoles = new DocumentRoles();
         firstDocumentRoles.setDocument(document);
@@ -662,12 +652,14 @@ public class DefaultAccessServiceTest {
 
         final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
 
+        final RestrictedPermissionJPA actualRestrictedPermission = permissionMap.get(permissionEnum);
+
         assertThat(editPermission.getPermission(), is(permissionEnum));
-        assertThat(editPermission.isEditText(), is(firstPermission.isEditText()));
-        assertThat(editPermission.isEditMenu(), is(firstPermission.isEditMenu()));
-        assertThat(editPermission.isEditImage(), is(firstPermission.isEditImage()));
-        assertThat(editPermission.isEditLoop(), is(firstPermission.isEditLoop()));
-        assertThat(editPermission.isEditDocInfo(), is(firstPermission.isEditDocInfo()));
+        assertThat(editPermission.isEditText(), is(actualRestrictedPermission.isEditText()));
+        assertThat(editPermission.isEditMenu(), is(actualRestrictedPermission.isEditMenu()));
+        assertThat(editPermission.isEditImage(), is(actualRestrictedPermission.isEditImage()));
+        assertThat(editPermission.isEditLoop(), is(actualRestrictedPermission.isEditLoop()));
+        assertThat(editPermission.isEditDocInfo(), is(actualRestrictedPermission.isEditDocInfo()));
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -684,7 +676,7 @@ public class DefaultAccessServiceTest {
         firstPermission.setEditLoop(false);
         firstPermission.setEditDocInfo(false);
 
-        document.setRestrictedPermissions(Collections.emptySet());
+        document.setRestrictedPermissions(new HashSet<>(Collections.singletonList(firstPermission)));
 
         final DocumentRoles firstDocumentRoles = new DocumentRoles();
         firstDocumentRoles.setDocument(document);
