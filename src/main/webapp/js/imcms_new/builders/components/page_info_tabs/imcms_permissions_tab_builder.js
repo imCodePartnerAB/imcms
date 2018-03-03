@@ -10,11 +10,13 @@ Imcms.define(
 
         texts = texts.pageInfo.permissions;
 
-        var defaultPermissions = [{
-            permission: "RESTRICTED_1"
-        }, {
-            permission: "RESTRICTED_2"
-        }];
+        function getDefaultPermissions() {
+            return [{
+                permission: "RESTRICTED_1"
+            }, {
+                permission: "RESTRICTED_2"
+            }];
+        }
 
         var editText = "editText",
             editMenu = "editMenu",
@@ -89,7 +91,7 @@ Imcms.define(
                 tabData.restrictedCheckboxes$ = [];
 
                 if (!document.restrictedPermissions || !document.restrictedPermissions.length) {
-                    document.restrictedPermissions = defaultPermissions;
+                    document.restrictedPermissions = getDefaultPermissions();
                 }
 
                 document.restrictedPermissions.forEach(function (restrictedPermission) {
