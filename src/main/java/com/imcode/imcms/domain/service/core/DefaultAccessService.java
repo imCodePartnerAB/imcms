@@ -2,22 +2,18 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.model.Role;
+import com.imcode.imcms.persistence.entity.DocumentRoles;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.security.AccessType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.List;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -27,48 +23,34 @@ import java.util.Optional;
 @Transactional
 public class DefaultAccessService implements AccessService {
 
-    private final MetaRepository metaRepository;
-    private final UserRolesService userRolesService;
     private final UserService userService;
+    private final DocumentRolesRepository documentRolesRepository;
 
-    DefaultAccessService(MetaRepository metaRepository,
-                         UserRolesService userRolesService,
-                         UserService userService) {
-
-        this.metaRepository = metaRepository;
-        this.userRolesService = userRolesService;
+    DefaultAccessService(UserService userService, DocumentRolesRepository documentRolesRepository) {
         this.userService = userService;
+        this.documentRolesRepository = documentRolesRepository;
     }
 
     @Override
     public boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType) {
-        final Meta meta = metaRepository.findOne(documentId);
-
-        if (meta == null) {
-            return false;
-        }
-
-        final User user;
         try {
-            user = userService.getUser(userId);
+            userService.getUser(userId);
         } catch (UserNotExistsException e) {
             return false;
         }
 
-        final Map<Integer, Permission> roleIdToPermission = meta.getRoleIdToPermission();
+        final List<DocumentRoles> documentRolesList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
+                userId, documentId
+        );
 
-        final Optional<Permission> oPermission = userRolesService.getRolesByUser(user)
-                .stream()
-                .map(Role::getId)
-                .map(roleIdToPermission::get)
-                .filter(Objects::nonNull)
-                .min(Comparator.naturalOrder());
-
-        if (!oPermission.isPresent()) {
+        if (documentRolesList.isEmpty()) {
             return false;
         }
 
-        final Permission mostPermission = oPermission.get();
+        final Permission mostPermission = documentRolesList.stream()
+                .map(DocumentRoles::getPermission)
+                .min(Comparator.naturalOrder())
+                .get();
 
         switch (mostPermission) {
             case EDIT:
@@ -78,7 +60,7 @@ public class DefaultAccessService implements AccessService {
                 return false;
             case RESTRICTED_1:
             case RESTRICTED_2:
-                return hasRestrictedEditAccess(accessType, meta, mostPermission);
+                return hasRestrictedEditAccess(accessType, documentRolesList.get(0).getDocument(), mostPermission);
         }
 
         return true;
