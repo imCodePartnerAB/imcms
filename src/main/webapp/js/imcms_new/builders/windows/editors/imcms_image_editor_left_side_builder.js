@@ -179,14 +179,14 @@ Imcms.define(
             zoom(0.9, this);
         }
 
-        function zoomContain(imageDataContainers) {
+        function zoomContain(imageDataContainers, $editableImageArea) {
             // fixme: save proportions! now image becomes just as editable area
             // only one side should be as area's side and one as needed to save proportions
-            var newHeight = imageDataContainers.$editableImageArea.height(),
-                newWidth = imageDataContainers.$editableImageArea.width()
+            var newHeight = $editableImageArea.height(),
+                newWidth = $editableImageArea.width()
             ;
-            var twiceAngleBorderSize = parseInt(this.angles.$topLeft.css("border-width")) * 2 || 0;
-            resizeImage(newWidth - twiceAngleBorderSize, newHeight - twiceAngleBorderSize);
+            var twiceAngleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) * 2 || 0;
+            resizeImage(newWidth - twiceAngleBorderSize, newHeight - twiceAngleBorderSize, imageDataContainers);
         }
 
         var angle = 0;
@@ -205,14 +205,18 @@ Imcms.define(
             rotate(90, this);
         }
 
-        function buildScaleAndRotateControls(imageDataContainers) {
+        function buildScaleAndRotateControls(imageDataContainers, $editableImageArea) {
             return new BEM({
                 block: "imcms-edit-image",
                 elements: {
                     "button": [
                         components.buttons.zoomPlusButton({click: zoomPlus.bind(imageDataContainers)}),
                         components.buttons.zoomMinusButton({click: zoomMinus.bind(imageDataContainers)}),
-                        components.buttons.zoomContainButton({click: zoomContain.bind(imageDataContainers)}),
+                        components.buttons.zoomContainButton({
+                            click: function () {
+                                zoomContain(imageDataContainers, $editableImageArea);
+                            }
+                        }),
                         components.buttons.rotateLeftButton({click: rotateLeft.bind(imageDataContainers)}),
                         components.buttons.rotateRightButton({click: rotateRight.bind(imageDataContainers)})
                     ]
@@ -241,12 +245,12 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildBottomPanel(toggleImgArea, imageDataContainers) {
+        function buildBottomPanel(toggleImgArea, imageDataContainers, $editableImageArea) {
             return new BEM({
                 block: "imcms-editable-img-controls",
                 elements: {
                     "control-size": buildEditSizeControls(imageDataContainers),
-                    "control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers),
+                    "control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers, $editableImageArea),
                     "control-view": buildSwitchViewControls(toggleImgArea, imageDataContainers)
                 }
             }).buildBlockStructure("<div>");
@@ -254,13 +258,13 @@ Imcms.define(
 
         return {
             build: function (opts) {
-                opts.imageDataContainers.$editableImageArea = buildEditableImageArea(opts.imageDataContainers);
-                opts.imageDataContainers.$previewImageArea = buildPreviewImageArea(opts.imageDataContainers);
-                opts.imageDataContainers.$bottomPanel = buildBottomPanel(opts.toggleImgArea, opts.imageDataContainers);
+                var $editableImageArea = buildEditableImageArea(opts.imageDataContainers);
+                var $previewImageArea = buildPreviewImageArea(opts.imageDataContainers);
+                opts.imageDataContainers.$bottomPanel = buildBottomPanel(opts.toggleImgArea, opts.imageDataContainers, $editableImageArea);
 
                 return $("<div>").append(
-                    opts.imageDataContainers.$editableImageArea,
-                    opts.imageDataContainers.$previewImageArea,
+                    $editableImageArea,
+                    $previewImageArea,
                     opts.imageDataContainers.$bottomPanel
                 );
             }

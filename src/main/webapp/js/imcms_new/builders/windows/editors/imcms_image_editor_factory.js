@@ -10,9 +10,9 @@ Imcms.define(
 
         return {
             buildEditor: function (opts) {
-                var $bodyHead = bodyHeadBuilder.build(opts);
                 var $rightSidePanel = rightSideBuilder.build(opts);
                 var $leftSide = leftSideBuilder.build(opts);
+                var $bodyHead = bodyHeadBuilder.build(opts, $rightSidePanel);
 
                 return new BEM({
                     block: "imcms-image_editor",

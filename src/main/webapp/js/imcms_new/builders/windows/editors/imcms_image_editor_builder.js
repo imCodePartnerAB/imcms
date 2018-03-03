@@ -4,13 +4,11 @@
  */
 Imcms.define("imcms-image-editor-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-window-builder", "imcms-images-rest-api",
-        "imcms-image-cropper", "jquery", "imcms-events", "imcms", "imcms-i18n-texts", "imcms-image-editor-factory"
+        "imcms-window-builder", "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",
+        "imcms-image-editor-factory"
     ],
-    function (BEM, components, WindowBuilder, imageRestApi, imageCropper, $, events, imcms, texts,
+    function (WindowBuilder, imageRestApi, imageCropper, $, events, imcms,
               imageEditorFactory) {
-
-        texts = texts.editors.image;
 
         var imageDataContainers = {};
         var imageData = {};
@@ -169,9 +167,7 @@ Imcms.define("imcms-image-editor-builder",
                     imageDataContainers.$cropImg.removeAttr("style");
 
                     $.each(imageDataContainers.angles, function (angleKey, angle) {
-                        angle.css({
-                            "display": "none"
-                        })
+                        angle.css("display", "none");
                     });
 
                     return;

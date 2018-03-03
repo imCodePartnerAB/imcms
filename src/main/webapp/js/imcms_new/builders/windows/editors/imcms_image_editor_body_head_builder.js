@@ -22,22 +22,22 @@ Imcms.define(
             }
         }
 
-        function showHideRightPanel(imageDataContainers) {
+        function showHideRightPanel($rightSidePanel) {
             showHidePanel({
                 $btn: $(this),
-                newPanelSideValue: imageDataContainers.$rightSidePanel.width(),
-                $panel: imageDataContainers.$rightSidePanel,
+                newPanelSideValue: $rightSidePanel.width(),
+                $panel: $rightSidePanel,
                 panelSide: "right",
                 textHide: texts.panels.right.hide,
                 textShow: texts.panels.right.show
             });
         }
 
-        function showHideBottomPanel(imageDataContainers) {
+        function showHideBottomPanel($bottomPanel) {
             showHidePanel({
                 $btn: $(this),
-                newPanelSideValue: imageDataContainers.$bottomPanel.height(),
-                $panel: imageDataContainers.$bottomPanel,
+                newPanelSideValue: $bottomPanel.height(),
+                $panel: $bottomPanel,
                 panelSide: "bottom",
                 textHide: texts.panels.bottom.hide,
                 textShow: texts.panels.bottom.show
@@ -70,7 +70,7 @@ Imcms.define(
         }
 
         return {
-            build: function (opts) {
+            build: function (opts, $rightSidePanel) {
                 var bodyHeadBEM = new BEM({
                     block: "imcms-image-characteristics",
                     elements: {
@@ -85,7 +85,7 @@ Imcms.define(
                     "class": "imcms-image-characteristic",
                     text: texts.panels.bottom.show,
                     click: function () {
-                        showHideBottomPanel.call(this, opts.imageDataContainers);
+                        showHideBottomPanel.call(this, opts.imageDataContainers.$bottomPanel);
                     }
                 });
 
@@ -95,7 +95,7 @@ Imcms.define(
                     "class": "imcms-image-characteristic",
                     text: texts.panels.right.show,
                     click: function () {
-                        showHideRightPanel.call(this, opts.imageDataContainers);
+                        showHideRightPanel.call(this, $rightSidePanel);
                     }
                 });
 
