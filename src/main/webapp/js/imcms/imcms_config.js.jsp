@@ -135,6 +135,7 @@
             "imcms-image-editor-builder": "builders/windows/editors/imcms_image_editor_builder.js",
             "imcms-image-editor-components": "builders/windows/editors/imcms_image_editor_components.js",
             "imcms-image-editor-right-side-builder": "builders/windows/editors/imcms_image_editor_right_side_builder.js",
+            "imcms-image-editor-left-side-builder": "builders/windows/editors/imcms_image_editor_left_side_builder.js",
             "imcms-loop-editor-builder": "builders/windows/editors/imcms_loop_editor_builder.js",
             //   </editors>
             //  </windows>
