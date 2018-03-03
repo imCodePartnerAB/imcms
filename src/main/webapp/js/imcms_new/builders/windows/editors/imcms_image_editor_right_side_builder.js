@@ -11,7 +11,6 @@ Imcms.define(
         return {
             build: function (opts) {
 
-                var imageEditorBlockClass = opts.imageEditorBlockClass;
                 var fillData = opts.fillData;
                 var $tag = opts.$tag;
                 var imageWindowBuilder = opts.imageWindowBuilder;
@@ -403,7 +402,7 @@ Imcms.define(
                 }
 
                 var $editableControls = buildEditableControls();
-                var $footer = buildFooter().addClass(imageEditorBlockClass + BEM.getBlockSeparator() + "footer");
+                var $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
                 return $("<div>").append($editableControls, $footer);
             }
