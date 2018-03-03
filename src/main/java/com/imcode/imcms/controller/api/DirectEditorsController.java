@@ -37,7 +37,7 @@ public class DirectEditorsController {
     @CheckAccess(AccessType.TEXT)
     public ModelAndView editText(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
-                                 @RequestParam("language-code") String langCode,
+                                 @RequestParam(value = "language-code", required = false) String langCode,
                                  @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                  @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
                                  @RequestParam(value = "return", required = false) String returnUrl,
@@ -54,7 +54,7 @@ public class DirectEditorsController {
 
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("langCode", langCode);
+        mav.addObject("langCode", (langCode == null) ? Imcms.getUser().getLanguage() : langCode);
         addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;
@@ -64,7 +64,7 @@ public class DirectEditorsController {
     @CheckAccess(AccessType.IMAGE)
     public ModelAndView editImage(@RequestParam("meta-id") int metaId,
                                   @RequestParam int index,
-                                  @RequestParam("language-code") String langCode,
+                                  @RequestParam(value = "language-code", required = false) String langCode,
                                   @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                   @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
                                   @RequestParam(value = "return", required = false) String returnUrl,
@@ -80,7 +80,7 @@ public class DirectEditorsController {
         mav.setViewName("EditImage");
 
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("langCode", langCode);
+        mav.addObject("langCode", (langCode == null) ? Imcms.getUser().getLanguage() : langCode);
         mav.addObject("imagesPath", imagesPath);
         addCommonModelData(metaId, index, returnUrl, request, mav);
 
