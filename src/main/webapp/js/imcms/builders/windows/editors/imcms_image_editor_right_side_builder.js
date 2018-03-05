@@ -9,6 +9,10 @@ Imcms.define(
         texts = texts.editors.image;
         var $tag, imageData;
 
+        events.on("image data", function () {
+            console.log(imageData);
+        });
+
         return {
             updateImageData: function ($newTag, newImageData) {
                 $tag = $newTag;
@@ -371,8 +375,10 @@ Imcms.define(
 
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
-                        imageWindowBuilder.closeWindow();
+                        imageData.width = opts.imageDataContainers.$image.width();
+                        imageData.height = opts.imageDataContainers.$image.height();
 
+                        imageWindowBuilder.closeWindow();
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
                         imageData.alternateText = opts.imageDataContainers.$altText.$input.val();
                         imageData.linkUrl = opts.imageDataContainers.$imgLink.$input.val();
