@@ -9,6 +9,10 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.security.AccessType;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,6 +39,17 @@ public class DefaultAccessServiceTest {
 
     @InjectMocks
     private DefaultAccessService accessService;
+
+    @Before
+    public void setUp() {
+        final UserDomainObject user = new UserDomainObject();
+        Imcms.setUser(user);
+    }
+
+    @After
+    public void tearDown() {
+        Imcms.removeUser();
+    }
 
     @Test
     public void hasUserEditAccess_When_DocumentNotExist_Expect_False() {
