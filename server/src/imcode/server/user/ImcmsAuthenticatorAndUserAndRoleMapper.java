@@ -588,6 +588,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
             updateUserRoles(user);
             addPhoneNumbers(user);
+            updateUserProperties(user);
+
         } catch (IntegrityConstraintViolationException e) {
             throw new UserAlreadyExistsException(e);
         } catch (DatabaseException e) {
