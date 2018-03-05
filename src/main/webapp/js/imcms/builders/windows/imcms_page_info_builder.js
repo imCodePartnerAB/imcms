@@ -136,7 +136,13 @@ Imcms.define("imcms-page-info-builder",
                 style: "display: none;"
             });
 
-            return [$saveAndPublishBtn, $cancelBtn, $saveBtn];
+            var buttons = [$cancelBtn, $saveBtn];
+
+            if (imcms.isAdmin) {
+                buttons.unshift($saveAndPublishBtn);
+            }
+
+            return buttons;
         }
 
         function buildPageInfo(docId, onDocumentSavedCallback) {

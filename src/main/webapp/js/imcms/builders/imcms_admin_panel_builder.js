@@ -88,7 +88,7 @@ Imcms.define("imcms-admin-panel-builder",
                         content: texts.publish,
                         onClick: publishDoc,
                         modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers),
-                        style: editContentDisplayProperty
+                        style: adminDisplayProperty
                     }, {
                         name: 'page_info',
                         tag: "<li>",
