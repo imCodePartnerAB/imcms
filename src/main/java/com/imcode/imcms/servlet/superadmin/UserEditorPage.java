@@ -57,7 +57,7 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
     private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
-    private static final int MAXIMUM_PASSWORD_LENGTH = 15;
+    private static final int MAXIMUM_PASSWORD_LENGTH = 128;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
