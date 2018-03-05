@@ -42,7 +42,8 @@ Imcms.define("imcms-admin-panel-builder",
                 var attributes = {
                     html: buttonData.content,
                     href: buttonData.href,
-                    click: buttonData.onClick
+                    click: buttonData.onClick,
+                    style: [buttonData.style]
                 };
 
                 if (opts && opts.active === buttonData.name) {
@@ -51,6 +52,10 @@ Imcms.define("imcms-admin-panel-builder",
 
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
             }
+
+            var editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
+            var editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
+            var adminDisplayProperty = imcms.isAdmin ? "" : "display:none";
 
             var versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"],
                 publishVersionButtonModifiers = imcms.isVersioningAllowed && imcms.document.hasNewerVersion
@@ -61,43 +66,50 @@ Imcms.define("imcms-admin-panel-builder",
                         tag: '<a>',
                         href: imcms.contextPath + '/' + imcms.document.id,
                         content: texts.public,
-                        modifiers: ["public"]
+                        modifiers: ["public"],
+                        style: editContentDisplayProperty
                     }, {
                         name: 'edit',
                         tag: '<a>',
                         href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id,
                         content: texts.edit,
-                        modifiers: ["edit"]
+                        modifiers: ["edit"],
+                        style: editContentDisplayProperty
                     }, {
                         name: 'preview',
                         tag: "<a>",
                         href: imcms.contextPath + '/api/viewDoc/' + imcms.document.id + "?working-preview=true",
                         content: texts.preview,
-                        modifiers: ["preview"].concat(versionedContentModifiers)
+                        modifiers: ["preview"].concat(versionedContentModifiers),
+                        style: editContentDisplayProperty
                     }, {
                         name: 'publish_offline',
                         tag: "<li>",
                         content: texts.publish,
                         onClick: publishDoc,
-                        modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers)
+                        modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers),
+                        style: editContentDisplayProperty
                     }, {
                         name: 'page_info',
                         tag: "<li>",
                         content: texts.pageInfo,
                         onClick: showPageInfo,
-                        modifiers: ["page-info"]
+                        modifiers: ["page-info"],
+                        style: editDocInfoDisplayProperty
                     }, {
                         name: 'document',
                         tag: "<li>",
                         content: texts.document,
                         onClick: initDocumentEditor,
-                        modifiers: ["document"]
+                        modifiers: ["document"],
+                        style: adminDisplayProperty
                     }, {
                         name: 'admin',
                         tag: "<a>",
                         href: imcms.contextPath + "/servlet/AdminManager",
                         content: texts.admin,
-                        modifiers: ["admin"]
+                        modifiers: ["admin"],
+                        style: adminDisplayProperty
                     }, {
                         name: 'logout',
                         tag: "<a>",
