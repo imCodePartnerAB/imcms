@@ -12,6 +12,6 @@
 </script>
 
 <c:if test="${isAdmin}">
-    <script src="${contextPath}/js/imcms_new/imcms_main.js" data-name="imcms"
-            data-main="${contextPath}/js/imcms_new/imcms_start.js"></script>
+    <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
+            data-main="${contextPath}/js/imcms/imcms_start.js"></script>
 </c:if>

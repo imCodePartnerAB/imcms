@@ -32,7 +32,7 @@
         imcms: Imcms // default module
     };
     Imcms.config = {
-        basePath: Imcms.contextPath + "/js/imcms_new",
+        basePath: Imcms.contextPath + "/js/imcms",
         dependencies: {
             "jquery": {
                 path: "//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js",

@@ -22,8 +22,8 @@
     <script>
         <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
     </script>
-    <script src="${contextPath}/js/imcms_new/imcms_main.js" data-name="imcms"
-            data-main="${contextPath}/js/imcms_new/edit_starters/imcms_doc_info_edit_start.js"></script>
+    <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
+            data-main="${contextPath}/js/imcms/edit_starters/imcms_doc_info_edit_start.js"></script>
 </head>
 <body>
 <input type="hidden" id="return-url" value="${returnUrl}">
