@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import static java.util.Optional.ofNullable;
+
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -74,14 +76,22 @@ public class ImageDTO extends ImageData {
         this.loopEntryRef = (from.loopEntryRef == null) ? null : new LoopEntryRefDTO(from.loopEntryRef);
         this.langCode = from.langCode;
         this.inText = from.inText;
-        this.name = from.name;
-        this.path = from.path;
-        this.linkUrl = from.linkUrl;
-        this.generatedFilePath = from.generatedFilePath;
-        this.generatedFilename = from.generatedFilename;
-        this.alternateText = from.alternateText;
+        this.name = ofNullable(from.name).orElse("");
+        this.path = ofNullable(from.path).orElse("");
+        this.linkUrl = ofNullable(from.linkUrl).orElse("");
+        this.generatedFilePath = ofNullable(from.generatedFilePath).orElse("");
+        this.generatedFilename = ofNullable(from.generatedFilename).orElse("");
+        this.alternateText = ofNullable(from.alternateText).orElse("");
         this.format = from.format;
         this.width = from.width;
         this.height = from.height;
+        this.border = from.border;
+        this.align = ofNullable(from.align).orElse("");
+        this.lowResolutionUrl = ofNullable(from.lowResolutionUrl).orElse("");
+        this.verticalSpace = from.verticalSpace;
+        this.horizontalSpace = from.horizontalSpace;
+        this.target = ofNullable(from.target).orElse("");
+        this.type = from.type;
+        this.rotateAngle = from.rotateAngle;
     }
 }
