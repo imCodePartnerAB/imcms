@@ -5,13 +5,14 @@
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 <%--@elvariable id="isAdmin" type="boolean"--%>
+<%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 
 <link rel="stylesheet" href="${contextPath}/css_new/imcms-imports_files.css">
 <script>
     <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
 </script>
 
-<c:if test="${isAdmin}">
+<c:if test="${isAdmin or editOptions.permission ne 'VIEW'}">
     <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
             data-main="${contextPath}/js/imcms/imcms_start.js"></script>
 </c:if>

@@ -41,11 +41,6 @@ public class AdminDoc extends HttpServlet {
             return;
         }
 
-        if (!user.canEdit(document) || user.isDefaultUser()) {
-            req.getRequestDispatcher("/login").forward(req, res);
-            return;
-        }
-
         req.setAttribute("isEditMode", "true");
         final String newPath = "/api/viewDoc/" + metaId;
         req.getRequestDispatcher(newPath).forward(req, res);

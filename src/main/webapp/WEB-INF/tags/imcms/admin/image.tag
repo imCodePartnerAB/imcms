@@ -16,6 +16,7 @@
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.model.LoopEntryRef"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
+<%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 
 <c:if test="${empty index}">
     <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
@@ -54,17 +55,22 @@
     ${post}
 </c:set>
 
-<c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}" data-lang-code="${language}"
-         data-index="${no}"${empty loopEntryRef
-            ? '' : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')
-            .concat(loopEntryRef.loopEntryIndex).concat('"')}>
-        <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
-        <div class="imcms-editor-area__control-wrap">
-            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                <div class="imcms-editor-area__control-title">Image Editor</div>
+<c:choose>
+    <c:when test="${isEditMode && editOptions.editImage}">
+        <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"
+             data-lang-code="${language}"
+             data-index="${no}"${empty loopEntryRef
+                ? '' : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')
+                .concat(loopEntryRef.loopEntryIndex).concat('"')}>
+            <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
+            <div class="imcms-editor-area__control-wrap">
+                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
+                    <div class="imcms-editor-area__control-title">Image Editor</div>
+                </div>
             </div>
         </div>
-    </div>
-</c:if>
-<c:if test="${not isEditMode}">${imageContent}</c:if>
+    </c:when>
+    <c:otherwise>
+        ${imageContent}
+    </c:otherwise>
+</c:choose>

@@ -8,6 +8,13 @@
         isEditMode: ${isEditMode or false},
         isPreviewMode: ${isPreviewMode or false},
         isVersioningAllowed: ${isVersioningAllowed or false},
+        isAdmin: ${isAdmin}, //todo: superadmin only?
+        editOptions: {
+            isEditDocInfo: ${editOptions.editDocInfo or false},
+            isEditContent: ${
+                    editOptions.editText or editOptions.editMenu or editOptions.editImage or editOptions.editLoop
+            }
+        },
         document: {
             id: ${empty currentDocument.id ? 'null' : currentDocument.id},
             type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
@@ -181,3 +188,5 @@
     <%--@elvariable id="version" type="java.lang.String"--%>
     <%--@elvariable id="imagesPath" type="java.lang.String"--%>
     <%--@elvariable id="userLanguage" type="java.lang.String"--%>
+    <%--@elvariable id="isAdmin" type="boolean"--%>
+    <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>

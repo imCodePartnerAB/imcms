@@ -26,8 +26,8 @@ ${"-->"}
 
 <c:set var="content" value="${textField.text}"/>
 
-<c:if test="${not isEditMode and mode ne 'write'}">${pre}${content}${post}</c:if>
-<c:if test="${isEditMode and mode ne 'read'}">
+<c:if test="${(not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
+<c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
 
     <c:set var="loopData">
         <c:if test="${loopEntryRef ne null}"> data-loop-entry-ref.loop-entry-index="${loopEntryRef.loopEntryIndex}"
@@ -73,3 +73,4 @@ ${"-->"}
 <%--@elvariable id="loopEntryRef" type="com.imcode.imcms.model.LoopEntryRef"--%>
 <%--@elvariable id="textField" type="com.imcode.imcms.model.Text"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
+<%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
