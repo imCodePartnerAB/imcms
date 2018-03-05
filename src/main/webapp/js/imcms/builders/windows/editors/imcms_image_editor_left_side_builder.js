@@ -60,46 +60,42 @@ Imcms.define(
             ]);
         }
 
-        function changeHeight(step, imageDataContainers) {
-            imageDataContainers.$image.height(imageDataContainers.$image.height() + step);
-            // imageDataContainers.$shadow.height(imageDataContainers.$shadow.height() + step);
-            imageDataContainers.$cropImg.height(imageDataContainers.$cropImg.height() + step);
+        function setWidth(newImageWidth, newCropImageWidth, newShadowWidth, imageDataContainers) {
+            newShadowWidth = Math.max(newShadowWidth, imageDataContainers.$editableImageArea.width());
+
+            imageDataContainers.$image.width(newImageWidth);
+            imageDataContainers.$cropImg.width(newCropImageWidth);
+            imageDataContainers.$shadow.width(newShadowWidth);
         }
 
-        function incrementHeight() {
-            changeHeight(1, this);
-        }
+        function setHeight(newImageHeight, newCropImageHeight, newShadowHeight, imageDataContainers) {
+            newShadowHeight = Math.max(newShadowHeight, imageDataContainers.$editableImageArea.height());
 
-        function decrementHeight() {
-            changeHeight(-1, this)
-        }
-
-        function changeWidth(step, imageDataContainers) {
-            imageDataContainers.$image.width(imageDataContainers.$image.width() + step);
-            // imageDataContainers.$shadow.width(imageDataContainers.$shadow.width() + step);
-            imageDataContainers.$cropImg.width(imageDataContainers.$cropImg.width() + step);
-        }
-
-        function incrementWidth() {
-            changeWidth(1, this);
-        }
-
-        function decrementWidth() {
-            changeWidth(-1, this)
+            imageDataContainers.$image.height(newImageHeight);
+            imageDataContainers.$cropImg.height(newCropImageHeight);
+            imageDataContainers.$shadow.height(newShadowHeight);
         }
 
         function buildEditSizeControls(imageDataContainers) {
             var $title = components.texts.titleText("<div>", texts.displaySize);
 
+            function onValidHeightChange() {
+                var height = +$(this).val();
+
+                if (isNaN(height)) {
+                    return;
+                }
+
+                setHeight(height, height, height + 4, imageDataContainers);
+            }
+
             imageDataContainers.$heightControlInput = components.texts.textNumber("<div>", {
                 name: "height",
                 placeholder: texts.height,
                 text: "H",
-                error: "Error"
+                error: "Error",
+                onValidChange: onValidHeightChange
             });
-
-            imageDataContainers.$heightControlInput.find(".imcms-button--increment").click(incrementHeight.bind(imageDataContainers));
-            imageDataContainers.$heightControlInput.find(".imcms-button--decrement").click(decrementHeight.bind(imageDataContainers));
 
             var $proportionsBtn = components.buttons.proportionsButton({
                 "data-state": "active",
@@ -108,15 +104,23 @@ Imcms.define(
                 }
             });
 
+            function onValidWidthChange() {
+                var width = +$(this).val();
+
+                if (isNaN(width)) {
+                    return;
+                }
+
+                setWidth(width, width, width + 4, imageDataContainers);
+            }
+
             imageDataContainers.$widthControlInput = components.texts.textNumber("<div>", {
                 name: "width",
                 placeholder: texts.width,
                 text: "W",
-                error: "Error"
+                error: "Error",
+                onValidChange: onValidWidthChange
             });
-
-            imageDataContainers.$widthControlInput.find(".imcms-button--increment").click(incrementWidth.bind(imageDataContainers));
-            imageDataContainers.$widthControlInput.find(".imcms-button--decrement").click(decrementWidth.bind(imageDataContainers));
 
             return new BEM({
                 block: "imcms-edit-size",
@@ -258,15 +262,15 @@ Imcms.define(
 
         return {
             build: function (opts) {
-                var $editableImageArea = buildEditableImageArea(opts.imageDataContainers);
+                opts.imageDataContainers.$editableImageArea = buildEditableImageArea(opts.imageDataContainers);
                 var $previewImageArea = buildPreviewImageArea(opts.imageDataContainers);
 
                 opts.imageDataContainers.$bottomPanel = buildBottomPanel(
-                    opts.toggleImgArea, opts.imageDataContainers, $editableImageArea
+                    opts.toggleImgArea, opts.imageDataContainers, opts.imageDataContainers.$editableImageArea
                 );
 
                 return $("<div>").append(
-                    $editableImageArea,
+                    opts.imageDataContainers.$editableImageArea,
                     $previewImageArea,
                     opts.imageDataContainers.$bottomPanel
                 );

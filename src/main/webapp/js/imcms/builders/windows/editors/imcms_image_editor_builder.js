@@ -145,14 +145,12 @@ Imcms.define("imcms-image-editor-builder",
             function fillBodyHeadData(imageData) {
                 imageDataContainers.$imageTitle.text(imageData.name + "." + imageData.format);
                 imageDataContainers.$imgUrl.text(imageData.path);
-                imageDataContainers.$heightValue.text(imageData.height);
-                imageDataContainers.$widthValue.text(imageData.width);
             }
 
             function fillLeftSideData(imageData) {
 
-                imageDataContainers.$widthControlInput.find("input").val(imageData.width);
-                imageDataContainers.$heightControlInput.find("input").val(imageData.height);
+                imageDataContainers.$widthControlInput.getInput().val(imageData.width);
+                imageDataContainers.$heightControlInput.getInput().val(imageData.height);
 
                 imageDataContainers.$shadow.css({
                     width: "100%",
@@ -182,16 +180,31 @@ Imcms.define("imcms-image-editor-builder",
                     var imageWidth = imageDataContainers.$image.width();
                     var imageHeight = imageDataContainers.$image.height();
 
-                    if (imageDataContainers.$shadow.height() < imageHeight) {
-                        imageDataContainers.$shadow.height(imageHeight);
+                    imageDataContainers.$heightValue.text(imageHeight);
+                    imageDataContainers.$widthValue.text(imageWidth);
+
+                    if (imageData.width && imageData.height) {
+                        imageDataContainers.$image.width(imageData.width);
+                        imageDataContainers.$image.height(imageData.height);
+
+                        imageWidth = imageData.width;
+                        imageHeight = imageData.height;
                     }
 
-                    if (imageDataContainers.$shadow.width() < imageWidth) {
-                        imageDataContainers.$shadow.width(imageWidth);
+                    imageDataContainers.$editableImageArea.width(imageDataContainers.$editableImageArea.width());  // removes float values
+                    imageDataContainers.$editableImageArea.height(imageDataContainers.$editableImageArea.height());// removes float values
+
+                    var maxShadowHeight = imageHeight + angleBorderSize * 2;
+                    var maxShadowWidth = imageWidth + angleBorderSize * 2;
+
+                    if (imageDataContainers.$shadow.height() < maxShadowHeight) {
+                        imageDataContainers.$shadow.height(maxShadowHeight);
                     }
 
-                    imageDataContainers.$image.width(imageWidth - angleBorderSize * 2);
-                    imageDataContainers.$image.height(imageHeight - angleBorderSize * 2);
+                    if (imageDataContainers.$shadow.width() < maxShadowWidth) {
+                        imageDataContainers.$shadow.width(maxShadowWidth);
+                    }
+
                     imageDataContainers.$image.css({
                         left: angleBorderSize,
                         top: angleBorderSize
@@ -234,6 +247,7 @@ Imcms.define("imcms-image-editor-builder",
             }
 
             imageEditorFactory.updateImageData($tag, imageData);
+
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
 

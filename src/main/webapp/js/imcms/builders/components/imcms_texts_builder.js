@@ -16,17 +16,21 @@ Imcms.define("imcms-texts-builder",
             }
         }
 
-        function validation() {
+        function validation(onValidChange) {
             var $this = $(this),
                 value = $this.val()
             ;
 
+            if (value.length > 10) {
+                value = value.substring(0, 10);
+                $this.val(value);
+            }
+
             if (value.match(/[^0-9,-]/g)) {
                 $this.val(value.replace(/[^0-9,-]/g, ''));
             }
-            if (value.length > 10) {
-                $this.val(value.substring(0, 10))
-            }
+
+            onValidChange && onValidChange.call(this);
         }
 
         function incrementNumberBoxValue() {
@@ -41,7 +45,8 @@ Imcms.define("imcms-texts-builder",
             var numberBoxInput = $(this).closest(".imcms-number-box").find(".imcms-number-box__input"),
                 value = (parseInt(numberBoxInput.val()) || 0) + delta
             ;
-            return numberBoxInput.val(value);
+            numberBoxInput.val(value);
+            numberBoxInput.change();
         }
 
         function deactivateNumberBox(e) {
@@ -157,7 +162,9 @@ Imcms.define("imcms-texts-builder",
                         name: attributes.name,
                         placeholder: attributes.placeholder,
                         click: activateNumberBox
-                    }).on('change keyup input click', validation),
+                    }).on('change keyup input click', function () {
+                        validation.call(this, attributes.onValidChange);
+                    }),
 
                     $buttonIncrement = buttons.incrementButton({click: incrementNumberBoxValue}),
                     $buttonDecrement = buttons.decrementButton({click: decrementNumberBoxValue}),
@@ -170,11 +177,17 @@ Imcms.define("imcms-texts-builder",
                     $label = primitives.imcmsLabel(id, attributes.text),
                     $error = numberBEM.buildElement("error-msg", "<div>", {text: attributes.error})
                 ;
-                return numberBEM.buildBlock("<div>", [
+                var block = numberBEM.buildBlock("<div>", [
                     {"label": $label},
                     {"number-box": $numberInputBox},
                     {"error-msg": $error}
                 ], (attributes["class"] ? {"class": attributes["class"]} : {}));
+
+                block.getInput = function () {
+                    return $input;
+                };
+
+                return block;
             },
             textNumberField: function (tag, attributes) {
                 return this.textNumber.apply(this, arguments).addClass("imcms-field");
