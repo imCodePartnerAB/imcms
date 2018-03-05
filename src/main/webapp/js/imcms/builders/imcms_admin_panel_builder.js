@@ -43,7 +43,7 @@ Imcms.define("imcms-admin-panel-builder",
                     html: buttonData.content,
                     href: buttonData.href,
                     click: buttonData.onClick,
-                    style: [buttonData.style]
+                    style: buttonData.style
                 };
 
                 if (opts && opts.active === buttonData.name) {
