@@ -128,7 +128,7 @@ public class ViewDocumentController {
         mav.addObject("userLanguage", user.getLanguage());
         mav.addObject("currentDocument", textDocument);
         mav.addObject("language", language);
-        mav.addObject("isAdmin", user.isAdmin());
+        mav.addObject("isAdmin", user.isSuperAdmin());
         mav.addObject("isEditMode", isEditMode);
         mav.addObject("contextPath", request.getContextPath());
         mav.addObject("imagesPath", imagesPath);
