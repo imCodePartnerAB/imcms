@@ -113,8 +113,8 @@ Imcms.define("imcms-image-editor-builder",
                 }
 
                 imageDataContainers.$previewImgContainer.css({
-                        "margin-left": 0,
-                        "margin-top": 0,
+                    "margin-left": 0,
+                    "margin-top": 0,
                     "left": 2 + "px",
                     "top": 2 + "px"
                 });
