@@ -116,18 +116,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         }
     }
 
-    private Integer getTextId(Text text, Version version, LanguageJPA language) {
-        final Integer index = text.getIndex();
-        final LoopEntryRef loopEntryRef = text.getLoopEntryRef();
-        final TextJPA textJPA = getText(index, version, language, loopEntryRef);
-
-        if (textJPA == null) {
-            return null;
-        }
-
-        return textJPA.getId();
-    }
-
     @Override
     protected TextJPA removeId(TextJPA entity, Version version) {
         return new TextJPA(entity, version);
