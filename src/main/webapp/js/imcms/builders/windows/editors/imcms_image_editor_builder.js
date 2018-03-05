@@ -110,15 +110,14 @@ Imcms.define("imcms-image-editor-builder",
                     // change size of preview image container
                     imageDataContainers.$previewImgContainer.width($tag.width());
                     imageDataContainers.$previewImgContainer.height($tag.height());
+                }
 
-                    // set properties of preview image container to zero
-                    imageDataContainers.$previewImgContainer.css({
+                imageDataContainers.$previewImgContainer.css({
                         "margin-left": 0,
                         "margin-top": 0,
-                        "left": 0,
-                        "top": 0
-                    });
-                }
+                    "left": 2 + "px",
+                    "top": 2 + "px"
+                });
             } else {
                 $previewImageArea.css({
                     "z-index": "10",
