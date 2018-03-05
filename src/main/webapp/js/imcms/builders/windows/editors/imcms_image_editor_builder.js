@@ -233,6 +233,7 @@ Imcms.define("imcms-image-editor-builder",
                 $tag.attr("data-index", imageData.index);
             }
 
+            imageEditorFactory.updateImageData($tag, imageData);
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
 
@@ -265,8 +266,6 @@ Imcms.define("imcms-image-editor-builder",
                 imageDataContainers.$langFlags.showLangFlagsAndCheckbox();
                 imageDataContainers.$langFlags.setActive(imcms.language.code);
             }
-
-            imageEditorFactory.updateImageData($tag, imageData);
 
             imageRestApi.read(opts).done(fillData);
         }
