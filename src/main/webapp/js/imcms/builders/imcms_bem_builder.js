@@ -61,9 +61,9 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      *     var bemClass = BEM.buildClass("one", "two", "three"); // = "one__two--three"
      * </code></pre>
      *
-     * @param block {string}
-     * @param element {string}
-     * @param modifier {string}
+     * @param block {string?}
+     * @param element {string?}
+     * @param modifier {string?}
      * @returns {string} BEM-styled class
      */
     BemBuilder.buildClass = function (block, element, modifier) {
