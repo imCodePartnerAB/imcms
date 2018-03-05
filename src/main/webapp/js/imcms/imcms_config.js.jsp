@@ -8,7 +8,7 @@
         isEditMode: ${isEditMode or false},
         isPreviewMode: ${isPreviewMode or false},
         isVersioningAllowed: ${isVersioningAllowed or false},
-        isAdmin: ${isAdmin}, //todo: superadmin only?
+        isAdmin: ${isAdmin or false},
         editOptions: {
             isEditDocInfo: ${editOptions.editDocInfo or false},
             isEditContent: ${
