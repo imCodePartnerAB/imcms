@@ -11,6 +11,7 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.security.AccessType;
+import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +76,12 @@ public class DefaultAccessService implements AccessService {
     public RestrictedPermission getEditPermission(int userId, int documentId) {
         final RestrictedPermissionDTO restrictedPermissionDTO = new RestrictedPermissionDTO();
         restrictedPermissionDTO.setPermission(Permission.VIEW); // by default
+
+        if (Imcms.getUser().isSuperAdmin()) {
+            setRestrictedPermissionDTO(restrictedPermissionDTO, Permission.EDIT,
+                    true, true, true, true, true);
+            return restrictedPermissionDTO;
+        }
 
         final List<DocumentRoles> documentRolesList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
                 userId, documentId
