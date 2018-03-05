@@ -1,9 +1,7 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
-import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.AccessService;
-import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.DocumentRoles;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -29,22 +27,14 @@ import java.util.stream.Collectors;
 @Transactional
 public class DefaultAccessService implements AccessService {
 
-    private final UserService userService;
     private final DocumentRolesRepository documentRolesRepository;
 
-    DefaultAccessService(UserService userService, DocumentRolesRepository documentRolesRepository) {
-        this.userService = userService;
+    DefaultAccessService(DocumentRolesRepository documentRolesRepository) {
         this.documentRolesRepository = documentRolesRepository;
     }
 
     @Override
     public boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType) {
-        try {
-            userService.getUser(userId);
-        } catch (UserNotExistsException e) {
-            return false;
-        }
-
         final List<DocumentRoles> documentRolesList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
                 userId, documentId
         );
