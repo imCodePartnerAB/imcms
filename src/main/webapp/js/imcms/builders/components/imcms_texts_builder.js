@@ -162,7 +162,14 @@ Imcms.define("imcms-texts-builder",
                         name: attributes.name,
                         placeholder: attributes.placeholder,
                         click: activateNumberBox
-                    }).on('change keyup input click', function () {
+                    }).on('change keyup input click', function (e) {
+                        if (e.key === "ArrowDown") {
+                            decrementNumberBoxValue.call(this);
+
+                        } else if (e.key === "ArrowUp") {
+                            incrementNumberBoxValue.call(this);
+                        }
+
                         validation.call(this, attributes.onValidChange);
                     }),
 
