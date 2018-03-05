@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,86 +71,89 @@ public class DefaultAccessService implements AccessService {
         return true;
     }
 
-    // TODO: need for refactoring
     @Override
     public RestrictedPermission getEditPermission(int userId, int documentId) {
         final RestrictedPermissionDTO restrictedPermissionDTO = new RestrictedPermissionDTO();
+        restrictedPermissionDTO.setPermission(Permission.VIEW); // by default
 
         final List<DocumentRoles> documentRolesList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
                 userId, documentId
         );
 
+        // if no common roles for document and user then return VIEW permission
         if (documentRolesList.isEmpty()) {
-            restrictedPermissionDTO.setPermission(Permission.VIEW);
-
             return restrictedPermissionDTO;
         }
 
-        final Set<Permission> permissions = documentRolesList.stream()
+        final Set<Permission> userPermissions = documentRolesList.stream()
                 .map(DocumentRoles::getPermission)
                 .collect(Collectors.toSet());
 
-        if (permissions.contains(Permission.EDIT)) {
-            restrictedPermissionDTO.setPermission(Permission.EDIT);
-            restrictedPermissionDTO.setEditText(true);
-            restrictedPermissionDTO.setEditMenu(true);
-            restrictedPermissionDTO.setEditImage(true);
-            restrictedPermissionDTO.setEditLoop(true);
-            restrictedPermissionDTO.setEditDocInfo(true);
+        // if EDIT permission is present then return
+        if (userPermissions.contains(Permission.EDIT)) {
+            setRestrictedPermissionDTO(restrictedPermissionDTO, Permission.EDIT,
+                    true, true, true, true, true);
 
             return restrictedPermissionDTO;
         }
 
-        final boolean isExistRestricted1 = permissions.contains(Permission.RESTRICTED_1);
-        final boolean isExistRestricted2 = permissions.contains(Permission.RESTRICTED_2);
-
-        if (!isExistRestricted1 && !isExistRestricted2) {
-            restrictedPermissionDTO.setPermission(Permission.VIEW);
-
-            return restrictedPermissionDTO;
-        }
-
-        // know that restricted1 or/and restricted 2 exist
-
-        final Set<RestrictedPermissionJPA> restrictedPermissions = documentRolesList.get(0)
+        final Set<RestrictedPermissionJPA> documentRestrictedPermissions = documentRolesList.get(0)
                 .getDocument()
                 .getRestrictedPermissions();
 
-        if (restrictedPermissions.isEmpty()) {
-            restrictedPermissionDTO.setPermission(Permission.VIEW);
-
-            return restrictedPermissionDTO;
-        }
-
-        final Set<Permission> documentPermissions = restrictedPermissions.stream()
+        final Set<Permission> documentPermissions = documentRestrictedPermissions.stream()
                 .map(RestrictedPermissionJPA::getPermission)
                 .collect(Collectors.toSet());
 
-        if (restrictedPermissions.size() == 2 && isExistRestricted1 && isExistRestricted2) {
-            restrictedPermissionDTO.setPermission(Permission.RESTRICTED_1);
+        // intersection of permissions (RESTRICTED_1 AND RESTRICTED_2)
+        documentPermissions.retainAll(userPermissions);
 
-            restrictedPermissions.forEach(permission -> {
-                restrictedPermissionDTO.setEditText(restrictedPermissionDTO.isEditText() || permission.isEditText());
-                restrictedPermissionDTO.setEditMenu(restrictedPermissionDTO.isEditMenu() || permission.isEditMenu());
-                restrictedPermissionDTO.setEditImage(restrictedPermissionDTO.isEditImage() || permission.isEditImage());
-                restrictedPermissionDTO.setEditLoop(restrictedPermissionDTO.isEditLoop() || permission.isEditLoop());
-                restrictedPermissionDTO.setEditDocInfo(
-                        restrictedPermissionDTO.isEditDocInfo() || permission.isEditDocInfo()
-                );
-            });
+        if (documentPermissions.size() == 2) { // if both exist then return union of them
 
-            return restrictedPermissionDTO;
+            final Iterator<RestrictedPermissionJPA> restrictedPermissionIterator =
+                    documentRestrictedPermissions.iterator();
+
+            final RestrictedPermissionJPA firstRestrictedPermission = restrictedPermissionIterator.next();
+            final RestrictedPermissionJPA secondRestrictedPermission = restrictedPermissionIterator.next();
+
+            setRestrictedPermissionDTO(restrictedPermissionDTO, Permission.RESTRICTED_1,
+                    firstRestrictedPermission.isEditText() || secondRestrictedPermission.isEditText(),
+                    firstRestrictedPermission.isEditMenu() || secondRestrictedPermission.isEditMenu(),
+                    firstRestrictedPermission.isEditImage() || secondRestrictedPermission.isEditImage(),
+                    firstRestrictedPermission.isEditLoop() || secondRestrictedPermission.isEditLoop(),
+                    firstRestrictedPermission.isEditDocInfo() || secondRestrictedPermission.isEditDocInfo()
+            );
+
+        } else if (documentPermissions.size() == 1) { // if one of them then return existing
+
+            final Permission restrictedPermission = documentPermissions.iterator().next();
+
+            documentRestrictedPermissions.stream()
+                    .filter(restrictedPermissionJPA -> restrictedPermissionJPA.getPermission()
+                            .equals(restrictedPermission))
+                    .findFirst()
+                    .ifPresent(restrictedPermissionJPA -> setRestrictedPermissionDTO(
+                            restrictedPermissionDTO,
+                            restrictedPermissionJPA.getPermission(),
+                            restrictedPermissionJPA.isEditText(), restrictedPermissionJPA.isEditMenu(),
+                            restrictedPermissionJPA.isEditImage(), restrictedPermissionJPA.isEditLoop(),
+                            restrictedPermissionJPA.isEditDocInfo())
+                    );
         }
 
-        documentPermissions.retainAll(permissions);
+        return restrictedPermissionDTO;
+    }
 
-        final Permission restrictedPermission = documentPermissions.iterator().next();
-        final RestrictedPermissionJPA restrictedPermissionJPA1 = restrictedPermissions.stream()
-                .filter(restrictedPermissionJPA -> restrictedPermissionJPA.getPermission().equals(restrictedPermission))
-                .findFirst()
-                .get();
+    private void setRestrictedPermissionDTO(RestrictedPermissionDTO restrictedPermission, Permission permission,
+                                            boolean isEditText, boolean isEditMenu, boolean isEditImage,
+                                            boolean isEditLoop, boolean isEditDocInfo) {
 
-        return new RestrictedPermissionDTO(restrictedPermissionJPA1);
+        restrictedPermission.setPermission(permission);
+        restrictedPermission.setEditText(isEditText);
+        restrictedPermission.setEditMenu(isEditMenu);
+        restrictedPermission.setEditImage(isEditImage);
+        restrictedPermission.setEditLoop(isEditLoop);
+        restrictedPermission.setEditDocInfo(isEditDocInfo);
     }
 
     private boolean hasRestrictedEditAccess(AccessType accessType, Meta meta, Permission permission) {

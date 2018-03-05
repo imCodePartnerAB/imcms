@@ -420,7 +420,11 @@ public class DefaultAccessServiceTest {
     public void getEditPermission_When_UserAndDocumentHaveOnlyViewPermission_Expect_ViewPermissionReturned() {
         final Permission viewPermission = Permission.VIEW;
 
+        final Meta document = new Meta();
+        document.setRestrictedPermissions(Collections.emptySet());
+
         final DocumentRoles firstDocumentRoles = new DocumentRoles();
+        firstDocumentRoles.setDocument(document);
         firstDocumentRoles.setPermission(viewPermission);
 
         final List<DocumentRoles> documentRolesList = Collections.singletonList(firstDocumentRoles);
