@@ -16,6 +16,7 @@
 <%--@elvariable id="loopService" type="com.imcode.imcms.domain.service.LoopService"--%>
 <%--@elvariable id="isEditMode" type="boolean"--%>
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
+<%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 <c:set var="loop" value="${isEditMode || isPreviewMode
@@ -30,14 +31,18 @@
 <c:remove var="loop"/>
 <c:remove var="loopIndex"/>
 
-<c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}" data-index="${index}">
-        <div class="imcms-editor-area__content imcms-editor-content">${loopContent}</div>
-        <div class="imcms-editor-area__control-wrap">
-            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
-                <div class="imcms-editor-area__control-title">Loop Editor</div>
+<c:choose>
+    <c:when test="${isEditMode && editOptions.editLoop}">
+        <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}" data-index="${index}">
+            <div class="imcms-editor-area__content imcms-editor-content">${loopContent}</div>
+            <div class="imcms-editor-area__control-wrap">
+                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
+                    <div class="imcms-editor-area__control-title">Loop Editor</div>
+                </div>
             </div>
         </div>
-    </div>
-</c:if>
-<c:if test="${not isEditMode}">${loopContent}</c:if>
+    </c:when>
+    <c:otherwise>
+        ${loopContent}
+    </c:otherwise>
+</c:choose>

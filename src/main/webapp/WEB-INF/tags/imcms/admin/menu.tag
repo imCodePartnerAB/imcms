@@ -15,6 +15,7 @@
 <%--@elvariable id="targetDocId" type="java.lang.Integer"--%>
 <%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.MenuService"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
+<%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 
 <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
@@ -25,16 +26,20 @@
 <c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
 <c:remove var="menuItems"/>
 
-<c:if test="${isEditMode}">
-    <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}" data-menu-index="${index}">
-        <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
-             data-menu-index="${index}">${menuContent}</div>
-            <%-- attributes used as unique identifier while reload --%>
-        <div class="imcms-editor-area__control-wrap">
-            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
-                <div class="imcms-editor-area__control-title">Menu Editor</div>
+<c:choose>
+    <c:when test="${isEditMode && editOptions.editMenu}">
+        <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}" data-menu-index="${index}">
+            <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
+                 data-menu-index="${index}">${menuContent}</div>
+                <%-- attributes used as unique identifier while reload --%>
+            <div class="imcms-editor-area__control-wrap">
+                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
+                    <div class="imcms-editor-area__control-title">Menu Editor</div>
+                </div>
             </div>
         </div>
-    </div>
-</c:if>
-<c:if test="${not isEditMode}">${menuContent}</c:if>
+    </c:when>
+    <c:otherwise>
+        ${menuContent}
+    </c:otherwise>
+</c:choose>
