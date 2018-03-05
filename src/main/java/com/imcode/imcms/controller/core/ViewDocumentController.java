@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.DocumentLanguageDisabledException;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -40,6 +41,7 @@ public class ViewDocumentController {
     private final DocumentMapper documentMapper;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
+    private final AccessService accessService;
     private final String imagesPath;
     private final String version;
     private final boolean isVersioningAllowed;
@@ -47,6 +49,7 @@ public class ViewDocumentController {
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
                            CommonContentService commonContentService,
+                           AccessService accessService,
                            @Value("${ImagePath}") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed) {
@@ -54,6 +57,7 @@ public class ViewDocumentController {
         this.documentMapper = documentMapper;
         this.versionService = versionService;
         this.commonContentService = commonContentService;
+        this.accessService = accessService;
         this.imagesPath = imagesPath;
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
@@ -132,6 +136,7 @@ public class ViewDocumentController {
         mav.addObject("isPreviewMode", isPreviewMode);
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
+        mav.addObject("editOptions", accessService.getEditPermission(user.getId(), docId));
 
         return mav;
     }
