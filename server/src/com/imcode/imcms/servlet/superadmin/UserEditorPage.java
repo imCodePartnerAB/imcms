@@ -64,7 +64,7 @@ public class UserEditorPage extends OkCancelPage {
     private UserDomainObject uneditedUser;
     private PhoneNumber currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
     private LocalizedMessage errorMessage;
-    private static final int MAXIMUM_PASSWORD_LENGTH = 15;
+    private static final int MAXIMUM_PASSWORD_LENGTH = 128;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
 
     public UserEditorPage(UserDomainObject user, DispatchCommand okDispatchCommand,
