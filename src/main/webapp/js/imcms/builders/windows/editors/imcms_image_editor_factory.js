@@ -23,6 +23,9 @@ Imcms.define(
                         "right-side": $rightSidePanel
                     }
                 }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
+            },
+            updateImageData: function ($tag, imageData) {
+                rightSideBuilder.updateImageData($tag, imageData);
             }
         }
     }

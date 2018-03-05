@@ -7,14 +7,19 @@ Imcms.define(
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events) {
 
         texts = texts.editors.image;
+        var $tag, imageData;
 
         return {
+            updateImageData: function ($newTag, newImageData) {
+                $tag = $newTag;
+                imageData = newImageData;
+            },
             build: function (opts) {
 
                 var fillData = opts.fillData;
-                var $tag = opts.$tag;
                 var imageWindowBuilder = opts.imageWindowBuilder;
-                var imageData = opts.imageData;
+                $tag = opts.$tag;
+                imageData = opts.imageData;
 
                 function buildSelectImageBtnContainer() {
                     var $selectImageBtn = components.buttons.neutralButton({

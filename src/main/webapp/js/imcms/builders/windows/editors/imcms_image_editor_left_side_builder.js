@@ -260,7 +260,10 @@ Imcms.define(
             build: function (opts) {
                 var $editableImageArea = buildEditableImageArea(opts.imageDataContainers);
                 var $previewImageArea = buildPreviewImageArea(opts.imageDataContainers);
-                opts.imageDataContainers.$bottomPanel = buildBottomPanel(opts.toggleImgArea, opts.imageDataContainers, $editableImageArea);
+
+                opts.imageDataContainers.$bottomPanel = buildBottomPanel(
+                    opts.toggleImgArea, opts.imageDataContainers, $editableImageArea
+                );
 
                 return $("<div>").append(
                     $editableImageArea,

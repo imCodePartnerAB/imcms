@@ -266,6 +266,8 @@ Imcms.define("imcms-image-editor-builder",
                 imageDataContainers.$langFlags.setActive(imcms.language.code);
             }
 
+            imageEditorFactory.updateImageData($tag, imageData);
+
             imageRestApi.read(opts).done(fillData);
         }
 
