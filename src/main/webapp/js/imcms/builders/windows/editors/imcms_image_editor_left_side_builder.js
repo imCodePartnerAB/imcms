@@ -60,24 +60,34 @@ Imcms.define(
             ]);
         }
 
-        function setCropArea(newImageWidth, oldImgWidth, imageDataContainers, param) {
-            /*if (param === "width") {
-                imageDataContainers.$cropArea.paramFunc = function (val) {
-                    return this.width(val);
-                };
-            }*/
+        function setCropAreaHeight(newImageHeight, oldImgHeight, imageDataContainers) {
+            var cropAreaHeight = imageDataContainers.$cropArea.height();
+            var cropAreaTop = imageDataContainers.$cropArea.position().top;
 
+            var newCropAreaHeight = (newImageHeight * cropAreaHeight) / oldImgHeight;
+            var delta = 0;
 
+            if ((newImageHeight + 2) < (cropAreaTop + newCropAreaHeight)) {
+                delta = cropAreaTop + newCropAreaHeight - newImageHeight - 2;
+            }
 
-            //var cropAreaWidth = imageDataContainers.$cropArea.paramFunc();
-
-            console.log("cropAreaWidth: ", cropAreaWidth);
-
+            if (newCropAreaHeight !== 0) {
+                imageDataContainers.$cropArea.height(newCropAreaHeight - delta);
+                imageDataContainers.angles.$bottomRight.css({"top": (cropAreaTop + newCropAreaHeight - delta - 18) + "px"});
+                imageDataContainers.angles.$bottomLeft.css({"top": (cropAreaTop + newCropAreaHeight - delta - 18) + "px"});
+            } else {
+                imageDataContainers.$cropArea.height(newImageHeight + 2);
+                imageDataContainers.$cropArea.css({"top": 2 + "px"});
+                imageDataContainers.$cropImg.css({"top": 0 + "px"});
+                imageDataContainers.angles.$topLeft.css({"top": 0 + "px"});
+                imageDataContainers.angles.$topRight.css({"top": 0 + "px"});
+                imageDataContainers.angles.$bottomLeft.css({"top": (newImageHeight - 16) + "px"});
+                imageDataContainers.angles.$bottomRight.css({"top": (newImageHeight - 16) + "px"});
+            }
+            events.trigger("update cropArea");
         }
 
         function setCropAreaWidth(newImageWidth, oldImgWidth, imageDataContainers) {
-            // imageDataContainers.angles - crop area angles
-
             var cropAreaWidth = imageDataContainers.$cropArea.width();
             var cropAreaLeft = imageDataContainers.$cropArea.offset().left;
 
@@ -90,8 +100,8 @@ Imcms.define(
 
             if (newCropAreaWidth !== 0) {
                 imageDataContainers.$cropArea.width(newCropAreaWidth - delta);
-                imageDataContainers.angles.$bottomRight.css({"left": cropAreaLeft + newCropAreaWidth - delta - 18 + "px"});
-                imageDataContainers.angles.$topRight.css({"left": cropAreaLeft + newCropAreaWidth - delta - 18 + "px"});
+                imageDataContainers.angles.$bottomRight.css({"left": (cropAreaLeft + newCropAreaWidth - delta - 18) + "px"});
+                imageDataContainers.angles.$topRight.css({"left": (cropAreaLeft + newCropAreaWidth - delta - 18) + "px"});
             } else {
                 imageDataContainers.$cropArea.width(newImageWidth + 2);
                 imageDataContainers.$cropArea.css({"left": 2 + "px"});
@@ -125,12 +135,14 @@ Imcms.define(
 
             function onValidHeightChange() {
                 var height = +$(this).val();
+                var previousHeight = imageDataContainers.$cropImg.height();
 
                 if (isNaN(height)) {
                     return;
                 }
 
                 setHeight(height, height, height + 4, imageDataContainers);
+                setCropAreaHeight(height, previousHeight, imageDataContainers);
             }
 
             imageDataContainers.$heightControlInput = components.texts.textNumber("<div>", {
@@ -158,7 +170,6 @@ Imcms.define(
 
                 setWidth(width, width, width + 4, imageDataContainers);
                 setCropAreaWidth(width, previousWidth, imageDataContainers);
-                setCropArea(width, previousWidth, imageDataContainers, "width");
             }
 
             imageDataContainers.$widthControlInput = components.texts.textNumber("<div>", {
