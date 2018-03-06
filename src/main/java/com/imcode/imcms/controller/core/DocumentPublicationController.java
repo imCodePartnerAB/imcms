@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.service.TypedDocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,9 +22,13 @@ import org.springframework.web.servlet.view.RedirectView;
 public class DocumentPublicationController {
 
     private final TypedDocumentService documentService;
+    private final boolean isVersioningAllowed;
 
-    public DocumentPublicationController(TypedDocumentService<Document> documentService) {
+    public DocumentPublicationController(TypedDocumentService<Document> documentService,
+                                         @Value("${document.versioning}") boolean isVersioningAllowed) {
+
         this.documentService = documentService;
+        this.isVersioningAllowed = isVersioningAllowed;
     }
 
     @CheckAccess
@@ -31,7 +36,10 @@ public class DocumentPublicationController {
     public RedirectView publishDocument(@PathVariable("docIdentifier") int docId,
                                         @RequestParam(value = "return", required = false) String returnUrl) {
 
-        documentService.publishDocument(docId, Imcms.getUser().getId());
+        if (isVersioningAllowed) {
+            documentService.publishDocument(docId, Imcms.getUser().getId());
+        }
+
         return new RedirectView((returnUrl == null) ? "/" + docId : returnUrl, true);
     }
 
