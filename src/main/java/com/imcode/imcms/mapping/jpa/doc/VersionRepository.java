@@ -2,13 +2,11 @@ package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.persistence.entity.Version;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.LockModeType;
 import java.util.List;
 
 @Repository
@@ -21,7 +19,6 @@ public interface VersionRepository extends JpaRepository<Version, Integer> {
     @Query("DELETE FROM Version v WHERE v.docId = ?1")
     void deleteByDocId(int docId);
 
-    //    @Query("SELECT v FROM Version v WHERE v.docId = ?1 AND v.no = ?2")
     Version findByDocIdAndNo(int docId, int no);
 
     @Query("SELECT v FROM Version v WHERE v.no = 0 AND v.docId = ?1")
@@ -32,10 +29,6 @@ public interface VersionRepository extends JpaRepository<Version, Integer> {
 
     @Query("SELECT v FROM Version v WHERE v.id = (SELECT max(v.id) FROM Version v WHERE v.docId = ?1)")
     Version findLatest(int docId);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT v.no FROM Version v WHERE v.id = (SELECT max(v.id) FROM Version v WHERE v.docId = ?1)")
-    Integer findLatestNoForUpdate(int docId);
 
     @Modifying
     @Query("UPDATE Meta m SET m.defaultVersionNo = :no, m.publisherId = :publisherId WHERE m.id = :docId")
