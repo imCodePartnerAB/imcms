@@ -1,7 +1,5 @@
 package com.imcode.imcms.domain.service.core;
 
-import com.imcode.imcms.domain.exception.UserNotExistsException;
-import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.DocumentRoles;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -32,9 +30,6 @@ public class DefaultAccessServiceTest {
     private static final int documentId = 1001;
 
     @Mock
-    private UserService userService;
-
-    @Mock
     private DocumentRolesRepository documentRolesRepository;
 
     @InjectMocks
@@ -62,20 +57,6 @@ public class DefaultAccessServiceTest {
     }
 
     @Test
-    public void hasUserEditAccess_When_UserNotExist_Expect_False() {
-        when(userService.getUser(userId)).thenThrow(new UserNotExistsException(userId));
-
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
-
-        assertFalse(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
-
-        verify(documentRolesRepository, times(0))
-                .getDocumentRolesByDocIdAndUserId(userId, documentId);
-    }
-
-    @Test
     public void hasUserEditAccess_When_UserHasEditAccess_Expect_True() {
         final DocumentRoles documentRoles = new DocumentRoles();
         documentRoles.setPermission(Permission.EDIT);
@@ -86,8 +67,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
 
         assertTrue(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -105,8 +84,6 @@ public class DefaultAccessServiceTest {
 
         assertFalse(hasUserEditAccess);
 
-        verify(userService, times(1)).getUser(userId);
-
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
     }
@@ -122,8 +99,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -143,8 +118,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
 
         assertTrue(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -169,8 +142,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -203,8 +174,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
 
         assertTrue(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -239,8 +208,6 @@ public class DefaultAccessServiceTest {
 
         assertFalse(hasUserEditAccess);
 
-        verify(userService, times(1)).getUser(userId);
-
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
     }
@@ -273,8 +240,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.MENU);
 
         assertTrue(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -309,8 +274,6 @@ public class DefaultAccessServiceTest {
 
         assertTrue(hasUserEditAccess);
 
-        verify(userService, times(1)).getUser(userId);
-
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
     }
@@ -344,8 +307,6 @@ public class DefaultAccessServiceTest {
 
         assertTrue(hasUserEditAccess);
 
-        verify(userService, times(1)).getUser(userId);
-
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
     }
@@ -378,8 +339,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.DOC_INFO);
 
         assertTrue(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
@@ -792,8 +751,6 @@ public class DefaultAccessServiceTest {
         final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
-
-        verify(userService, times(1)).getUser(userId);
 
         verify(documentRolesRepository, times(1))
                 .getDocumentRolesByDocIdAndUserId(userId, documentId);
