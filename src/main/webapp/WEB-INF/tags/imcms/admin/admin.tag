@@ -16,7 +16,7 @@
        value="${editOptions.editText or editOptions.editMenu or editOptions.editImage or editOptions.editLoop}"
 />
 
-<c:if test="${isAdmin or isEditDocumentContent}">
+<c:if test="${isAdmin or isEditDocumentContent or editOptions.editDocInfo}">
     <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
             data-main="${contextPath}/js/imcms/imcms_start.js"></script>
 </c:if>
