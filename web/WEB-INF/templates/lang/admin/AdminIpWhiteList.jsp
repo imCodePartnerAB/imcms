@@ -111,10 +111,10 @@
                                     <td><? templates/sv/AdminIpAccess.htm/4 ?> ${userIP}<br> &nbsp;</td>
                                 </tr>
                                 <tr>
-                                    <td><input id="login-via-https" ${secureViaHttps ? 'checked="checked" ' : ''}
+                                    <td><input id="login-via-https" ${isHttpsRequired ? 'checked="checked" ' : ''}
                                                type="checkbox"><? templates/sv/AdminIpAccess.htm/5 ?><br> &nbsp;
                                         <input id="login-via-https-hidden" type="hidden" name="LOGIN_VIA_HTTPS"
-                                               value="${secureViaHttps or false}">
+                                               value="${isHttpsRequired or false}">
                                     </td>
                                 </tr>
                                 <tr>

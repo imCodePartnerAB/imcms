@@ -80,6 +80,18 @@ public class AdminIpWhiteList extends HttpServlet {
         return Imcms.getServices().getDatabase().execute(queryCommand);
     }
 
+    public static boolean isHttpsRequired() {
+        final String isHttpsRequired = Imcms.getServices()
+                .getDatabase()
+                .execute(new SqlQueryCommand<String>(
+                        SELECT_SETTING_IP_WHITELIST_VIA_HTTPS,
+                        new String[]{},
+                        Utility.SINGLE_STRING_HANDLER
+                ));
+
+        return BooleanUtils.toBoolean(isHttpsRequired);
+    }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final UserDomainObject user = Utility.getLoggedOnUser(request);
@@ -276,19 +288,11 @@ public class AdminIpWhiteList extends HttpServlet {
             userIP = "127.0.0.1"; // localhost handled here
         }
 
-        final String shouldUseHttpsStr = Imcms.getServices()
-                .getDatabase()
-                .execute(new SqlQueryCommand<String>(
-                        SELECT_SETTING_IP_WHITELIST_VIA_HTTPS,
-                        new String[]{}, Utility.SINGLE_STRING_HANDLER));
-
-        final boolean shouldUseHttps = BooleanUtils.toBoolean(shouldUseHttpsStr);
-
         request.setAttribute("contextPath", request.getContextPath());
         request.setAttribute("language", language);
         request.setAttribute("userIP", userIP);
         request.setAttribute("roleIpRanges", roleIpRanges);
-        request.setAttribute("secureViaHttps", shouldUseHttps);
+        request.setAttribute("isHttpsRequired", isHttpsRequired());
         request.getRequestDispatcher(templatePath).forward(request, response);
     }
 
@@ -312,5 +316,4 @@ public class AdminIpWhiteList extends HttpServlet {
     private String getAdminTemplatePath(String templateFileName, UserDomainObject user) {
         return "/WEB-INF/templates/" + user.getLanguageIso639_2() + "/admin/" + templateFileName;
     }
-
 }

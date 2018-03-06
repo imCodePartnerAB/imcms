@@ -561,7 +561,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             modifyPasswordIfNecessary(user);
 
             String externalColumn = DatabaseUtils.isDatabaseMSSql(services) ? "[external]" : "external";
-            Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][]{
+            Number newUserId = services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][]{
                     {"login_name", getSafeTrimmedString(user.getLoginName())},
                     {"login_password", getSafeTrimmedString(user.getPassword())},
                     {"first_name", user.getFirstName()},
@@ -1038,6 +1038,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
         if (user == null || user.isDefaultUser() || roleIpRanges.isEmpty()) {
             return true; // only non-default users have to be checked
+        }
+
+        if (!request.isSecure() && AdminIpWhiteList.isHttpsRequired()) {
+            return false;
         }
 
         String userIP = request.getRemoteAddr();
