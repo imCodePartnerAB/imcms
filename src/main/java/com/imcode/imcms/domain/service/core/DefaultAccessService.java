@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.core;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.persistence.entity.DocumentRoles;
+import com.imcode.imcms.persistence.entity.DocumentRole;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
@@ -35,16 +35,16 @@ public class DefaultAccessService implements AccessService {
 
     @Override
     public boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType) {
-        final List<DocumentRoles> documentRolesList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
+        final List<DocumentRole> documentRoleList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
                 userId, documentId
         );
 
-        if (documentRolesList.isEmpty()) {
+        if (documentRoleList.isEmpty()) {
             return false;
         }
 
-        final Permission mostPermission = documentRolesList.stream()
-                .map(DocumentRoles::getPermission)
+        final Permission mostPermission = documentRoleList.stream()
+                .map(DocumentRole::getPermission)
                 .min(Comparator.naturalOrder())
                 .get();
 
@@ -56,7 +56,7 @@ public class DefaultAccessService implements AccessService {
                 return false;
             case RESTRICTED_1:
             case RESTRICTED_2:
-                return hasRestrictedEditAccess(accessType, documentRolesList.get(0).getDocument(), mostPermission);
+                return hasRestrictedEditAccess(accessType, documentRoleList.get(0).getDocument(), mostPermission);
         }
 
         return true;
@@ -73,17 +73,17 @@ public class DefaultAccessService implements AccessService {
             return restrictedPermissionDTO;
         }
 
-        final List<DocumentRoles> documentRolesList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
+        final List<DocumentRole> documentRoleList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
                 userId, documentId
         );
 
         // if no common roles for document and user then return VIEW permission
-        if (documentRolesList.isEmpty()) {
+        if (documentRoleList.isEmpty()) {
             return restrictedPermissionDTO;
         }
 
-        final Set<Permission> userPermissions = documentRolesList.stream()
-                .map(DocumentRoles::getPermission)
+        final Set<Permission> userPermissions = documentRoleList.stream()
+                .map(DocumentRole::getPermission)
                 .collect(Collectors.toSet());
 
         // if EDIT permission is present then return
@@ -94,7 +94,7 @@ public class DefaultAccessService implements AccessService {
             return restrictedPermissionDTO;
         }
 
-        final Set<RestrictedPermissionJPA> documentRestrictedPermissions = documentRolesList.get(0)
+        final Set<RestrictedPermissionJPA> documentRestrictedPermissions = documentRoleList.get(0)
                 .getDocument()
                 .getRestrictedPermissions();
 
@@ -132,8 +132,10 @@ public class DefaultAccessService implements AccessService {
                     .ifPresent(restrictedPermissionJPA -> setRestrictedPermissionDTO(
                             restrictedPermissionDTO,
                             restrictedPermissionJPA.getPermission(),
-                            restrictedPermissionJPA.isEditText(), restrictedPermissionJPA.isEditMenu(),
-                            restrictedPermissionJPA.isEditImage(), restrictedPermissionJPA.isEditLoop(),
+                            restrictedPermissionJPA.isEditText(),
+                            restrictedPermissionJPA.isEditMenu(),
+                            restrictedPermissionJPA.isEditImage(),
+                            restrictedPermissionJPA.isEditLoop(),
                             restrictedPermissionJPA.isEditDocInfo())
                     );
         }

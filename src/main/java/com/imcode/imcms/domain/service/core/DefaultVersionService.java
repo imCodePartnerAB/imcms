@@ -50,8 +50,8 @@ public class DefaultVersionService implements VersionService {
     @Override
     public Version create(int docId, int userId) {
         final User creator = userService.getUser(userId);
-        final Integer latestNo = versionRepository.findLatestNoForUpdate(docId);
-        final int no = (latestNo == null) ? 0 : latestNo + 1;
+        final Version latestVersion = versionRepository.findLatest(docId);
+        final int no = (latestVersion == null) ? 0 : latestVersion.getNo() + 1;
         final Date now = new Date();
         final Version version = new Version();
 
