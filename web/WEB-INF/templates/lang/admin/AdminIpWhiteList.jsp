@@ -6,6 +6,14 @@
     <title><? templates/sv/AdminManager_adminTask_element.htm/6 ?></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp"/>
     <script type="text/javascript" src="${contextPath}/imcms/${language}/scripts/imcms_admin.js.jsp"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#login-via-https").click(function () {
+                $("#login-via-https-hidden").val($(this).is(":checked"));
+                $("#white-list-form").submit();
+            });
+        });
+    </script>
 </head>
 <body><!-- gui_outer_start -->
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">
@@ -84,7 +92,7 @@
                     </td>
                     <td colspan="2">                        <!-- /gui_mid -->
                         <!-- /gui_start_of_page -->
-                        <form method="post" action="AdminIpWhiteList" name="argumentForm">
+                        <form id="white-list-form" method="post" action="AdminIpWhiteList" name="argumentForm">
                             <table border="0" cellspacing="0" cellpadding="2" width="400">
                                 <tr>
                                     <td>
@@ -103,8 +111,10 @@
                                     <td><? templates/sv/AdminIpAccess.htm/4 ?> ${userIP}<br> &nbsp;</td>
                                 </tr>
                                 <tr>
-                                    <td><input name="SECURE_VIA_HTTPS" ${secureViaHttps ? 'checked="checked" ' : ''}
+                                    <td><input id="login-via-https" ${secureViaHttps ? 'checked="checked" ' : ''}
                                                type="checkbox"><? templates/sv/AdminIpAccess.htm/5 ?><br> &nbsp;
+                                        <input id="login-via-https-hidden" type="hidden" name="LOGIN_VIA_HTTPS"
+                                               value="${secureViaHttps or false}">
                                     </td>
                                 </tr>
                                 <tr>

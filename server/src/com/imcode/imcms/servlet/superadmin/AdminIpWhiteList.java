@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlQueryDatabaseCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.CollectionHandler;
@@ -11,6 +12,7 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.log4j.Logger;
 
@@ -42,6 +44,8 @@ public class AdminIpWhiteList extends HttpServlet {
     private static final String IS_ADMIN = "is_admin";
     private static final String IP_RANGE_FROM = "ip_range_from";
     private static final String IP_RANGE_TO = "ip_range_to";
+    private static final String SELECT_SETTING_IP_WHITELIST_VIA_HTTPS = "SELECT value FROM document_properties where key_name = 'imcms.ip.whitelist.https' AND meta_id = 1001";
+    private static final String UPDATE_SETTING_IP_WHITELIST_VIA_HTTPS = "INSERT INTO document_properties (meta_id, key_name, value) VALUES (1001, 'imcms.ip.whitelist.https', ?) ON DUPLICATE KEY UPDATE value = ?";
 
     private final InetAddressValidator ipValidator = InetAddressValidator.getInstance();
 
@@ -95,6 +99,9 @@ public class AdminIpWhiteList extends HttpServlet {
         if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(user, request, response, getClass());
 
+        } else if (request.getParameter("LOGIN_VIA_HTTPS") != null) {
+            setLoginViaHttps(request, response, user);
+
         } else if (request.getParameter("ADD_IP_RANGE") != null) {
             setViewDataAndForwardTo(WHITE_LIST_ADD_TEMPLATE, request, response, user);
 
@@ -115,6 +122,18 @@ public class AdminIpWhiteList extends HttpServlet {
         } else if (request.getParameter("DEL_IP_RANGE") != null) {
             deleteIpRange(request, response);
         }
+    }
+
+    private void setLoginViaHttps(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws ServletException, IOException {
+        String loginViaHttps = request.getParameter("LOGIN_VIA_HTTPS");
+        loginViaHttps = BooleanUtils.toBooleanObject(loginViaHttps).toString(); // "on/off" transfers to "true/false"
+
+        final SqlUpdateCommand command = new SqlUpdateCommand(UPDATE_SETTING_IP_WHITELIST_VIA_HTTPS, new Object[]{
+                loginViaHttps, loginViaHttps // exactly twice
+        });
+        Imcms.getServices().getDatabase().execute(command);
+
+        setRangesAndViewDataAndForwardTo(WHITE_LIST_TEMPLATE, request, response, user);
     }
 
     private void showDeletionWarning(HttpServletRequest request, HttpServletResponse response, UserDomainObject user)
@@ -257,11 +276,19 @@ public class AdminIpWhiteList extends HttpServlet {
             userIP = "127.0.0.1"; // localhost handled here
         }
 
+        final String shouldUseHttpsStr = Imcms.getServices()
+                .getDatabase()
+                .execute(new SqlQueryCommand<String>(
+                        SELECT_SETTING_IP_WHITELIST_VIA_HTTPS,
+                        new String[]{}, Utility.SINGLE_STRING_HANDLER));
+
+        final boolean shouldUseHttps = BooleanUtils.toBoolean(shouldUseHttpsStr);
+
         request.setAttribute("contextPath", request.getContextPath());
         request.setAttribute("language", language);
         request.setAttribute("userIP", userIP);
         request.setAttribute("roleIpRanges", roleIpRanges);
-        request.setAttribute("secureViaHttps", false);
+        request.setAttribute("secureViaHttps", shouldUseHttps);
         request.getRequestDispatcher(templatePath).forward(request, response);
     }
 
