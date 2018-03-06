@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
@@ -89,9 +90,13 @@ public class DefaultAccessService implements AccessService {
             return fullEditPermission;
         }
 
-        final Set<RestrictedPermission> documentRestrictedPermissions = documentRoles.getDocument()
-                .getRestrictedPermissions()
-                .stream()
+        return getRestrictedPermissionForUser(userPermissions, documentRoles.getDocument().getRestrictedPermissions());
+    }
+
+    private RestrictedPermission getRestrictedPermissionForUser(Set<Permission> userPermissions,
+                                                                Set<RestrictedPermissionJPA> restrictedPermissions) {
+
+        final Set<RestrictedPermission> documentRestrictedPermissions = restrictedPermissions.stream()
                 .map(RestrictedPermissionDTO::new)
                 .collect(Collectors.toSet());
 
