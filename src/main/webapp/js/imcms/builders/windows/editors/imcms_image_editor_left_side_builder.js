@@ -1,7 +1,7 @@
 Imcms.define(
     "imcms-image-editor-left-side-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery"],
-    function (BEM, components, texts, $) {
+    ["imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-events"],
+    function (BEM, components, texts, $, events) {
 
         texts = texts.editors.image;
 
@@ -60,6 +60,50 @@ Imcms.define(
             ]);
         }
 
+        function setCropArea(newImageWidth, oldImgWidth, imageDataContainers, param) {
+            /*if (param === "width") {
+                imageDataContainers.$cropArea.paramFunc = function (val) {
+                    return this.width(val);
+                };
+            }*/
+
+
+
+            //var cropAreaWidth = imageDataContainers.$cropArea.paramFunc();
+
+            console.log("cropAreaWidth: ", cropAreaWidth);
+
+        }
+
+        function setCropAreaWidth(newImageWidth, oldImgWidth, imageDataContainers) {
+            // imageDataContainers.angles - crop area angles
+
+            var cropAreaWidth = imageDataContainers.$cropArea.width();
+            var cropAreaLeft = imageDataContainers.$cropArea.offset().left;
+
+            var newCropAreaWidth = (newImageWidth * cropAreaWidth) / oldImgWidth;
+            var delta = 0;
+
+            if ((newImageWidth + 2) < (cropAreaLeft + newCropAreaWidth)) {
+                delta = cropAreaLeft + newCropAreaWidth - newImageWidth - 2;
+            }
+
+            if (newCropAreaWidth !== 0) {
+                imageDataContainers.$cropArea.width(newCropAreaWidth - delta);
+                imageDataContainers.angles.$bottomRight.css({"left": cropAreaLeft + newCropAreaWidth - delta - 18 + "px"});
+                imageDataContainers.angles.$topRight.css({"left": cropAreaLeft + newCropAreaWidth - delta - 18 + "px"});
+            } else {
+                imageDataContainers.$cropArea.width(newImageWidth + 2);
+                imageDataContainers.$cropArea.css({"left": 2 + "px"});
+                imageDataContainers.$cropImg.css({"left": 0 + "px"});
+                imageDataContainers.angles.$topLeft.css({"left": 0 + "px"});
+                imageDataContainers.angles.$bottomLeft.css({"left": 0 + "px"});
+                imageDataContainers.angles.$topRight.css({"left": (newImageWidth - 16) + "px"});
+                imageDataContainers.angles.$bottomRight.css({"left": (newImageWidth - 16) + "px"});
+            }
+            events.trigger("update cropArea");
+        }
+
         function setWidth(newImageWidth, newCropImageWidth, newShadowWidth, imageDataContainers) {
             newShadowWidth = Math.max(newShadowWidth, imageDataContainers.$editableImageArea.width());
 
@@ -106,12 +150,15 @@ Imcms.define(
 
             function onValidWidthChange() {
                 var width = +$(this).val();
+                var previousWidth = imageDataContainers.$cropImg.width();
 
                 if (isNaN(width)) {
                     return;
                 }
 
                 setWidth(width, width, width + 4, imageDataContainers);
+                setCropAreaWidth(width, previousWidth, imageDataContainers);
+                setCropArea(width, previousWidth, imageDataContainers, "width");
             }
 
             imageDataContainers.$widthControlInput = components.texts.textNumber("<div>", {
