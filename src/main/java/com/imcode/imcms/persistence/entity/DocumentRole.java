@@ -9,7 +9,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "roles_rights")
-public class DocumentRoles {
+public class DocumentRole {
 
     @EmbeddedId
     private DocumentRoleId id;
@@ -26,7 +26,7 @@ public class DocumentRoles {
     @Enumerated(EnumType.STRING)
     private Meta.Permission permission;
 
-    public DocumentRoles(Meta document, RoleJPA role, Meta.Permission permission) {
+    public DocumentRole(Meta document, RoleJPA role, Meta.Permission permission) {
         this.document = document;
         this.role = role;
         this.permission = permission;

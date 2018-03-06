@@ -4,7 +4,7 @@ import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.persistence.entity.DocumentRoles;
+import com.imcode.imcms.persistence.entity.DocumentRole;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
-public class DocumentRolesRepositoryTest {
+public class DocumentRoleRepositoryTest {
 
     @Autowired
     private DocumentRolesRepository documentRolesRepository;
@@ -70,18 +70,18 @@ public class DocumentRolesRepositoryTest {
         final Meta meta = metaRepository.findOne(docId);
         final RoleJPA roleJPA = roleRepository.findOne(roleId);
 
-        documentRolesRepository.save(new DocumentRoles(meta, roleJPA, permission));
+        documentRolesRepository.save(new DocumentRole(meta, roleJPA, permission));
 
-        final List<DocumentRoles> documentRolesList = documentRolesRepository
+        final List<DocumentRole> documentRoleList = documentRolesRepository
                 .getDocumentRolesByDocIdAndUserId(userId, docId);
 
-        assertThat(documentRolesList, hasSize(1));
+        assertThat(documentRoleList, hasSize(1));
 
-        final DocumentRoles actualDocumentRoles = documentRolesList.get(0);
+        final DocumentRole actualDocumentRole = documentRoleList.get(0);
 
-        assertThat(actualDocumentRoles.getDocument(), is(meta));
-        assertThat(actualDocumentRoles.getRole(), is(roleJPA));
-        assertThat(actualDocumentRoles.getPermission(), is(permission));
+        assertThat(actualDocumentRole.getDocument(), is(meta));
+        assertThat(actualDocumentRole.getRole(), is(roleJPA));
+        assertThat(actualDocumentRole.getPermission(), is(permission));
     }
 
     @Test
@@ -103,24 +103,24 @@ public class DocumentRolesRepositoryTest {
         final RoleJPA roleJPA1 = roleRepository.findOne(roleId1);
         final RoleJPA roleJPA2 = roleRepository.findOne(roleId2);
 
-        documentRolesRepository.save(new DocumentRoles(meta, roleJPA1, permission1));
-        documentRolesRepository.save(new DocumentRoles(meta, roleJPA2, permission2));
+        documentRolesRepository.save(new DocumentRole(meta, roleJPA1, permission1));
+        documentRolesRepository.save(new DocumentRole(meta, roleJPA2, permission2));
 
-        final List<DocumentRoles> documentRolesList = documentRolesRepository
+        final List<DocumentRole> documentRoleList = documentRolesRepository
                 .getDocumentRolesByDocIdAndUserId(userId, docId);
 
-        assertThat(documentRolesList, hasSize(2));
+        assertThat(documentRoleList, hasSize(2));
 
-        final List<Meta> metaList = documentRolesList.stream()
-                .map(DocumentRoles::getDocument)
+        final List<Meta> metaList = documentRoleList.stream()
+                .map(DocumentRole::getDocument)
                 .collect(Collectors.toList());
 
-        final List<RoleJPA> roleList = documentRolesList.stream()
-                .map(DocumentRoles::getRole)
+        final List<RoleJPA> roleList = documentRoleList.stream()
+                .map(DocumentRole::getRole)
                 .collect(Collectors.toList());
 
-        final List<Meta.Permission> permissionList = documentRolesList.stream()
-                .map(DocumentRoles::getPermission)
+        final List<Meta.Permission> permissionList = documentRoleList.stream()
+                .map(DocumentRole::getPermission)
                 .collect(Collectors.toList());
 
         assertThat(metaList, containsInAnyOrder(meta, meta));
