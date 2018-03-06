@@ -7,9 +7,11 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -21,10 +23,15 @@ public class DefaultVersionService implements VersionService {
 
     private final VersionRepository versionRepository;
     private final UserService userService;
+    private final boolean isVersioningAllowed;
 
-    DefaultVersionService(VersionRepository versionRepository, UserService userService) {
+    DefaultVersionService(VersionRepository versionRepository,
+                          UserService userService,
+                          @Value("${document.versioning}") boolean isVersioningAllowed) {
+
         this.versionRepository = versionRepository;
         this.userService = userService;
+        this.isVersioningAllowed = isVersioningAllowed;
     }
 
     @Override
@@ -34,7 +41,11 @@ public class DefaultVersionService implements VersionService {
 
     @Override
     public Version getLatestVersion(int docId) throws DocumentNotExistException {
-        return getVersion(docId, versionRepository::findLatest);
+        Function<Integer, Version> versionFunction = isVersioningAllowed
+                ? versionRepository::findLatest
+                : versionRepository::findWorking;
+
+        return getVersion(docId, versionFunction);
     }
 
     @Override
@@ -74,12 +85,16 @@ public class DefaultVersionService implements VersionService {
 
     @Override
     public List<Version> findByDocId(int docId) {
-        return versionRepository.findByDocId(docId);
+        return isVersioningAllowed
+                ? versionRepository.findByDocId(docId)
+                : Collections.singletonList(versionRepository.findWorking(docId));
     }
 
     @Override
     public Version findDefault(int docId) {
-        return versionRepository.findDefault(docId);
+        return isVersioningAllowed
+                ? versionRepository.findDefault(docId)
+                : versionRepository.findWorking(docId);
     }
 
     @Override
@@ -95,8 +110,13 @@ public class DefaultVersionService implements VersionService {
 
     @Override
     public boolean hasNewerVersion(int docId) {
+        if (!isVersioningAllowed) {
+            return false;
+        }
+
         final Version latestVersion = getLatestVersion(docId);
         final Version workingVersion = getDocumentWorkingVersion(docId);
+
         return latestVersion.equals(workingVersion)
                 || latestVersion.getCreatedDt().before(workingVersion.getModifiedDt());
     }

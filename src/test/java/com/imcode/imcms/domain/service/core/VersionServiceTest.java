@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
@@ -20,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -38,14 +41,20 @@ public class VersionServiceTest {
     private VersionRepository versionRepository;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private VersionDataInitializer versionDataInitializer;
+
+    private Version workingVersion;
     private List<Version> versions;
 
     @Before
     public void setUpVersions() {
         versionDataInitializer.cleanRepositories();
 
-        versionDataInitializer.createData(0, docId);
+        workingVersion = versionDataInitializer.createData(0, docId);
+
         versions = Arrays.asList(
                 versionDataInitializer.createData(1, docId),
                 versionDataInitializer.createData(2, docId),
@@ -87,7 +96,6 @@ public class VersionServiceTest {
     }
 
     @Test
-    @Transactional
     public void delete() {
         final List<Version> versions = versionService.findByDocId(docId);
         assertTrue(versions.size() > 0);
@@ -96,6 +104,51 @@ public class VersionServiceTest {
 
         final List<Version> emptyList = versionService.findByDocId(docId);
         assertTrue(emptyList.isEmpty());
+    }
+
+    @Test
+    public void getLatestVersion_When_VersioningIsNotAllowed_Expect_WorkingVersionIsReturned() {
+        final DefaultVersionService defaultVersionService = new DefaultVersionService(
+                versionRepository, userService, false
+        );
+
+        final Version latestVersion = defaultVersionService.getLatestVersion(docId);
+
+        assertTrue(versionRepository.findAll().size() > 1);
+        assertThat(latestVersion, is(workingVersion));
+    }
+
+    @Test
+    public void findByDocId_When_VersioningIsNotAllowed_Expect_OnlyWorkingVersionIsReturned() {
+        final DefaultVersionService defaultVersionService = new DefaultVersionService(
+                versionRepository, userService, false
+        );
+
+        final List<Version> byDocId = defaultVersionService.findByDocId(docId);
+
+        assertTrue(versionRepository.findAll().size() > 1);
+        assertThat(byDocId, hasSize(1));
+        assertThat(byDocId.get(0), is(workingVersion));
+    }
+
+    @Test
+    public void hasNewerVersion_When_VersioningIsNotAllowed_Expect_FalseIsReturned() {
+        final DefaultVersionService defaultVersionService = new DefaultVersionService(
+                versionRepository, userService, false
+        );
+
+        assertFalse(defaultVersionService.hasNewerVersion(docId));
+    }
+
+    @Test
+    public void findDefault_When_VersioningIsNotAllowed_Expect_WorkingVersionIsReturned() {
+        final DefaultVersionService defaultVersionService = new DefaultVersionService(
+                versionRepository, userService, false
+        );
+
+        final Version defaultVersion = defaultVersionService.findDefault(docId);
+
+        assertThat(defaultVersion, is(workingVersion));
     }
 
     private Date getTomorrowDate() {
