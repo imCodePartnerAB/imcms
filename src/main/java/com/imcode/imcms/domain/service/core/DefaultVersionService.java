@@ -27,7 +27,7 @@ public class DefaultVersionService implements VersionService {
 
     DefaultVersionService(VersionRepository versionRepository,
                           UserService userService,
-                          @Value("${document.versioning}") boolean isVersioningAllowed) {
+                          @Value("${document.versioning:true}") boolean isVersioningAllowed) {
 
         this.versionRepository = versionRepository;
         this.userService = userService;

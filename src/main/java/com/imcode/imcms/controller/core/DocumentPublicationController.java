@@ -25,7 +25,7 @@ public class DocumentPublicationController {
     private final boolean isVersioningAllowed;
 
     public DocumentPublicationController(TypedDocumentService<Document> documentService,
-                                         @Value("${document.versioning}") boolean isVersioningAllowed) {
+                                         @Value("${document.versioning:true}") boolean isVersioningAllowed) {
 
         this.documentService = documentService;
         this.isVersioningAllowed = isVersioningAllowed;
