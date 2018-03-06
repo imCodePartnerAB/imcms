@@ -73,7 +73,7 @@ public class DocumentRoleRepositoryTest {
         documentRolesRepository.save(new DocumentRole(meta, roleJPA, permission));
 
         final List<DocumentRole> documentRoleList = documentRolesRepository
-                .getDocumentRolesByDocIdAndUserId(userId, docId);
+                .getDocumentRolesByUserIdAndDocId(userId, docId);
 
         assertThat(documentRoleList, hasSize(1));
 
@@ -107,7 +107,7 @@ public class DocumentRoleRepositoryTest {
         documentRolesRepository.save(new DocumentRole(meta, roleJPA2, permission2));
 
         final List<DocumentRole> documentRoleList = documentRolesRepository
-                .getDocumentRolesByDocIdAndUserId(userId, docId);
+                .getDocumentRolesByUserIdAndDocId(userId, docId);
 
         assertThat(documentRoleList, hasSize(2));
 
