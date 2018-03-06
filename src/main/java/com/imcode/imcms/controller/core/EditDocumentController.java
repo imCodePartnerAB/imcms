@@ -23,7 +23,7 @@ public class EditDocumentController {
     }
 
     @RequestMapping({"", "/"})
-    public void redirectToView(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void editDocument(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final int metaId = Integer.parseInt(request.getParameter(PARAMETER__META_ID));
 
         final Version documentWorkingVersion = versionService.findWorking(metaId);
