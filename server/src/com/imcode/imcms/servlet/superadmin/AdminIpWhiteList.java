@@ -261,6 +261,7 @@ public class AdminIpWhiteList extends HttpServlet {
         request.setAttribute("language", language);
         request.setAttribute("userIP", userIP);
         request.setAttribute("roleIpRanges", roleIpRanges);
+        request.setAttribute("secureViaHttps", false);
         request.getRequestDispatcher(templatePath).forward(request, response);
     }
 

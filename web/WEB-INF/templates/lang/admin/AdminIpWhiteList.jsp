@@ -103,6 +103,11 @@
                                     <td><? templates/sv/AdminIpAccess.htm/4 ?> ${userIP}<br> &nbsp;</td>
                                 </tr>
                                 <tr>
+                                    <td><input name="SECURE_VIA_HTTPS" ${secureViaHttps ? 'checked="checked" ' : ''}
+                                               type="checkbox"><? templates/sv/AdminIpAccess.htm/5 ?><br> &nbsp;
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td>
                                         <table border="0" cellspacing="0" cellpadding="2" width="100%">
                                             <tr>
