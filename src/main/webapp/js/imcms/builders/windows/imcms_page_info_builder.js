@@ -138,7 +138,7 @@ Imcms.define("imcms-page-info-builder",
 
             var buttons = [$cancelBtn, $saveBtn];
 
-            if (imcms.isAdmin) {
+            if (imcms.isAdmin && imcms.isVersioningAllowed) {
                 buttons.unshift($saveAndPublishBtn);
             }
 

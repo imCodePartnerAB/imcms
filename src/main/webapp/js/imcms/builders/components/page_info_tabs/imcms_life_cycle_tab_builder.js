@@ -147,7 +147,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
             });
             tabData.$docVersionSaveDateTime = $docVersionSaveDateTime;
 
-            return lifeCycleInnerStructureBEM.buildBlock("<div>", [
+            return tabData.$currentVersionRowBlock = lifeCycleInnerStructureBEM.buildBlock("<div>", [
                 {"title": $currentVersionRowTitle},
                 {
                     "item": tabData.$currentVersionNumber,
@@ -216,9 +216,10 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 /** @namespace document.currentVersion */
                 /** @namespace document.published */
 
-                var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion)
-                    ? "block" : "none";
+                var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
+                    && imcms.isVersioningAllowed) ? "block" : "none";
 
+                tabData.$currentVersionRowBlock.css("display", imcms.isVersioningAllowed ? "block" : "none");
                 tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
                 tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
                 tabData.$docStatusSelect.selectValue(document.publicationStatus);
