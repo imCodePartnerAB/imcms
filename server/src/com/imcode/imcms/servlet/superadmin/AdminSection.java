@@ -2,7 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
+import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -171,7 +171,7 @@ public class AdminSection extends HttpServlet {
             if (!section_id.equals("-1")) {
                 //ok we have a request for delete lets see if there is any docs connected to that section_id
                 final Object[] parameters = new String[] {section_id};
-                String doc_nrs = (String) imcref.getProcedureExecutor().executeProcedure("SectionCount", parameters, new ObjectFromFirstRowResultSetHandler(new StringFromRowFactory()));
+                String doc_nrs = (String) imcref.getProcedureExecutor().executeProcedure("SectionCount", parameters, new SingleObjectHandler<String>(new StringFromRowFactory()));
                 int doc_int = 0;
                 if (doc_nrs != null) {
                     try {

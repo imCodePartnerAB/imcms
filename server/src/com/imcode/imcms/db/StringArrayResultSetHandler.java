@@ -8,18 +8,18 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringArrayResultSetHandler implements ResultSetHandler {
+public class StringArrayResultSetHandler implements ResultSetHandler<String[]> {
 
-    public Object handle( ResultSet resultSet ) throws SQLException {
+    public String[] handle(ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
-        List results = new ArrayList();
+        List<String> results = new ArrayList<String>();
         while ( resultSet.next() ) {
             for ( int i = 1; i <= columnCount; i++ ) {
                 String s = resultSet.getString( i );
                 results.add( s );
             }
         }
-        return (String[])results.toArray( new String[results.size()] );
+        return results.toArray(new String[results.size()]);
     }
 }

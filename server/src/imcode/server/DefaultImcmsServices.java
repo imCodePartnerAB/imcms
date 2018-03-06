@@ -3,7 +3,6 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
 import com.imcode.imcms.db.DefaultProcedureExecutor;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
@@ -242,7 +241,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		try {
 			DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
 			final Object[] parameters = new String[0];
-			return dateFormat.parse((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 2", parameters, Utility.SINGLE_STRING_HANDLER)));
+            return dateFormat.parse(getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 2", parameters, Utility.SINGLE_STRING_HANDLER)));
 		} catch (ParseException ex) {
 			log.fatal("Failed to get SessionCounterDate from db.", ex);
 			throw new UnhandledException(ex);
@@ -251,7 +250,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
 	private int getSessionCounterFromDb() {
 		final Object[] parameters = new String[0];
-		return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
+        return Integer.parseInt(getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
 	}
 
 	private void initDocumentMapper() {
@@ -699,31 +698,31 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		SystemData sd = new SystemData();
 
 		final Object[] parameters5 = new String[0];
-		String startDocument = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
+        String startDocument = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
 		sd.setStartDocument(startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt(startDocument));
 
 		final Object[] parameters4 = new String[0];
-		String systemMessage = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
+        String systemMessage = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
 		sd.setSystemMessage(systemMessage);
 
 		final Object[] parameters3 = new String[0];
-		String serverMasterName = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 4", parameters3, Utility.SINGLE_STRING_HANDLER));
+        String serverMasterName = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 4", parameters3, Utility.SINGLE_STRING_HANDLER));
 		sd.setServerMaster(serverMasterName);
 
 		final Object[] parameters2 = new String[0];
-		String serverMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 5", parameters2, Utility.SINGLE_STRING_HANDLER));
+        String serverMasterAddress = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 5", parameters2, Utility.SINGLE_STRING_HANDLER));
 		sd.setServerMasterAddress(serverMasterAddress);
 
 		final Object[] parameters1 = new String[0];
-		String webMasterName = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 6", parameters1, Utility.SINGLE_STRING_HANDLER));
+        String webMasterName = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 6", parameters1, Utility.SINGLE_STRING_HANDLER));
 		sd.setWebMaster(webMasterName);
 
 		final Object[] parameters7 = new String[0];
-		String webMasterAddress = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 7", parameters7, Utility.SINGLE_STRING_HANDLER));
+        String webMasterAddress = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 7", parameters7, Utility.SINGLE_STRING_HANDLER));
 		sd.setWebMasterAddress(webMasterAddress);
 
 		final Object[] parameter9 = new String[0];
-		String userLoginPasswordExpirationInterval = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 9", parameter9, Utility.SINGLE_STRING_HANDLER));
+        String userLoginPasswordExpirationInterval = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 9", parameter9, Utility.SINGLE_STRING_HANDLER));
 		if (userLoginPasswordExpirationInterval == null) {
 			log.warn("System property userLoginPasswordResetExpirationInterval is not set; using default");
 		} else {
@@ -757,14 +756,14 @@ final public class DefaultImcmsServices implements ImcmsServices {
 		sqlParams = new String[]{"" + sd.getStartDocument()};
 		getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
 
-		database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[]{
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[]{
 				sd.getServerMaster()}));
-		database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[]{
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[]{
 				sd.getServerMasterAddress()}));
 
-		database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[]{
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[]{
 				sd.getWebMaster()}));
-		database.execute(new SqlUpdateDatabaseCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[]{
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[]{
 				sd.getWebMasterAddress()}));
 
 		sqlParams = new String[]{sd.getSystemMessage()};

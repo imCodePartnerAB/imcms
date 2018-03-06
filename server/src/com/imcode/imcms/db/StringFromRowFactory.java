@@ -1,11 +1,11 @@
 package com.imcode.imcms.db;
 
-import com.imcode.db.handlers.ObjectFromRowFactory;
+import com.imcode.db.handlers.RowTransformer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StringFromRowFactory implements ObjectFromRowFactory {
+public class StringFromRowFactory implements RowTransformer<String> {
 
     private final int columnIndex;
 
@@ -17,11 +17,11 @@ public class StringFromRowFactory implements ObjectFromRowFactory {
         this.columnIndex = columnIndex ;
     }
 
-    public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+    public String createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
         return resultSet.getString(columnIndex) ;
     }
 
-    public Class getClassOfCreatedObjects() {
+    public Class<String> getClassOfCreatedObjects() {
         return String.class;
     }
 }

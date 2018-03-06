@@ -5,8 +5,8 @@ import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryCommand;
 import imcode.server.document.*;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.util.io.FileInputStreamSource;
 import imcode.util.Utility;
+import imcode.util.io.FileInputStreamSource;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 
@@ -35,7 +35,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         try {
             String[] parameters = new String[] { "" + document.getId() };
             String sqlStr = "SELECT to_meta_id, browser_id FROM browser_docs WHERE meta_id = ?";
-            sqlResult = (String[][]) database.execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+            sqlResult = database.execute(new SqlQueryCommand<String[][]>(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -85,7 +85,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         try {
             String[] parameters = new String[] { "" + htmlDocument.getId() };
             String sqlStr = "SELECT frame_set FROM frameset_docs WHERE meta_id = ?";
-            html = (String) database.execute(new SqlQueryCommand(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
+            html = database.execute(new SqlQueryCommand<String>(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }
@@ -96,7 +96,7 @@ class DocumentInitializingVisitor extends DocumentVisitor {
         String url;
         try {
             String[] parameters = new String[] { "" + document.getId() };
-            url = (String) database.execute(new SqlQueryCommand("SELECT url_ref FROM url_docs WHERE meta_id = ?", parameters, Utility.SINGLE_STRING_HANDLER));
+            url = database.execute(new SqlQueryCommand<String>("SELECT url_ref FROM url_docs WHERE meta_id = ?", parameters, Utility.SINGLE_STRING_HANDLER));
         } catch ( DatabaseException e ) {
             throw new UnhandledException(e);
         }

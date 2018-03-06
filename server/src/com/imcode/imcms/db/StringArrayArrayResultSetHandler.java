@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StringArrayArrayResultSetHandler implements ResultSetHandler {
+public class StringArrayArrayResultSetHandler implements ResultSetHandler<String[][]> {
 
-    public Object handle( ResultSet resultSet ) throws SQLException {
+    public String[][] handle(ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
-        List results = new ArrayList();
+        List<String[]> results = new ArrayList<String[]>();
         while ( resultSet.next() ) {
             String[] row = new String[columnCount];
             for ( int i = 0; i < columnCount; i++ ) {
@@ -21,6 +21,6 @@ public class StringArrayArrayResultSetHandler implements ResultSetHandler {
             }
             results.add( row );
         }
-        return (String[][])results.toArray( new String[results.size()][] );
+        return results.toArray(new String[results.size()][]);
     }
 }
