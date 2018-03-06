@@ -14,5 +14,5 @@ public interface DocumentRolesRepository extends JpaRepository<DocumentRole, Doc
     @Query("SELECT docRoles FROM DocumentRole docRoles, UserRoles userRoles " +
             "WHERE userRoles.id.userId = ?1 AND docRoles.id.documentId = ?2 AND " +
             "docRoles.id.roleId = userRoles.id.roleId")
-    List<DocumentRole> getDocumentRolesByDocIdAndUserId(int userId, int documentId);
+    List<DocumentRole> getDocumentRolesByUserIdAndDocId(int userId, int documentId);
 }

@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 07.09.17
  */
-Imcms.define("imcms-image-cropper", [], function () {
+Imcms.define("imcms-image-cropper", ["imcms-events"], function (events) {
 
     var $croppingArea, $imageEditor, $cropImg, croppingAreaParams, angleBorderSize, imageCoords, angleParams,
         $originImg, angles, imageData;
@@ -159,6 +159,11 @@ Imcms.define("imcms-image-cropper", [], function () {
         var fixedCoords = transformCroppingAngleDeltaCoords(angleName, deltaX, deltaY);
         setElementTopLeft(angles["$" + angleName], fixedCoords.y, fixedCoords.x);
     }
+
+    events.on("update cropArea", function () {
+        croppingAreaParams.width = $croppingArea.width();
+        croppingAreaParams.height = $croppingArea.height();
+    });
 
     function resizeCroppingTopLeft(deltaX, deltaY) {
         var newWidth = (croppingAreaParams.width = $croppingArea.width() + deltaX);
