@@ -191,46 +191,94 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
-        function resizeImage(newWidth, newHeight, imageDataContainers) {
-            imageDataContainers.$image.add(imageDataContainers.$cropImg)
-                .add(imageDataContainers.$cropArea)
+        function resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers) {
+            imageDataContainers.$image
                 .animate({
                     "width": newWidth,
                     "height": newHeight
+                }, 200);
+
+            imageDataContainers.$cropImg
+                .animate({
+                    "left": -newCropAreaLeft,
+                    "top": -newCropAreaTop,
+                    "width": newWidth,
+                    "height": newHeight
+                }, 200);
+
+            imageDataContainers.$cropArea
+                .animate({
+                    "left": newCropAreaLeft,
+                    "top": newCropAreaTop,
+                    "width": newCropAreaWeight,
+                    "height": newCropAreaHeight
                 }, 200);
 
             var angleHeight = imageDataContainers.angles.$bottomLeft.height();
             var angleWidth = imageDataContainers.angles.$bottomLeft.width();
             var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
 
-            imageDataContainers.$cropArea.add(imageDataContainers.$image)
-                .animate({
-                    "top": angleBorderSize,
-                    "left": angleBorderSize
-                }, 200);
-            imageDataContainers.angles.$topLeft.animate({
-                "top": 0,
-                "left": 0
-            }, 200);
-            imageDataContainers.angles.$bottomLeft.animate({
-                "top": newHeight - angleHeight + angleBorderSize,
-                "left": 0
-            }, 200);
+            var positionTopForAngelsTop = newCropAreaTop - angleBorderSize;
+            var positionTopForAngelsBottom = newCropAreaTop + newCropAreaHeight - angleHeight;
+            var positionLeftForAngelsLeft = newCropAreaLeft - angleBorderSize;
+            var positionLeftForAngelsRight = newCropAreaLeft + newCropAreaWeight - angleWidth;
+
+            if (newCropAreaLeft <= 2) {
+                positionLeftForAngelsLeft = 0;
+            }
+
+            if (newCropAreaTop <= 2) {
+                positionTopForAngelsTop = 0;
+            }
+
             imageDataContainers.angles.$topRight.animate({
-                "top": 0,
-                "left": newWidth - angleWidth + angleBorderSize
+                "top": positionTopForAngelsTop,
+                "left": positionLeftForAngelsRight
             }, 200);
+
             imageDataContainers.angles.$bottomRight.animate({
-                "top": newHeight - angleHeight + angleBorderSize,
-                "left": newWidth - angleWidth + angleBorderSize
+                "top": positionTopForAngelsBottom,
+                "left": positionLeftForAngelsRight
             }, 200);
+
+            imageDataContainers.angles.$topLeft.animate({
+                "top": positionTopForAngelsTop,
+                "left": positionLeftForAngelsLeft
+            }, 200);
+
+            imageDataContainers.angles.$bottomLeft.animate({
+                "top": positionTopForAngelsBottom,
+                "left": positionLeftForAngelsLeft
+            }, 200);
+
+            setTimeout(function () {
+                events.trigger("update cropArea");
+            }, 250);
         }
 
         function zoom(zoomCoefficient, imageDataContainers) {
             var newHeight = ~~(imageDataContainers.$image.height() * zoomCoefficient),
-                newWidth = ~~(imageDataContainers.$image.width() * zoomCoefficient)
+                newWidth = ~~(imageDataContainers.$image.width() * zoomCoefficient),
+                newCropAreaHeight = ~~(imageDataContainers.$cropArea.height() * zoomCoefficient),
+                newCropAreaWeight = ~~(imageDataContainers.$cropArea.width() * zoomCoefficient),
+                newCropAreaLeft = ~~(imageDataContainers.$cropArea.position().left * zoomCoefficient),
+                newCropAreaTop = ~~(imageDataContainers.$cropArea.position().top * zoomCoefficient)
             ;
-            resizeImage(newWidth, newHeight, imageDataContainers);
+
+            if (newCropAreaLeft <= 2) {
+                newCropAreaLeft = 2;
+            }
+
+            if (newCropAreaTop <= 2) {
+                newCropAreaTop = 2;
+            }
+
+            resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers);
+            var heightControlInput = imageDataContainers.$heightControlInput.getInput();
+            var widthControlInput = imageDataContainers.$widthControlInput.getInput();
+
+            heightControlInput.val(newHeight);
+            widthControlInput.val(newWidth);
         }
 
         function zoomPlus() {
