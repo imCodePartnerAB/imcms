@@ -12,7 +12,11 @@
     <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
 </script>
 
-<c:if test="${isAdmin or editOptions.permission ne 'VIEW'}">
+<c:set var="isEditDocumentContent"
+       value="${editOptions.editText or editOptions.editMenu or editOptions.editImage or editOptions.editLoop}"
+/>
+
+<c:if test="${isAdmin or isEditDocumentContent}">
     <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
             data-main="${contextPath}/js/imcms/imcms_start.js"></script>
 </c:if>
