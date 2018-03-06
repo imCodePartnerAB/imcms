@@ -21,6 +21,8 @@
 .imcms-editable-img-area__layout {
     background: rgba(37, 34, 34, .5);
     position: absolute;
+    min-width: 100%;
+    min-height: 100%;
     top: 0;
     left: 0;
     z-index: 30;

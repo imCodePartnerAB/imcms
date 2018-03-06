@@ -198,6 +198,11 @@ Imcms.define(
                     "height": newHeight
                 }, 200);
 
+            imageDataContainers.$shadow.animate({
+                "width": newWidth + 4,
+                "height": newHeight + 4
+            }, 200);
+
             imageDataContainers.$cropImg
                 .animate({
                     "left": -newCropAreaLeft,
@@ -293,10 +298,23 @@ Imcms.define(
             // fixme: save proportions! now image becomes just as editable area
             // only one side should be as area's side and one as needed to save proportions
             var newHeight = $editableImageArea.height(),
-                newWidth = $editableImageArea.width()
+                newWidth = $editableImageArea.width(),
+                newCropAreaHeight = $editableImageArea.height(),
+                newCropAreaWeight = $editableImageArea.width(),
+                newCropAreaLeft = 2,
+                newCropAreaTop = 2
             ;
             var twiceAngleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) * 2 || 0;
-            resizeImage(newWidth - twiceAngleBorderSize, newHeight - twiceAngleBorderSize, imageDataContainers);
+
+            resizeImage(
+                newWidth - twiceAngleBorderSize,
+                newHeight - twiceAngleBorderSize,
+                newCropAreaHeight - twiceAngleBorderSize,
+                newCropAreaWeight - twiceAngleBorderSize,
+                newCropAreaLeft,
+                newCropAreaTop,
+                imageDataContainers
+            );
         }
 
         var angle = 0;
