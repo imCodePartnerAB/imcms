@@ -1,21 +1,19 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.domain.dto.DocumentRoles;
 import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
 import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.persistence.entity.DocumentRole;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.security.AccessType;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,26 +25,21 @@ import java.util.stream.Collectors;
 @Transactional
 public class DefaultAccessService implements AccessService {
 
-    private final DocumentRolesRepository documentRolesRepository;
+    private final DocumentRolesService documentRolesService;
 
-    DefaultAccessService(DocumentRolesRepository documentRolesRepository) {
-        this.documentRolesRepository = documentRolesRepository;
+    DefaultAccessService(DocumentRolesService documentRolesService) {
+        this.documentRolesService = documentRolesService;
     }
 
     @Override
     public boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType) {
-        final List<DocumentRole> documentRoleList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
-                userId, documentId
-        );
+        final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, userId);
 
-        if (documentRoleList.isEmpty()) {
+        if (documentRoles.hasNoRoles()) {
             return false;
         }
 
-        final Permission mostPermission = documentRoleList.stream()
-                .map(DocumentRole::getPermission)
-                .min(Comparator.naturalOrder())
-                .get();
+        final Permission mostPermission = documentRoles.getMostPermission();
 
         switch (mostPermission) {
             case EDIT:
@@ -56,7 +49,7 @@ public class DefaultAccessService implements AccessService {
                 return false;
             case RESTRICTED_1:
             case RESTRICTED_2:
-                return hasRestrictedEditAccess(accessType, documentRoleList.get(0).getDocument(), mostPermission);
+                return hasRestrictedEditAccess(accessType, documentRoles.getDocument(), mostPermission);
         }
 
         return true;
@@ -73,18 +66,14 @@ public class DefaultAccessService implements AccessService {
             return restrictedPermissionDTO;
         }
 
-        final List<DocumentRole> documentRoleList = documentRolesRepository.getDocumentRolesByDocIdAndUserId(
-                userId, documentId
-        );
+        final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, userId);
 
         // if no common roles for document and user then return VIEW permission
-        if (documentRoleList.isEmpty()) {
+        if (documentRoles.hasNoRoles()) {
             return restrictedPermissionDTO;
         }
 
-        final Set<Permission> userPermissions = documentRoleList.stream()
-                .map(DocumentRole::getPermission)
-                .collect(Collectors.toSet());
+        final Set<Permission> userPermissions = documentRoles.getPermissions();
 
         // if EDIT permission is present then return
         if (userPermissions.contains(Permission.EDIT)) {
@@ -94,8 +83,7 @@ public class DefaultAccessService implements AccessService {
             return restrictedPermissionDTO;
         }
 
-        final Set<RestrictedPermissionJPA> documentRestrictedPermissions = documentRoleList.get(0)
-                .getDocument()
+        final Set<RestrictedPermissionJPA> documentRestrictedPermissions = documentRoles.getDocument()
                 .getRestrictedPermissions();
 
         final Set<Permission> documentPermissions = documentRestrictedPermissions.stream()
