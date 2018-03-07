@@ -373,6 +373,17 @@ Imcms.define(
 
             // TODO: fix crop area position when it is out of img
             resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, 2, 2, imageDataContainers);
+
+            var heightControlInput = imageDataContainers.$heightControlInput.getInput();
+            var widthControlInput = imageDataContainers.$widthControlInput.getInput();
+
+            if (isImgRotate) {
+                heightControlInput.val(newWidth);
+                widthControlInput.val(newHeight);
+            } else {
+                heightControlInput.val(newHeight);
+                widthControlInput.val(newWidth);
+            }
         }
 
         function rotateLeft() {
