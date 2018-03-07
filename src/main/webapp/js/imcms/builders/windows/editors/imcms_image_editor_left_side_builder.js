@@ -371,7 +371,8 @@ Imcms.define(
                 newCropAreaLeft = imageDataContainers.$cropArea.position().left,
                 newCropAreaTop = imageDataContainers.$cropArea.position().top;
 
-            resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers);
+            // TODO: fix crop area position when it is out of img
+            resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, 2, 2, imageDataContainers);
         }
 
         function rotateLeft() {
