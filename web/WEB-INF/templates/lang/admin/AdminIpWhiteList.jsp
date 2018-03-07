@@ -126,9 +126,11 @@
                                                 <td><b><? templates/sv/AdminIpAccess.htm/3003 ?></b></td>
                                                 <td>&nbsp;&nbsp;&nbsp;</td>
                                                 <td><b><? templates/sv/AdminIpAccess.htm/3004 ?></b></td>
+                                                <td>&nbsp;&nbsp;&nbsp;</td>
+                                                <td><b><? templates/sv/AdminIpWhiteList.jsp/3 ?></b></td>
                                             </tr>
                                             <tr>
-                                                <td colspan="5"><img
+                                                <td colspan="7"><img
                                                         src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif"
                                                         width="100%" height="1" style="margin: 8px 0;" alt=""/></td>
                                             </tr>
@@ -143,6 +145,11 @@
                                                     <td align="center">-</td>
                                                     <td><input type="text" name="IP_END${ipRange.id}"
                                                                value="${ipRange.ipTo}" size="15" maxlength="15"></td>
+                                                    <td align="center">-</td>
+                                                    <td><input type="text" name="IP_DESCRIPTION${ipRange.id}"
+                                                        <%--style="width: 320px;"--%>
+                                                               size="50" maxlength="256"
+                                                               value="${ipRange.description}"></td>
                                                 </tr>
                                             </c:forEach></table>
                                     </td>

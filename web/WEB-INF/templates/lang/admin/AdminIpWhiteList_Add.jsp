@@ -108,6 +108,10 @@
                                     <td><input type="text" name="IP_END" size="15" maxlength="15"></td>
                                 </tr>
                                 <tr>
+                                    <td><? templates/sv/AdminIpAccess_Add.htm/9 ?></td>
+                                    <td><input type="text" name="IP_DESCRIPTION" size="50" maxlength="256"></td>
+                                </tr>
+                                <tr>
                                     <td colspan="2"><img
                                             src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif"
                                             width="100%" height="1" style="margin: 8px 0;" alt=""/></td>

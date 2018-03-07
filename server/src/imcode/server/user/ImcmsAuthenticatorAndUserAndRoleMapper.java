@@ -1044,10 +1044,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             return false;
         }
 
-        String userIP = request.getRemoteAddr();
+        final String userIP = request.getRemoteAddr();
 
         if ("0:0:0:0:0:0:0:1".equals(userIP)) {
-            userIP = "127.0.0.1"; // localhost handled here
+            return true; //userIP = "127.0.0.1"; // localhost handled here
         }
 
         if (isNotValidInet4Address(userIP)) {

@@ -44,6 +44,11 @@ public class AdminIpWhiteList extends HttpServlet {
     private static final String IS_ADMIN = "is_admin";
     private static final String IP_RANGE_FROM = "ip_range_from";
     private static final String IP_RANGE_TO = "ip_range_to";
+    private static final String IP_DESCRIPTION = "description";
+    private static final String SELECT_IP_WHITE_LIST_QUERY =
+            "SELECT id, " + IS_ADMIN + ", " + IP_RANGE_FROM + ", " + IP_RANGE_TO + ", " + IP_DESCRIPTION
+                    + " FROM " + TABLE_NAME
+                    + " ORDER BY id";
     private static final String SELECT_SETTING_IP_WHITELIST_VIA_HTTPS = "SELECT value FROM document_properties where key_name = 'imcms.ip.whitelist.https' AND meta_id = 1001";
     private static final String UPDATE_SETTING_IP_WHITELIST_VIA_HTTPS = "INSERT INTO document_properties (meta_id, key_name, value) VALUES (1001, 'imcms.ip.whitelist.https', ?) ON DUPLICATE KEY UPDATE value = ?";
 
@@ -57,7 +62,8 @@ public class AdminIpWhiteList extends HttpServlet {
                 final boolean isAdmin = resultSet.getBoolean(IS_ADMIN);
                 final String ipFrom = resultSet.getString(IP_RANGE_FROM);
                 final String ipTo = resultSet.getString(IP_RANGE_TO);
-                return new RoleIpRange(id, isAdmin, ipFrom, ipTo);
+                final String ipDescription = resultSet.getString(IP_DESCRIPTION);
+                return new RoleIpRange(id, isAdmin, ipFrom, ipTo, ipDescription);
             }
 
             @Override
@@ -66,15 +72,11 @@ public class AdminIpWhiteList extends HttpServlet {
             }
         };
 
-        final String sqlCommand = "SELECT id, " + IS_ADMIN + ", " + IP_RANGE_FROM + ", " + IP_RANGE_TO
-                + " FROM " + TABLE_NAME
-                + " ORDER BY id";
-
         final CollectionHandler<RoleIpRange, List<RoleIpRange>> collectionHandler =
                 new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer);
 
         final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
-                sqlCommand, new Object[]{}, collectionHandler
+                SELECT_IP_WHITE_LIST_QUERY, new Object[]{}, collectionHandler
         );
 
         return Imcms.getServices().getDatabase().execute(queryCommand);
@@ -111,9 +113,6 @@ public class AdminIpWhiteList extends HttpServlet {
         if (!user.isSuperAdmin()) {
             AdminIpAccess.printNonAdminError(user, request, response, getClass());
 
-        } else if (request.getParameter("LOGIN_VIA_HTTPS") != null) {
-            setLoginViaHttps(request, response, user);
-
         } else if (request.getParameter("ADD_IP_RANGE") != null) {
             setViewDataAndForwardTo(WHITE_LIST_ADD_TEMPLATE, request, response, user);
 
@@ -133,6 +132,9 @@ public class AdminIpWhiteList extends HttpServlet {
 
         } else if (request.getParameter("DEL_IP_RANGE") != null) {
             deleteIpRange(request, response);
+
+        } else if (request.getParameter("LOGIN_VIA_HTTPS") != null) {
+            setLoginViaHttps(request, response, user);
         }
     }
 
@@ -203,6 +205,7 @@ public class AdminIpWhiteList extends HttpServlet {
             final int rangeId = Integer.parseInt(editIpRangeId);
             final String ipFrom = request.getParameter("IP_START" + rangeId);
             final String ipTo = request.getParameter("IP_END" + rangeId);
+            final String ipDescription = request.getParameter("IP_DESCRIPTION" + rangeId);
 
             if (ipValidator.isValidInet4Address(ipFrom)
                     && ipValidator.isValidInet4Address(ipTo)
@@ -210,10 +213,11 @@ public class AdminIpWhiteList extends HttpServlet {
             {
                 final String sql = "UPDATE " + TABLE_NAME
                         + " SET " + IP_RANGE_FROM + " = ?,"
-                        + " " + IP_RANGE_TO + " = ?"
+                        + " " + IP_RANGE_TO + " = ?,"
+                        + " " + IP_DESCRIPTION + " = ?"
                         + " WHERE id = ?";
 
-                final Object[] params = {ipFrom, ipTo, rangeId};
+                final Object[] params = {ipFrom, ipTo, ipDescription, rangeId};
 
                 log.info("Updating IP range with id " + rangeId + " from " + ipFrom + " to " + ipTo);
 
@@ -229,6 +233,7 @@ public class AdminIpWhiteList extends HttpServlet {
 
         final String ipFrom = request.getParameter("IP_START");
         final String ipTo = request.getParameter("IP_END");
+        final String ipDescription = request.getParameter("IP_DESCRIPTION");
 
         if (ipValidator.isValidInet4Address(ipFrom)
                 && ipValidator.isValidInet4Address(ipTo)
@@ -239,6 +244,7 @@ public class AdminIpWhiteList extends HttpServlet {
                     {IS_ADMIN, isAdmin},
                     {IP_RANGE_FROM, ipFrom},
                     {IP_RANGE_TO, ipTo},
+                    {IP_DESCRIPTION, ipDescription},
             };
 
             log.info("Adding new IP range from " + ipFrom + " to " + ipTo + " for "
