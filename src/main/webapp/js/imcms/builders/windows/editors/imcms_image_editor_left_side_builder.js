@@ -360,13 +360,18 @@ Imcms.define(
             }
             imageDataContainers.$image.css(style);
             imageDataContainers.$cropImg.css(style);
-            imageDataContainers.$shadow.css({
-                "width": ((!isImgRotate) ? imageDataContainers.$image.height() : imageDataContainers.$image.width()) + 4,
-                "height": ((!isImgRotate) ? imageDataContainers.$image.width() : imageDataContainers.$image.height()) + 4
-            });
 
-            events.trigger("rotate img");
             isImgRotate = !isImgRotate;
+            events.trigger("rotate img");
+
+            var newWidth = imageDataContainers.$image.width(),
+                newHeight = imageDataContainers.$image.height(),
+                newCropAreaHeight = imageDataContainers.$cropArea.width(),
+                newCropAreaWeight = imageDataContainers.$cropArea.height(),
+                newCropAreaLeft = imageDataContainers.$cropArea.position().left,
+                newCropAreaTop = imageDataContainers.$cropArea.position().top;
+
+            resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers);
         }
 
         function rotateLeft() {
