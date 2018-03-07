@@ -6,18 +6,19 @@ package com.imcode.imcms.servlet;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.11.17.
  */
-@SuppressWarnings("unused")
 public final class RoleIpRange {
     private final int id;
     private final boolean isAdmin;
     private final String ipFrom;
     private final String ipTo;
+    private final String description;
 
-    public RoleIpRange(int id, boolean isAdmin, String ipFrom, String ipTo) {
+    public RoleIpRange(int id, boolean isAdmin, String ipFrom, String ipTo, String description) {
         this.id = id;
         this.isAdmin = isAdmin;
         this.ipFrom = ipFrom;
         this.ipTo = ipTo;
+        this.description = description;
     }
 
     public int getId() {
@@ -34,5 +35,9 @@ public final class RoleIpRange {
 
     public String getIpTo() {
         return ipTo;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }
