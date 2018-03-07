@@ -321,8 +321,42 @@ Imcms.define(
 
         function rotate(angleDelta, imageDataContainers) {
             angle += angleDelta;
-            imageDataContainers.$image.css({"transform": "rotate(" + angle + "deg)"});
-            imageDataContainers.$cropImg.css({"transform": "rotate(" + angle + "deg)"});
+            angle = ((angle === 360) || (angle === -360)) ? 0 : angle;
+
+            var style = {};
+
+            switch (angle) {
+                case 90:
+                case -270:
+                    style = {
+                        "transform": "rotate(" + angle + "deg) translateY(-100%)",
+                        "transform-origin": "top left"
+                    };
+                    break;
+                case 180:
+                case -180:
+                    style = {
+                        "transform": "rotate(" + angle + "deg) translate(-100%, -100%)",
+                        "transform-origin": "top left"
+                    };
+                    break;
+                case 270:
+                case -90:
+                    style = {
+                        "transform": "rotate(" + angle + "deg) translateX(-100%)",
+                        "transform-origin": "top left"
+                    };
+                    break;
+                default:
+                    style = {
+                        "transform": "rotate(" + angle + "deg)",
+                        "transform-origin": "top left"
+                    };
+            }
+            imageDataContainers.$image.css(style);
+            imageDataContainers.$cropImg.css(style);
+
+            events.trigger("rotate img");
         }
 
         function rotateLeft() {
