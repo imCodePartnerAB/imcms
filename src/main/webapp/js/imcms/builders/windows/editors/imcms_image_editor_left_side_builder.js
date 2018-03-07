@@ -2,7 +2,7 @@ Imcms.define(
     "imcms-image-editor-left-side-builder",
     ["imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-events"],
     function (BEM, components, texts, $, events) {
-
+        var isImgRotate = false;
         texts = texts.editors.image;
 
         function buildPreviewImageArea(imageDataContainers) {
@@ -199,8 +199,8 @@ Imcms.define(
                 }, 200);
 
             imageDataContainers.$shadow.animate({
-                "width": newWidth + 4,
-                "height": newHeight + 4
+                "width": ((isImgRotate) ? newHeight : newWidth) + 4,
+                "height": ((isImgRotate) ? newWidth : newHeight) + 4
             }, 200);
 
             imageDataContainers.$cropImg
@@ -306,6 +306,11 @@ Imcms.define(
             ;
             var twiceAngleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) * 2 || 0;
 
+            if (isImgRotate) {
+                newCropAreaHeight = $editableImageArea.width();
+                newCropAreaWeight = $editableImageArea.height();
+            }
+
             resizeImage(
                 newWidth - twiceAngleBorderSize,
                 newHeight - twiceAngleBorderSize,
@@ -355,8 +360,13 @@ Imcms.define(
             }
             imageDataContainers.$image.css(style);
             imageDataContainers.$cropImg.css(style);
+            imageDataContainers.$shadow.css({
+                "width": ((!isImgRotate) ? imageDataContainers.$image.height() : imageDataContainers.$image.width()) + 4,
+                "height": ((!isImgRotate) ? imageDataContainers.$image.width() : imageDataContainers.$image.height()) + 4
+            });
 
             events.trigger("rotate img");
+            isImgRotate = !isImgRotate;
         }
 
         function rotateLeft() {
