@@ -1,6 +1,6 @@
 package imcode.server;
 
-import com.imcode.db.*;
+import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
 import com.imcode.imcms.db.*;
 import com.imcode.imcms.services.ServerSettings;
@@ -8,19 +8,26 @@ import com.imcode.imcms.services.ServerSettingsChecker;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.util.Prefs;
 import imcode.util.CachingFileLoader;
-import org.apache.commons.dbcp.BasicDataSource;
-import org.apache.commons.lang.UnhandledException;
+import imcode.util.Prefs;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
 
 import javax.sql.DataSource;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 public class Imcms {
 
@@ -209,11 +216,14 @@ public class Imcms {
             basicDataSource.setPassword(password);
             basicDataSource.setUrl(jdbcUrl);
 
-            basicDataSource.setMaxActive(maxConnectionCount);
+            basicDataSource.setMaxTotal(maxConnectionCount);
             basicDataSource.setMaxIdle(maxConnectionCount);
+            basicDataSource.setMaxWaitMillis(TimeUnit.SECONDS.toMillis(20));
             basicDataSource.setDefaultAutoCommit(true);
             basicDataSource.setPoolPreparedStatements(true);
             basicDataSource.setTestOnBorrow(true);
+            basicDataSource.setLogAbandoned(true);
+            basicDataSource.setRemoveAbandonedTimeout(60);
             basicDataSource.setValidationQuery("select 1");
 
             logDatabaseVersion(basicDataSource);
