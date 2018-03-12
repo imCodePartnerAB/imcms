@@ -1,3 +1,4 @@
+<%@ page pageEncoding="UTF-8" %>
 <html>
 <head><title><? templates/sv/AdminIpWhiteList_Add.jsp/1 ?></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">

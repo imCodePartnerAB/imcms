@@ -1,3 +1,4 @@
+<%@ page pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <!-- gui_start_of_page -->
@@ -105,7 +106,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><? templates/sv/AdminIpAccess.htm/3 ?><br> &nbsp;</td>
+                                    <td><? templates/sv/AdminIpWhiteList.jsp/4 ?><br> &nbsp;</td>
                                 </tr>
                                 <tr>
                                     <td><? templates/sv/AdminIpAccess.htm/4 ?> ${userIP}<br> &nbsp;</td>
@@ -164,7 +165,7 @@
                                         <input type="submit" class="imcmsFormBtn" name="ADD_IP_RANGE"
                                                value="<? templates/sv/AdminIpAccess.htm/2001 ?>">
                                         <input type="submit" class="imcmsFormBtn" name="UPDATE_IP_RANGE"
-                                                value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
+                                               value="<? templates/sv/AdminIpAccess.htm/2002 ?>">
                                         <input type="submit" class="imcmsFormBtn" name="IP_WARN_DELETE"
                                                value="<? templates/sv/AdminIpAccess.htm/2003 ?>">
                                     </td>
