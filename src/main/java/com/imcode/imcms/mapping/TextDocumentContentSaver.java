@@ -1,31 +1,28 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
+import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.container.*;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Menu;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuItem;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.repository.*;
 import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 @Transactional
 public class TextDocumentContentSaver {
 
+    private final MenuService menuService;
     private final VersionRepository versionRepository;
     private final TextRepository textRepository;
     private final TextHistoryRepository textHistoryRepository;
@@ -36,12 +33,19 @@ public class TextDocumentContentSaver {
     private final LanguageRepository languageRepository;
     private final UserRepository userRepository;
 
-    @Inject
-    public TextDocumentContentSaver(VersionRepository versionRepository, TextRepository textRepository,
-                                    TextHistoryRepository textHistoryRepository, ImageRepository imageRepository,
-                                    MenuRepository menuRepository, TextDocumentTemplateRepository textDocumentTemplateRepository,
-                                    LoopRepository loopRepository, LanguageRepository languageRepository,
+    @Autowired
+    public TextDocumentContentSaver(MenuService menuService,
+                                    VersionRepository versionRepository,
+                                    TextRepository textRepository,
+                                    TextHistoryRepository textHistoryRepository,
+                                    ImageRepository imageRepository,
+                                    MenuRepository menuRepository,
+                                    TextDocumentTemplateRepository textDocumentTemplateRepository,
+                                    LoopRepository loopRepository,
+                                    LanguageRepository languageRepository,
                                     UserRepository userRepository) {
+
+        this.menuService = menuService;
         this.versionRepository = versionRepository;
         this.textRepository = textRepository;
         this.textHistoryRepository = textHistoryRepository;
@@ -171,41 +175,8 @@ public class TextDocumentContentSaver {
         textDocumentTemplateRepository.save(textDocumentTemplate);
     }
 
-    public void saveMenu(TextDocMenuContainer container) {
-        VersionRef versionRef = container.getVersionRef();
-        Version version = findVersion(versionRef);
-        Menu menu = toJpaObject(container.getMenu(), version, container.getMenuNo());
-
-        saveMenu(menu, SaveMode.UPDATE);
-
-    }
-
-    private Menu toJpaObject(MenuDomainObject menuDO, Version version, int no) {
-        Menu menu = new Menu();
-        Map<Integer, MenuItem> menuItems = new HashMap<>();
-
-        menuDO.getItemsMap().forEach((menuItemNo, menuItemDO) -> {
-            MenuItem menuItem = new MenuItem();
-            menuItem.setSortKey(menuItemDO.getSortKey());
-            menuItem.setTreeSortIndex(menuItemDO.getTreeSortIndex());
-            menuItems.put(menuItemNo, menuItem);
-        });
-
-        menu.setVersion(version);
-        menu.setNo(no);
-        menu.setSortOrder(menuDO.getSortOrder());
-        menu.setItems(menuItems);
-
-        return menu;
-    }
-
-    private void saveMenu(Menu menu, SaveMode saveMode) {
-        if (saveMode == SaveMode.UPDATE) {
-            Integer id = menuRepository.findIdByVersionAndNo(menu.getVersion(), menu.getNo());
-            menu.setId(id);
-        }
-
-        menuRepository.saveAndFlush(menu);
+    public void saveMenu(MenuContainer container) {
+        menuService.saveFrom(container.getMenu());
     }
 
     private void saveImages(TextDocumentDomainObject doc, Version version, LanguageJPA language, SaveMode saveMode) {

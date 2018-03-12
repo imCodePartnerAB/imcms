@@ -33,7 +33,6 @@ import static org.junit.Assert.*;
 public class MenuRepositoryTest {
 
     @Autowired
-    @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
     private MenuRepository menuRepository;
 
     @Autowired

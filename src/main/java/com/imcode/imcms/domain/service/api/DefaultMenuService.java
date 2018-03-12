@@ -11,7 +11,6 @@ import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +35,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
     DefaultMenuService(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-                       @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
+                               MenuRepository menuRepository,
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,

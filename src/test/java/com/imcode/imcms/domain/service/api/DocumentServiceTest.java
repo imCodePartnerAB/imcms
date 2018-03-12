@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -93,7 +92,6 @@ public class DocumentServiceTest {
     private VersionRepository versionRepository;
 
     @Autowired
-    @Qualifier("com.imcode.imcms.persistence.repository.MenuRepository")
     private MenuRepository menuRepository;
 
     @Autowired

@@ -7,7 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-@Entity(name = "com.imcode.imcms.persistence.entity.Menu")
+@Entity
 @Table(name = "imcms_menu")
 @Setter
 @Getter

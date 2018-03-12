@@ -9,7 +9,6 @@ import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -32,7 +31,7 @@ public class MenuDataInitializer extends TestDataCleaner {
     private Menu savedMenu;
     private Version version;
 
-    public MenuDataInitializer(@Qualifier("com.imcode.imcms.persistence.repository.MenuRepository") MenuRepository menuRepository,
+    public MenuDataInitializer(MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer,
                                BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
                                LanguageService languageService) {

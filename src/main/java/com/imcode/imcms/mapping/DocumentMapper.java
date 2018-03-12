@@ -8,7 +8,7 @@ import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.MenuRepository;
+import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
 import imcode.server.document.*;
 import imcode.server.document.index.DocumentIndex;
@@ -350,10 +350,6 @@ public class DocumentMapper implements DocumentGetter {
         this.documentIndex = documentIndex;
     }
 
-    public List<Object[]> getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
-        return menuRepository.getParentDocumentAndMenuIdsForDocument(document.getId(), document.getVersionNo());
-    }
-
     public void deleteDocument(int docId) {
         deleteDocument(getDefaultDocument(docId));
     }
@@ -369,21 +365,11 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
-        List<Integer[]> rows = menuRepository.getDocumentMenuPairsContainingDocument(document.getId(), document.getVersionNo());
-
-        TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[rows.size()];
-
-        for (int i = 0; i < documentMenuPairs.length; i++) {
-            Object[] row = rows.get(i);
-
-            int containingDocumentId = (int) row[0];
-            int menuIndex = (int) row[1];
-
-            TextDocumentDomainObject containingDocument = getDocument(containingDocumentId);
-            documentMenuPairs[i] = new TextDocumentMenuIndexPair(containingDocument, menuIndex);
-        }
-
-        return documentMenuPairs;
+        return menuRepository
+                .getDocIdsByLinkedDocIdAndVersionNo(document.getId(), document.getVersionNo())
+                .stream()
+                .map(docId -> new TextDocumentMenuIndexPair(getDocument(docId)))
+                .toArray(TextDocumentMenuIndexPair[]::new);
     }
 
     public Iterator<DocumentDomainObject> getDocumentsIterator(IntRange idRange) {
@@ -742,19 +728,13 @@ public class DocumentMapper implements DocumentGetter {
     public static class TextDocumentMenuIndexPair {
 
         private TextDocumentDomainObject document;
-        private int menuIndex;
 
-        public TextDocumentMenuIndexPair(TextDocumentDomainObject document, int menuIndex) {
+        public TextDocumentMenuIndexPair(TextDocumentDomainObject document) {
             this.document = document;
-            this.menuIndex = menuIndex;
         }
 
         public TextDocumentDomainObject getDocument() {
             return document;
-        }
-
-        public int getMenuIndex() {
-            return menuIndex;
         }
     }
 

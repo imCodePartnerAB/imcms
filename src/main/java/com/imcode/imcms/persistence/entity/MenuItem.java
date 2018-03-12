@@ -7,7 +7,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "com.imcode.imcms.persistence.entity.MenuItem")
+@Entity
 @Table(name = "imcms_menu_item")
 @Data
 @NoArgsConstructor

@@ -114,7 +114,7 @@ public class DocumentSaver {
     }
 
     @Transactional
-    public void saveMenu(TextDocMenuContainer container, UserDomainObject user)
+    public void saveMenu(MenuContainer container, UserDomainObject user)
             throws NoPermissionInternalException {
         textDocumentContentSaver.saveMenu(container);
         docRepository.touch(container.getVersionRef(), user);
