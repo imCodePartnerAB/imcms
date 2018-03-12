@@ -54,11 +54,8 @@ LI { padding-bottom:5px; }
 		<td valign="top">
 		<table border="0" cellspacing="0" cellpadding="0" style="width:100%;">
 		<tr>
-			<td colspan="3" style="padding-bottom:15px;"><imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoTop"/></td>
 		</tr>
 		<tr valign="top">
-			<td style="width:200px; padding-right:15px;"><imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoLeft"/></td>
-	
 			<td>
 			<imcms:text no="1" label="Text (Rubrik)" pre='<h1>' post='</h1>' formats="text" rows="2" />
 			<imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>' />
@@ -76,18 +73,15 @@ LI { padding-bottom:5px; }
 			</imcms:menuloop>
 			</ul>
 			</imcms:menu>
-			<imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoContent" pre='<hr/>' post='<hr/>'/>
 			<imcms:image no='3' label='Bild' linkable="false" pre='<br/><br/>' post='<br/>'/><br/>
 			<imcms:include no='1' label='Dynamisk inkludering 1'/>
 			</td>
 	
-			<td style="width:150px; padding-left:10px;"><imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoRight"/></td>
 		</tr>
 		</table></td>
 	</tr>
 	<tr>
 		<td valign="bottom" style="text-align:center;"><imcms:admin/>
-		<imcms:include url="@documentationwebappurl@/servlet/GetDoc?meta_id=1054&template=imcmsDemoBottom"/></td>
 	</tr>
 	</table>
 </div>
