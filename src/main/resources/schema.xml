@@ -1,4 +1,4 @@
-<schema version="6.41"
+<schema version="6.42"
         xsi:noNamespaceSchemaLocation="schema.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -150,6 +150,9 @@
         </diff>
         <diff from="6.40" to="6.41">
             <script>diff/diff-6.40-6.41-mysql.sql</script>
+        </diff>
+        <diff from="6.41" to="6.42">
+            <script>diff/diff-6.41-6.42-mysql.sql</script>
         </diff>
     </diffs>
 </schema>
