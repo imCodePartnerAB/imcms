@@ -84,8 +84,18 @@ public class Image {
         return internalImage.getLinkUrl();
     }
 
+    @SuppressWarnings("unused")
+    public void setLinkHref(String linkHref) {
+        internalImage.setLinkUrl(linkHref);
+    }
+
     public String getLinkTarget() {  // use target_name if target = _other
         return internalImage.getTarget();
+    }
+
+    @SuppressWarnings("unused")
+    public void setLinkTarget(String linkTarget) {
+        internalImage.setTarget(linkTarget);
     }
 
     public void setSrc(String src) {   // image srcurl,  relative imageurl
