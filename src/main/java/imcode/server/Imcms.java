@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.servlet.ServletContext;
+import javax.sql.DataSource;
 import java.io.File;
 import java.util.Properties;
 
@@ -148,6 +149,10 @@ public class Imcms {
      */
     public static boolean isVersioningAllowed() {
         return isVersioningAllowed;
+    }
+
+    public static DataSource getApiDataSource() {
+        return services.getDatabaseService().getDataSource();
     }
 
     @PostConstruct

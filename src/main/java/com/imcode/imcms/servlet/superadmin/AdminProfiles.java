@@ -19,7 +19,7 @@ import java.util.Map;
 public class AdminProfiles extends HttpServlet {
 
     private Database getDatabase() {
-        return new DataSourceDatabase(Imcms.getServices().getDatabaseService().getDataSource());
+        return new DataSourceDatabase(Imcms.getApiDataSource());
     }
 
     protected void doGet(HttpServletRequest request,
