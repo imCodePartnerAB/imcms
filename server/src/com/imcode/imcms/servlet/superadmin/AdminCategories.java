@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.servlet.admin.ImageBrowser;
@@ -12,8 +11,6 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.image.ImageInfo;
-
 import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
@@ -174,9 +171,7 @@ public class AdminCategories extends HttpServlet {
         if ( req.getParameter( PARAMETER__BROWSE_FOR_IMAGE ) != null ) {
             forwardToImageBrowse( adminCategoriesPage, req, res );
         } else if ( null != req.getParameter( PARAMETER__ADD_CATEGORY_BUTTON ) && StringUtils.isNotBlank( newCategory.getName() ) ) {
-            try {
-                categoryMapper.addCategory( newCategory );
-            } catch ( CategoryAlreadyExistsException ignored ) {}
+            categoryMapper.addCategory(newCategory);
             adminCategoriesPage.setCategoryToEdit( new CategoryDomainObject( 0, null, "", "", null ) );
             adminCategoriesPage.setUniqueCategoryName( true );
         }
