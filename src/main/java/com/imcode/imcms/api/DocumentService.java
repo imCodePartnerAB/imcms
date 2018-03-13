@@ -127,6 +127,11 @@ public class DocumentService {
         }
     }
 
+    @SuppressWarnings("unused")
+    public void deleteDocument(Document document) throws NoPermissionException {
+        documentMapper.deleteDocument(document.getInternal());
+    }
+
     public Category getCategory(CategoryType categoryType, String categoryName) {
         final CategoryDomainObject category = getCategoryMapper().getCategoryByTypeAndName(categoryType.getInternal(), categoryName);
         if (null != category) {
