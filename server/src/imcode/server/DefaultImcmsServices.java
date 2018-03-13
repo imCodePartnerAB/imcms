@@ -15,8 +15,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.IndexDocumentFactory;
-import imcode.server.document.index.RebuildingDirectoryIndex;
+import imcode.server.document.index.*;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
@@ -256,7 +255,18 @@ final public class DefaultImcmsServices implements ImcmsServices {
 	private void initDocumentMapper() {
 		File indexDirectory = Imcms.getIndexDirectory();
 		documentMapper = new DocumentMapper(this, this.getDatabase());
-		documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, new PhaseQueryFixingDocumentIndex(new RebuildingDirectoryIndex(indexDirectory, getConfig().getIndexingSchedulePeriodInMinutes(), new IndexDocumentFactory(getCategoryMapper())))));
+        final DefaultReindexingDocumentRepository repository = new DefaultReindexingDocumentRepository(documentMapper);
+        DefaultDirectoryIndex.addCustomDocRepository("default", repository);
+
+        final float indexingSchedulePeriod = getConfig().getIndexingSchedulePeriodInMinutes();
+        final IndexDocumentFactory indexDocumentFactory = new IndexDocumentFactory(getCategoryMapper());
+
+        DocumentIndex documentIndex = new RebuildingDirectoryIndex(
+                indexDirectory, indexingSchedulePeriod, indexDocumentFactory
+        );
+        documentIndex = new PhaseQueryFixingDocumentIndex(documentIndex);
+
+        documentMapper.setDocumentIndex(new LoggingDocumentIndex(database, documentIndex));
 	}
 
 	private void initTemplateMapper() {

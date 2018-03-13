@@ -2,7 +2,6 @@ package imcode.server.document.index;
 
 import com.imcode.imcms.api.SearchResult;
 import com.imcode.imcms.mapping.DocumentGetter;
-import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.util.HumanReadable;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -45,9 +44,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
         this.directory = directory;
         this.indexDocumentFactory = indexDocumentFactory;
-
-        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-        nameToCustomDocRepository.put("default", new DefaultReindexingDocumentRepository(documentMapper));
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
@@ -87,7 +83,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    @SuppressWarnings("unused")
     public static void addCustomDocRepository(String name, DocumentRepository documentRepository) {
         nameToCustomDocRepository.put(name, documentRepository);
     }
