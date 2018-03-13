@@ -2,8 +2,8 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 public class DocumentGetterWrapper implements DocumentGetter {
 
@@ -13,7 +13,7 @@ public class DocumentGetterWrapper implements DocumentGetter {
         this.documentGetter = documentGetter;
     }
 
-    public List getDocuments(Collection documentIds) {
+    public List<DocumentDomainObject> getDocuments(Collection documentIds) {
         return documentGetter.getDocuments(documentIds) ;
     }
 

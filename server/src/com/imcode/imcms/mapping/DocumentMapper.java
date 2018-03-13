@@ -5,7 +5,7 @@ import com.imcode.db.DatabaseCommand;
 import com.imcode.db.commands.CompositeDatabaseCommand;
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.imcms.api.Document;
@@ -25,11 +25,11 @@ import imcode.util.LazilyLoadedObject;
 import imcode.util.SystemClock;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.math.IntRange;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.oro.text.perl.Perl5Util;
 
 import java.io.File;
@@ -48,8 +48,8 @@ public class DocumentMapper implements DocumentGetter {
     private Database database;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
-    private Map aliasCache ;
-    private Map documentCache ;
+    private Map<String, String[]> aliasCache;
+    private Map<Integer, DocumentDomainObject> documentCache;
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
     private CachingDocumentGetter documentGetter ;
@@ -64,8 +64,8 @@ public class DocumentMapper implements DocumentGetter {
         this.database = database;
         Config config = services.getConfig();
         int documentCacheMaxSize = config.getDocumentCacheMaxSize();
-        documentCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
-        aliasCache = Collections.synchronizedMap(new LRUMap(documentCacheMaxSize)) ;
+        documentCache = Collections.synchronizedMap(new LRUMap<>(documentCacheMaxSize));
+        aliasCache = Collections.synchronizedMap(new LRUMap<>(documentCacheMaxSize));
         setDocumentGetter(new FragmentingDocumentGetter(new DatabaseDocumentGetter(database, services)));
         this.documentPermissionSetMapper = new DocumentPermissionSetMapper(database);
         this.categoryMapper = new CategoryMapper(database);
@@ -140,17 +140,16 @@ public class DocumentMapper implements DocumentGetter {
         document.setPublicationStatus(Document.PublicationStatus.NEW);
     }
 
-    public SectionDomainObject[] getAllSections() {
-        String[] parameters = new String[0];
-        String[][] sqlRows = (String[][]) getDatabase().execute(new SqlQueryCommand(SQL_GET_ALL_SECTIONS, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        SectionDomainObject[] allSections = new SectionDomainObject[sqlRows.length];
-        for (int i = 0; i < sqlRows.length; i++) {
-            int sectionId = Integer.parseInt(sqlRows[i][0]);
-            String sectionName = sqlRows[i][1];
-            allSections[i] = new SectionDomainObject(sectionId, sectionName);
+    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
+        File filePath = Imcms.getServices().getConfig().getFilePath();
+        File[] filesToDelete = filePath.listFiles(fileFilter);
+        if (filesToDelete == null) {
+            return;
         }
-        Arrays.sort(allSections, SECTION_NAME_COMPARATOR);
-        return allSections;
+
+        for (File aFilesToDelete : filesToDelete) {
+            aFilesToDelete.delete();
+        }
     }
 
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
@@ -200,43 +199,46 @@ public class DocumentMapper implements DocumentGetter {
         return documentIndex;
     }
 
+    public SectionDomainObject[] getAllSections() {
+        String[] parameters = new String[0];
+        String[][] sqlRows = getDatabase().execute(new SqlQueryCommand<>(SQL_GET_ALL_SECTIONS, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        SectionDomainObject[] allSections = new SectionDomainObject[sqlRows.length];
+        for (int i = 0; i < sqlRows.length; i++) {
+            int sectionId = Integer.parseInt(sqlRows[i][0]);
+            String sectionName = sqlRows[i][1];
+            allSections[i] = new SectionDomainObject(sectionId, sectionName);
+        }
+        Arrays.sort(allSections, SECTION_NAME_COMPARATOR);
+        return allSections;
+    }
+
     public String[][] getParentDocumentAndMenuIdsForDocument(DocumentDomainObject document) {
         String sqlStr = "SELECT meta_id,menu_index FROM childs, menus WHERE menus.menu_id = childs.menu_id AND to_meta_id = ?";
         String[] parameters = new String[]{"" + document.getId()};
-        return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        return getDatabase().execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
     }
 
     public String[][] getAllMimeTypesWithDescriptions(UserDomainObject user) {
         String sqlStr = "SELECT mime, mime_name FROM mime_types WHERE lang_prefix = ? AND mime_id > 0 ORDER BY mime_id";
         String[] parameters = new String[]{user.getLanguageIso639_2()};
-        return (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        return getDatabase().execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
     }
 
     public String[] getAllMimeTypes() {
         String sqlStr = "SELECT mime FROM mime_types WHERE mime_id > 0 ORDER BY mime_id";
         String[] params = new String[]{};
-        return (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
+        return getDatabase().execute(new SqlQueryCommand<>(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
     }
 
     public BrowserDocumentDomainObject.Browser[] getAllBrowsers() {
         String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id != 0";
         String[] parameters = new String[0];
-        String[][] sqlResult = (String[][]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        List browsers = new ArrayList();
-        for (int i = 0; i < sqlResult.length; i++) {
-            browsers.add(createBrowserFromSqlRow(sqlResult[i]));
+        String[][] sqlResult = getDatabase().execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        List<BrowserDocumentDomainObject.Browser> browsers = new ArrayList<>();
+        for (String[] aSqlResult : sqlResult) {
+            browsers.add(createBrowserFromSqlRow(aSqlResult));
         }
-        return (BrowserDocumentDomainObject.Browser[]) browsers.toArray(new BrowserDocumentDomainObject.Browser[browsers.size()]);
-    }
-
-    public BrowserDocumentDomainObject.Browser getBrowserById(int browserIdToGet) {
-        if (browserIdToGet == BrowserDocumentDomainObject.Browser.DEFAULT.getId()) {
-            return BrowserDocumentDomainObject.Browser.DEFAULT;
-        }
-        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
-        String[] params = new String[]{"" + browserIdToGet};
-        String[] sqlRow = (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
-        return createBrowserFromSqlRow(sqlRow);
+        return browsers.toArray(new BrowserDocumentDomainObject.Browser[browsers.size()]);
     }
 
     protected BrowserDocumentDomainObject.Browser createBrowserFromSqlRow(String[] sqlRow) {
@@ -257,22 +259,32 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
+    public BrowserDocumentDomainObject.Browser getBrowserById(int browserIdToGet) {
+        if (browserIdToGet == BrowserDocumentDomainObject.Browser.DEFAULT.getId()) {
+            return BrowserDocumentDomainObject.Browser.DEFAULT;
+        }
+        String sqlStr = "SELECT browser_id, name, value FROM browsers WHERE browser_id = ?";
+        String[] params = new String[]{"" + browserIdToGet};
+        String[] sqlRow = getDatabase().execute(new SqlQueryCommand<>(sqlStr, params, Utility.STRING_ARRAY_HANDLER));
+        return createBrowserFromSqlRow(sqlRow);
+    }
+
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
     	if (document instanceof TextDocumentDomainObject) {
     		TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
-    		
+
             for (int imageIndex : textDoc.getImages().keySet()) {
                 ImageCacheManager.clearCacheEntries(textDoc.getId(), imageIndex);
             }
     	}
-    	
+
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
         return new CompositeDatabaseCommand(new DatabaseCommand[]{
             new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
-            new SqlUpdateDatabaseCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
+                new SqlUpdateCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
             new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),
@@ -292,7 +304,7 @@ public class DocumentMapper implements DocumentGetter {
             new DeleteWhereColumnsEqualDatabaseCommand("texts_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("images_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("childs_history", "to_meta_id", metaIdStr ),
-            new SqlUpdateDatabaseCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[] {metaIdStr} ),
+                new SqlUpdateCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[]{metaIdStr}),
             new DeleteWhereColumnsEqualDatabaseCommand("menus_history", metaIdColumn, metaIdStr ),
             new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
             new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
@@ -304,10 +316,9 @@ public class DocumentMapper implements DocumentGetter {
         String[] parameters = new String[]{
             user.getLanguageIso639_2()
         };
-        String[][] rows = (String[][]) getDatabase().execute(new SqlQueryCommand("SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
-        Map allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap();
-        for (int i = 0; i < rows.length; i++) {
-            String[] row = rows[i];
+        String[][] rows = getDatabase().execute(new SqlQueryCommand<>("SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        Map<Integer, String> allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap<>();
+        for (String[] row : rows) {
             Integer documentTypeId = Integer.valueOf(row[0]);
             String documentTypeNameInUsersLanguage = row[1];
             allDocumentTypeIdsAndNamesInUsersLanguage.put(documentTypeId, documentTypeNameInUsersLanguage);
@@ -315,10 +326,14 @@ public class DocumentMapper implements DocumentGetter {
         return allDocumentTypeIdsAndNamesInUsersLanguage;
     }
 
+    public Iterator getDocumentsIterator(final IntRange idRange) {
+        return new DocumentsIterator(getDocumentIds(idRange));
+    }
+
     public TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingDocument(DocumentDomainObject document) {
         String sqlSelectMenus = "SELECT meta_id, menu_index FROM menus, childs WHERE menus.menu_id = childs.menu_id AND childs.to_meta_id = ? ORDER BY meta_id, menu_index";
         String[] parameters = new String[]{"" + document.getId()};
-        String[][] sqlRows = (String[][]) getDatabase().execute(new SqlQueryCommand(sqlSelectMenus, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        String[][] sqlRows = getDatabase().execute(new SqlQueryCommand<>(sqlSelectMenus, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
         TextDocumentMenuIndexPair[] documentMenuPairs = new TextDocumentMenuIndexPair[sqlRows.length];
         for (int i = 0; i < sqlRows.length; i++) {
             String[] sqlRow = sqlRows[i];
@@ -330,17 +345,13 @@ public class DocumentMapper implements DocumentGetter {
         return documentMenuPairs;
     }
 
-    public Iterator getDocumentsIterator(final IntRange idRange) {
-        return new DocumentsIterator(getDocumentIds(idRange));
-    }
-
     private int[] getDocumentIds(IntRange idRange) {
         String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id";
         String[] params = new String[]{
             "" + idRange.getMinimumInteger(),
             "" + idRange.getMaximumInteger()
         };
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
+        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
@@ -350,18 +361,17 @@ public class DocumentMapper implements DocumentGetter {
 
     public int[] getAllDocumentIds() {
         String[] params = new String[0];
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT meta_id FROM meta ORDER BY meta_id", params, Utility.STRING_ARRAY_HANDLER));
+        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>("SELECT meta_id FROM meta ORDER BY meta_id", params, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
         }
         return documentIds;
     }
-
 
     public int[] getAllDocumentIdsForIndexing() {
         String[] params = new String[0];
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT meta_id FROM meta ORDER BY doc_type ASC, date_modified DESC", params, Utility.STRING_ARRAY_HANDLER));
+        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>("SELECT meta_id FROM meta ORDER BY doc_type ASC, date_modified DESC", params, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
         for (int i = 0; i < documentIdStrings.length; i++) {
             documentIds[i] = Integer.parseInt(documentIdStrings[i]);
@@ -369,12 +379,21 @@ public class DocumentMapper implements DocumentGetter {
         return documentIds;
     }
 
+    public Set<Integer> getDocumentIdsForIndexing() {
+        final String getDocIdsSQL = "SELECT meta_id FROM meta ORDER BY doc_type ASC, date_modified DESC";
+
+        final SqlQueryCommand<List<Integer>> databaseCommand = new SqlQueryCommand<>(
+                getDocIdsSQL, new String[0], Utility.INTEGER_LIST_HANDLER
+        );
+
+        return new HashSet<>(getDatabase().execute(databaseCommand));
+    }
 
     public Set<String> getAllDocumentAlias() {
-        Set<String> allDocumentAlias = new HashSet<String>();
-        String[] allAlias = (String[]) getDatabase().execute(new SqlQueryCommand("SELECT value FROM document_properties where key_name = ? ORDER BY value", new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));
-        for (int i = 0; i < allAlias.length; i ++) {
-            allDocumentAlias.add(allAlias[i].toLowerCase()) ;
+        Set<String> allDocumentAlias = new HashSet<>();
+        String[] allAlias = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM document_properties where key_name = ? ORDER BY value", new String[]{DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS}, Utility.STRING_ARRAY_HANDLER));
+        for (String allAlia : allAlias) {
+            allDocumentAlias.add(allAlia.toLowerCase());
         }
         return allDocumentAlias;
     }
@@ -387,10 +406,10 @@ public class DocumentMapper implements DocumentGetter {
                 document = getDocument(new Integer(documentIdString));
             }else{
                 String documentIdStringLower = documentIdString.toLowerCase();
-                String[] documentIds = (String[])aliasCache.get(documentIdStringLower);
+                String[] documentIds = aliasCache.get(documentIdStringLower);
                 if (documentIds == null || documentIds.length == 0) {
-                    documentIds = (String[]) getDatabase().execute(
-                            new SqlQueryCommand(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
+                    documentIds = getDatabase().execute(
+                            new SqlQueryCommand<>(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
                                     new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdStringLower },
                                     Utility.STRING_ARRAY_HANDLER));
                     aliasCache.put(documentIdStringLower, documentIds);
@@ -402,14 +421,6 @@ public class DocumentMapper implements DocumentGetter {
             }
         }
         return document;
-    }
-
-    static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
-        File filePath = Imcms.getServices().getConfig().getFilePath();
-        File[] filesToDelete = filePath.listFiles(fileFilter);
-        for (int i = 0; i < filesToDelete.length; i++) {
-            filesToDelete[i].delete();
-        }
     }
 
     static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
@@ -426,12 +437,12 @@ public class DocumentMapper implements DocumentGetter {
 
     public int getLowestDocumentId() {
         String[] params = new String[0];
-        return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT MIN(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
+        return Integer.parseInt(getDatabase().execute(new SqlQueryCommand<>("SELECT MIN(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
     }
 
     public int getHighestDocumentId() {
         String[] params = new String[0];
-        return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT MAX(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
+        return Integer.parseInt(getDatabase().execute(new SqlQueryCommand<>("SELECT MAX(meta_id) FROM meta", params, Utility.SINGLE_STRING_HANDLER)));
     }
 
     public void copyDocument(DocumentDomainObject document,
@@ -446,7 +457,7 @@ public class DocumentMapper implements DocumentGetter {
     public List getDocumentsWithPermissionsForRole(RoleDomainObject role) {
         String sqlStr = "SELECT meta_id FROM roles_rights WHERE role_id = ? ORDER BY meta_id";
         final Object[] parameters = new String[]{"" + role.getId()};
-        String[] documentIdStrings = (String[]) getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_HANDLER));
+        String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_HANDLER));
         final int[] documentIds = Utility.convertStringArrayToIntArray(documentIdStrings);
         return new AbstractList() {
             public Object get(int index) {
@@ -491,7 +502,7 @@ public class DocumentMapper implements DocumentGetter {
 
     String[] getAllKeywords() {
         String[] params = new String[0];
-        return (String[]) getDatabase().execute(new SqlQueryCommand("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
+        return getDatabase().execute(new SqlQueryCommand<>("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
     }
 
     public void setClock(Clock clock) {
@@ -506,15 +517,14 @@ public class DocumentMapper implements DocumentGetter {
         this.documentIndex = documentIndex;
     }
 
-    public List getDocuments(Collection documentIds) {
+    public List<DocumentDomainObject> getDocuments(Collection documentIds) {
         return documentGetter.getDocuments(documentIds) ;
     }
 
-    public Set getSections(Collection sectionIds) {
-        Set sections = new HashSet() ;
-        for ( Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
-            Integer sectionId = (Integer) iterator.next();
-            sections.add(getSectionById(sectionId.intValue())) ;
+    public Set<SectionDomainObject> getSections(Collection<Integer> sectionIds) {
+        Set<SectionDomainObject> sections = new HashSet<>();
+        for (Integer sectionId : sectionIds) {
+            sections.add(getSectionById(sectionId));
         }
         return sections ;
     }
@@ -524,9 +534,8 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
-        Set categories = getCategoryMapper().getCategories(document.getCategoryIds());
-        for ( Iterator iterator = categories.iterator(); iterator.hasNext(); ) {
-            CategoryDomainObject category = (CategoryDomainObject)iterator.next();
+        Set<CategoryDomainObject> categories = getCategoryMapper().getCategories(document.getCategoryIds());
+        for (CategoryDomainObject category : categories) {
             if (!category.getType().isInherited()) {
                 document.removeCategoryId(category.getId());
             }
@@ -566,8 +575,8 @@ public class DocumentMapper implements DocumentGetter {
     
     /**
      * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and a 
-     * {@link FileDocument} file ID ({@code fileNo}).
-     * 
+     * file ID ({@code fileNo}).
+     *
      * @param metaId    the ID of a text document
      * @param fileNo    the file ID of a {@link FileDocumentDomainObject}
      */
@@ -594,28 +603,9 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    private class DocumentsIterator implements Iterator {
-
-        int[] documentIds;
-        int index;
-
-        DocumentsIterator(int[] documentIds) {
-            this.documentIds = (int[]) documentIds.clone();
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        public boolean hasNext() {
-            return index < documentIds.length;
-        }
-
-        public Object next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return getDocument(documentIds[index++]);
+    private static class SectionNameComparator implements Comparator<SectionDomainObject> {
+        public int compare(SectionDomainObject section1, SectionDomainObject section2) {
+            return section1.getName().compareToIgnoreCase(section2.getName());
         }
     }
 
@@ -664,40 +654,30 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
-    private static class SectionNameComparator implements Comparator {
+    private static class SectionsSet extends AbstractSet<SectionDomainObject> implements LazilyLoadedObject.Copyable {
 
-        public int compare(Object o1, Object o2) {
-            SectionDomainObject section1 = (SectionDomainObject) o1;
-            SectionDomainObject section2 = (SectionDomainObject) o2;
-            return section1.getName().compareToIgnoreCase(section2.getName());
-        }
-    }
+        private Map<Integer, SectionDomainObject> byId = new HashMap<>();
+        private Map<String, SectionDomainObject> byName = new HashMap<>();
 
-    private static class SectionsSet extends AbstractSet implements LazilyLoadedObject.Copyable {
-
-        private Map byId = new HashMap() ;
-        private Map byName = new HashMap() ;
-
-        public boolean add(Object o) {
-            SectionDomainObject section = (SectionDomainObject) o ;
+        public boolean add(SectionDomainObject section) {
             byName.put(section.getName().toLowerCase(), section) ;
-            return null == byId.put(new Integer(section.getId()), section) ;
+            return null == byId.put(section.getId(), section);
         }
 
         public int size() {
             return byId.size() ;
         }
 
-        public Iterator iterator() {
+        public Iterator<SectionDomainObject> iterator() {
             return byId.values().iterator() ;
         }
 
         public SectionDomainObject getSectionById(int sectionId) {
-            return (SectionDomainObject) byId.get(new Integer(sectionId)) ;
+            return byId.get(sectionId);
         }
 
         public SectionDomainObject getSectionByName(String name) {
-            return (SectionDomainObject) byName.get(name.toLowerCase()) ;
+            return byName.get(name.toLowerCase());
         }
 
         public LazilyLoadedObject.Copyable copy() {
@@ -705,20 +685,47 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
+    private class DocumentsIterator implements Iterator {
+
+        int[] documentIds;
+        int index;
+
+        DocumentsIterator(int[] documentIds) {
+            this.documentIds = documentIds.clone();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        public boolean hasNext() {
+            return index < documentIds.length;
+        }
+
+        public Object next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return getDocument(documentIds[index++]);
+        }
+    }
+
     private class SectionsSetLoader implements LazilyLoadedObject.Loader {
 
         public LazilyLoadedObject.Copyable load() {
-            return (SectionsSet) getDatabase().execute(new SqlQueryCommand("SELECT section_id, section_name FROM sections", null, new CollectionHandler(new SectionsSet(), new RowTransformer() {
-                public Object createObjectFromResultSetRow(ResultSet rs) throws SQLException {
+            final RowTransformer<SectionDomainObject> rowTransformer = new RowTransformer<SectionDomainObject>() {
+                public SectionDomainObject createObjectFromResultSetRow(ResultSet rs) throws SQLException {
                     int sectionId = rs.getInt(1);
                     String sectionName = rs.getString(2);
                     return new SectionDomainObject(sectionId, sectionName);
                 }
 
-                public Class getClassOfCreatedObjects() {
+                public Class<SectionDomainObject> getClassOfCreatedObjects() {
                     return SectionDomainObject.class;
                 }
-            }))) ;
+            };
+            final CollectionHandler<SectionDomainObject, SectionsSet> collectionHandler = new CollectionHandler<>(new SectionsSet(), rowTransformer);
+            return getDatabase().execute(new SqlQueryCommand<>("SELECT section_id, section_name FROM sections", null, collectionHandler));
         }
     }
 }

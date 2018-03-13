@@ -2,24 +2,23 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
+import com.imcode.db.handlers.ObjectArrayHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
-import com.imcode.db.handlers.ObjectArrayHandler;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.util.Utility;
+import org.apache.commons.collections.map.LRUMap;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-
-import org.apache.commons.collections.map.LRUMap;
 
 public class CategoryMapper {
 
@@ -162,7 +161,7 @@ public class CategoryMapper {
 
     public CategoryTypeDomainObject addCategoryTypeToDb(final CategoryTypeDomainObject categoryType
     ) {
-        Number newId = (Number) database.execute(new InsertIntoTableDatabaseCommand("category_types", getColumnNamesAndValuesForCategoryType(categoryType))) ;
+        Number newId = database.execute(new InsertIntoTableDatabaseCommand("category_types", getColumnNamesAndValuesForCategoryType(categoryType)));
         return getCategoryTypeById(newId.intValue());
     }
 
@@ -180,8 +179,8 @@ public class CategoryMapper {
         invalidateCategoryType(categoryType);
     }
 
-    public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
-        Number newId = (Number) database.execute(new InsertIntoTableDatabaseCommand("categories", getColumnNamesAndValuesForCategory(category))) ;
+    public CategoryDomainObject addCategory(CategoryDomainObject category) {
+        Number newId = database.execute(new InsertIntoTableDatabaseCommand("categories", getColumnNamesAndValuesForCategory(category)));
         int categoryId = newId.intValue();
         category.setId(categoryId);
         return getCategoryById(categoryId);
@@ -272,13 +271,12 @@ public class CategoryMapper {
         }
     }
 
-    public Set getCategories(Collection categoryIds) {
-        Set categories = new HashSet() ;
-        for ( Iterator iterator = categoryIds.iterator(); iterator.hasNext(); ) {
-            Integer categoryId = (Integer) iterator.next();
-            CategoryDomainObject category = getCategoryById(categoryId.intValue()) ;
+    public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
+        Set<CategoryDomainObject> categories = new HashSet<>();
+        for (Integer categoryId : categoryIds) {
+            CategoryDomainObject category = getCategoryById(categoryId);
             if (null != category) {
-                categories.add(category) ;
+                categories.add(category);
             }
         }
         return categories;
