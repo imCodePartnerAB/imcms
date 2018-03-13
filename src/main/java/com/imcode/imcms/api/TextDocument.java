@@ -116,7 +116,7 @@ public class TextDocument extends Document {
     public Template getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
         return contentManagementSystem.getTemplateService()
-                .getTemplate(templateName)
+                .getTemplateOptional(templateName)
                 .orElse(null);
     }
 

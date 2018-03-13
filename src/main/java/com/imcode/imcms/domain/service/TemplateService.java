@@ -15,8 +15,10 @@ public interface TemplateService {
 
     void save(Template saveMe);
 
-    Optional<Template> getTemplate(String templateName);
+    Optional<Template> getTemplateOptional(String templateName);
 
     File getTemplateDirectory();
 
+    @Deprecated
+    Template getTemplate(String templateName);
 }

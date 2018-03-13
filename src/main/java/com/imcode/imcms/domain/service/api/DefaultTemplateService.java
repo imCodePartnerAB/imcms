@@ -47,13 +47,19 @@ class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    public Optional<Template> getTemplate(String templateName) {
+    public Optional<Template> getTemplateOptional(String templateName) {
         if (isTemplateFileExist(templateName)) {
             final Template template = templateRepository.findOne(templateName);
             return Optional.ofNullable(template).map(TemplateDTO::new);
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    @Deprecated
+    public Template getTemplate(String templateName) {
+        return getTemplateOptional(templateName).orElse(null);
     }
 
     public File getTemplateDirectory() {

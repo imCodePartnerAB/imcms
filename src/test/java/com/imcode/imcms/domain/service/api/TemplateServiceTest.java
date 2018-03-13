@@ -58,7 +58,7 @@ public class TemplateServiceTest {
 
         try {
             final Template templateDTO = dataInitializer.createData(templateName);
-            final Optional<Template> templateOptional = templateService.getTemplate(templateName);
+            final Optional<Template> templateOptional = templateService.getTemplateOptional(templateName);
             assertTrue(templateOptional.isPresent());
             final Template templateResult = templateOptional.get();
             assertEquals(templateDTO, templateResult);
@@ -78,11 +78,11 @@ public class TemplateServiceTest {
 
             Template templateDTO = new TemplateDTO(templateName, false);
             templateService.save(templateDTO);
-            final Optional<Template> oTemplate = templateService.getTemplate(templateName);
+            final Optional<Template> oTemplate = templateService.getTemplateOptional(templateName);
             assertTrue(oTemplate.isPresent());
 
             templateDTO = oTemplate.get();
-            final Optional<Template> templateOptional = templateService.getTemplate(templateName);
+            final Optional<Template> templateOptional = templateService.getTemplateOptional(templateName);
             assertTrue(templateOptional.isPresent());
             final Template templateResult = templateOptional.get();
             assertEquals(templateDTO.getName(), templateResult.getName());
@@ -100,7 +100,7 @@ public class TemplateServiceTest {
 
         templateService.save(templateDTO);
 
-        assertFalse(templateService.getTemplate(dummyName).isPresent());
+        assertFalse(templateService.getTemplateOptional(dummyName).isPresent());
     }
 
 }
