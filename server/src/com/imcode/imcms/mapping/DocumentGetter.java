@@ -2,13 +2,13 @@ package com.imcode.imcms.mapping;
 
 import imcode.server.document.DocumentDomainObject;
 
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 public interface DocumentGetter {
     
-    /** Return a list of documents <em>in the same order</em> as the documentIds */ 
-    List<DocumentDomainObject> getDocuments(Collection documentIds);
+    /** Return a list of documents <em>in the same order</em> as the documentIds */
+    List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds);
 
     DocumentDomainObject getDocument(Integer documentId);
 }
