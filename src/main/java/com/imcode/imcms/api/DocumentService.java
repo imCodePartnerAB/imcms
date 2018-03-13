@@ -136,6 +136,12 @@ public class DocumentService {
         }
     }
 
+    @SuppressWarnings("unused")
+    public Category getCategory(int categoryId) {
+        CategoryDomainObject category = this.getCategoryMapper().getCategoryById(categoryId);
+        return null != category ? new Category(category) : null;
+    }
+
     private CategoryMapper getCategoryMapper() {
         return contentManagementSystem.getInternal().getCategoryMapper();
     }
