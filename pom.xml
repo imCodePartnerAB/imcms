@@ -57,8 +57,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-		<maven.compiler.source>1.6</maven.compiler.source>
-		<maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
 		<maven.compiler.showWarnings>true</maven.compiler.showWarnings>
 
@@ -355,7 +355,7 @@
 		<dependency>
 			<groupId>com.imcode.db</groupId>
 			<artifactId>imcode-db</artifactId>
-            <version>0.5-java7-SNAPSHOT</version>
+            <version>0.5-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
