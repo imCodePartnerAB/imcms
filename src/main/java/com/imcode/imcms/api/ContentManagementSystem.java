@@ -9,6 +9,7 @@ import imcode.util.Utility;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import java.security.KeyStore;
 
 public class ContentManagementSystem implements Cloneable {
@@ -70,6 +71,13 @@ public class ContentManagementSystem implements Cloneable {
         ContentManagementSystem contentManagementSystem = new ContentManagementSystem(service, accessor);
         contentManagementSystem.init();
         return contentManagementSystem;
+    }
+
+    @Deprecated
+    public static ContentManagementSystem create(ImcmsServices service,
+                                                 UserDomainObject accessor,
+                                                 DataSource dataSource) {
+        return create(service, accessor);
     }
 
     private void init() {
