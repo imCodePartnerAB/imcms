@@ -98,6 +98,11 @@ public class Image {
         internalImage.setTarget(linkTarget);
     }
 
+    @SuppressWarnings("unused")
+    public String getSrcRelativeToContextPath() {
+        return internalImage.getUrlPathRelativeToContextPath();
+    }
+
     public void setSrc(String src) {   // image srcurl,  relative imageurl
         ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString(src);
         internalImage.setSource(imageSource);

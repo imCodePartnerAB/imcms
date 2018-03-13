@@ -179,7 +179,7 @@ public class ImageDomainObject extends ImageDTO implements Cloneable {
         return contextPath + urlPathRelativeToContextPath;
     }
 
-    private String getUrlPathRelativeToContextPath() {
+    public String getUrlPathRelativeToContextPath() {
         return source.getUrlPathRelativeToContextPath();
     }
 
