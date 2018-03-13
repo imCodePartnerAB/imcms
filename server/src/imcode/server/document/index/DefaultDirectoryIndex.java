@@ -8,8 +8,7 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -26,30 +25,29 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.AbstractList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private static final Logger log = Logger.getLogger(DefaultDirectoryIndex.class.getName());
-    private static final int INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_IN_MINUTE;
+    private static final long INDEXING_LOG_PERIOD__MILLISECONDS = DateUtils.MILLIS_PER_MINUTE;
 
-    private static ReindexingDocumentIdsGetter reindexingDocumentIdsGetter = new DefaultReindexingDocumentIdsGetter();
+    private static final Map<String, DocumentRepository> nameToCustomDocRepository = new HashMap<>();
 
     private final File directory;
     private final IndexDocumentFactory indexDocumentFactory;
 
-    //private boolean inconsistent;
-
     static {
-        // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memoryconsuming queries?
+        // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memory consuming queries?
         BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
     }
 
     DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
         this.directory = directory;
         this.indexDocumentFactory = indexDocumentFactory;
+
+        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+        nameToCustomDocRepository.put("default", new DefaultReindexingDocumentRepository(documentMapper));
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
@@ -89,14 +87,36 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    /**
-     * Set custom realization of reindexing document ids getter instead default
-     *
-     * @param documentIdsGetter - custom document ids getter
-     */
     @SuppressWarnings("unused")
-    public static void setReindexingDocumentIdsGetter(ReindexingDocumentIdsGetter documentIdsGetter) {
-        reindexingDocumentIdsGetter = documentIdsGetter;
+    public static void addCustomDocRepository(String name, DocumentRepository documentRepository) {
+        nameToCustomDocRepository.put(name, documentRepository);
+    }
+
+    public void indexDocument(DocumentDomainObject document) throws IndexException {
+        try {
+            removeDocument(document);
+            addDocument(document);
+        } catch (IOException e) {
+            throw new IndexException(e);
+        }
+    }
+
+    public void removeDocument(DocumentDomainObject document) throws IndexException {
+        try {
+            IndexReader indexReader = IndexReader.open(directory);
+            try {
+                indexReader.delete(new Term("meta_id", "" + document.getId()));
+            } finally {
+                indexReader.close();
+            }
+        } catch (IOException e) {
+            throw new IndexException(e);
+        }
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeCustomDocRepository(String name, DocumentRepository documentRepository) {
+        nameToCustomDocRepository.remove(name);
     }
 
     private SearchResult<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser,
@@ -122,39 +142,10 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         if (log.isDebugEnabled()) {
             log.debug("Got " + documentList.size() + " documents in " + stopWatch.getTime() + "ms.");
         }
-//        if (documentList.size() != documentIds.size()) {
-//            inconsistent = true ;
-//        }
-        CollectionUtils.filter(documentList, new Predicate() {
-            public boolean evaluate(Object object) {
-                DocumentDomainObject document = (DocumentDomainObject) object;
-                return searchingUser.canSearchFor(document);
-            }
-        });
+
+        CollectionUtils.filter(documentList, searchingUser::canSearchFor);
 
         return SearchResult.of(documentList, totalCount);
-    }
-
-    public void indexDocument(DocumentDomainObject document) throws IndexException {
-        try {
-            removeDocument(document);
-            addDocument(document);
-        } catch (IOException e) {
-            throw new IndexException(e);
-        }
-    }
-
-    public void removeDocument(DocumentDomainObject document) throws IndexException {
-        try {
-            IndexReader indexReader = IndexReader.open(directory);
-            try {
-                indexReader.delete(new Term("meta_id", "" + document.getId()));
-            } finally {
-                indexReader.close();
-            }
-        } catch (IOException e) {
-            throw new IndexException(e);
-        }
     }
 
     private void addDocument(DocumentDomainObject document) throws IOException {
@@ -178,34 +169,48 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     private void indexDocuments() throws IOException {
         IndexWriter indexWriter = createIndexWriter(true);
         try {
-            final int[] documentIds = reindexingDocumentIdsGetter.getDocumentIds();
-            indexDocuments(documentIds, indexWriter);
+            for (Map.Entry<String, DocumentRepository> nameToRepositoryEntry : nameToCustomDocRepository.entrySet()) {
+                final String repositoryName = nameToRepositoryEntry.getKey();
+                log.info("Indexing docs from " + repositoryName + " document repository started.");
+
+                final Set<DocumentDomainObject> docForIndexing = nameToRepositoryEntry.getValue().getDocs();
+                indexDocuments(docForIndexing, indexWriter);
+
+                log.info("Indexing docs from " + repositoryName + " document repository finished.");
+            }
 
         } finally {
             indexWriter.close();
         }
     }
 
-    private void indexDocuments(int[] documentIds, IndexWriter indexWriter) throws IOException {
-        final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
+    private void indexDocuments(Set<DocumentDomainObject> docsForIndexing, IndexWriter indexWriter) throws IOException {
+        final int docsSize = docsForIndexing.size();
+        final IntervalSchedule indexingLogSchedule = new IntervalSchedule(INDEXING_LOG_PERIOD__MILLISECONDS);
+        int i = 0;
 
-        logIndexingStarting(documentIds.length);
-        IntervalSchedule indexingLogSchedule = new IntervalSchedule(INDEXING_LOG_PERIOD__MILLISECONDS);
+        logIndexingStarting(docsSize);
 
-        for (int i = 0; i < documentIds.length; i++) {
+        for (DocumentDomainObject documentForIndex : docsForIndexing) {
+            i++;
+
+            if (documentForIndex == null) {
+                continue;
+            }
+
             try {
-                addDocumentToIndex(documentMapper.getDocument(documentIds[i], true), indexWriter);
+                addDocumentToIndex(documentForIndex, indexWriter);
+
             } catch (Exception ex) {
-                log.error("Could not index document with meta_id " + documentIds[i] + ", trying next document.", ex);
+                log.error("Could not index document with meta_id " + documentForIndex.getId() + ", trying next document.", ex);
             }
 
             if (indexingLogSchedule.isTime()) {
-                logIndexingProgress(i, documentIds.length, indexingLogSchedule.getStopWatch().getTime());
+                logIndexingProgress(i, docsSize, indexingLogSchedule.getStopWatch().getTime());
             }
-            //Thread.yield(); // To make sure other threads with the same priority get a chance to run something once in a while.
         }
 
-        logIndexingCompleted(documentIds.length, indexingLogSchedule.getStopWatch());
+        logIndexingCompleted(docsSize, indexingLogSchedule.getStopWatch());
         optimizeIndex(indexWriter);
     }
 
