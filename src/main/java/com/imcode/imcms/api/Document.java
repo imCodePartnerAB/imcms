@@ -141,6 +141,11 @@ public class Document implements Serializable {
         internalDocument.addCategory(category);
     }
 
+    @SuppressWarnings("unused")
+    public void setPermissionSetTypeForRole(Role role, Meta.Permission permission) {
+        this.internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), permission);
+    }
+
     /**
      * @return An array of Categories, an empty if no one found.
      */

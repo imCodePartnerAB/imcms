@@ -11,10 +11,12 @@ import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -346,6 +348,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     private Integer getModifierId() {
         return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy();
+    }
+
+    public void setDocumentPermissionSetTypeForRoleId(RoleId roleId, Meta.Permission permission) {
+        this.getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permission);
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
