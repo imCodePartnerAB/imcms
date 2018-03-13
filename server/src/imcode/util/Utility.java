@@ -3,9 +3,7 @@ package imcode.util;
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
-import com.imcode.imcms.db.StringArrayResultSetHandler;
-import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.db.*;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -59,6 +57,8 @@ public class Utility {
 
     public static final ResultSetHandler<String> SINGLE_STRING_HANDLER = new SingleObjectHandler<String>(new StringFromRowFactory());
     public static final ResultSetHandler<String[]> STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
+    public static final ResultSetHandler<List<String>> STRING_LIST_HANDLER = new StringListResultSetHandler();
+    public static final ResultSetHandler<List<Integer>> INTEGER_LIST_HANDLER = new IntegerListResultSetHandler();
     public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     private final static Logger log = Logger.getLogger(Utility.class.getName());
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
