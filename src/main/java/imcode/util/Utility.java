@@ -205,7 +205,10 @@ public class Utility {
         return convertStringArrayToIntArray(parameterValues);
     }
 
-    private static int[] convertStringArrayToIntArray(String[] strings) {
+    /**
+     * Also this method is using by clients
+     */
+    public static int[] convertStringArrayToIntArray(String[] strings) {
         int[] parameterInts = new int[strings.length];
         for (int i = 0; i < strings.length; i++) {
             parameterInts[i] = Integer.parseInt(strings[i]);
