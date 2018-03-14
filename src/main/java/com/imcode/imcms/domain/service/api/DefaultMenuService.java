@@ -34,8 +34,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
     private TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
-    DefaultMenuService(@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-                               MenuRepository menuRepository,
+    DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
