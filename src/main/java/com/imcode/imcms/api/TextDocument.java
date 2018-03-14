@@ -4,10 +4,9 @@ import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Template;
+import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.*;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
@@ -250,6 +249,81 @@ public class TextDocument extends Document {
 
             public int getType() {
                 return type;
+            }
+        }
+    }
+
+    @Deprecated
+    public static class MenuItem {
+        MenuItemDomainObject internalMenuItem;
+        Document child;
+
+        @Deprecated
+        public MenuItem(MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem) {
+            this.internalMenuItem = internalMenuItem;
+            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor(contentManagementSystem);
+            internalMenuItem.getDocument().accept(visitor);
+            this.child = visitor.getDocument();
+        }
+
+        @Deprecated
+        public MenuItem(MenuItemDomainObject menuItem, DocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
+            this.internalMenuItem = menuItem;
+            this.child = new Document(document, contentManagementSystem);
+        }
+
+        @Deprecated
+        public Document getDocument() {
+            return this.child;
+        }
+
+        @Deprecated
+        public Integer getSortKey() {
+            return this.internalMenuItem.getSortKey();
+        }
+
+        @Deprecated
+        public void setSortKey(Integer sortKey) {
+            this.internalMenuItem.setSortKey(sortKey);
+        }
+
+        @Deprecated
+        public TextDocument.MenuItem.TreeKey getTreeKey() {
+            return new TextDocument.MenuItem.TreeKey(this.internalMenuItem.getTreeSortKey());
+        }
+
+        @Deprecated
+        public void setTreeKey(TextDocument.MenuItem.TreeKey treeKey) {
+            this.internalMenuItem.setTreeSortKey(treeKey.internalTreeSortKey);
+        }
+
+        @Deprecated
+        public static class TreeKey {
+            TreeSortKeyDomainObject internalTreeSortKey;
+
+            @Deprecated
+            public TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
+                this.internalTreeSortKey = internalTreeSortKey;
+            }
+
+            @Deprecated
+            public TreeKey(String treeSortKey) {
+                this.internalTreeSortKey = new TreeSortKeyDomainObject(treeSortKey);
+            }
+
+            @Deprecated
+            public int getLevelCount() {
+                return this.internalTreeSortKey.getLevelCount();
+            }
+
+            @Deprecated
+            public int getLevelKey(int level) {
+                return this.internalTreeSortKey.getLevelKey(level - 1);
+            }
+
+            @Deprecated
+            public String toString() {
+                return this.internalTreeSortKey.toString();
             }
         }
     }
