@@ -160,7 +160,7 @@ public class ImageDomainObject extends ImageDTO implements Cloneable {
         return new ImageSize(w, h);
     }
 
-    private ImageSize getRealImageSize() {
+    public ImageSize getRealImageSize() {
         ImageSize imageSize = new ImageSize(0, 0);
         if (!isEmpty()) {
             try {
