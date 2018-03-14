@@ -1,8 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.domain.service.TemplateGroupService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -19,13 +21,16 @@ import java.util.stream.Collectors;
 @Transactional
 class DefaultTemplateService implements TemplateService {
 
+    private final TemplateGroupService templateGroupService;
     private final TemplateRepository templateRepository;
     private final File templateDirectory;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
 
-    DefaultTemplateService(TemplateRepository templateRepository,
+    DefaultTemplateService(TemplateGroupService templateGroupService,
+                           TemplateRepository templateRepository,
                            @Value("WEB-INF/templates/text") File templateDirectory) {
 
+        this.templateGroupService = templateGroupService;
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
     }
@@ -60,6 +65,16 @@ class DefaultTemplateService implements TemplateService {
     @Deprecated
     public Template getTemplate(String templateName) {
         return getTemplateOptional(templateName).orElse(null);
+    }
+
+    @Override
+    public TemplateGroup getTemplateGroupById(Integer groupId) {
+        return templateGroupService.get(groupId);
+    }
+
+    @Override
+    public List<Template> getTemplates(TemplateGroup templateGroup) {
+        return templateGroupService.get(templateGroup.getId()).getTemplates();
     }
 
     public File getTemplateDirectory() {

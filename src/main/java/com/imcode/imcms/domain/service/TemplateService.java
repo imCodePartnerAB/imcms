@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 
 import java.io.File;
 import java.util.List;
@@ -21,4 +22,8 @@ public interface TemplateService {
 
     @Deprecated
     Template getTemplate(String templateName);
+
+    TemplateGroup getTemplateGroupById(Integer groupId);
+
+    List<Template> getTemplates(TemplateGroup templateGroup);
 }
