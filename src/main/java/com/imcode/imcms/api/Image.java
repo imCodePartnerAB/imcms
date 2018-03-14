@@ -103,6 +103,12 @@ public class Image {
         return internalImage.getUrlPathRelativeToContextPath();
     }
 
+    @Deprecated
+    @SuppressWarnings("unused")
+    public void setLowSrc(String lowSrc) {
+        this.internalImage.setLowResolutionUrl(lowSrc);
+    }
+
     public void setSrc(String src) {   // image srcurl,  relative imageurl
         ImageSource imageSource = ImcmsImageUtils.createImageSourceFromString(src);
         internalImage.setSource(imageSource);
