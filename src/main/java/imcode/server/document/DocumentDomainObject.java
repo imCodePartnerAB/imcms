@@ -4,6 +4,7 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
+import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -416,6 +417,18 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void addCategory(Category category) {
         meta.getCategories().add(category);
+    }
+
+    @Deprecated
+    public void addCategory(com.imcode.imcms.api.Category category) {
+        final CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setId(category.getId());
+        categoryDTO.setName(category.getName());
+        categoryDTO.setImageUrl(category.getImage());
+        categoryDTO.setDescription(category.getDescription());
+        categoryDTO.setType(category.getType());
+
+        addCategory(categoryDTO);
     }
 
     public boolean equals(Object o) {

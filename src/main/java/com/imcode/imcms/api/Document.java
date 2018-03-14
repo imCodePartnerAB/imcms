@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -9,6 +8,7 @@ import imcode.server.document.DocumentDomainObject;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Set;
 
@@ -141,6 +141,11 @@ public class Document implements Serializable {
         internalDocument.addCategory(category);
     }
 
+    @Deprecated
+    public void addCategory(com.imcode.imcms.api.Category category) {
+        internalDocument.addCategory(category);
+    }
+
     @SuppressWarnings("unused")
     public void setPermissionSetTypeForRole(Role role, Meta.Permission permission) {
         this.internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), permission);
@@ -149,20 +154,20 @@ public class Document implements Serializable {
     /**
      * @return An array of Categories, an empty if no one found.
      */
-    public Category[] getCategories() {
+    @SuppressWarnings("unused")
+    @Deprecated
+    public com.imcode.imcms.api.Category[] getCategories() {
         Set<CategoryDomainObject> categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategories());
         CategoryDomainObject[] categoryDomainObjects = categories.toArray(new CategoryDomainObject[categories.size()]);
         return getCategoryArrayFromCategoryDomainObjectArray(categoryDomainObjects);
     }
 
-    private Category[] getCategoryArrayFromCategoryDomainObjectArray(CategoryDomainObject[] categoryDomainObjects) {
-        Category[] categories = new Category[categoryDomainObjects.length];
+    private com.imcode.imcms.api.Category[] getCategoryArrayFromCategoryDomainObjectArray(
+            CategoryDomainObject[] categoryDomainObjects) {
 
-        for (int i = 0; i < categories.length; i++) {
-            CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
-            categories[i] = new CategoryDTO(categoryDomainObject);
-        }
-        return categories;
+        return Arrays.stream(categoryDomainObjects)
+                .map(com.imcode.imcms.api.Category::new)
+                .toArray(com.imcode.imcms.api.Category[]::new);
     }
 
     public User getPublisher() {
@@ -266,7 +271,8 @@ public class Document implements Serializable {
      * @return an array of Categories, empty array if no one found.
      */
     @SuppressWarnings("unused")
-    public Category[] getCategoriesOfType(CategoryType categoryType) {
+    @Deprecated
+    public com.imcode.imcms.api.Category[] getCategoriesOfType(CategoryType categoryType) {
         CategoryMapper categoryMapper = contentManagementSystem.getInternal().getCategoryMapper();
         Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategories());
         CategoryDomainObject[] categories = categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
