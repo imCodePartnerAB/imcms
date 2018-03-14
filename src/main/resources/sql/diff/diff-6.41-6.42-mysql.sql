@@ -4,6 +4,14 @@
 SET @schema_version__major_new = 6;
 SET @schema_version__minor_new = 42;
 
+DROP PROCEDURE IF EXISTS temp_main_procedure;
+DROP PROCEDURE IF EXISTS temp_insert_menu_items_procedure;
+
+DELETE FROM imcms_menu;
+DELETE FROM imcms_menu_item;
+
+SET max_sp_recursion_depth = 255;
+
 DELIMITER temp_delim;
 
 CREATE PROCEDURE temp_main_procedure()
@@ -12,8 +20,8 @@ CREATE PROCEDURE temp_main_procedure()
     DECLARE v_finished INTEGER DEFAULT 0;
     DECLARE v_id INTEGER DEFAULT 0;
     DECLARE v_menu_id INTEGER DEFAULT 0;
-    DECLARE v_tree_sort_index VARCHAR(255) DEFAULT "";
-    DECLARE not_integer_reg_exp VARCHAR(255) DEFAULT "%\\.%";
+    DECLARE v_tree_sort_index VARCHAR(255) DEFAULT '';
+    DECLARE not_integer_reg_exp VARCHAR(255) DEFAULT '%\\.%';
 
     -- declare cursor
     DECLARE menu_items_cursor CURSOR FOR
@@ -78,7 +86,7 @@ CREATE PROCEDURE temp_insert_menu_items_procedure(
     -- declare variables
     DECLARE v_finished INTEGER DEFAULT 0;
     DECLARE v_parent_id INTEGER DEFAULT 0;
-    DECLARE v_tree_sort_index VARCHAR(255) DEFAULT "";
+    DECLARE v_tree_sort_index VARCHAR(255) DEFAULT '';
     DECLARE tree_sort_reg_exp VARCHAR(255) DEFAULT CONCAT('^', in_tree_sort_index, '.', '[0-9]+$');
 
     -- declare cursor
