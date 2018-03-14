@@ -42,4 +42,8 @@ class DefaultTemplateGroupService implements TemplateGroupService {
         return new TemplateGroupDTO(templateGroupJPA);
     }
 
+    @Override
+    public TemplateGroup get(Integer groupId) {
+        return new TemplateGroupDTO(templateGroupRepository.findOne(groupId));
+    }
 }

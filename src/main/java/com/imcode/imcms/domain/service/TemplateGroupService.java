@@ -12,4 +12,5 @@ public interface TemplateGroupService {
 
     TemplateGroup get(String name);
 
+    TemplateGroup get(Integer groupId);
 }
