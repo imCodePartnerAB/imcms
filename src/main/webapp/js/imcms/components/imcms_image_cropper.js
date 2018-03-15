@@ -44,27 +44,35 @@ Imcms.define("imcms-image-cropper", ["imcms-events"], function (events) {
         }
     };
 
+    function getCurrentWidth($element) {
+        return (isImgRotate) ? $element.height() : $element.width();
+    }
+
+    function getCurrentHeight($element) {
+        return (isImgRotate) ? $element.width() : $element.height();
+    }
+
     function getValidCoordX(coordX) {
         return new Limit().setMin(imageCoords.left)
-            .setMax(((isImgRotate) ? $originImg.height() : $originImg.width()) + imageCoords.left + angleBorderSize)
+            .setMax(getCurrentWidth($originImg) + imageCoords.left + angleBorderSize)
             .forValue(coordX);
     }
 
     function getValidCoordY(coordY) {
         return new Limit().setMin(imageCoords.top)
-            .setMax(((!isImgRotate) ? $originImg.height() : $originImg.width()) + imageCoords.top + angleBorderSize)
+            .setMax(getCurrentHeight($originImg) + imageCoords.top + angleBorderSize)
             .forValue(coordY);
     }
 
     function getValidLeftOnMove(left) {
         return new Limit().setMin(angleBorderSize)
-            .setMax(((isImgRotate) ? $originImg.height() : $originImg.width()) - croppingAreaParams.width + angleBorderSize)
+            .setMax(getCurrentWidth($originImg) - croppingAreaParams.width + angleBorderSize)
             .forValue(left);
     }
 
     function getValidTopOnMove(top) {
         return new Limit().setMin(angleBorderSize)
-            .setMax(((!isImgRotate) ? $originImg.height() : $originImg.width()) - croppingAreaParams.height + angleBorderSize)
+            .setMax(getCurrentHeight($originImg) - croppingAreaParams.height + angleBorderSize)
             .forValue(top);
     }
 
@@ -76,55 +84,55 @@ Imcms.define("imcms-image-cropper", ["imcms-events"], function (events) {
 
     function getValidTopOnResize(top) {
         return new Limit().setMin(angleBorderSize)
-            .setMax(parseInt($croppingArea.css("top")) + ((isImgRotate) ? $croppingArea.width() : $croppingArea.height()) - angleParams.height * 2)
+            .setMax(parseInt($croppingArea.css("top")) + getCurrentHeight($croppingArea) - angleParams.height * 2)
             .forValue(top);
     }
 
     function getValidTopAngleY(top) {
         return new Limit().setMin(0)
-            .setMax(parseInt($croppingArea.css("top")) + ((isImgRotate) ? $croppingArea.width() : $croppingArea.height()) - angleParams.height * 2 - angleBorderSize)
+            .setMax(parseInt($croppingArea.css("top")) + getCurrentHeight($croppingArea) - angleParams.height * 2 - angleBorderSize)
             .forValue(top);
     }
 
     function getValidBottomAngleY(top) {
         return new Limit().setMin(parseInt($croppingArea.css("top")) + angleParams.height)
-            .setMax(((isImgRotate) ? $originImg.width() : $originImg.height()) - angleParams.height + angleBorderSize)
+            .setMax(getCurrentHeight($originImg) - angleParams.height + angleBorderSize)
             .forValue(top);
     }
 
     function getValidLeftAngleX(left) {
         return new Limit().setMin(0)
-            .setMax(parseInt($croppingArea.css("left")) + ((isImgRotate) ? $croppingArea.height() : $croppingArea.width()) - angleBorderSize - angleParams.width * 2)
+            .setMax(parseInt($croppingArea.css("left")) + getCurrentWidth($croppingArea) - angleBorderSize - angleParams.width * 2)
             .forValue(left);
     }
 
     function getValidRightAngleX(left) {
         return new Limit().setMin(parseInt($croppingArea.css("left")) + angleParams.width)
-            .setMax(((!isImgRotate) ? $originImg.width() : $originImg.height()) - angleParams.width + angleBorderSize)
+            .setMax(getCurrentWidth($originImg) - angleParams.width + angleBorderSize)
             .forValue(left);
     }
 
     function getValidLeftCropWidth(width) {
         return new Limit().setMin(2 * angleParams.width)
-            .setMax(parseInt($croppingArea.css("left")) + ((isImgRotate) ? $croppingArea.height() : $croppingArea.width()) - angleBorderSize)
+            .setMax(parseInt($croppingArea.css("left")) + getCurrentWidth($croppingArea) - angleBorderSize)
             .forValue(width);
     }
 
     function getValidRightCropWidth(width) {
         return new Limit().setMin(2 * angleParams.width)
-            .setMax(((isImgRotate) ? $originImg.height() : $originImg.width()) - parseInt($croppingArea.css("left")) + angleBorderSize)
+            .setMax(getCurrentWidth($originImg) - parseInt($croppingArea.css("left")) + angleBorderSize)
             .forValue(width);
     }
 
     function getValidCropHeightTop(height) {
         return new Limit().setMin(2 * angleParams.height)
-            .setMax(parseInt($croppingArea.css("top")) + ((isImgRotate) ? $croppingArea.width() : $croppingArea.height()) - angleBorderSize)
+            .setMax(parseInt($croppingArea.css("top")) + getCurrentHeight($croppingArea) - angleBorderSize)
             .forValue(height);
     }
 
     function getValidCropHeightBottom(height) {
         return new Limit().setMin(2 * angleParams.height)
-            .setMax(((isImgRotate) ? $originImg.width() : $originImg.height()) - parseInt($croppingArea.css("top")) + angleBorderSize)
+            .setMax(getCurrentHeight($originImg) - parseInt($croppingArea.css("top")) + angleBorderSize)
             .forValue(height);
     }
 
