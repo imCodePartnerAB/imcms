@@ -184,9 +184,9 @@ Imcms.define(
                 block: "imcms-edit-size",
                 elements: [
                     {"title": $title},
-                    {"number": imageDataContainers.$heightControlInput},
+                    {"number": imageDataContainers.$widthControlInput},
                     {"button": $proportionsBtn},
-                    {"number": imageDataContainers.$widthControlInput}
+                    {"number": imageDataContainers.$heightControlInput}
                 ]
             }).buildBlockStructure("<div>");
         }
@@ -364,9 +364,9 @@ Imcms.define(
             var newWidth = imageDataContainers.$image.width(),
                 newHeight = imageDataContainers.$image.height(),
                 newCropAreaHeight = imageDataContainers.$cropArea.width(),
-                newCropAreaWeight = imageDataContainers.$cropArea.height(),
-                newCropAreaLeft = imageDataContainers.$cropArea.position().left,
-                newCropAreaTop = imageDataContainers.$cropArea.position().top;
+                newCropAreaWeight = imageDataContainers.$cropArea.height();
+            // newCropAreaLeft = imageDataContainers.$cropArea.position().left,
+            // newCropAreaTop = imageDataContainers.$cropArea.position().top;
 
             // TODO: fix crop area position when it is out of img
             resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, 2, 2, imageDataContainers);
