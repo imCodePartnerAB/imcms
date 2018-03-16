@@ -31,6 +31,14 @@ Imcms.define(
                 return getCurrentHeight($element);
             };
 
+            $element.getTop = function () {
+                return $element.position().top;
+            };
+
+            $element.getLeft = function () {
+                return $element.position().left;
+            };
+
             return $element;
         }
 

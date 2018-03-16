@@ -62,31 +62,31 @@ Imcms.define(
 
         function getValidTopOnResize(top) {
             return new Limit().setMin(angleBorderSize)
-                .setMax(parseInt(cropElements.$cropArea.css("top")) + cropElements.$cropArea.getCurrentHeight() - angles.getDoubleHeight())
+                .setMax(cropElements.$cropArea.getTop() + cropElements.$cropArea.getCurrentHeight() - angles.getDoubleHeight())
                 .forValue(top);
         }
 
         function getValidLeftCropWidth(width) {
             return new Limit().setMin(angles.getDoubleWidth())
-                .setMax(parseInt(cropElements.$cropArea.css("left")) + cropElements.$cropArea.getCurrentWidth() - angleBorderSize)
+                .setMax(cropElements.$cropArea.getLeft() + cropElements.$cropArea.getCurrentWidth() - angleBorderSize)
                 .forValue(width);
         }
 
         function getValidRightCropWidth(width) {
             return new Limit().setMin(angles.getDoubleWidth())
-                .setMax(cropElements.$image.getCurrentWidth() - parseInt(cropElements.$cropArea.css("left")) + angleBorderSize)
+                .setMax(cropElements.$image.getCurrentWidth() - cropElements.$cropArea.getLeft() + angleBorderSize)
                 .forValue(width);
         }
 
         function getValidCropHeightTop(height) {
             return new Limit().setMin(angles.getDoubleHeight())
-                .setMax(parseInt(cropElements.$cropArea.css("top")) + cropElements.$cropArea.getCurrentHeight() - angleBorderSize)
+                .setMax(cropElements.$cropArea.getTop() + cropElements.$cropArea.getCurrentHeight() - angleBorderSize)
                 .forValue(height);
         }
 
         function getValidCropHeightBottom(height) {
             return new Limit().setMin(angles.getDoubleHeight())
-                .setMax(cropElements.$image.getCurrentHeight() - parseInt(cropElements.$cropArea.css("top")) + angleBorderSize)
+                .setMax(cropElements.$image.getCurrentHeight() - cropElements.$cropArea.getTop() + angleBorderSize)
                 .forValue(height);
         }
 
@@ -104,9 +104,9 @@ Imcms.define(
             var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() + deltaX);
             var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() + deltaY);
 
-            var newTop = parseInt(cropElements.$cropArea.css("top")) - deltaY;
+            var newTop = cropElements.$cropArea.getTop() - deltaY;
             newTop = getValidTopOnResize(newTop);
-            var newLeft = parseInt(cropElements.$cropArea.css("left")) - deltaX;
+            var newLeft = cropElements.$cropArea.getLeft() - deltaX;
             newLeft = getValidLeftOnResize(newLeft);
 
             var legalWidth = getValidLeftCropWidth(newWidth);
@@ -121,7 +121,7 @@ Imcms.define(
             var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() - deltaX);
             var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() + deltaY);
 
-            var newTop = parseInt(cropElements.$cropArea.css("top")) - deltaY;
+            var newTop = cropElements.$cropArea.getTop() - deltaY;
             newTop = getValidTopOnResize(newTop);
 
             var legalWidth = getValidRightCropWidth(newWidth);
@@ -146,7 +146,7 @@ Imcms.define(
             var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() + deltaX);
             var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() - deltaY);
 
-            var newLeft = parseInt(cropElements.$cropArea.css("left")) - deltaX;
+            var newLeft = cropElements.$cropArea.getLeft() - deltaX;
             newLeft = getValidLeftOnResize(newLeft);
 
             var legalWidth = getValidLeftCropWidth(newWidth);
@@ -341,8 +341,8 @@ Imcms.define(
                     resizeCropper[resizeAngleName](deltaX, deltaY);
 
                 } else {
-                    var croppingAreaTop = parseInt(cropElements.$cropArea.css("top"));
-                    var croppingAreaLeft = parseInt(cropElements.$cropArea.css("left"));
+                    var croppingAreaTop = cropElements.$cropArea.getTop();
+                    var croppingAreaLeft = cropElements.$cropArea.getLeft();
 
                     var newLeft = croppingAreaLeft - deltaX;
                     var newTop = croppingAreaTop - deltaY;
@@ -354,10 +354,10 @@ Imcms.define(
                     setCroppingAnglesTopLeft(newTop, newLeft);
                 }
 
-                imageData.cropRegion.cropX1 = croppingCoefficientX * (parseInt(cropElements.$cropArea.css("left")) - 2);
-                imageData.cropRegion.cropY1 = croppingCoefficientY * (parseInt(cropElements.$cropArea.css("top")) - 2);
-                imageData.cropRegion.cropX2 = croppingCoefficientX * (parseInt(cropElements.$cropArea.css("left")) + cropElements.$cropArea.width() - 2);
-                imageData.cropRegion.cropY2 = croppingCoefficientY * (parseInt(cropElements.$cropArea.css("top")) + cropElements.$cropArea.height() - 2);
+                imageData.cropRegion.cropX1 = croppingCoefficientX * (cropElements.$cropArea.getLeft() - 2);
+                imageData.cropRegion.cropY1 = croppingCoefficientY * (cropElements.$cropArea.getTop() - 2);
+                imageData.cropRegion.cropX2 = croppingCoefficientX * (cropElements.$cropArea.getLeft() + cropElements.$cropArea.width() - 2);
+                imageData.cropRegion.cropY2 = croppingCoefficientY * (cropElements.$cropArea.getTop() + cropElements.$cropArea.height() - 2);
             });
 
             $imageEditor.on("dragstart", function () {

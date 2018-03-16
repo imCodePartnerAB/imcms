@@ -56,14 +56,14 @@ Imcms.define(
                 console.log("position changed")
             },
             getTop: function () {
-                return parseInt(this.$angle.css("top"));
+                return this.$angle.position().top;
             },
             setLeft: function (newLeft) {
                 this.$angle.css({left: newLeft});
                 console.log("position changed")
             },
             getLeft: function () {
-                return parseInt(this.$angle.css("left"));
+                return this.$angle.position().left;
             },
             setTopLeft: function (top, left) {
                 this.$angle.css({
