@@ -201,9 +201,7 @@ Imcms.define(
             ;
 
             imageData = imageCropComponents.imageData;
-            // cropElements.$image = imageCropComponents.cropElements.$image;
             $imageEditor = imageCropComponents.$imageEditor;
-            // $cropImg = imageCropComponents.$cropImg;
 
             angleBorderSize = angles.getBorderSize();
             imageCoords = cropElements.$image.offset();
