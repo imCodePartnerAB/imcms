@@ -12,11 +12,13 @@ import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.image.Format;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -313,7 +315,7 @@ public class TextDocumentContentSaver {
         image.setAlternateText(imageDO.getAlternateText());
         image.setBorder(imageDO.getBorder());
         image.setCropRegion(cropRegion);
-        image.setFormat(imageDO.getFormat());
+        image.setFormat(Optional.ofNullable(imageDO.getFormat()).orElse(Format.BMP)); // change if need
         image.setGeneratedFilename(imageDO.getGeneratedFilename());
         image.setHeight(imageDO.getHeight());
         image.setHorizontalSpace(imageDO.getHorizontalSpace());
