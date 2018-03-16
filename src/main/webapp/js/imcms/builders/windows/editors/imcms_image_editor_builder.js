@@ -2,13 +2,13 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 21.08.17
  */
-Imcms.define("imcms-image-editor-builder",
+Imcms.define(
+    "imcms-image-editor-builder",
     [
         "imcms-window-builder", "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",
-        "imcms-image-editor-factory"
+        "imcms-image-editor-factory", "imcms-image-crop-angles", "imcms-image-cropping-elements"
     ],
-    function (WindowBuilder, imageRestApi, imageCropper, $, events, imcms,
-              imageEditorFactory) {
+    function (WindowBuilder, imageRestApi, imageCropper, $, events, imcms, imageEditorFactory, cropAngles, cropElements) {
 
         var imageDataContainers = {};
         var imageData = {};
@@ -89,21 +89,21 @@ Imcms.define("imcms-image-editor-builder",
 
                     // change size of preview image
                     imageDataContainers.$previewImg.width(
-                        imageDataContainers.$cropImg.width() * $tag.width() / imageDataContainers.$cropArea.width()
+                        cropElements.$cropImg.width() * $tag.width() / cropElements.$cropArea.width()
                     );
 
                     imageDataContainers.$previewImg.height(
-                        imageDataContainers.$cropImg.height() * $tag.height() / imageDataContainers.$cropArea.height()
+                        cropElements.$cropImg.height() * $tag.height() / cropElements.$cropArea.height()
                     );
 
                     // change top and left properties of preview image
-                    var newTopValue = imageDataContainers.$previewImg.height() * parseInt(imageDataContainers.$cropImg.css("top"), 10)
-                        / imageDataContainers.$image.height();
+                    var newTopValue = imageDataContainers.$previewImg.height() * parseInt(cropElements.$cropImg.css("top"), 10)
+                        / cropElements.$image.height();
 
                     imageDataContainers.$previewImg.css("top", newTopValue + "px");
 
-                    var newLeftValue = imageDataContainers.$previewImg.width() * parseInt(imageDataContainers.$cropImg.css("left"), 10)
-                        / imageDataContainers.$image.width();
+                    var newLeftValue = imageDataContainers.$previewImg.width() * parseInt(cropElements.$cropImg.css("left"), 10)
+                        / cropElements.$image.width();
 
                     imageDataContainers.$previewImg.css("left", newLeftValue + "px");
 
@@ -142,8 +142,24 @@ Imcms.define("imcms-image-editor-builder",
         function fillData(image) {
 
             function fillBodyHeadData(imageData) {
-                imageDataContainers.$imageTitle.text(imageData.name + "." + imageData.format);
-                imageDataContainers.$imgUrl.text(imageData.path);
+                var titleText = imageData.name + "." + imageData.format;
+                var fullTitle = titleText;
+                var pathText = imageData.path;
+                var fullPath = pathText;
+
+                if (titleText.length > 15) {
+                    titleText = titleText.substr(0, 50) + "...";
+                }
+
+                if (pathText.length > 15) {
+                    pathText = pathText.substr(0, 50) + "...";
+                }
+
+                imageDataContainers.$imageTitle.text(titleText);
+                imageDataContainers.$imageTitle.attr("title", fullTitle);
+
+                imageDataContainers.$imgUrl.text(pathText);
+                imageDataContainers.$imgUrl.attr("title", fullPath);
             }
 
             function fillLeftSideData(imageData) {
@@ -157,34 +173,31 @@ Imcms.define("imcms-image-editor-builder",
                 });
 
                 if (!imageData.path) {
-                    imageDataContainers.$image.removeAttr("src");
-                    imageDataContainers.$image.removeAttr("style");
+                    cropElements.$image.removeAttr("src");
+                    cropElements.$image.removeAttr("style");
 
-                    imageDataContainers.$cropImg.removeAttr("src");
-                    imageDataContainers.$cropImg.removeAttr("style");
+                    cropElements.$cropImg.removeAttr("src");
+                    cropElements.$cropImg.removeAttr("style");
 
-                    $.each(imageDataContainers.angles, function (angleKey, angle) {
-                        angle.css("display", "none");
-                    });
+                    cropAngles.hideAll();
 
                     return;
                 }
 
-                imageDataContainers.$image.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
+                cropElements.$image.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
 
                 setTimeout(function () { // to let image src load
-                    imageDataContainers.$image.removeAttr("style");
+                    cropElements.$image.removeAttr("style");
                     // fixes to prevent stupid little scroll because of borders
-                    var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
-                    var imageWidth = imageDataContainers.$image.width();
-                    var imageHeight = imageDataContainers.$image.height();
+                    var imageWidth = cropElements.$image.width();
+                    var imageHeight = cropElements.$image.height();
 
                     imageDataContainers.$heightValue.text(imageHeight);
                     imageDataContainers.$widthValue.text(imageWidth);
 
                     if (imageData.width && imageData.height) {
-                        imageDataContainers.$image.width(imageData.width);
-                        imageDataContainers.$image.height(imageData.height);
+                        cropElements.$image.width(imageData.width);
+                        cropElements.$image.height(imageData.height);
 
                         imageWidth = imageData.width;
                         imageHeight = imageData.height;
@@ -193,8 +206,8 @@ Imcms.define("imcms-image-editor-builder",
                     imageDataContainers.$editableImageArea.width(imageDataContainers.$editableImageArea.width());  // removes float values
                     imageDataContainers.$editableImageArea.height(imageDataContainers.$editableImageArea.height());// removes float values
 
-                    var maxShadowHeight = imageHeight + angleBorderSize * 2;
-                    var maxShadowWidth = imageWidth + angleBorderSize * 2;
+                    var maxShadowHeight = imageHeight + cropAngles.getDoubleBorderSize();
+                    var maxShadowWidth = imageWidth + cropAngles.getDoubleBorderSize();
 
                     if (imageDataContainers.$shadow.height() < maxShadowHeight) {
                         imageDataContainers.$shadow.height(maxShadowHeight);
@@ -204,29 +217,24 @@ Imcms.define("imcms-image-editor-builder",
                         imageDataContainers.$shadow.width(maxShadowWidth);
                     }
 
-                    imageDataContainers.$image.css({
-                        left: angleBorderSize,
-                        top: angleBorderSize
+                    cropElements.$image.css({
+                        left: cropAngles.getBorderSize(),
+                        top: cropAngles.getBorderSize()
                     });
 
-                    imageDataContainers.$cropImg.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
+                    cropElements.$cropImg.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
 
                     // todo: receive correct crop area
-                    imageDataContainers.$cropArea.css({
-                        width: imageDataContainers.$image.width(),
-                        height: imageDataContainers.$image.height(),
-                        left: angleBorderSize,
-                        top: angleBorderSize
+                    cropElements.$cropArea.css({
+                        width: cropElements.$image.width(),
+                        height: cropElements.$image.height(),
+                        left: cropAngles.getBorderSize(),
+                        top: cropAngles.getBorderSize()
                     });
 
                     imageCropper.initImageCropper({
                         imageData: imageData,
-                        $imageEditor: imageWindowBuilder.$editor,
-                        $croppingArea: imageDataContainers.$cropArea,
-                        $cropImg: imageDataContainers.$cropImg,
-                        $originImg: imageDataContainers.$image,
-                        angles: imageDataContainers.angles,
-                        borderWidth: angleBorderSize
+                        $imageEditor: imageWindowBuilder.$editor
                     });
                 }, 200);
             }
@@ -286,8 +294,8 @@ Imcms.define("imcms-image-editor-builder",
         function clearData() {
             events.trigger("enable text editor blur");
             imageCropper.destroyImageCropper();
-            imageDataContainers.$image.removeAttr("src");
-            imageDataContainers.$cropArea.find("img").removeAttr("src");
+            cropElements.$image.removeAttr("src");
+            cropElements.$cropArea.find("img").removeAttr("src");
         }
 
         var imageWindowBuilder = new WindowBuilder({
