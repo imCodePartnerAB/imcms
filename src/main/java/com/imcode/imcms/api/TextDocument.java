@@ -1,19 +1,22 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.persistence.entity.Meta;
+import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.GetterDocumentReference;
 import imcode.server.document.textdocument.*;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -250,6 +253,112 @@ public class TextDocument extends Document {
             public int getType() {
                 return type;
             }
+        }
+    }
+
+    @Deprecated
+    public Menu getMenu(int no) {
+        return new Menu(this, no);
+    }
+
+    @Deprecated
+    public static class Menu {
+
+        private TextDocumentDomainObject internalTextDocument;
+        private int menuIndex;
+        private ContentManagementSystem contentManagementSystem;
+
+        Menu(TextDocument document, int menuIndex) {
+            this.internalTextDocument = document.getInternalTextDocument();
+            this.menuIndex = menuIndex;
+            this.contentManagementSystem = document.getContentManagementSystem();
+        }
+
+        @Deprecated
+        public void addDocument(Document documentToAdd) {
+            final int docId = documentToAdd.getId();
+
+            final MenuItemDTO menuItemDTO = new MenuItemDTO();
+            menuItemDTO.setDocumentId(docId);
+            menuItemDTO.setTitle(documentToAdd.getHeadline());
+            menuItemDTO.setTarget(documentToAdd.getTarget());
+            menuItemDTO.setType(Meta.DocumentType.values()[documentToAdd.getInternal().getMeta().getDocumentType()]);
+            menuItemDTO.setDocumentStatus(DocumentStatus.IN_PROCESS);
+            menuItemDTO.setLink("/" + (documentToAdd.getAlias() == null ? docId : documentToAdd.getAlias()));
+            menuItemDTO.setChildren(Collections.emptyList());
+
+            internalTextDocument.getMenu(this.menuIndex).getMenuItems().add(menuItemDTO);
+        }
+
+        @Deprecated
+        public void removeDocument(Document documentToRemove) {
+            internalTextDocument.getMenu(this.menuIndex)
+                    .getMenuItems()
+                    .removeIf(menuItemDTO -> menuItemDTO.getDocumentId() == documentToRemove.getId());
+        }
+
+        @Deprecated
+        public TextDocument.MenuItem[] getVisibleMenuItems() {
+            final List<MenuItemDTO> visibleMenuItems = contentManagementSystem.getInternal()
+                    .getMenuService()
+                    .getVisibleMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage());
+
+            return convertToMenuItem(visibleMenuItems);
+        }
+
+        @Deprecated
+        public Document[] getVisibleDocuments() {
+            TextDocument.MenuItem[] menuItems = this.getVisibleMenuItems();
+            return this.getDocumentsFromMenuItems(menuItems);
+        }
+
+        @Deprecated
+        public TextDocument.MenuItem[] getMenuItems() {
+            final List<MenuItemDTO> menuItems = contentManagementSystem.getInternal()
+                    .getMenuService()
+                    .getMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage());
+
+            return convertToMenuItem(menuItems);
+        }
+
+        @Deprecated
+        public TextDocument.MenuItem[] getPublishedMenuItems() {
+            final List<MenuItemDTO> publicMenuItems = contentManagementSystem.getInternal()
+                    .getMenuService()
+                    .getPublicMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage());
+
+            return convertToMenuItem(publicMenuItems);
+        }
+
+        @Deprecated
+        public Document[] getDocuments() {
+            TextDocument.MenuItem[] menuItems = this.getMenuItems();
+            return this.getDocumentsFromMenuItems(menuItems);
+        }
+
+        private TextDocument.MenuItem[] convertToMenuItem(List<MenuItemDTO> menuItems) {
+            return menuItems.stream()
+                    .map(menuItemDTO -> {
+                        final GetterDocumentReference documentReference = new GetterDocumentReference(
+                                menuItemDTO.getDocumentId(), contentManagementSystem.getInternal().getDocumentMapper()
+                        );
+
+                        final MenuItemDomainObject menuItemDomainObject = new MenuItemDomainObject(documentReference);
+
+                        return new MenuItem(menuItemDomainObject, contentManagementSystem);
+                    })
+                    .toArray(TextDocument.MenuItem[]::new);
+        }
+
+        private Document[] getDocumentsFromMenuItems(TextDocument.MenuItem[] menuItems) {
+            Document[] documents = new Document[menuItems.length];
+
+            for (int i = 0; i < menuItems.length; ++i) {
+                TextDocument.MenuItem menuItem = menuItems[i];
+                documents[i] = menuItem.getDocument();
+            }
+
+            return documents;
         }
     }
 
