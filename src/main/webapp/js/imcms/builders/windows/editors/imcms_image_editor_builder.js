@@ -295,7 +295,7 @@ Imcms.define(
             events.trigger("enable text editor blur");
             imageCropper.destroyImageCropper();
             cropElements.$image.removeAttr("src");
-            cropElements.$cropArea.find("img").removeAttr("src");
+            cropElements.$cropImg.removeAttr("src");
         }
 
         var imageWindowBuilder = new WindowBuilder({

@@ -177,6 +177,18 @@ Imcms.define(
                         error: "Error"
                     });
 
+                    events.on("crop area position changed", function () {
+                        var x = cropElements.$cropArea.getLeft();
+                        var y = cropElements.$cropArea.getTop();
+                        var x1 = cropElements.$cropArea.getCurrentWidth();
+                        var y1 = cropElements.$cropArea.getCurrentHeight();
+
+                        $xCropCoord.getInput().val(x);
+                        $yCropCoord.getInput().val(y);
+                        $x1CropCoord.getInput().val(x1);
+                        $y1CropCoord.getInput().val(y1);
+                    });
+
                     return new BEM({
                         block: "imcms-crop-coordinates",
                         elements: {

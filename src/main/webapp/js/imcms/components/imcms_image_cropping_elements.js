@@ -42,6 +42,47 @@ Imcms.define(
             return $element;
         }
 
+        function setPositionListeners($element, eventName) {
+            var oldCss = $element.css;
+            $element.css = function () {
+                var retVal = oldCss.apply($element, arguments);
+                events.trigger(eventName);
+                return retVal;
+            };
+
+            var oldHeight = $element.height;
+            $element.height = function () {
+                var retVal = oldHeight.apply($element, arguments);
+
+                if (arguments.length >= 1) {
+                    events.trigger(eventName);
+                }
+
+                return retVal;
+            };
+
+            var oldWidth = $element.width;
+            $element.width = function () {
+                var retVal = oldWidth.apply($element, arguments);
+
+                if (arguments.length >= 1) {
+                    events.trigger(eventName);
+                }
+
+                return retVal;
+            };
+
+            var oldAnimate = $element.animate;
+            $element.animate = function (params, duration, callback) {
+                return oldAnimate.call($element, params, duration, function () {
+                    callback && callback.call();
+                    events.trigger(eventName);
+                });
+            };
+
+            return $element;
+        }
+
         return {
             $cropImg: null,
             $cropArea: null,
@@ -52,7 +93,7 @@ Imcms.define(
             },
             buildCropArea: function () {
                 this.$cropArea = $("<div>", {"class": cropAreaClass}).append(this.buildCropImage());
-                return setFunctionality(this.$cropArea);
+                return setPositionListeners(setFunctionality(this.$cropArea), "crop area position changed");
             },
             buildImage: function () {
                 this.$image = $("<img>", {"class": "imcms-editable-img"});
