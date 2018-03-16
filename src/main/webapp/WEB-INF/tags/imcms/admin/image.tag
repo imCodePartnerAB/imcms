@@ -7,6 +7,7 @@
 <%@ attribute name="style" required="false" %>
 <%@ attribute name="pre" required="false" %>
 <%@ attribute name="post" required="false" %>
+<%@ attribute name="label" required="false" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
