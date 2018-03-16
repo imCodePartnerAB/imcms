@@ -68,7 +68,7 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      */
     BemBuilder.buildClass = function (block, element, modifier) {
         modifier = (modifier) ? MODIFIER_SEPARATOR + modifier : "";
-        element = (element) ? BLOCK_SEPARATOR + element : "";
+        element = (block && element) ? BLOCK_SEPARATOR + element : (element) ? element : "";
         block = (block || "");
         return block + element + modifier;
     };
