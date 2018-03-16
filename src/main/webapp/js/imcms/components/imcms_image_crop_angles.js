@@ -17,24 +17,24 @@ Imcms.define(
 
         function getValidTopAngleY(top) {
             return new Limit().setMin(0)
-                .setMax(parseInt(cropElements.$cropArea.css("top")) + cropElements.$cropArea.getCurrentHeight() - module.getDoubleHeight() - module.getBorderSize())
+                .setMax(cropElements.$cropArea.getTop() + cropElements.$cropArea.getCurrentHeight() - module.getDoubleHeight() - module.getBorderSize())
                 .forValue(top);
         }
 
         function getValidBottomAngleY(top) {
-            return new Limit().setMin(parseInt(cropElements.$cropArea.css("top")) + module.getHeight())
+            return new Limit().setMin(cropElements.$cropArea.getTop() + module.getHeight())
                 .setMax(cropElements.$image.getCurrentHeight() - module.getHeight() + module.getBorderSize())
                 .forValue(top);
         }
 
         function getValidLeftAngleX(left) {
             return new Limit().setMin(0)
-                .setMax(parseInt(cropElements.$cropArea.css("left")) + cropElements.$cropArea.getCurrentWidth() - module.getBorderSize() - module.getDoubleWidth())
+                .setMax(cropElements.$cropArea.getLeft() + cropElements.$cropArea.getCurrentWidth() - module.getBorderSize() - module.getDoubleWidth())
                 .forValue(left);
         }
 
         function getValidRightAngleX(left) {
-            return new Limit().setMin(parseInt(cropElements.$cropArea.css("left")) + module.getWidth())
+            return new Limit().setMin(cropElements.$cropArea.getLeft() + module.getWidth())
                 .setMax(cropElements.$image.getCurrentWidth() - module.getWidth() + module.getBorderSize())
                 .forValue(left);
         }
