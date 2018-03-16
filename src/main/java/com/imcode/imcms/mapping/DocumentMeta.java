@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
@@ -57,6 +58,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Set<String> keywords = new CopyOnWriteArraySet<>();
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+    private volatile Set<RestrictedPermissionJPA> restrictedPermissions;
 
     @Override
     public DocumentMeta clone() {
@@ -281,6 +283,14 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setDefaultVersionNo(Integer defaultVersionNo) {
         this.defaultVersionNo = defaultVersionNo;
+    }
+
+    public Set<RestrictedPermissionJPA> getRestrictedPermissions() {
+        return restrictedPermissions;
+    }
+
+    public void setRestrictedPermissions(Set<RestrictedPermissionJPA> restrictedPermissions) {
+        this.restrictedPermissions = restrictedPermissions;
     }
 
     /**

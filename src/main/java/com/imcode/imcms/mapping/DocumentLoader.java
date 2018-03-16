@@ -179,6 +179,7 @@ public class DocumentLoader {
         metaDO.setPublisherId(meta.getPublisherId());
         metaDO.setSearchDisabled(meta.isSearchDisabled());
         metaDO.setTarget(meta.getTarget());
+        metaDO.setRestrictedPermissions(meta.getRestrictedPermissions());
 
         initRoleIdToPermissionSetIdMap(metaDO, meta);
 
