@@ -207,6 +207,8 @@ public class ImcmsSetupFilter implements Filter {
 
                 final Language language = languageMapper.getLanguageByCode(langCode);
                 Imcms.setLanguage(language);
+            } else {
+                Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
             }
 
             ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);

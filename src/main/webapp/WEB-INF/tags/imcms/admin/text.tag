@@ -3,7 +3,7 @@ ${"<!--"}
 ${"-->"}
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
-<%@ attribute name="no" required="false" %>
+<%@ attribute name="no" required="false" type="java.lang.Object" %>
 <%@ attribute name="index" required="false" %>
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="placeholder" required="false" %>

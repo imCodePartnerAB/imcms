@@ -159,6 +159,7 @@ public class DocumentSaver {
         checkDocumentForSave(doc);
 
         Meta jpaMeta = toJpaObject(doc.getMeta());
+        jpaMeta.setModifierId(user.getId());
 
         metaRepository.saveAndFlush(jpaMeta);
 

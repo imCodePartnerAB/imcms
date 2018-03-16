@@ -3,14 +3,15 @@ package com.imcode.imcms.api;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.user.RoleGetter;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
 
 public class Document implements Serializable {
 
@@ -151,6 +152,44 @@ public class Document implements Serializable {
         this.internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), permission);
     }
 
+    @Deprecated
+    public DocumentPermissionSet getPermissionSetRestrictedOne() {
+        return new DocumentPermissionSet(hasEditTextOption(Meta.Permission.RESTRICTED_1));
+    }
+
+    @Deprecated
+    public DocumentPermissionSet getPermissionSetRestrictedTwo() {
+        return new DocumentPermissionSet(hasEditTextOption(Meta.Permission.RESTRICTED_2));
+    }
+
+    private boolean hasEditTextOption(Meta.Permission permission) {
+        final Set<RestrictedPermissionJPA> permissions = internalDocument.getMeta().getRestrictedPermissions();
+
+        final Optional<RestrictedPermissionJPA> permissionOptional = permissions.stream()
+                .filter(permissionJPA -> permissionJPA.getPermission() == permission)
+                .findFirst();
+
+        return permissionOptional.orElse(new RestrictedPermissionJPA()).isEditText();
+    }
+
+    @Deprecated
+    public Map<Role, DocumentPermissionSet> getRolesMappedToPermissions() {
+        final Map<Role, DocumentPermissionSet> rolesMappedToPermissions = new HashMap<>();
+
+        final RoleGetter roleGetter = contentManagementSystem.getInternal().getRoleGetter();
+
+        final RoleIdToDocumentPermissionSetTypeMappings permissionSetTypes =
+                internalDocument.getRoleIdsMappedToDocumentPermissionSetTypes();
+
+        Arrays.stream(permissionSetTypes.getMappings())
+                .forEach(mapping -> {
+                    final Role role = new Role(roleGetter.getRole(mapping.getRoleId()));
+                    rolesMappedToPermissions.put(role, null);
+                });
+
+        return rolesMappedToPermissions;
+    }
+
     /**
      * @return An array of Categories, an empty if no one found.
      */
@@ -264,6 +303,13 @@ public class Document implements Serializable {
 
     @SuppressWarnings("unused")
     public void removeCategory(Category category) {
+        internalDocument.removeCategoryId(category.getId());
+    }
+
+    /**
+     * @deprecated Use {@link #removeCategory} instead.
+     */
+    public void removeCategory(com.imcode.imcms.api.Category category) {
         internalDocument.removeCategoryId(category.getId());
     }
 

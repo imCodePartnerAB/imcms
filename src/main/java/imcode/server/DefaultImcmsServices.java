@@ -7,6 +7,7 @@ import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -57,6 +58,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final Database database;
     private final LocalizedMessageProvider localizedMessageProvider;
     private final Properties properties;
+    private final MenuService menuService;
     private Config config;
     private SystemData sysData;
     private CachingFileLoader fileLoader;
@@ -88,7 +90,8 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 TemplateService templateService,
                                 DocumentMapper documentMapper,
                                 ProcedureExecutor procedureExecutor,
-                                LanguageMapper languageMapper) {
+                                LanguageMapper languageMapper,
+                                MenuService menuService) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -105,6 +108,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.languageMapper = languageMapper;
 
         this.kerberosLoginService = new KerberosLoginService(config);
+        this.menuService = menuService;
     }
 
     @PostConstruct
@@ -343,6 +347,11 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Override
     public TemplateService getTemplateService() {
         return templateService;
+    }
+
+    @Override
+    public MenuService getMenuService() {
+        return menuService;
     }
 
     private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
