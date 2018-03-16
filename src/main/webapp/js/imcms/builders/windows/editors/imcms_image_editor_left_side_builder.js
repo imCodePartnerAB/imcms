@@ -1,7 +1,11 @@
 Imcms.define(
     "imcms-image-editor-left-side-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-events"],
-    function (BEM, components, texts, $, events) {
+    [
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-events",
+        "imcms-image-crop-angles", "imcms-image-cropping-elements"
+    ],
+
+    function (BEM, components, texts, $, events, croppingAngles, cropElements) {
         var isImgRotate = false;
         texts = texts.editors.image;
 
@@ -34,35 +38,22 @@ Imcms.define(
                 }
             });
 
-            imageDataContainers.$image = editableImgAreaBEM.buildElement("img", "<img>");
             imageDataContainers.$shadow = editableImgAreaBEM.buildElement("layout", "<div>");
-            imageDataContainers.$cropArea = editableImgAreaBEM.buildElement("crop-area", "<div>")
-                .append(imageDataContainers.$cropImg = $("<img>", {"class": "imcms-crop-area__crop-img"}));
-
-            var angleAttributes = {
-                style: "display: none;"
-            };
-            imageDataContainers.angles = {
-                $topLeft: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["top-left"]),
-                $topRight: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["top-right"]),
-                $bottomLeft: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["bottom-left"]),
-                $bottomRight: editableImgAreaBEM.buildElement("angle", "<div>", angleAttributes, ["bottom-right"])
-            };
 
             return editableImgAreaBEM.buildBlock("<div>", [
-                {"img": imageDataContainers.$image},
+                {"img": cropElements.buildImage()},
                 {"layout": imageDataContainers.$shadow},
-                {"crop-area": imageDataContainers.$cropArea},
-                {"angle": imageDataContainers.angles.$topLeft},
-                {"angle": imageDataContainers.angles.$topRight},
-                {"angle": imageDataContainers.angles.$bottomRight},
-                {"angle": imageDataContainers.angles.$bottomLeft}
+                {"crop-area": cropElements.buildCropArea()},
+                {"angle": croppingAngles.topLeft.buildAngle()},
+                {"angle": croppingAngles.topRight.buildAngle()},
+                {"angle": croppingAngles.bottomRight.buildAngle()},
+                {"angle": croppingAngles.bottomLeft.buildAngle()}
             ]);
         }
 
-        function setCropAreaHeight(newImageHeight, oldImgHeight, imageDataContainers) {
-            var cropAreaHeight = imageDataContainers.$cropArea.height();
-            var cropAreaTop = imageDataContainers.$cropArea.position().top;
+        function setCropAreaHeight(newImageHeight, oldImgHeight) {
+            var cropAreaHeight = cropElements.$cropArea.height();
+            var cropAreaTop = cropElements.$cropArea.position().top;
 
             var newCropAreaHeight = (newImageHeight * cropAreaHeight) / oldImgHeight;
             var delta = 0;
@@ -72,24 +63,26 @@ Imcms.define(
             }
 
             if (newCropAreaHeight !== 0) {
-                imageDataContainers.$cropArea.height(newCropAreaHeight - delta);
-                imageDataContainers.angles.$bottomRight.css({"top": (cropAreaTop + newCropAreaHeight - delta - 18) + "px"});
-                imageDataContainers.angles.$bottomLeft.css({"top": (cropAreaTop + newCropAreaHeight - delta - 18) + "px"});
+                cropElements.$cropArea.height(newCropAreaHeight - delta);
+                var newTop = cropAreaTop + newCropAreaHeight - delta - 18;
+                croppingAngles.bottomRight.setTop(newTop);
+                croppingAngles.bottomLeft.setTop(newTop);
             } else {
-                imageDataContainers.$cropArea.height(newImageHeight + 2);
-                imageDataContainers.$cropArea.css({"top": 2 + "px"});
-                imageDataContainers.$cropImg.css({"top": 0 + "px"});
-                imageDataContainers.angles.$topLeft.css({"top": 0 + "px"});
-                imageDataContainers.angles.$topRight.css({"top": 0 + "px"});
-                imageDataContainers.angles.$bottomLeft.css({"top": (newImageHeight - 16) + "px"});
-                imageDataContainers.angles.$bottomRight.css({"top": (newImageHeight - 16) + "px"});
+                cropElements.$cropArea.height(newImageHeight + 2);
+                cropElements.$cropArea.css({"top": 2});
+                cropElements.$cropImg.css({"top": 0});
+
+                croppingAngles.topLeft.setTop(0);
+                croppingAngles.topRight.setTop(0);
+                croppingAngles.bottomLeft.setTop(newImageHeight - 16);
+                croppingAngles.bottomRight.setTop(newImageHeight - 16);
             }
             events.trigger("update cropArea");
         }
 
-        function setCropAreaWidth(newImageWidth, oldImgWidth, imageDataContainers) {
-            var cropAreaWidth = imageDataContainers.$cropArea.width();
-            var cropAreaLeft = imageDataContainers.$cropArea.offset().left;
+        function setCropAreaWidth(newImageWidth, oldImgWidth) {
+            var cropAreaWidth = cropElements.$cropArea.width();
+            var cropAreaLeft = cropElements.$cropArea.offset().left;
 
             var newCropAreaWidth = (newImageWidth * cropAreaWidth) / oldImgWidth;
             var delta = 0;
@@ -99,17 +92,21 @@ Imcms.define(
             }
 
             if (newCropAreaWidth !== 0) {
-                imageDataContainers.$cropArea.width(newCropAreaWidth - delta);
-                imageDataContainers.angles.$bottomRight.css({"left": (cropAreaLeft + newCropAreaWidth - delta - 18) + "px"});
-                imageDataContainers.angles.$topRight.css({"left": (cropAreaLeft + newCropAreaWidth - delta - 18) + "px"});
+                cropElements.$cropArea.width(newCropAreaWidth - delta);
+                var newLeft = cropAreaLeft + newCropAreaWidth - delta - 18;
+
+                croppingAngles.bottomRight.setLeft(newLeft);
+                croppingAngles.topRight.setLeft(newLeft);
+
             } else {
-                imageDataContainers.$cropArea.width(newImageWidth + 2);
-                imageDataContainers.$cropArea.css({"left": 2 + "px"});
-                imageDataContainers.$cropImg.css({"left": 0 + "px"});
-                imageDataContainers.angles.$topLeft.css({"left": 0 + "px"});
-                imageDataContainers.angles.$bottomLeft.css({"left": 0 + "px"});
-                imageDataContainers.angles.$topRight.css({"left": (newImageWidth - 16) + "px"});
-                imageDataContainers.angles.$bottomRight.css({"left": (newImageWidth - 16) + "px"});
+                cropElements.$cropArea.width(newImageWidth + 2);
+                cropElements.$cropArea.css({"left": 2});
+                cropElements.$cropImg.css({"left": 0});
+
+                croppingAngles.topLeft.setLeft(0);
+                croppingAngles.bottomLeft.setLeft(0);
+                croppingAngles.topRight.setLeft(newImageWidth - 16);
+                croppingAngles.bottomRight.setLeft(newImageWidth - 16);
             }
             events.trigger("update cropArea");
         }
@@ -117,16 +114,16 @@ Imcms.define(
         function setWidth(newImageWidth, newCropImageWidth, newShadowWidth, imageDataContainers) {
             newShadowWidth = Math.max(newShadowWidth, imageDataContainers.$editableImageArea.width());
 
-            imageDataContainers.$image.width(newImageWidth);
-            imageDataContainers.$cropImg.width(newCropImageWidth);
+            cropElements.$image.width(newImageWidth);
+            cropElements.$cropImg.width(newCropImageWidth);
             imageDataContainers.$shadow.width(newShadowWidth);
         }
 
         function setHeight(newImageHeight, newCropImageHeight, newShadowHeight, imageDataContainers) {
             newShadowHeight = Math.max(newShadowHeight, imageDataContainers.$editableImageArea.height());
 
-            imageDataContainers.$image.height(newImageHeight);
-            imageDataContainers.$cropImg.height(newCropImageHeight);
+            cropElements.$image.height(newImageHeight);
+            cropElements.$cropImg.height(newCropImageHeight);
             imageDataContainers.$shadow.height(newShadowHeight);
         }
 
@@ -135,7 +132,7 @@ Imcms.define(
 
             function onValidHeightChange() {
                 var height = +$(this).val();
-                var previousHeight = imageDataContainers.$cropImg.height();
+                var previousHeight = cropElements.$cropImg.height();
 
                 if (isNaN(height)) {
                     return;
@@ -162,7 +159,7 @@ Imcms.define(
 
             function onValidWidthChange() {
                 var width = +$(this).val();
-                var previousWidth = imageDataContainers.$cropImg.width();
+                var previousWidth = cropElements.$cropImg.width();
 
                 if (isNaN(width)) {
                     return;
@@ -192,7 +189,7 @@ Imcms.define(
         }
 
         function resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers) {
-            imageDataContainers.$image.animate({
+            cropElements.$image.animate({
                 "width": newWidth,
                 "height": newHeight
             }, 200);
@@ -202,23 +199,23 @@ Imcms.define(
                 "height": ((isImgRotate) ? newWidth : newHeight) + 4
             }, 200);
 
-            imageDataContainers.$cropImg.animate({
+            cropElements.$cropImg.animate({
                 "left": -newCropAreaLeft + 2,
                 "top": -newCropAreaTop + 2,
                 "width": newWidth,
                 "height": newHeight
             }, 200);
 
-            imageDataContainers.$cropArea.animate({
+            cropElements.$cropArea.animate({
                 "left": newCropAreaLeft,
                 "top": newCropAreaTop,
                 "width": newCropAreaWeight,
                 "height": newCropAreaHeight
             }, 200);
 
-            var angleHeight = imageDataContainers.angles.$bottomLeft.height();
-            var angleWidth = imageDataContainers.angles.$bottomLeft.width();
-            var angleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) || 0;
+            var angleHeight = croppingAngles.bottomLeft.$angle.height();
+            var angleWidth = croppingAngles.bottomLeft.$angle.width();
+            var angleBorderSize = parseInt(croppingAngles.topLeft.$angle.css("border-width")) || 0;
 
             var positionTopForAngelsTop = newCropAreaTop - angleBorderSize;
             var positionTopForAngelsBottom = newCropAreaTop + newCropAreaHeight - angleHeight;
@@ -233,22 +230,22 @@ Imcms.define(
                 positionTopForAngelsTop = 0;
             }
 
-            imageDataContainers.angles.$topRight.animate({
+            croppingAngles.topRight.animate({
                 "top": positionTopForAngelsTop,
                 "left": positionLeftForAngelsRight
             }, 200);
 
-            imageDataContainers.angles.$bottomRight.animate({
+            croppingAngles.bottomRight.animate({
                 "top": positionTopForAngelsBottom,
                 "left": positionLeftForAngelsRight
             }, 200);
 
-            imageDataContainers.angles.$topLeft.animate({
+            croppingAngles.topLeft.animate({
                 "top": positionTopForAngelsTop,
                 "left": positionLeftForAngelsLeft
             }, 200);
 
-            imageDataContainers.angles.$bottomLeft.animate({
+            croppingAngles.bottomLeft.animate({
                 "top": positionTopForAngelsBottom,
                 "left": positionLeftForAngelsLeft
             }, 200);
@@ -259,12 +256,12 @@ Imcms.define(
         }
 
         function zoom(zoomCoefficient, imageDataContainers) {
-            var newHeight = ~~(imageDataContainers.$image.height() * zoomCoefficient),
-                newWidth = ~~(imageDataContainers.$image.width() * zoomCoefficient),
-                newCropAreaHeight = ~~(imageDataContainers.$cropArea.height() * zoomCoefficient),
-                newCropAreaWeight = ~~(imageDataContainers.$cropArea.width() * zoomCoefficient),
-                newCropAreaLeft = ~~(imageDataContainers.$cropArea.position().left * zoomCoefficient),
-                newCropAreaTop = ~~(imageDataContainers.$cropArea.position().top * zoomCoefficient)
+            var newHeight = ~~(cropElements.$image.height() * zoomCoefficient),
+                newWidth = ~~(cropElements.$image.width() * zoomCoefficient),
+                newCropAreaHeight = ~~(cropElements.$cropArea.height() * zoomCoefficient),
+                newCropAreaWeight = ~~(cropElements.$cropArea.width() * zoomCoefficient),
+                newCropAreaLeft = ~~(cropElements.$cropArea.position().left * zoomCoefficient),
+                newCropAreaTop = ~~(cropElements.$cropArea.position().top * zoomCoefficient)
             ;
 
             if (newCropAreaLeft <= 2) {
@@ -301,7 +298,7 @@ Imcms.define(
                 newCropAreaLeft = 2,
                 newCropAreaTop = 2
             ;
-            var twiceAngleBorderSize = parseInt(imageDataContainers.angles.$topLeft.css("border-width")) * 2 || 0;
+            var twiceAngleBorderSize = parseInt(croppingAngles.topLeft.$angle.css("border-width")) * 2 || 0;
 
             if (isImgRotate) {
                 newCropAreaHeight = $editableImageArea.width();
@@ -355,18 +352,16 @@ Imcms.define(
                         "transform-origin": "top left"
                     };
             }
-            imageDataContainers.$image.css(style);
-            imageDataContainers.$cropImg.css(style);
+            cropElements.$image.css(style);
+            cropElements.$cropImg.css(style);
 
             isImgRotate = !isImgRotate;
             events.trigger("rotate img");
 
-            var newWidth = imageDataContainers.$image.width(),
-                newHeight = imageDataContainers.$image.height(),
-                newCropAreaHeight = imageDataContainers.$cropArea.width(),
-                newCropAreaWeight = imageDataContainers.$cropArea.height();
-            // newCropAreaLeft = imageDataContainers.$cropArea.position().left,
-            // newCropAreaTop = imageDataContainers.$cropArea.position().top;
+            var newWidth = cropElements.$image.width(),
+                newHeight = cropElements.$image.height(),
+                newCropAreaHeight = cropElements.$cropArea.width(),
+                newCropAreaWeight = cropElements.$cropArea.height();
 
             // TODO: fix crop area position when it is out of img
             resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, 2, 2, imageDataContainers);

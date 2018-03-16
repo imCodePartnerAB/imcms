@@ -2,9 +2,10 @@ Imcms.define(
     "imcms-image-editor-right-side-builder",
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
-        "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events"
+        "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
+        "imcms-image-cropping-elements"
     ],
-    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events) {
+    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements) {
 
         texts = texts.editors.image;
         var $tag, imageData;
@@ -141,9 +142,9 @@ Imcms.define(
                 function buildCropCoordinatesText(advancedModeBEM) {
                     return advancedModeBEM.buildElement("title", "<div>")
                         .append(texts.cropCoords + " (W:")
-                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"}))
+                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"})) // todo: set actual values and refresh
                         .append(" H:")
-                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"}))
+                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"})) // todo: set actual values and refresh
                         .append(")");
                 }
 
@@ -375,8 +376,8 @@ Imcms.define(
 
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
-                        imageData.width = opts.imageDataContainers.$image.width();
-                        imageData.height = opts.imageDataContainers.$image.height();
+                        imageData.width = cropElements.$image.width();
+                        imageData.height = cropElements.$image.height();
 
                         imageWindowBuilder.closeWindow();
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
