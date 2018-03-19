@@ -100,6 +100,23 @@ Imcms.define(
             croppingAreaParams.height = cropElements.$cropArea.height();
         });
 
+        function setCropAreaX(newX) {
+            var newLeft = getValidLeftOnResize(newX + angleBorderSize);
+            var oldLeft = cropElements.$cropArea.getLeft();
+
+            if (newLeft === oldLeft) {
+                return;
+            }
+
+            var oldWidth = cropElements.$cropArea.width();
+            var deltaX = oldLeft - newLeft;
+            var legalWidth = croppingAreaParams.width = getValidLeftCropWidth(oldWidth + deltaX);
+
+            cropElements.$cropArea.width(legalWidth);
+            cropElements.$cropImg.css("left", angleBorderSize - newLeft);
+            cropElements.$cropArea.css("left", newLeft);
+        }
+
         function resizeCroppingTopLeft(deltaX, deltaY) {
             var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() + deltaX);
             var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() + deltaY);
@@ -400,8 +417,16 @@ Imcms.define(
             removeCroppingListeners();
         }
 
+        function setCropX(newX) {
+            angles.topLeft.setNewX(newX);
+            angles.bottomLeft.setNewX(newX);
+
+            setCropAreaX(newX);
+        }
+
         return {
             initImageCropper: init,
+            setCropX: setCropX,
             destroyImageCropper: destroy
         };
     }

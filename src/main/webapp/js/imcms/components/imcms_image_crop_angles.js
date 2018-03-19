@@ -53,14 +53,12 @@ Imcms.define(
             },
             setTop: function (newTop) {
                 this.$angle.css({top: newTop});
-                console.log("position changed")
             },
             getTop: function () {
                 return this.$angle.position().top;
             },
             setLeft: function (newLeft) {
                 this.$angle.css({left: newLeft});
-                console.log("position changed")
             },
             getLeft: function () {
                 return this.$angle.position().left;
@@ -83,10 +81,14 @@ Imcms.define(
 
                 this.setTopLeft(newTop, newLeft);
             },
+            setNewX: function (newX) {
+                this.setLeft(this._trimToValidLeftValue(newX));
+            },
+            setNewY: function (newY) {
+                this.setTop(this._trimToValidTopValue(newY));
+            },
             animate: function (attributes, duration) {
-                this.$angle.animate(attributes, duration, function () {
-                    console.log("position changed")
-                });
+                this.$angle.animate(attributes, duration);
             }
         };
 

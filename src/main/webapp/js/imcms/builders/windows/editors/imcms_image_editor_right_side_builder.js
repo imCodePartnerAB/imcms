@@ -3,9 +3,10 @@ Imcms.define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements"
+        "imcms-image-cropping-elements", "imcms-image-cropper"
     ],
-    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements) {
+    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
+              imageCropper) {
 
         texts = texts.editors.image;
         var $tag, imageData;
@@ -148,33 +149,65 @@ Imcms.define(
                         .append(")");
                 }
 
+                function onValidChangeX(newX) {
+                    imageCropper.setCropX(newX);
+                }
+
+                function onValidChangeY(newY) {
+                    console.log(newY)
+                }
+
+                function onValidChangeX1(newX1) {
+                    console.log(newX1)
+                }
+
+                function onValidChangeY1(newY1) {
+                    console.log(newY1)
+                }
+
+                function setValidation(onValid) {
+                    return function () {
+                        var val = +$(this).val();
+
+                        if (isNaN(val)) {
+                            return;
+                        }
+
+                        onValid.call(this, val);
+                    }
+                }
+
                 function buildCropCoordinatesContainer() {
                     var $xCropCoord = components.texts.textNumber("<div>", {
                         name: "cropX0",
                         placeholder: "X",
                         text: "X",
-                        error: "Error"
+                        error: "Error",
+                        onValidChange: setValidation(onValidChangeX)
                     });
 
                     var $yCropCoord = components.texts.textNumber("<div>", {
                         name: "cropY0",
                         placeholder: "Y",
                         text: "Y",
-                        error: "Error"
+                        error: "Error",
+                        onValidChange: setValidation(onValidChangeY)
                     });
 
                     var $x1CropCoord = components.texts.textNumber("<div>", {
                         name: "cropX1",
                         placeholder: "X1",
                         text: "X1",
-                        error: "Error"
+                        error: "Error",
+                        onValidChange: setValidation(onValidChangeX1)
                     });
 
                     var $y1CropCoord = components.texts.textNumber("<div>", {
                         name: "cropY1",
                         placeholder: "Y1",
                         text: "Y1",
-                        error: "Error"
+                        error: "Error",
+                        onValidChange: setValidation(onValidChangeY1)
                     });
 
                     events.on("crop area position changed", function () {
