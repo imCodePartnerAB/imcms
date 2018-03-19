@@ -11,6 +11,7 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
 import org.junit.After;
 import org.junit.Before;
@@ -53,6 +54,9 @@ public class CommonContentServiceTest {
 
     @Autowired
     private VersionRepository versionRepository;
+
+    @Autowired
+    private CommonContentRepository commonContentRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -139,11 +143,15 @@ public class CommonContentServiceTest {
 
     @Test
     public void delete() {
+        final Version version = new Version();
+        version.setDocId(DOC_ID);
+        version.setNo(WORKING_VERSION_INDEX);
+
         commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_INDEX);
-        assertFalse(commonContentService.getOrCreateCommonContents(DOC_ID, WORKING_VERSION_INDEX).isEmpty());
+        assertFalse(commonContentRepository.findByVersion(version).isEmpty());
 
         commonContentService.deleteByDocId(DOC_ID);
-        assertTrue(commonContentService.getCommonContents(DOC_ID, WORKING_VERSION_INDEX).isEmpty());
+        assertTrue(commonContentRepository.findByVersion(version).isEmpty());
     }
 
     @Test

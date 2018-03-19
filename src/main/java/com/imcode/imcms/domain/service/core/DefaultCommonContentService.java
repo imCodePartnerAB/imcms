@@ -65,16 +65,6 @@ public class DefaultCommonContentService
     }
 
     @Override
-    public List<CommonContent> getCommonContents(int docId, int versionNo) {
-        return languageService.getAll()
-                .stream()
-                .map(languageDTO -> getCommonContent(docId, versionNo, languageDTO))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public <T extends CommonContent> void save(int docId, Collection<T> saveUs) {
         final Set<CommonContentJPA> toSave = saveUs.stream().map(CommonContentJPA::new).collect(Collectors.toSet());
         repository.save(toSave);

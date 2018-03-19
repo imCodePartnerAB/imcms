@@ -30,8 +30,6 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
      */
     CommonContent getOrCreate(int docId, int versionNo, Language language);
 
-    List<CommonContent> getCommonContents(int docId, int versionNo);
-
     <T extends CommonContent> void save(int docId, Collection<T> saveUs);
 
     Set<CommonContent> getByVersion(Version version);

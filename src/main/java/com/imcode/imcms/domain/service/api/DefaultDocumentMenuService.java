@@ -67,7 +67,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         final Version latestVersion = versionService.getLatestVersion(docId);
 
         final List<CommonContent> commonContentList = commonContentService
-                .getCommonContents(docId, latestVersion.getNo());
+                .getOrCreateCommonContents(docId, latestVersion.getNo());
 
         final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, latestVersion, commonContentList);
 
