@@ -57,7 +57,7 @@
 
         <build.webapp.dir>${project.build.directory}/${project.artifactId}</build.webapp.dir>
 
-        <solr.version>4.10.2</solr.version>
+        <solr.version>7.2.1</solr.version>
         <slf4j.version>1.7.25</slf4j.version>
         <springframework.version>4.3.13.RELEASE</springframework.version>
 
