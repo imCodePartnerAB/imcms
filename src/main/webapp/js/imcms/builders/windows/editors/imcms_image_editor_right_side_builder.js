@@ -178,10 +178,10 @@ Imcms.define(
                     });
 
                     events.on("crop area position changed", function () {
-                        var x = cropElements.$cropArea.getLeft();
-                        var y = cropElements.$cropArea.getTop();
-                        var x1 = cropElements.$cropArea.getCurrentWidth();
-                        var y1 = cropElements.$cropArea.getCurrentHeight();
+                        var x = cropElements.$cropArea.getLeft() - 2;
+                        var y = cropElements.$cropArea.getTop() - 2;
+                        var x1 = cropElements.$cropArea.getCurrentWidth() + x;
+                        var y1 = cropElements.$cropArea.getCurrentHeight() + y;
 
                         $xCropCoord.getInput().val(x);
                         $yCropCoord.getInput().val(y);
