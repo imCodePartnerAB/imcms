@@ -97,7 +97,7 @@ public class ViewDocumentController {
         final Version latestDocVersion = versionService.getLatestVersion(docId);
 
         final List<CommonContent> enabledCommonContents =
-                commonContentService.getCommonContents(docId, latestDocVersion.getNo())
+                commonContentService.getOrCreateCommonContents(docId, latestDocVersion.getNo())
                         .stream()
                         .filter(CommonContent::isEnabled)
                         .collect(Collectors.toList());
