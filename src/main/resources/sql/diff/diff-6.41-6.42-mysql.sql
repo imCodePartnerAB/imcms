@@ -21,7 +21,7 @@ CREATE PROCEDURE temp_main_procedure()
     DECLARE v_id INTEGER DEFAULT 0;
     DECLARE v_menu_id INTEGER DEFAULT 0;
     DECLARE v_tree_sort_index VARCHAR(255) DEFAULT '';
-    DECLARE not_integer_reg_exp VARCHAR(255) DEFAULT '%\\.%';
+    DECLARE integer_reg_exp VARCHAR(255) DEFAULT '^[0-9]+$';
 
     -- declare cursor
     DECLARE menu_items_cursor CURSOR FOR
@@ -30,7 +30,7 @@ CREATE PROCEDURE temp_main_procedure()
         menu_id,
         tree_sort_index
       FROM imcms_text_doc_menu_items
-      WHERE tree_sort_index COLLATE utf8_general_ci NOT LIKE not_integer_reg_exp;
+      WHERE tree_sort_index COLLATE utf8_general_ci REGEXP integer_reg_exp;
 
     -- declare NOT FOUND handler
     DECLARE CONTINUE HANDLER
@@ -52,7 +52,7 @@ CREATE PROCEDURE temp_main_procedure()
         CAST(tree_sort_index AS UNSIGNED),
         to_doc_id
       FROM imcms_text_doc_menu_items
-      WHERE tree_sort_index COLLATE utf8_general_ci NOT LIKE not_integer_reg_exp;
+      WHERE tree_sort_index COLLATE utf8_general_ci REGEXP integer_reg_exp;
 
     OPEN menu_items_cursor;
 
