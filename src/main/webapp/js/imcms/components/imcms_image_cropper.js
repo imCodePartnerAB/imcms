@@ -152,6 +152,21 @@ Imcms.define(
             cropElements.$cropArea.css("top", newTop);
         }
 
+        function setCropAreaY1(newY1) {
+            var oldHeight = cropElements.$cropArea.height();
+            var oldTop = cropElements.$cropArea.getTop();
+            var oldY1 = oldHeight + oldTop - angleBorderSize;
+
+            if (oldY1 === newY1) {
+                return;
+            }
+
+            var newHeight = newY1 - oldTop + angleBorderSize;
+            var legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
+
+            cropElements.$cropArea.height(legalHeight);
+        }
+
         function resizeCroppingTopLeft(deltaX, deltaY) {
             var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() + deltaX);
             var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() + deltaY);
@@ -472,6 +487,10 @@ Imcms.define(
         }
 
         function setCropY1(newY1) {
+            angles.bottomRight.setNewY(newY1 - angles.getWidth() + angles.getBorderSize());
+            angles.bottomLeft.setNewY(newY1 - angles.getWidth() + angles.getBorderSize());
+
+            setCropAreaY1(newY1);
         }
 
         return {
