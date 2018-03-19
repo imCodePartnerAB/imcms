@@ -76,7 +76,6 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
     private int documentsPerPage = DEFAULT_DOCUMENTS_PER_PAGE;
     private DocumentDomainObject selectedDocument;
     private Query query;
-    private DateFormat solrDateFormat = org.apache.solr.common.util.DateUtil.getThreadLocalDateFormat();
     private DocumentFinder documentFinder;
 
     public SearchDocumentsPage() {
@@ -157,42 +156,42 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 
     private Query createQuery(DocumentFinder documentFinder, UserDomainObject user) {
 
-        BooleanQuery newQuery = new BooleanQuery();
+        BooleanQuery.Builder newQueryBuilder = new BooleanQuery.Builder();
         if (StringUtils.isNotBlank(queryString)) {
             try {
                 Query textQuery = documentFinder.parse(queryString);
-                newQuery.add(textQuery, Occur.MUST);
+                newQueryBuilder.add(textQuery, Occur.MUST);
             } catch (ParseException e) {
                 log.debug(e.getMessage() + " in search-string " + queryString, e);
             }
         }
 
         if (null != phases && phases.length > 0) {
-            BooleanQuery phaseQueries = new BooleanQuery();
+            BooleanQuery.Builder phaseQueriesBuilder = new BooleanQuery.Builder();
             for (String phase : phases) {
                 Query phaseQuery = new TermQuery(new Term(DocumentIndex.FIELD__PHASE, phase));
-                phaseQueries.add(phaseQuery, Occur.SHOULD);
+                phaseQueriesBuilder.add(phaseQuery, Occur.SHOULD);
             }
-            newQuery.add(phaseQueries, Occur.MUST);
+            newQueryBuilder.add(phaseQueriesBuilder.build(), Occur.MUST);
         }
 
         if (null != documentTypeIds && documentTypeIds.length > 0) {
-            BooleanQuery documentTypeQueries = new BooleanQuery();
+            BooleanQuery.Builder documentTypeQueriesBuilder = new BooleanQuery.Builder();
             for (int documentTypeId : documentTypeIds) {
                 Query documentTypeQuery = new TermQuery(new Term(DocumentIndex.FIELD__DOC_TYPE_ID, "" + documentTypeId));
-                documentTypeQueries.add(documentTypeQuery, Occur.SHOULD);
+                documentTypeQueriesBuilder.add(documentTypeQuery, Occur.SHOULD);
             }
-            newQuery.add(documentTypeQueries, Occur.MUST);
+            newQueryBuilder.add(documentTypeQueriesBuilder.build(), Occur.MUST);
         }
 
         if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_CREATED_BY_USER.equals(userDocumentsRestriction)) {
             Query createdByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__CREATOR_ID, "" + user.getId()));
-            newQuery.add(createdByUserQuery, Occur.MUST);
+            newQueryBuilder.add(createdByUserQuery, Occur.MUST);
         }
 
         if (USER_DOCUMENTS_RESTRICTION__DOCUMENTS_PUBLISHED_BY_USER.equals(userDocumentsRestriction)) {
             Query publishedByUserQuery = new TermQuery(new Term(DocumentIndex.FIELD__PUBLISHER_ID, "" + user.getId()));
-            newQuery.add(publishedByUserQuery, Occur.MUST);
+            newQueryBuilder.add(publishedByUserQuery, Occur.MUST);
         }
 
         if (null != startDate || null != endDate) {
@@ -221,16 +220,18 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 
             // todo: fix
             TermRangeQuery publicationStartedQuery = new TermRangeQuery(dateField,
-                    new BytesRef(solrDateFormat.format(calculatedStartDate)),
-                    new BytesRef(solrDateFormat.format(calculatedEndDate)),
+                    new BytesRef(calculatedStartDate.toInstant().toString()),
+                    new BytesRef(calculatedEndDate.toInstant().toString()),
                     true, true);
-            newQuery.add(publicationStartedQuery, Occur.MUST);
+            newQueryBuilder.add(publicationStartedQuery, Occur.MUST);
         }
 
-        if (0 == newQuery.getClauses().length) {
+        final BooleanQuery booleanQuery = newQueryBuilder.build();
+        if (booleanQuery.clauses().isEmpty()) {
             return null;
         }
-        return newQuery;
+
+        return booleanQuery;
     }
 
     protected boolean wasCanceled(HttpServletRequest request) {

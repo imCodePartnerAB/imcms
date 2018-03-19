@@ -68,7 +68,11 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
     private void getTerms(Query query, Collection<String> terms) {
         if (query instanceof BooleanQuery) {
             BooleanQuery booleanQuery = (BooleanQuery) query;
-            BooleanClause[] clauses = booleanQuery.getClauses();
+
+            final List<BooleanClause> booleanClauses = new ArrayList<>();
+            booleanQuery.iterator().forEachRemaining(booleanClauses::add);
+            BooleanClause[] clauses = booleanClauses.toArray(new BooleanClause[0]);
+
             for (BooleanClause clause : clauses) {
                 if (clause.getOccur() != BooleanClause.Occur.MUST_NOT) {
                     getTerms(clause.getQuery(), terms);
