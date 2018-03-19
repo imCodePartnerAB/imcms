@@ -111,6 +111,7 @@ public class DefaultCommonContentService
                     commonContentJPA.setVersionNo(versionNo);
                 }));
 
+        newCommonContent.setId(null);
         newCommonContent.setVersionNo(versionNo);
 
         return new CommonContentDTO(repository.saveAndFlush(newCommonContent));
