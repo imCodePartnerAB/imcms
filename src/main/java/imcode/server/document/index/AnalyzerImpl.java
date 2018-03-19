@@ -4,31 +4,23 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.Tokenizer;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.util.CharTokenizer;
-import org.apache.lucene.util.Version;
-
-import java.io.Reader;
 
 @Deprecated
 public class AnalyzerImpl extends Analyzer {
 
-
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+    protected TokenStreamComponents createComponents(String fieldName) {
         Tokenizer tokenizer;
         if (DocumentIndex.FIELD__KEYWORD.equals(fieldName)) {
-            tokenizer = new NullTokenizer(reader);
+            tokenizer = new NullTokenizer();
         } else {
-            tokenizer = new LetterOrDigitTokenizer(reader);
+            tokenizer = new LetterOrDigitTokenizer();
         }
 
-        return new TokenStreamComponents(tokenizer, new LowerCaseFilter(Version.LUCENE_40, tokenizer));
+        return new TokenStreamComponents(tokenizer, new LowerCaseFilter(tokenizer));
     }
 
     private static class NullTokenizer extends CharTokenizer {
-
-        private NullTokenizer(Reader reader) {
-            super(Version.LUCENE_40, reader);
-        }
 
         protected boolean isTokenChar(int c) {
             return true;
@@ -36,10 +28,6 @@ public class AnalyzerImpl extends Analyzer {
     }
 
     private static class LetterOrDigitTokenizer extends CharTokenizer {
-
-        private LetterOrDigitTokenizer(Reader reader) {
-            super(Version.LUCENE_40, reader);
-        }
 
         protected boolean isTokenChar(int c) {
             return Character.isLetterOrDigit(c) || '_' == c;
