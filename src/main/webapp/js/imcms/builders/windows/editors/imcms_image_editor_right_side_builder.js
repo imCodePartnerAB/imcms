@@ -149,22 +149,6 @@ Imcms.define(
                         .append(")");
                 }
 
-                function onValidChangeX(newX) {
-                    imageCropper.setCropX(newX);
-                }
-
-                function onValidChangeY(newY) {
-                    console.log(newY)
-                }
-
-                function onValidChangeX1(newX1) {
-                    console.log(newX1)
-                }
-
-                function onValidChangeY1(newY1) {
-                    console.log(newY1)
-                }
-
                 function setValidation(onValid) {
                     return function () {
                         var val = +$(this).val();
@@ -183,7 +167,7 @@ Imcms.define(
                         placeholder: "X",
                         text: "X",
                         error: "Error",
-                        onValidChange: setValidation(onValidChangeX)
+                        onValidChange: setValidation(imageCropper.setCropX)
                     });
 
                     var $yCropCoord = components.texts.textNumber("<div>", {
@@ -191,7 +175,7 @@ Imcms.define(
                         placeholder: "Y",
                         text: "Y",
                         error: "Error",
-                        onValidChange: setValidation(onValidChangeY)
+                        onValidChange: setValidation(imageCropper.setCropY)
                     });
 
                     var $x1CropCoord = components.texts.textNumber("<div>", {
@@ -199,7 +183,7 @@ Imcms.define(
                         placeholder: "X1",
                         text: "X1",
                         error: "Error",
-                        onValidChange: setValidation(onValidChangeX1)
+                        onValidChange: setValidation(imageCropper.setCropX1)
                     });
 
                     var $y1CropCoord = components.texts.textNumber("<div>", {
@@ -207,7 +191,7 @@ Imcms.define(
                         placeholder: "Y1",
                         text: "Y1",
                         error: "Error",
-                        onValidChange: setValidation(onValidChangeY1)
+                        onValidChange: setValidation(imageCropper.setCropY1)
                     });
 
                     events.on("crop area position changed", function () {
