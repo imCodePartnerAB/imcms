@@ -10,8 +10,8 @@ import imcode.server.document.index.service.SolrServerFactory;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
@@ -49,7 +49,7 @@ public class DocumentIndexServiceOpsTest {
     private static String titleField;
     private static int documentSize = 10;
     private static boolean addedInitDocuments;
-    private static SolrServer solrServer;
+    private static SolrClient solrServer;
 
     @InjectMocks
     private DocumentIndexServiceOps documentIndexServiceOps;
@@ -79,7 +79,7 @@ public class DocumentIndexServiceOpsTest {
 
     @AfterClass
     public static void deleteTestSolrFolder() throws IOException {
-        solrServer.shutdown();
+        solrServer.close();
         FileUtility.forceDelete(testSolrFolder);
     }
 
@@ -581,7 +581,7 @@ public class DocumentIndexServiceOpsTest {
         }
     }
 
-    private SolrDocumentList getSolrDocumentList(SearchQueryDTO queryDTO) throws SolrServerException {
+    private SolrDocumentList getSolrDocumentList(SearchQueryDTO queryDTO) throws SolrServerException, IOException {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(queryDTO);
         final QueryResponse queryResponse = documentIndexServiceOps.query(solrServer, solrQuery);
 

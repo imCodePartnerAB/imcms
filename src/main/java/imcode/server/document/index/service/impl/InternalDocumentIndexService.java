@@ -4,8 +4,8 @@ import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.IndexUpdateOp;
 import imcode.server.document.index.service.SolrServerFactory;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrException;
@@ -116,7 +116,7 @@ public class InternalDocumentIndexService implements DocumentIndexService, Index
     }
 
     private ManagedDocumentIndexService newManagedService(boolean recreateDataDir) {
-        final SolrServer solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir);
+        final SolrClient solrServer = SolrServerFactory.createEmbeddedSolrServer(solrHome, recreateDataDir);
         return new ManagedDocumentIndexService(solrServer, solrServer, serviceOps, failureHandler);
     }
 

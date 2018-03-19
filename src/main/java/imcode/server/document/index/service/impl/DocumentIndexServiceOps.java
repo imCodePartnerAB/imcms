@@ -4,12 +4,11 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.document.index.DocumentIndex;
 import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.util.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -55,11 +54,11 @@ public class DocumentIndexServiceOps {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
-    public QueryResponse query(SolrServer solrServer, SolrQuery solrQuery) throws SolrServerException {
+    public QueryResponse query(SolrClient solrServer, SolrQuery solrQuery) throws SolrServerException, IOException {
         return solrServer.query(solrQuery);
     }
 
-    public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
+    public void addDocsToIndex(SolrClient solrServer, int docId) throws SolrServerException, IOException {
         final SolrInputDocument solrInputDoc = mkSolrInputDoc(docId);
 
         if (solrInputDoc != null) {
@@ -70,7 +69,7 @@ public class DocumentIndexServiceOps {
         }
     }
 
-    public void deleteDocsFromIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
+    public void deleteDocsFromIndex(SolrClient solrServer, int docId) throws SolrServerException, IOException {
         String query = mkSolrDocsDeleteQuery(docId);
 
         solrServer.deleteByQuery(query);
@@ -78,13 +77,13 @@ public class DocumentIndexServiceOps {
         logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
-    public void rebuildIndex(SolrServer solrServer) {
+    public void rebuildIndex(SolrClient solrServer) {
         rebuildIndex(solrServer, indexRebuildProgress -> {
         });
     }
 
     @SneakyThrows
-    private void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback) {
+    private void rebuildIndex(SolrClient solrServer, Consumer<IndexRebuildProgress> progressCallback) {
         logger.debug("Rebuilding index.");
 
         final List<Integer> ids = documentMapper.getAllDocumentIds();
@@ -114,7 +113,7 @@ public class DocumentIndexServiceOps {
 
         logger.debug("Deleting old documents from index.");
 
-        solrServer.deleteByQuery(String.format("timestamp:{* TO %s}", DateUtil.getThreadLocalDateFormat().format(rebuildStartDt)));
+        solrServer.deleteByQuery(String.format("timestamp:{* TO %s}", rebuildStartDt.toInstant().toString()));
         solrServer.commit();
 
         logger.debug("Index rebuild is complete.");

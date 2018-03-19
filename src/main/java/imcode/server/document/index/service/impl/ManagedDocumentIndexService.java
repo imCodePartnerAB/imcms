@@ -6,8 +6,8 @@ import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.IndexUpdateOp;
 import imcode.server.document.index.service.IndexUpdateOperation;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
 import java.util.concurrent.*;
@@ -39,12 +39,12 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     private volatile Future indexUpdateFuture = CompletableFuture.completedFuture(null);
     private volatile Future indexRebuildFuture = CompletableFuture.completedFuture(null);
 
-    private SolrServer solrServerReader;
-    private SolrServer solrServerWriter;
+    private SolrClient solrServerReader;
+    private SolrClient solrServerWriter;
     private DocumentIndexServiceOps serviceOps;
     private Consumer<ServiceFailure> failureHandler;
 
-    ManagedDocumentIndexService(SolrServer solrServerReader, SolrServer solrServerWriter,
+    ManagedDocumentIndexService(SolrClient solrServerReader, SolrClient solrServerWriter,
                                 DocumentIndexServiceOps serviceOps, Consumer<ServiceFailure> failureHandler) {
         this.solrServerReader = solrServerReader;
         this.solrServerWriter = solrServerWriter;
@@ -115,7 +115,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
                     try {
                         solrServerReader.commit(true, true, true);
-                        solrServerReader.shutdown();
+                        solrServerReader.close();
                     } catch (Exception e) {
                         logger.warn("An error occurred while shutting down SolrServer reader.", e);
                     }
@@ -123,7 +123,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                     if (!solrServerReader.equals(solrServerWriter)) {
                         try {
                             solrServerWriter.commit(true, true, true);
-                            solrServerWriter.shutdown();
+                            solrServerWriter.close();
                         } catch (Exception e) {
                             logger.warn("An error occurred while shutting down SolrServer writer.", e);
                         }
