@@ -311,8 +311,6 @@
          Admin Handlers - This will register all the standard admin
          RequestHandlers.
       -->
-    <requestHandler name="/admin/"
-                    class="solr.admin.AdminHandlers" />
 
     <!-- ping/healthcheck -->
     <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
