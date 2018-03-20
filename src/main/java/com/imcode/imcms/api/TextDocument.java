@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.api.DocumentService.ApiWrappingDocumentVisitor;
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.mapping.container.LoopEntryRef;
 import imcode.server.document.*;
@@ -402,15 +403,17 @@ public class TextDocument extends Document {
         Document child;
 
         public MenuItem(MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem) {
-            this.internalMenuItem = internalMenuItem;
-            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor(contentManagementSystem);
-            internalMenuItem.getDocument().accept(visitor);
-            child = visitor.getDocument();
+            this(internalMenuItem, internalMenuItem.getDocument(), contentManagementSystem);
         }
 
-        public MenuItem(MenuItemDomainObject menuItem, DocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
+        public MenuItem(MenuItemDomainObject menuItem,
+                        DocumentDomainObject document,
+                        ContentManagementSystem contentManagementSystem) {
+
             this.internalMenuItem = menuItem;
-            this.child = new Document(document, contentManagementSystem);
+            ApiWrappingDocumentVisitor visitor = new ApiWrappingDocumentVisitor(contentManagementSystem);
+            document.accept(visitor);
+            this.child = visitor.getDocument();
         }
 
         public Document getDocument() {
