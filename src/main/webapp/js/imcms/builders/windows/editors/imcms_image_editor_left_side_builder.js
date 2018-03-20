@@ -132,12 +132,12 @@ Imcms.define(
 
             function onValidHeightChange() {
                 var height = +$(this).val();
-                var previousHeight = cropElements.$cropImg.height();
 
                 if (isNaN(height)) {
                     return;
                 }
 
+                var previousHeight = cropElements.$cropImg.height();
                 setHeight(height, height, height + 4, imageDataContainers);
                 setCropAreaHeight(height, previousHeight, imageDataContainers);
             }
@@ -159,12 +159,12 @@ Imcms.define(
 
             function onValidWidthChange() {
                 var width = +$(this).val();
-                var previousWidth = cropElements.$cropImg.width();
 
                 if (isNaN(width)) {
                     return;
                 }
 
+                var previousWidth = cropElements.$cropImg.width();
                 setWidth(width, width, width + 4, imageDataContainers);
                 setCropAreaWidth(width, previousWidth, imageDataContainers);
             }

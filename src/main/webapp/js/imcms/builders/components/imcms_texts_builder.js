@@ -46,15 +46,14 @@ Imcms.define("imcms-texts-builder",
                 value = (parseInt(numberBoxInput.val()) || 0) + delta
             ;
             numberBoxInput.val(value);
-            numberBoxInput.change();
         }
 
         function deactivateNumberBox(e) {
             var $target = $(e.target);
 
             if ($target.hasClass("imcms-number-box__button")
-                || $target.parent().children(".imcms-number-box__input").length
-            ) {
+                || $target.parent().children(".imcms-number-box__input").length)
+            {
                 return;
             }
 
@@ -173,8 +172,18 @@ Imcms.define("imcms-texts-builder",
                         validation.call(this, attributes.onValidChange);
                     }),
 
-                    $buttonIncrement = buttons.incrementButton({click: incrementNumberBoxValue}),
-                    $buttonDecrement = buttons.decrementButton({click: decrementNumberBoxValue}),
+                    $buttonIncrement = buttons.incrementButton({
+                        click: function () {
+                            incrementNumberBoxValue.call(this);
+                            $input.change();
+                        }
+                    }),
+                    $buttonDecrement = buttons.decrementButton({
+                        click: function () {
+                            decrementNumberBoxValue.call(this);
+                            $input.change();
+                        }
+                    }),
 
                     $numberInputBox = numberBoxBEM.buildBlock("<div>", [
                         {"input": $input},
