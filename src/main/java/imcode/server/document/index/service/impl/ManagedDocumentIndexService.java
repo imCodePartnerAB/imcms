@@ -39,15 +39,15 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     private volatile Future indexUpdateFuture = CompletableFuture.completedFuture(null);
     private volatile Future indexRebuildFuture = CompletableFuture.completedFuture(null);
 
-    private SolrClient solrServerReader;
-    private SolrClient solrServerWriter;
+    private SolrClient solrClientReader;
+    private SolrClient solrClientWriter;
     private DocumentIndexServiceOps serviceOps;
     private Consumer<ServiceFailure> failureHandler;
 
-    ManagedDocumentIndexService(SolrClient solrServerReader, SolrClient solrServerWriter,
+    ManagedDocumentIndexService(SolrClient solrClientReader, SolrClient solrClientWriter,
                                 DocumentIndexServiceOps serviceOps, Consumer<ServiceFailure> failureHandler) {
-        this.solrServerReader = solrServerReader;
-        this.solrServerWriter = solrServerWriter;
+        this.solrClientReader = solrClientReader;
+        this.solrClientWriter = solrClientWriter;
         this.serviceOps = serviceOps;
         this.failureHandler = failureHandler;
     }
@@ -55,7 +55,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     @Override
     public QueryResponse query(SolrQuery solrQuery) {
         try {
-            return serviceOps.query(solrServerReader, solrQuery);
+            return serviceOps.query(solrClientReader, solrQuery);
 
         } catch (Exception e) {
             logger.error("Search error. solrQuery: " + solrQuery, e);
@@ -114,16 +114,16 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                     indexRebuildExecutor.shutdown();
 
                     try {
-                        solrServerReader.commit(true, true, true);
-                        solrServerReader.close();
+                        solrClientReader.commit(true, true, true);
+                        solrClientReader.close();
                     } catch (Exception e) {
                         logger.warn("An error occurred while shutting down SolrServer reader.", e);
                     }
 
-                    if (!solrServerReader.equals(solrServerWriter)) {
+                    if (!solrClientReader.equals(solrClientWriter)) {
                         try {
-                            solrServerWriter.commit(true, true, true);
-                            solrServerWriter.close();
+                            solrClientWriter.commit(true, true, true);
+                            solrClientWriter.close();
                         } catch (Exception e) {
                             logger.warn("An error occurred while shutting down SolrServer writer.", e);
                         }
@@ -146,7 +146,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
     private void rebuildIndexes() {
         indexUpdateRequests.clear();
-        serviceOps.rebuildIndex(solrServerWriter);
+        serviceOps.rebuildIndex(solrClientWriter);
         indexUpdateFuture = indexUpdateExecutor.submit(this::updateIndexes);
     }
 
@@ -166,10 +166,10 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
                 final IndexUpdateOperation indexUpdateOperation = updateOp.operation();
 
                 if (IndexUpdateOperation.ADD.equals(indexUpdateOperation)) {
-                    serviceOps.addDocsToIndex(solrServerWriter, updateOp.docId());
+                    serviceOps.addDocsToIndex(solrClientWriter, updateOp.docId());
 
                 } else if (IndexUpdateOperation.DELETE.equals(indexUpdateOperation)) {
-                    serviceOps.deleteDocsFromIndex(solrServerWriter, updateOp.docId());
+                    serviceOps.deleteDocsFromIndex(solrClientWriter, updateOp.docId());
                 }
             } catch (InterruptedException e) {
                 logger.debug("document-index-update thread [" + toString() + "] was interrupted");

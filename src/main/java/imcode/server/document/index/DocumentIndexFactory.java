@@ -29,7 +29,7 @@ public class DocumentIndexFactory {
         if (oSolrUrl.isPresent()) {
             final String solrUrl = oSolrUrl.get();
 
-            service = new RemoteDocumentIndexService(solrUrl, solrUrl, documentIndexServiceOps, periodInMinutes);
+            service = new RemoteDocumentIndexService(solrUrl, documentIndexServiceOps, periodInMinutes);
 
         } else if (oSolrHome.isPresent()) {
             final String solrHome = oSolrHome.get();

@@ -54,36 +54,36 @@ public class DocumentIndexServiceOps {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
-    public QueryResponse query(SolrClient solrServer, SolrQuery solrQuery) throws SolrServerException, IOException {
-        return solrServer.query(solrQuery);
+    public QueryResponse query(SolrClient solrClient, SolrQuery solrQuery) throws SolrServerException, IOException {
+        return solrClient.query(solrQuery);
     }
 
-    public void addDocsToIndex(SolrClient solrServer, int docId) throws SolrServerException, IOException {
+    public void addDocsToIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
         final SolrInputDocument solrInputDoc = mkSolrInputDoc(docId);
 
         if (solrInputDoc != null) {
-            solrServer.add(solrInputDoc);
-            solrServer.commit(false, false, true);
+            solrClient.add(solrInputDoc);
+            solrClient.commit(false, false, true);
 
             logger.info(String.format("Added solrInputDoc with docId %d into the index.", docId));
         }
     }
 
-    public void deleteDocsFromIndex(SolrClient solrServer, int docId) throws SolrServerException, IOException {
+    public void deleteDocsFromIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
         String query = mkSolrDocsDeleteQuery(docId);
 
-        solrServer.deleteByQuery(query);
-        solrServer.commit(false, false, true);
+        solrClient.deleteByQuery(query);
+        solrClient.commit(false, false, true);
         logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
-    public void rebuildIndex(SolrClient solrServer) {
-        rebuildIndex(solrServer, indexRebuildProgress -> {
+    public void rebuildIndex(SolrClient solrClient) {
+        rebuildIndex(solrClient, indexRebuildProgress -> {
         });
     }
 
     @SneakyThrows
-    private void rebuildIndex(SolrClient solrServer, Consumer<IndexRebuildProgress> progressCallback) {
+    private void rebuildIndex(SolrClient solrClient, Consumer<IndexRebuildProgress> progressCallback) {
         logger.debug("Rebuilding index.");
 
         final List<Integer> ids = documentMapper.getAllDocumentIds();
@@ -97,13 +97,13 @@ public class DocumentIndexServiceOps {
 
         for (int id : ids) {
             if (Thread.interrupted()) {
-                solrServer.rollback();
+                solrClient.rollback();
                 throw new InterruptedException();
             }
 
             SolrInputDocument solrInputDoc = mkSolrInputDoc(id);
             if (solrInputDoc != null) {
-                solrServer.add(solrInputDoc);
+                solrClient.add(solrInputDoc);
                 logger.debug(String.format("Added input docs [%s] to index.", solrInputDoc));
             }
 
@@ -113,8 +113,8 @@ public class DocumentIndexServiceOps {
 
         logger.debug("Deleting old documents from index.");
 
-        solrServer.deleteByQuery(String.format("timestamp:{* TO %s}", rebuildStartDt.toInstant().toString()));
-        solrServer.commit();
+        solrClient.deleteByQuery(String.format("timestamp:{* TO %s}", rebuildStartDt.toInstant().toString()));
+        solrClient.commit();
 
         logger.debug("Index rebuild is complete.");
     }

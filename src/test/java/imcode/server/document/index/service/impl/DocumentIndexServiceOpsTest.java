@@ -6,7 +6,7 @@ import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.service.SolrServerFactory;
+import imcode.server.document.index.service.SolrClientFactory;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -49,7 +49,7 @@ public class DocumentIndexServiceOpsTest {
     private static String titleField;
     private static int documentSize = 10;
     private static boolean addedInitDocuments;
-    private static SolrClient solrServer;
+    private static SolrClient solrClient;
 
     @InjectMocks
     private DocumentIndexServiceOps documentIndexServiceOps;
@@ -62,7 +62,7 @@ public class DocumentIndexServiceOpsTest {
     public static void setUp() throws Exception {
         FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
 
-        solrServer = SolrServerFactory.createEmbeddedSolrServer(testSolrFolder.getAbsolutePath());
+        solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath());
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
@@ -79,7 +79,7 @@ public class DocumentIndexServiceOpsTest {
 
     @AfterClass
     public static void deleteTestSolrFolder() throws IOException {
-        solrServer.close();
+        solrClient.close();
         FileUtility.forceDelete(testSolrFolder);
     }
 
@@ -124,7 +124,7 @@ public class DocumentIndexServiceOpsTest {
         assertThat(solrDocumentList.size(), is(1));
         assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(headlineValue));
 
-        documentIndexServiceOps.deleteDocsFromIndex(solrServer, getDocId(id));
+        documentIndexServiceOps.deleteDocsFromIndex(solrClient, getDocId(id));
 
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
         assertThat(solrDocumentList.size(), is(0));
@@ -401,7 +401,7 @@ public class DocumentIndexServiceOpsTest {
                 DocumentIndex.FIELD__CATEGORY_ID, secondCategoryId
         );
 
-        solrServer.commit();
+        solrClient.commit();
 
         // checking for first category id
         searchQueryDTO.setCategoriesId(Collections.singletonList(firstCategoryId));
@@ -536,7 +536,7 @@ public class DocumentIndexServiceOpsTest {
 
         when(documentIndexer.index(docId)).thenReturn(solrInputDocument);
 
-        documentIndexServiceOps.addDocsToIndex(solrServer, docId);
+        documentIndexServiceOps.addDocsToIndex(solrClient, docId);
     }
 
     private SolrInputDocument addRequiredFields(int id) {
@@ -583,7 +583,7 @@ public class DocumentIndexServiceOpsTest {
 
     private SolrDocumentList getSolrDocumentList(SearchQueryDTO queryDTO) throws SolrServerException, IOException {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(queryDTO);
-        final QueryResponse queryResponse = documentIndexServiceOps.query(solrServer, solrQuery);
+        final QueryResponse queryResponse = documentIndexServiceOps.query(solrClient, solrQuery);
 
         return queryResponse.getResults();
     }

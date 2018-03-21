@@ -25,7 +25,7 @@ public class ManagedDocumentIndexServiceTest {
     private DocumentIndexServiceOps serviceOps;
 
     @Mock
-    private SolrClient solrServer;
+    private SolrClient solrClient;
 
     @Mock
     private QueryResponse queryResponse;
@@ -42,7 +42,7 @@ public class ManagedDocumentIndexServiceTest {
 
     @Test
     public void query_When_SolrServerIsCorrect_Expect_QueryResponseIsReturned() throws SolrServerException, IOException {
-        when(serviceOps.query(solrServer, solrQuery)).thenReturn(queryResponse);
+        when(serviceOps.query(solrClient, solrQuery)).thenReturn(queryResponse);
 
         final QueryResponse actualResponse = managedDocumentIndexService.query(solrQuery);
 
@@ -51,13 +51,13 @@ public class ManagedDocumentIndexServiceTest {
 
     @Test(expected = IndexException.class)
     public void query_When_SolrServerExceptionIsThrown_Expect_IndexException() throws SolrServerException, IOException {
-        when(serviceOps.query(solrServer, solrQuery)).thenThrow(new SolrServerException("test_message"));
+        when(serviceOps.query(solrClient, solrQuery)).thenThrow(new SolrServerException("test_message"));
 
         managedDocumentIndexService.query(solrQuery);
     }
 
     @After
     public void verifyMethodExecution() throws SolrServerException, IOException {
-        verify(serviceOps, times(1)).query(solrServer, solrQuery);
+        verify(serviceOps, times(1)).query(solrClient, solrQuery);
     }
 }

@@ -3,6 +3,7 @@ package imcode.server.document.index.service;
 import com.imcode.imcms.util.Value;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.BinaryRequestWriter;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
@@ -12,23 +13,28 @@ import java.io.File;
 
 import static java.lang.String.format;
 
-public class SolrServerFactory {
+public class SolrClientFactory {
 
     public static final String DEFAULT_CORE_NAME = "core";
     public static final String DEFAULT_DATA_DIR_NAME = "data";
-    private static final Logger logger = Logger.getLogger(SolrServerFactory.class);
+    private static final Logger logger = Logger.getLogger(SolrClientFactory.class);
 
-    public static HttpSolrClient createHttpSolrServer(String solrUrl) {
+    public static SolrClient createHttpSolrClient(String solrUrl) {
+        return createHttpSolrClient(solrUrl, false);
+    }
+
+    // TODO how recreate data on server?
+    public static SolrClient createHttpSolrClient(String solrUrl, boolean recreateDataDir) {
         return Value.with(new HttpSolrClient.Builder(solrUrl).build(), solr ->
                 solr.setRequestWriter(new BinaryRequestWriter())
         );
     }
 
-    public static EmbeddedSolrServer createEmbeddedSolrServer(String solrHome) {
-        return createEmbeddedSolrServer(solrHome, false);
+    public static SolrClient createEmbeddedSolrClient(String solrHome) {
+        return createEmbeddedSolrClient(solrHome, false);
     }
 
-    public static EmbeddedSolrServer createEmbeddedSolrServer(String solrHome, boolean recreateDataDir) {
+    public static SolrClient createEmbeddedSolrClient(String solrHome, boolean recreateDataDir) {
         logger.info(format("Creating embedded SOLr server. Solr home: %s, recreateDataDir: %s.",
                 solrHome, recreateDataDir));
 
