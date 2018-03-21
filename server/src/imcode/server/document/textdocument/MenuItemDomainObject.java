@@ -11,8 +11,8 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
     private Integer sortKey;
     private TreeSortKeyDomainObject treeSortKey;
 
-    public MenuItemDomainObject( DocumentReference documentReference,
-                                 Integer sortKey, TreeSortKeyDomainObject treeSortKey ) {
+    public MenuItemDomainObject(DocumentReference documentReference,
+                                Integer sortKey, TreeSortKeyDomainObject treeSortKey) {
         this.documentReference = documentReference;
         this.sortKey = sortKey;
         this.treeSortKey = treeSortKey;
@@ -22,19 +22,19 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         this(documentReference, null, new TreeSortKeyDomainObject(""));
     }
 
-    public boolean equals( Object o ) {
-        if ( this == o ) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof MenuItemDomainObject ) ) {
+        if (!(o instanceof MenuItemDomainObject)) {
             return false;
         }
 
-        final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject)o;
+        final MenuItemDomainObject otherMenuItem = (MenuItemDomainObject) o;
 
         return sortKey.equals(otherMenuItem.sortKey)
-               && treeSortKey.equals(otherMenuItem.treeSortKey)
-               && documentReference.equals(otherMenuItem.documentReference);
+                && treeSortKey.equals(otherMenuItem.treeSortKey)
+                && documentReference.equals(otherMenuItem.documentReference);
     }
 
     public int hashCode() {
@@ -45,14 +45,22 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
         return sortKey;
     }
 
+    public void setSortKey(Integer sortKey) {
+        this.sortKey = sortKey;
+    }
+
     public TreeSortKeyDomainObject getTreeSortKey() {
         return treeSortKey;
+    }
+
+    public void setTreeSortKey(TreeSortKeyDomainObject treeSortKey) {
+        this.treeSortKey = treeSortKey;
     }
 
     public DocumentReference getDocumentReference() {
         return documentReference;
     }
-    
+
     protected Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
@@ -63,13 +71,5 @@ public class MenuItemDomainObject implements Cloneable, Serializable {
 
     public int getDocumentId() {
         return documentReference.getDocumentId();
-    }
-
-    public void setSortKey(Integer sortKey) {
-        this.sortKey = sortKey;
-    }
-
-    public void setTreeSortKey(TreeSortKeyDomainObject treeSortKey) {
-        this.treeSortKey = treeSortKey;
     }
 }

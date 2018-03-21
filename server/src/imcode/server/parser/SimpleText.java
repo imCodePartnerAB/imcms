@@ -1,25 +1,23 @@
-package imcode.server.parser ;
-
-import java.util.List ;
+package imcode.server.parser;
 
 public class SimpleText implements Text {
 
-    private String content ;
+    private String content;
 
     public SimpleText(String text) {
-	content = text ;
+        content = text;
     }
 
     public String getContent() {
-	return content ;
+        return content;
     }
 
     public String toString() {
-	return getContent() ;
+        return getContent();
     }
 
     public short getNodeType() {
-	return Node.TEXT_NODE ;
+        return Node.TEXT_NODE;
     }
 
 }

@@ -12,17 +12,17 @@ class DublinCoreTermsMapFactory {
 
     public Map<NameSpace, Map<String, String>> getNameSpaceStrings(DublinCoreTerms dublinCoreTerms) {
         Format iso8601Format = DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT;
-        return ArrayUtils.toMap(new Object[][] {
-                { DublinCoreTerms.DUBLIN_CORE_ELEMENTS_NAME_SPACE, ArrayUtils.toMap(new Object[][] {
+        return ArrayUtils.toMap(new Object[][]{
+                {DublinCoreTerms.DUBLIN_CORE_ELEMENTS_NAME_SPACE, ArrayUtils.toMap(new Object[][]{
                         {"creator", null != dublinCoreTerms.getCreator() ? dublinCoreTerms.getCreator().getName() : null},
-                        {"description",dublinCoreTerms.getDescription()},
-                        {"identifier",dublinCoreTerms.getIdentifer()},
-                        {"title",dublinCoreTerms.getTitle()},
+                        {"description", dublinCoreTerms.getDescription()},
+                        {"identifier", dublinCoreTerms.getIdentifer()},
+                        {"title", dublinCoreTerms.getTitle()},
                 })},
-                { DublinCoreTerms.DUBLIN_CORE_TERMS_NAME_SPACE, ArrayUtils.toMap(new Object[][] {
-                        {"created", format(iso8601Format, dublinCoreTerms.getCreated()) },
-                        {"issued",format(iso8601Format, dublinCoreTerms.getIssued()) },
-                        {"modified",format(iso8601Format, dublinCoreTerms.getModified()) },
+                {DublinCoreTerms.DUBLIN_CORE_TERMS_NAME_SPACE, ArrayUtils.toMap(new Object[][]{
+                        {"created", format(iso8601Format, dublinCoreTerms.getCreated())},
+                        {"issued", format(iso8601Format, dublinCoreTerms.getIssued())},
+                        {"modified", format(iso8601Format, dublinCoreTerms.getModified())},
                 })},
         });
     }

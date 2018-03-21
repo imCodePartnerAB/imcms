@@ -26,7 +26,7 @@ public class MenuTag extends BodyTagSupport {
     private int no;
     private Properties attributes = new Properties();
     private Iterator<MenuItemDomainObject> menuItemIterator;
-    private MenuItemDomainObject menuItem ;
+    private MenuItemDomainObject menuItem;
     private String template;
     private MenuDomainObject menu;
     private String label;
@@ -41,7 +41,7 @@ public class MenuTag extends BodyTagSupport {
 
         menu = document.getMenu(no);
         MenuItemDomainObject[] menuItems = menu.getMenuItems();
-        menuItemIterator = new FilterIterator(new ArrayIterator(menuItems), new MenuParser.UserCanSeeMenuItemPredicate(parserParameters.getDocumentRequest().getUser())) ;
+        menuItemIterator = new FilterIterator(new ArrayIterator(menuItems), new MenuParser.UserCanSeeMenuItemPredicate(parserParameters.getDocumentRequest().getUser()));
         if (menuItemIterator.hasNext()) {
             nextMenuItem();
             return EVAL_BODY_BUFFERED;
@@ -53,8 +53,8 @@ public class MenuTag extends BodyTagSupport {
     public boolean nextMenuItem() {
         if (menuItemIterator.hasNext()) {
             menuItem = menuItemIterator.next();
-            pageContext.setAttribute("menuitem", new TextDocument.MenuItem(menuItem, ContentManagementSystem.fromRequest(pageContext.getRequest()))) ;
-            return true ;
+            pageContext.setAttribute("menuitem", new TextDocument.MenuItem(menuItem, ContentManagementSystem.fromRequest(pageContext.getRequest())));
+            return true;
         } else {
             invalidateMenuItem();
             return false;
@@ -62,7 +62,7 @@ public class MenuTag extends BodyTagSupport {
     }
 
     public int doAfterBody() throws JspException {
-        if ( menuItemIterator.hasNext() ) {
+        if (menuItemIterator.hasNext()) {
             nextMenuItem();
             return EVAL_BODY_AGAIN;
         } else {
@@ -73,35 +73,35 @@ public class MenuTag extends BodyTagSupport {
     public int doEndTag() throws JspException {
         try {
             String bodyContentString = null != getBodyContent() ? getBodyContent().getString() : "";
-            bodyContent = null ;
+            bodyContent = null;
             HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
             HttpServletResponse response = (HttpServletResponse) pageContext.getResponse();
             ParserParameters parserParameters = ParserParameters.fromRequest(request);
             bodyContentString = MenuParser.addMenuAdmin(no,
-                                                        parserParameters.isMenuMode(),
-                                                        bodyContentString, menu, request,response,label);
+                    parserParameters.isMenuMode(),
+                    bodyContentString, menu, request, response, label);
             bodyContentString = TagParser.addPreAndPost(attributes, bodyContentString);
             pageContext.getOut().write(bodyContentString);
-        } catch ( IOException e ) {
+        } catch (IOException e) {
             throw new JspException(e);
-        } catch ( ServletException e ) {
+        } catch (ServletException e) {
             throw new JspException(e);
-        } catch ( RuntimeException e ) {
+        } catch (RuntimeException e) {
             throw new JspException(e);
         }
         return EVAL_PAGE;
     }
 
-    public void setNo(int no) {
-        this.no = no ;
+    public int getNo() {
+        return no;
     }
 
-    public int getNo() {
-        return no ;
+    public void setNo(int no) {
+        this.no = no;
     }
 
     public void setMode(String mode) {
-        attributes.setProperty("mode", mode) ;
+        attributes.setProperty("mode", mode);
     }
 
     public void setLabel(String label) {
@@ -113,11 +113,11 @@ public class MenuTag extends BodyTagSupport {
     }
 
     public void setPre(String pre) {
-        attributes.setProperty("pre", pre) ;
+        attributes.setProperty("pre", pre);
     }
 
     public void setPost(String post) {
-        attributes.setProperty("post", post) ;
+        attributes.setProperty("post", post);
     }
 
     public Iterator<MenuItemDomainObject> getMenuItemIterator() {
@@ -132,7 +132,7 @@ public class MenuTag extends BodyTagSupport {
     }
 
     public void invalidateMenuItem() {
-        menuItem = null ;
+        menuItem = null;
         pageContext.removeAttribute("menuitem");
     }
 

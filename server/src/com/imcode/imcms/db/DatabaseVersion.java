@@ -2,8 +2,8 @@ package com.imcode.imcms.db;
 
 public class DatabaseVersion implements Comparable<DatabaseVersion> {
 
-    private final int majorVersion ;
-    private final int minorVersion ;
+    private final int majorVersion;
+    private final int minorVersion;
     private final int clientVersion;
 
     public DatabaseVersion(int majorVersion, int minorVersion) {
@@ -33,7 +33,7 @@ public class DatabaseVersion implements Comparable<DatabaseVersion> {
         if (0 == result) {
             result = Integer.valueOf(clientVersion).compareTo(other.clientVersion);
         }
-        return result ;
+        return result;
     }
 
     public boolean equals(Object o) {

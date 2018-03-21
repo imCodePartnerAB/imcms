@@ -13,7 +13,7 @@ public class SimpleColumn implements Column {
         this.name = name;
         this.type = type;
         this.size = size;
-        this.required =required;
+        this.required = required;
     }
 
     public boolean isNullable() {

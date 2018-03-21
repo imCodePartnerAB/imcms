@@ -1,9 +1,11 @@
 package com.imcode.imcms.util.rss;
 
+import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
+import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.UnhandledException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang.StringUtils;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -11,16 +13,13 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 import java.util.Locale;
-
-import com.imcode.imcms.util.rss.dc.DublinCoreTerms;
-import com.imcode.imcms.util.rss.dc.DublinCoreEntity;
+import java.util.Map;
 
 public class Rss20DocumentFactory implements RssDocumentFactory {
 
     private static final String RFC822_DATE_PATTERN = "EEE, d MMM yyyy HH:mm:ss Z";
-	private static final Locale EN_LOCALE = Locale.US;
+    private static final Locale EN_LOCALE = Locale.US;
 
     public Document createRssDocument(Channel channel) {
         try {
@@ -31,7 +30,7 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
             appendRssElement(xmlDocument, channel);
 
             return xmlDocument;
-        } catch ( ParserConfigurationException e ) {
+        } catch (ParserConfigurationException e) {
             throw new UnhandledException(e);
         }
     }
@@ -66,7 +65,7 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
     private void appendItems(Element channelElement,
                              Channel channel) {
 
-        for ( Item item : channel.getItems() ) {
+        for (Item item : channel.getItems()) {
             appendItem(channelElement, item);
         }
     }
@@ -87,13 +86,13 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
         try {
             DublinCoreEntity dublinCoreEntity = (DublinCoreEntity) item.getNameSpaceBeans().get(DublinCoreTerms.DUBLIN_CORE_ELEMENTS_NAME_SPACE).get("creator");
             appendTextElement(itemElement, "author", dublinCoreEntity.getEmailAddress());
-        } catch ( NullPointerException npe ) {
+        } catch (NullPointerException npe) {
         }
 
         try {
             Date issued = (Date) item.getNameSpaceBeans().get(DublinCoreTerms.DUBLIN_CORE_TERMS_NAME_SPACE).get("issued");
             appendTextElement(itemElement, "pubDate", dateFormat.format(issued));
-        } catch ( NullPointerException npe ) {
+        } catch (NullPointerException npe) {
         }
 
         Map<NameSpace, Map<String, String>> nameSpaces = item.getNameSpaceStrings();
@@ -103,14 +102,14 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
 
     private void appendNameSpaceStrings(Element itemElement, Map<NameSpace, Map<String, String>> nameSpaces
     ) {
-        for ( Map.Entry<NameSpace, Map<String, String>> nameSpaceEntry : nameSpaces.entrySet() ) {
+        for (Map.Entry<NameSpace, Map<String, String>> nameSpaceEntry : nameSpaces.entrySet()) {
             NameSpace nameSpace = nameSpaceEntry.getKey();
             String nameSpaceUri = nameSpace.getNameSpaceUri();
             String prefix = lookupPrefix(itemElement, nameSpaceUri, nameSpace);
             Map<String, String> nameSpaceValues = nameSpaceEntry.getValue();
-            for ( Map.Entry<String, String> nameSpaceValueEntry : nameSpaceValues.entrySet() ) {
+            for (Map.Entry<String, String> nameSpaceValueEntry : nameSpaceValues.entrySet()) {
                 String name = nameSpaceValueEntry.getKey();
-                if ( null != prefix ) {
+                if (null != prefix) {
                     name = prefix + ":" + name;
                 }
                 String value = nameSpaceValueEntry.getValue();
@@ -121,9 +120,9 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
 
     private String lookupPrefix(Element element, String nameSpaceUri, NameSpace nameSpace) {
         String prefix = element.lookupPrefix(nameSpaceUri);
-        if ( null == prefix ) {
+        if (null == prefix) {
             String suggestedPrefix = nameSpace.getSuggestedPrefix();
-            if ( null == element.lookupNamespaceURI(suggestedPrefix) ) {
+            if (null == element.lookupNamespaceURI(suggestedPrefix)) {
                 prefix = suggestedPrefix;
                 element.getOwnerDocument().getDocumentElement().setAttribute("xmlns:" + prefix, nameSpaceUri);
             }
@@ -137,7 +136,7 @@ public class Rss20DocumentFactory implements RssDocumentFactory {
 
     private void appendTextElementNS(Element parentElement, String namespaceUri, String qualifiedName,
                                      String text) {
-        if ( StringUtils.isNotBlank(text) ) {
+        if (StringUtils.isNotBlank(text)) {
             parentElement.appendChild(createTextElementNS(parentElement.getOwnerDocument(), namespaceUri, qualifiedName, text));
         }
     }

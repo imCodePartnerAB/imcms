@@ -25,37 +25,41 @@ public class BackgroundIndexBuilder {
                                   IndexDocumentFactory indexDocumentFactory) {
         this.indexParentDirectory = indexParentDirectory;
         this.rebuildingDirectoryIndex = rebuildingDirectoryIndex;
-        indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
-        previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
+        indexParentDirectory.setLastModified(System.currentTimeMillis());
+        previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified();
         this.indexDocumentFactory = indexDocumentFactory;
+    }
+
+    private static File getNewIndexDirectory(File indexParentDirectory) {
+        return (File) Utility.findMatch(new CounterFileFactory(indexParentDirectory), new UniqueFilePredicate());
     }
 
     public synchronized void start() {
         try {
-            NDC.push(ClassUtils.getShortClassName(getClass())+"-"+Utility.numberToAlphaNumerics(System.identityHashCode(this)));
+            NDC.push(ClassUtils.getShortClassName(getClass()) + "-" + Utility.numberToAlphaNumerics(System.identityHashCode(this)));
 
             touchIndexParentDirectory();
 
-            if ( null != indexBuildingThread && indexBuildingThread.isAlive() ) {
+            if (null != indexBuildingThread && indexBuildingThread.isAlive()) {
                 log.info("Ignoring request to build new index. Already in progress.");
                 return;
             }
 
             File indexDirectory = getNewIndexDirectory(indexParentDirectory);
-            if ( !indexDirectory.mkdirs() ) {
+            if (!indexDirectory.mkdirs()) {
                 log.warn("Failed to create new index directory. Will try again next time.");
                 return;
             }
 
-            log.info("Created directory "+indexDirectory);
-            
+            log.info("Created directory " + indexDirectory);
+
             rememberIndexParentDirectoryLastModified();
 
             try {
-                log.info("Starting index rebuild thread.") ;
+                log.info("Starting index rebuild thread.");
                 indexBuildingThread = new IndexBuildingThread(this, indexDirectory, indexDocumentFactory);
                 indexBuildingThread.start();
-            } catch ( IllegalThreadStateException itse ) {
+            } catch (IllegalThreadStateException itse) {
                 throw new ShouldNotBeThrownException(itse);
             }
         } finally {
@@ -64,19 +68,19 @@ public class BackgroundIndexBuilder {
     }
 
     boolean otherProcessModifiedIndexDirectory() {
-        if (previousIndexParentDirectoryLastModified != 0 ) {
+        if (previousIndexParentDirectoryLastModified != 0) {
             long lastModified = indexParentDirectory.lastModified();
-            if (lastModified > previousIndexParentDirectoryLastModified ) {
-                log.trace("Expected last modified "+previousIndexParentDirectoryLastModified+" but got "+lastModified);
+            if (lastModified > previousIndexParentDirectoryLastModified) {
+                log.trace("Expected last modified " + previousIndexParentDirectoryLastModified + " but got " + lastModified);
                 rememberIndexParentDirectoryLastModified();
-                return true ;
+                return true;
             }
         }
-        return false ;
+        return false;
     }
 
     void touchIndexParentDirectory() {
-        indexParentDirectory.setLastModified(System.currentTimeMillis()) ;
+        indexParentDirectory.setLastModified(System.currentTimeMillis());
         rememberIndexParentDirectoryLastModified();
     }
 
@@ -88,17 +92,13 @@ public class BackgroundIndexBuilder {
         return indexBuildingThread != null && indexBuildingThread.removeDocument(document);
     }
 
-    private static File getNewIndexDirectory(File indexParentDirectory) {
-        return (File) Utility.findMatch(new CounterFileFactory(indexParentDirectory), new UniqueFilePredicate()) ;
-    }
-
     public synchronized void notifyRebuildComplete(DefaultDirectoryIndex newIndex) {
-        rebuildingDirectoryIndex.notifyRebuildComplete(newIndex) ;
+        rebuildingDirectoryIndex.notifyRebuildComplete(newIndex);
         rememberIndexParentDirectoryLastModified();
     }
 
     private void rememberIndexParentDirectoryLastModified() {
-        previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified() ;
+        previousIndexParentDirectoryLastModified = indexParentDirectory.lastModified();
     }
 
     private static class CounterFileFactory extends CounterStringFactory {
@@ -106,7 +106,7 @@ public class BackgroundIndexBuilder {
         private File parentDirectory;
 
         CounterFileFactory(File parentDirectory) {
-            super(1) ;
+            super(1);
             this.parentDirectory = parentDirectory;
         }
 

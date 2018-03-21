@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class LogOut extends HttpServlet {
 
-    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Utility.removeRememberCdCookie(request, response);
         Utility.makeUserLoggedOut(request);
         new VerifyUser.GoToLoginSuccessfulPageCommand().dispatch(request, response);

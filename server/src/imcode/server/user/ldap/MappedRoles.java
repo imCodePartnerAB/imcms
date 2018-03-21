@@ -1,9 +1,13 @@
 package imcode.server.user.ldap;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableTable;
+import com.google.common.collect.Table;
 import com.imcode.imcms.api.P;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public class MappedRoles {
 
@@ -44,7 +48,7 @@ public class MappedRoles {
             ImmutableTable.Builder<String, String, String> rolesTableBuilder = ImmutableTable.builder();
             ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
-            for (MappedRole.RoleToAttribute mr: rolesToAttributesColl) {
+            for (MappedRole.RoleToAttribute mr : rolesToAttributesColl) {
                 rolesBuilder.add(mr.role());
                 rolesTableBuilder.put(mr.attributeName(), mr.attributeValue(), mr.role());
             }
@@ -60,7 +64,7 @@ public class MappedRoles {
         public Set<String> roles(List<P.P2<String, String>> attributesNameValuePairs) {
             ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
-            for (P.P2<String, String> nameAndValue: attributesNameValuePairs) {
+            for (P.P2<String, String> nameAndValue : attributesNameValuePairs) {
                 String role = role(nameAndValue._1(), nameAndValue._2());
                 if (role != null) rolesBuilder.add(role);
             }
@@ -86,7 +90,7 @@ public class MappedRoles {
             ImmutableSet.Builder<String> groupsBuilder = ImmutableSet.builder();
             ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
 
-            for (MappedRole.RoleToAdGroup mr: rolesToAdGroupsColl) {
+            for (MappedRole.RoleToAdGroup mr : rolesToAdGroupsColl) {
                 rolesBuilder.add(mr.role());
                 groupsBuilder.add(mr.group());
 
@@ -108,13 +112,13 @@ public class MappedRoles {
             ImmutableSet.Builder<String> rolesBuilder = ImmutableSet.builder();
             ImmutableSet.Builder<String> lowerCasedGroupsBuilder = ImmutableSet.builder();
 
-            for (String group: groups) {
+            for (String group : groups) {
                 lowerCasedGroupsBuilder.add(group.toLowerCase());
             }
 
             Set<String> lowerCasedGroups = lowerCasedGroupsBuilder.build();
 
-            for (MappedRole.RoleToAdGroup mappedRole: mappedRolesTable.values()) {
+            for (MappedRole.RoleToAdGroup mappedRole : mappedRolesTable.values()) {
                 if (lowerCasedGroups.contains(mappedRole.group())) rolesBuilder.add(mappedRole.role());
             }
 

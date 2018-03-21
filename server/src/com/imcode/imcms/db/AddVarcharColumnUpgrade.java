@@ -22,8 +22,8 @@ class AddVarcharColumnUpgrade extends ImcmsDatabaseUpgrade {
     private String tableName;
 
     protected AddVarcharColumnUpgrade(org.apache.ddlutils.model.Database ddl,
-            String tableName, String previousColumnName,
-                            String name, int size, boolean required) {
+                                      String tableName, String previousColumnName,
+                                      String name, int size, boolean required) {
         super(ddl);
         this.tableName = tableName;
 
@@ -49,7 +49,7 @@ class AddVarcharColumnUpgrade extends ImcmsDatabaseUpgrade {
                 acc.setAtEnd(true);
                 changes.add(acc);
                 sqlBuilder.processChanges(actualDdl, actualDdl, changes, null);
-                return null ;
+                return null;
             }
         });
     }

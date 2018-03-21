@@ -8,6 +8,6 @@ public interface InputStreamSource extends Serializable {
 
     InputStream getInputStream() throws IOException;
 
-    long getSize() throws IOException ;
+    long getSize() throws IOException;
 
 }

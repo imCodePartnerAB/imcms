@@ -1,19 +1,19 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
-import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
 import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.UpdateTableWhereColumnEqualsDatabaseCommand;
+import com.imcode.db.handlers.CollectionHandler;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
-import com.imcode.db.handlers.CollectionHandler;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Mapper<E extends Mapper.MapperObject> {
 
@@ -24,7 +24,7 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
     }
 
     public E get(Object id) {
-        return (E) database.execute(new SqlQueryCommand(getSelectSql()+" WHERE "+getIdColumnName()+" = ?", new Object[] { id } , new SingleObjectHandler(getRowTransformer())));
+        return (E) database.execute(new SqlQueryCommand(getSelectSql() + " WHERE " + getIdColumnName() + " = ?", new Object[]{id}, new SingleObjectHandler(getRowTransformer())));
     }
 
     public List<E> getAll() {
@@ -34,10 +34,10 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
     protected List<E> getAll(String where, String orderBy) {
         String selectSql = getSelectSql();
         if (null != where) {
-            selectSql += " WHERE "+where;
+            selectSql += " WHERE " + where;
         }
         if (null != orderBy) {
-            selectSql += " ORDER BY "+orderBy;
+            selectSql += " ORDER BY " + orderBy;
         }
         return (List<E>) database.execute(new SqlQueryCommand(selectSql, null, new CollectionHandler(new ArrayList(), getRowTransformer())));
     }
@@ -76,11 +76,15 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
         };
     }
 
-    protected abstract String getTableName() ;
-    protected abstract String getIdColumnName() ;
-    protected abstract List<String> getDataColumnNames() ;
+    protected abstract String getTableName();
+
+    protected abstract String getIdColumnName();
+
+    protected abstract List<String> getDataColumnNames();
+
     protected abstract E convertRow(ResultSet rs) throws SQLException;
-    protected abstract Object[][] getDataValues(E e) ;
+
+    protected abstract Object[][] getDataValues(E e);
 
     protected String getDefaultOrderBy() {
         return null;

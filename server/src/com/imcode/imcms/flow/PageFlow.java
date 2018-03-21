@@ -1,7 +1,7 @@
 package com.imcode.imcms.flow;
 
-import imcode.util.HttpSessionUtils;
 import imcode.util.HttpSessionAttribute;
+import imcode.util.HttpSessionUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,40 +19,40 @@ public abstract class PageFlow implements Serializable, HttpSessionAttribute {
     protected DispatchCommand returnCommand;
     private String sessionAttributeName;
 
-    protected PageFlow( DispatchCommand returnCommand ) {
+    protected PageFlow(DispatchCommand returnCommand) {
         this.returnCommand = returnCommand;
     }
 
     public String getSessionAttributeName() {
-        return sessionAttributeName ;
+        return sessionAttributeName;
     }
 
-    public void setSessionAttributeName( String sessionAttributeName ) {
-        this.sessionAttributeName = sessionAttributeName ;
+    public void setSessionAttributeName(String sessionAttributeName) {
+        this.sessionAttributeName = sessionAttributeName;
     }
 
     public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute( this, request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW );
-        String page = request.getParameter( REQUEST_PARAMETER__PAGE );
-        if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
-            dispatchReturn( request, response );
+        HttpSessionUtils.setSessionAttributeAndSetNameInRequestAttribute(this, request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW);
+        String page = request.getParameter(REQUEST_PARAMETER__PAGE);
+        if (null != request.getParameter(REQUEST_PARAMETER__CANCEL_BUTTON)) {
+            dispatchReturn(request, response);
         } else if (null == page) {
-            dispatchToFirstPage( request, response ) ;
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__OK_BUTTON )) {
-            dispatchOk( request, response, page ) ;
+            dispatchToFirstPage(request, response);
+        } else if (null != request.getParameter(REQUEST_PARAMETER__OK_BUTTON)) {
+            dispatchOk(request, response, page);
         } else {
-            dispatchFromPage( request, response, page );
+            dispatchFromPage(request, response, page);
         }
     }
 
-    protected void dispatchReturn( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-        HttpSessionUtils.removeSessionAttribute(request, getSessionAttributeName()) ;
-        returnCommand.dispatch( request, response );
+    protected void dispatchReturn(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        HttpSessionUtils.removeSessionAttribute(request, getSessionAttributeName());
+        returnCommand.dispatch(request, response);
     }
 
-    protected abstract void dispatchToFirstPage( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+    protected abstract void dispatchToFirstPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
 
-    protected abstract void dispatchOk( HttpServletRequest request, HttpServletResponse response, String page ) throws IOException, ServletException;
+    protected abstract void dispatchOk(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException;
 
     protected abstract void dispatchFromPage(HttpServletRequest request, HttpServletResponse response, String page) throws IOException, ServletException;
 

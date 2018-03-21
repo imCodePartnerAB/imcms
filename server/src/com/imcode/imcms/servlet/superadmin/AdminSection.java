@@ -23,7 +23,7 @@ import java.util.Vector;
 
 public class AdminSection extends HttpServlet {
 
-    private final static Logger log = Logger.getLogger( AdminSection.class.getName() );
+    private final static Logger log = Logger.getLogger(AdminSection.class.getName());
 
     private final static String ADMIN_TEMPLATE = "sections/admin_section.html";
     private final static String ADD_TEMPLATE = "sections/admin_section_add.html";
@@ -35,12 +35,12 @@ public class AdminSection extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
 
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType(res);
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
 
         //lets see if its a super admin we got otherwise get rid of him fast
-        if ( !user.isSuperAdmin() ) {
+        if (!user.isSuperAdmin()) {
             log.debug("the user wasn't a administrator so lets get rid of him");
             res.sendRedirect("StartDoc");
             return;
@@ -48,7 +48,7 @@ public class AdminSection extends HttpServlet {
 
         //ok so far lets load the admin page
         ServletOutputStream out = res.getOutputStream();
-        String content = imcref.getAdminTemplate( ADMIN_TEMPLATE, user, null );
+        String content = imcref.getAdminTemplate(ADMIN_TEMPLATE, user, null);
         out.write(content.getBytes(Imcms.DEFAULT_ENCODING));
         out.flush();
         out.close();
@@ -84,8 +84,8 @@ public class AdminSection extends HttpServlet {
             //lets start and see if we need to save anything to the db
             if (!new_section_name.equals("")) {
                 boolean section_exists = false;
-                for( int i=0; i < section_arr.length; i++){
-                    if( new_section_name.equals( section_arr[i][1]) ){
+                for (int i = 0; i < section_arr.length; i++) {
+                    if (new_section_name.equals(section_arr[i][1])) {
                         section_exists = true;
                         Properties langproperties = ImcmsPrefsLocalizedMessageProvider.getLanguageProperties(user);
                         errormsg = langproperties.getProperty("error/servlet/AdminSection/section_exists");
@@ -94,8 +94,8 @@ public class AdminSection extends HttpServlet {
                 }
 
                 //ok we have a new name lets save it to db, but only if it's not exists in db
-                if(!section_exists){
-                    final Object[] parameters = new String[] {new_section_name};
+                if (!section_exists) {
+                    final Object[] parameters = new String[]{new_section_name};
                     imcref.getProcedureExecutor().executeUpdateProcedure("SectionAdd", parameters);
                     imcref.getDocumentMapper().initSections();
                     final Object[] parameters1 = new String[0];
@@ -104,11 +104,11 @@ public class AdminSection extends HttpServlet {
             }
 
             vec.add("#errormsg#");
-            vec.add( errormsg );
+            vec.add(errormsg);
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
             //ok lets parse the page with right template
-            htmlToSend.append(imcref.getAdminTemplate( ADD_TEMPLATE, user, vec ));
+            htmlToSend.append(imcref.getAdminTemplate(ADD_TEMPLATE, user, vec));
         }//end if(req.getParameter("add_section")!= null)
         //**** end add_section-case ****
 
@@ -119,8 +119,8 @@ public class AdminSection extends HttpServlet {
             String section_id = req.getParameter("section_list") == null ? "-1" : req.getParameter("section_list");
             if ((!new_section.equals("")) && (!section_id.equals("-1"))) {
                 //ok we have a new name lets save it to db, but only if it's not exists in db
-                final Object[] parameters = new String[] {section_id,
-                                                                                                new_section};
+                final Object[] parameters = new String[]{section_id,
+                        new_section};
                 imcref.getProcedureExecutor().executeUpdateProcedure("SectionChangeName", parameters);
                 imcref.getDocumentMapper().initSections();
             }
@@ -132,7 +132,7 @@ public class AdminSection extends HttpServlet {
             vec.add("#section_list#");
             vec.add(createOptionList(section_arr, user, null));
             //ok lets parse the page with right template
-            htmlToSend.append(imcref.getAdminTemplate( NAME_TEMPLATE, user, vec ));
+            htmlToSend.append(imcref.getAdminTemplate(NAME_TEMPLATE, user, vec));
 
         }//end if (req.getParameter("edit_section")!= null)
         //**** lend edit_section-case ****
@@ -155,12 +155,12 @@ public class AdminSection extends HttpServlet {
                 return;
             }
             if (new_sections.equals("-1")) {
-                deleteSection( imcref, del_section );
+                deleteSection(imcref, del_section);
             } else {
-                final Object[] parameters = new String[] {new_sections,
-                                                                                            del_section};
+                final Object[] parameters = new String[]{new_sections,
+                        del_section};
                 imcref.getDatabase().execute(new SqlUpdateCommand("update meta_section set section_id = ? where section_id = ?", parameters));
-                deleteSection( imcref, del_section );
+                deleteSection(imcref, del_section);
             }
         }
 
@@ -170,7 +170,7 @@ public class AdminSection extends HttpServlet {
             String section_id = req.getParameter("section_list") == null ? "-1" : req.getParameter("section_list");
             if (!section_id.equals("-1")) {
                 //ok we have a request for delete lets see if there is any docs connected to that section_id
-                final Object[] parameters = new String[] {section_id};
+                final Object[] parameters = new String[]{section_id};
                 String doc_nrs = (String) imcref.getProcedureExecutor().executeProcedure("SectionCount", parameters, new SingleObjectHandler<String>(new StringFromRowFactory()));
                 int doc_int = 0;
                 if (doc_nrs != null) {
@@ -193,11 +193,11 @@ public class AdminSection extends HttpServlet {
                     vec.add(doc_nrs);
                     vec.add("#delete_section#");
                     vec.add(section_id);
-                    htmlToSend.append(imcref.getAdminTemplate( DELETE_CONFIRM_TEMPLATE, user, vec ));
+                    htmlToSend.append(imcref.getAdminTemplate(DELETE_CONFIRM_TEMPLATE, user, vec));
                     got_confirm_page = true;
                 } else {
                     //ok we can delete it right a way an carry on with it
-                    deleteSection( imcref, section_id );
+                    deleteSection(imcref, section_id);
                 }
             }
 
@@ -210,12 +210,11 @@ public class AdminSection extends HttpServlet {
                 vec.add("#section_list#");
                 vec.add(createOptionList(section_arr, user, null));
                 //ok lets parse the page with right template
-                htmlToSend.append(imcref.getAdminTemplate( DELETE_TEMPLATE, user, vec ));
+                htmlToSend.append(imcref.getAdminTemplate(DELETE_TEMPLATE, user, vec));
             }
 
         }//end if (req.getParameter("edit_section")!= null)
         //**** end delete_section-case ****
-
 
 
         //**** ok lets rapp it all up *****
@@ -225,16 +224,16 @@ public class AdminSection extends HttpServlet {
             return;
         }
         //ok now lets send the page to browser
-        Utility.setDefaultHtmlContentType( res );
+        Utility.setDefaultHtmlContentType(res);
         ServletOutputStream out = res.getOutputStream();
         out.write(htmlToSend.toString().getBytes(Imcms.DEFAULT_ENCODING));
         out.flush();
         out.close();
     }//end doPost()
 
-    private void deleteSection( ImcmsServices imcref, String del_section ) {
-        imcref.getDatabase().execute(new DeleteWhereColumnsEqualDatabaseCommand( "meta_section", "section_id", del_section) ) ;
-        imcref.getDatabase().execute(new DeleteWhereColumnsEqualDatabaseCommand( "sections", "section_id", del_section) ) ;
+    private void deleteSection(ImcmsServices imcref, String del_section) {
+        imcref.getDatabase().execute(new DeleteWhereColumnsEqualDatabaseCommand("meta_section", "section_id", del_section));
+        imcref.getDatabase().execute(new DeleteWhereColumnsEqualDatabaseCommand("sections", "section_id", del_section));
         imcref.getDocumentMapper().initSections();
     }
 
@@ -257,7 +256,7 @@ public class AdminSection extends HttpServlet {
                 vec.add(arr[i][1]);
                 vec.add("#docs#");
                 vec.add(arr[i][2]);
-                buff.append(imcref.getAdminTemplate( LINE_TEMPLATE, user, vec ));
+                buff.append(imcref.getAdminTemplate(LINE_TEMPLATE, user, vec));
             }
         }
         return buff.toString();

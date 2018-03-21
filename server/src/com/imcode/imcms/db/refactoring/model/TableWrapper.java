@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public class TableWrapper implements Table {
 
-    private Table wrappedTable ;
+    private Table wrappedTable;
 
     public TableWrapper(Table wrappedTable) {
         this.wrappedTable = wrappedTable;

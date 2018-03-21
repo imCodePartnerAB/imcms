@@ -13,7 +13,7 @@ public class ArraySet extends AbstractSet {
     }
 
     public int size() {
-        return array.length ;
+        return array.length;
     }
 
     public Iterator iterator() {

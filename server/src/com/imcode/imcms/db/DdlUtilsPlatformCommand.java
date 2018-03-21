@@ -12,5 +12,5 @@ public abstract class DdlUtilsPlatformCommand implements DatabaseCommand {
         return executePlatform(databaseConnection, platform);
     }
 
-    protected abstract Object executePlatform(DatabaseConnection databaseConnection, Platform platform) ;
+    protected abstract Object executePlatform(DatabaseConnection databaseConnection, Platform platform);
 }

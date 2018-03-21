@@ -12,7 +12,7 @@ public class ForeignKeyHasLocalColumnName implements Predicate {
 
     public boolean evaluate(Object object) {
         ForeignKey foreignKey = (ForeignKey) object;
-        for ( Reference reference : foreignKey.getReferences() ) {
+        for (Reference reference : foreignKey.getReferences()) {
             if (columnName.equals(reference.getLocalColumnName())) {
                 return true;
             }

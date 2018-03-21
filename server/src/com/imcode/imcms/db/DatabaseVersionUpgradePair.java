@@ -6,8 +6,8 @@ public class DatabaseVersionUpgradePair {
     private DatabaseUpgrade upgrade;
 
     public DatabaseVersionUpgradePair(int major, int minor, DatabaseUpgrade upgrade) {
-        version = new DatabaseVersion(major,minor) ;
-        this.upgrade = upgrade ;
+        version = new DatabaseVersion(major, minor);
+        this.upgrade = upgrade;
     }
 
     public DatabaseVersion getVersion() {

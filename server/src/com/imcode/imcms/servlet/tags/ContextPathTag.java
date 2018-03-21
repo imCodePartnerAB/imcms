@@ -8,8 +8,8 @@ public class ContextPathTag extends TagSupport {
 
     public int doStartTag() throws JspException {
         try {
-            pageContext.getOut().print((( HttpServletRequest)pageContext.getRequest()).getContextPath());
-        } catch ( Exception e ) {
+            pageContext.getOut().print(((HttpServletRequest) pageContext.getRequest()).getContextPath());
+        } catch (Exception e) {
             throw new JspException(e);
         }
         return SKIP_BODY;

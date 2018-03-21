@@ -7,7 +7,7 @@ import java.util.*;
 public class BatchDocumentGetter extends DocumentGetterWrapper {
 
     private final Set documentIds;
-    private Map documentsMap ;
+    private Map documentsMap;
 
     BatchDocumentGetter(Set documentIds, DocumentGetter documentGetter) {
         super(documentGetter);
@@ -18,15 +18,15 @@ public class BatchDocumentGetter extends DocumentGetterWrapper {
         if (null == documentsMap) {
             documentsMap = new HashMap();
             List documents = super.getDocuments(documentIds);
-            for ( Iterator iterator = documents.iterator(); iterator.hasNext(); ) {
+            for (Iterator iterator = documents.iterator(); iterator.hasNext(); ) {
                 DocumentDomainObject document = (DocumentDomainObject) iterator.next();
-                documentsMap.put(new Integer(document.getId()), document) ;
+                documentsMap.put(new Integer(document.getId()), document);
             }
         }
         DocumentDomainObject document = (DocumentDomainObject) documentsMap.remove(documentId);
         if (null == document) {
-            document = super.getDocument(documentId) ;
+            document = super.getDocument(documentId);
         }
-        return document ;
+        return document;
     }
 }

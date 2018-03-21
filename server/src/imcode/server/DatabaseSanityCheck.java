@@ -25,94 +25,43 @@ public class DatabaseSanityCheck implements SanityCheck {
         this.wantedModel = wantedModel;
     }
 
-    public Collection<Problem> execute() {
-        DdlUtilsPlatformCommand databaseCommand = new DdlUtilsPlatformCommand() {
-            protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
-                platform.setDelimitedIdentifierModeOn(true);
-                org.apache.ddlutils.model.Database actualModel = platform.readModelFromDatabase(null);
-                ModelComparator modelComparator = new ModelComparator(platform.getPlatformInfo(), false);
-                List<ModelChange> changes = modelComparator.compare(actualModel, wantedModel);
-                Set<Class> errorChanges = new HashSet<Class>(Arrays.asList(new Class[] {
-                        AddColumnChange.class,
-                        RemoveColumnChange.class,
-                        AddTableChange.class,
-                        ColumnAutoIncrementChange.class,
-                        AddPrimaryKeyChange.class,
-                        ColumnRequiredChange.class,
-                        PrimaryKeyChange.class,
-                        AddIndexChange.class,
-                        ColumnDataTypeChange.class,
-                }));
-                Set<Class> warningChanges = new HashSet<Class>(Arrays.asList(new Class[] {
-                        ColumnSizeChange.class,
-                        AddForeignKeyChange.class,
-                        ColumnOrderChange.class,
-                }));
-                Set<Class> ignoredChanges = new HashSet<Class>(Arrays.asList(new Class[] {
-                        RemoveForeignKeyChange.class,
-                        RemoveIndexChange.class,
-                        RemoveTableChange.class,
-                        RemovePrimaryKeyChange.class,
-                        ColumnDefaultValueChange.class
-                }));
-                List<Problem> problems = new ArrayList<Problem>();
-                for ( ModelChange change : changes ) {
-                    Class<? extends ModelChange> changeClass = change.getClass();
-                    Problem problem = null;
-                    if (errorChanges.contains(changeClass)) {
-                        problem = getProblem(Problem.Severity.ERROR, change, platform);
-                    } else if (warningChanges.contains(changeClass)) {
-                        problem = getProblem(Problem.Severity.WARNING, change, platform);
-                    } else if (!ignoredChanges.contains(changeClass)){
-                        problem = getProblem(Problem.Severity.UNKNOWN, change, platform);
-                    }
-                    if (null != problem) {
-                        problems.add(problem);
-                    }
-                }
-                return problems;
-            }
-        };
-        return (Collection<Problem>) database.execute(databaseCommand);
-    }
-
     private static Problem getProblem(final Problem.Severity severity, ModelChange change, Platform platform) {
         String changeString;
-        if (change instanceof RemoveIndexChange ) {
+        if (change instanceof RemoveIndexChange) {
             RemoveIndexChange removeIndexChange = (RemoveIndexChange) change;
             Index index = removeIndexChange.getIndex();
-            changeString = "Unexpected index "+index.getName() + " on column(s) "+ stringifyIndexColumns(index);
-        } else if (change instanceof ColumnDefaultValueChange ) {
+            changeString = "Unexpected index " + index.getName() + " on column(s) " + stringifyIndexColumns(index);
+        } else if (change instanceof ColumnDefaultValueChange) {
             ColumnDefaultValueChange columnDefaultValueChange = (ColumnDefaultValueChange) change;
-            changeString = "Unexpected default value "+columnDefaultValueChange.getChangedColumn().getDefaultValue()+", expected "+columnDefaultValueChange.getNewDefaultValue();
-        } else if (change instanceof ColumnDataTypeChange ) {
+            changeString = "Unexpected default value " + columnDefaultValueChange.getChangedColumn().getDefaultValue() + ", expected " + columnDefaultValueChange.getNewDefaultValue();
+        } else if (change instanceof ColumnDataTypeChange) {
             ColumnDataTypeChange columnDataTypeChange = (ColumnDataTypeChange) change;
-            changeString = "Expected data type "+platform.getPlatformInfo().getNativeType(columnDataTypeChange.getNewTypeCode()) ;
-        } else if (change instanceof AddTableChange ) {
+            changeString = "Expected data type " + platform.getPlatformInfo().getNativeType(columnDataTypeChange.getNewTypeCode());
+        } else if (change instanceof AddTableChange) {
             AddTableChange addTableChange = (AddTableChange) change;
-            changeString = "Missing table "+addTableChange.getNewTable();
+            changeString = "Missing table " + addTableChange.getNewTable();
         } else if (change instanceof RemoveForeignKeyChange) {
             RemoveForeignKeyChange removeForeignKeyChange = (RemoveForeignKeyChange) change;
             ForeignKey foreignKey = removeForeignKeyChange.getForeignKey();
-            changeString = "Unexpected foreign key to "+foreignKey.getForeignTableName();
-            changeString+=" ("+stringifyReferences(foreignKey)+")";
+            changeString = "Unexpected foreign key to " + foreignKey.getForeignTableName();
+            changeString += " (" + stringifyReferences(foreignKey) + ")";
         } else if (change instanceof AddForeignKeyChange) {
             AddForeignKeyChange removeForeignKeyChange = (AddForeignKeyChange) change;
             ForeignKey newForeignKey = removeForeignKeyChange.getNewForeignKey();
-            changeString = "Missing foreign key to "+newForeignKey.getForeignTableName();
-            changeString+=" ("+stringifyReferences(newForeignKey)+")";
+            changeString = "Missing foreign key to " + newForeignKey.getForeignTableName();
+            changeString += " (" + stringifyReferences(newForeignKey) + ")";
         } else if (change instanceof AddIndexChange) {
             AddIndexChange addIndexChange = (AddIndexChange) change;
             Index index = addIndexChange.getNewIndex();
-            changeString = "Missing index "+index.getName()+ " on column(s) "+stringifyIndexColumns(index);
+            changeString = "Missing index " + index.getName() + " on column(s) " + stringifyIndexColumns(index);
         } else {
             changeString = change.toString();
         }
-        if (change instanceof ColumnChange ) {
+        if (change instanceof ColumnChange) {
             ColumnChange columnChange = (ColumnChange) change;
-            changeString = columnChange.getChangedTable().getName()+"."+columnChange.getChangedColumn().getName()+": "+changeString ;
-        } else if (change instanceof TableChange ) {
-            changeString = ((TableChange)change).getChangedTable().getName()+": "+changeString ;
+            changeString = columnChange.getChangedTable().getName() + "." + columnChange.getChangedColumn().getName() + ": " + changeString;
+        } else if (change instanceof TableChange) {
+            changeString = ((TableChange) change).getChangedTable().getName() + ": " + changeString;
         }
 
         return new SimpleProblem(severity, changeString);
@@ -121,7 +70,7 @@ public class DatabaseSanityCheck implements SanityCheck {
     private static String stringifyIndexColumns(Index index) {
         return commafy(index.getColumns(), new Transformer() {
             public Object transform(Object input) {
-                IndexColumn indexColumn = (IndexColumn) input ;
+                IndexColumn indexColumn = (IndexColumn) input;
                 return indexColumn.getName();
             }
         });
@@ -138,6 +87,57 @@ public class DatabaseSanityCheck implements SanityCheck {
 
     private static String commafy(Object[] array, Transformer transformer) {
         return StringUtils.join(CollectionUtils.collect(Arrays.asList(array), transformer).iterator(), ", ");
+    }
+
+    public Collection<Problem> execute() {
+        DdlUtilsPlatformCommand databaseCommand = new DdlUtilsPlatformCommand() {
+            protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
+                platform.setDelimitedIdentifierModeOn(true);
+                org.apache.ddlutils.model.Database actualModel = platform.readModelFromDatabase(null);
+                ModelComparator modelComparator = new ModelComparator(platform.getPlatformInfo(), false);
+                List<ModelChange> changes = modelComparator.compare(actualModel, wantedModel);
+                Set<Class> errorChanges = new HashSet<Class>(Arrays.asList(new Class[]{
+                        AddColumnChange.class,
+                        RemoveColumnChange.class,
+                        AddTableChange.class,
+                        ColumnAutoIncrementChange.class,
+                        AddPrimaryKeyChange.class,
+                        ColumnRequiredChange.class,
+                        PrimaryKeyChange.class,
+                        AddIndexChange.class,
+                        ColumnDataTypeChange.class,
+                }));
+                Set<Class> warningChanges = new HashSet<Class>(Arrays.asList(new Class[]{
+                        ColumnSizeChange.class,
+                        AddForeignKeyChange.class,
+                        ColumnOrderChange.class,
+                }));
+                Set<Class> ignoredChanges = new HashSet<Class>(Arrays.asList(new Class[]{
+                        RemoveForeignKeyChange.class,
+                        RemoveIndexChange.class,
+                        RemoveTableChange.class,
+                        RemovePrimaryKeyChange.class,
+                        ColumnDefaultValueChange.class
+                }));
+                List<Problem> problems = new ArrayList<Problem>();
+                for (ModelChange change : changes) {
+                    Class<? extends ModelChange> changeClass = change.getClass();
+                    Problem problem = null;
+                    if (errorChanges.contains(changeClass)) {
+                        problem = getProblem(Problem.Severity.ERROR, change, platform);
+                    } else if (warningChanges.contains(changeClass)) {
+                        problem = getProblem(Problem.Severity.WARNING, change, platform);
+                    } else if (!ignoredChanges.contains(changeClass)) {
+                        problem = getProblem(Problem.Severity.UNKNOWN, change, platform);
+                    }
+                    if (null != problem) {
+                        problems.add(problem);
+                    }
+                }
+                return problems;
+            }
+        };
+        return (Collection<Problem>) database.execute(databaseCommand);
     }
 
 }

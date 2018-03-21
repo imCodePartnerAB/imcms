@@ -21,6 +21,7 @@ import java.io.IOException;
 public class MenuRss extends HttpServlet {
 
     private final static Logger LOG = Logger.getLogger(MenuRss.class);
+
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
         try {
@@ -30,7 +31,7 @@ public class MenuRss extends HttpServlet {
 
             DocumentService documentService = cms.getDocumentService();
             TextDocument document = documentService.getTextDocument(documentId);
-            if ( null == document ) {
+            if (null == document) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND);
             } else {
                 final RssDocumentFactory rssDocumentFactory = new Rss20DocumentFactory();
@@ -38,13 +39,13 @@ public class MenuRss extends HttpServlet {
                 Document xmlDocument = rssDocumentFactory.createRssDocument(documentMenuChannel);
                 Utility.outputXmlDocument(response, xmlDocument);
             }
-        } catch ( NoPermissionException e ) {
-            LOG.debug("Forbidden.",e);
+        } catch (NoPermissionException e) {
+            LOG.debug("Forbidden.", e);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        } catch ( ClassCastException nfe ) {
-            LOG.debug("Forbidden.",nfe);
+        } catch (ClassCastException nfe) {
+            LOG.debug("Forbidden.", nfe);
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
-        } catch ( NumberFormatException nfe ) {
+        } catch (NumberFormatException nfe) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }

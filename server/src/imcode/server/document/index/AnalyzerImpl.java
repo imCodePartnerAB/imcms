@@ -6,36 +6,37 @@ import java.io.Reader;
 
 class AnalyzerImpl extends Analyzer {
 
-    public TokenStream tokenStream( String fieldName, Reader reader ) {
+    public TokenStream tokenStream(String fieldName, Reader reader) {
         Tokenizer tokenizer;
-        if ( DocumentIndex.FIELD__SECTION.equals( fieldName )
-             || DocumentIndex.FIELD__KEYWORD.equals( fieldName ) ) {
-            tokenizer = new NullTokenizer( reader );
+        if (DocumentIndex.FIELD__SECTION.equals(fieldName)
+                || DocumentIndex.FIELD__KEYWORD.equals(fieldName))
+        {
+            tokenizer = new NullTokenizer(reader);
         } else {
-            tokenizer = new LetterOrDigitTokenizer( reader );
+            tokenizer = new LetterOrDigitTokenizer(reader);
         }
-        return new LowerCaseFilter( tokenizer );
+        return new LowerCaseFilter(tokenizer);
     }
 
     private static class NullTokenizer extends CharTokenizer {
 
-        private NullTokenizer( Reader reader ) {
-            super( reader );
+        private NullTokenizer(Reader reader) {
+            super(reader);
         }
 
-        protected boolean isTokenChar( char c ) {
+        protected boolean isTokenChar(char c) {
             return true;
         }
     }
 
     private static class LetterOrDigitTokenizer extends CharTokenizer {
 
-        private LetterOrDigitTokenizer( Reader reader ) {
-            super( reader );
+        private LetterOrDigitTokenizer(Reader reader) {
+            super(reader);
         }
 
-        protected boolean isTokenChar( char c ) {
-            return Character.isLetterOrDigit( c ) || '_' == c;
+        protected boolean isTokenChar(char c) {
+            return Character.isLetterOrDigit(c) || '_' == c;
         }
     }
 }

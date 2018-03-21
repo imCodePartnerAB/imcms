@@ -1,28 +1,25 @@
 package imcode.server.document.textdocument;
 
 import imcode.util.Parser;
-
-import java.io.Serializable;
-
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+import java.io.Serializable;
+
 public class TextDomainObject implements Serializable {
-
-    String text;
-    int type;
-
-    /* Text-types. */
 
     /**
      * Plain text, with linebreaks. *
      */
     public final static int TEXT_TYPE_PLAIN = 0;
-
     /**
      * HTML-code. *
      */
     public final static int TEXT_TYPE_HTML = 1;
+
+    /* Text-types. */
+    String text;
+    int type;
 
     public TextDomainObject(String text) {
         this(text, TEXT_TYPE_PLAIN);
@@ -34,9 +31,9 @@ public class TextDomainObject implements Serializable {
      * @param text The text
      * @param type The type of the text.
      */
-    public TextDomainObject( String text, int type ) {
-        setText( text );
-        setType( type );
+    public TextDomainObject(String text, int type) {
+        setText(text);
+        setType(type);
     }
 
     /**
@@ -53,7 +50,7 @@ public class TextDomainObject implements Serializable {
      *
      * @param text Value to assign to text
      */
-    public void setText( String text ) {
+    public void setText(String text) {
         this.text = text;
     }
 
@@ -71,14 +68,14 @@ public class TextDomainObject implements Serializable {
      *
      * @param type Value to assign to type
      */
-    public void setType( int type ) {
-        switch ( type ) {
+    public void setType(int type) {
+        switch (type) {
             case TEXT_TYPE_PLAIN:
             case TEXT_TYPE_HTML:
                 this.type = type;
                 break;
             default:
-                throw new IllegalArgumentException( "Illegal text-type." );
+                throw new IllegalArgumentException("Illegal text-type.");
         }
     }
 
@@ -91,29 +88,29 @@ public class TextDomainObject implements Serializable {
 
     public String toHtmlString() {
         String result = getText();
-        if ( getType() == TEXT_TYPE_PLAIN ) {
+        if (getType() == TEXT_TYPE_PLAIN) {
             String[] vp = new String[]{
-                "&", "&amp;",
-                "<", "&lt;",
-                ">", "&gt;",
-                "\"", "&quot;",
-                "\r\n", "\n",
-                "\r", "\n",
-                "\n", "<br />\n",
+                    "&", "&amp;",
+                    "<", "&lt;",
+                    ">", "&gt;",
+                    "\"", "&quot;",
+                    "\r\n", "\n",
+                    "\r", "\n",
+                    "\n", "<br />\n",
             };
-            result = Parser.parseDoc( result, vp );
+            result = Parser.parseDoc(result, vp);
         }
         return result;
     }
 
-    public boolean equals( Object obj ) {
-        if ( !( obj instanceof TextDomainObject ) ) {
+    public boolean equals(Object obj) {
+        if (!(obj instanceof TextDomainObject)) {
             return false;
         }
-        final TextDomainObject o = (TextDomainObject)obj;
+        final TextDomainObject o = (TextDomainObject) obj;
         return new EqualsBuilder().append(text, o.getText())
                 .append(type, o.getType()).isEquals();
-        }
+    }
 
     public int hashCode() {
         return new HashCodeBuilder().append(type)

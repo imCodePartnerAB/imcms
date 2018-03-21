@@ -55,12 +55,12 @@ public class Imcms {
         return services;
     }
 
-    public static void setPath(File path) {
-        Imcms.path = path;
-    }
-
     public static File getPath() {
         return path;
+    }
+
+    public static void setPath(File path) {
+        Imcms.path = path;
     }
 
     public synchronized static void start() throws StartupException {

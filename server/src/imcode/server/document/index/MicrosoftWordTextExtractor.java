@@ -1,14 +1,14 @@
 package imcode.server.document.index;
 
 import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.model.TextPieceTable;
 import org.apache.poi.hwpf.model.TextPiece;
+import org.apache.poi.hwpf.model.TextPieceTable;
 
-import java.io.InputStream;
 import java.io.IOException;
-import java.util.List;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 class MicrosoftWordTextExtractor implements StreamTextsExtractor {
 
@@ -17,7 +17,7 @@ class MicrosoftWordTextExtractor implements StreamTextsExtractor {
         HWPFDocument wordDocument = new HWPFDocument(in);
         TextPieceTable textTable = wordDocument.getTextTable();
         List textPieces = textTable.getTextPieces();
-        for ( Iterator iterator = textPieces.iterator(); iterator.hasNext(); ) {
+        for (Iterator iterator = textPieces.iterator(); iterator.hasNext(); ) {
             TextPiece textPiece = (TextPiece) iterator.next();
             String text = textPiece.getStringBuffer().toString();
             text = text.replaceAll("\\x13.*\\x14", "");

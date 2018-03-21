@@ -9,8 +9,8 @@ import imcode.server.ImcmsServices;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.PlatformFactory;
 import org.apache.ddlutils.PlatformUtils;
-import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.io.DatabaseIO;
+import org.apache.ddlutils.model.Database;
 import org.apache.ddlutils.platform.mssql.MSSqlPlatform;
 
 import javax.sql.DataSource;
@@ -21,10 +21,10 @@ import java.sql.Connection;
 
 public class DatabaseUtils {
 
+    private static String currentDatabaseName = null;
+
     private DatabaseUtils() {
     }
-
-    private static String currentDatabaseName = null;
 
     public static Database getWantedDdl() throws IOException {
         DatabaseIO io = new DatabaseIO();
@@ -41,8 +41,7 @@ public class DatabaseUtils {
             com.imcode.db.Database database = services.getDatabase();
             if (database instanceof MockDatabase) {
                 currentDatabaseName = "mock";
-            }
-            else {
+            } else {
                 currentDatabaseName = (String) services.getDatabase().execute(new DatabaseCommand() {
                     public Object executeOn(DatabaseConnection databaseConnection) throws DatabaseException {
                         final Connection connection = databaseConnection.getConnection();

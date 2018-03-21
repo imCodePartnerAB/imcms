@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CompositeUpgrade implements DatabaseUpgrade {
 
-    List<DatabaseUpgrade> upgrades = new ArrayList() ;
+    List<DatabaseUpgrade> upgrades = new ArrayList();
 
     public CompositeUpgrade(DatabaseUpgrade... ups) {
         for (DatabaseUpgrade upgrade : ups) {
@@ -17,7 +17,7 @@ public class CompositeUpgrade implements DatabaseUpgrade {
     }
 
     public void upgrade(Database database) throws DatabaseException {
-        for ( DatabaseUpgrade upgrade : upgrades ) {
+        for (DatabaseUpgrade upgrade : upgrades) {
             upgrade.upgrade(database);
         }
     }

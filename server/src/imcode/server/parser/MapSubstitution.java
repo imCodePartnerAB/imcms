@@ -42,27 +42,27 @@ public class MapSubstitution implements Substitution {
     private Map map;
     private boolean removeNulls;
 
-    public MapSubstitution( Map map, boolean removeNulls ) {
-        setMap( map, removeNulls );
+    public MapSubstitution(Map map, boolean removeNulls) {
+        setMap(map, removeNulls);
     }
 
-    private void setMap( Map map, boolean removeNulls ) {
+    private void setMap(Map map, boolean removeNulls) {
         this.map = map;
         this.removeNulls = removeNulls;
     }
 
-    public void appendSubstitution( StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput,
-                                    PatternMatcher patMat, Pattern pat ) {
-        String match = matres.group( 0 );
-        String replace = (String)map.get( match );
-        if ( replace == null ) {
-            if ( removeNulls ) {
+    public void appendSubstitution(StringBuffer sb, MatchResult matres, int sc, PatternMatcherInput originalInput,
+                                   PatternMatcher patMat, Pattern pat) {
+        String match = matres.group(0);
+        String replace = (String) map.get(match);
+        if (replace == null) {
+            if (removeNulls) {
                 replace = "";
             } else {
                 replace = match;
             }
         }
-        sb.append( replace );
+        sb.append(replace);
     }
 
 }

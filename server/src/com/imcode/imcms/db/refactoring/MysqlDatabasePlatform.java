@@ -25,18 +25,18 @@ public class MysqlDatabasePlatform extends DatabasePlatform {
         List<ForeignKey> foreignKeysWithLocalColumnName = new ArrayList();
         CollectionUtils.select(table.getForeignKeys(), new ForeignKeyHasLocalColumnName(columnName), foreignKeysWithLocalColumnName);
         dropForeignKeys(foreignKeysWithLocalColumnName);
-        update("ALTER TABLE "+table.getName() +" CHANGE COLUMN "+columnName+" "+createColumnDefinition(column));
+        update("ALTER TABLE " + table.getName() + " CHANGE COLUMN " + columnName + " " + createColumnDefinition(column));
     }
 
     protected String createColumnDefinition(Column column) {
         List<String> columnDefinition = new ArrayList();
         columnDefinition.add(column.getName());
         columnDefinition.add(getTypeString(column));
-        columnDefinition.add(column.isNullable() ? "NULL" : "NOT NULL") ;
+        columnDefinition.add(column.isNullable() ? "NULL" : "NOT NULL");
         if (column.hasDefault()) {
-            columnDefinition.add("DEFAULT "+column.getDefaultValue()) ;
+            columnDefinition.add("DEFAULT " + column.getDefaultValue());
         } else if (column.isAutoIncremented()) {
-            columnDefinition.add("AUTO_INCREMENT") ;
+            columnDefinition.add("AUTO_INCREMENT");
         }
         return StringUtils.join(columnDefinition.iterator(), " ");
     }
@@ -46,6 +46,6 @@ public class MysqlDatabasePlatform extends DatabasePlatform {
     }
 
     protected String createTableDefinition(Table table) {
-        return super.createTableDefinition(table)+" ENGINE=InnoDB DEFAULT CHARSET=utf8";
+        return super.createTableDefinition(table) + " ENGINE=InnoDB DEFAULT CHARSET=utf8";
     }
 }

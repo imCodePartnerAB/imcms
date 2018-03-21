@@ -56,15 +56,15 @@ public class SingleConnectionDataSource implements DataSource {
                 throw new NotImplementedException();
             }
 
-            public void setClientInfo(Properties properties) throws SQLClientInfoException {
-                throw new NotImplementedException();
-            }
-
             public String getClientInfo(String name) throws SQLException {
                 throw new NotImplementedException();
             }
 
             public Properties getClientInfo() throws SQLException {
+                throw new NotImplementedException();
+            }
+
+            public void setClientInfo(Properties properties) throws SQLClientInfoException {
                 throw new NotImplementedException();
             }
 
@@ -76,12 +76,12 @@ public class SingleConnectionDataSource implements DataSource {
                 throw new NotImplementedException();
             }
 
-            public void setSchema(String schema) throws SQLException {
-
-            }
-
             public String getSchema() throws SQLException {
                 return null;
+            }
+
+            public void setSchema(String schema) throws SQLException {
+
             }
 
             public void abort(Executor executor) throws SQLException {
@@ -101,21 +101,21 @@ public class SingleConnectionDataSource implements DataSource {
     }
 
     public Connection getConnection(String username, String password) throws SQLException {
-        return null ;
+        return null;
     }
 
     public PrintWriter getLogWriter() throws SQLException {
-        return null ;
+        return null;
     }
 
     public void setLogWriter(PrintWriter out) throws SQLException {
     }
 
-    public void setLoginTimeout(int seconds) throws SQLException {
-    }
-
     public int getLoginTimeout() throws SQLException {
         return 0;
+    }
+
+    public void setLoginTimeout(int seconds) throws SQLException {
     }
 
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {

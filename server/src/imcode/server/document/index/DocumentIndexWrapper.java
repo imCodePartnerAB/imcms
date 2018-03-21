@@ -11,7 +11,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
     private final DocumentIndex index;
 
     public DocumentIndexWrapper(DocumentIndex index) {
-        this.index = index ;
+        this.index = index;
     }
 
     public void indexDocument(DocumentDomainObject document) throws IndexException {
@@ -27,7 +27,7 @@ public class DocumentIndexWrapper implements DocumentIndex {
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
-        return index.search(query, searchingUser) ;
+        return index.search(query, searchingUser);
     }
 
     @Override

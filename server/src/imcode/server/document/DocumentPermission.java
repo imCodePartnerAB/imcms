@@ -6,29 +6,29 @@ import java.io.Serializable;
 
 public class DocumentPermission implements Serializable {
 
-    private final String name ;
+    private final String name;
 
-    public DocumentPermission( String name ) {
+    public DocumentPermission(String name) {
         if (null == name) {
-            throw new NullArgumentException( "name" ) ;
+            throw new NullArgumentException("name");
         }
         this.name = name;
     }
 
-    public boolean equals( Object o ) {
-        if ( this == o ) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof DocumentPermission ) ) {
+        if (!(o instanceof DocumentPermission)) {
             return false;
         }
 
-        final DocumentPermission documentPermission = (DocumentPermission)o;
+        final DocumentPermission documentPermission = (DocumentPermission) o;
 
-        return name.equals( documentPermission.name ) ;
+        return name.equals(documentPermission.name);
     }
 
     public int hashCode() {
-        return name.hashCode() ;
+        return name.hashCode();
     }
 }

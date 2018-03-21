@@ -11,6 +11,7 @@ public class LuceneQuery extends SearchQuery {
 
     /**
      * Constructs LuceneQuery from already created {@link Query}
+     *
      * @param query {@link Query}
      */
     public LuceneQuery(Query query) {
@@ -20,5 +21,5 @@ public class LuceneQuery extends SearchQuery {
     Query getQuery() {
         return query;
     }
-    
+
 }

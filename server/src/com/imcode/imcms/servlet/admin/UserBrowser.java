@@ -17,7 +17,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserBrowser extends HttpServlet {
 
@@ -28,39 +29,39 @@ public class UserBrowser extends HttpServlet {
     public static final String REQUEST_PARAMETER__SEARCH_STRING = "searchstring";
     public static final String REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS = "includeInactive";
     public static final String REQUEST_ATTRIBUTE__FORM_DATA = "formData";
-    private static final String JSP__USER_BROWSER = "/jsp/userbrowser.jsp";
     public static final String REQUEST_PARAMETER__SELECT_USER_BUTTON = "selectUserButton";
     public static final String REQUEST_PARAMETER__ARCHIVE_USER_BUTTON = "archiveUserButton";
     public static final String REQUEST_PARAMETER__ADD_USER = "addUser";
     public static final String REQUEST_PARAMETER__CANCEL_BUTTON = "cancel";
+    private static final String JSP__USER_BROWSER = "/jsp/userbrowser.jsp";
     private static final LocalizedMessage ERROR__USER_ALREADY_EXISTS = new LocalizedMessage("error/servlet/AdminUserProps/username_already_exists");
 
-    public void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        UserFinder userFinder = (UserFinder)HttpSessionUtils.getSessionAttributeWithNameInRequest( request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE );
-        if ( null == userFinder ) {
+        UserFinder userFinder = (UserFinder) HttpSessionUtils.getSessionAttributeWithNameInRequest(request, REQUEST_ATTRIBUTE_PARAMETER__USER_BROWSE);
+        if (null == userFinder) {
             Utility.redirectToStartDocument(request, response);
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__SHOW_USERS_BUTTON ) ) {
-            listUsers( request, response );
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__SELECT_USER_BUTTON ) ) {
-            UserDomainObject selectedUser = getSelectedUserFromRequest( request );
-            if ( null == selectedUser && !userFinder.isNullSelectable() ) {
-                listUsers( request, response );
+        } else if (null != request.getParameter(REQUEST_PARAMETER__SHOW_USERS_BUTTON)) {
+            listUsers(request, response);
+        } else if (null != request.getParameter(REQUEST_PARAMETER__SELECT_USER_BUTTON)) {
+            UserDomainObject selectedUser = getSelectedUserFromRequest(request);
+            if (null == selectedUser && !userFinder.isNullSelectable()) {
+                listUsers(request, response);
             } else {
-                userFinder.selectUser( selectedUser, request, response );
+                userFinder.selectUser(selectedUser, request, response);
             }
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__CANCEL_BUTTON ) ) {
-            userFinder.cancel( request, response );
+        } else if (null != request.getParameter(REQUEST_PARAMETER__CANCEL_BUTTON)) {
+            userFinder.cancel(request, response);
 
         } else if (null != request.getParameter(REQUEST_PARAMETER__ARCHIVE_USER_BUTTON)) {
             UserDomainObject selectedUser = getSelectedUserFromRequest(request);
             if (null == selectedUser && !userFinder.isNullSelectable()) {
                 listUsers(request, response);
             } else {
-                ContentManagementSystem contentManagementSystem = ContentManagementSystem.fromRequest( request );
+                ContentManagementSystem contentManagementSystem = ContentManagementSystem.fromRequest(request);
                 UserService userService = contentManagementSystem.getUserService();
                 String userLoginName = selectedUser.getLoginName();
-                User user = userService.getUser( userLoginName );
+                User user = userService.getUser(userLoginName);
                 user.setActive(false);
                 try {
                     userService.saveUser(user);
@@ -71,7 +72,7 @@ public class UserBrowser extends HttpServlet {
                 }
             }
 
-        } else if ( null != request.getParameter( REQUEST_PARAMETER__ADD_USER ) && userFinder.isUsersAddable() ) {
+        } else if (null != request.getParameter(REQUEST_PARAMETER__ADD_USER) && userFinder.isUsersAddable()) {
             goToCreateUserPage(userFinder, request, response);
         }
     }
@@ -92,126 +93,130 @@ public class UserBrowser extends HttpServlet {
                 try {
                     Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(newUser);
                     returnCommand.dispatch(request, response);
-                } catch ( UserAlreadyExistsException e ) {
-                    userEditorPage.setErrorMessage(ERROR__USER_ALREADY_EXISTS) ;
+                } catch (UserAlreadyExistsException e) {
+                    userEditorPage.setErrorMessage(ERROR__USER_ALREADY_EXISTS);
                     userEditorPage.forward(request, response);
                 }
             }
         };
-        userEditorPage.setOkCommand(saveUserAndReturnCommand) ;
+        userEditorPage.setOkCommand(saveUserAndReturnCommand);
         userEditorPage.forward(request, response);
     }
 
-    private void listUsers( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException {
-        UserBrowserPage userBrowserPage = createPageFromRequest( request );
-        userBrowserPage.forward( request, response );
+    private void listUsers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        UserBrowserPage userBrowserPage = createPageFromRequest(request);
+        userBrowserPage.forward(request, response);
     }
 
-    private UserBrowserPage createPageFromRequest( HttpServletRequest request ) {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser( request );
+    private UserBrowserPage createPageFromRequest(HttpServletRequest request) {
+        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
         ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        boolean includeInactiveUsers = null != request.getParameter( REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS );
-        String searchString = request.getParameter( REQUEST_PARAMETER__SEARCH_STRING );
-        String[] selectedRoleIds = request.getParameter(REQUEST_PARAMETER__ROLE_ID) != null ? request.getParameterValues(REQUEST_PARAMETER__ROLE_ID) : new String[] {};
-        RoleDomainObject[] selectedRoles = selectedRoleIds.length > 0 ? new RoleDomainObject[selectedRoleIds.length] : new RoleDomainObject[0] ;
-        UserDomainObject[] users = userMapperAndRole.findUsersByNamePrefix( searchString, includeInactiveUsers );
-        for (int i=0; i < selectedRoleIds.length; i++ ){
+        boolean includeInactiveUsers = null != request.getParameter(REQUEST_PARAMETER__INCLUDE_INACTIVE_USERS);
+        String searchString = request.getParameter(REQUEST_PARAMETER__SEARCH_STRING);
+        String[] selectedRoleIds = request.getParameter(REQUEST_PARAMETER__ROLE_ID) != null ? request.getParameterValues(REQUEST_PARAMETER__ROLE_ID) : new String[]{};
+        RoleDomainObject[] selectedRoles = selectedRoleIds.length > 0 ? new RoleDomainObject[selectedRoleIds.length] : new RoleDomainObject[0];
+        UserDomainObject[] users = userMapperAndRole.findUsersByNamePrefix(searchString, includeInactiveUsers);
+        for (int i = 0; i < selectedRoleIds.length; i++) {
             selectedRoles[i] = userMapperAndRole.getRoleById(Integer.parseInt(selectedRoleIds[i]));
         }
-        if ( selectedRoles.length > 0 ) {
+        if (selectedRoles.length > 0) {
             List usersList = new ArrayList();
-            for (int i=0; i < users.length; i++ ) {
+            for (int i = 0; i < users.length; i++) {
                 boolean hasRole = false;
                 for (int k = 0; k < selectedRoles.length; k++) {
                     hasRole = users[i].hasRoleId(selectedRoles[k].getId());
-                    if(hasRole){break;}
+                    if (hasRole) {
+                        break;
+                    }
                 }
-                if(hasRole) { usersList.add(users[i]); }
+                if (hasRole) {
+                    usersList.add(users[i]);
+                }
             }
 
-            users = (UserDomainObject[])usersList.toArray(new UserDomainObject[usersList.size()] );
+            users = (UserDomainObject[]) usersList.toArray(new UserDomainObject[usersList.size()]);
         }
 
-        if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()){
+        if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) {
             users = getUsersWithUseradminPermissibleRoles(loggedOnUser, users);
         }
 
         UserBrowserPage userBrowserPage = new UserBrowserPage();
-        userBrowserPage.setSearchString( searchString );
-        userBrowserPage.setUsers( users );
+        userBrowserPage.setSearchString(searchString);
+        userBrowserPage.setUsers(users);
         userBrowserPage.setSelectedRoles(selectedRoles);
-        userBrowserPage.setIncludeInactiveUsers( includeInactiveUsers );
+        userBrowserPage.setIncludeInactiveUsers(includeInactiveUsers);
         return userBrowserPage;
     }
 
     private UserDomainObject[] getUsersWithUseradminPermissibleRoles(UserDomainObject loggedOnUser, UserDomainObject[] users) {
         List userList = new ArrayList();
         RoleId[] useradminPermissibleRoles = loggedOnUser.getUserAdminRoleIds();
-        for( int i=0; i < users.length; i++){
-            for( int k=0; k < useradminPermissibleRoles.length; k++){
-                if( users[i].hasRoleId( useradminPermissibleRoles[k] ) ){
+        for (int i = 0; i < users.length; i++) {
+            for (int k = 0; k < useradminPermissibleRoles.length; k++) {
+                if (users[i].hasRoleId(useradminPermissibleRoles[k])) {
                     userList.add(users[i]);
-                    break ;
+                    break;
                 }
             }
         }
-        return (UserDomainObject[])userList.toArray(new UserDomainObject[userList.size()]);
+        return (UserDomainObject[]) userList.toArray(new UserDomainObject[userList.size()]);
     }
 
-    private UserDomainObject getSelectedUserFromRequest( HttpServletRequest request ) {
+    private UserDomainObject getSelectedUserFromRequest(HttpServletRequest request) {
         ImcmsAuthenticatorAndUserAndRoleMapper userMapperAndRole = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        String userIdStr = request.getParameter( REQUEST_PARAMETER__USER_ID );
-        if ( null == userIdStr ) {
+        String userIdStr = request.getParameter(REQUEST_PARAMETER__USER_ID);
+        if (null == userIdStr) {
             return null;
         }
-        int userId = Integer.parseInt( userIdStr );
-        return userMapperAndRole.getUser( userId );
+        int userId = Integer.parseInt(userIdStr);
+        return userMapperAndRole.getUser(userId);
     }
 
     public static class UserBrowserPage {
 
         UserDomainObject[] users = new UserDomainObject[0];
         String searchString = "";
-        RoleDomainObject[] selectedRoles = new RoleDomainObject[] {};
+        RoleDomainObject[] selectedRoles = new RoleDomainObject[]{};
         private boolean includeInactiveUsers;
 
         public String getSearchString() {
             return searchString;
         }
 
+        public void setSearchString(String searchString) {
+            this.searchString = searchString;
+        }
+
         public UserDomainObject[] getUsers() {
             return users;
         }
 
-        public void setSearchString( String searchString ) {
-            this.searchString = searchString;
+        public void setUsers(UserDomainObject[] users) {
+            this.users = users;
+        }
+
+        public RoleDomainObject[] getSelectedRoles() {
+            return this.selectedRoles;
         }
 
         public void setSelectedRoles(RoleDomainObject[] selectedRoles) {
             this.selectedRoles = selectedRoles;
         }
 
-         public RoleDomainObject[] getSelectedRoles() {
-             return this.selectedRoles;
-         }
-
-        public void setUsers( UserDomainObject[] users ) {
-            this.users = users;
-        }
-
-        public void setIncludeInactiveUsers( boolean includeInactiveUsers ) {
-            this.includeInactiveUsers = includeInactiveUsers;
-        }
-
         public boolean isIncludeInactiveUsers() {
             return includeInactiveUsers;
         }
 
-        public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-            request.setAttribute( REQUEST_ATTRIBUTE__FORM_DATA, this );
-            UserDomainObject user = Utility.getLoggedOnUser( request );
+        public void setIncludeInactiveUsers(boolean includeInactiveUsers) {
+            this.includeInactiveUsers = includeInactiveUsers;
+        }
+
+        public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+            request.setAttribute(REQUEST_ATTRIBUTE__FORM_DATA, this);
+            UserDomainObject user = Utility.getLoggedOnUser(request);
             String userLanguage = user.getLanguageIso639_2();
-            request.getRequestDispatcher( "/imcms/" + userLanguage + JSP__USER_BROWSER ).forward( request, response );
+            request.getRequestDispatcher("/imcms/" + userLanguage + JSP__USER_BROWSER).forward(request, response);
         }
     }
 }

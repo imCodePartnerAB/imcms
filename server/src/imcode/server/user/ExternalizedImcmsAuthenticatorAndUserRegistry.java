@@ -26,7 +26,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
                                                          String defaultLanguage) throws IllegalArgumentException {
         if ((null == externalAuthenticator) != (null == externalUserRegistry)) {
             throw new IllegalArgumentException("External authenticator and external usermapper should both be either set or not set.");
-    }
+        }
 
         this.imcmsAuthenticatorAndUserMapperAndRole = imcmsAndRole;
         this.externalAuthenticator = externalAuthenticator;
@@ -130,11 +130,11 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
         Set<String> externalRolesNamesLCase = Sets.newHashSet();
         Set<String> userExternalRolesNamesLCase = Sets.newHashSet();
 
-        for (String roleName: externalUserRegistry.getAllRoleNames()) {
+        for (String roleName : externalUserRegistry.getAllRoleNames()) {
             externalRolesNamesLCase.add(roleName.toLowerCase());
         }
 
-        for (String roleName: externalUserRegistry.getRoleNames(externalUser)) {
+        for (String roleName : externalUserRegistry.getRoleNames(externalUser)) {
             userExternalRolesNamesLCase.add(roleName.toLowerCase());
         }
 

@@ -3,15 +3,15 @@ package com.imcode.imcms.db;
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import org.apache.ddlutils.platform.SqlBuilder;
-import org.apache.ddlutils.alteration.ModelChange;
 import org.apache.ddlutils.alteration.ColumnSizeChange;
+import org.apache.ddlutils.alteration.ModelChange;
 import org.apache.ddlutils.model.Column;
 import org.apache.ddlutils.model.Table;
+import org.apache.ddlutils.platform.SqlBuilder;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 class ColumnSizeUpgrade extends ImcmsDatabaseUpgrade {
 
@@ -38,7 +38,7 @@ class ColumnSizeUpgrade extends ImcmsDatabaseUpgrade {
                 final List<ModelChange> changes = new ArrayList();
                 changes.add(new ColumnSizeChange(actualTable, column, columnSize, 0));
                 sqlBuilder.processChanges(actualDdl, actualDdl, changes, null);
-                return null ;
+                return null;
             }
         });
     }

@@ -10,16 +10,16 @@ import org.apache.commons.lang.UnhandledException;
 import java.util.*;
 
 public class TextDocumentDomainObject extends DocumentDomainObject {
-	
-	/** 
-	 * Modified text indexes. 
-	 * 
-	 * Every modified text can be saved to history. 
-	 * This controlled by setting boolean flag.
-	 * 
-	 * Required when saving only particular set of text fields.
-	 */
-	private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
+
+    /**
+     * Modified text indexes.
+     * <p>
+     * Every modified text can be saved to history.
+     * This controlled by setting boolean flag.
+     * <p>
+     * Required when saving only particular set of text fields.
+     */
+    private Map<Integer, Boolean> modifiedTextIndexes = new TreeMap<Integer, Boolean>();
 
     private LazilyLoadedObject<CopyableHashMap> texts = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
     private LazilyLoadedObject<CopyableHashMap> images = new LazilyLoadedObject<CopyableHashMap>(new CopyableHashMapLoader());
@@ -36,7 +36,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     });
 
     public TextDocumentDomainObject() {
-        this(ID_NEW) ;
+        this(ID_NEW);
     }
 
     public TextDocumentDomainObject(int documentId) {
@@ -54,72 +54,72 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public Object clone() throws CloneNotSupportedException {
-        TextDocumentDomainObject clone = (TextDocumentDomainObject)super.clone();
+        TextDocumentDomainObject clone = (TextDocumentDomainObject) super.clone();
         clone.texts = (LazilyLoadedObject) texts.clone();
         clone.images = (LazilyLoadedObject) images.clone();
         clone.includes = (LazilyLoadedObject) includes.clone();
-        clone.menus = (LazilyLoadedObject) menus.clone() ;
-        clone.templateNames = (LazilyLoadedObject) templateNames.clone() ;
+        clone.menus = (LazilyLoadedObject) menus.clone();
+        clone.templateNames = (LazilyLoadedObject) templateNames.clone();
         return clone;
     }
 
     public DocumentTypeDomainObject getDocumentType() {
-        return DocumentTypeDomainObject.TEXT ;
+        return DocumentTypeDomainObject.TEXT;
     }
 
     public Set getChildDocumentIds() {
-        Set childDocuments = new HashSet() ;
-        for ( Iterator iterator = getMenus().values().iterator(); iterator.hasNext(); ) {
-            MenuDomainObject menu = (MenuDomainObject)iterator.next();
-            MenuItemDomainObject[] menuItems = menu.getMenuItems() ;
-            for ( int i = 0; i < menuItems.length; i++ ) {
+        Set childDocuments = new HashSet();
+        for (Iterator iterator = getMenus().values().iterator(); iterator.hasNext(); ) {
+            MenuDomainObject menu = (MenuDomainObject) iterator.next();
+            MenuItemDomainObject[] menuItems = menu.getMenuItems();
+            for (int i = 0; i < menuItems.length; i++) {
                 MenuItemDomainObject menuItem = menuItems[i];
-                childDocuments.add( new Integer(menuItem.getDocumentId()) ) ;
+                childDocuments.add(new Integer(menuItem.getDocumentId()));
             }
         }
-        return childDocuments ;
+        return childDocuments;
     }
 
-    public ImageDomainObject getImage( int imageIndex ) {
-        ImageDomainObject image = (ImageDomainObject)getImagesMap().get( new Integer( imageIndex )) ;
+    public ImageDomainObject getImage(int imageIndex) {
+        ImageDomainObject image = (ImageDomainObject) getImagesMap().get(new Integer(imageIndex));
         if (null == image) {
-            image = new ImageDomainObject() ;
+            image = new ImageDomainObject();
         }
-        return image ;
+        return image;
     }
 
     private Map getImagesMap() {
         return (Map) images.get();
     }
 
-    public Integer getIncludedDocumentId( int includeIndex ) {
-        return (Integer)getIncludesMap().get( new Integer( includeIndex ) );
+    public Integer getIncludedDocumentId(int includeIndex) {
+        return (Integer) getIncludesMap().get(new Integer(includeIndex));
     }
 
     private Map getIncludesMap() {
         return (Map) includes.get();
     }
 
-    public MenuDomainObject getMenu( int menuIndex ) {
+    public MenuDomainObject getMenu(int menuIndex) {
         Map menusMap = (Map) menus.get();
-        MenuDomainObject menu = (MenuDomainObject) menusMap.get( new Integer( menuIndex ) );
+        MenuDomainObject menu = (MenuDomainObject) menusMap.get(new Integer(menuIndex));
         if (null == menu) {
-            menu = new MenuDomainObject() ;
-            setMenu( menuIndex, menu );
+            menu = new MenuDomainObject();
+            setMenu(menuIndex, menu);
         }
         return menu;
     }
 
-    public TextDomainObject getText( int textFieldIndex ) {
-        return (TextDomainObject)getTextsMap().get( new Integer( textFieldIndex ) );
+    public TextDomainObject getText(int textFieldIndex) {
+        return (TextDomainObject) getTextsMap().get(new Integer(textFieldIndex));
     }
 
     private Map getTextsMap() {
-        return (Map)texts.get();
+        return (Map) texts.get();
     }
 
-    public void accept( DocumentVisitor documentVisitor ) {
-        documentVisitor.visitTextDocument(this) ;
+    public void accept(DocumentVisitor documentVisitor) {
+        documentVisitor.visitTextDocument(this);
     }
 
     public void removeAllImages() {
@@ -142,35 +142,39 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         getTextsMap().clear();
     }
 
-    public void setInclude( int includeIndex, int includedDocumentId ) {
-        getIncludesMap().put( new Integer( includeIndex ), new Integer( includedDocumentId ) );
+    public void setInclude(int includeIndex, int includedDocumentId) {
+        getIncludesMap().put(new Integer(includeIndex), new Integer(includedDocumentId));
     }
 
-    public void setMenu( int menuIndex, MenuDomainObject menu ) {
-        getMenusMap().put( new Integer( menuIndex ), menu );
+    public void setMenu(int menuIndex, MenuDomainObject menu) {
+        getMenusMap().put(new Integer(menuIndex), menu);
     }
 
-    public void setText( int textIndex, TextDomainObject text ) {
-        getTextsMap().put( new Integer( textIndex ), text );
+    public void setText(int textIndex, TextDomainObject text) {
+        getTextsMap().put(new Integer(textIndex), text);
     }
 
     /**
-     * @return Map<Integer, {@link ImageDomainObject} *
-     */
+     * @return Map<Integer ,   { @ link   ImageDomainObject }   *
+          */
     public Map<Integer, ImageDomainObject> getImages() {
-        return Collections.unmodifiableMap( getImagesMap() );
+        return Collections.unmodifiableMap(getImagesMap());
     }
 
     public Map getIncludes() {
-        return Collections.unmodifiableMap( getIncludesMap() );
+        return Collections.unmodifiableMap(getIncludesMap());
     }
 
     public Map<Integer, MenuDomainObject> getMenus() {
-        return Collections.unmodifiableMap( getMenusMap() );
+        return Collections.unmodifiableMap(getMenusMap());
     }
 
     public String getTemplateName() {
         return getTemplateNames().getTemplateName();
+    }
+
+    public void setTemplateName(String templateName) {
+        getTemplateNames().setTemplateName(templateName);
     }
 
     private TemplateNames getTemplateNames() {
@@ -181,33 +185,29 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return getTemplateNames().getTemplateGroupId();
     }
 
-    public Map<Integer, TextDomainObject> getTexts() {
-        return Collections.unmodifiableMap( getTextsMap() );
-    }
-
-    public void setTemplateName( String templateName ) {
-        getTemplateNames().setTemplateName(templateName);
-    }
-
-    public void setTemplateGroupId( int v ) {
+    public void setTemplateGroupId(int v) {
         getTemplateNames().setTemplateGroupId(v);
     }
 
-    public void setImage( int imageIndex, ImageDomainObject image ) {
+    public Map<Integer, TextDomainObject> getTexts() {
+        return Collections.unmodifiableMap(getTextsMap());
+    }
+
+    public void setImage(int imageIndex, ImageDomainObject image) {
         image.setImageIndex(imageIndex);
-        getImagesMap().put( new Integer( imageIndex ), image ) ;
+        getImagesMap().put(new Integer(imageIndex), image);
     }
 
     public String getDefaultTemplateName() {
         return getTemplateNames().getDefaultTemplateName();
     }
 
-    public void setDefaultTemplateId( String defaultTemplateId ) {
+    public void setDefaultTemplateId(String defaultTemplateId) {
         getTemplateNames().setDefaultTemplateName(defaultTemplateId);
     }
 
-    public void removeInclude( int includeIndex ) {
-        getIncludesMap().remove( new Integer( includeIndex )) ;
+    public void removeInclude(int includeIndex) {
+        getIncludesMap().remove(new Integer(includeIndex));
     }
 
     public void setLazilyLoadedMenus(LazilyLoadedObject menus) {
@@ -215,11 +215,11 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setLazilyLoadedImages(LazilyLoadedObject images) {
-        this.images = images ;
+        this.images = images;
     }
 
     public void setLazilyLoadedIncludes(LazilyLoadedObject includes) {
-        this.includes = includes ;
+        this.includes = includes;
     }
 
     public void setLazilyLoadedTexts(LazilyLoadedObject texts) {
@@ -246,6 +246,22 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         this.templateNames = templateIds;
     }
 
+    public Map<Integer, Boolean> getModifiedTextIndexes() {
+        return modifiedTextIndexes;
+    }
+
+    public void addModifiedTextIndex(int index, boolean saveToHistory) {
+        modifiedTextIndexes.put(index, saveToHistory);
+    }
+
+    public void removeModifiedTextIndex(int index) {
+        modifiedTextIndexes.remove(index);
+    }
+
+    public void removeAllModifiedTextIndexs() {
+        modifiedTextIndexes.clear();
+    }
+
     private static class CopyableHashMapLoader implements LazilyLoadedObject.Loader<CopyableHashMap> {
 
         public CopyableHashMap load() {
@@ -257,17 +273,17 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         private String templateName;
         private int templateGroupId;
         private String defaultTemplateName;
-        private String defaultTemplateNameForRestricted1 ;
-        private String defaultTemplateNameForRestricted2 ;
+        private String defaultTemplateNameForRestricted1;
+        private String defaultTemplateNameForRestricted2;
 
         public TemplateNames copy() {
-            return (TemplateNames) clone() ;
+            return (TemplateNames) clone();
         }
 
         public Object clone() {
             try {
                 return super.clone();
-            } catch ( CloneNotSupportedException e ) {
+            } catch (CloneNotSupportedException e) {
                 throw new UnhandledException(e);
             }
         }
@@ -312,21 +328,4 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
             this.defaultTemplateNameForRestricted2 = defaultTemplateNameForRestricted2;
         }
     }
-
-    
-	public Map<Integer, Boolean> getModifiedTextIndexes() {
-		return modifiedTextIndexes;
-	}
-	
-	public void addModifiedTextIndex(int index, boolean saveToHistory) {
-		modifiedTextIndexes.put(index, saveToHistory);
-	}
-	
-	public void removeModifiedTextIndex(int index) {
-		modifiedTextIndexes.remove(index);
-	}
-	
-	public void removeAllModifiedTextIndexs() {
-		modifiedTextIndexes.clear();
-	}	
 }

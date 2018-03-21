@@ -10,8 +10,8 @@ import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import imcode.util.Utility;
 import imcode.util.ShouldNotBeThrownException;
+import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
@@ -25,33 +25,28 @@ public class ChangeMenu extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws ServletException, IOException {
 
-        int menuIndex = Integer.parseInt(request.getParameter( "menuIndex" )) ;
-        final int documentId = Integer.parseInt(request.getParameter("documentId")) ;
+        int menuIndex = Integer.parseInt(request.getParameter("menuIndex"));
+        final int documentId = Integer.parseInt(request.getParameter("documentId"));
 
         final DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         final TextDocumentDomainObject document = (TextDocumentDomainObject) documentMapper.getDocument(documentId);
 
         final UserDomainObject user = Utility.getLoggedOnUser(request);
         TextDocumentPermissionSetDomainObject permissionSetFor = (TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(document);
-        if ( !permissionSetFor.getEditMenus() ) {
-            AdminDoc.adminDoc( documentId, user, request, response, getServletContext() );
-            return ;
+        if (!permissionSetFor.getEditMenus()) {
+            AdminDoc.adminDoc(documentId, user, request, response, getServletContext());
+            return;
         }
 
         final DispatchCommand cancelCommand = new RedirectToMenuEditDispatchCommand(document, menuIndex);
-        DispatchCommand saveCommand = new DispatchCommand() {
-            public void dispatch(HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException, ServletException {
-                try {
-                    documentMapper.saveDocument(document, user);
-                    cancelCommand.dispatch(request, response);
-                } catch ( NoPermissionToAddDocumentToMenuException e ) {
-                    throw new UnhandledException(e);
-                } catch ( NoPermissionToEditDocumentException e ) {
-                    throw new UnhandledException(e);
-                } catch (DocumentSaveException e) {
-                    throw new ShouldNotBeThrownException(e);
-                }
+        DispatchCommand saveCommand = (DispatchCommand) (request1, response1) -> {
+            try {
+                documentMapper.saveDocument(document, user);
+                cancelCommand.dispatch(request1, response1);
+            } catch (NoPermissionToAddDocumentToMenuException | NoPermissionToEditDocumentException e) {
+                throw new UnhandledException(e);
+            } catch (DocumentSaveException e) {
+                throw new ShouldNotBeThrownException(e);
             }
         };
         MenuEditPage menuEditPage = new MenuEditPage(saveCommand, cancelCommand, document, menuIndex, getServletContext());
@@ -63,14 +58,14 @@ public class ChangeMenu extends HttpServlet {
         private TextDocumentDomainObject parentDocument;
         private int parentMenuIndex;
 
-        RedirectToMenuEditDispatchCommand( TextDocumentDomainObject parentDocument, int parentMenuIndex ) {
+        RedirectToMenuEditDispatchCommand(TextDocumentDomainObject parentDocument, int parentMenuIndex) {
             this.parentDocument = parentDocument;
             this.parentMenuIndex = parentMenuIndex;
         }
 
-        public void dispatch( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
-            response.sendRedirect( "AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
-                                   + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex );
+        public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+            response.sendRedirect("AdminDoc?meta_id=" + parentDocument.getId() + "&flags="
+                    + ImcmsConstants.DISPATCH_FLAG__EDIT_MENU + "&editmenu=" + parentMenuIndex);
         }
     }
 

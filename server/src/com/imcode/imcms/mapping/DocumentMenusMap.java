@@ -1,8 +1,8 @@
 package com.imcode.imcms.mapping;
 
+import imcode.server.document.textdocument.MenuDomainObject;
 import imcode.util.LazilyLoadedObject;
 import imcode.util.ShouldNotBeThrownException;
-import imcode.server.document.textdocument.MenuDomainObject;
 
 import java.util.*;
 
@@ -10,18 +10,18 @@ public class DocumentMenusMap extends AbstractMap implements LazilyLoadedObject.
     private final HashMap menusMap = new HashMap();
 
     public DocumentMenusMap copy() {
-        DocumentMenusMap menusClone = new DocumentMenusMap() ;
-        for ( Iterator iterator = entrySet().iterator(); iterator.hasNext(); ) {
-            Entry entry = (Entry)iterator.next();
-            Integer menuIndex = (Integer)entry.getKey();
-            MenuDomainObject menu = (MenuDomainObject)entry.getValue();
+        DocumentMenusMap menusClone = new DocumentMenusMap();
+        for (Iterator iterator = entrySet().iterator(); iterator.hasNext(); ) {
+            Entry entry = (Entry) iterator.next();
+            Integer menuIndex = (Integer) entry.getKey();
+            MenuDomainObject menu = (MenuDomainObject) entry.getValue();
             try {
-                menusClone.put(menuIndex, menu.clone()) ;
-            } catch ( CloneNotSupportedException e ) {
-                throw new ShouldNotBeThrownException(e) ;
+                menusClone.put(menuIndex, menu.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new ShouldNotBeThrownException(e);
             }
         }
-        return menusClone ;
+        return menusClone;
     }
 
     public void clear() {

@@ -7,11 +7,11 @@ public class IdLocalizedNamePairToOptionTransformer implements Transformer {
     private String language;
 
     public IdLocalizedNamePairToOptionTransformer(String language) {
-        this.language = language ;
+        this.language = language;
     }
 
     public Object transform(Object input) {
-        IdLocalizedNamePair pair = (IdLocalizedNamePair) input ;
-        return new String[] {pair.getId()+"", pair.getName().toLocalizedString(language)};
+        IdLocalizedNamePair pair = (IdLocalizedNamePair) input;
+        return new String[]{pair.getId() + "", pair.getName().toLocalizedString(language)};
     }
 }

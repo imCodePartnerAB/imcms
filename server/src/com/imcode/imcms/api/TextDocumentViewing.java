@@ -16,27 +16,41 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class TextDocumentViewing {
 
+    private static final String REQUEST_ATTRIBUTE__VIEWING = TextDocumentViewing.class.getName();
     private TextDocument textDocument;
     private ParserParameters parserParameters;
 
-    private static final String REQUEST_ATTRIBUTE__VIEWING = TextDocumentViewing.class.getName();
-
-    public TextDocumentViewing( ParserParameters parserParameters ) {
+    public TextDocumentViewing(ParserParameters parserParameters) {
         this.parserParameters = parserParameters;
-        textDocument = new TextDocument( (TextDocumentDomainObject)parserParameters.getDocumentRequest().getDocument(), ContentManagementSystem.fromRequest( parserParameters.getDocumentRequest().getHttpServletRequest() ) );
+        textDocument = new TextDocument((TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument(), ContentManagementSystem.fromRequest(parserParameters.getDocumentRequest().getHttpServletRequest()));
     }
 
     /**
      * Returns TextDocumentViewing from the given request
+     *
      * @param request HttpServletRequest to get TextDocumentViewing from
      * @return TextDocumentViewing or null, if the request doesn't have any set
      */
-    public static TextDocumentViewing fromRequest( HttpServletRequest request ) {
-        return (TextDocumentViewing)request.getAttribute( REQUEST_ATTRIBUTE__VIEWING );
+    public static TextDocumentViewing fromRequest(HttpServletRequest request) {
+        return (TextDocumentViewing) request.getAttribute(REQUEST_ATTRIBUTE__VIEWING);
+    }
+
+    /**
+     * Puts the given TextDocumentViewing object into request attribute and requests the one previously set.
+     *
+     * @param viewing TextDocumentViewing to put into request attribute.
+     * @return TextDocumentViewing that was previously in request attribute or null if none was before.
+     */
+    public static TextDocumentViewing putInRequest(TextDocumentViewing viewing) {
+        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
+        TextDocumentViewing previousViewing = fromRequest(httpServletRequest);
+        httpServletRequest.setAttribute(REQUEST_ATTRIBUTE__VIEWING, viewing);
+        return previousViewing;
     }
 
     /**
      * Returns currently viewed TextDocument
+     *
      * @return currently viewed TextDocument
      */
     public TextDocument getTextDocument() {
@@ -45,14 +59,16 @@ public class TextDocumentViewing {
 
     /**
      * Tests if current TextDocument is in edit mode(be it text, images, menus etc)
+     *
      * @return true if current TextDocument is being edited, false otherwise
      */
     public boolean isEditing() {
-        return parserParameters.isAnyMode() ;
+        return parserParameters.isAnyMode();
     }
 
     /**
      * Tests if current TextDocument is in text edit mode
+     *
      * @return true if current TextDocument is in text edit mode, false otherwise
      */
     public boolean isEditingTexts() {
@@ -61,6 +77,7 @@ public class TextDocumentViewing {
 
     /**
      * Tests if current TextDocument is in image edit mode
+     *
      * @return true if current TextDocument is in image edit mode, false otherwise
      */
     public boolean isEditingImages() {
@@ -69,6 +86,7 @@ public class TextDocumentViewing {
 
     /**
      * Tests if current TextDocument is in menu edit mode
+     *
      * @return true if current TextDocument is in menu edit mode, false otherwise
      */
     public boolean isEditingMenus() {
@@ -77,6 +95,7 @@ public class TextDocumentViewing {
 
     /**
      * Tests if current TextDocument is in include edit mode
+     *
      * @return true if current TextDocument is in include edit mode, false otherwise
      */
     public boolean isEditingIncludes() {
@@ -85,6 +104,7 @@ public class TextDocumentViewing {
 
     /**
      * Tests if current TextDocument is in template edit mode
+     *
      * @return true if current TextDocument is in template edit mode, false otherwise
      */
     public boolean isEditingTemplate() {
@@ -96,18 +116,6 @@ public class TextDocumentViewing {
      */
     public Integer getEditedMenuIndex() {
         return parserParameters.getEditingMenuIndex();
-    }
-
-    /**
-     * Puts the given TextDocumentViewing object into request attribute and requests the one previously set.
-     * @param viewing TextDocumentViewing to put into request attribute.
-     * @return TextDocumentViewing that was previously in request attribute or null if none was before.
-     */
-    public static TextDocumentViewing putInRequest( TextDocumentViewing viewing ) {
-        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
-        TextDocumentViewing previousViewing = fromRequest( httpServletRequest );
-        httpServletRequest.setAttribute( REQUEST_ATTRIBUTE__VIEWING, viewing );
-        return previousViewing ;
     }
 
 }

@@ -11,6 +11,7 @@ public class TemplateGroup {
 
     /**
      * Constructs TemplateGroup with TemplateGroupDomainObject backing it
+     *
      * @param internal TemplateGroupDomainObject to be used internally
      */
     public TemplateGroup(TemplateGroupDomainObject internal) {
@@ -19,6 +20,7 @@ public class TemplateGroup {
 
     /**
      * Returns template group's name
+     *
      * @return template group's name
      */
     public String getName() {
@@ -27,6 +29,7 @@ public class TemplateGroup {
 
     /**
      * Returns template group's id
+     *
      * @return template group's id
      */
     public int getId() {
@@ -38,20 +41,20 @@ public class TemplateGroup {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof TemplateGroup ) ) {
+        if (!(o instanceof TemplateGroup)) {
             return false;
         }
 
         final TemplateGroup templateGroup = (TemplateGroup) o;
 
-        return internalTemplateGroup.equals(templateGroup.internalTemplateGroup) ;
+        return internalTemplateGroup.equals(templateGroup.internalTemplateGroup);
 
     }
 
     public int hashCode() {
-        return internalTemplateGroup.hashCode() ;
+        return internalTemplateGroup.hashCode();
     }
 }

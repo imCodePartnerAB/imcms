@@ -44,7 +44,7 @@ public class DocumentMapper implements DocumentGetter {
     private static final String SQL_GET_DOCUMENT_ID_FROM_PROPERTIES = "SELECT meta_id FROM document_properties WHERE key_name=? AND value=?";
 
     private final static String COPY_HEADLINE_SUFFIX_TEMPLATE = "copy_prefix.html";
-
+    private static final SectionNameComparator SECTION_NAME_COMPARATOR = new SectionNameComparator();
     private Database database;
     private DocumentPermissionSetMapper documentPermissionSetMapper;
     private DocumentIndex documentIndex;
@@ -52,12 +52,10 @@ public class DocumentMapper implements DocumentGetter {
     private Map<Integer, DocumentDomainObject> documentCache;
     private Clock clock = new SystemClock();
     private ImcmsServices imcmsServices;
-    private CachingDocumentGetter documentGetter ;
-    private DocumentSaver documentSaver ;
+    private CachingDocumentGetter documentGetter;
+    private DocumentSaver documentSaver;
     private CategoryMapper categoryMapper;
-
     private LazilyLoadedObject sections;
-    private static final SectionNameComparator SECTION_NAME_COMPARATOR = new SectionNameComparator();
 
     public DocumentMapper(ImcmsServices services, Database database) {
         this.imcmsServices = services;
@@ -73,73 +71,6 @@ public class DocumentMapper implements DocumentGetter {
         initSections();
     }
 
-    public void initSections() {
-        sections = new LazilyLoadedObject(new SectionsSetLoader());
-    }
-
-    public void setDocumentGetter(DocumentGetter documentGetter) {
-        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
-    }
-
-    public DocumentSaver getDocumentSaver() {
-        return documentSaver ;
-    }
-
-    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
-        DocumentDomainObject newDocument;
-        try {
-            if ( DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
-                newDocument = (DocumentDomainObject) parent.clone();
-                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
-                newTextDocument.removeAllTexts();
-                newTextDocument.removeAllImages();
-                newTextDocument.removeAllIncludes();
-                newTextDocument.removeAllMenus();
-                setTemplateForNewTextDocument( newTextDocument, user, parent );
-            } else {
-                newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
-                newDocument.setAttributes((DocumentDomainObject.Attributes) parent.getAttributes().clone());
-            }
-        } catch (CloneNotSupportedException e) {
-            throw new UnhandledException(e);
-        }
-        newDocument.setId( 0 );
-        newDocument.setHeadline( "" );
-        newDocument.setMenuText( "" );
-        newDocument.setMenuImage( "" );
-        newDocument.setProperties(new HashMap());
-        makeDocumentLookNew( newDocument, user );
-        removeNonInheritedCategories(newDocument) ;
-        return newDocument;
-    }
-
-    void setTemplateForNewTextDocument( TextDocumentDomainObject newTextDocument, UserDomainObject user,
-                                        final DocumentDomainObject parent ) {
-        DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor( parent );
-        String templateName = null;
-        if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType) ) {
-            templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
-        } else if ( DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType) ) {
-            templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
-        }
-        if ( null == templateName && parent instanceof TextDocumentDomainObject ) {
-            templateName = ( (TextDocumentDomainObject)parent ).getDefaultTemplateName();
-        }
-        if ( null != templateName ) {
-            newTextDocument.setTemplateName( templateName );
-        }
-    }
-
-    void makeDocumentLookNew( DocumentDomainObject document, UserDomainObject user ) {
-        Date now = new Date();
-        document.setCreator(user);
-        setCreatedAndModifiedDatetimes(document, now);
-        document.setPublicationStartDatetime(now);
-        document.setArchivedDatetime(null);
-        document.setPublicationEndDatetime(null);
-        document.setPublicationStatus(Document.PublicationStatus.NEW);
-    }
-
     static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
         File filePath = Imcms.getServices().getConfig().getFilePath();
         File[] filesToDelete = filePath.listFiles(fileFilter);
@@ -152,6 +83,77 @@ public class DocumentMapper implements DocumentGetter {
         }
     }
 
+    static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
+        deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
+    }
+
+    static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
+        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
+    }
+
+    public void initSections() {
+        sections = new LazilyLoadedObject(new SectionsSetLoader());
+    }
+
+    public DocumentSaver getDocumentSaver() {
+        return documentSaver;
+    }
+
+    public DocumentDomainObject createDocumentOfTypeFromParent(int documentTypeId, final DocumentDomainObject parent, UserDomainObject user) {
+        DocumentDomainObject newDocument;
+        try {
+            if (DocumentTypeDomainObject.TEXT_ID == documentTypeId) {
+                newDocument = (DocumentDomainObject) parent.clone();
+                TextDocumentDomainObject newTextDocument = (TextDocumentDomainObject) newDocument;
+                newTextDocument.removeAllTexts();
+                newTextDocument.removeAllImages();
+                newTextDocument.removeAllIncludes();
+                newTextDocument.removeAllMenus();
+                setTemplateForNewTextDocument(newTextDocument, user, parent);
+            } else {
+                newDocument = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
+                newDocument.setAttributes((DocumentDomainObject.Attributes) parent.getAttributes().clone());
+            }
+        } catch (CloneNotSupportedException e) {
+            throw new UnhandledException(e);
+        }
+        newDocument.setId(0);
+        newDocument.setHeadline("");
+        newDocument.setMenuText("");
+        newDocument.setMenuImage("");
+        newDocument.setProperties(new HashMap());
+        makeDocumentLookNew(newDocument, user);
+        removeNonInheritedCategories(newDocument);
+        return newDocument;
+    }
+
+    void setTemplateForNewTextDocument(TextDocumentDomainObject newTextDocument, UserDomainObject user,
+                                       final DocumentDomainObject parent) {
+        DocumentPermissionSetTypeDomainObject documentPermissionSetType = user.getDocumentPermissionSetTypeFor(parent);
+        String templateName = null;
+        if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(documentPermissionSetType)) {
+            templateName = newTextDocument.getDefaultTemplateNameForRestricted1();
+        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)) {
+            templateName = newTextDocument.getDefaultTemplateNameForRestricted2();
+        }
+        if (null == templateName && parent instanceof TextDocumentDomainObject) {
+            templateName = ((TextDocumentDomainObject) parent).getDefaultTemplateName();
+        }
+        if (null != templateName) {
+            newTextDocument.setTemplateName(templateName);
+        }
+    }
+
+    void makeDocumentLookNew(DocumentDomainObject document, UserDomainObject user) {
+        Date now = new Date();
+        document.setCreator(user);
+        setCreatedAndModifiedDatetimes(document, now);
+        document.setPublicationStartDatetime(now);
+        document.setArchivedDatetime(null);
+        document.setPublicationEndDatetime(null);
+        document.setPublicationStatus(Document.PublicationStatus.NEW);
+    }
+
     public DocumentReference getDocumentReference(DocumentDomainObject document) {
         return getDocumentReference(document.getId());
     }
@@ -162,12 +164,12 @@ public class DocumentMapper implements DocumentGetter {
 
     public SectionDomainObject getSectionById(int sectionId) {
         SectionsSet sectionsSet = (SectionsSet) sections.get();
-        return sectionsSet.getSectionById(sectionId) ;
+        return sectionsSet.getSectionById(sectionId);
     }
 
     public SectionDomainObject getSectionByName(String name) {
         SectionsSet sectionsSet = (SectionsSet) sections.get();
-        return sectionsSet.getSectionByName(name) ;
+        return sectionsSet.getSectionByName(name);
     }
 
     public void saveNewDocument(DocumentDomainObject document, UserDomainObject user, boolean copying)
@@ -178,8 +180,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     public void saveDocument(DocumentDomainObject document,
-                             final UserDomainObject user) throws DocumentSaveException , NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException
-    {
+                             final UserDomainObject user) throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject oldDocument = getDocument(document.getId());
 
@@ -197,6 +198,10 @@ public class DocumentMapper implements DocumentGetter {
 
     public DocumentIndex getDocumentIndex() {
         return documentIndex;
+    }
+
+    public void setDocumentIndex(DocumentIndex documentIndex) {
+        this.documentIndex = documentIndex;
     }
 
     public SectionDomainObject[] getAllSections() {
@@ -270,51 +275,51 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private DatabaseCommand createDeleteDocumentCommand(final DocumentDomainObject document) {
-    	if (document instanceof TextDocumentDomainObject) {
-    		TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
+        if (document instanceof TextDocumentDomainObject) {
+            TextDocumentDomainObject textDoc = (TextDocumentDomainObject) document;
 
             for (int imageIndex : textDoc.getImages().keySet()) {
                 ImageCacheManager.clearCacheEntries(textDoc.getId(), imageIndex);
             }
-    	}
+        }
 
         final String metaIdStr = "" + document.getId();
         final String metaIdColumn = "meta_id";
         return new CompositeDatabaseCommand(new DatabaseCommand[]{
-            new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("document_categories", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("meta_classification", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("childs", "to_meta_id", metaIdStr),
                 new SqlUpdateCommand("DELETE FROM childs WHERE menu_id IN (SELECT menu_id FROM menus WHERE meta_id = ?)", new String[]{metaIdStr}),
-            new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("images", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("user_rights", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("url_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("browser_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("fileupload_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("frameset_docs", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets_ex", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets_ex", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("includes", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("includes", "included_meta_id", metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("texts_history", metaIdColumn, metaIdStr ),
-            new DeleteWhereColumnsEqualDatabaseCommand("images_history", metaIdColumn, metaIdStr ),
-            new DeleteWhereColumnsEqualDatabaseCommand("childs_history", "to_meta_id", metaIdStr ),
+                new DeleteWhereColumnsEqualDatabaseCommand("menus", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("text_docs", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("texts", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("images", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("user_rights", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("url_docs", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("browser_docs", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("fileupload_docs", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("frameset_docs", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets_ex", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("new_doc_permission_sets", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets_ex", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("doc_permission_sets", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("includes", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("includes", "included_meta_id", metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("texts_history", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("images_history", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("childs_history", "to_meta_id", metaIdStr),
                 new SqlUpdateCommand("DELETE FROM childs_history WHERE menu_id IN (SELECT menu_id FROM menus_history WHERE meta_id = ?)", new String[]{metaIdStr}),
-            new DeleteWhereColumnsEqualDatabaseCommand("menus_history", metaIdColumn, metaIdStr ),
-            new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
-            new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr)
+                new DeleteWhereColumnsEqualDatabaseCommand("menus_history", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("document_properties", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("meta_section", metaIdColumn, metaIdStr),
+                new DeleteWhereColumnsEqualDatabaseCommand("meta", metaIdColumn, metaIdStr)
         });
     }
 
     public Map getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
         String[] parameters = new String[]{
-            user.getLanguageIso639_2()
+                user.getLanguageIso639_2()
         };
         String[][] rows = getDatabase().execute(new SqlQueryCommand<>("SELECT doc_type, type FROM doc_types WHERE lang_prefix = ? ORDER BY doc_type", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
         Map<Integer, String> allDocumentTypeIdsAndNamesInUsersLanguage = new TreeMap<>();
@@ -348,8 +353,8 @@ public class DocumentMapper implements DocumentGetter {
     private int[] getDocumentIds(IntRange idRange) {
         String sqlSelectIds = "SELECT meta_id FROM meta WHERE meta_id >= ? AND meta_id <= ? ORDER BY meta_id";
         String[] params = new String[]{
-            "" + idRange.getMinimumInteger(),
-            "" + idRange.getMaximumInteger()
+                "" + idRange.getMinimumInteger(),
+                "" + idRange.getMaximumInteger()
         };
         String[] documentIdStrings = getDatabase().execute(new SqlQueryCommand<>(sqlSelectIds, params, Utility.STRING_ARRAY_HANDLER));
         int[] documentIds = new int[documentIdStrings.length];
@@ -402,20 +407,20 @@ public class DocumentMapper implements DocumentGetter {
         DocumentDomainObject document = null;
 
         if (null != documentIdString) {
-            if ( NumberUtils.isDigits( documentIdString ) ) {
+            if (NumberUtils.isDigits(documentIdString)) {
                 document = getDocument(new Integer(documentIdString));
-            }else{
+            } else {
                 String documentIdStringLower = documentIdString.toLowerCase();
                 String[] documentIds = aliasCache.get(documentIdStringLower);
                 if (documentIds == null || documentIds.length == 0) {
                     documentIds = getDatabase().execute(
                             new SqlQueryCommand<>(SQL_GET_DOCUMENT_ID_FROM_PROPERTIES,
-                                    new String[] { DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdStringLower },
+                                    new String[]{DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentIdStringLower},
                                     Utility.STRING_ARRAY_HANDLER));
                     aliasCache.put(documentIdStringLower, documentIds);
                 }
 
-                if(documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
+                if (documentIds.length > 0 && NumberUtils.isDigits(documentIds[0])) {
                     document = getDocument(new Integer(documentIds[0]));
                 }
             }
@@ -423,16 +428,12 @@ public class DocumentMapper implements DocumentGetter {
         return document;
     }
 
-    static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new FileDocumentFileFilter(fileDocument));
-    }
-
     public DocumentPermissionSetMapper getDocumentPermissionSetMapper() {
         return documentPermissionSetMapper;
     }
 
-    static void deleteOtherFileDocumentFiles(final FileDocumentDomainObject fileDocument) {
-        deleteFileDocumentFilesAccordingToFileFilter(new SuperfluousFileDocumentFilesFileFilter(fileDocument));
+    public void setDocumentPermissionSetMapper(DocumentPermissionSetMapper documentPermissionSetMapper) {
+        this.documentPermissionSetMapper = documentPermissionSetMapper;
     }
 
     public int getLowestDocumentId() {
@@ -490,6 +491,10 @@ public class DocumentMapper implements DocumentGetter {
         return clock;
     }
 
+    public void setClock(Clock clock) {
+        this.clock = clock;
+    }
+
     public ImcmsServices getImcmsServices() {
         return imcmsServices;
     }
@@ -505,20 +510,8 @@ public class DocumentMapper implements DocumentGetter {
         return getDatabase().execute(new SqlQueryCommand<>("SELECT code FROM classification", params, Utility.STRING_ARRAY_HANDLER));
     }
 
-    public void setClock(Clock clock) {
-        this.clock = clock;
-    }
-
-    public void setDocumentPermissionSetMapper(DocumentPermissionSetMapper documentPermissionSetMapper) {
-        this.documentPermissionSetMapper = documentPermissionSetMapper;
-    }
-
-    public void setDocumentIndex(DocumentIndex documentIndex) {
-        this.documentIndex = documentIndex;
-    }
-
     public List<DocumentDomainObject> getDocuments(Collection documentIds) {
-        return documentGetter.getDocuments(documentIds) ;
+        return documentGetter.getDocuments(documentIds);
     }
 
     public Set<SectionDomainObject> getSections(Collection<Integer> sectionIds) {
@@ -526,11 +519,15 @@ public class DocumentMapper implements DocumentGetter {
         for (Integer sectionId : sectionIds) {
             sections.add(getSectionById(sectionId));
         }
-        return sections ;
+        return sections;
     }
 
     public DocumentGetter getDocumentGetter() {
         return documentGetter;
+    }
+
+    public void setDocumentGetter(DocumentGetter documentGetter) {
+        this.documentGetter = new CachingDocumentGetter(documentGetter, documentCache);
     }
 
     private void removeNonInheritedCategories(DocumentDomainObject document) {
@@ -541,44 +538,43 @@ public class DocumentMapper implements DocumentGetter {
             }
         }
     }
-    
+
     /**
      * Removes all image cache entries.
-     * 
      */
     public void clearImageCache() {
         ImageCacheManager.clearAllCacheEntries();
     }
-    
+
     /**
-     * Removes all image cache entries that have been created for a document that is identified 
+     * Removes all image cache entries that have been created for a document that is identified
      * with {@code metaId}.
-     * 
+     * <p>
      * If a document contains 3 image fields (1, 2, 3), then the cache entries for these 3 images will be removed.
-     * 
-     * @param metaId    the ID of a text document
+     *
+     * @param metaId the ID of a text document
      */
     public void clearImageCache(int metaId) {
         ImageCacheManager.clearCacheEntries(metaId);
     }
-    
+
     /**
-     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and an image field 
+     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and an image field
      * number ({@code no}).
-     * 
-     * @param metaId    the ID of a text document
-     * @param no        the ID of an image field
+     *
+     * @param metaId the ID of a text document
+     * @param no     the ID of an image field
      */
     public void clearImageCache(int metaId, int no) {
         ImageCacheManager.clearCacheEntries(metaId, no);
     }
-    
+
     /**
-     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and a 
+     * Removes a specific image cache entry that is identified with a document ID ({@code metaId}) and a
      * file ID ({@code fileNo}).
      *
-     * @param metaId    the ID of a text document
-     * @param fileNo    the file ID of a {@link FileDocumentDomainObject}
+     * @param metaId the ID of a text document
+     * @param fileNo the file ID of a {@link FileDocumentDomainObject}
      */
     public void clearImageCache(int metaId, String fileNo) {
         ImageCacheManager.clearCacheEntries(metaId, fileNo);
@@ -650,7 +646,7 @@ public class DocumentMapper implements DocumentGetter {
             boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(fileDocumentId, fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return super.accept(file, fileDocumentId, fileId)
-                   && (!correctFileForFileDocumentFile || !fileDocumentHasFile);
+                    && (!correctFileForFileDocumentFile || !fileDocumentHasFile);
         }
     }
 
@@ -660,16 +656,16 @@ public class DocumentMapper implements DocumentGetter {
         private Map<String, SectionDomainObject> byName = new HashMap<>();
 
         public boolean add(SectionDomainObject section) {
-            byName.put(section.getName().toLowerCase(), section) ;
+            byName.put(section.getName().toLowerCase(), section);
             return null == byId.put(section.getId(), section);
         }
 
         public int size() {
-            return byId.size() ;
+            return byId.size();
         }
 
         public Iterator<SectionDomainObject> iterator() {
-            return byId.values().iterator() ;
+            return byId.values().iterator();
         }
 
         public SectionDomainObject getSectionById(int sectionId) {
@@ -681,7 +677,7 @@ public class DocumentMapper implements DocumentGetter {
         }
 
         public LazilyLoadedObject.Copyable copy() {
-            return this ;
+            return this;
         }
     }
 

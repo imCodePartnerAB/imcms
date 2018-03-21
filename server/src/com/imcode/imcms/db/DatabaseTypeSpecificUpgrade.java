@@ -4,13 +4,12 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-
 import org.apache.ddlutils.PlatformUtils;
 import org.apache.ddlutils.platform.mssql.MSSqlPlatform;
 import org.apache.ddlutils.platform.mysql.MySqlPlatform;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
 
 abstract class DatabaseTypeSpecificUpgrade extends ImcmsDatabaseUpgrade {
 
@@ -27,9 +26,9 @@ abstract class DatabaseTypeSpecificUpgrade extends ImcmsDatabaseUpgrade {
                 return platformUtils.determineDatabaseType(dataSource);
             }
         });
-        if ( MSSqlPlatform.DATABASENAME.equals(databaseName) ) {
+        if (MSSqlPlatform.DATABASENAME.equals(databaseName)) {
             upgradeMssql(database);
-        } else if ( MySqlPlatform.DATABASENAME.equals(databaseName) ) {
+        } else if (MySqlPlatform.DATABASENAME.equals(databaseName)) {
             upgradeMysql(database);
         } else {
             upgradeOther(database);

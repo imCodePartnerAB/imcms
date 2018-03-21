@@ -5,7 +5,7 @@ public class TemplateDomainObject implements Comparable<TemplateDomainObject> {
     private final String fileName;
 
     public TemplateDomainObject(String name, String fileName) {
-        this.name = name ;
+        this.name = name;
         this.fileName = fileName;
     }
 
@@ -18,14 +18,14 @@ public class TemplateDomainObject implements Comparable<TemplateDomainObject> {
     }
 
     public int compareTo(TemplateDomainObject o) {
-        return name.compareToIgnoreCase(o.getName()) ;
+        return name.compareToIgnoreCase(o.getName());
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 

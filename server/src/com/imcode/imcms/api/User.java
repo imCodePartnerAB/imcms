@@ -13,16 +13,17 @@ import java.util.Map;
 public class User {
     private UserDomainObject internalUser;
 
+    User(UserDomainObject internalUser) {
+        this.internalUser = internalUser;
+    }
+
     imcode.server.user.UserDomainObject getInternal() {
         return internalUser;
     }
 
-    User( UserDomainObject internalUser ) {
-        this.internalUser = internalUser;
-    }
-
     /**
      * Returns user id
+     *
      * @return user id
      */
     public int getId() {
@@ -31,6 +32,7 @@ public class User {
 
     /**
      * Returns user login name
+     *
      * @return login name
      */
     public String getLoginName() {
@@ -38,7 +40,17 @@ public class User {
     }
 
     /**
+     * Sets this user's login name
+     *
+     * @param loginName login name
+     */
+    public void setLoginName(String loginName) {
+        internalUser.setLoginName(loginName);
+    }
+
+    /**
      * Returns user company
+     *
      * @return user company
      */
     public String getCompany() {
@@ -46,7 +58,17 @@ public class User {
     }
 
     /**
+     * Sets this user's company
+     *
+     * @param company user company
+     */
+    public void setCompany(String company) {
+        internalUser.setCompany(company);
+    }
+
+    /**
      * Returns user first name
+     *
      * @return first name
      */
     public String getFirstName() {
@@ -54,7 +76,17 @@ public class User {
     }
 
     /**
+     * Sets this user's first name
+     *
+     * @param firstName user first name
+     */
+    public void setFirstName(String firstName) {
+        internalUser.setFirstName(firstName);
+    }
+
+    /**
      * Returns user last name
+     *
      * @return last name
      */
     public String getLastName() {
@@ -62,7 +94,17 @@ public class User {
     }
 
     /**
+     * Sets this user's last name
+     *
+     * @param lastName last name
+     */
+    public void setLastName(String lastName) {
+        internalUser.setLastName(lastName);
+    }
+
+    /**
      * Returns user title(Mr., Mrs etc)
+     *
      * @return user title
      */
     public String getTitle() {
@@ -70,7 +112,17 @@ public class User {
     }
 
     /**
+     * Sets user's title (ie Mr., Mrs etc)
+     *
+     * @param title user's title
+     */
+    public void setTitle(String title) {
+        internalUser.setTitle(title);
+    }
+
+    /**
      * Returns address
+     *
      * @return address
      */
     public String getAddress() {
@@ -78,7 +130,17 @@ public class User {
     }
 
     /**
+     * Sets this user's address
+     *
+     * @param address user address
+     */
+    public void setAddress(String address) {
+        internalUser.setAddress(address);
+    }
+
+    /**
      * Returns user city
+     *
      * @return user city
      */
     public String getCity() {
@@ -86,7 +148,17 @@ public class User {
     }
 
     /**
+     * Sets this user's city
+     *
+     * @param city user city
+     */
+    public void setCity(String city) {
+        internalUser.setCity(city);
+    }
+
+    /**
      * Returns zip code
+     *
      * @return zip code
      */
     public String getZip() {
@@ -94,11 +166,30 @@ public class User {
     }
 
     /**
+     * Sets user's zip code
+     *
+     * @param zip user zip code
+     */
+    public void setZip(String zip) {
+        internalUser.setZip(zip);
+    }
+
+    /**
      * Returns country
+     *
      * @return country
      */
     public String getCountry() {
         return internalUser.getCountry();
+    }
+
+    /**
+     * Sets this user's country
+     *
+     * @param country user country
+     */
+    public void setCountry(String country) {
+        internalUser.setCountry(country);
     }
 
     /**
@@ -109,7 +200,15 @@ public class User {
     }
 
     /**
+     * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
+     */
+    public void setCountyCouncil(String countyCouncil) {
+        internalUser.setProvince(countyCouncil);
+    }
+
+    /**
      * Returns province
+     *
      * @return province
      */
     public String getProvince() {
@@ -118,6 +217,7 @@ public class User {
 
     /**
      * Sets province
+     *
      * @param province a string representing a province
      */
     public void setProvince(String province) {
@@ -126,22 +226,60 @@ public class User {
 
     /**
      * Returns user's email address
+     *
      * @return email address
      */
     public String getEmailAddress() {
         return internalUser.getEmailAddress();
     }
 
+    /**
+     * Sets this user's email address
+     *
+     * @param emailAddress user email address
+     */
+    public void setEmailAddress(String emailAddress) {
+        internalUser.setEmailAddress(emailAddress);
+    }
+
     public String getOtherPhone() {
         return internalUser.getOtherPhone();
+    }
+
+    /**
+     * Sets this user 'other' phone number. A number that doens't fall into any phone number category.
+     * Often used as storage for meta_id connected to the user.
+     *
+     * @param otherphone a string representing any phone.
+     */
+    public void setOtherPhone(String otherphone) {
+        internalUser.setOtherPhone(otherphone);
     }
 
     public String getWorkPhone() {
         return internalUser.getWorkPhone();
     }
 
+    /**
+     * Sets user's work phone number
+     *
+     * @param workphone work phone number
+     */
+    public void setWorkPhone(String workphone) {
+        internalUser.setWorkPhone(workphone);
+    }
+
     public String getMobilePhone() {
         return internalUser.getMobilePhone();
+    }
+
+    /**
+     * Sets this user's mobile phone number
+     *
+     * @param mobilephone a string representing this user's mobile phone number
+     */
+    public void setMobilePhone(String mobilephone) {
+        internalUser.setMobilePhone(mobilephone);
     }
 
     public String getHomePhone() {
@@ -149,7 +287,17 @@ public class User {
     }
 
     /**
+     * Sets this user's home phone number
+     *
+     * @param homephone a string representing this user's home phone number
+     */
+    public void setHomePhone(String homephone) {
+        internalUser.setHomePhone(homephone);
+    }
+
+    /**
      * Indicates if the user is active
+     *
      * @return true if the user is active, false othewise
      */
     public boolean isActive() {
@@ -157,7 +305,17 @@ public class User {
     }
 
     /**
+     * Sets this user's active status
+     *
+     * @param active true to make this user active, false to make inactive
+     */
+    public void setActive(boolean active) {
+        internalUser.setActive(active);
+    }
+
+    /**
      * Returns a String representation of this user, in form of user's login name.
+     *
      * @return a string representing this user.
      */
     public String toString() {
@@ -166,31 +324,35 @@ public class User {
 
     /**
      * Tests if this user possesses the given role
-     * @since 2.0
+     *
      * @return true if the user has the given role
+     * @since 2.0
      */
     public boolean hasRole(Role role) {
-        return internalUser.hasRoleId(role.getInternal().getId()) ;
+        return internalUser.hasRoleId(role.getInternal().getId());
     }
 
     /**
      * Tests if this user is a default one
+     *
      * @return true if this user is a default one, false otherwise
      */
     public boolean isDefaultUser() {
-        return internalUser.isDefaultUser() ;
+        return internalUser.isDefaultUser();
     }
 
     /**
      * Tests if this user is a super admin, meaning, possesses SuperAdmin role.
+     *
      * @return true if this user is a super admin, false otherwise
      */
     public boolean isSuperAdmin() {
-        return internalUser.isSuperAdmin() ;
+        return internalUser.isSuperAdmin();
     }
 
     /**
      * Tests if this user is a user admin, meaning, possesses UserAdmin role.
+     *
      * @return true if this user is a user admin, false otherwise
      */
     public boolean isUserAdmin() {
@@ -199,22 +361,23 @@ public class User {
 
     /**
      * Tests if this user can edit the given document
+     *
      * @param document Document to be tested for this user's ability to be edited
      * @return true if this user can edit the given document, false otherwise
      */
     public boolean canEdit(Document document) {
-        return internalUser.canEdit(document.getInternal()) ;
+        return internalUser.canEdit(document.getInternal());
     }
 
-    public boolean equals( Object o ) {
-        if ( this == o ) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof User ) ) {
+        if (!(o instanceof User)) {
             return false;
         }
 
-        final User user = (User)o;
+        final User user = (User) o;
 
         return internalUser != null ? internalUser.equals(user.internalUser) : user.internalUser == null;
     }
@@ -225,35 +388,38 @@ public class User {
 
     /**
      * Returns user roles
-     * @since 2.0
+     *
      * @return an array of Roles this user has.
+     * @since 2.0
      */
     public Role[] getRoles() {
         RoleId[] roleDOs = internalUser.getRoleIds();
         Role[] roles = new Role[roleDOs.length];
-        for ( int i = 0; i < roleDOs.length; i++ ) {
+        for (int i = 0; i < roleDOs.length; i++) {
             roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
         }
-        return roles ;
+        return roles;
     }
 
     /**
      * Replaces user's roles with the given ones
-     * @since 2.0
+     *
      * @param roles an array of roles to replace user's roles with
+     * @since 2.0
      */
     public void setRoles(Role[] roles) {
         RoleId[] roleIds = new RoleId[roles.length];
-        for ( int i = 0; i < roles.length; i++ ) {
+        for (int i = 0; i < roles.length; i++) {
             roleIds[i] = roles[i].getInternal().getId();
         }
-        internalUser.setRoleIds( roleIds );
+        internalUser.setRoleIds(roleIds);
     }
 
     /**
      * Adds a role to this user
-     * @since 2.0
+     *
      * @param role a Role to add
+     * @since 2.0
      */
     public void addRole(Role role) {
         internalUser.addRoleId(role.getInternal().getId());
@@ -261,78 +427,17 @@ public class User {
 
     /**
      * Removes the given role from this user
-     * @since 2.0
+     *
      * @param role a Role to remove
+     * @since 2.0
      */
     public void removeRole(Role role) {
-        internalUser.removeRoleId(role.getInternal().getId()) ;
-    }
-
-    /**
-     * Sets this user's active status
-     * @param active true to make this user active, false to make inactive
-     */
-    public void setActive( boolean active ) {
-        internalUser.setActive( active );
-    }
-
-    /**
-     * Sets this user's address
-     * @param address user address
-     */
-    public void setAddress( String address ) {
-        internalUser.setAddress( address );
-    }
-
-    /**
-     * Sets this user's city
-     * @param city user city
-     */
-    public void setCity( String city ) {
-        internalUser.setCity( city );
-    }
-
-    /**
-     * Sets this user's company
-     * @param company user company
-     */
-    public void setCompany( String company ) {
-        internalUser.setCompany( company );
-    }
-
-    /**
-     * Sets this user's country
-     * @param country user country
-     */
-    public void setCountry( String country ) {
-        internalUser.setCountry( country );
-    }
-
-    /**
-     * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
-     */
-    public void setCountyCouncil( String countyCouncil ) {
-        internalUser.setProvince( countyCouncil );
-    }
-
-    /**
-     * Sets this user's email address
-     * @param emailAddress user email address
-     */
-    public void setEmailAddress( String emailAddress ) {
-        internalUser.setEmailAddress( emailAddress );
-    }
-
-    /**
-     * Sets this user's fax number
-     * @param faxphone a string representing user's fax number
-     */
-    public void setFaxPhone( String faxphone ) {
-        internalUser.setFaxPhone( faxphone );
+        internalUser.removeRoleId(role.getInternal().getId());
     }
 
     /**
      * Returns this user's fax number
+     *
      * @return user's fax number
      */
     public String getFaxPhone() {
@@ -340,104 +445,44 @@ public class User {
     }
 
     /**
-     * Sets this user's first name
-     * @param firstName user first name
+     * Sets this user's fax number
+     *
+     * @param faxphone a string representing user's fax number
      */
-    public void setFirstName( String firstName ) {
-        internalUser.setFirstName( firstName );
-    }
-
-    /**
-     * Sets this user's home phone number
-     * @param homephone a string representing this user's home phone number
-     */
-    public void setHomePhone( String homephone ) {
-        internalUser.setHomePhone( homephone );
-    }
-
-    /**
-     * Sets this user's last name
-     * @param lastName last name
-     */
-    public void setLastName( String lastName ) {
-        internalUser.setLastName( lastName );
-    }
-
-    /**
-     * Sets this user's login name
-     * @param loginName login name
-     */
-    public void setLoginName( String loginName ) {
-        internalUser.setLoginName( loginName );
-    }
-
-    /**
-     * Sets this user's mobile phone number
-     * @param mobilephone a string representing this user's mobile phone number
-     */
-    public void setMobilePhone( String mobilephone ) {
-        internalUser.setMobilePhone( mobilephone );
-    }
-
-    /**
-     * Sets this user 'other' phone number. A number that doens't fall into any phone number category.
-     * Often used as storage for meta_id connected to the user.
-     * @param otherphone a string representing any phone.
-     */
-    public void setOtherPhone( String otherphone ) {
-        internalUser.setOtherPhone( otherphone );
+    public void setFaxPhone(String faxphone) {
+        internalUser.setFaxPhone(faxphone);
     }
 
     /**
      * Sets user's password
+     *
      * @param password user password
      */
-    public void setPassword( String password ) {
-        internalUser.setPassword( password );
-    }
-
-    /**
-     * Sets user's title (ie Mr., Mrs etc)
-     * @param title user's title
-     */
-    public void setTitle( String title ) {
-        internalUser.setTitle( title );
-    }
-
-    /**
-     * Sets user's work phone number
-     * @param workphone work phone number
-     */
-    public void setWorkPhone( String workphone ) {
-        internalUser.setWorkPhone( workphone );
-    }
-
-    /**
-     * Sets user's zip code
-     * @param zip user zip code
-     */
-    public void setZip( String zip ) {
-        internalUser.setZip( zip );
-    }
-
-    /**
-     * Sets user language. User language is used in some areas of imcms for internationalization.
-     * @param language Language used by this user
-     */
-    public void setLanguage( Language language ) {
-        internalUser.setLanguageIso639_2( language.getIsoCode639_2() );
+    public void setPassword(String password) {
+        internalUser.setPassword(password);
     }
 
     /**
      * Returns user's language.
+     *
      * @return Language used by the user
      */
     public Language getLanguage() {
-        return Language.getLanguageByISO639_2( internalUser.getLanguageIso639_2() ) ;
+        return Language.getLanguageByISO639_2(internalUser.getLanguageIso639_2());
+    }
+
+    /**
+     * Sets user language. User language is used in some areas of imcms for internationalization.
+     *
+     * @param language Language used by this user
+     */
+    public void setLanguage(Language language) {
+        internalUser.setLanguageIso639_2(language.getIsoCode639_2());
     }
 
     /**
      * Returns session id associated with this user.
+     *
      * @return a String with user session id
      */
     public String getSessionId() {
@@ -446,6 +491,7 @@ public class User {
 
     /**
      * Sets user's session id
+     *
      * @param sessionId String do be used as this user's session id
      */
     public void setSessionId(String sessionId) {

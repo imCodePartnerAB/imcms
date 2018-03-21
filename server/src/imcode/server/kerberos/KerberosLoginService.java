@@ -7,8 +7,10 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import javax.security.auth.Subject;
 import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.security.auth.kerberos.KerberosTicket;
@@ -17,10 +19,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import java.io.IOException;
 
 public class KerberosLoginService {
     private static final Logger log = Logger.getLogger(KerberosLoginService.class);
@@ -45,6 +44,30 @@ public class KerberosLoginService {
         if (config.isSsoEnabled()) {
             initLoginContext();
         }
+    }
+
+    private static KerberosLoginResult resultNegotiate(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setHeader(AUTHENTICATE_HEADER, "Negotiate");
+
+        return resultContinue(request, response);
+    }
+
+    private static KerberosLoginResult resultContinue(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        Utility.forwardToLogin(request, response, HttpServletResponse.SC_UNAUTHORIZED);
+
+        return new KerberosLoginResult(KerberosLoginStatus.CONTINUE);
+    }
+
+    private static KerberosLoginResult resultFailed(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        Utility.forwardToLogin(request, response);
+
+        return new KerberosLoginResult(KerberosLoginStatus.FAILED);
     }
 
     private synchronized void initLoginContext() {
@@ -219,28 +242,33 @@ public class KerberosLoginService {
         return null;
     }
 
-    private static KerberosLoginResult resultNegotiate(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    /**
+     * Check if a security blob starts with the NTLMSSP signature
+     *
+     * @param byts   byte[]
+     * @param offset int
+     * @return boolean
+     */
+    private boolean isNTLMSSPBlob(byte[] byts, int offset) {
+        // Check if the blob has the NTLMSSP signature
 
-        response.setHeader(AUTHENTICATE_HEADER, "Negotiate");
+        boolean isNTLMSSP = false;
 
-        return resultContinue(request, response);
-    }
+        if ((byts.length - offset) >= NTLM.Signature.length) {
 
-    private static KerberosLoginResult resultContinue(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            if (log.isDebugEnabled())
+                log.debug("Checking if the blob has the NTLMSSP signature.");
+            // Check for the NTLMSSP signature
 
-        Utility.forwardToLogin(request, response, HttpServletResponse.SC_UNAUTHORIZED);
+            int idx = 0;
+            while (idx < NTLM.Signature.length && byts[offset + idx] == NTLM.Signature[idx])
+                idx++;
 
-        return new KerberosLoginResult(KerberosLoginStatus.CONTINUE);
-    }
+            if (idx == NTLM.Signature.length)
+                isNTLMSSP = true;
+        }
 
-    private static KerberosLoginResult resultFailed(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        Utility.forwardToLogin(request, response);
-
-        return new KerberosLoginResult(KerberosLoginStatus.FAILED);
+        return isNTLMSSP;
     }
 
     private static class NTLM {
@@ -286,34 +314,5 @@ public class KerberosLoginService {
         public static final int TargetDomain = 0x0002;
         public static final int TargetFullDNS = 0x0003;
         public static final int TargetDNSDomain = 0x0004;
-    }
-
-    /**
-     * Check if a security blob starts with the NTLMSSP signature
-     *
-     * @param byts   byte[]
-     * @param offset int
-     * @return boolean
-     */
-    private boolean isNTLMSSPBlob(byte[] byts, int offset) {
-        // Check if the blob has the NTLMSSP signature
-
-        boolean isNTLMSSP = false;
-
-        if ((byts.length - offset) >= NTLM.Signature.length) {
-
-            if (log.isDebugEnabled())
-                log.debug("Checking if the blob has the NTLMSSP signature.");
-            // Check for the NTLMSSP signature
-
-            int idx = 0;
-            while (idx < NTLM.Signature.length && byts[offset + idx] == NTLM.Signature[idx])
-                idx++;
-
-            if (idx == NTLM.Signature.length)
-                isNTLMSSP = true;
-        }
-
-        return isNTLMSSP;
     }
 }

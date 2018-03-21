@@ -5,6 +5,7 @@ import java.util.List;
 public interface ForeignKey {
 
     String getLocalTableName();
+
     String getName();
 
     List<Reference> getReferences();

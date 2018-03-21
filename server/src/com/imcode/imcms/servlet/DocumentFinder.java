@@ -14,25 +14,22 @@ import org.apache.commons.collections.SetUtils;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DocumentFinder extends WebComponent {
 
     private Handler<Integer> selectDocumentCommand;
     private Query restrictingQuery;
     private QueryParser queryParser = new DefaultQueryParser();
-    private Set extraSearchResultColumns = SetUtils.orderedSet( new HashSet() ) ;
-    private DocumentFinderPage page ;
-    private Comparator documentComparator ;
+    private Set extraSearchResultColumns = SetUtils.orderedSet(new HashSet());
+    private DocumentFinderPage page;
+    private Comparator documentComparator;
     private boolean logged;
 
     public DocumentFinder() {
@@ -40,15 +37,15 @@ public class DocumentFinder extends WebComponent {
     }
 
     public DocumentFinder(DocumentFinderPage page) {
-        this.page = page ;
+        this.page = page;
         page.setDocumentFinder(this);
     }
 
     public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
-        selectDocumentCommand.handle( selectedDocument.getId() );
+        selectDocumentCommand.handle(selectedDocument.getId());
     }
 
-    public void forward( HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException {
+    public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         forwardWithPage(request, response, page);
     }
 
@@ -56,51 +53,51 @@ public class DocumentFinder extends WebComponent {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
         final BooleanQuery booleanQuery = new BooleanQuery();
-        if ( null != page.getQuery() ) {
-            booleanQuery.add( page.getQuery(), true, false );
+        if (null != page.getQuery()) {
+            booleanQuery.add(page.getQuery(), true, false);
         }
-        if ( null != restrictingQuery ) {
-            booleanQuery.add( restrictingQuery, true, false );
+        if (null != restrictingQuery) {
+            booleanQuery.add(restrictingQuery, true, false);
         }
-        if ( booleanQuery.getClauses().length > 0 ) {
-            List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser( request ) );
+        if (booleanQuery.getClauses().length > 0) {
+            List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser(request));
             if (null != documentComparator) {
-                Collections.sort(documentsFound, documentComparator) ;
+                Collections.sort(documentsFound, documentComparator);
             }
-            page.setDocumentsFound( documentsFound );
+            page.setDocumentsFound(documentsFound);
         }
-        page.forward( request, response );
+        page.forward(request, response);
     }
 
     public boolean isDocumentsSelectable() {
         return null != selectDocumentCommand;
     }
 
-    public void setSelectDocumentCommand( Handler<Integer> selectDocumentCommand ) {
+    public void setSelectDocumentCommand(Handler<Integer> selectDocumentCommand) {
         this.selectDocumentCommand = selectDocumentCommand;
     }
 
-    public void setRestrictingQuery( Query restrictingQuery ) {
+    public void setRestrictingQuery(Query restrictingQuery) {
         this.restrictingQuery = restrictingQuery;
     }
 
-    public void setQueryParser( QueryParser queryParser ) {
+    public void setQueryParser(QueryParser queryParser) {
         this.queryParser = queryParser;
     }
 
-    public Query parse( String queryString ) throws ParseException {
-        return queryParser.parse( queryString );
+    public Query parse(String queryString) throws ParseException {
+        return queryParser.parse(queryString);
     }
 
-    public void addExtraSearchResultColumn( SearchResultColumn searchResultColumn ) {
-        extraSearchResultColumns.add(searchResultColumn) ;
+    public void addExtraSearchResultColumn(SearchResultColumn searchResultColumn) {
+        extraSearchResultColumns.add(searchResultColumn);
     }
 
     public SearchResultColumn[] getExtraSearchResultColumns() {
-        return (SearchResultColumn[])extraSearchResultColumns.toArray( new SearchResultColumn[extraSearchResultColumns.size()] );
+        return (SearchResultColumn[]) extraSearchResultColumns.toArray(new SearchResultColumn[extraSearchResultColumns.size()]);
     }
 
-    public void setDocumentComparator( Comparator documentComparator ) {
+    public void setDocumentComparator(Comparator documentComparator) {
         this.documentComparator = documentComparator;
     }
 
@@ -114,7 +111,7 @@ public class DocumentFinder extends WebComponent {
 
     public interface SearchResultColumn extends Serializable {
 
-        String render( DocumentDomainObject document, HttpServletRequest request, HttpServletResponse response ) throws IOException, ServletException;
+        String render(DocumentDomainObject document, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException;
 
         LocalizedMessage getName();
     }

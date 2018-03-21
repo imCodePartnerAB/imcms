@@ -14,30 +14,30 @@ import java.util.*;
 
 public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
+    public static final String SQL_GET_DOCUMENTS = "SELECT meta_id,\n"
+            + "doc_type,\n"
+            + "meta_headline,\n"
+            + "meta_text,\n"
+            + "meta_image,\n"
+            + "owner_id,\n"
+            + "permissions,\n"
+            + "shared,\n"
+            + "show_meta,\n"
+            + "lang_prefix,\n"
+            + "date_created,\n"
+            + "date_modified,\n"
+            + "disable_search,\n"
+            + "target,\n"
+            + "archived_datetime,\n"
+            + "publisher_id,\n"
+            + "status,\n"
+            + "publication_start_datetime,\n"
+            + "publication_end_datetime\n"
+            + "FROM meta\n"
+            + "WHERE meta_id ";
+    static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT meta_id, set_id, permission_data FROM ";
     private Database database;
     private ImcmsServices services;
-    public static final String SQL_GET_DOCUMENTS = "SELECT meta_id,\n"
-                                                   + "doc_type,\n"
-                                                   + "meta_headline,\n"
-                                                   + "meta_text,\n"
-                                                   + "meta_image,\n"
-                                                   + "owner_id,\n"
-                                                   + "permissions,\n"
-                                                   + "shared,\n"
-                                                   + "show_meta,\n"
-                                                   + "lang_prefix,\n"
-                                                   + "date_created,\n"
-                                                   + "date_modified,\n"
-                                                   + "disable_search,\n"
-                                                   + "target,\n"
-                                                   + "archived_datetime,\n"
-                                                   + "publisher_id,\n"
-                                                   + "status,\n"
-                                                   + "publication_start_datetime,\n"
-                                                   + "publication_end_datetime\n"
-                                                   + "FROM meta\n"
-                                                   + "WHERE meta_id ";
-    static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT meta_id, set_id, permission_data FROM ";
 
     public DatabaseDocumentGetter(Database database, ImcmsServices services) {
         this.database = database;
@@ -46,7 +46,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
     public List getDocuments(final Collection documentIds) {
         if (documentIds.isEmpty()) {
-            return Collections.EMPTY_LIST ;
+            return Collections.EMPTY_LIST;
         }
         LinkedHashMap documentMap = new LinkedHashMap();
         DocumentInitializer.executeWithAppendedIntegerInClause(database, SQL_GET_DOCUMENTS, documentIds, new CollectionHandler(new DocumentMapSet(documentMap), new DocumentFromRowFactory()));
@@ -57,18 +57,28 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         initializer.initDocuments(documentList);
 
         LinkedHashMap retMap = new LinkedHashMap();
-        
-        for (Iterator it = documentIds.iterator(); it.hasNext();) {
-            Integer id = (Integer)it.next();
+
+        for (Iterator it = documentIds.iterator(); it.hasNext(); ) {
+            Integer id = (Integer) it.next();
             retMap.put(id, documentMap.get(id));
         }
 
         return new DocumentList(retMap);
     }
 
+    private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
+        Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+        if (Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt) {
+            publicationStatus = Document.PublicationStatus.APPROVED;
+        } else if (Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt) {
+            publicationStatus = Document.PublicationStatus.DISAPPROVED;
+        }
+        return publicationStatus;
+    }
+
     private class DocumentMapSet extends AbstractSet {
 
-        private Map map ;
+        private Map map;
 
         DocumentMapSet(Map map) {
             this.map = map;
@@ -79,24 +89,14 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         }
 
         public boolean add(Object o) {
-            DocumentDomainObject document = (DocumentDomainObject) o ;
-            return null == map.put(new Integer(document.getId()), document) ;
+            DocumentDomainObject document = (DocumentDomainObject) o;
+            return null == map.put(new Integer(document.getId()), document);
         }
 
         public Iterator iterator() {
-            return map.values().iterator() ;
+            return map.values().iterator();
         }
 
-    }
-
-    private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
-        Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-        if ( Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt ) {
-            publicationStatus = Document.PublicationStatus.APPROVED;
-        } else if ( Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt ) {
-            publicationStatus = Document.PublicationStatus.DISAPPROVED;
-        }
-        return publicationStatus;
     }
 
     private class DocumentFromRowFactory implements RowTransformer {

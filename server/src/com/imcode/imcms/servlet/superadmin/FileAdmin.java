@@ -30,6 +30,20 @@ public class FileAdmin extends HttpServlet {
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_COPY_OVERWRIGHT_WARNING = "FileAdminCopyOverwriteWarning.html";
     private static final String ADMIN_TEMPLATE_FILE_ADMIN_MOVE_OVERWRITE_WARNING = "FileAdminMoveOverwriteWarning.html";
 
+    static File findUniqueFilename(File file) {
+        File uniqueFile = file;
+        int counter = 1;
+        String previousSuffix = "";
+        while (uniqueFile.exists()) {
+            String filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
+            String suffix = "." + counter;
+            counter++;
+            uniqueFile = new File(uniqueFile.getParentFile(), filenameWithoutSuffix + suffix);
+            previousSuffix = suffix;
+        }
+        return uniqueFile;
+    }
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
         UserDomainObject user = Utility.getLoggedOnUser(req);
@@ -363,20 +377,6 @@ public class FileAdmin extends HttpServlet {
         res.getOutputStream().write(content.getBytes(Imcms.DEFAULT_ENCODING));
     }
 
-    static File findUniqueFilename(File file) {
-        File uniqueFile = file;
-        int counter = 1;
-        String previousSuffix = "";
-        while (uniqueFile.exists()) {
-            String filenameWithoutSuffix = StringUtils.substringBeforeLast(uniqueFile.getName(), previousSuffix);
-            String suffix = "." + counter;
-            counter++;
-            uniqueFile = new File(uniqueFile.getParentFile(), filenameWithoutSuffix + suffix);
-            previousSuffix = suffix;
-        }
-        return uniqueFile;
-    }
-
     private void outputMoveOverwriteWarning(String option_list, File sourceDir, File destDir,
                                             String file_list, File dir1, File dir2, HttpServletResponse res,
                                             UserDomainObject user, ImcmsServices imcref) throws IOException {
@@ -478,10 +478,6 @@ public class FileAdmin extends HttpServlet {
         ServletOutputStream out = res.getOutputStream();
         String content = imcref.getAdminTemplate("FileAdminNameBlank.html", user, vec);
         out.write(content.getBytes(Imcms.DEFAULT_ENCODING));
-    }
-
-    private interface FromSourceFileToDestinationFileCommand {
-        void execute(File source, File destination) throws IOException;
     }
 
     private void moveOk(HttpServletRequest mp, File[] roots) throws IOException {
@@ -727,10 +723,14 @@ public class FileAdmin extends HttpServlet {
                 return filea.isDirectory() == fileb.isDirectory()
                         ? filea.getAbsolutePath().compareToIgnoreCase(fileb.getAbsolutePath())
                         : filea.isDirectory()
-                            ? -1
-                            :  1;
+                        ? -1
+                        : 1;
             }
         };
+    }
+
+    private interface FromSourceFileToDestinationFileCommand {
+        void execute(File source, File destination) throws IOException;
     }
 
 }

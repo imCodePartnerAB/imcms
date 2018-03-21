@@ -10,9 +10,9 @@ public class PhoneNumber implements Serializable {
 
     public PhoneNumber(String number, PhoneNumberType type) {
         if (null == number) {
-            throw new NullArgumentException("number") ;
+            throw new NullArgumentException("number");
         } else if (null == type) {
-            throw new NullArgumentException("type") ;
+            throw new NullArgumentException("type");
         }
         this.number = number;
         this.type = type;
@@ -27,10 +27,10 @@ public class PhoneNumber implements Serializable {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
@@ -45,6 +45,6 @@ public class PhoneNumber implements Serializable {
     }
 
     public String toString() {
-        return number ;
+        return number;
     }
 }

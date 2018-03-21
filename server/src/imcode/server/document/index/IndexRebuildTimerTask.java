@@ -22,12 +22,12 @@ class IndexRebuildTimerTask extends TimerTask {
         try {
             log.info("Starting scheduled index rebuild.");
             if (backgroundIndexBuilder.otherProcessModifiedIndexDirectory()) {
-                log.debug("Another process modified index directory. Aborting.") ;
-                cancel() ;
-                return ;
+                log.debug("Another process modified index directory. Aborting.");
+                cancel();
+                return;
             }
             backgroundIndexBuilder.start();
-        } catch ( Exception e ) {
+        } catch (Exception e) {
             log.warn("Caught exception during scheduled index rebuild.", e);
         }
         Date nextTime = new Date(scheduledExecutionTime() + indexRebuildSchedulePeriodInMilliseconds);

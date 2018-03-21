@@ -8,8 +8,8 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 
 public class MssqlDatabasePlatform extends DatabasePlatform {
 
@@ -18,12 +18,12 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
     }
 
     public void dropForeignKey(ForeignKey foreignKey) {
-        update("ALTER TABLE "+foreignKey.getLocalTableName()+" DROP CONSTRAINT "+foreignKey.getName());
+        update("ALTER TABLE " + foreignKey.getLocalTableName() + " DROP CONSTRAINT " + foreignKey.getName());
     }
 
     public void alterColumn(Table table, final String columnName, final Column column) {
         final String tableName = table.getName();
-        final String temporaryTableName = tableName+"_tmp";
+        final String temporaryTableName = tableName + "_tmp";
         TableWrapper newTable = new TableWrapper(table) {
             public String getName() {
                 return temporaryTableName;
@@ -33,7 +33,7 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
                 return CollectionUtils.collect(super.getColumns(), new Transformer() {
                     public Object transform(Object input) {
                         Column c = (Column) input;
-                        if ( columnName.equals(c.getName()) ) {
+                        if (columnName.equals(c.getName())) {
                             return column;
                         } else {
                             return c;
@@ -43,7 +43,7 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
             }
 
             public Collection<ForeignKey> getForeignKeys() {
-                return CollectionUtils.select(super.getForeignKeys(), new NotPredicate(new ForeignKeyHasLocalColumnName(columnName))) ;
+                return CollectionUtils.select(super.getForeignKeys(), new NotPredicate(new ForeignKeyHasLocalColumnName(columnName)));
             }
 
         };
@@ -55,18 +55,18 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
     }
 
     private void renameTable(String oldName, String newName) {
-        update("sp_rename '"+oldName+"', '"+newName+"'");
+        update("sp_rename '" + oldName + "', '" + newName + "'");
     }
 
     public void copyTable(String tableName, String temporaryTableName) {
-        update("INSERT INTO "+temporaryTableName+" SELECT * FROM "+tableName);
+        update("INSERT INTO " + temporaryTableName + " SELECT * FROM " + tableName);
     }
 
     protected String createColumnDefinition(Column column) {
         List<String> columnDefinition = new ArrayList<String>();
         columnDefinition.add(column.getName());
         columnDefinition.add(getTypeString(column));
-        columnDefinition.add(column.isNullable() ? "NULL" : "NOT NULL") ;
+        columnDefinition.add(column.isNullable() ? "NULL" : "NOT NULL");
         if (column.isAutoIncremented()) {
             columnDefinition.add("IDENTITY");
         }
@@ -76,7 +76,7 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
     protected String getTypeString(Column column) {
         String typeString = super.getTypeString(column);
         if (column.getType() == Type.VARCHAR) {
-            typeString = "N"+typeString;
+            typeString = "N" + typeString;
         }
         return typeString;
     }

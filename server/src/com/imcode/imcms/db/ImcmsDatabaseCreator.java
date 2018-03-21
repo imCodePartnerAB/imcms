@@ -5,25 +5,24 @@ import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.commands.CompositeDatabaseCommand;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
+import imcode.server.Imcms;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.platform.CreationParameters;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import java.io.*;
-import java.util.regex.Pattern;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.Locale;
-
-import imcode.server.Imcms;
+import java.util.regex.Pattern;
 
 public class ImcmsDatabaseCreator {
 
+    private final static Logger LOG = Logger.getLogger(ImcmsDatabaseCreator.class);
     private final LocalizedMessageProvider localizedMessageProvider;
     private final Reader initScriptReader;
 
-    private final static Logger LOG = Logger.getLogger(ImcmsDatabaseCreator.class);
-    
     public ImcmsDatabaseCreator(Reader initScriptReader, LocalizedMessageProvider localizedMessageProvider) {
         this.initScriptReader = initScriptReader;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -31,7 +30,7 @@ public class ImcmsDatabaseCreator {
 
     public void createDatabase(Database database, final org.apache.ddlutils.model.Database wantedDdl) {
         database.execute(new CompositeDatabaseCommand(
-                new DatabaseCommand[] {
+                new DatabaseCommand[]{
                         new DdlUtilsPlatformCommand() {
                             protected Object executePlatform(DatabaseConnection databaseConnection, Platform platform) {
                                 CreationParameters params = new CreationParameters();
@@ -40,7 +39,7 @@ public class ImcmsDatabaseCreator {
                                 String sql = platform.getCreateTablesSql(wantedDdl, params, false, false);
                                 LOG.trace(sql);
                                 platform.evaluateBatch(sql, false);
-                                return null ;
+                                return null;
                             }
                         },
                         new DdlUtilsPlatformCommand() {
@@ -48,14 +47,14 @@ public class ImcmsDatabaseCreator {
                                                              Platform platform) {
                                 String sql;
                                 try {
-                                    sql = IOUtils.toString(initScriptReader) ;
-                                } catch ( IOException e ) {
+                                    sql = IOUtils.toString(initScriptReader);
+                                } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
                                 sql = massageSql(platform, sql);
                                 LOG.trace(sql);
-                                platform.evaluateBatch(sql, false) ;
-                                return null ;
+                                platform.evaluateBatch(sql, false);
+                                return null;
                             }
                         },
                 }
@@ -67,15 +66,15 @@ public class ImcmsDatabaseCreator {
         sql = Pattern.compile(
                 "^-- " + platformName + " ", Pattern.MULTILINE).matcher(sql).replaceAll("");
         sql = Pattern.compile("^-- \\w+ (.*?)\n", Pattern.MULTILINE).matcher(sql).replaceAll("");
-        String language = Locale.getDefault().getISO3Language() ;
+        String language = Locale.getDefault().getISO3Language();
         if (StringUtils.isBlank(language) || !localizedMessageProvider.supportsLanguage(language)) {
-            language = Imcms.getDefaultLanguage() ;
+            language = Imcms.getDefaultLanguage();
         }
 
         sql = sql.replaceAll("@language@", language);
-        sql = sql.replaceAll("@headline@", localizedMessageProvider.get("start_document/headline").toLocalizedString(language)) ;
-        sql = sql.replaceAll("@text1@", localizedMessageProvider.get("start_document/text1").toLocalizedString(language)) ;
-        sql = sql.replaceAll("@text2@", localizedMessageProvider.get("start_document/text2").toLocalizedString(language)) ;
+        sql = sql.replaceAll("@headline@", localizedMessageProvider.get("start_document/headline").toLocalizedString(language));
+        sql = sql.replaceAll("@text1@", localizedMessageProvider.get("start_document/text1").toLocalizedString(language));
+        sql = sql.replaceAll("@text2@", localizedMessageProvider.get("start_document/text2").toLocalizedString(language));
         return sql;
     }
 

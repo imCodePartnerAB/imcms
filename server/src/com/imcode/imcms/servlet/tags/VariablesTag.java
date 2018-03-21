@@ -11,8 +11,8 @@ public class VariablesTag extends TagSupport {
     public int doStartTag() throws JspException {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         TextDocumentViewing viewing = TextDocumentViewing.fromRequest(request);
-        pageContext.setAttribute("viewing", viewing) ;
-        pageContext.setAttribute("document", viewing.getTextDocument()) ;
+        pageContext.setAttribute("viewing", viewing);
+        pageContext.setAttribute("document", viewing.getTextDocument());
         return SKIP_BODY;
     }
 }

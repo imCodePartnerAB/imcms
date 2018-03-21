@@ -15,7 +15,8 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
 
     private Logger logger = Logger.getLogger(getClass());
 
-    public ChainedLdapUserAndRoleRegistry() {}
+    public ChainedLdapUserAndRoleRegistry() {
+    }
 
     public ChainedLdapUserAndRoleRegistry(Authenticator authenticator, UserAndRoleRegistry userAndRoleRegistry) {
         addLink(authenticator, userAndRoleRegistry);
@@ -31,7 +32,7 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
         boolean result = false;
 
         for (Authenticator authenticator : authenticators) {
-            
+
             if (result = authenticator.authenticate(loginName, password)) {
                 break;
             }
@@ -57,7 +58,7 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
 
     public String[] getRoleNames(UserDomainObject user) {
         String[] roleNames = DEFAULT_ROLES;
-        
+
         for (UserAndRoleRegistry userAndRoleRegistry : userAndRoleRegistries) {
             try {
                 roleNames = userAndRoleRegistry.getRoleNames(user);
@@ -73,7 +74,7 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
         return roleNames;
     }
 
-    
+
     public String[] getAllRoleNames() {
         for (UserAndRoleRegistry userAndRoleRegistry : userAndRoleRegistries) {
             try {

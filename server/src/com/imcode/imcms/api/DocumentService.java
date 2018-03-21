@@ -289,8 +289,7 @@ public class DocumentService {
      * @param maxChoices maximum number of category choice of this category type
      * @return The newly craeated category type.
      * @throws NoPermissionException
-     * @throws CategoryTypeAlreadyExistsException
-     *                               if there's already a category type with given name
+     * @throws CategoryTypeAlreadyExistsException if there's already a category type with given name
      */
     public CategoryType createNewCategoryType(String name,
                                               int maxChoices) throws NoPermissionException, CategoryTypeAlreadyExistsException {

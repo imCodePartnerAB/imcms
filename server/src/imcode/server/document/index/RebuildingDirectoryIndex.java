@@ -9,8 +9,6 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
@@ -77,38 +75,6 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    private synchronized Date restartIndexRebuildScheduling(long indexModifiedTime) {
-        if (!isSchedulingIndexRebuilds()) {
-            return null;
-        }
-        long time = System.currentTimeMillis();
-        Date nextTime = new Date(indexModifiedTime + indexRebuildSchedulePeriodInMilliseconds);
-        if (nextTime.getTime() < time) {
-            nextTime.setTime(time);
-        }
-        restartIndexRebuildScheduling(nextTime);
-        return nextTime;
-    }
-
-    private synchronized void restartIndexRebuildScheduling(Date nextTime) {
-        if (null != currentIndexRebuildTimerTask) {
-            currentIndexRebuildTimerTask.cancel();
-            log.trace("Canceled existing index rebuild timer task.");
-        }
-        try {
-            log.info("Restarting scheduling of index rebuilds. First rebuild at " + formatDatetime(nextTime) + ".");
-            backgroundIndexBuilder.touchIndexParentDirectory();
-            currentIndexRebuildTimerTask = new IndexRebuildTimerTask(indexRebuildSchedulePeriodInMilliseconds, backgroundIndexBuilder);
-            scheduledIndexRebuildTimer.scheduleAtFixedRate(currentIndexRebuildTimerTask, nextTime, indexRebuildSchedulePeriodInMilliseconds);
-        } catch (IllegalStateException ise) {
-            log.error("Failed to start index rebuild scheduling.", ise);
-        }
-    }
-
-    private boolean isSchedulingIndexRebuilds() {
-        return indexRebuildSchedulePeriodInMilliseconds > 0;
-    }
-
     static File findLatestIndexDirectory(File indexParentDirectory) {
         try {
             if (indexParentDirectory.exists() && !indexParentDirectory.isDirectory()) {
@@ -153,6 +119,38 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 
     static String formatDatetime(Date nextExecutionTime) {
         return new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING).format(nextExecutionTime);
+    }
+
+    private synchronized Date restartIndexRebuildScheduling(long indexModifiedTime) {
+        if (!isSchedulingIndexRebuilds()) {
+            return null;
+        }
+        long time = System.currentTimeMillis();
+        Date nextTime = new Date(indexModifiedTime + indexRebuildSchedulePeriodInMilliseconds);
+        if (nextTime.getTime() < time) {
+            nextTime.setTime(time);
+        }
+        restartIndexRebuildScheduling(nextTime);
+        return nextTime;
+    }
+
+    private synchronized void restartIndexRebuildScheduling(Date nextTime) {
+        if (null != currentIndexRebuildTimerTask) {
+            currentIndexRebuildTimerTask.cancel();
+            log.trace("Canceled existing index rebuild timer task.");
+        }
+        try {
+            log.info("Restarting scheduling of index rebuilds. First rebuild at " + formatDatetime(nextTime) + ".");
+            backgroundIndexBuilder.touchIndexParentDirectory();
+            currentIndexRebuildTimerTask = new IndexRebuildTimerTask(indexRebuildSchedulePeriodInMilliseconds, backgroundIndexBuilder);
+            scheduledIndexRebuildTimer.scheduleAtFixedRate(currentIndexRebuildTimerTask, nextTime, indexRebuildSchedulePeriodInMilliseconds);
+        } catch (IllegalStateException ise) {
+            log.error("Failed to start index rebuild scheduling.", ise);
+        }
+    }
+
+    private boolean isSchedulingIndexRebuilds() {
+        return indexRebuildSchedulePeriodInMilliseconds > 0;
     }
 
     public synchronized void indexDocument(DocumentDomainObject document) {
@@ -218,7 +216,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
 //                rebuildBecauseOfError("Index is inconsistent.", null);
 //            }
             return result;
-        } catch ( IndexException ex ) {
+        } catch (IndexException ex) {
             rebuildBecauseOfError("Search failed.", ex);
 
             return SearchResult.empty();

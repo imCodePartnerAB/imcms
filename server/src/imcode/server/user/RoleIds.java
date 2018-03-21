@@ -16,7 +16,7 @@ public class RoleIds implements Cloneable, Serializable {
     }
 
     public RoleIds(RoleId[] roleReferences) {
-        set.addAll(Arrays.asList(roleReferences)) ;
+        set.addAll(Arrays.asList(roleReferences));
     }
 
     public void add(RoleId roleId) {
@@ -28,7 +28,7 @@ public class RoleIds implements Cloneable, Serializable {
             RoleIds clone = (RoleIds) super.clone();
             clone.set = (HashSet) set.clone();
             return clone;
-        } catch ( CloneNotSupportedException e ) {
+        } catch (CloneNotSupportedException e) {
             throw new ShouldNotBeThrownException(e);
         }
     }
@@ -46,10 +46,10 @@ public class RoleIds implements Cloneable, Serializable {
     }
 
     public Set asSet() {
-        return Collections.unmodifiableSet(set) ;
+        return Collections.unmodifiableSet(set);
     }
 
     public boolean isEmpty() {
-        return set.isEmpty() ;
+        return set.isEmpty();
     }
 }

@@ -15,7 +15,7 @@ public class SuperAdminFilter implements Filter {
                          FilterChain filterChain) throws IOException, ServletException {
         ContentManagementSystem cms = ContentManagementSystem.fromRequest(servletRequest);
         if (!cms.getCurrentUser().isSuperAdmin()) {
-            (( HttpServletResponse)servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
+            ((HttpServletResponse) servletResponse).setStatus(HttpServletResponse.SC_FORBIDDEN);
             servletResponse.getWriter().write("You need to be superadmin to access this resource.");
             return;
         }

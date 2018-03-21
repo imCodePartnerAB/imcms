@@ -21,6 +21,36 @@ public class Version extends HttpServlet {
 
     private final static String VERSION_FILE = "/WEB-INF/version.txt";
 
+    public static String getJavaVersion() {
+        return System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version");
+    }
+
+    public static String getImcmsVersion(ServletContext servletContext) {
+        try {
+            Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
+            try {
+                return "imCMS " + IOUtils.toString(in).trim();
+            } finally {
+                in.close();
+            }
+        } catch (Exception npe) {
+            return "imCMS";
+        }
+    }
+
+    public static String getDatabaseProductNameAndVersion() {
+        return (String) Imcms.getServices().getDatabase().execute(new DatabaseCommand() {
+            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
+                try {
+                    DatabaseMetaData metaData = connection.getConnection().getMetaData();
+                    return metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion();
+                } catch (SQLException e) {
+                    throw DatabaseException.fromSQLException("", e);
+                }
+            }
+        });
+    }
+
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
         String imcmsVersion = getImcmsVersion(getServletContext());
@@ -34,35 +64,5 @@ public class Version extends HttpServlet {
         out.println(javaVersion);
         out.println(serverInfo);
         out.println(databaseProductNameAndVersion);
-    }
-
-    public static String getJavaVersion() {
-        return System.getProperty("java.vm.vendor")+" "+System.getProperty("java.vm.name")+" "+System.getProperty("java.vm.version");
-    }
-
-    public static String getImcmsVersion(ServletContext servletContext) {
-        try {
-            Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
-            try {
-                return "imCMS "+IOUtils.toString(in).trim();
-            } finally {
-                in.close();
-            }
-        } catch ( Exception npe ) {
-            return "imCMS";
-        }
-    }
-
-    public static String getDatabaseProductNameAndVersion() {
-        return (String) Imcms.getServices().getDatabase().execute(new DatabaseCommand() {
-            public Object executeOn(DatabaseConnection connection) throws DatabaseException {
-                try {
-                    DatabaseMetaData metaData = connection.getConnection().getMetaData();
-                    return metaData.getDatabaseProductName() + " " + metaData.getDatabaseProductVersion();
-                } catch ( SQLException e ) {
-                    throw DatabaseException.fromSQLException("", e);
-                }
-            }
-        });
     }
 }

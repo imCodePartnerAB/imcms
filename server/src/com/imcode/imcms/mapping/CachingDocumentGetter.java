@@ -13,27 +13,27 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
 
     public CachingDocumentGetter(DocumentGetter documentGetter, Map<Integer, DocumentDomainObject> cache) {
         super(documentGetter);
-        this.cache = cache ;
+        this.cache = cache;
     }
 
     public DocumentDomainObject getDocument(Integer documentId, boolean renewCache) {
-        DocumentDomainObject document = renewCache ? null : cache.get(documentId) ;
+        DocumentDomainObject document = renewCache ? null : cache.get(documentId);
         if (null == document) {
-            document = super.getDocument(documentId) ;
+            document = super.getDocument(documentId);
             if (null == document) {
-                return null ;
+                return null;
             }
-            cache.put(documentId, document) ;
+            cache.put(documentId, document);
         }
         try {
-            return (DocumentDomainObject) document.clone() ;
-        } catch ( CloneNotSupportedException e ) {
+            return (DocumentDomainObject) document.clone();
+        } catch (CloneNotSupportedException e) {
             throw new ShouldNotBeThrownException(e);
         }
     }
 
     public List<DocumentDomainObject> getDocuments(Collection documentIds) {
-        return super.getDocuments(documentIds) ;
+        return super.getDocuments(documentIds);
     }
-    
+
 }

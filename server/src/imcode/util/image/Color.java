@@ -1,8 +1,8 @@
 package imcode.util.image;
 
 public enum Color {
-    WHITE("white"), 
-    BLACK("black"), 
+    WHITE("white"),
+    BLACK("black"),
     TRANSPARENT("transparent");
 
     private final String color;

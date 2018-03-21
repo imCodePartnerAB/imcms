@@ -12,16 +12,16 @@ public class ExceptionFreeInputStreamSource extends InputStreamSourceWrapper {
     public InputStream getInputStream() {
         try {
             return super.getInputStream();
-        } catch(IOException ioe) {
-            return new EmptyInputStream() ;
+        } catch (IOException ioe) {
+            return new EmptyInputStream();
         }
     }
 
     public long getSize() {
         try {
             return super.getSize();
-        } catch(IOException ioe) {
-            return 0 ;
+        } catch (IOException ioe) {
+            return 0;
         }
     }
 }

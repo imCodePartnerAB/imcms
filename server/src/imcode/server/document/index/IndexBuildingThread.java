@@ -13,9 +13,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 class IndexBuildingThread extends Thread {
 
+    private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
     private final Set<DocumentDomainObject> documentsToAddToNewIndex = Collections.synchronizedSet(new LinkedHashSet<DocumentDomainObject>());
     private final Set<DocumentDomainObject> documentsToRemoveFromNewIndex = Collections.synchronizedSet(new LinkedHashSet<DocumentDomainObject>());
-    private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
     private final BackgroundIndexBuilder backgroundIndexBuilder;
     private final File indexDirectory;
 

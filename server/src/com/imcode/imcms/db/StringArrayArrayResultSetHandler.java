@@ -14,12 +14,12 @@ public class StringArrayArrayResultSetHandler implements ResultSetHandler<String
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
         List<String[]> results = new ArrayList<String[]>();
-        while ( resultSet.next() ) {
+        while (resultSet.next()) {
             String[] row = new String[columnCount];
-            for ( int i = 0; i < columnCount; i++ ) {
-                row[i] = resultSet.getString( i + 1 );
+            for (int i = 0; i < columnCount; i++) {
+                row[i] = resultSet.getString(i + 1);
             }
-            results.add( row );
+            results.add(row);
         }
         return results.toArray(new String[results.size()][]);
     }

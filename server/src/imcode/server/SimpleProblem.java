@@ -16,6 +16,8 @@ public class SimpleProblem implements SanityCheck.Problem {
 
     public String getDescription() {
         return description;
-    };
+    }
+
+    ;
 
 }

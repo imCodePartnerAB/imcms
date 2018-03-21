@@ -7,12 +7,12 @@ import java.util.*;
 public class AbstractDocumentGetter implements DocumentGetter {
 
     public List getDocuments(Collection documentIds) {
-        List documents = new ArrayList(documentIds.size()) ;
-        for ( Iterator iterator = documentIds.iterator(); iterator.hasNext(); ) {
+        List documents = new ArrayList(documentIds.size());
+        for (Iterator iterator = documentIds.iterator(); iterator.hasNext(); ) {
             Integer documentId = (Integer) iterator.next();
             DocumentDomainObject document = getDocument(documentId);
             if (null != document) {
-                documents.add(document) ;
+                documents.add(document);
             }
         }
         return documents;
@@ -21,7 +21,7 @@ public class AbstractDocumentGetter implements DocumentGetter {
     public DocumentDomainObject getDocument(Integer documentId) {
         List documents = getDocuments(Collections.singletonList(documentId));
         if (documents.isEmpty()) {
-            return null ;
+            return null;
         }
         return (DocumentDomainObject) documents.get(0);
     }

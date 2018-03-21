@@ -1,8 +1,8 @@
 package com.imcode.imcms.db.refactoring.model;
 
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class DdlUtilsTable implements Table {
 
@@ -22,7 +22,7 @@ public class DdlUtilsTable implements Table {
 
     public Collection<ForeignKey> getForeignKeys() {
         List<ForeignKey> foreignKeys = new ArrayList<ForeignKey>();
-        for ( org.apache.ddlutils.model.ForeignKey foreignKey : table.getForeignKeys() ) {
+        for (org.apache.ddlutils.model.ForeignKey foreignKey : table.getForeignKeys()) {
             foreignKeys.add(new DdlUtilsForeignKey(getName(), foreignKey));
         }
         return foreignKeys;
@@ -30,7 +30,7 @@ public class DdlUtilsTable implements Table {
 
     private List<Column> wrapColumns(org.apache.ddlutils.model.Column[] ddlutilsColumns) {
         List<Column> columns = new ArrayList<Column>();
-        for ( org.apache.ddlutils.model.Column column : ddlutilsColumns ) {
+        for (org.apache.ddlutils.model.Column column : ddlutilsColumns) {
             columns.add(new DdlUtilsColumn(column));
         }
         return columns;

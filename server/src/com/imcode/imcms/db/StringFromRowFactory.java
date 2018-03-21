@@ -10,15 +10,15 @@ public class StringFromRowFactory implements RowTransformer<String> {
     private final int columnIndex;
 
     public StringFromRowFactory() {
-        this(1) ;
+        this(1);
     }
 
     public StringFromRowFactory(int columnIndex) {
-        this.columnIndex = columnIndex ;
+        this.columnIndex = columnIndex;
     }
 
     public String createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-        return resultSet.getString(columnIndex) ;
+        return resultSet.getString(columnIndex);
     }
 
     public Class<String> getClassOfCreatedObjects() {

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class IdNamePair implements Comparable, Serializable {
 
-    private final IdObjectPair idObjectPair ;
+    private final IdObjectPair idObjectPair;
 
     public IdNamePair(int id, String name) {
         idObjectPair = new IdObjectPair(id, name);
@@ -21,10 +21,10 @@ public class IdNamePair implements Comparable, Serializable {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( o == null || getClass() != o.getClass() ) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
 
@@ -38,11 +38,11 @@ public class IdNamePair implements Comparable, Serializable {
         return idObjectPair.hashCode();
     }
 
-    public int compareTo( Object o ) {
-        return getName().compareToIgnoreCase( ( (IdNamePair)o ).getName() );
+    public int compareTo(Object o) {
+        return getName().compareToIgnoreCase(((IdNamePair) o).getName());
     }
 
     public String toString() {
-        return "("+ ClassUtils.getShortClassName(getClass())+" "+idObjectPair+")";
+        return "(" + ClassUtils.getShortClassName(getClass()) + " " + idObjectPair + ")";
     }
 }

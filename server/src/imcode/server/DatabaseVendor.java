@@ -1,7 +1,7 @@
 package imcode.server;
 
 public enum DatabaseVendor {
-    MYSQL("com.mysql.jdbc.Driver"), 
+    MYSQL("com.mysql.jdbc.Driver"),
     MSSQL("net.sourceforge.jtds.jdbc.Driver");
 
     private final String driverClass;

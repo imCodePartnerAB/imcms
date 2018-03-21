@@ -13,25 +13,27 @@ public class LuceneParsedQuery extends SearchQuery {
 
     /**
      * Constructs Lucene search query from a String
+     *
      * @param queryString a string representing a search query
      * @throws BadQueryException if the given string cannot be parsed into query
      */
-    public LuceneParsedQuery( String queryString ) throws BadQueryException {
+    public LuceneParsedQuery(String queryString) throws BadQueryException {
         try {
             query = parse(queryString);
-        } catch ( ParseException e ) {
-            throw new BadQueryException( queryString, e );
+        } catch (ParseException e) {
+            throw new BadQueryException(queryString, e);
         }
     }
 
     /**
      * Attempts parsing of a String into Lucene search query
+     *
      * @param queryString a string representing a search query
      * @return a {@link Query} parsed from the given String
      * @throws ParseException if the given string cannot be parsed into query
      */
     public static Query parse(String queryString) throws ParseException {
-        return new DefaultQueryParser().parse( queryString );
+        return new DefaultQueryParser().parse(queryString);
     }
 
     Query getQuery() {

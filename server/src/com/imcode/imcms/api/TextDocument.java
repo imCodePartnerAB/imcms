@@ -1,11 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.DocumentGetter;
-import imcode.server.document.DirectDocumentReference;
-import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPredicate;
-import imcode.server.document.DocumentReference;
-import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.*;
 import imcode.server.document.textdocument.*;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,13 +23,14 @@ public class TextDocument extends Document {
      */
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
 
-    public TextDocument( TextDocumentDomainObject textDocument,
-                  ContentManagementSystem contentManagementSystem ) {
+    public TextDocument(TextDocumentDomainObject textDocument,
+                        ContentManagementSystem contentManagementSystem) {
         super(textDocument, contentManagementSystem);
     }
 
     /**
      * Returns this document's TextFields that are not empty.
+     *
      * @return A SortedMap that has {@link TextField} indices as keys, and instances of TextFields as values. Only the
      * TextFields that contain any text are mapped.
      */
@@ -60,6 +57,7 @@ public class TextDocument extends Document {
 
     /**
      * Returns this document's Images
+     *
      * @return A SortedMap that contains {@link Image} indices as keys, and instaces of {@link Image} as values. Only the
      * Images that have url(not empty) are returned.
      */
@@ -87,6 +85,7 @@ public class TextDocument extends Document {
 
     /**
      * Returns this document's includes
+     *
      * @return A SortedMap that contains indices of the includes as keys, and instaces of {@link Document} as values. Only the
      * includes that have a {@link Document} are returned.
      */
@@ -102,7 +101,7 @@ public class TextDocument extends Document {
         Transformer fromDomainToAPITransformer = new Transformer() {
             public Object transform(Object o) {
                 Integer tempMetaId = (Integer) o;
-                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getDocument(tempMetaId), contentManagementSystem );
+                return DocumentService.wrapDocumentDomainObject(getDocumentGetter().getDocument(tempMetaId), contentManagementSystem);
             }
         };
 
@@ -113,14 +112,14 @@ public class TextDocument extends Document {
     }
 
     private DocumentGetter getDocumentGetter() {
-        return contentManagementSystem.getInternal().getDocumentMapper() ;
+        return contentManagementSystem.getInternal().getDocumentMapper();
     }
 
     private SortedMap filterAndConvertValues(Map map, Predicate predicate, Transformer transformer) {
         Collection<Map.Entry> nonEmptyTextFields = CollectionUtils.select(map.entrySet(), predicate);
         final SortedMap sortedMap = TransformedSortedMap.decorate(new TreeMap(), CloneTransformer.INSTANCE, transformer);
 
-        for ( Map.Entry entry : nonEmptyTextFields ) {
+        for (Map.Entry entry : nonEmptyTextFields) {
             sortedMap.put(entry.getKey(), entry.getValue());
         }
 
@@ -129,6 +128,7 @@ public class TextDocument extends Document {
 
     /**
      * Returns a TextField with the given index.
+     *
      * @param textFieldIndexInDocument text field index in this document
      * @return TextField with the given index or an empty string TextField if the document doesn't have a TextField with the given index
      */
@@ -149,13 +149,14 @@ public class TextDocument extends Document {
      * @return internal {@code TextDocumentDomainObject}
      */
     public TextDocumentDomainObject getInternalTextDocument() {
-        return (TextDocumentDomainObject)getInternal();
+        return (TextDocumentDomainObject) getInternal();
     }
 
     /**
      * Sets the text of the TextField with the given index to the text provided, in {@link com.imcode.imcms.api.TextDocument.TextField.Format#PLAIN} format
+     *
      * @param textFieldIndexInDocument index of a TextField in this document
-     * @param newText text do be set
+     * @param newText                  text do be set
      */
     public void setPlainTextField(int textFieldIndexInDocument, String newText) {
         setTextField(textFieldIndexInDocument, newText, TextField.Format.PLAIN);
@@ -163,8 +164,9 @@ public class TextDocument extends Document {
 
     /**
      * Sets the text of the TextField with the given index to the text provided, in {@link com.imcode.imcms.api.TextDocument.TextField.Format#HTML} format
+     *
      * @param textFieldIndexInDocument index of a TextField in this document
-     * @param newText text do be set
+     * @param newText                  text do be set
      */
     public void setHtmlTextField(int textFieldIndexInDocument, String newText) {
         setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
@@ -172,9 +174,10 @@ public class TextDocument extends Document {
 
     /**
      * Sets the TextField with the given index to the provided text and {@link com.imcode.imcms.api.TextDocument.TextField.Format}
+     *
      * @param textFieldIndexInDocument index of a TextField in this document
-     * @param newText text do be set
-     * @param format {@link com.imcode.imcms.api.TextDocument.TextField.Format}
+     * @param newText                  text do be set
+     * @param format                   {@link com.imcode.imcms.api.TextDocument.TextField.Format}
      */
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
         TextDomainObject imcmsText = new TextDomainObject(newText, format.getType());
@@ -183,6 +186,7 @@ public class TextDocument extends Document {
 
     /**
      * Returns Image with the given index in this document.
+     *
      * @param imageIndexInDocument image index in this document
      * @return Image or null if the document does contain any with the given index
      */
@@ -197,17 +201,28 @@ public class TextDocument extends Document {
 
     /**
      * Returns this text document's template
+     *
      * @return the template used by this document or null if the {@link Template} doesn't exist.
      */
     public Template getTemplate() {
         String templateName = getInternalTextDocument().getTemplateName();
-        return contentManagementSystem.getTemplateService().getTemplate(templateName) ;
+        return contentManagementSystem.getTemplateService().getTemplate(templateName);
+    }
+
+    /**
+     * Sets the {@link Template} of this text document to the given one.
+     *
+     * @param template a template to be set for this text document, null is used for template group
+     */
+    public void setTemplate(Template template) {
+        setTemplate(null, template);
     }
 
     /**
      * Sets template group and template to be used by this text document.
+     *
      * @param templateGroup can be null. {@link TemplateGroup}, note that the template group doesn't have to have the template provided
-     * @param template not null, template to be used by this document
+     * @param template      not null, template to be used by this document
      */
     public void setTemplate(TemplateGroup templateGroup, Template template) {
         getInternalTextDocument().setTemplateName(template.getInternal().getName());
@@ -217,15 +232,8 @@ public class TextDocument extends Document {
     }
 
     /**
-     * Sets the {@link Template} of this text document to the given one.
-     * @param template a template to be set for this text document, null is used for template group
-     */
-    public void setTemplate(Template template) {
-        setTemplate(null, template);
-    }
-
-    /**
      * Returns included Document by the given index in the document.
+     *
      * @param includeIndexInDocument index of an include in this document
      * @return included Document or null if no document include exists by the given index in this document
      * or the included document doesn't exist anymore.
@@ -235,7 +243,7 @@ public class TextDocument extends Document {
         if (null != includedDocumentId) {
             DocumentDomainObject includedDocument = getDocumentGetter().getDocument(new Integer(includedDocumentId.intValue()));
             if (null != includedDocument) {
-                return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem );
+                return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem);
             }
         }
         return null;
@@ -243,19 +251,21 @@ public class TextDocument extends Document {
 
     /**
      * Sets or removes the given document with the given index in this document.
+     *
      * @param includeIndexInDocument index of an inlcude in this document
-     * @param documentToBeIncluded TextDocument to be set or a null, if null is given, the include is removed.
+     * @param documentToBeIncluded   TextDocument to be set or a null, if null is given, the include is removed.
      */
     public void setInclude(int includeIndexInDocument, TextDocument documentToBeIncluded) {
         if (null == documentToBeIncluded) {
-            getInternalTextDocument().removeInclude( includeIndexInDocument );
+            getInternalTextDocument().removeInclude(includeIndexInDocument);
         } else {
-            getInternalTextDocument().setInclude( includeIndexInDocument, documentToBeIncluded.getId() );
+            getInternalTextDocument().setInclude(includeIndexInDocument, documentToBeIncluded.getId());
         }
     }
 
     /**
      * Get the {@link Menu} with the given index in this document.
+     *
      * @param menuIndexInDocument the index of the menu in this document.
      * @return {@link Menu} with the given index in this document.
      */
@@ -265,25 +275,27 @@ public class TextDocument extends Document {
 
     /**
      * Returns all menus in this document.
+     *
      * @return a SortedMap of menus in this document, with menu indices as keys and menus as values
      */
     public SortedMap getMenus() {
-        Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus() ;
+        Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus();
         SortedMap menus = new TreeMap();
-        for ( Integer menuIndex : internalMenus.keySet() ) {
+        for (Integer menuIndex : internalMenus.keySet()) {
             menus.put(menuIndex, new Menu(this, menuIndex.intValue()));
         }
-        return menus ;
+        return menus;
     }
 
     /**
      * Sets the given {@link Image} to the given index in this document.
+     *
      * @param imageIndex index in this document
-     * @param image Image to set, not null
+     * @param image      Image to set, not null
      */
-    public void setImage( int imageIndex, Image image ) {
-        TextDocumentDomainObject textDocument = (TextDocumentDomainObject)getInternal() ;
-        textDocument.setImage( imageIndex, image.getInternal());
+    public void setImage(int imageIndex, Image image) {
+        TextDocumentDomainObject textDocument = (TextDocumentDomainObject) getInternal();
+        textDocument.setImage(imageIndex, image.getInternal());
     }
 
     ContentManagementSystem getContentManagementSystem() {
@@ -295,24 +307,6 @@ public class TextDocument extends Document {
      */
     public static class TextField {
         private final TextDomainObject imcmsText;
-
-        /**
-         * Format in which the text inside TextField is set or returned.
-         * When {@link Format#PLAIN} format is used, the reserved HTML characters are replaced with character entities.
-         */
-        public enum Format {
-            PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
-            HTML(TextDomainObject.TEXT_TYPE_HTML);
-            private final int type;
-
-            Format(int type) {
-                this.type = type;
-            }
-
-            public int getType() {
-                return type;
-            }
-        }
 
         private TextField(TextDomainObject imcmsText) {
             this.imcmsText = imcmsText;
@@ -334,6 +328,7 @@ public class TextDocument extends Document {
 
         /**
          * Returns format set for this text field
+         *
          * @return Format of this text field
          */
         public Format getFormat() {
@@ -342,6 +337,7 @@ public class TextDocument extends Document {
 
         /**
          * Sets format of this text field
+         *
          * @param format Format to use by this text field
          */
         public void setFormat(Format format) {
@@ -366,6 +362,24 @@ public class TextDocument extends Document {
         public String getHtmlFormattedText() {
             return imcmsText.toHtmlString();
         }
+
+        /**
+         * Format in which the text inside TextField is set or returned.
+         * When {@link Format#PLAIN} format is used, the reserved HTML characters are replaced with character entities.
+         */
+        public enum Format {
+            PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
+            HTML(TextDomainObject.TEXT_TYPE_HTML);
+            private final int type;
+
+            Format(int type) {
+                this.type = type;
+            }
+
+            public int getType() {
+                return type;
+            }
+        }
     }
 
     /**
@@ -375,15 +389,16 @@ public class TextDocument extends Document {
         MenuItemDomainObject internalMenuItem;
         Document child;
 
-        public MenuItem( MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem ) {
+        public MenuItem(MenuItemDomainObject internalMenuItem, ContentManagementSystem contentManagementSystem) {
             this.internalMenuItem = internalMenuItem;
-            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor( contentManagementSystem );
-            internalMenuItem.getDocument().accept( visitor );
-            child = visitor.getDocument() ;
+            DocumentService.ApiWrappingDocumentVisitor visitor = new DocumentService.ApiWrappingDocumentVisitor(contentManagementSystem);
+            internalMenuItem.getDocument().accept(visitor);
+            child = visitor.getDocument();
         }
 
         /**
          * Returns a {@link Document} contained by this menu item.
+         *
          * @return Document contained in the menu item
          */
         public Document getDocument() {
@@ -392,8 +407,8 @@ public class TextDocument extends Document {
 
 
         /**
-            @deprecated Use {@link #getSortKey()}
-       **/
+         * @deprecated Use {@link #getSortKey()}
+         **/
         public int getManualNumber() {
             Integer sortKey = internalMenuItem.getSortKey();
             if (null == sortKey) {
@@ -404,6 +419,7 @@ public class TextDocument extends Document {
 
         /**
          * Returns the manual sort key of this menu item
+         *
          * @return integer representing sort of key of this menu item
          */
         public Integer getSortKey() {
@@ -412,14 +428,16 @@ public class TextDocument extends Document {
 
         /**
          * Sets the manual sort key of this menu item
+         *
          * @param sortKey sort key
          */
-        public void setSortKey( Integer sortKey ) {
+        public void setSortKey(Integer sortKey) {
             internalMenuItem.setSortKey(sortKey);
         }
 
         /**
          * Returns the {@link TreeKey} of this menu item.
+         *
          * @return a TreeKey, which can be empty if the menu item doesn't have any set.
          */
         public TreeKey getTreeKey() {
@@ -428,6 +446,7 @@ public class TextDocument extends Document {
 
         /**
          * Sets the tree key of this menu item to the given one
+         *
          * @param treeKey {@link TreeKey} to be used for this menu item
          */
         public void setTreeKey(TreeKey treeKey) {
@@ -442,6 +461,7 @@ public class TextDocument extends Document {
 
             /**
              * Constructs TreeKey with TreeSortKeyDomainObject backing it.
+             *
              * @param internalTreeSortKey TreeSortKeyDomainObject to be used internally
              */
             public TreeKey(TreeSortKeyDomainObject internalTreeSortKey) {
@@ -451,6 +471,7 @@ public class TextDocument extends Document {
             /**
              * Constructs TreeKey from a String, not digit characters are treated as a separator, so
              * 1.3 and 1,3 produce the same key.
+             *
              * @param treeSortKey a String to construct TreeKey from
              */
             public TreeKey(String treeSortKey) {
@@ -459,6 +480,7 @@ public class TextDocument extends Document {
 
             /**
              * Returns the number of levels in this tree key.
+             *
              * @return int, number of levels
              */
             public int getLevelCount() {
@@ -476,6 +498,7 @@ public class TextDocument extends Document {
 
             /**
              * Returns a string representation of this tree key in a form of numbers separated by periods('.')
+             *
              * @return a String representing tree key in a form of numbers separated by periods('.')
              */
             public String toString() {
@@ -505,6 +528,7 @@ public class TextDocument extends Document {
 
         /**
          * Menu sort order by {@link com.imcode.imcms.api.TextDocument.MenuItem.TreeKey} order.
+         *
          * @deprecated Wrong name, use {@link #SORT_BY_TREE_ORDER_ASCENDING}.
          */
         public final static int SORT_BY_TREE_ORDER_DESCENDING = MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER;
@@ -526,7 +550,7 @@ public class TextDocument extends Document {
         Menu(TextDocument document, int menuIndex) {
             internalTextDocument = document.getInternalTextDocument();
             this.menuIndex = menuIndex;
-            contentManagementSystem = document.getContentManagementSystem() ;
+            contentManagementSystem = document.getContentManagementSystem();
         }
 
         /**
@@ -535,7 +559,7 @@ public class TextDocument extends Document {
          * @param documentToAdd the document to add
          */
         public void addDocument(Document documentToAdd) {
-            DocumentReference documentReference = new DirectDocumentReference( documentToAdd.getInternal() );
+            DocumentReference documentReference = new DirectDocumentReference(documentToAdd.getInternal());
             internalTextDocument.getMenu(menuIndex).addMenuItem(new MenuItemDomainObject(documentReference));
         }
 
@@ -549,97 +573,103 @@ public class TextDocument extends Document {
         }
 
         /**
-         * @param sortOrder One of {@link #SORT_BY_HEADLINE}, {@link #SORT_BY_MANUAL_ORDER_DESCENDING},
-         *                  {@link #SORT_BY_MODIFIED_DATETIME_DESCENDING}, or {@link #SORT_BY_TREE_ORDER_DESCENDING}
-         */
-        public void setSortOrder( int sortOrder ) {
-            internalTextDocument.getMenu( menuIndex ).setSortOrder( sortOrder );
-        }
-
-        /**
          * Returns the sort order of this menu.
+         *
          * @return sort order of this menu
          */
         public int getSortOrder() {
-            return internalTextDocument.getMenu( menuIndex ).getSortOrder();
+            return internalTextDocument.getMenu(menuIndex).getSortOrder();
+        }
+
+        /**
+         * @param sortOrder One of {@link #SORT_BY_HEADLINE}, {@link #SORT_BY_MANUAL_ORDER_DESCENDING},
+         *                  {@link #SORT_BY_MODIFIED_DATETIME_DESCENDING}, or {@link #SORT_BY_TREE_ORDER_DESCENDING}
+         */
+        public void setSortOrder(int sortOrder) {
+            internalTextDocument.getMenu(menuIndex).setSortOrder(sortOrder);
         }
 
         /**
          * Returns menu items that current user can see.
+         *
          * @return array of visible {@link MenuItem} in this menu.
          * @since 2.0
          */
         public MenuItem[] getVisibleMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
             DocumentPredicate documentPredicate = new DocumentPredicate() {
-                public boolean evaluateDocument( DocumentDomainObject document ) {
-                    return user.canSeeDocumentInMenus( document ) ;
+                public boolean evaluateDocument(DocumentDomainObject document) {
+                    return user.canSeeDocumentInMenus(document);
                 }
             };
-            return getMenuItems( documentPredicate );
+            return getMenuItems(documentPredicate);
         }
 
         /**
          * Returns documents the menu items hold in this menu that current user can see.
+         *
          * @return the documents returned by {@link #getVisibleMenuItems()}.
          * @since 2.0
          */
         public Document[] getVisibleDocuments() {
-            MenuItem[] menuItems = getVisibleMenuItems() ;
-            return getDocumentsFromMenuItems( menuItems ) ;
+            MenuItem[] menuItems = getVisibleMenuItems();
+            return getDocumentsFromMenuItems(menuItems);
         }
 
         /**
          * Returns menu items in this menu that current user can see or edit, excluding archived documents.
          * The menu items that have a missing document(due to deletion etc) are not returned.
+         *
          * @return array of menuitems in this menu that the user can see or edit, excluding archived documents.
          */
         public MenuItem[] getMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems( new DocumentPredicate() {
-                public boolean evaluateDocument( DocumentDomainObject document ) {
-                    return user.canSeeDocumentInMenus( document ) || user.canEdit( document ) ;
+            return getMenuItems(new DocumentPredicate() {
+                public boolean evaluateDocument(DocumentDomainObject document) {
+                    return user.canSeeDocumentInMenus(document) || user.canEdit(document);
                 }
-            } ) ;
+            });
         }
 
         /**
          * Returns menu items in this menu that current user can see or edit, excluding archived documents.
+         *
          * @return array of menuitems in this menu that the user can see or edit, including archived documents.
          */
         public MenuItem[] getPublishedMenuItems() {
             final UserDomainObject user = contentManagementSystem.getCurrentUser().getInternal();
-            return getMenuItems( new DocumentPredicate() {
-                public boolean evaluateDocument( DocumentDomainObject document ) {
-                    return document.isPublished() && user.canSeeDocumentWhenEditingMenus( document ) ;
+            return getMenuItems(new DocumentPredicate() {
+                public boolean evaluateDocument(DocumentDomainObject document) {
+                    return document.isPublished() && user.canSeeDocumentWhenEditingMenus(document);
                 }
-            } ) ;
+            });
         }
 
         /**
          * Returns documents contained in menu items returned by {@link #getMenuItems()}.
+         *
          * @return the documents returned by {@link #getMenuItems()}.
          */
         public Document[] getDocuments() {
             MenuItem[] menuItems = getMenuItems();
-            return getDocumentsFromMenuItems( menuItems );
+            return getDocumentsFromMenuItems(menuItems);
         }
 
-        private MenuItem[] getMenuItems( DocumentPredicate documentPredicate ) {
-            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu( menuIndex ).getMenuItems();
-            List menuItems = new ArrayList( menuItemsDomainObjects.length );
-            for ( MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects ) {
+        private MenuItem[] getMenuItems(DocumentPredicate documentPredicate) {
+            MenuItemDomainObject[] menuItemsDomainObjects = internalTextDocument.getMenu(menuIndex).getMenuItems();
+            List menuItems = new ArrayList(menuItemsDomainObjects.length);
+            for (MenuItemDomainObject menuItemDomainObject : menuItemsDomainObjects) {
                 DocumentDomainObject document = menuItemDomainObject.getDocument();
-                if ( documentPredicate.evaluateDocument(document) ) {
+                if (documentPredicate.evaluateDocument(document)) {
                     menuItems.add(new MenuItem(menuItemDomainObject, contentManagementSystem));
                 }
             }
-            return (MenuItem[])menuItems.toArray( new MenuItem[menuItems.size()] );
+            return (MenuItem[]) menuItems.toArray(new MenuItem[menuItems.size()]);
         }
 
-        private Document[] getDocumentsFromMenuItems( MenuItem[] menuItems ) {
+        private Document[] getDocumentsFromMenuItems(MenuItem[] menuItems) {
             Document[] documents = new Document[menuItems.length];
-            for ( int i = 0; i < menuItems.length; i++ ) {
+            for (int i = 0; i < menuItems.length; i++) {
                 MenuItem menuItem = menuItems[i];
                 documents[i] = menuItem.getDocument();
             }

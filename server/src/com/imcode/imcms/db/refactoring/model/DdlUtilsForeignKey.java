@@ -3,10 +3,10 @@ package com.imcode.imcms.db.refactoring.model;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 
-import java.util.List;
 import java.util.Arrays;
+import java.util.List;
 
-public class DdlUtilsForeignKey extends AbstractForeignKey{
+public class DdlUtilsForeignKey extends AbstractForeignKey {
 
     private final String localTableName;
     private final org.apache.ddlutils.model.ForeignKey foreignKey;

@@ -8,9 +8,8 @@ public abstract class LocalizedMessageProvider {
         try {
             getResourceBundle(languageIso639_2);
             return true;
-        }
-        catch (Exception ex) {
-           return false; 
+        } catch (Exception ex) {
+            return false;
         }
     }
 

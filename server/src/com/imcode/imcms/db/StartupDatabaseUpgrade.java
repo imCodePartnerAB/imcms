@@ -1,21 +1,17 @@
 package com.imcode.imcms.db;
 
 import com.imcode.db.*;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.handlers.RowTransformer;
 import com.imcode.db.handlers.SingleObjectHandler;
-import org.apache.commons.collections.CollectionUtils;
+import imcode.server.Imcms;
 import org.apache.ddlutils.platform.SqlBuilder;
 import org.apache.log4j.Logger;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.io.File;
-
-import imcode.server.Imcms;
 
 public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
@@ -23,7 +19,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     private final static Logger LOG = Logger.getLogger(StartupDatabaseUpgrade.class);
 
-    DatabaseVersionUpgradePair[] upgrades = new DatabaseVersionUpgradePair[] {
+    DatabaseVersionUpgradePair[] upgrades = new DatabaseVersionUpgradePair[]{
             new DatabaseVersionUpgradePair(4, 0, new CreateTableUpgrade(wantedDdl, "database_version")),
             new DatabaseVersionUpgradePair(4, 1, new UnicodeUpgrade(wantedDdl)),
             new DatabaseVersionUpgradePair(4, 2, new CompositeUpgrade(
@@ -33,15 +29,15 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
             new DatabaseVersionUpgradePair(4, 3, new CreateTableUpgrade(wantedDdl, "document_properties")),
             new DatabaseVersionUpgradePair(4, 4, new TemplateNamesUpgrade(new File(Imcms.getPath(), "WEB-INF/templates/text"))),
             new DatabaseVersionUpgradePair(4, 5, new CompositeUpgrade(
-                   new CreateTableUpgrade(wantedDdl, "texts_history"),
-                   new CreateTableUpgrade(wantedDdl, "images_history"))),
+                    new CreateTableUpgrade(wantedDdl, "texts_history"),
+                    new CreateTableUpgrade(wantedDdl, "images_history"))),
             new DatabaseVersionUpgradePair(4, 6, new CompositeUpgrade(
-                   new CreateTableUpgrade(wantedDdl, "menus_history"),
-                   new CreateTableUpgrade(wantedDdl, "childs_history"))),
-            new DatabaseVersionUpgradePair(4,7, new CreateTableUpgrade(wantedDdl, "document_search_log")),
-            new DatabaseVersionUpgradePair(4,8, new CreateTableUpgrade(wantedDdl, "profiles")),
+                    new CreateTableUpgrade(wantedDdl, "menus_history"),
+                    new CreateTableUpgrade(wantedDdl, "childs_history"))),
+            new DatabaseVersionUpgradePair(4, 7, new CreateTableUpgrade(wantedDdl, "document_search_log")),
+            new DatabaseVersionUpgradePair(4, 8, new CreateTableUpgrade(wantedDdl, "profiles")),
     };
-    private ImcmsDatabaseCreator imcmsDatabaseCreator ;
+    private ImcmsDatabaseCreator imcmsDatabaseCreator;
 
     public StartupDatabaseUpgrade(org.apache.ddlutils.model.Database ddl,
                                   ImcmsDatabaseCreator imcmsDatabaseCreator) {
@@ -51,7 +47,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
 
     public void upgrade(Database database) throws DatabaseException {
         DatabaseVersion databaseVersion = getDatabaseVersion(database);
-        if ( null == databaseVersion ) {
+        if (null == databaseVersion) {
             int tableCount = (Integer) database.execute(new DdlUtilsSqlBuilderCommand() {
                 protected Object executeSqlBuilder(DatabaseConnection databaseConnection,
                                                    SqlBuilder sqlBuilder) {
@@ -59,18 +55,18 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                     return new Integer(database.getTableCount());
                 }
             });
-            if ( 0 == tableCount ) {
+            if (0 == tableCount) {
                 createDatabaseAndSetVersion(database, wantedDdl);
                 return;
             }
-            databaseVersion = new DatabaseVersion(0,0, 0);
+            databaseVersion = new DatabaseVersion(0, 0, 0);
         }
         upgradeDatabase(databaseVersion, database);
     }
 
     private void upgradeDatabase(DatabaseVersion databaseVersion, Database database) {
         LOG.info("The current database version is " + databaseVersion);
-        
+
         for (final DatabaseVersionUpgradePair versionUpgradePair : upgrades) {
             final DatabaseVersion upgradeVersion = versionUpgradePair.getVersion();
             if (upgradeVersion.compareTo(databaseVersion) > 0) {
@@ -97,7 +93,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                 ScriptBasedUpgrade upgrade = new ScriptBasedUpgrade(wantedDdl, currentVersion);
 
                 upgrade.upgrade(database);
-                
+
                 return null;
             }
         });
@@ -135,11 +131,11 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
         }));
         try {
             return (DatabaseVersion) database.execute(sqlQueryCommand);
-        } catch ( DatabaseException dbe ) {
-            for ( Throwable t = dbe; null != t; t = t.getCause() ) {
-                if ( t instanceof SQLException ) {
-                    for ( SQLException se = (SQLException) t; null != se; se = se.getNextException() ) {
-                        if ( SQL_STATE__MISSING_TABLE.equals(se.getSQLState()) ) {
+        } catch (DatabaseException dbe) {
+            for (Throwable t = dbe; null != t; t = t.getCause()) {
+                if (t instanceof SQLException) {
+                    for (SQLException se = (SQLException) t; null != se; se = se.getNextException()) {
+                        if (SQL_STATE__MISSING_TABLE.equals(se.getSQLState())) {
                             return null;
                         }
                     }

@@ -33,7 +33,7 @@ public class DocumentPermissionSetType {
      */
     public final static DocumentPermissionSetType NONE = new DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject.NONE);
 
-    private final DocumentPermissionSetTypeDomainObject internal ;
+    private final DocumentPermissionSetTypeDomainObject internal;
 
     DocumentPermissionSetType(DocumentPermissionSetTypeDomainObject internal) {
         this.internal = internal;

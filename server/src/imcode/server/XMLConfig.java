@@ -11,7 +11,10 @@ import org.apache.log4j.Logger;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public final class XMLConfig {
 
@@ -32,7 +35,7 @@ public final class XMLConfig {
         try {
             JAXBContext context = JAXBContext.newInstance(ServerElement.class);
             Unmarshaller um = context.createUnmarshaller();
-            serverElement = (ServerElement)um.unmarshal(new InputStreamReader(
+            serverElement = (ServerElement) um.unmarshal(new InputStreamReader(
                     new BOMInputStream(new FileInputStream(configFilePath)), "UTF-8"));
         } catch (FileNotFoundException e) {
             String errorMsg = String.format("Configuration file %s can not be found.", configFilePath);
@@ -68,7 +71,7 @@ public final class XMLConfig {
         if (ldapElement != null) {
             MappedRolesElement rolesMappingElement = ldapElement.mappedRolesElement();
 
-            for (RoleToAttributeElement el: rolesMappingElement.rolesToAttributesElements()) {
+            for (RoleToAttributeElement el : rolesMappingElement.rolesToAttributesElements()) {
                 String roleName = el.role();
                 String attributeName = el.attributeName();
                 String attributeValue = el.attributeValue();
@@ -79,7 +82,7 @@ public final class XMLConfig {
                         roleName, attributeName, attributeValue));
             }
 
-            for (RoleToAdGroupElement el: rolesMappingElement.rolesToAdGroupsElements()) {
+            for (RoleToAdGroupElement el : rolesMappingElement.rolesToAdGroupsElements()) {
                 String role = el.role();
                 String group = el.group();
 

@@ -10,8 +10,8 @@ import java.io.Serializable;
 public class CategoryTypeDomainObject implements Comparable, Serializable {
 
     private final int id;
-    private String name ;
-    private int maxChoices ;
+    private String name;
+    private int maxChoices;
     private boolean inherited;
     private boolean imageArchive;
 
@@ -35,28 +35,28 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
         this.name = name;
     }
 
-    public void setMaxChoices(int maxChoices) {
-        this.maxChoices = maxChoices;
-    }
-
     public int getMaxChoices() {
         return maxChoices;
+    }
+
+    public void setMaxChoices(int maxChoices) {
+        this.maxChoices = maxChoices;
     }
 
     public boolean isInherited() {
         return inherited;
     }
 
-    public void setInherited( boolean inherited ) {
+    public void setInherited(boolean inherited) {
         this.inherited = inherited;
     }
-    
+
     public boolean isImageArchive() {
-    	return imageArchive;
+        return imageArchive;
     }
-    
+
     public void setImageArchive(boolean imageArchive) {
-    	this.imageArchive = imageArchive;
+        this.imageArchive = imageArchive;
     }
 
     public boolean equals(Object o) {
@@ -69,7 +69,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
 
         final CategoryTypeDomainObject categoryTypeDomainObject = (CategoryTypeDomainObject) o;
 
-        return id==categoryTypeDomainObject.id ;
+        return id == categoryTypeDomainObject.id;
 
     }
 
@@ -78,11 +78,11 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
     }
 
     public String toString() {
-        return getName() ;
+        return getName();
     }
 
-    public int compareTo( Object o ) {
-        return name.compareToIgnoreCase( ((CategoryTypeDomainObject)o).name) ;
+    public int compareTo(Object o) {
+        return name.compareToIgnoreCase(((CategoryTypeDomainObject) o).name);
     }
 
     public boolean hasImages() {
@@ -90,7 +90,7 @@ public class CategoryTypeDomainObject implements Comparable, Serializable {
         boolean hasImages = false;
         for (int i = 0; i < categories.length; i++) {
             CategoryDomainObject category = categories[i];
-            if( !"".equals(category.getImageUrl()) ) {
+            if (!"".equals(category.getImageUrl())) {
                 hasImages = true;
                 break;
             }

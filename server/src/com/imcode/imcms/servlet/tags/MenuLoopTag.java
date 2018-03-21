@@ -9,7 +9,7 @@ public class MenuLoopTag extends TagSupport {
     public int doStartTag() throws JspException {
         MenuTag menuTag = (MenuTag) findAncestorWithClass(this, MenuTag.class);
         if (null == menuTag) {
-            throw new JspTagException("menuloop must be enclosed in menu.") ;
+            throw new JspTagException("menuloop must be enclosed in menu.");
         }
         return EVAL_BODY_INCLUDE;
     }

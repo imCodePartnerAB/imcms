@@ -17,9 +17,8 @@ import java.util.List;
  */
 public class UserService {
 
-    private ContentManagementSystem contentManagementSystem;
-
     private static final SecureRandom RANDOM = new SecureRandom();
+    private ContentManagementSystem contentManagementSystem;
 
     /**
      * Returns UserService with given cms

@@ -7,17 +7,17 @@ import java.util.List;
 
 public class DocumentGetterWrapper implements DocumentGetter {
 
-    private DocumentGetter documentGetter ;
+    private DocumentGetter documentGetter;
 
     public DocumentGetterWrapper(DocumentGetter documentGetter) {
         this.documentGetter = documentGetter;
     }
 
     public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
-        return documentGetter.getDocuments(documentIds) ;
+        return documentGetter.getDocuments(documentIds);
     }
 
     public DocumentDomainObject getDocument(Integer documentId) {
-        return documentGetter.getDocument(documentId) ;
+        return documentGetter.getDocument(documentId);
     }
 }

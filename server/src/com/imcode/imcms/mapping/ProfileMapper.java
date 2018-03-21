@@ -8,7 +8,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProfileMapper extends Mapper<Profile>{
+public class ProfileMapper extends Mapper<Profile> {
 
     public ProfileMapper(Database database) {
         super(database);
@@ -35,9 +35,9 @@ public class ProfileMapper extends Mapper<Profile>{
     }
 
     protected Object[][] getDataValues(Profile profile) {
-        return new Object[][] {
-                { "name", profile.getName() },
-                { "document_name", profile.getDocumentName() },
+        return new Object[][]{
+                {"name", profile.getName()},
+                {"document_name", profile.getDocumentName()},
         };
     }
 

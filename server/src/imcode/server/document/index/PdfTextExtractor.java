@@ -2,11 +2,12 @@ package imcode.server.document.index;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.util.PDFTextStripper;
-//import org.pdfbox.pdmodel.PDDocument;
-//import org.pdfbox.util.PDFTextStripper;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+//import org.pdfbox.pdmodel.PDDocument;
+//import org.pdfbox.util.PDFTextStripper;
 
 class PdfTextExtractor implements StreamTextsExtractor {
 
@@ -14,8 +15,8 @@ class PdfTextExtractor implements StreamTextsExtractor {
         PDDocument pdf = PDDocument.load(in);
         try {
             PDFTextStripper stripper = new PDFTextStripper();
-            String text = stripper.getText(pdf) ;
-            return new String[] {text} ;
+            String text = stripper.getText(pdf);
+            return new String[]{text};
         } finally {
             pdf.close();
         }

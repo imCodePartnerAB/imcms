@@ -33,17 +33,26 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
     private static final Map<String, DocumentRepository> nameToCustomDocRepository = new HashMap<>();
 
-    private final File directory;
-    private final IndexDocumentFactory indexDocumentFactory;
-
     static {
         // FIXME: Set to something lower, like imcmsDocumentCount to prevent slow or memory consuming queries?
         BooleanQuery.setMaxClauseCount(Integer.MAX_VALUE);
     }
 
+    private final File directory;
+    private final IndexDocumentFactory indexDocumentFactory;
+
     DefaultDirectoryIndex(File directory, IndexDocumentFactory indexDocumentFactory) {
         this.directory = directory;
         this.indexDocumentFactory = indexDocumentFactory;
+    }
+
+    public static void addCustomDocRepository(String name, DocumentRepository documentRepository) {
+        nameToCustomDocRepository.put(name, documentRepository);
+    }
+
+    @SuppressWarnings("unused")
+    public static void removeCustomDocRepository(String name, DocumentRepository documentRepository) {
+        nameToCustomDocRepository.remove(name);
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
@@ -83,10 +92,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    public static void addCustomDocRepository(String name, DocumentRepository documentRepository) {
-        nameToCustomDocRepository.put(name, documentRepository);
-    }
-
     public void indexDocument(DocumentDomainObject document) throws IndexException {
         try {
             removeDocument(document);
@@ -109,13 +114,8 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    @SuppressWarnings("unused")
-    public static void removeCustomDocRepository(String name, DocumentRepository documentRepository) {
-        nameToCustomDocRepository.remove(name);
-    }
-
     private SearchResult<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser,
-                                                int startPosition, int maxResults) {
+                                                                      int startPosition, int maxResults) {
 
         DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
         List<Integer> documentIds = new DocumentIdHitsList(hits);
@@ -274,7 +274,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
     /**
      * Read only non-caching view of found meta ids.
-     *
+     * <p>
      * Please note that {@link #get(int)} method call is expensive since it always perform additional computation.
      * If you need a reusable sub-list of this view please consider copying its elements explicitly -
      * for example {@code new java.util.ArrayList(DocumentIdHitsList.subList(n, k))}

@@ -1,5 +1,7 @@
 package imcode.server;
 
+import com.imcode.db.Database;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
 import com.imcode.imcms.api.SearchResult;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
@@ -7,17 +9,21 @@ import imcode.server.document.index.DocumentIndexWrapper;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
-import com.imcode.db.Database;
-import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
-
-import java.util.*;
-import java.sql.Timestamp;
-
-import org.apache.lucene.search.*;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.*;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
+    private final static Set<String> LOGGED_FIELDS = new HashSet<String>(Arrays.asList(
+            DocumentIndex.FIELD__META_HEADLINE,
+            DocumentIndex.FIELD__META_TEXT,
+            DocumentIndex.FIELD__TEXT,
+            DocumentIndex.FIELD__ALIAS,
+            DocumentIndex.FIELD__KEYWORD
+    ));
     private final Database database;
 
     public LoggingDocumentIndex(Database database, DocumentIndex documentIndex) {
@@ -76,14 +82,6 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
             addTerm(terms, prefixQuery.getPrefix());
         }
     }
-
-    private final static Set<String> LOGGED_FIELDS = new HashSet<String>(Arrays.asList(
-            DocumentIndex.FIELD__META_HEADLINE,
-            DocumentIndex.FIELD__META_TEXT,
-            DocumentIndex.FIELD__TEXT,
-            DocumentIndex.FIELD__ALIAS,
-            DocumentIndex.FIELD__KEYWORD
-    ));
 
     private void addTerm(Collection<String> terms, Term term) {
         if (LOGGED_FIELDS.contains(term.field())) {

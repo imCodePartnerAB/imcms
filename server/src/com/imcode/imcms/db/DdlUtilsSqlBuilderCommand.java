@@ -2,14 +2,13 @@ package com.imcode.imcms.db;
 
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.SqlUpdateCommand;
-import org.apache.ddlutils.platform.SqlBuilder;
-import org.apache.ddlutils.Platform;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ddlutils.Platform;
+import org.apache.ddlutils.platform.SqlBuilder;
 
-import java.io.Writer;
-import java.io.StringWriter;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 public abstract class DdlUtilsSqlBuilderCommand extends DdlUtilsPlatformCommand {
 
@@ -21,18 +20,18 @@ public abstract class DdlUtilsSqlBuilderCommand extends DdlUtilsPlatformCommand 
         sqlBuilder.setWriter(newWriter);
         Object result;
         try {
-            result = executeSqlBuilder(databaseConnection, sqlBuilder) ;
-        } catch ( IOException e ) {
-            throw new DatabaseException(null, e) ;
+            result = executeSqlBuilder(databaseConnection, sqlBuilder);
+        } catch (IOException e) {
+            throw new DatabaseException(null, e);
         }
         sqlBuilder.setWriter(oldWriter);
         String sql = newWriter.toString();
-        if ( StringUtils.isNotBlank(sql)) {
-            platform.evaluateBatch(databaseConnection.getConnection(), sql, false) ;
+        if (StringUtils.isNotBlank(sql)) {
+            platform.evaluateBatch(databaseConnection.getConnection(), sql, false);
         }
-        return result ;
+        return result;
     }
 
     protected abstract Object executeSqlBuilder(DatabaseConnection databaseConnection,
-                                                SqlBuilder sqlBuilder) throws IOException ;
+                                                SqlBuilder sqlBuilder) throws IOException;
 }

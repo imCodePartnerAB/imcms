@@ -7,8 +7,9 @@ public interface ContentManagementSystemRunnable {
 
     /**
      * Runs with passed {@link ContentManagementSystem}
+     *
      * @param contentManagementSystem {@link ContentManagementSystem}
      */
-    void runWith(ContentManagementSystem contentManagementSystem) ;
+    void runWith(ContentManagementSystem contentManagementSystem);
 
 }

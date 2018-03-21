@@ -29,7 +29,7 @@ public class DdlUtilsColumn implements Column {
     }
 
     public Type getType() {
-        if ( column.isOfNumericType() ) {
+        if (column.isOfNumericType()) {
             return Type.INTEGER;
         } else if (column.isOfTextType()) {
             return Type.VARCHAR;

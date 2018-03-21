@@ -17,25 +17,27 @@ public class UrlDocument extends Document {
         super(document, contentManagementSystem);
     }
 
-    /**
-     * Sets url of this url document to the given one
-     * @param url a url
-     */
-    public void setUrl(String url ) {
-        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
-        urlDocumentDomainObject.setUrl( url );
-    }
-
     private UrlDocumentDomainObject getInternalUrlDocument() {
-        UrlDocumentDomainObject urlDocumentDomainObject = (UrlDocumentDomainObject)getInternal();
+        UrlDocumentDomainObject urlDocumentDomainObject = (UrlDocumentDomainObject) getInternal();
         return urlDocumentDomainObject;
     }
 
     /**
      * Returns url of this url document
+     *
      * @return this url document's url
      */
     public String getUrl() {
         return getInternalUrlDocument().getUrl();
+    }
+
+    /**
+     * Sets url of this url document to the given one
+     *
+     * @param url a url
+     */
+    public void setUrl(String url) {
+        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
+        urlDocumentDomainObject.setUrl(url);
     }
 }

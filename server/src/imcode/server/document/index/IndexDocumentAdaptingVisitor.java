@@ -4,11 +4,7 @@ import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.document.textdocument.TextDomainObject;
-import imcode.server.document.textdocument.MenuDomainObject;
-import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,11 +24,10 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 //    private static final String MIME_TYPE__POWERPOINT = "application/vnd.ms-powerpoint";
 //    private static final String MIME_TYPE__PDF = "application/pdf";
 
+    private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
     Document indexDocument;
     Tika tikaAutodetect;
     Tika tikaHtml;
-
-    private final static Logger log = Logger.getLogger(IndexDocumentFactory.class.getName());
 
     IndexDocumentAdaptingVisitor(Document indexDocument, Tika tikaAutodetect, Tika tikaHtml) {
         this.indexDocument = indexDocument;
@@ -43,7 +38,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
     public void visitTextDocument(TextDocumentDomainObject textDocument) {
         indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__TEMPLATE, textDocument.getTemplateName()));
 
-        for ( Map.Entry<Integer,TextDomainObject> textEntry : textDocument.getTexts().entrySet() ) {
+        for (Map.Entry<Integer, TextDomainObject> textEntry : textDocument.getTexts().entrySet()) {
             Integer textIndex = textEntry.getKey();
             TextDomainObject text = textEntry.getValue();
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__NONSTRIPPED_TEXT, text.getText()));
@@ -52,15 +47,15 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
             indexDocument.add(Field.UnStored(DocumentIndex.FIELD__TEXT + textIndex, htmlStrippedText));
         }
 
-        for ( MenuDomainObject menu : textDocument.getMenus().values() ) {
-            for ( MenuItemDomainObject menuItem : menu.getMenuItems() ) {
-                indexDocument.add(Field.Keyword(DocumentIndex.FIELD__CHILD_ID, ""+menuItem.getDocumentId()));
+        for (MenuDomainObject menu : textDocument.getMenus().values()) {
+            for (MenuItemDomainObject menuItem : menu.getMenuItems()) {
+                indexDocument.add(Field.Keyword(DocumentIndex.FIELD__CHILD_ID, "" + menuItem.getDocumentId()));
             }
         }
 
-        for ( ImageDomainObject image : textDocument.getImages().values() ) {
+        for (ImageDomainObject image : textDocument.getImages().values()) {
             String imageLinkUrl = image.getLinkUrl();
-            if ( null != imageLinkUrl && imageLinkUrl.length() > 0 ) {
+            if (null != imageLinkUrl && imageLinkUrl.length() > 0) {
                 indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__IMAGE_LINK_URL, imageLinkUrl));
             }
         }
@@ -95,7 +90,7 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
 
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
         FileDocumentDomainObject.FileDocumentFile file = fileDocument.getDefaultFile();
-        if ( null == file ) {
+        if (null == file) {
             return;
         }
 
@@ -104,7 +99,8 @@ class IndexDocumentAdaptingVisitor extends DocumentVisitor {
         Config config = Imcms.getServices().getConfig();
 
         if (config.getIndexDisabledFileExtensionsAsSet().contains(ext)
-                || config.getIndexDisabledFileMimesAsSet().contains(mime)) {
+                || config.getIndexDisabledFileMimesAsSet().contains(mime))
+        {
             log.info(String.format("File [%s] will not be indexed. Index is disabled for filename extension [%s] or MIME [%s].", file.getFilename(), ext, mime));
         } else {
             indexDocument.add(IndexDocumentFactory.unStoredKeyword(DocumentIndex.FIELD__MIME_TYPE, mime));

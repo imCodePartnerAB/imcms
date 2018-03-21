@@ -15,78 +15,84 @@ import java.security.KeyStore;
  */
 public class DefaultContentManagementSystem extends ContentManagementSystem implements Cloneable {
 
+    protected ImcmsServices service;
+    UserDomainObject currentUser;
     private UserService userService;
     private DocumentService documentService;
     private TemplateService templateService;
     private DatabaseService databaseService;
     private MailService mailService;
-    UserDomainObject currentUser;
-    protected ImcmsServices service;
 
     /**
      * Constructs DefaultContentManagementSystem for the given user, does not initiallize the services like {@link UserService} etc
-     * @param service ImcmsServices
+     *
+     * @param service  ImcmsServices
      * @param accessor UserDomainObject becomes current user
      */
-    public DefaultContentManagementSystem( ImcmsServices service, UserDomainObject accessor ) {
-        this.service = service ;
+    public DefaultContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
+        this.service = service;
         currentUser = accessor;
     }
 
     /**
      * Constructs DefaultContentManagementSystem and initializes services
-     * @param service ImcmsServices
-     * @param accessor UserDomainObject becomes current user
+     *
+     * @param service       ImcmsServices
+     * @param accessor      UserDomainObject becomes current user
      * @param apiDataSource DataSource to be user for {@link DatabaseService}
      * @return DefaultContentManagementSystem with initialized services
      */
     public static DefaultContentManagementSystem create(ImcmsServices service, UserDomainObject accessor,
                                                         DataSource apiDataSource) {
-        DefaultContentManagementSystem contentManagementSystem = new DefaultContentManagementSystem( service, accessor );
+        DefaultContentManagementSystem contentManagementSystem = new DefaultContentManagementSystem(service, accessor);
         contentManagementSystem.init(apiDataSource);
-        return contentManagementSystem ;
+        return contentManagementSystem;
     }
 
     private void init(DataSource apiDataSource) {
-        userService = new UserService( this );
-        documentService = new DocumentService( this ) ;
-        templateService = new TemplateService( this );
-        databaseService = new DatabaseService( apiDataSource );
-        mailService = new MailService(service.getSMTP()) ;
+        userService = new UserService(this);
+        documentService = new DocumentService(this);
+        templateService = new TemplateService(this);
+        databaseService = new DatabaseService(apiDataSource);
+        mailService = new MailService(service.getSMTP());
     }
 
     protected Object clone() throws CloneNotSupportedException {
-        DefaultContentManagementSystem clone = (DefaultContentManagementSystem)super.clone() ;
-        clone.currentUser = (UserDomainObject)currentUser.clone() ;
-        return clone ;
+        DefaultContentManagementSystem clone = (DefaultContentManagementSystem) super.clone();
+        clone.currentUser = (UserDomainObject) currentUser.clone();
+        return clone;
     }
 
     /**
      * Returns {@link UserService}
+     *
      * @return UserService
      */
-    public UserService getUserService(){
+    public UserService getUserService() {
         return userService;
     }
 
     /**
      * Returns {@link DocumentService}
+     *
      * @return DocumentService
      */
-    public DocumentService getDocumentService(){
+    public DocumentService getDocumentService() {
         return documentService;
     }
 
     /**
      * Returns current {@link User}
+     *
      * @return current user
      */
     public User getCurrentUser() {
-        return new User((UserDomainObject)currentUser.clone()) ;
+        return new User((UserDomainObject) currentUser.clone());
     }
 
     /**
      * Returns {@link DatabaseService}
+     *
      * @return DatabaseService
      */
     public DatabaseService getDatabaseService() {
@@ -95,6 +101,7 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
 
     /**
      * Returns {@link TemplateService}
+     *
      * @return TemplateService
      */
     public TemplateService getTemplateService() {
@@ -103,31 +110,33 @@ public class DefaultContentManagementSystem extends ContentManagementSystem impl
 
     /**
      * Returns {@link MailService}
+     *
      * @return MailService
      */
     public MailService getMailService() {
-        return mailService ;
+        return mailService;
     }
 
     ImcmsServices getInternal() {
-        return service ;
+        return service;
     }
 
     /**
      * Runs {@link ContentManagementSystemRunnable#runWith(ContentManagementSystem)} with passed ContentManagementSystem's
      * user having super admin privileges.
+     *
      * @param runnable class implementing ContentManagementSystemRunnable
      * @throws NoPermissionException if ContentManagementSystemRunnable implementer is not signed with the key store
      */
-    public void runAsSuperadmin( ContentManagementSystemRunnable runnable ) throws NoPermissionException {
+    public void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException {
         KeyStore keyStore = service.getKeyStore();
         Class clazz = runnable.getClass();
-        if (!Utility.classIsSignedByCertificatesInKeyStore( clazz, keyStore )) {
-            throw new NoPermissionException("Class "+clazz.getName()+" is not signed by certificates in keystore.") ;
+        if (!Utility.classIsSignedByCertificatesInKeyStore(clazz, keyStore)) {
+            throw new NoPermissionException("Class " + clazz.getName() + " is not signed by certificates in keystore.");
         }
-        DefaultContentManagementSystem cms = create( service, (UserDomainObject)currentUser.clone(), Imcms.getApiDataSource());
-        cms.currentUser.addRoleId( RoleId.SUPERADMIN );
-        runnable.runWith( cms );
+        DefaultContentManagementSystem cms = create(service, (UserDomainObject) currentUser.clone(), Imcms.getApiDataSource());
+        cms.currentUser.addRoleId(RoleId.SUPERADMIN);
+        runnable.runWith(cms);
         cms.currentUser = null;
     }
 }

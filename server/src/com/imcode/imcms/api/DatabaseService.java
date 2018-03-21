@@ -13,6 +13,7 @@ public class DatabaseService {
 
     /**
      * Constructs DatabaseService with the given DataSource
+     *
      * @param dataSource DataSource to get connection from
      */
     public DatabaseService(DataSource dataSource) {
@@ -21,7 +22,7 @@ public class DatabaseService {
 
     /**
      * Get a databaseconnection from the connectionpool.
-     *
+     * <p>
      * <strong>IMPORTANT</strong>: Do not forget to make sure that the connection is closed
      * (inside a "finally" block!), otherwise it won't be returned to the pool.
      *
@@ -29,15 +30,15 @@ public class DatabaseService {
      * @throws SQLException if there was a problem getting the connection.
      */
     public Connection getConnection() throws SQLException {
-        return dataSource.getConnection() ;
+        return dataSource.getConnection();
     }
-    
+
     /**
      * Get the underlying DataSource.
-     * 
+     *
      * @return a {@link DataSource}.
      */
     public DataSource getDataSource() {
-        return dataSource ;
+        return dataSource;
     }
 }

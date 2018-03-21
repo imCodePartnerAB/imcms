@@ -2,7 +2,9 @@ package imcode.server.document;
 
 import java.io.Serializable;
 
-/** @author kreiger */
+/**
+ * @author kreiger
+ */
 public class CategoryDomainObject implements Comparable, Serializable {
 
     private String name;
@@ -23,12 +25,24 @@ public class CategoryDomainObject implements Comparable, Serializable {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public CategoryTypeDomainObject getType() {
         return type;
+    }
+
+    public void setType(CategoryTypeDomainObject type) {
+        this.type = type;
     }
 
     public String toString() {
@@ -36,10 +50,10 @@ public class CategoryDomainObject implements Comparable, Serializable {
     }
 
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( !( o instanceof CategoryDomainObject ) ) {
+        if (!(o instanceof CategoryDomainObject)) {
             return false;
         }
 
@@ -57,31 +71,19 @@ public class CategoryDomainObject implements Comparable, Serializable {
         return description;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public int compareTo(Object o) {
-        return name.compareToIgnoreCase(( (CategoryDomainObject) o ).name);
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void setType(CategoryTypeDomainObject type) {
-        this.type = type;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public int compareTo(Object o) {
+        return name.compareToIgnoreCase(((CategoryDomainObject) o).name);
     }
 }

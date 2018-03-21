@@ -53,6 +53,10 @@ public class SystemData implements java.io.Serializable {
         return startDocument;
     }
 
+    public void setStartDocument(int startDocument) {
+        this.startDocument = startDocument;
+    }
+
     /**
      * Get the servermaster
      */
@@ -60,41 +64,15 @@ public class SystemData implements java.io.Serializable {
         return serverMaster;
     }
 
+    public void setServerMaster(String serverMaster) {
+        this.serverMaster = serverMaster;
+    }
+
     /**
      * Get the servermaster's address
      */
     public String getServerMasterAddress() {
         return serverMasterAddress;
-    }
-
-    /**
-     * Get the webmaster
-     */
-    public String getWebMaster() {
-        return webMaster;
-    }
-
-    /**
-     * Get the webmaster's address
-     */
-    public String getWebMasterAddress() {
-        return webMasterAddress;
-    }
-
-    /**
-     * Get the systemmessage
-     */
-    public String getSystemMessage() {
-        return systemMessage;
-    }
-
-
-    public void setStartDocument(int startDocument) {
-        this.startDocument = startDocument;
-    }
-
-    public void setServerMaster(String serverMaster) {
-        this.serverMaster = serverMaster;
     }
 
     /**
@@ -107,6 +85,13 @@ public class SystemData implements java.io.Serializable {
     /**
      * Get the webmaster
      */
+    public String getWebMaster() {
+        return webMaster;
+    }
+
+    /**
+     * Get the webmaster
+     */
     public void setWebMaster(String webMaster) {
         this.webMaster = webMaster;
     }
@@ -114,8 +99,22 @@ public class SystemData implements java.io.Serializable {
     /**
      * Get the webmaster's address
      */
+    public String getWebMasterAddress() {
+        return webMasterAddress;
+    }
+
+    /**
+     * Get the webmaster's address
+     */
     public void setWebMasterAddress(String webMasterAddress) {
         this.webMasterAddress = webMasterAddress;
+    }
+
+    /**
+     * Get the systemmessage
+     */
+    public String getSystemMessage() {
+        return systemMessage;
     }
 
     /**
