@@ -40,15 +40,17 @@ public class MenuEditPage extends OkCancelPage {
     public static final String SORT_ORDER = "sortOrder";
     public static final String SORT = "sort";
     private final MenuDomainObject menu;
+    private final String returnUrl;
     private TextDocumentDomainObject textDocument;
     private ServletContext servletContext;
     private int menuIndex;
 
     public MenuEditPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand,
-                        TextDocumentDomainObject textDocument, int menuIndex, ServletContext servletContext) {
+                        TextDocumentDomainObject textDocument, int menuIndex, ServletContext servletContext, String returnUrl) {
         super(okDispatchCommand, cancelDispatchCommand);
         this.textDocument = textDocument;
         this.menuIndex = menuIndex;
+        this.returnUrl = returnUrl;
         menu = textDocument.getMenu(menuIndex);
         this.servletContext = servletContext;
     }
@@ -221,6 +223,10 @@ public class MenuEditPage extends OkCancelPage {
     public void save(UserDomainObject user) throws DocumentSaveException {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         documentMapper.saveDocument(textDocument, user);
+    }
+
+    public String getReturnUrl() {
+        return returnUrl;
     }
 
     public static class SaveNewDocumentAndAddToMenuCommand implements CreateDocumentPageFlow.SaveDocumentCommand {

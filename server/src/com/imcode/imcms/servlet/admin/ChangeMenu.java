@@ -1,6 +1,8 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.flow.Page;
+import com.imcode.imcms.flow.RedirectCommand;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
 import imcode.server.Imcms;
@@ -12,6 +14,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldNotBeThrownException;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
 import javax.servlet.ServletException;
@@ -37,8 +40,12 @@ public class ChangeMenu extends HttpServlet {
             AdminDoc.adminDoc(documentId, user, request, response, getServletContext());
             return;
         }
+        String returnUrl = StringUtils.defaultString(request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL));
 
-        final DispatchCommand cancelCommand = new RedirectToMenuEditDispatchCommand(document, menuIndex);
+        final DispatchCommand cancelCommand = (returnUrl.isEmpty())
+                ? new RedirectToMenuEditDispatchCommand(document, menuIndex)
+                : new RedirectCommand(returnUrl);
+
         DispatchCommand saveCommand = (DispatchCommand) (request1, response1) -> {
             try {
                 documentMapper.saveDocument(document, user);
@@ -49,7 +56,8 @@ public class ChangeMenu extends HttpServlet {
                 throw new ShouldNotBeThrownException(e);
             }
         };
-        MenuEditPage menuEditPage = new MenuEditPage(saveCommand, cancelCommand, document, menuIndex, getServletContext());
+        MenuEditPage menuEditPage = new MenuEditPage(saveCommand, cancelCommand, document, menuIndex, getServletContext(), returnUrl);
+        request.setAttribute(Page.IN_REQUEST, menuEditPage);
         menuEditPage.forward(request, response);
     }
 

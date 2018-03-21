@@ -3,7 +3,9 @@ package com.imcode.imcms.servlet.admin;
 import com.imcode.imcms.flow.Page;
 import com.imcode.util.MultipartHttpServletRequest;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -24,8 +26,16 @@ public class PageDispatcher extends HttpServlet {
         Page page = Page.fromRequest(request);
         if (null != page) {
             page.dispatch(request, response);
-        } else {
+            return;
+        }
+
+        final String returnUrl = StringUtils.defaultString(request.getParameter(ImcmsConstants.REQUEST_PARAM__RETURN_URL));
+
+        if (returnUrl.isEmpty()) {
             Utility.redirectToStartDocument(request, response);
+
+        } else {
+            response.sendRedirect(returnUrl);
         }
     }
 }

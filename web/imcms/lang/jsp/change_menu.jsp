@@ -5,6 +5,7 @@
 	        com.imcode.imcms.servlet.admin.MenuEditPage,
 	        com.imcode.imcms.util.l10n.LocalizedMessage,
 	        com.imcode.util.HtmlBuilder,
+	        imcode.server.ImcmsConstants,
 	        imcode.server.document.DocumentDomainObject,
 	        imcode.server.document.DocumentTypeDomainObject,
 	        imcode.server.document.TextDocumentPermissionSetDomainObject,
@@ -24,16 +25,16 @@
 	        java.util.ArrayList,
 	        java.util.Arrays,
 	        java.util.List,
-	        java.util.Set,
-	        com.imcode.imcms.servlet.AjaxServlet"
+	        java.util.Set"
 	
 	contentType="text/html; charset=UTF-8"
-	
-%><%@ taglib prefix="vel" uri="imcmsvelocity"
+
+%>
+<%@ taglib prefix="vel" uri="imcmsvelocity"
 %><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%
-    
-MenuEditPage menuEditPage = (MenuEditPage) Page.fromRequest(request);
+
+    MenuEditPage menuEditPage = Page.fromRequest(request);
 final MenuDomainObject menu = menuEditPage.getMenu();
 UserDomainObject user = Utility.getLoggedOnUser(request);
 MenuItemDomainObject[] menuItemsUserCanSee = menu.getMenuItemsUserCanSee(user);
@@ -54,6 +55,12 @@ String cp = request.getContextPath() ;
 <form action="<%= cp %>/servlet/PageDispatcher" method="POST">
 <%= Page.htmlHidden(request) %>
 
+    <%
+        if (null != menuEditPage.getReturnUrl() && !"".equals(menuEditPage.getReturnUrl())) { %>
+    <input type="hidden" name="<%= ImcmsConstants.REQUEST_PARAM__RETURN_URL %>"
+           value="<%= StringEscapeUtils.escapeHtml(menuEditPage.getReturnUrl()) %>"/><%
+    } %>
+
 #gui_outer_start()
 #gui_head( "<fmt:message key="global/imcms_administration" />" )
 <input type="submit" tabindex="10" value="<fmt:message key="global/back" />" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>" class="imcmsFormBtn">
@@ -65,14 +72,12 @@ String cp = request.getContextPath() ;
 				<%
 					TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)user.getPermissionSetFor( textDocument );
 					final Set allowedDocumentTypeIds = permissionSet.getAllowedDocumentTypeIds();
-					final List docTypeIdsOrder = new ArrayList(Arrays.asList(new IdLocalizedNamePair[] {
-							DocumentTypeDomainObject.TEXT,
-							new IdLocalizedNamePair( 0, new LocalizedMessage( "templates/sv/textdoc/existing_doc_name.html/internal_link" ) ),
-							DocumentTypeDomainObject.URL,
-							DocumentTypeDomainObject.FILE,
-							DocumentTypeDomainObject.BROWSER,
-							DocumentTypeDomainObject.HTML,
-					}));
+                    final List docTypeIdsOrder = new ArrayList(Arrays.asList(DocumentTypeDomainObject.TEXT,
+                            new IdLocalizedNamePair(0, new LocalizedMessage("templates/sv/textdoc/existing_doc_name.html/internal_link")),
+                            DocumentTypeDomainObject.URL,
+                            DocumentTypeDomainObject.FILE,
+                            DocumentTypeDomainObject.BROWSER,
+                            DocumentTypeDomainObject.HTML));
 					CollectionUtils.filter(docTypeIdsOrder, new Predicate() {
 						public boolean evaluate(Object object) {
 							IdLocalizedNamePair pair = (IdLocalizedNamePair) object ;
@@ -87,13 +92,11 @@ String cp = request.getContextPath() ;
 #gui_hr("cccccc")
 	<div>
 		<select name="<%= MenuEditPage.SORT_ORDER %>">
-			<%= html.options(Arrays.asList(new IdLocalizedNamePair[] {
-					new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_headline")),
-					new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_key")),
-					new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_tree_key")),
-					new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_modified_datetime")),
-					new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_published_datetime")),
-			}), new IdLocalizedNamePairToOptionTransformer(user.getLanguageIso639_2()),
+            <%= html.options(Arrays.asList(new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_HEADLINE, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_headline")),
+                    new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_key")),
+                    new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_manual_tree_key")),
+                    new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_modified_datetime")),
+                    new IdLocalizedNamePair(MenuDomainObject.MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED, new LocalizedMessage("templates/sv/textdoc/sort_order.html/by_published_datetime"))), new IdLocalizedNamePairToOptionTransformer(user.getLanguageIso639_2()),
 				new Predicate() {
 					public boolean evaluate(Object object) {
 						IdLocalizedNamePair pair = (IdLocalizedNamePair) object ;
