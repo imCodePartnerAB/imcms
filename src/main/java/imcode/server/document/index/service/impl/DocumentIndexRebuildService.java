@@ -14,19 +14,22 @@ import java.util.EnumSet;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static org.apache.solr.common.SolrException.ErrorCode.*;
 
-public abstract class AbstractDocumentIndexService implements DocumentIndexService, IndexRebuildScheduler {
+public class DocumentIndexRebuildService implements DocumentIndexService, IndexRebuildScheduler {
 
-    private final static Logger logger = Logger.getLogger(AbstractDocumentIndexService.class);
+    private final static Logger logger = Logger.getLogger(DocumentIndexRebuildService.class);
     private final Object lock = new Object();
     private final AtomicBoolean shutdownRef = new AtomicBoolean(false);
     private final AtomicReference<DocumentIndexService> serviceRef = new AtomicReference<>(
             new UnavailableDocumentIndexService()
     );
-    private DocumentIndexServiceOps serviceOps;
+    private final String pathToSolr;
+    private final BiFunction<String, Boolean, SolrClient> solrClientFactory;
+    private final DocumentIndexServiceFactory documentIndexServiceFactory;
 
     private Consumer<ServiceFailure> failureHandler = failure -> {
         try {
@@ -63,8 +66,12 @@ public abstract class AbstractDocumentIndexService implements DocumentIndexServi
         // ??? logger.fatal("No more index update or rebuild requests will be accepted.", e) ???
     };
 
-    void init(DocumentIndexServiceOps serviceOps, long periodInMinutes) {
-        this.serviceOps = serviceOps;
+    public DocumentIndexRebuildService(String pathToSolr, BiFunction<String, Boolean, SolrClient> solrClientFactory,
+                                       long periodInMinutes, DocumentIndexServiceFactory documentIndexServiceFactory) {
+        this.pathToSolr = pathToSolr;
+        this.solrClientFactory = solrClientFactory;
+        this.documentIndexServiceFactory = documentIndexServiceFactory;
+
         serviceRef.set(newManagedService(false));
         setRebuildIntervalInMinutes(periodInMinutes);
     }
@@ -107,8 +114,6 @@ public abstract class AbstractDocumentIndexService implements DocumentIndexServi
         return serviceRef.get().isUpdateDone();
     }
 
-    abstract SolrClient createSolrClient(boolean recreateDataDir);
-
     private void replaceManagedServerInstance(ServiceFailure failure) {
         synchronized (lock) {
             if (serviceRef.compareAndSet(failure.getService(), new UnavailableDocumentIndexService())) {
@@ -130,7 +135,7 @@ public abstract class AbstractDocumentIndexService implements DocumentIndexServi
     }
 
     private ManagedDocumentIndexService newManagedService(boolean recreateDataDir) {
-        final SolrClient solrClient = createSolrClient(recreateDataDir);
-        return new ManagedDocumentIndexService(solrClient, solrClient, serviceOps, failureHandler);
+        final SolrClient solrClient = solrClientFactory.apply(pathToSolr, recreateDataDir);
+        return documentIndexServiceFactory.create(solrClient, solrClient, failureHandler);
     }
 }

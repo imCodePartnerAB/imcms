@@ -21,7 +21,6 @@ import imcode.server.*;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
 import imcode.server.document.index.ResolvingQueryIndex;
-import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import imcode.util.io.FileUtility;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
@@ -134,11 +133,11 @@ class MainConfig {
     }
 
     @Bean
-    public ResolvingQueryIndex documentIndex(Database database, Config config, DocumentMapper documentMapper,
-                                             DocumentIndexServiceOps documentIndexServiceOps,
-                                             DocumentSearchQueryConverter documentSearchQueryConverter) {
+    public ResolvingQueryIndex documentIndex(Database database, DocumentMapper documentMapper,
+                                             DocumentSearchQueryConverter documentSearchQueryConverter,
+                                             DocumentIndexFactory documentIndexFactory) {
 
-        final DocumentIndex index = DocumentIndexFactory.create(config, documentIndexServiceOps);
+        final DocumentIndex index = documentIndexFactory.create();
         final LoggingDocumentIndex documentIndex = new LoggingDocumentIndex(
                 database,
                 new PhaseQueryFixingDocumentIndex(index)

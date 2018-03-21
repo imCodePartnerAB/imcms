@@ -1,21 +1,30 @@
 package imcode.server.document.index;
 
 import imcode.server.Config;
-import imcode.server.document.index.service.DocumentIndexService;
-import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
-import imcode.server.document.index.service.impl.InternalDocumentIndexService;
-import imcode.server.document.index.service.impl.RemoteDocumentIndexService;
+import imcode.server.document.index.service.SolrClientFactory;
+import imcode.server.document.index.service.impl.DocumentIndexRebuildService;
+import imcode.server.document.index.service.impl.DocumentIndexServiceFactory;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
-// translated from scala...
+@Component
 public class DocumentIndexFactory {
 
     private static Logger logger = Logger.getLogger(DocumentIndexFactory.class);
+    private final DocumentIndexServiceFactory documentIndexServiceFactory;
+    private final Config config;
 
-    public static DocumentIndex create(Config config, DocumentIndexServiceOps documentIndexServiceOps) {
+    public DocumentIndexFactory(DocumentIndexServiceFactory documentIndexServiceFactory, Config config) {
+        this.documentIndexServiceFactory = documentIndexServiceFactory;
+        this.config = config;
+    }
+
+    public DocumentIndex create() {
         final Function<String, Optional<String>> trimToOption = s -> Optional.ofNullable(s)
                 .map(String::trim)
                 .filter(str -> str.length() > 0);
@@ -24,16 +33,16 @@ public class DocumentIndexFactory {
         final Optional<String> oSolrHome = trimToOption.apply(config.getSolrHome());
         final long periodInMinutes = config.getIndexingSchedulePeriodInMinutes();
 
-        final DocumentIndexService service;
+        final String solrPath;
+        final BiFunction<String, Boolean, SolrClient> solrClientFactory;
 
         if (oSolrUrl.isPresent()) {
-            final String solrUrl = oSolrUrl.get();
-
-            service = new RemoteDocumentIndexService(solrUrl, documentIndexServiceOps, periodInMinutes);
+            solrPath = oSolrUrl.get();
+            solrClientFactory = SolrClientFactory::createHttpSolrClient;
 
         } else if (oSolrHome.isPresent()) {
-            final String solrHome = oSolrHome.get();
-            service = new InternalDocumentIndexService(solrHome, documentIndexServiceOps, periodInMinutes);
+            solrPath = oSolrHome.get();
+            solrClientFactory = SolrClientFactory::createEmbeddedSolrClient;
 
         } else {
             final String errMsg = "Configuration error. Unable to create DocumentIndex.\n"
@@ -45,7 +54,9 @@ public class DocumentIndexFactory {
             throw new IllegalArgumentException(errMsg);
         }
 
-        return new DocumentIndexImpl(service);
+        return new DocumentIndexImpl(new DocumentIndexRebuildService(
+                solrPath, solrClientFactory, periodInMinutes, documentIndexServiceFactory
+        ));
     }
 
 }

@@ -24,7 +24,7 @@ public class SolrClientFactory {
     }
 
     // TODO how recreate data on server?
-    public static SolrClient createHttpSolrClient(String solrUrl, boolean recreateDataDir) {
+    public static SolrClient createHttpSolrClient(String solrUrl, Boolean recreateDataDir) {
         return Value.with(new HttpSolrClient.Builder(solrUrl).build(), solr ->
                 solr.setRequestWriter(new BinaryRequestWriter())
         );
