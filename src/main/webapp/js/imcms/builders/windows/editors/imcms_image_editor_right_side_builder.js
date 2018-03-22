@@ -204,6 +204,13 @@ Imcms.define(
                         $yCropCoord.getInput().val(y);
                         $x1CropCoord.getInput().val(x1);
                         $y1CropCoord.getInput().val(y1);
+
+                        imageData.cropRegion = {
+                            cropX1: x,
+                            cropX2: x1,
+                            cropY1: y,
+                            cropY2: y1
+                        }
                     });
 
                     return new BEM({
