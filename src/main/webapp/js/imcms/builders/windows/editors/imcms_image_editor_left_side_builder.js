@@ -314,6 +314,11 @@ Imcms.define(
                 newCropAreaTop,
                 imageDataContainers
             );
+            var heightControlInput = imageDataContainers.$heightControlInput.getInput();
+            var widthControlInput = imageDataContainers.$widthControlInput.getInput();
+
+            heightControlInput.val(newHeight);
+            widthControlInput.val(newWidth);
         }
 
         var angle = 0;
