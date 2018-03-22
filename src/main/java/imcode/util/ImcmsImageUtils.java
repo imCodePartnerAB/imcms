@@ -33,6 +33,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -184,8 +185,7 @@ public class ImcmsImageUtils {
             IOUtils.copy(input, output);
             IOUtils.closeQuietly(output);
 
-            generateImage(tempFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(), image.getResize(),
-                    image.getCropRegion(), image.getRotateDirection());
+            generateImage(tempFile, genFile, image);
 
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
@@ -204,46 +204,63 @@ public class ImcmsImageUtils {
         }
     }
 
-    private static void generateImage(File imageFile, File destFile, Format format, int width, int height,
-                                      Resize resize, ImageCropRegionDTO cropRegion, RotateDirection rotateDir) {
+    private static void generateImage(File imageFile, File destFile, ImageData image) {
 
-        ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
+        final ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
+        setRotateDirection(image, operation);
+        setSize(image, operation);
+        setCropRegion(image, operation);
+        setFormat(image.getFormat(), operation);
 
-        if (rotateDir != RotateDirection.NORTH) {
-            operation.rotate(rotateDir.getAngle());
+        operation.processToFile(destFile);
+    }
+
+    private static void setFormat(Format format, ImageOp operation) {
+        Optional.ofNullable(format).ifPresent(operation::outputFormat);
+    }
+
+    private static void setCropRegion(ImageData image, ImageOp operation) {
+        final ImageCropRegionDTO cropRegion = image.getCropRegion();
+
+        if (cropRegion.isValid()) {
+            operation.crop(
+                    cropRegion.getCropX1(),
+                    cropRegion.getCropY1(),
+                    cropRegion.getWidth(),
+                    cropRegion.getHeight()
+            );
         }
+    }
+
+    private static void setSize(ImageData image, ImageOp operation) {
+        final int height = image.getHeight();
+        final int width = image.getWidth();
 
         if (width > 0 || height > 0) {
             Integer w = (width > 0 ? width : null);
             Integer h = (height > 0 ? height : null);
 
-            if (resize == null) {
-                resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
-            }
+            final Resize resize = Optional.ofNullable(image.getResize())
+                    .orElse(width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
 
             operation.filter(Filter.LANCZOS);
             operation.resize(w, h, resize);
         }
+    }
 
-        if (cropRegion.isValid()) {
-            int cropWidth = cropRegion.getWidth();
-            int cropHeight = cropRegion.getHeight();
+    private static void setRotateDirection(ImageData image, ImageOp operation) {
+        final RotateDirection rotateDir = image.getRotateDirection();
 
-            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
+        if (rotateDir != RotateDirection.NORTH) {
+            operation.rotate(rotateDir.getAngle());
         }
-
-        if (format != null) {
-            operation.outputFormat(format);
-        }
-
-        operation.processToFile(destFile);
     }
 
     public static ImageDomainObject toDomainObject(Image image) {
         if (image == null) return null;
 
-        ImageDomainObject imageDO = new ImageDomainObject();
+        final ImageDomainObject imageDO = new ImageDomainObject();
 
         imageDO.setAlign(image.getAlign());
         imageDO.setAlternateText(image.getAlternateText());
