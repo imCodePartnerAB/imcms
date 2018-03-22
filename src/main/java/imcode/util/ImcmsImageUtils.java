@@ -214,13 +214,6 @@ public class ImcmsImageUtils {
             operation.rotate(rotateDir.getAngle());
         }
 
-        if (cropRegion.isValid()) {
-            int cropWidth = cropRegion.getWidth();
-            int cropHeight = cropRegion.getHeight();
-
-            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
-        }
-
         if (width > 0 || height > 0) {
             Integer w = (width > 0 ? width : null);
             Integer h = (height > 0 ? height : null);
@@ -231,6 +224,13 @@ public class ImcmsImageUtils {
 
             operation.filter(Filter.LANCZOS);
             operation.resize(w, h, resize);
+        }
+
+        if (cropRegion.isValid()) {
+            int cropWidth = cropRegion.getWidth();
+            int cropHeight = cropRegion.getHeight();
+
+            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
         }
 
         if (format != null) {

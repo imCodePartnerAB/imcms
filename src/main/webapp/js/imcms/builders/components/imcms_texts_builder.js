@@ -216,7 +216,8 @@ Imcms.define("imcms-texts-builder",
                             type: "text",
                             id: column.id,
                             placeholder: column.placeholder,
-                            name: column.name
+                            name: column.name,
+                            blur: column.blur
                         });
                     }),
                     $inputBox = pluralInputBEM.buildElement("input-box", "<div>").append(inputs)
