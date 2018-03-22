@@ -10,6 +10,15 @@ Imcms.define(
 
         texts = texts.editors.image;
         var $tag, imageData;
+        var imgPosition = {
+            align: "NONE",
+            spaceAround: {
+                top: 0,
+                right: 0,
+                bottom: 0,
+                left: 0
+            }
+        };
 
         events.on("image data", function () {
             console.log(imageData);
@@ -108,6 +117,18 @@ Imcms.define(
                     var $alignLeftBtn = buildAlignButton(["align-left"]);
                     var $alignRightBtn = buildAlignButton(["align-right"]);
 
+                    $alignNoneBtn.click(function () {
+                        imgPosition.align = "NONE";
+                    });
+
+                    $alignLeftBtn.click(function () {
+                        imgPosition.align = "LEFT";
+                    });
+
+                    $alignRightBtn.click(function () {
+                        imgPosition.align = "RIGHT";
+                    });
+
                     return components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,
                         $alignTopBtn,
@@ -118,24 +139,44 @@ Imcms.define(
                     ]);
                 }
 
+                function setSpaceAroundImg(spacePlace, spaceValue) {
+                    imgPosition.spaceAround[spacePlace] = spaceValue;
+                }
+
                 function buildSpaceAroundImageInputContainer() {
                     return components.texts.pluralInput("<div>", [
                         {
                             id: "image-space-top",
                             name: "top",
-                            placeholder: texts.top
+                            placeholder: texts.top,
+                            blur: function () {
+                                var spaceValue = $(this).val();
+                                setSpaceAroundImg("top", parseInt(spaceValue));
+                            }
                         }, {
                             id: "image-space-right",
                             name: "right",
-                            placeholder: texts.right
+                            placeholder: texts.right,
+                            blur: function () {
+                                var spaceValue = $(this).val();
+                                setSpaceAroundImg("right", parseInt(spaceValue));
+                            }
                         }, {
                             id: "image-space-bottom",
                             name: "bottom",
-                            placeholder: texts.bottom
+                            placeholder: texts.bottom,
+                            blur: function () {
+                                var spaceValue = $(this).val();
+                                setSpaceAroundImg("bottom", parseInt(spaceValue));
+                            }
                         }, {
                             id: "image-space-left",
                             name: "left",
-                            placeholder: texts.left
+                            placeholder: texts.left,
+                            blur: function () {
+                                var spaceValue = $(this).val();
+                                setSpaceAroundImg("left", parseInt(spaceValue));
+                            }
                         }
                     ], {text: texts.spaceAround});
                 }
@@ -419,6 +460,10 @@ Imcms.define(
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
                         imageData.alternateText = opts.imageDataContainers.$altText.$input.val();
                         imageData.linkUrl = opts.imageDataContainers.$imgLink.$input.val();
+
+                        /*********/
+                        imageData.align = imgPosition.align;
+                        imageData.spaceAround = imgPosition.spaceAround;
 
                         imageRestApi.create(imageData)
                             .success(onImageSaved)
