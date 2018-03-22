@@ -62,7 +62,7 @@ public class DocumentIndexServiceOpsTest {
     public static void setUp() throws Exception {
         FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
 
-        solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath());
+        solrClient = SolrClientFactory.createEmbeddedSolrClient(testSolrFolder.getAbsolutePath(), false);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
