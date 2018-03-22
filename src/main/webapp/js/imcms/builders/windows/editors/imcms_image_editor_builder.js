@@ -236,6 +236,9 @@ Imcms.define(
                         imageData: imageData,
                         $imageEditor: imageWindowBuilder.$editor
                     });
+
+                    events.trigger("rotate image " + imageData.rotateDirection);
+
                 }, 200);
             }
 

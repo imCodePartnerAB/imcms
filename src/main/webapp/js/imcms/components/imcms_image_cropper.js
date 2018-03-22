@@ -127,7 +127,7 @@ Imcms.define(
             }
 
             var deltaX1 = oldX1 - newX1;
-            var newWidth = cropElements.$cropArea.width() - deltaX1;
+            var newWidth = oldWidth - deltaX1;
             var legalWidth = croppingAreaParams.width = getValidRightCropWidth(newWidth);
 
             cropElements.$cropArea.width(legalWidth);

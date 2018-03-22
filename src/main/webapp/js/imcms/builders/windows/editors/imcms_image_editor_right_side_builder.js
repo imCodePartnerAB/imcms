@@ -451,17 +451,38 @@ Imcms.define(
                         .error(console.error.bind(console));
                 }
 
+                function angleToDirection(angle) {
+                    switch (angle) {
+                        case 90:
+                        case -270:
+                            return "EAST";
+                        case 180:
+                        case -180:
+                            return "SOUTH";
+                        case 270:
+                        case -90:
+                            return "WEST";
+                        case 0:
+                        case 360:
+                        default:
+                            return "NORTH";
+                    }
+                }
+
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
                         imageData.width = cropElements.$image.width();
                         imageData.height = cropElements.$image.height();
-
+                        // these two should be done before close
                         imageWindowBuilder.closeWindow();
+
+                        imageData.rotateAngle = opts.imageDataContainers.rotateAngle;
+                        imageData.rotateDirection = angleToDirection(opts.imageDataContainers.rotateAngle);
+
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
                         imageData.alternateText = opts.imageDataContainers.$altText.$input.val();
                         imageData.linkUrl = opts.imageDataContainers.$imgLink.$input.val();
 
-                        /*********/
                         imageData.align = imgPosition.align;
                         imageData.spaceAround = imgPosition.spaceAround;
 

@@ -323,11 +323,9 @@ Imcms.define(
 
         var angle = 0;
 
-        function rotate(angleDelta, imageDataContainers) {
-            angle += angleDelta;
-            angle = ((angle === 360) || (angle === -360)) ? 0 : angle;
-
+        function rotateOnAngle(newAngle, imageDataContainers) {
             var style = {};
+            imageDataContainers.rotateAngle = angle = newAngle;
 
             switch (angle) {
                 case 90:
@@ -361,7 +359,7 @@ Imcms.define(
             cropElements.$cropImg.css(style);
 
             isImgRotate = !isImgRotate;
-            events.trigger("rotate img");
+            events.trigger("image rotated");
 
             var newWidth = cropElements.$image.width(),
                 newHeight = cropElements.$image.height(),
@@ -383,6 +381,13 @@ Imcms.define(
             }
         }
 
+        function rotate(angleDelta, imageDataContainers) {
+            angle += angleDelta;
+            angle = ((angle === 360) || (angle === -360)) ? 0 : angle;
+
+            rotateOnAngle(angle, imageDataContainers);
+        }
+
         function rotateLeft() {
             rotate(-90, this);
         }
@@ -392,6 +397,11 @@ Imcms.define(
         }
 
         function buildScaleAndRotateControls(imageDataContainers, $editableImageArea) {
+            events.on("rotate image NORTH", rotateOnAngle.bindArgs(0, imageDataContainers));
+            events.on("rotate image EAST", rotateOnAngle.bindArgs(90, imageDataContainers));
+            events.on("rotate image SOUTH", rotateOnAngle.bindArgs(180, imageDataContainers));
+            events.on("rotate image WEST", rotateOnAngle.bindArgs(-90, imageDataContainers));
+
             return new BEM({
                 block: "imcms-edit-image",
                 elements: {

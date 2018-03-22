@@ -18,7 +18,7 @@ Imcms.define(
             return (isImgRotate) ? $element.width() : $element.height();
         }
 
-        events.on("rotate img", function () {
+        events.on("image rotated", function () {
             isImgRotate = !isImgRotate;
         });
 
