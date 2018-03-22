@@ -63,6 +63,39 @@ public abstract class ImageData implements Documentable, Serializable {
         public boolean isDefault() {
             return this == RotateDirection.NORTH;
         }
+
+        @JsonIgnore
+        public static RotateDirection fromAngle(int angle) {
+            if (angle > 180) {
+                angle = angle - (angle / 180) * 180;
+            }
+
+            if (angle < -90) {
+                angle = angle - (angle / -90) * -90;
+            }
+
+            switch (angle) {
+                case -90:
+                    return WEST;
+                case 0:
+                    return NORTH;
+                case 90:
+                    return EAST;
+                case 180:
+                    return SOUTH;
+                default: {
+                    if (angle < -45) return WEST;
+                    if (angle > 135) return SOUTH;
+                    if (angle > 45) return EAST;
+                    return NORTH;
+                }
+            }
+        }
+
+        @JsonIgnore
+        public int toAngle() {
+            return angle;
+        }
     }
 
 }

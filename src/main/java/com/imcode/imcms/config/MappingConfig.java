@@ -209,6 +209,7 @@ class MappingConfig {
             dto.setTarget(image.getTarget());
             dto.setType(image.getType());
             dto.setRotateAngle(image.getRotateAngle());
+            dto.setRotateDirection(ImageData.RotateDirection.fromAngle(image.getRotateAngle()));
             dto.setArchiveImageId(image.getArchiveImageId());
             dto.setResize(Resize.getByOrdinal(image.getResize()));
 
@@ -243,7 +244,7 @@ class MappingConfig {
             image.setHorizontalSpace(imageDTO.getHorizontalSpace());
             image.setTarget(imageDTO.getTarget());
             image.setType(imageDTO.getType());
-            image.setRotateAngle(imageDTO.getRotateAngle());
+            image.setRotateAngle(imageDTO.getRotateDirection().toAngle());
             image.setArchiveImageId(imageDTO.getArchiveImageId());
             image.setResize(imageDTO.getResize() == null ? 0 : imageDTO.getResize().getOrdinal());
 
