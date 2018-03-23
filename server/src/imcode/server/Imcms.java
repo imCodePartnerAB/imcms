@@ -218,11 +218,13 @@ public class Imcms {
 
             basicDataSource.setMaxTotal(maxConnectionCount);
             basicDataSource.setMaxIdle(maxConnectionCount);
+            basicDataSource.setMaxConnLifetimeMillis(TimeUnit.SECONDS.toMillis(40));
             basicDataSource.setMaxWaitMillis(TimeUnit.SECONDS.toMillis(20));
             basicDataSource.setDefaultAutoCommit(true);
             basicDataSource.setPoolPreparedStatements(true);
             basicDataSource.setTestOnBorrow(true);
             basicDataSource.setLogAbandoned(true);
+            basicDataSource.setLogExpiredConnections(true);
             basicDataSource.setRemoveAbandonedTimeout(60);
             basicDataSource.setValidationQuery("select 1");
 
