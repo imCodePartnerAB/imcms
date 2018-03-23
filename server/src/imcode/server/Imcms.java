@@ -140,8 +140,9 @@ public class Imcms {
         }
     }
 
-    private static Database createDatabase(Properties serverprops) {
-        dataSource = createDataSource(serverprops);
+    private static Database createDatabase(Properties serverProps) {
+        dataSource = createDataSource(serverProps);
+        dataSource.setJmxName("org.apache.dbcp:DataSource=dataSource,connectionPool=connections");
         return new DataSourceDatabase(dataSource);
     }
 
@@ -150,6 +151,7 @@ public class Imcms {
             Properties serverprops = getServerProperties();
             LOG.debug("Creating API DataSource.");
             apiDataSource = createDataSource(serverprops);
+            apiDataSource.setJmxName("org.apache.dbcp:DataSource=apiDataSource,connectionPool=apiConnections");
         }
         return apiDataSource;
     }
