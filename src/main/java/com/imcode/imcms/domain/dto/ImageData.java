@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.imcode.imcms.model.SpaceAround;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
 import imcode.server.document.textdocument.NullImageSource;
@@ -21,15 +22,17 @@ public abstract class ImageData implements Documentable, Serializable {
 
     private static final long serialVersionUID = -3077752704023867257L;
 
-    protected volatile int width;
-    protected volatile int height;
-    protected volatile Format format;
-    protected volatile String generatedFilename;
-    protected volatile ImageCropRegionDTO cropRegion = new ImageCropRegionDTO();
-    protected volatile ImageSource source = new NullImageSource();
+    protected int width;
+    protected int height;
+    protected Format format;
+    protected String generatedFilename;
+    protected ImageCropRegionDTO cropRegion = new ImageCropRegionDTO();
+    protected ImageSource source = new NullImageSource();
+    protected SpaceAroundDTO spaceAround = new SpaceAroundDTO();
 
-    private volatile Resize resize;
-    private volatile RotateDirection rotateDirection = RotateDirection.NORTH;
+    private Resize resize;
+    private RotateDirection rotateDirection = RotateDirection.NORTH;
+
 
     @JsonIgnore
     public boolean isEmpty() {
@@ -98,4 +101,11 @@ public abstract class ImageData implements Documentable, Serializable {
         }
     }
 
+    public SpaceAround getSpaceAround() {
+        return spaceAround;
+    }
+
+    public void setSpaceAround(SpaceAround spaceAround) {
+        this.spaceAround = new SpaceAroundDTO(spaceAround);
+    }
 }

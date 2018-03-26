@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.SpaceAround;
 import imcode.util.image.Format;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,11 +48,7 @@ public class Image {
     @Column(name = "low_scr")
     private String lowResolutionUrl = "";
 
-    @Column(name = "v_space")
-    private int verticalSpace;
-
-    @Column(name = "h_space")
-    private int horizontalSpace;
+    private SpaceAroundJPA spaceAround = new SpaceAroundJPA();
 
     private String target = "";
 
@@ -103,8 +100,6 @@ public class Image {
         this.align = from.align;
         this.alternateText = from.alternateText;
         this.lowResolutionUrl = from.lowResolutionUrl;
-        this.verticalSpace = from.verticalSpace;
-        this.horizontalSpace = from.horizontalSpace;
         this.target = from.target;
         this.linkUrl = from.linkUrl;
         this.url = from.url;
@@ -117,5 +112,15 @@ public class Image {
         this.archiveImageId = from.archiveImageId;
         this.allLanguages = from.allLanguages;
         this.inText = from.inText;
+
+        setSpaceAround(from.getSpaceAround());
+    }
+
+    public SpaceAround getSpaceAround() {
+        return spaceAround;
+    }
+
+    public void setSpaceAround(SpaceAround spaceAround) {
+        this.spaceAround = new SpaceAroundJPA(spaceAround);
     }
 }

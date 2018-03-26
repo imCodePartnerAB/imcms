@@ -191,8 +191,6 @@ public class ImageServiceTest {
             img.setBorder(0);
             img.setAlign("");
             img.setLowResolutionUrl("");
-            img.setVerticalSpace(0);
-            img.setHorizontalSpace(0);
             img.setTarget("");
             img.setType(0);
             img.setRotateAngle(0);
@@ -228,8 +226,6 @@ public class ImageServiceTest {
             img.setBorder(0);
             img.setAlign("");
             img.setLowResolutionUrl("");
-            img.setVerticalSpace(0);
-            img.setHorizontalSpace(0);
             img.setTarget("");
             img.setType(0);
             img.setRotateAngle(0);

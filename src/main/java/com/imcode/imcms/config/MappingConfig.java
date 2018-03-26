@@ -204,8 +204,7 @@ class MappingConfig {
             dto.setBorder(image.getBorder());
             dto.setAlign(image.getAlign());
             dto.setLowResolutionUrl(image.getLowResolutionUrl());
-            dto.setVerticalSpace(image.getVerticalSpace());
-            dto.setHorizontalSpace(image.getHorizontalSpace());
+            dto.setSpaceAround(image.getSpaceAround());
             dto.setTarget(image.getTarget());
             dto.setType(image.getType());
             dto.setRotateAngle(image.getRotateAngle());
@@ -240,8 +239,7 @@ class MappingConfig {
             image.setBorder(imageDTO.getBorder());
             image.setAlign(imageDTO.getAlign());
             image.setLowResolutionUrl(imageDTO.getLowResolutionUrl());
-            image.setVerticalSpace(imageDTO.getVerticalSpace());
-            image.setHorizontalSpace(imageDTO.getHorizontalSpace());
+            image.setSpaceAround(imageDTO.getSpaceAround());
             image.setTarget(imageDTO.getTarget());
             image.setType(imageDTO.getType());
             image.setRotateAngle(imageDTO.getRotateDirection().toAngle());

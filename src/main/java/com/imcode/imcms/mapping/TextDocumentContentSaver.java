@@ -318,7 +318,7 @@ public class TextDocumentContentSaver {
         image.setFormat(Optional.ofNullable(imageDO.getFormat()).orElse(Format.BMP)); // change if need
         image.setGeneratedFilename(imageDO.getGeneratedFilename());
         image.setHeight(imageDO.getHeight());
-        image.setHorizontalSpace(imageDO.getHorizontalSpace());
+        image.setSpaceAround(imageDO.getSpaceAround());
         image.setUrl(imageDO.getSource().toStorageString());
         image.setLinkUrl(imageDO.getLinkUrl());
         image.setLowResolutionUrl(imageDO.getLowResolutionUrl());
@@ -327,7 +327,6 @@ public class TextDocumentContentSaver {
         image.setRotateAngle(imageDO.getRotateDirection() == null ? 0 : imageDO.getRotateDirection().getAngle());
         image.setTarget(imageDO.getTarget());
         image.setType(imageDO.getSource().getTypeId());
-        image.setVerticalSpace(imageDO.getVerticalSpace());
         image.setWidth(imageDO.getWidth());
         image.setHeight(imageDO.getHeight());
         image.setArchiveImageId(imageDO.getArchiveImageId());

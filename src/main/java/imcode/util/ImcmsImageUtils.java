@@ -270,13 +270,12 @@ public class ImcmsImageUtils {
         imageDO.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
         imageDO.setGeneratedFilename(image.getGeneratedFilename());
         imageDO.setHeight(image.getHeight());
-        imageDO.setHorizontalSpace(image.getHorizontalSpace());
+        imageDO.setSpaceAround(image.getSpaceAround());
         imageDO.setLinkUrl(image.getLinkUrl());
         imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
         imageDO.setName(image.getName());
         imageDO.setResize(Resize.getByOrdinal(image.getResize()));
         imageDO.setTarget(image.getTarget());
-        imageDO.setVerticalSpace(image.getVerticalSpace());
         imageDO.setWidth(image.getWidth());
 
         return initImageSource(image, imageDO);
