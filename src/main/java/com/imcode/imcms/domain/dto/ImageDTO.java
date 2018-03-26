@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.beans.ConstructorProperties;
+import java.util.List;
 
 import static java.util.Optional.ofNullable;
 
@@ -24,6 +25,7 @@ public class ImageDTO extends ImageData {
     private boolean allLanguages;
     private String alternateText;
     private String linkUrl;
+    private List<String> exifInfo;
 
     /**
      * Two-letter language code ISO-639-1
