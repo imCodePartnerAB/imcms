@@ -88,6 +88,19 @@
     right: 2%;
 }
 
+.image-exif-window {
+    z-index: 10004;
+}
+
+.image-exif-window .imcms-pop-up-modal__body {
+    height: 100%;
+    background-color: #f3f3fc;
+}
+
+.imcms-pop-up-modal__body .image-exif-window__row {
+    padding: 6px 15px;
+}
+
 @media screen and (max-width: 1650px) {
     .imcms-image_editor__footer .imcms-button--negative {
         right: 45%;

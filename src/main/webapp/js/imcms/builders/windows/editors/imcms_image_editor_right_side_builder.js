@@ -3,10 +3,10 @@ Imcms.define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements", "imcms-image-cropper"
+        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder"
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
-              imageCropper) {
+              imageCropper, WindowBuilder) {
 
         texts = texts.editors.image;
         var $tag, imageData, $fileFormat;
@@ -22,6 +22,35 @@ Imcms.define(
 
         events.on("image data", function () {
             console.log(imageData);
+        });
+
+        var $exifInfoContainer;
+
+        function buildExifInfoWindow() {
+            return new BEM({
+                block: "imcms-pop-up-modal",
+                elements: {
+                    "head": exifInfoWindowBuilder.buildHead("EXIF"),
+                    "body": $exifInfoContainer = $("<div>")
+                }
+            }).buildBlockStructure("<div>", {"class": "image-exif-window"});
+        }
+
+        function loadExifData() {
+            /** @namespace imageData.exifInfo */
+            (imageData.exifInfo || []).forEach(function (exifDataRow) {
+                $exifInfoContainer.append($("<div>", {"class": "image-exif-window__row"}).text(exifDataRow));
+            });
+        }
+
+        function clearExifData() {
+            $exifInfoContainer.empty();
+        }
+
+        var exifInfoWindowBuilder = new WindowBuilder({
+            factory: buildExifInfoWindow,
+            loadDataStrategy: loadExifData,
+            clearDataStrategy: clearExifData
         });
 
         return {
@@ -305,7 +334,7 @@ Imcms.define(
                 }
 
                 function showExif() {
-                    // todo: implement!!!
+                    exifInfoWindowBuilder.buildWindow();
                 }
 
                 function buildAdvancedControls() {
