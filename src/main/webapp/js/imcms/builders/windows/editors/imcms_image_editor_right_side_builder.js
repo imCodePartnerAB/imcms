@@ -217,11 +217,12 @@ Imcms.define(
 
                 function buildCropCoordinatesText(advancedModeBEM) {
                     return advancedModeBEM.buildElement("title", "<div>")
-                        .append(texts.cropCoords + " (W:")
+                        .append(texts.cropCoords)
+                        /*.append(" (W:")
                         .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"})) // todo: set actual values and refresh
                         .append(" H:")
                         .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"})) // todo: set actual values and refresh
-                        .append(")");
+                        .append(")")*/;
                 }
 
                 function setValidation(onValid) {
