@@ -264,6 +264,12 @@ Imcms.define(
             imageDataContainers.$altText.$input.val(image.alternateText);
             imageDataContainers.$imgLink.$input.val(image.linkUrl);
 
+            var spaceAround = image.spaceAround;
+            spaceAround.top && $("#image-space-top").val(spaceAround.top).blur();
+            spaceAround.right && $("#image-space-right").val(spaceAround.right).blur();
+            spaceAround.bottom && $("#image-space-bottom").val(spaceAround.bottom).blur();
+            spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
+
             if (image.allLanguages !== undefined) {
                 imageDataContainers.$allLanguagesCheckBox.find("input").prop('checked', image.allLanguages);
             }

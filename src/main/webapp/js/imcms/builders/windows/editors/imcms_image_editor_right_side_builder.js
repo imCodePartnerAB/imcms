@@ -139,8 +139,9 @@ Imcms.define(
                     ]);
                 }
 
-                function setSpaceAroundImg(spacePlace, spaceValue) {
-                    imgPosition.spaceAround[spacePlace] = spaceValue;
+                function setSpaceAroundImg(spacePlace, element) {
+                    var spaceValue = $(element).val();
+                    imgPosition.spaceAround[spacePlace] = parseInt(spaceValue);
                 }
 
                 function buildSpaceAroundImageInputContainer() {
@@ -150,32 +151,28 @@ Imcms.define(
                             name: "top",
                             placeholder: texts.top,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("top", parseInt(spaceValue));
+                                setSpaceAroundImg("top", this);
                             }
                         }, {
                             id: "image-space-right",
                             name: "right",
                             placeholder: texts.right,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("right", parseInt(spaceValue));
+                                setSpaceAroundImg("right", this);
                             }
                         }, {
                             id: "image-space-bottom",
                             name: "bottom",
                             placeholder: texts.bottom,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("bottom", parseInt(spaceValue));
+                                setSpaceAroundImg("bottom", this);
                             }
                         }, {
                             id: "image-space-left",
                             name: "left",
                             placeholder: texts.left,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("left", parseInt(spaceValue));
+                                setSpaceAroundImg("left", this);
                             }
                         }
                     ], {text: texts.spaceAround});
