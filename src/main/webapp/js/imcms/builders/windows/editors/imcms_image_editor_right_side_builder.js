@@ -9,7 +9,7 @@ Imcms.define(
               imageCropper) {
 
         texts = texts.editors.image;
-        var $tag, imageData;
+        var $tag, imageData, $fileFormat;
         var imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -28,6 +28,14 @@ Imcms.define(
             updateImageData: function ($newTag, newImageData) {
                 $tag = $newTag;
                 imageData = newImageData;
+
+                var spaceAround = newImageData.spaceAround;
+                spaceAround.top && $("#image-space-top").val(spaceAround.top).blur();
+                spaceAround.right && $("#image-space-right").val(spaceAround.right).blur();
+                spaceAround.bottom && $("#image-space-bottom").val(spaceAround.bottom).blur();
+                spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
+
+                $fileFormat.selectValue(imageData.format);
             },
             build: function (opts) {
 
@@ -267,17 +275,32 @@ Imcms.define(
                         text: texts.fileFormat,
                         name: "fileFormat"
                     }, [{
-                        text: "GIF",
-                        "data-value": 0
+                        text: "JPG",
+                        "data-value": "JPEG"
                     }, {
                         text: "PNG",
-                        "data-value": 1
+                        "data-value": "PNG"
                     }, {
-                        text: "PNG-24",
-                        "data-value": 2
+                        text: "BMP",
+                        "data-value": "BMP"
                     }, {
-                        text: "JPG",
-                        "data-value": 3
+                        text: "GIF",
+                        "data-value": "GIF"
+                    }, {
+                        text: "PSD",
+                        "data-value": "PSD"
+                    }, {
+                        text: "SVG",
+                        "data-value": "SVG"
+                    }, {
+                        text: "TIFF",
+                        "data-value": "TIFF"
+                    }, {
+                        text: "XCF",
+                        "data-value": "XCF"
+                    }, {
+                        text: "PICT",
+                        "data-value": "PICT"
                     }]);
                 }
 
@@ -304,7 +327,7 @@ Imcms.define(
                     var $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
                     var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
                     var $cropCoordinatesContainer = buildCropCoordinatesContainer();
-                    var $fileFormat = buildFileFormatSelect();
+                    $fileFormat = buildFileFormatSelect();
                     var $showExifBtn = components.buttons.neutralButton({
                         text: texts.exif.button,
                         click: showExif
@@ -482,6 +505,8 @@ Imcms.define(
 
                         imageData.align = imgPosition.align;
                         imageData.spaceAround = imgPosition.spaceAround;
+
+                        imageData.format = $fileFormat.getSelectedValue();
 
                         imageRestApi.create(imageData)
                             .success(onImageSaved)
