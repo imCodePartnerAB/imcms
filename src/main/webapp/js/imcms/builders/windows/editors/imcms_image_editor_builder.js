@@ -98,12 +98,12 @@ Imcms.define(
                     );
 
                     // change top and left properties of preview image
-                    var newTopValue = imageDataContainers.$previewImg.height() * parseInt(cropElements.$cropImg.css("top"), 10)
+                    var newTopValue = imageDataContainers.$previewImg.height() * cropElements.$cropImg.getTop()
                         / cropElements.$image.height();
 
                     imageDataContainers.$previewImg.css("top", newTopValue + "px");
 
-                    var newLeftValue = imageDataContainers.$previewImg.width() * parseInt(cropElements.$cropImg.css("left"), 10)
+                    var newLeftValue = imageDataContainers.$previewImg.width() * cropElements.$cropImg.getLeft()
                         / cropElements.$image.width();
 
                     imageDataContainers.$previewImg.css("left", newLeftValue + "px");
@@ -116,15 +116,27 @@ Imcms.define(
                 imageDataContainers.$previewImgContainer.css({
                     "margin-left": 0,
                     "margin-top": 0,
-                    "left": 2 + "px",
-                    "top": 2 + "px"
+                    width: cropElements.$cropArea.width(),
+                    height: cropElements.$cropArea.height(),
+                    left: cropElements.$cropArea.getLeft() - 2,
+                    top: cropElements.$cropArea.getTop() - 2
                 });
+
+                var css = imageRotate.getCurrentRotateCss();
+                css.width = cropElements.$image.width();
+                css.height = cropElements.$image.height();
+                css.top = cropElements.$image.getTop();
+                css.left = cropElements.$image.getLeft();
+
+                imageDataContainers.$previewImg.css(css);
+
             } else {
                 $previewImageArea.css({
                     "z-index": "10",
                     "display": "none"
                 });
             }
+
             $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
             $(this).addClass("imcms-editable-img-control-tabs__tab--active");
         }

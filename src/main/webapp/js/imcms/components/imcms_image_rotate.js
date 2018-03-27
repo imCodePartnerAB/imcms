@@ -44,40 +44,36 @@ Imcms.define(
             "WEST": angleWest
         };
 
+        function getRotateCss(angle) {
+            var degrees = angle.degrees;
+            var transform = "rotate(" + degrees + "deg)";
+
+            switch (degrees) {
+                case 90:
+                    transform += " translateY(-100%)";
+                    break;
+                case 180:
+                    transform += " translate(-100%, -100%)";
+                    break;
+                case 270:
+                    transform += " translateX(-100%)";
+                    break;
+            }
+
+            return {
+                "transform": transform,
+                "transform-origin": "top left"
+            };
+        }
+
         function rotate(newAngle) {
             var sameAngle = !currentAngle || (newAngle === currentAngle);
 
             currentAngle = newAngle;
 
-            var style = {};
-            var degrees = newAngle.degrees;
             var isImageProportionsInverted = currentAngle.proportionsInverted;
+            var style = getRotateCss(currentAngle);
 
-            switch (degrees) {
-                case 90:
-                    style = {
-                        "transform": "rotate(" + degrees + "deg) translateY(-100%)",
-                        "transform-origin": "top left"
-                    };
-                    break;
-                case 180:
-                    style = {
-                        "transform": "rotate(" + degrees + "deg) translate(-100%, -100%)",
-                        "transform-origin": "top left"
-                    };
-                    break;
-                case 270:
-                    style = {
-                        "transform": "rotate(" + degrees + "deg) translateX(-100%)",
-                        "transform-origin": "top left"
-                    };
-                    break;
-                default:
-                    style = {
-                        "transform": "rotate(" + degrees + "deg)",
-                        "transform-origin": "top left"
-                    };
-            }
             cropElements.$image.css(style);
             cropElements.$cropImg.css(style);
 
@@ -135,6 +131,9 @@ Imcms.define(
             },
             getCurrentAngle: function () {
                 return currentAngle;
+            },
+            getCurrentRotateCss: function () {
+                return getRotateCss(currentAngle || angleNorth);
             }
         };
     }
