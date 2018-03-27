@@ -81,6 +81,8 @@
             "imcms-image-crop-angles": "components/imcms_image_crop_angles.js",
             "imcms-numeric-limiter": "components/imcms_numeric_limiter.js",
             "imcms-image-cropping-elements": "components/imcms_image_cropping_elements.js",
+            "imcms-image-rotate": "components/imcms_image_rotate.js",
+            "imcms-image-resize": "components/imcms_image_resize.js",
             //  <text editor components>
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",

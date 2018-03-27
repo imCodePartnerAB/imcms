@@ -3,10 +3,10 @@ Imcms.define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder"
+        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder", "imcms-image-rotate"
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
-              imageCropper, WindowBuilder) {
+              imageCropper, WindowBuilder, imageRotate) {
 
         texts = texts.editors.image;
         var $tag, imageData, $fileFormat;
@@ -273,8 +273,8 @@ Imcms.define(
                     events.on("crop area position changed", function () {
                         var x = cropElements.$cropArea.getLeft() - 2;
                         var y = cropElements.$cropArea.getTop() - 2;
-                        var x1 = cropElements.$cropArea.getCurrentWidth() + x;
-                        var y1 = cropElements.$cropArea.getCurrentHeight() + y;
+                        var x1 = cropElements.$cropArea.width() + x;
+                        var y1 = cropElements.$cropArea.height() + y;
 
                         $xCropCoord.getInput().val(x);
                         $yCropCoord.getInput().val(y);
@@ -501,24 +501,6 @@ Imcms.define(
                         .error(console.error.bind(console));
                 }
 
-                function angleToDirection(angle) {
-                    switch (angle) {
-                        case 90:
-                        case -270:
-                            return "EAST";
-                        case 180:
-                        case -180:
-                            return "SOUTH";
-                        case 270:
-                        case -90:
-                            return "WEST";
-                        case 0:
-                        case 360:
-                        default:
-                            return "NORTH";
-                    }
-                }
-
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
                         imageData.width = cropElements.$image.width();
@@ -526,8 +508,9 @@ Imcms.define(
                         // these two should be done before close
                         imageWindowBuilder.closeWindow();
 
-                        imageData.rotateAngle = opts.imageDataContainers.rotateAngle;
-                        imageData.rotateDirection = angleToDirection(opts.imageDataContainers.rotateAngle);
+                        var currentAngle = imageRotate.getCurrentAngle();
+                        imageData.rotateAngle = currentAngle.degrees;
+                        imageData.rotateDirection = currentAngle.name;
 
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
                         imageData.alternateText = opts.imageDataContainers.$altText.$input.val();

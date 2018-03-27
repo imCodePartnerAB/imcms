@@ -6,9 +6,10 @@ Imcms.define(
     "imcms-image-editor-builder",
     [
         "imcms-window-builder", "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",
-        "imcms-image-editor-factory", "imcms-image-crop-angles", "imcms-image-cropping-elements"
+        "imcms-image-editor-factory", "imcms-image-crop-angles", "imcms-image-cropping-elements", "imcms-image-rotate"
     ],
-    function (WindowBuilder, imageRestApi, imageCropper, $, events, imcms, imageEditorFactory, cropAngles, cropElements) {
+    function (WindowBuilder, imageRestApi, imageCropper, $, events, imcms, imageEditorFactory, cropAngles, cropElements,
+              imageRotate) {
 
         var imageDataContainers = {};
         var imageData = {};
@@ -237,7 +238,7 @@ Imcms.define(
                         $imageEditor: imageWindowBuilder.$editor
                     });
 
-                    events.trigger("rotate image " + imageData.rotateDirection);
+                    imageRotate.rotateImage(imageData.rotateDirection);
 
                 }, 200);
             }

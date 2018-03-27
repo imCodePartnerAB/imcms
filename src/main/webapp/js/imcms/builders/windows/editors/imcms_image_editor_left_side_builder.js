@@ -2,11 +2,10 @@ Imcms.define(
     "imcms-image-editor-left-side-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-events",
-        "imcms-image-crop-angles", "imcms-image-cropping-elements"
+        "imcms-image-crop-angles", "imcms-image-cropping-elements", "imcms-image-rotate", "imcms-image-resize"
     ],
 
-    function (BEM, components, texts, $, events, croppingAngles, cropElements) {
-        var isImgRotate = false;
+    function (BEM, components, texts, $, events, croppingAngles, cropElements, imageRotate, imageResize) {
         texts = texts.editors.image;
 
         function buildPreviewImageArea(imageDataContainers) {
@@ -188,73 +187,6 @@ Imcms.define(
             }).buildBlockStructure("<div>");
         }
 
-        function resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers) {
-            cropElements.$image.animate({
-                "width": newWidth,
-                "height": newHeight
-            }, 200);
-
-            imageDataContainers.$shadow.animate({
-                "width": ((isImgRotate) ? newHeight : newWidth) + 4,
-                "height": ((isImgRotate) ? newWidth : newHeight) + 4
-            }, 200);
-
-            cropElements.$cropImg.animate({
-                "left": -newCropAreaLeft + 2,
-                "top": -newCropAreaTop + 2,
-                "width": newWidth,
-                "height": newHeight
-            }, 200);
-
-            cropElements.$cropArea.animate({
-                "left": newCropAreaLeft,
-                "top": newCropAreaTop,
-                "width": newCropAreaWeight,
-                "height": newCropAreaHeight
-            }, 200);
-
-            var angleHeight = croppingAngles.bottomLeft.$angle.height();
-            var angleWidth = croppingAngles.bottomLeft.$angle.width();
-            var angleBorderSize = parseInt(croppingAngles.topLeft.$angle.css("border-width")) || 0;
-
-            var positionTopForAngelsTop = newCropAreaTop - angleBorderSize;
-            var positionTopForAngelsBottom = newCropAreaTop + newCropAreaHeight - angleHeight;
-            var positionLeftForAngelsLeft = newCropAreaLeft - angleBorderSize;
-            var positionLeftForAngelsRight = newCropAreaLeft + newCropAreaWeight - angleWidth;
-
-            if (newCropAreaLeft <= 2) {
-                positionLeftForAngelsLeft = 0;
-            }
-
-            if (newCropAreaTop <= 2) {
-                positionTopForAngelsTop = 0;
-            }
-
-            croppingAngles.topRight.animate({
-                "top": positionTopForAngelsTop,
-                "left": positionLeftForAngelsRight
-            }, 200);
-
-            croppingAngles.bottomRight.animate({
-                "top": positionTopForAngelsBottom,
-                "left": positionLeftForAngelsRight
-            }, 200);
-
-            croppingAngles.topLeft.animate({
-                "top": positionTopForAngelsTop,
-                "left": positionLeftForAngelsLeft
-            }, 200);
-
-            croppingAngles.bottomLeft.animate({
-                "top": positionTopForAngelsBottom,
-                "left": positionLeftForAngelsLeft
-            }, 200);
-
-            setTimeout(function () {
-                events.trigger("update cropArea");
-            }, 250);
-        }
-
         function zoom(zoomCoefficient, imageDataContainers) {
             var newHeight = ~~(cropElements.$image.height() * zoomCoefficient),
                 newWidth = ~~(cropElements.$image.width() * zoomCoefficient),
@@ -264,15 +196,31 @@ Imcms.define(
                 newCropAreaTop = ~~(cropElements.$cropArea.position().top * zoomCoefficient)
             ;
 
-            if (newCropAreaLeft <= 2) {
-                newCropAreaLeft = 2;
+            var borderSize = croppingAngles.getBorderSize();
+
+            if (newCropAreaLeft <= borderSize) {
+                newCropAreaLeft = borderSize;
             }
 
-            if (newCropAreaTop <= 2) {
-                newCropAreaTop = 2;
+            if (newCropAreaTop <= borderSize) {
+                newCropAreaTop = borderSize;
             }
 
-            resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, newCropAreaLeft, newCropAreaTop, imageDataContainers);
+            imageResize.resize({
+                    image: {
+                        width: newWidth,
+                        height: newHeight
+                    },
+                    cropArea: {
+                        height: newCropAreaHeight,
+                        width: newCropAreaWeight,
+                        top: newCropAreaTop,
+                        left: newCropAreaLeft
+                    }
+                },
+                imageDataContainers,
+                imageRotate.isProportionsInverted()
+            );
             var heightControlInput = imageDataContainers.$heightControlInput.getInput();
             var widthControlInput = imageDataContainers.$widthControlInput.getInput();
 
@@ -291,28 +239,32 @@ Imcms.define(
         function zoomContain(imageDataContainers, $editableImageArea) {
             // fixme: save proportions! now image becomes just as editable area
             // only one side should be as area's side and one as needed to save proportions
+            var proportionsInverted = imageRotate.isProportionsInverted();
             var newHeight = $editableImageArea.height(),
                 newWidth = $editableImageArea.width(),
-                newCropAreaHeight = $editableImageArea.height(),
-                newCropAreaWeight = $editableImageArea.width(),
-                newCropAreaLeft = 2,
-                newCropAreaTop = 2
+                newCropAreaHeight = (proportionsInverted)
+                    ? $editableImageArea.width() : $editableImageArea.height(),
+                newCropAreaWeight = (proportionsInverted)
+                    ? $editableImageArea.height() : $editableImageArea.width(),
+                newCropAreaLeft = croppingAngles.getBorderSize(),
+                newCropAreaTop = croppingAngles.getBorderSize(),
+                twiceAngleBorderSize = croppingAngles.getDoubleBorderSize()
             ;
-            var twiceAngleBorderSize = parseInt(croppingAngles.topLeft.$angle.css("border-width")) * 2 || 0;
 
-            if (isImgRotate) {
-                newCropAreaHeight = $editableImageArea.width();
-                newCropAreaWeight = $editableImageArea.height();
-            }
-
-            resizeImage(
-                newWidth - twiceAngleBorderSize,
-                newHeight - twiceAngleBorderSize,
-                newCropAreaHeight - twiceAngleBorderSize,
-                newCropAreaWeight - twiceAngleBorderSize,
-                newCropAreaLeft,
-                newCropAreaTop,
-                imageDataContainers
+            imageResize.resize({
+                    image: {
+                        width: newWidth - twiceAngleBorderSize,
+                        height: newHeight - twiceAngleBorderSize
+                    },
+                    cropArea: {
+                        height: newCropAreaHeight - twiceAngleBorderSize,
+                        width: newCropAreaWeight - twiceAngleBorderSize,
+                        top: newCropAreaTop,
+                        left: newCropAreaLeft
+                    }
+                },
+                imageDataContainers,
+                proportionsInverted
             );
             var heightControlInput = imageDataContainers.$heightControlInput.getInput();
             var widthControlInput = imageDataContainers.$widthControlInput.getInput();
@@ -321,86 +273,8 @@ Imcms.define(
             widthControlInput.val(newWidth);
         }
 
-        var angle = 0;
-
-        function rotateOnAngle(newAngle, imageDataContainers) {
-            var style = {};
-            imageDataContainers.rotateAngle = angle = newAngle;
-
-            switch (angle) {
-                case 90:
-                case -270:
-                    style = {
-                        "transform": "rotate(" + angle + "deg) translateY(-100%)",
-                        "transform-origin": "top left"
-                    };
-                    break;
-                case 180:
-                case -180:
-                    style = {
-                        "transform": "rotate(" + angle + "deg) translate(-100%, -100%)",
-                        "transform-origin": "top left"
-                    };
-                    break;
-                case 270:
-                case -90:
-                    style = {
-                        "transform": "rotate(" + angle + "deg) translateX(-100%)",
-                        "transform-origin": "top left"
-                    };
-                    break;
-                default:
-                    style = {
-                        "transform": "rotate(" + angle + "deg)",
-                        "transform-origin": "top left"
-                    };
-            }
-            cropElements.$image.css(style);
-            cropElements.$cropImg.css(style);
-
-            isImgRotate = !isImgRotate;
-            events.trigger("image rotated");
-
-            var newWidth = cropElements.$image.width(),
-                newHeight = cropElements.$image.height(),
-                newCropAreaHeight = cropElements.$cropArea.width(),
-                newCropAreaWeight = cropElements.$cropArea.height();
-
-            // TODO: fix crop area position when it is out of img
-            resizeImage(newWidth, newHeight, newCropAreaHeight, newCropAreaWeight, 2, 2, imageDataContainers);
-
-            var heightControlInput = imageDataContainers.$heightControlInput.getInput();
-            var widthControlInput = imageDataContainers.$widthControlInput.getInput();
-
-            if (isImgRotate) {
-                heightControlInput.val(newWidth);
-                widthControlInput.val(newHeight);
-            } else {
-                heightControlInput.val(newHeight);
-                widthControlInput.val(newWidth);
-            }
-        }
-
-        function rotate(angleDelta, imageDataContainers) {
-            angle += angleDelta;
-            angle = ((angle === 360) || (angle === -360)) ? 0 : angle;
-
-            rotateOnAngle(angle, imageDataContainers);
-        }
-
-        function rotateLeft() {
-            rotate(-90, this);
-        }
-
-        function rotateRight() {
-            rotate(90, this);
-        }
-
         function buildScaleAndRotateControls(imageDataContainers, $editableImageArea) {
-            events.on("rotate image NORTH", rotateOnAngle.bindArgs(0, imageDataContainers));
-            events.on("rotate image EAST", rotateOnAngle.bindArgs(90, imageDataContainers));
-            events.on("rotate image SOUTH", rotateOnAngle.bindArgs(180, imageDataContainers));
-            events.on("rotate image WEST", rotateOnAngle.bindArgs(-90, imageDataContainers));
+            imageRotate.setDataContainers(imageDataContainers);
 
             return new BEM({
                 block: "imcms-edit-image",
@@ -413,8 +287,8 @@ Imcms.define(
                                 zoomContain(imageDataContainers, $editableImageArea);
                             }
                         }),
-                        components.buttons.rotateLeftButton({click: rotateLeft.bind(imageDataContainers)}),
-                        components.buttons.rotateRightButton({click: rotateRight.bind(imageDataContainers)})
+                        components.buttons.rotateLeftButton({click: imageRotate.rotateLeft}),
+                        components.buttons.rotateRightButton({click: imageRotate.rotateRight})
                     ]
                 }
             }).buildBlockStructure("<div>");
