@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.model.SpaceAround;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
@@ -64,20 +65,12 @@ public class Image {
         internalImage.setAlternateText(alt_text);
     }
 
-    public int getVspace() {
-        return internalImage.getVerticalSpace();
+    public SpaceAround getSpaceAround() {
+        return internalImage.getSpaceAround();
     }
 
-    public void setVspace(int v_space) {
-        internalImage.setVerticalSpace(v_space);
-    }
-
-    public int getHspace() {
-        return internalImage.getHorizontalSpace();
-    }
-
-    public void setHspace(int h_space) {
-        internalImage.setHorizontalSpace(h_space);
+    public void setSpaceAround(SpaceAround spaceAround) {
+        internalImage.setSpaceAround(spaceAround);
     }
 
     public String getLinkHref() {

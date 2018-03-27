@@ -1,5 +1,9 @@
 package imcode.util;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
@@ -10,7 +14,12 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
@@ -29,9 +38,16 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
-import java.io.*;
+import java.awt.Dimension;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -257,6 +273,37 @@ public class ImcmsImageUtils {
         }
     }
 
+    public static List<String> getExifInfo(String imageUrl) {
+        final List<String> exifInfo = new ArrayList<>();
+        final ImageSource imageSource = ImcmsImageUtils.getImageSource(imageUrl);
+
+        if (imageSource instanceof ImagesPathRelativePathImageSource) {
+
+            final boolean exists = ((ImagesPathRelativePathImageSource) imageSource).getFile().exists();
+
+            if (!exists) {
+                return exifInfo;
+            }
+
+            try (final InputStream inputStream = imageSource.getInputStreamSource().getInputStream()) {
+                final Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+
+                for (Directory directory : metadata.getDirectories()) {
+                    for (Tag tag : directory.getTags()) {
+                        exifInfo.add(tag.toString());
+                    }
+                    for (String error : directory.getErrors()) {
+                        exifInfo.add("ERROR: " + error);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return exifInfo;
+    }
+
     public static ImageDomainObject toDomainObject(Image image) {
         if (image == null) return null;
 
@@ -270,13 +317,12 @@ public class ImcmsImageUtils {
         imageDO.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
         imageDO.setGeneratedFilename(image.getGeneratedFilename());
         imageDO.setHeight(image.getHeight());
-        imageDO.setHorizontalSpace(image.getHorizontalSpace());
+        imageDO.setSpaceAround(image.getSpaceAround());
         imageDO.setLinkUrl(image.getLinkUrl());
         imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
         imageDO.setName(image.getName());
         imageDO.setResize(Resize.getByOrdinal(image.getResize()));
         imageDO.setTarget(image.getTarget());
-        imageDO.setVerticalSpace(image.getVerticalSpace());
         imageDO.setWidth(image.getWidth());
 
         return initImageSource(image, imageDO);

@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.beans.ConstructorProperties;
+import java.util.List;
+
 import static java.util.Optional.ofNullable;
 
 @Data
@@ -22,6 +25,7 @@ public class ImageDTO extends ImageData {
     private boolean allLanguages;
     private String alternateText;
     private String linkUrl;
+    private List<String> exifInfo;
 
     /**
      * Two-letter language code ISO-639-1
@@ -35,8 +39,6 @@ public class ImageDTO extends ImageData {
     private int border;
     private String align;
     private String lowResolutionUrl;
-    private int verticalSpace;
-    private int horizontalSpace;
     private String target;
     private int type;
     private int rotateAngle;
@@ -59,8 +61,6 @@ public class ImageDTO extends ImageData {
         this.border = 0;
         this.align = "";
         this.lowResolutionUrl = "";
-        this.verticalSpace = 0;
-        this.horizontalSpace = 0;
         this.target = "";
         this.type = -1;
         this.rotateAngle = 0;
@@ -88,10 +88,18 @@ public class ImageDTO extends ImageData {
         this.border = from.border;
         this.align = ofNullable(from.align).orElse("");
         this.lowResolutionUrl = ofNullable(from.lowResolutionUrl).orElse("");
-        this.verticalSpace = from.verticalSpace;
-        this.horizontalSpace = from.horizontalSpace;
         this.target = ofNullable(from.target).orElse("");
         this.type = from.type;
         this.rotateAngle = from.rotateAngle;
+    }
+
+    /**
+     * Constructor for dynamic beans generators such as Jackson library,
+     * it shows concrete types of abstract classes that should be used.
+     * Don't use it directly.
+     */
+    @ConstructorProperties({"spaceAround"})
+    public ImageDTO(SpaceAroundDTO spaceAround) {
+        this.spaceAround = spaceAround;
     }
 }

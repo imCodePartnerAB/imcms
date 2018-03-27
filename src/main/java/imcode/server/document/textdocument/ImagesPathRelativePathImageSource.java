@@ -33,7 +33,7 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
         return new FileInputStreamSource(getFile());
     }
 
-    private File getFile() {
+    public File getFile() {
         File basePath = isAbsolute() ? Imcms.getPath() : ImcmsImageUtils.imagesPath;
         return new File(basePath, path);
     }

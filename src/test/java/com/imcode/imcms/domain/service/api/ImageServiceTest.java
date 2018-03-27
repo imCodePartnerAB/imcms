@@ -1,5 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
@@ -20,7 +25,10 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.server.user.UserDomainObject;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import org.junit.After;
@@ -35,13 +43,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -191,8 +203,6 @@ public class ImageServiceTest {
             img.setBorder(0);
             img.setAlign("");
             img.setLowResolutionUrl("");
-            img.setVerticalSpace(0);
-            img.setHorizontalSpace(0);
             img.setTarget("");
             img.setType(0);
             img.setRotateAngle(0);
@@ -228,8 +238,6 @@ public class ImageServiceTest {
             img.setBorder(0);
             img.setAlign("");
             img.setLowResolutionUrl("");
-            img.setVerticalSpace(0);
-            img.setHorizontalSpace(0);
             img.setTarget("");
             img.setType(0);
             img.setRotateAngle(0);
@@ -530,5 +538,28 @@ public class ImageServiceTest {
 
         imageRepository.findAll()
                 .forEach(imageJPA -> assertFalse(imageJPA.isAllLanguages()));
+    }
+
+    @Test
+    public void exifData() throws ImageProcessingException, IOException {
+        final ImageSource imageSource = ImcmsImageUtils.getImageSource("/img1.jpg");
+
+        if (!(imageSource instanceof NullImageSource)) {
+
+            try (final InputStream inputStream = imageSource.getInputStreamSource().getInputStream()) {
+                Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+
+                for (Directory directory : metadata.getDirectories()) {
+                    for (Tag tag : directory.getTags()) {
+                        System.out.println(tag);
+                    }
+                    for (String error : directory.getErrors()) {
+                        System.err.println("ERROR: " + error);
+                    }
+                }
+
+            }
+
+        }
     }
 }

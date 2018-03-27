@@ -3,13 +3,13 @@ Imcms.define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements", "imcms-image-cropper"
+        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder"
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
-              imageCropper) {
+              imageCropper, WindowBuilder) {
 
         texts = texts.editors.image;
-        var $tag, imageData;
+        var $tag, imageData, $fileFormat;
         var imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -24,10 +24,47 @@ Imcms.define(
             console.log(imageData);
         });
 
+        var $exifInfoContainer;
+
+        function buildExifInfoWindow() {
+            return new BEM({
+                block: "imcms-pop-up-modal",
+                elements: {
+                    "head": exifInfoWindowBuilder.buildHead("EXIF"),
+                    "body": $exifInfoContainer = $("<div>")
+                }
+            }).buildBlockStructure("<div>", {"class": "image-exif-window"});
+        }
+
+        function loadExifData() {
+            /** @namespace imageData.exifInfo */
+            (imageData.exifInfo || []).forEach(function (exifDataRow) {
+                $exifInfoContainer.append($("<div>", {"class": "image-exif-window__row"}).text(exifDataRow));
+            });
+        }
+
+        function clearExifData() {
+            $exifInfoContainer.empty();
+        }
+
+        var exifInfoWindowBuilder = new WindowBuilder({
+            factory: buildExifInfoWindow,
+            loadDataStrategy: loadExifData,
+            clearDataStrategy: clearExifData
+        });
+
         return {
             updateImageData: function ($newTag, newImageData) {
                 $tag = $newTag;
                 imageData = newImageData;
+
+                var spaceAround = newImageData.spaceAround;
+                spaceAround.top && $("#image-space-top").val(spaceAround.top).blur();
+                spaceAround.right && $("#image-space-right").val(spaceAround.right).blur();
+                spaceAround.bottom && $("#image-space-bottom").val(spaceAround.bottom).blur();
+                spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
+
+                $fileFormat.selectValue(imageData.format);
             },
             build: function (opts) {
 
@@ -139,8 +176,9 @@ Imcms.define(
                     ]);
                 }
 
-                function setSpaceAroundImg(spacePlace, spaceValue) {
-                    imgPosition.spaceAround[spacePlace] = spaceValue;
+                function setSpaceAroundImg(spacePlace, element) {
+                    var spaceValue = $(element).val();
+                    imgPosition.spaceAround[spacePlace] = parseInt(spaceValue);
                 }
 
                 function buildSpaceAroundImageInputContainer() {
@@ -150,32 +188,28 @@ Imcms.define(
                             name: "top",
                             placeholder: texts.top,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("top", parseInt(spaceValue));
+                                setSpaceAroundImg("top", this);
                             }
                         }, {
                             id: "image-space-right",
                             name: "right",
                             placeholder: texts.right,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("right", parseInt(spaceValue));
+                                setSpaceAroundImg("right", this);
                             }
                         }, {
                             id: "image-space-bottom",
                             name: "bottom",
                             placeholder: texts.bottom,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("bottom", parseInt(spaceValue));
+                                setSpaceAroundImg("bottom", this);
                             }
                         }, {
                             id: "image-space-left",
                             name: "left",
                             placeholder: texts.left,
                             blur: function () {
-                                var spaceValue = $(this).val();
-                                setSpaceAroundImg("left", parseInt(spaceValue));
+                                setSpaceAroundImg("left", this);
                             }
                         }
                     ], {text: texts.spaceAround});
@@ -183,11 +217,12 @@ Imcms.define(
 
                 function buildCropCoordinatesText(advancedModeBEM) {
                     return advancedModeBEM.buildElement("title", "<div>")
-                        .append(texts.cropCoords + " (W:")
+                        .append(texts.cropCoords)
+                        /*.append(" (W:")
                         .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"})) // todo: set actual values and refresh
                         .append(" H:")
                         .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"})) // todo: set actual values and refresh
-                        .append(")");
+                        .append(")")*/;
                 }
 
                 function setValidation(onValid) {
@@ -270,22 +305,37 @@ Imcms.define(
                         text: texts.fileFormat,
                         name: "fileFormat"
                     }, [{
-                        text: "GIF",
-                        "data-value": 0
+                        text: "JPG",
+                        "data-value": "JPEG"
                     }, {
                         text: "PNG",
-                        "data-value": 1
+                        "data-value": "PNG"
                     }, {
-                        text: "PNG-24",
-                        "data-value": 2
+                        text: "BMP",
+                        "data-value": "BMP"
                     }, {
-                        text: "JPG",
-                        "data-value": 3
+                        text: "GIF",
+                        "data-value": "GIF"
+                    }, {
+                        text: "PSD",
+                        "data-value": "PSD"
+                    }, {
+                        text: "SVG",
+                        "data-value": "SVG"
+                    }, {
+                        text: "TIFF",
+                        "data-value": "TIFF"
+                    }, {
+                        text: "XCF",
+                        "data-value": "XCF"
+                    }, {
+                        text: "PICT",
+                        "data-value": "PICT"
                     }]);
                 }
 
                 function showExif() {
-                    // todo: implement!!!
+                    exifInfoWindowBuilder.buildWindow();
                 }
 
                 function buildAdvancedControls() {
@@ -307,7 +357,7 @@ Imcms.define(
                     var $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
                     var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
                     var $cropCoordinatesContainer = buildCropCoordinatesContainer();
-                    var $fileFormat = buildFileFormatSelect();
+                    $fileFormat = buildFileFormatSelect();
                     var $showExifBtn = components.buttons.neutralButton({
                         text: texts.exif.button,
                         click: showExif
@@ -485,6 +535,8 @@ Imcms.define(
 
                         imageData.align = imgPosition.align;
                         imageData.spaceAround = imgPosition.spaceAround;
+
+                        imageData.format = $fileFormat.getSelectedValue();
 
                         imageRestApi.create(imageData)
                             .success(onImageSaved)
