@@ -89,6 +89,9 @@ Imcms.define(
             },
             animate: function (attributes, duration) {
                 this.$angle.animate(attributes, duration);
+            },
+            css: function () {
+                this.$angle.css.apply(this.$angle, arguments);
             }
         };
 

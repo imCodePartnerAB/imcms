@@ -8,18 +8,22 @@ Imcms.define(
     function ($, BEM, events) {
 
         var cropAreaClass = "imcms-crop-area";
-        var isImgRotate = false;
+        var isImageProportionsInverted = false;
 
         function getCurrentWidth($element) {
-            return (isImgRotate) ? $element.height() : $element.width();
+            return (isImageProportionsInverted) ? $element.height() : $element.width();
         }
 
         function getCurrentHeight($element) {
-            return (isImgRotate) ? $element.width() : $element.height();
+            return (isImageProportionsInverted) ? $element.width() : $element.height();
         }
 
-        events.on("image rotated", function () {
-            isImgRotate = !isImgRotate;
+        events.on("image proportions inverted", function () {
+            isImageProportionsInverted = true;
+        });
+
+        events.on("regular image proportions", function () {
+            isImageProportionsInverted = false;
         });
 
         function setFunctionality($element) {
