@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-    <luceneMatchVersion>LUCENE_41</luceneMatchVersion>
+    <luceneMatchVersion>7.2.1</luceneMatchVersion>
 
     <!-- Data Directory
 
@@ -135,12 +135,12 @@
              then documents 0 through 49 will be collected and cached.  Any further
              requests in that range can be satisfied via the cache.
           -->
-        <queryResultWindowSize>20</queryResultWindowSize>
+        <queryResultWindowSize>100</queryResultWindowSize>
 
         <!-- Maximum number of documents to cache for any entry in the
              queryResultCache.
           -->
-        <queryResultMaxDocsCached>200</queryResultMaxDocsCached>
+        <queryResultMaxDocsCached>100000</queryResultMaxDocsCached>
     </query>
 
 
