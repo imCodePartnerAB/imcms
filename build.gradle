@@ -122,3 +122,8 @@ dependencies {
     testCompile group: 'org.springframework', name: 'spring-test', version:'4.3.13.RELEASE'
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version:'1.5.0'
 }
+
+task explodedWar(type: Sync) {
+    into "${buildDir}/exploded"
+    with war
+}
