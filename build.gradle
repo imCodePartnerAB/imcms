@@ -123,6 +123,32 @@ dependencies {
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version:'1.5.0'
 }
 
+//sourceSets {
+//    main.resources.srcDirs += 'src/main/resources'
+//    main.resources.srcDirs += 'src/main/resources-conf'
+//
+////    main {
+////        resources {
+////            srcDir 'src/main/java'
+////        }
+////    }
+//}
+
+war {
+//    duplicatesStrategy 'include'
+    webInf {
+        from 'src/main/resources'
+        from 'src/main/resources-conf'
+
+        include '*.properties'
+        include '*.conf'
+        include '*.xml'
+        include '*.json'
+
+        into "/WEB-INF/conf"
+    }
+}
+
 task explodedWar(type: Sync) {
     into "${buildDir}/exploded"
     with war
