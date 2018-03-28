@@ -118,15 +118,15 @@ Imcms.define(
                     "margin-top": 0,
                     width: cropElements.$cropArea.width(),
                     height: cropElements.$cropArea.height(),
-                    left: cropElements.$cropArea.getLeft() - 2,
-                    top: cropElements.$cropArea.getTop() - 2
+                    left: 2,
+                    top: 2
                 });
 
                 var css = imageRotate.getCurrentRotateCss();
                 css.width = cropElements.$image.width();
                 css.height = cropElements.$image.height();
-                css.top = cropElements.$image.getTop();
-                css.left = cropElements.$image.getLeft();
+                css.top = 2 - cropElements.$cropArea.getTop();
+                css.left = 2 - cropElements.$cropArea.getLeft();
 
                 imageDataContainers.$previewImg.css(css);
 
