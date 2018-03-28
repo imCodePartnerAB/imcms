@@ -134,6 +134,9 @@ Imcms.define(
             },
             getCurrentRotateCss: function () {
                 return getRotateCss(currentAngle || angleNorth);
+            },
+            destroy: function () {
+                currentAngle = null;
             }
         };
     }

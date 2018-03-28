@@ -312,6 +312,7 @@ Imcms.define(
             imageCropper.destroyImageCropper();
             cropElements.$image.removeAttr("src");
             cropElements.$cropImg.removeAttr("src");
+            imageRotate.destroy();
         }
 
         var imageWindowBuilder = new WindowBuilder({
