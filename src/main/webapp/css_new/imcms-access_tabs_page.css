@@ -1,0 +1,83 @@
+.imcms-access-role__head {
+    display: block;
+    margin-bottom: 12px;
+    overflow: hidden;
+    width: 100%;
+}
+
+.imcms-access-role__head .imcms-access-role__title {
+    text-align: center;
+    text-transform: uppercase;
+    display: block;
+    float: left;
+    width: 19%;
+}
+
+.imcms-access-role__head .imcms-access-role__title:first-child {
+    text-align: left;
+}
+
+.imcms-access-role__row {
+    display: block;
+    overflow: hidden;
+    padding: 3px 0;
+    width: 100%;
+}
+
+.imcms-access-role__row:hover {
+    background-color: #d0e9f9;
+}
+
+.imcms-access-role__body .imcms-access-role__column,
+.imcms-access-role__body .imcms-access-role__column-title {
+    display: block;
+    float: left;
+    width: 19%;
+}
+
+.imcms-access-role__body .imcms-access-role__column {
+    text-align: center;
+}
+
+.imcms-access-role__body .imcms-access-role__column-title {
+    text-align: left;
+}
+
+.imcms-access-role__body button {
+    display: none;
+    margin-right: 5px;
+}
+
+.imcms-access-role__row:hover > button {
+    display: block;
+}
+
+.imcms-access-role__column .imcms-radio__label {
+    padding-left: 15px;
+}
+
+.imcms-access-role__column .imcms-radio__label:before {
+    top: 3px;
+}
+
+.imcms-access-role__column .imcms-radio__label:after {
+    top: 8px;
+}
+
+.imcms-access-addrole {
+    /*overflow: hidden;*/
+}
+
+.imcms-access-addrole .imcms-access-addrole__select {
+    float: left;
+    margin-right: 23px;
+    width: 87%;
+}
+
+.imcms-access-addrole__select label {
+    display: none;
+}
+
+.imcms-access-addrole .imcms-access-addrole__button {
+    line-height: 40px;
+}

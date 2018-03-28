@@ -10,53 +10,15 @@ import java.util.Objects;
  */
 public class TextDomainObject implements Serializable, Cloneable {
 
-    public enum Format {
-        PLAIN_TEXT, HTML
-    }
-
     /**
      * Plain text, with linebreaks.
      */
     public final static int TEXT_TYPE_PLAIN = 0;
-
     /**
      * HTML-code.
      */
     public final static int TEXT_TYPE_HTML = 1;
-
-
-    public static final class Builder {
-        private TextDomainObject textDomainObject;
-
-        public Builder() {
-            textDomainObject = new TextDomainObject();
-        }
-
-        public Builder(TextDomainObject textDomainObject) {
-            this.textDomainObject = textDomainObject.clone();
-        }
-
-        public TextDomainObject build() {
-            return textDomainObject.clone();
-        }
-
-        public Builder text(String text) {
-            textDomainObject.text = text;
-            return this;
-        }
-
-        public Builder type(int type) {
-            textDomainObject.type = type;
-            return this;
-        }
-    }
-
-    public static Builder builder() {
-        return new Builder();
-    }
-
     private volatile String text;
-
     private volatile int type;
 
     public TextDomainObject() {
@@ -76,6 +38,10 @@ public class TextDomainObject implements Serializable, Cloneable {
     public TextDomainObject(String text, int type) {
         setText(text);
         setType(type);
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -159,13 +125,42 @@ public class TextDomainObject implements Serializable, Cloneable {
         return Objects.hash(text, type);
     }
 
-
     @Override
     public TextDomainObject clone() {
         try {
             return (TextDomainObject) super.clone();
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
+        }
+    }
+
+    public enum Format {
+        PLAIN_TEXT, HTML
+    }
+
+    public static final class Builder {
+        private TextDomainObject textDomainObject;
+
+        public Builder() {
+            textDomainObject = new TextDomainObject();
+        }
+
+        public Builder(TextDomainObject textDomainObject) {
+            this.textDomainObject = textDomainObject.clone();
+        }
+
+        public TextDomainObject build() {
+            return textDomainObject.clone();
+        }
+
+        public Builder text(String text) {
+            textDomainObject.text = text;
+            return this;
+        }
+
+        public Builder type(int type) {
+            textDomainObject.type = type;
+            return this;
         }
     }
 }

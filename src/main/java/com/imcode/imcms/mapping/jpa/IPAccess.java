@@ -11,10 +11,10 @@ public class IPAccess implements Cloneable {
     @Column(name = "ip_access_id")
     private Integer id;
 
-    @Column(name = "ip_start")
+    @Column(name = "ip_start", columnDefinition = "decimal")
     private String start;
 
-    @Column(name = "ip_end")
+    @Column(name = "ip_end", columnDefinition = "decimal")
     private String end;
 
     @Column(name = "user_id")

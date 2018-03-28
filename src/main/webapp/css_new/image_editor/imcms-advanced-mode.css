@@ -1,0 +1,65 @@
+.imcms-advanced-mode {
+    display: none;
+}
+
+.imcms-advanced-mode__title {
+    margin-bottom: 10px;
+}
+
+.imcms-advanced-mode__buttons {
+    margin-bottom: 10px;
+}
+
+.imcms-advanced-mode__space-around {
+    margin-bottom: 10px;
+}
+
+.imcms-advanced-mode__space-around .imcms-space-around__input-box {
+    max-width: none;
+}
+
+.imcms-crop-coordinates {
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.imcms-crop-coordinates .imcms-number {
+    display: block;
+    float: left;
+    width: 45%;
+    margin-right: 1%;
+}
+
+.imcms-crop-coordinates .imcms-number:first-child .imcms-number__label,
+.imcms-crop-coordinates .imcms-number:nth-child(2) .imcms-number__label {
+    margin-right: 7%;
+    margin-bottom: 10px;
+}
+
+.imcms-crop-coordinates .imcms-number__label {
+    margin-top: 0;
+    line-height: 41px;
+    float: left;
+    margin-right: 2.5%;
+}
+
+.imcms-crop-coordinates .imcms-number-box {
+    float: left;
+    width: 70%;
+}
+
+.imcms-crop-coordinates .imcms-number-box__error-msg {
+    float: left;
+    width: 70%;
+}
+
+@media screen and (max-width: 1320px) {
+    .imcms-advanced-mode__buttons {
+        width: 100%;
+        margin: 0 auto 10px;
+    }
+
+    .imcms-advanced-mode__buttons button {
+        margin-bottom: 5px;
+    }
+}

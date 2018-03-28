@@ -13,7 +13,7 @@ public enum Gravity {
 
     private final String gravity;
 
-    private Gravity(String gravity) {
+    Gravity(String gravity) {
         this.gravity = gravity;
     }
 

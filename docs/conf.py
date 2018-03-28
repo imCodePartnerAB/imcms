@@ -50,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'ImCMS'
-copyright = '2015, ImCodePartnerAB'
+copyright = '2015-2017, ImCodePartnerAB'
 author = 'ImCodePartnerAB'
 
 # The version info for the project you're documenting, acts as replacement for

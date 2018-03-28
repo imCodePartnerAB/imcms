@@ -23,7 +23,7 @@ public enum Filter {
 
     private final String filter;
 
-    private Filter(String filter) {
+    Filter(String filter) {
         this.filter = filter;
     }
 

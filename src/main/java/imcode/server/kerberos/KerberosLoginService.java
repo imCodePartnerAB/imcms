@@ -7,8 +7,10 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 
-import java.io.IOException;
 import javax.security.auth.Subject;
 import javax.security.auth.kerberos.KerberosPrincipal;
 import javax.security.auth.kerberos.KerberosTicket;
@@ -17,10 +19,7 @@ import javax.security.auth.login.LoginException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
+import java.io.IOException;
 
 public class KerberosLoginService {
     private static final Logger log = Logger.getLogger(KerberosLoginService.class);
@@ -45,6 +44,30 @@ public class KerberosLoginService {
         if (config.isSsoEnabled()) {
             initLoginContext();
         }
+    }
+
+    private static KerberosLoginResult resultNegotiate(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        response.setHeader(AUTHENTICATE_HEADER, "Negotiate");
+
+        return resultContinue(request, response);
+    }
+
+    private static KerberosLoginResult resultContinue(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        Utility.forwardToLogin(request, response, HttpServletResponse.SC_UNAUTHORIZED);
+
+        return new KerberosLoginResult(KerberosLoginStatus.CONTINUE);
+    }
+
+    private static KerberosLoginResult resultFailed(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        Utility.forwardToLogin(request, response);
+
+        return new KerberosLoginResult(KerberosLoginStatus.FAILED);
     }
 
     private synchronized void initLoginContext() {
@@ -179,29 +202,5 @@ public class KerberosLoginService {
         }
 
         return null;
-    }
-
-    private static KerberosLoginResult resultNegotiate(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        response.setHeader(AUTHENTICATE_HEADER, "Negotiate");
-
-        return resultContinue(request, response);
-    }
-
-    private static KerberosLoginResult resultContinue(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        Utility.forwardToLogin(request, response, HttpServletResponse.SC_UNAUTHORIZED);
-
-        return new KerberosLoginResult(KerberosLoginStatus.CONTINUE);
-    }
-
-    private static KerberosLoginResult resultFailed(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        Utility.forwardToLogin(request, response);
-
-        return new KerberosLoginResult(KerberosLoginStatus.FAILED);
     }
 }

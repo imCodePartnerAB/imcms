@@ -5,17 +5,8 @@ import java.util.List;
 
 public class SearchResult<T> {
 
-    public static <T> SearchResult<T> empty() {
-        return new SearchResult<T>(Collections.<T>emptyList(), 0);
-    }
-
-    public static <T> SearchResult<T> of(List<T> documents, int totalCount) {
-        return new SearchResult<T>(documents, totalCount);
-    }
-
     private List<T> documents;
     private int totalCount;
-
 
     public SearchResult() {
     }
@@ -25,6 +16,13 @@ public class SearchResult<T> {
         this.totalCount = totalCount;
     }
 
+    public static <T> SearchResult<T> empty() {
+        return new SearchResult<T>(Collections.emptyList(), 0);
+    }
+
+    public static <T> SearchResult<T> of(List<T> documents, int totalCount) {
+        return new SearchResult<T>(documents, totalCount);
+    }
 
     public List<T> getDocuments() {
         return documents;

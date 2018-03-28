@@ -1,16 +1,12 @@
 package imcode.util;
 
-import java.net.URLConnection;
+import java.io.*;
 import java.net.URL;
-import java.io.IOException;
+import java.net.URLConnection;
 import java.util.HashMap;
-import java.util.Map;
-import java.io.File;
-import java.io.InputStream;
-import java.util.Random;
-import java.io.OutputStream;
-import java.io.FileInputStream;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * <p>Title: Client HTTP Request class</p>
@@ -21,9 +17,110 @@ import java.util.Iterator;
  * @version 1.0
  */
 public class ClientHttpRequest {
+    private static Random random = new Random();
     URLConnection connection;
     OutputStream os = null;
     Map cookies = new HashMap();
+    String boundary = "---------------------------" + randomString() + randomString() + randomString();
+
+    /**
+     * Creates a new multipart POST HTTP request on a freshly opened URLConnection
+     */
+    public ClientHttpRequest(URLConnection connection) {
+        this.connection = connection;
+        connection.setDoOutput(true);
+        connection.setRequestProperty("Content-Type",
+                "multipart/form-data; boundary=" + boundary);
+    }
+
+    /**
+     * Creates a new multipart POST HTTP request for a specified URL
+     */
+    public ClientHttpRequest(URL url) throws IOException {
+        this(url.openConnection());
+    }
+
+    /**
+     * Creates a new multipart POST HTTP request for a specified URL string
+     */
+    public ClientHttpRequest(String urlString) throws IOException {
+        this(new URL(urlString));
+    }
+
+    protected static String randomString() {
+        return Long.toString(random.nextLong(), 36);
+    }
+
+    private static void pipe(InputStream in, OutputStream out) throws IOException {
+        byte[] buf = new byte[500000];
+        int nread;
+        int navailable;
+        int total = 0;
+        synchronized (in) {
+            while ((nread = in.read(buf, 0, buf.length)) >= 0) {
+                out.write(buf, 0, nread);
+                total += nread;
+            }
+        }
+        out.flush();
+        buf = null;
+    }
+
+    /**
+     * posts a new request to specified URL, with parameters that are passed in the argument
+     */
+    public static InputStream post(URL url, Map parameters) throws IOException {
+        return new ClientHttpRequest(url).post(parameters);
+    }
+
+    /**
+     * posts a new request to specified URL, with parameters that are passed in the argument
+     */
+    public static InputStream post(URL url, Object[] parameters) throws IOException {
+        return new ClientHttpRequest(url).post(parameters);
+    }
+
+    /**
+     * posts a new request to specified URL, with cookies and parameters that are passed in the argument
+     */
+    public static InputStream post(URL url, Map cookies, Map parameters) throws IOException {
+        return new ClientHttpRequest(url).post(cookies, parameters);
+    }
+
+    /**
+     * posts a new request to specified URL, with cookies and parameters that are passed in the argument
+     */
+    public static InputStream post(URL url, String[] cookies, Object[] parameters) throws IOException {
+        return new ClientHttpRequest(url).post(cookies, parameters);
+    }
+
+    /**
+     * post the POST request specified URL, with the specified parameter
+     */
+    public static InputStream post(URL url, String name1, Object value1) throws IOException {
+        return new ClientHttpRequest(url).post(name1, value1);
+    }
+
+    /**
+     * post the POST request to specified URL, with the specified parameters
+     */
+    public static InputStream post(URL url, String name1, Object value1, String name2, Object value2) throws IOException {
+        return new ClientHttpRequest(url).post(name1, value1, name2, value2);
+    }
+
+    /**
+     * post the POST request to specified URL, with the specified parameters
+     */
+    public static InputStream post(URL url, String name1, Object value1, String name2, Object value2, String name3, Object value3) throws IOException {
+        return new ClientHttpRequest(url).post(name1, value1, name2, value2, name3, value3);
+    }
+
+    /**
+     * post the POST request to specified URL, with the specified parameters
+     */
+    public static InputStream post(URL url, String name1, Object value1, String name2, Object value2, String name3, Object value3, String name4, Object value4) throws IOException {
+        return new ClientHttpRequest(url).post(name1, value1, name2, value2, name3, value3, name4, value4);
+    }
 
     protected void connect() throws IOException {
         if (os == null) {
@@ -52,43 +149,10 @@ public class ClientHttpRequest {
         newline();
     }
 
-    private static Random random = new Random();
-
-    protected static String randomString() {
-        return Long.toString(random.nextLong(), 36);
-    }
-
-    String boundary = "---------------------------" + randomString() + randomString() + randomString();
-
     private void boundary() throws IOException {
         write("--");
         write(boundary);
     }
-
-    /**
-     * Creates a new multipart POST HTTP request on a freshly opened URLConnection
-     */
-    public ClientHttpRequest(URLConnection connection) throws IOException {
-        this.connection = connection;
-        connection.setDoOutput(true);
-        connection.setRequestProperty("Content-Type",
-                "multipart/form-data; boundary=" + boundary);
-    }
-
-    /**
-     * Creates a new multipart POST HTTP request for a specified URL
-     */
-    public ClientHttpRequest(URL url) throws IOException {
-        this(url.openConnection());
-    }
-
-    /**
-     * Creates a new multipart POST HTTP request for a specified URL string
-     */
-    public ClientHttpRequest(String urlString) throws IOException {
-        this(new URL(urlString));
-    }
-
 
     private void postCookies() {
         StringBuffer cookieList = new StringBuffer();
@@ -109,14 +173,14 @@ public class ClientHttpRequest {
     /**
      * adds a cookie to the requst
      */
-    public void setCookie(String name, String value) throws IOException {
+    public void setCookie(String name, String value) {
         cookies.put(name, value);
     }
 
     /**
      * adds cookies to the request
      */
-    public void setCookies(Map cookies) throws IOException {
+    public void setCookies(Map cookies) {
         if (cookies == null) {
             return;
         }
@@ -153,21 +217,6 @@ public class ClientHttpRequest {
         writeln(value);
     }
 
-    private static void pipe(InputStream in, OutputStream out) throws IOException {
-        byte[] buf = new byte[500000];
-        int nread;
-        int navailable;
-        int total = 0;
-        synchronized (in) {
-            while ((nread = in.read(buf, 0, buf.length)) >= 0) {
-                out.write(buf, 0, nread);
-                total += nread;
-            }
-        }
-        out.flush();
-        buf = null;
-    }
-
     /**
      * adds a file parameter to the request
      */
@@ -179,7 +228,7 @@ public class ClientHttpRequest {
         write('"');
         newline();
         write("Content-Type: ");
-        String type = connection.guessContentTypeFromName(filename);
+        String type = URLConnection.guessContentTypeFromName(filename);
         if (type == null) {
             type = "application/octet-stream";
         }
@@ -306,61 +355,5 @@ public class ClientHttpRequest {
     public InputStream post(String name1, Object value1, String name2, Object value2, String name3, Object value3, String name4, Object value4) throws IOException {
         setParameter(name1, value1);
         return post(name2, value2, name3, value3, name4, value4);
-    }
-
-    /**
-     * posts a new request to specified URL, with parameters that are passed in the argument
-     */
-    public static InputStream post(URL url, Map parameters) throws IOException {
-        return new ClientHttpRequest(url).post(parameters);
-    }
-
-    /**
-     * posts a new request to specified URL, with parameters that are passed in the argument
-     */
-    public static InputStream post(URL url, Object[] parameters) throws IOException {
-        return new ClientHttpRequest(url).post(parameters);
-    }
-
-    /**
-     * posts a new request to specified URL, with cookies and parameters that are passed in the argument
-     */
-    public static InputStream post(URL url, Map cookies, Map parameters) throws IOException {
-        return new ClientHttpRequest(url).post(cookies, parameters);
-    }
-
-    /**
-     * posts a new request to specified URL, with cookies and parameters that are passed in the argument
-     */
-    public static InputStream post(URL url, String[] cookies, Object[] parameters) throws IOException {
-        return new ClientHttpRequest(url).post(cookies, parameters);
-    }
-
-    /**
-     * post the POST request specified URL, with the specified parameter
-     */
-    public static InputStream post(URL url, String name1, Object value1) throws IOException {
-        return new ClientHttpRequest(url).post(name1, value1);
-    }
-
-    /**
-     * post the POST request to specified URL, with the specified parameters
-     */
-    public static InputStream post(URL url, String name1, Object value1, String name2, Object value2) throws IOException {
-        return new ClientHttpRequest(url).post(name1, value1, name2, value2);
-    }
-
-    /**
-     * post the POST request to specified URL, with the specified parameters
-     */
-    public static InputStream post(URL url, String name1, Object value1, String name2, Object value2, String name3, Object value3) throws IOException {
-        return new ClientHttpRequest(url).post(name1, value1, name2, value2, name3, value3);
-    }
-
-    /**
-     * post the POST request to specified URL, with the specified parameters
-     */
-    public static InputStream post(URL url, String name1, Object value1, String name2, Object value2, String name3, Object value3, String name4, Object value4) throws IOException {
-        return new ClientHttpRequest(url).post(name1, value1, name2, value2, name3, value3, name4, value4);
     }
 }

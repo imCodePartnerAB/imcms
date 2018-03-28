@@ -1,11 +1,11 @@
 package imcode.server;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
 import java.util.*;
-
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Base application configuration.
@@ -38,7 +38,7 @@ public class Config {
 
     private String sessionCookieDomain;
     private String fileAdminRootPaths;
-    private float indexingSchedulePeriodInMinutes;
+    private long indexingSchedulePeriodInMinutes;
     private String documentPathPrefix;
     private int documentCacheMaxSize = 100;
     private String keyStorePath;
@@ -78,6 +78,26 @@ public class Config {
     private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
     private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
 
+    private static List<String> splitCommaSeparatedString(String string) {
+        StringTokenizer st = new StringTokenizer(StringUtils.trimToEmpty(string), " \t\n\r\f,");
+        List<String> tokens = new LinkedList<String>();
+
+        while (st.hasMoreTokens()) {
+            tokens.add(st.nextToken());
+        }
+
+        return tokens;
+    }
+
+    private static Set<String> distinctLowerCased(List<String> strings) {
+        Set<String> distinctStrings = new LinkedHashSet<String>();
+
+        for (String string : strings) {
+            distinctStrings.add(string.toLowerCase());
+        }
+
+        return Collections.unmodifiableSet(distinctStrings);
+    }
 
     public String getWorkaroundUriEncoding() {
         return workaroundUriEncoding;
@@ -88,28 +108,48 @@ public class Config {
         this.workaroundUriEncoding = charset.name();
     }
 
-    public void setTemplatePath(File templatePath) {
-        this.templatePath = templatePath;
-    }
-
-    public void setIncludePath(File includePath) {
-        this.includePath = includePath;
+    public File getFilePath() {
+        return filePath;
     }
 
     public void setFilePath(File filePath) {
         this.filePath = filePath;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public String getSmtpServer() {
+        return smtpServer;
     }
 
     public void setSmtpServer(String smtpServer) {
         this.smtpServer = smtpServer;
     }
 
+    public int getSmtpPort() {
+        return smtpPort;
+    }
+
     public void setSmtpPort(int smtpPort) {
         this.smtpPort = smtpPort;
+    }
+
+    public File getTemplatePath() {
+        return templatePath;
+    }
+
+    public void setTemplatePath(File templatePath) {
+        this.templatePath = templatePath;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getDefaultLanguage() {
+        return defaultLanguage;
     }
 
     public void setDefaultLanguage(String defaultLanguage) {
@@ -123,32 +163,12 @@ public class Config {
         this.defaultLanguage = defaultLanguage;
     }
 
-    public File getFilePath() {
-        return filePath;
-    }
-
-    public String getSmtpServer() {
-        return smtpServer;
-    }
-
-    public int getSmtpPort() {
-        return smtpPort;
-    }
-
-    public File getTemplatePath() {
-        return templatePath;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public String getDefaultLanguage() {
-        return defaultLanguage;
-    }
-
     public File getIncludePath() {
         return includePath;
+    }
+
+    public void setIncludePath(File includePath) {
+        this.includePath = includePath;
     }
 
     public String getSessionCookieDomain() {
@@ -176,11 +196,11 @@ public class Config {
         this.fileAdminRootPaths = fileAdminRootPaths;
     }
 
-    public float getIndexingSchedulePeriodInMinutes() {
+    public long getIndexingSchedulePeriodInMinutes() {
         return indexingSchedulePeriodInMinutes;
     }
 
-    public void setIndexingSchedulePeriodInMinutes(float indexingSchedulePeriodInMinutes) {
+    public void setIndexingSchedulePeriodInMinutes(long indexingSchedulePeriodInMinutes) {
         this.indexingSchedulePeriodInMinutes = indexingSchedulePeriodInMinutes;
     }
 
@@ -381,7 +401,6 @@ public class Config {
         this.ssoUseLocalKrbConfig = ssoUseLocalKrbConfig;
     }
 
-
     public String getIndexDisabledFileExtensions() {
         return indexDisabledFileExtensions;
     }
@@ -399,33 +418,12 @@ public class Config {
         return indexDisabledFileMimes;
     }
 
-    public Set<String> getIndexDisabledFileMimesAsSet() {
-        return indexDisabledFileMimesSet;
-    }
-
     public void setIndexDisabledFileMimes(String indexDisabledFileMimes) {
         this.indexDisabledFileMimes = indexDisabledFileMimes;
         this.indexDisabledFileMimesSet = distinctLowerCased(splitCommaSeparatedString(indexDisabledFileMimes));
     }
 
-    private static List<String> splitCommaSeparatedString(String string) {
-        StringTokenizer st = new StringTokenizer(StringUtils.trimToEmpty(string), " \t\n\r\f,");
-        List<String> tokens = new LinkedList<String>();
-
-        while (st.hasMoreTokens()) {
-            tokens.add(st.nextToken());
-        }
-
-        return tokens;
-    }
-
-    private static Set<String> distinctLowerCased(List<String> strings) {
-        Set<String> distinctStrings = new LinkedHashSet<String>();
-
-        for (String string : strings) {
-            distinctStrings.add(string.toLowerCase());
-        }
-
-        return Collections.unmodifiableSet(distinctStrings);
+    public Set<String> getIndexDisabledFileMimesAsSet() {
+        return indexDisabledFileMimesSet;
     }
 }

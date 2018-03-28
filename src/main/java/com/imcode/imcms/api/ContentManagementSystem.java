@@ -1,28 +1,28 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.service.TemplateService;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
+import java.security.KeyStore;
 
-public abstract class ContentManagementSystem {
+public class ContentManagementSystem implements Cloneable {
 
-    public abstract UserService getUserService();
+    protected ImcmsServices service;
+    volatile UserDomainObject currentUser;
+    private UserService userService;
+    private DocumentService documentService;
 
-    public abstract DocumentService getDocumentService();
-
-    public abstract User getCurrentUser();
-
-    public abstract DatabaseService getDatabaseService();
-
-    public abstract TemplateService getTemplateService();
-
-    public abstract MailService getMailService();
-
-    public abstract void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException;
+    protected ContentManagementSystem(ImcmsServices service, UserDomainObject accessor) {
+        this.service = service;
+        currentUser = accessor;
+    }
 
     /**
      * Get a ContentManagementSystem for the given username and password.
@@ -30,15 +30,12 @@ public abstract class ContentManagementSystem {
     public static ContentManagementSystem getContentManagementSystem(String userName, String password) {
         ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = imcref.verifyUser(userName, password);
-        return DefaultContentManagementSystem.create(imcref, user, Imcms.getApiDataSource());
+        return ContentManagementSystem.create(imcref, user);
     }
 
     /**
      * Try to login the current user with the given name and password.
      *
-     * @param request
-     * @param username
-     * @param password
      * @return The new ContentManagementSystem, or null if the login failed.
      */
     public static ContentManagementSystem login(HttpServletRequest request, String username, String password) {
@@ -70,5 +67,67 @@ public abstract class ContentManagementSystem {
         return Utility.getContentManagementSystemFromRequest(request);
     }
 
-    abstract ImcmsServices getInternal();
+    public static ContentManagementSystem create(ImcmsServices service, UserDomainObject accessor) {
+        ContentManagementSystem contentManagementSystem = new ContentManagementSystem(service, accessor);
+        contentManagementSystem.init();
+        return contentManagementSystem;
+    }
+
+    @Deprecated
+    public static ContentManagementSystem create(ImcmsServices service,
+                                                 UserDomainObject accessor,
+                                                 DataSource dataSource) {
+        return create(service, accessor);
+    }
+
+    private void init() {
+        userService = new UserService(this);
+        documentService = new DocumentService(this);
+    }
+
+    protected ContentManagementSystem clone() throws CloneNotSupportedException {
+        ContentManagementSystem clone = (ContentManagementSystem) super.clone();
+        clone.currentUser = currentUser.clone();
+        return clone;
+    }
+
+    public UserService getUserService() {
+        return userService;
+    }
+
+    public DocumentService getDocumentService() {
+        return documentService;
+    }
+
+    public User getCurrentUser() {
+        return new User(currentUser.clone());
+    }
+
+    public DatabaseService getDatabaseService() {
+        return service.getDatabaseService();
+    }
+
+    public TemplateService getTemplateService() {
+        return service.getTemplateService();
+    }
+
+    public MailService getMailService() {
+        return service.getMailService();
+    }
+
+    ImcmsServices getInternal() {
+        return service;
+    }
+
+    public void runAsSuperadmin(ContentManagementSystemRunnable runnable) throws NoPermissionException {
+        KeyStore keyStore = service.getKeyStore();
+        Class clazz = runnable.getClass();
+        if (!Utility.classIsSignedByCertificatesInKeyStore(clazz, keyStore)) {
+            throw new NoPermissionException("Class " + clazz.getName() + " is not signed by certificates in keystore.");
+        }
+        ContentManagementSystem cms = create(service, currentUser.clone());
+        cms.currentUser.addRoleId(RoleId.SUPERADMIN);
+        runnable.runWith(cms);
+        cms.currentUser = null;
+    }
 }

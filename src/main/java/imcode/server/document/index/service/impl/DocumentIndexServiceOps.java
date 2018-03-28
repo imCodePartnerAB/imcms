@@ -1,28 +1,21 @@
 package imcode.server.document.index.service.impl;
 
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.DocumentMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentIndex;
+import lombok.SneakyThrows;
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrInputDocument;
-import org.apache.solr.common.util.DateUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
 
 /**
  * Document index service low level operations.
@@ -30,117 +23,88 @@ import java.util.stream.Collectors;
  * An instance of this class is thread save.
  */
 // todo: document search might return doc which is not present in db (deleted) - return stub instead
+@Component
 public class DocumentIndexServiceOps {
 
     private static final Logger logger = Logger.getLogger(DocumentIndexServiceOps.class);
 
     private final DocumentMapper documentMapper;
-
     private final DocumentIndexer documentIndexer;
 
-    public DocumentIndexServiceOps(DocumentMapper documentMapper, DocumentIndexer documentIndexer) {
+    @Autowired
+    public DocumentIndexServiceOps(DocumentMapper documentMapper,
+                                   DocumentIndexer documentIndexer) {
+
         this.documentMapper = documentMapper;
         this.documentIndexer = documentIndexer;
     }
 
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId) {
-        return mkSolrInputDocs(docId, documentMapper.getImcmsServices().getDocumentLanguages().getAll());
-    }
-
-
-    public Collection<SolrInputDocument> mkSolrInputDocs(int docId, Collection<DocumentLanguage> languages) {
-        Collection<SolrInputDocument> solrInputDocs = languages.stream()
-                .map(language -> (DocumentDomainObject) documentMapper.getDefaultDocument(docId, language))
-                .filter(Objects::nonNull)
-                .map(doc -> {
-                    try {
-                        return documentIndexer.index(doc);
-                    } catch (Exception e) {
-                        logger.error(
-                                String.format("Can't create SolrInputDocument from doc %d-%d-%s",
-                                        doc.getId(), doc.getVersionNo(), doc.getLanguage().getCode()),
-                                e);
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        if (logger.isTraceEnabled()) {
-            logger.trace(
-                    String.format("Created %d solrInputDoc(s) with docId: %d and language(s): %s.",
-                            solrInputDocs.size(), docId, languages)
-            );
+    private SolrInputDocument mkSolrInputDoc(int docId) {
+        try {
+            return documentIndexer.index(docId);
+        } catch (Exception e) {
+            logger.error(
+                    String.format("Can't create SolrInputDocument from doc %d", docId),
+                    e);
+            return null;
         }
-
-        return solrInputDocs;
-
     }
 
-    public String mkSolrDocsDeleteQuery(int docId) {
+    private String mkSolrDocsDeleteQuery(int docId) {
         return String.format("%s:%d", DocumentIndex.FIELD__META_ID, docId);
     }
 
-    public QueryResponse query(SolrServer solrServer, SolrQuery solrQuery) throws SolrServerException {
-        if (logger.isDebugEnabled()) {
-            try {
-                String decodedSolrQuery = URLDecoder.decode(solrQuery.toString(), StandardCharsets.UTF_8.name());
-                logger.debug(String.format("Searching using SOLr query: %s.", decodedSolrQuery));
-            } catch (UnsupportedEncodingException e) {
-                // should never happen
-                logger.fatal("Solr query can not be decoded", e);
-                throw new AssertionError(e);
-            }
-        }
-
-        return solrServer.query(solrQuery);
+    public QueryResponse query(SolrClient solrClient, SolrQuery solrQuery) throws SolrServerException, IOException {
+        return solrClient.query(solrQuery);
     }
 
+    public void addDocsToIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
+        final SolrInputDocument solrInputDoc = mkSolrInputDoc(docId);
 
-    public void addDocsToIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
-        Collection<SolrInputDocument> solrInputDocs = mkSolrInputDocs(docId);
+        if (solrInputDoc != null) {
+            solrClient.add(solrInputDoc);
+            solrClient.commit(false, false, true);
 
-        if (!solrInputDocs.isEmpty()) {
-            solrServer.add(solrInputDocs);
-            solrServer.commit();
-
-            logger.trace(String.format("Added %d solrInputDoc(s) with docId %d into the index.", solrInputDocs.size(), docId));
+            logger.info(String.format("Added solrInputDoc with docId %d into the index.", docId));
         }
     }
 
-
-    public void deleteDocsFromIndex(SolrServer solrServer, int docId) throws SolrServerException, IOException {
+    public void deleteDocsFromIndex(SolrClient solrClient, int docId) throws SolrServerException, IOException {
         String query = mkSolrDocsDeleteQuery(docId);
 
-        solrServer.deleteByQuery(query);
-        solrServer.commit();
+        solrClient.deleteByQuery(query);
+        solrClient.commit(false, false, true);
+        logger.info(String.format("Removed document with docId %d from index.", docId));
     }
 
+    public void rebuildIndex(SolrClient solrClient) {
+        rebuildIndex(solrClient, indexRebuildProgress -> {
+        });
+    }
 
-    public void rebuildIndex(SolrServer solrServer, Consumer<IndexRebuildProgress> progressCallback)
-            throws SolrServerException, IOException, InterruptedException {
+    @SneakyThrows
+    private void rebuildIndex(SolrClient solrClient, Consumer<IndexRebuildProgress> progressCallback) {
         logger.debug("Rebuilding index.");
 
-        List<Integer> ids = documentMapper.getAllDocumentIds();
-        List<DocumentLanguage> languages = documentMapper.getImcmsServices().getDocumentLanguages().getAll();
+        final List<Integer> ids = documentMapper.getAllDocumentIds();
 
-        int docsCount = ids.size();
+        final int docsCount = ids.size();
         int docNo = 0;
-        Date rebuildStartDt = new Date();
-        long rebuildStartTime = rebuildStartDt.getTime();
+        final Date rebuildStartDt = new Date();
+        final long rebuildStartTime = rebuildStartDt.getTime();
 
         progressCallback.accept(new IndexRebuildProgress(rebuildStartTime, rebuildStartTime, docsCount, docNo));
 
         for (int id : ids) {
             if (Thread.interrupted()) {
-                solrServer.rollback();
+                solrClient.rollback();
                 throw new InterruptedException();
             }
 
-            Collection<SolrInputDocument> solrInputDocs = mkSolrInputDocs(id, languages);
-            if (!solrInputDocs.isEmpty()) {
-                solrServer.add(solrInputDocs);
-                logger.debug(String.format("Added input docs [%s] to index.", solrInputDocs));
+            SolrInputDocument solrInputDoc = mkSolrInputDoc(id);
+            if (solrInputDoc != null) {
+                solrClient.add(solrInputDoc);
+                logger.debug(String.format("Added input docs [%s] to index.", solrInputDoc));
             }
 
             docNo += 1;
@@ -149,8 +113,8 @@ public class DocumentIndexServiceOps {
 
         logger.debug("Deleting old documents from index.");
 
-        solrServer.deleteByQuery(String.format("timestamp:{* TO %s}", DateUtil.getThreadLocalDateFormat().format(rebuildStartDt)));
-        solrServer.commit();
+        solrClient.deleteByQuery(String.format("timestamp:{* TO %s}", rebuildStartDt.toInstant().toString()));
+        solrClient.commit();
 
         logger.debug("Index rebuild is complete.");
     }

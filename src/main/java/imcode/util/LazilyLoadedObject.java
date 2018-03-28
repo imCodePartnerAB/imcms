@@ -47,16 +47,16 @@ public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implem
         loader = null;
     }
 
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        load();
+        out.defaultWriteObject();
+    }
+
     public interface Loader<L extends Copyable> extends Serializable {
         L load();
     }
 
     public interface Copyable<C extends Copyable> extends Serializable {
         C copy();
-    }
-
-    private void writeObject(ObjectOutputStream out) throws IOException {
-        load();
-        out.defaultWriteObject();
     }
 }

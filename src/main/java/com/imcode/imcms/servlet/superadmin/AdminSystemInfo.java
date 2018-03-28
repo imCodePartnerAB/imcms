@@ -1,30 +1,27 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.SystemData;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.log4j.Logger;
-
-import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 public class AdminSystemInfo extends HttpServlet {
 
     private final static Logger log = Logger.getLogger(AdminSystemInfo.class.getName());
 
-    private final static String HTML_TEMPLATE = "AdminSystemMessage.htm";
+    private final static String HTML_TEMPLATE = "AdminSystemMessage.jsp";
 
     /**
      * The GET method creates the html page when this side has been

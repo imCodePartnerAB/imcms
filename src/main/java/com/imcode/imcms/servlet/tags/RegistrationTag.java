@@ -4,15 +4,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Shadowgun on 19.02.2015.
  */
 public class RegistrationTag extends TagSupport implements IAttributedTag {
-    private volatile String attributes = "";
     private static final String ATTR_PATTERN = "(\\S+)=[\"']?((?:.(?![\"']?\\s+(?:\\S+)=|[>\"']))+.)[\"']?";
+    private volatile String attributes = "";
 
     @Override
     public int doStartTag() throws JspException {

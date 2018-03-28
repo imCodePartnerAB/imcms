@@ -1,0 +1,88 @@
+.imcms-editable-img-controls {
+    display: block;
+    overflow: hidden;
+    padding-left: 42px;
+    width: 100%;
+    height: 125px;
+}
+
+.imcms-editable-img-controls__control-size,
+.imcms-editable-img-controls__control-scale-n-rotate,
+.imcms-editable-img-controls__control-view {
+    display: block;
+    float: left;
+}
+
+.imcms-editable-img-controls__control-size {
+    width: 25%;
+}
+
+.imcms-editable-img-controls__control-scale-n-rotate {
+    width: 35%;
+}
+
+.imcms-editable-img-controls__control-view {
+    width: 20%;
+    float: right;
+}
+
+.imcms-editable-img-control-tabs {
+    padding-top: 40px;
+}
+
+.imcms-editable-img-control-tabs__tab {
+    cursor: pointer;
+    line-height: 41px;
+    text-align: center;
+    text-transform: uppercase;
+    float: right;
+    position: relative;
+    padding-left: 5px;
+    padding-right: 5px;
+    /*width: 50%;*/
+}
+
+.imcms-editable-img-control-tabs__tab:after {
+    content: "";
+    background-color: #0b94d8;
+    display: none;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+}
+
+.imcms-editable-img-control-tabs__tab--active:after {
+    display: block;
+}
+
+.imcms-editable-img-control-tabs__tab:hover:after {
+    display: block;
+}
+
+@media screen and (max-width: 1500px) {
+    .imcms-editable-img-controls__control-view {
+        width: 25%;
+    }
+}
+
+@media screen and (max-width: 1300px) {
+    .imcms-editable-img-controls__control-view {
+        width: 30%;
+    }
+
+    .imcms-editable-img-controls__control-scale-n-rotate {
+        width: 30%;
+    }
+}
+
+@media screen and (max-width: 1150px) {
+    .imcms-editable-img-controls__control-view {
+        width: 27%;
+    }
+
+    .imcms-editable-img-controls__control-scale-n-rotate {
+        width: 30%;
+    }
+}

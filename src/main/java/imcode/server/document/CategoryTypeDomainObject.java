@@ -1,119 +1,44 @@
 package imcode.server.document;
 
-import imcode.server.Imcms;
+import com.imcode.imcms.model.CategoryType;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 
-public class CategoryTypeDomainObject implements Comparable, Serializable, Cloneable {
+@Getter
+@Setter
+@ToString(of = "name")
+@EqualsAndHashCode(of = "name", callSuper = false)
+public class CategoryTypeDomainObject extends CategoryType implements Comparable, Serializable {
 
-    private int id;
+    private static final long serialVersionUID = 4246000976127225850L;
+
+    private Integer id;
     private String name;
-    private int maxChoices;
+    private boolean multiSelect;
     private boolean inherited;
     private boolean imageArchive;
 
-    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
+    public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited) {
         this.id = id;
         this.name = name;
-        this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
+        this.multiSelect = multiSelect;
         this.inherited = inherited;
     }
 
-    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited, boolean imageArchive) {
+    public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited, boolean imageArchive) {
         this.id = id;
         this.name = name;
-        this.maxChoices = maxChoices;  // 0=single choice, 1=multi choice
+        this.multiSelect = multiSelect;
         this.inherited = inherited;
         this.imageArchive = imageArchive;
-    }
-
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setMaxChoices(int maxChoices) {
-        this.maxChoices = maxChoices;
-    }
-
-    public int getMaxChoices() {
-        return maxChoices;
-    }
-
-    public boolean isInherited() {
-        return inherited;
-    }
-
-    public void setInherited(boolean inherited) {
-        this.inherited = inherited;
-    }
-
-    public boolean isImageArchive() {
-        return imageArchive;
-    }
-
-    public void setImageArchive(boolean imageArchive) {
-        this.imageArchive = imageArchive;
-    }
-
-
-    public boolean equals(Object o) {
-        return this == o
-                || (o instanceof CategoryTypeDomainObject &&
-                ((CategoryTypeDomainObject) o).getName().toLowerCase().equals(getName().toLowerCase()));
-    }
-
-    public int hashCode() {
-        return getName().hashCode();
-    }
-
-    public String toString() {
-        return getName();
     }
 
     public int compareTo(Object o) {
         return name.compareToIgnoreCase(((CategoryTypeDomainObject) o).name);
     }
 
-    public boolean hasImages() {
-        CategoryDomainObject[] categories = Imcms.getServices().getCategoryMapper().getAllCategoriesOfType(this);
-        boolean hasImages = false;
-        for (int i = 0; i < categories.length; i++) {
-            CategoryDomainObject category = categories[i];
-            if (!"".equals(category.getImageUrl())) {
-                hasImages = true;
-                break;
-            }
-        }
-        return hasImages;
-    }
-
-    public boolean isMultiselect() {
-        return maxChoices == 0;
-    }
-
-    public void setMultiselect(boolean multiselect) {
-        setMaxChoices(0);
-    }
-
-    public boolean isSingleSelect() {
-        return !isMultiselect();
-    }
-
-    @Override
-    public CategoryTypeDomainObject clone() {
-        try {
-            return (CategoryTypeDomainObject) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
-    }
 }

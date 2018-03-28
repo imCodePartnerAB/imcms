@@ -1,17 +1,22 @@
 package com.imcode.imcms.db;
 
+import com.imcode.imcms.persistence.components.SqlResourcePathResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.Collection;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public final class DB {
 
@@ -36,13 +41,10 @@ public final class DB {
         return Version.parse(versionStr);
     }
 
-    public synchronized void updateVersion(Version newVersion) {
-        logger.info("Updating database version from {} to {}.", getVersion(), newVersion);
+    private synchronized void updateVersion(Version newVersion) {
+        final Version currentVersion = getVersion();
+        logger.info("Updating database version from {} to {}.", currentVersion, newVersion);
         jdbcTemplate.update("UPDATE database_version SET major=?, minor=?", newVersion.getMajor(), newVersion.getMinor());
-    }
-
-    private String scriptFullPath(Schema schema, String script) {
-        return String.join("/", schema.getScriptsDir(), script);
     }
 
     private Version update(Schema schema) {
@@ -55,30 +57,27 @@ public final class DB {
                 return dbVersion;
 
             case 1:
-                Optional.of(
-                        String.format(
-                                "Unexpected database version. Database version %s is greater that required version %s",
-                                requiredVersion, requiredVersion)
-                ).ifPresent(errorMsg -> {
-                    logger.error(errorMsg);
-                    throw new IllegalStateException(errorMsg);
-                });
+                String errorMsg = String.format(
+                        "Unexpected database version. Database version %s is greater that required version %s",
+                        requiredVersion, requiredVersion);
+
+                logger.error(errorMsg);
+                throw new IllegalStateException(errorMsg);
 
             default:
                 logger.info("Database have to be updated. Required version: {}, database version: {}", requiredVersion, dbVersion);
                 List<Diff> diffs = schema.diffsChainFrom(dbVersion);
 
                 if (diffs.isEmpty()) {
-                    Optional.of(String.format("No diff is available for version %s", dbVersion)).ifPresent(errorMsg -> {
-                        logger.error(errorMsg);
-                        throw new IllegalStateException(errorMsg);
-                    });
+                    final String errorMessage = String.format("No diff is available for version %s", dbVersion);
+                    logger.error(errorMessage);
+                    throw new IllegalStateException(errorMessage);
                 }
 
                 logger.info("The following diff will be applied: {}.", diffs);
 
-                diffs.stream().forEach(diff -> {
-                    runScripts(diff.getScripts().stream().map(script -> scriptFullPath(schema, script)));
+                diffs.forEach(diff -> {
+                    runScripts(diff.getScripts(), schema.getScriptsDir());
                     updateVersion(diff.getTo());
                 });
 
@@ -97,7 +96,7 @@ public final class DB {
             logger.info("Database is empty and need to be initialized.");
             logger.info("The following init will be applied: {}", schema.getInit());
 
-            runScripts(schema.getInit().getScripts().stream().map(script -> scriptFullPath(schema, script)));
+            runScripts(schema.getInit().getScripts(), schema.getScriptsDir());
             updateVersion(schema.getInit().getVersion());
 
             logger.info("Database has been initialized.");
@@ -106,30 +105,36 @@ public final class DB {
         return update(schema);
     }
 
-    public synchronized void runScripts(Stream<String> scripts) {
-        jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
-            IBatisPatchedScriptRunner scriptRunner = new IBatisPatchedScriptRunner(connection);
-            scriptRunner.setAutoCommit(false);
-            scriptRunner.setStopOnError(true);
+    private synchronized void runScripts(List<String> scripts, URI scriptsDirURI) {
 
-            scripts.forEach(script -> {
-                logger.debug("Running script {}.", script);
-                try (FileReader reader = new FileReader(script)) {
-                    scriptRunner.runScript(reader);
-                } catch (IOException e) {
-                    throw new RuntimeSqlException(e);
-                }
-            });
+        jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
+
+            try (SqlResourcePathResolver pathResolver = new SqlResourcePathResolver(scriptsDirURI)) {
+                Path scriptsDirPath = pathResolver.resolveSqlResourcePath();
+                runScripts(scripts, scriptsDirPath, connection);
+            } catch (IOException e) {
+                throw new RuntimeSqlException(e);
+            }
 
             return null;
+
         });
+
     }
 
-    public synchronized void runScripts(Collection<String> scripts) {
-        runScripts(scripts.stream());
+    private void runScripts(List<String> scripts, Path scriptsDirPath, Connection connection) throws IOException {
+        IBatisPatchedScriptRunner scriptRunner = new IBatisPatchedScriptRunner(connection);
+        scriptRunner.setAutoCommit(false);
+        scriptRunner.setStopOnError(true);
+
+        for (String script : scripts) {
+            logger.debug("Running script {}.", script);
+            final Path scriptPath = scriptsDirPath.resolve(script);
+            final InputStream scriptInputStream = Files.newInputStream(scriptPath);
+            try (Reader reader = new InputStreamReader(scriptInputStream, StandardCharsets.UTF_8)) {
+                scriptRunner.runScript(reader);
+            }
+        }
     }
 
-    public JdbcTemplate getJdbcTemplate() {
-        return jdbcTemplate;
-    }
 }

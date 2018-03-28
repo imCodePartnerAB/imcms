@@ -1,21 +1,22 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Supplier;
 import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 
-public class CacheWrapper<K, V> {
+import java.util.function.Supplier;
 
-    public static <K, V> CacheWrapper<K, V> of(CacheConfiguration cacheConfiguration) {
-        return new CacheWrapper<>(new Cache(cacheConfiguration));
-    }
+public class CacheWrapper<K, V> {
 
     private final Ehcache cache;
 
     public CacheWrapper(Ehcache cache) {
         this.cache = cache;
+    }
+
+    public static <K, V> CacheWrapper<K, V> of(CacheConfiguration cacheConfiguration) {
+        return new CacheWrapper<>(new Cache(cacheConfiguration));
     }
 
     public V get(K key) {

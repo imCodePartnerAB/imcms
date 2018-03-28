@@ -1,1 +1,2 @@
 .. _Oleg Dokuka: http://omniscient.me/
+.. _Serhii Maksymchuk: https://github.com/Serg-Maximchuk

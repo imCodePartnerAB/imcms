@@ -1,18 +1,19 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.mapping.jpa.doc.*;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
-import imcode.server.ImcmsConstants;
-import imcode.server.document.*;
+import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
+import com.imcode.imcms.persistence.repository.MetaRepository;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleId;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Loads documents from the database.
@@ -20,241 +21,169 @@ import java.util.stream.Collectors;
 @Component
 public class DocumentLoader {
 
-	/**
-	 * Permission to create child documents.
-	 */
-	public final static int PERM_CREATE_DOCUMENT = 8;
+    private final DocumentVersionMapper versionMapper;
+    private final DocumentLanguages documentLanguages;
+    private final MetaRepository metaRepository;
+    private final DocumentContentMapper contentMapper;
+    private final DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
-	@Inject
-	private DocRepository docRepository;
+    public DocumentLoader(DocumentVersionMapper versionMapper,
+                          DocumentLanguages documentLanguages,
+                          MetaRepository metaRepository,
+                          DocumentContentMapper contentMapper,
+                          DocumentContentInitializingVisitor documentContentInitializingVisitor) {
 
-	@Inject
-	private PropertyRepository propertyRepository;
+        this.versionMapper = versionMapper;
+        this.documentLanguages = documentLanguages;
+        this.metaRepository = metaRepository;
+        this.contentMapper = contentMapper;
+        this.documentContentInitializingVisitor = documentContentInitializingVisitor;
+    }
 
-	@Inject
-	private VersionRepository versionRepository;
+    /**
+     * Loads document's meta.
+     *
+     * @param docId document id.
+     * @return loaded meta of null if meta with given id does not exists.
+     */
+    public DocumentMeta loadMeta(int docId) {
+        return toDomainObject(metaRepository.findOne(docId));
+    }
 
-	@Inject
-	private MetaRepository metaRepository;
+    /**
+     * Loads and initializes document's content.
+     */
+    public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
+        DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
 
-	@Inject
-	private CommonContentRepository commonContentRepository;
+        document.setCommonContent(dcc != null
+                ? dcc
+                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build()
+        );
+        document.accept(documentContentInitializingVisitor);
 
-	@Inject
-	private DocumentLanguageMapper languageMapper;
+        return document;
+    }
 
-	@Inject
-	private DocumentContentMapper contentMapper;
+    /**
+     * @return custom doc or null if doc does not exists
+     */
+    public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
+        DocumentMeta meta = loadMeta(docRef.getId());
 
-	@Inject
-	private DocumentContentInitializingVisitor documentContentInitializingVisitor;
+        if (meta == null) {
+            return null;
+        }
 
-	/**
-	 * Loads document's meta.
-	 *
-	 * @param docId document id.
-	 * @return loaded meta of null if meta with given id does not exists.
-	 */
-	public DocumentMeta loadMeta(int docId) {
-		return toDomainObject(metaRepository.findOne(docId));
-	}
+        DocumentVersionInfo versionInfo = versionMapper.getInfo(docRef.getId());
+        DocumentVersion version = versionInfo.getVersion(docRef.getVersionNo());
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-	/**
-	 * Loads and initializes document's content.
-	 */
-	public <T extends DocumentDomainObject> T loadAndInitContent(T document) {
-		DocumentCommonContent dcc = contentMapper.getCommonContent(document.getRef());
+        doc.setMeta(meta.clone());
+        doc.setVersionNo(version.getNo());
+        doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
 
-		document.setCommonContent(dcc != null
-				? dcc
-				: DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build()
-		);
-		document.accept(documentContentInitializingVisitor);
+        return loadAndInitContent(doc);
+    }
 
-		return document;
-	}
+    /**
+     * @return default doc or null if doc does not exists
+     */
+    public <T extends DocumentDomainObject> T getDefaultDoc(int docId, String docLanguageCode) {
+        DocumentMeta meta = loadMeta(docId);
 
-	private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
-		Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-		if (Document.PublicationStatus.APPROVED.asInt() == publicationStatusInt) {
-			publicationStatus = Document.PublicationStatus.APPROVED;
-		} else if (Document.PublicationStatus.DISAPPROVED.asInt() == publicationStatusInt) {
-			publicationStatus = Document.PublicationStatus.DISAPPROVED;
-		}
-		return publicationStatus;
-	}
+        if (meta == null) {
+            return null;
+        }
 
-	// Moved from  DocumentInitializer.initDocuments
-	private void initRoleIdToPermissionSetIdMap(DocumentMeta metaDO, Meta jpaMeta) {
-		RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
-				new RoleIdToDocumentPermissionSetTypeMappings();
+        DocumentVersionInfo versionInfo = versionMapper.getInfo(docId);
+        DocumentVersion version = versionInfo.getDefaultVersion();
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-		for (Map.Entry<Integer, Integer> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermissionSetIdMap().entrySet()) {
-			rolePermissionMappings.setPermissionSetTypeForRole(
-					new RoleId(roleIdToPermissionSetId.getKey()),
-					DocumentPermissionSetTypeDomainObject.fromInt(roleIdToPermissionSetId.getValue()));
-		}
+        doc.setMeta(meta.clone());
+        doc.setVersionNo(version.getNo());
+        doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
 
-		metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
-	}
+        return loadAndInitContent(doc);
+    }
 
-	private void initDocumentsPermissionSets(DocumentMeta metaDO, Meta ormMeta) {
-		DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-				ormMeta.getPermissionSetBitsMap(), ormMeta.getPermissionSetEx());
+    /**
+     * @return working doc or null if doc does not exists
+     */
+    public <T extends DocumentDomainObject> T getWorkingDoc(int docId, String docLanguageCode) {
+        DocumentMeta meta = loadMeta(docId);
 
-		metaDO.setPermissionSets(permissionSets);
-	}
+        if (meta == null) {
+            return null;
+        }
 
-	private void initDocumentsPermissionSetsForNew(DocumentMeta metaDO, Meta jpaMeta) {
-		DocumentPermissionSets permissionSets = createDocumentsPermissionSets(
-				jpaMeta.getPermissionSetBitsForNewMap(), jpaMeta.getPermissionSetExForNew());
+        DocumentVersionInfo versionInfo = versionMapper.getInfo(docId);
+        DocumentVersion version = versionInfo.getWorkingVersion();
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
 
-		metaDO.setPermissionSetsForNewDocument(permissionSets);
-	}
+        doc.setMeta(meta.clone());
+        doc.setVersionNo(version.getNo());
+        doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
 
-	private DocumentPermissionSets createDocumentsPermissionSets(
-			Map<Integer, Integer> permissionSetBitsMap,
-			Set<Meta.PermissionSetEx> permissionSetEx) {
+        return loadAndInitContent(doc);
+    }
 
-		DocumentPermissionSets permissionSets = new DocumentPermissionSets();
+    private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
+        Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+        if (Document.PublicationStatus.APPROVED.asInt() == publicationStatusInt) {
+            publicationStatus = Document.PublicationStatus.APPROVED;
+        } else if (Document.PublicationStatus.DISAPPROVED.asInt() == publicationStatusInt) {
+            publicationStatus = Document.PublicationStatus.DISAPPROVED;
+        }
+        return publicationStatus;
+    }
 
-		for (Map.Entry<Integer, Integer> permissionSetBitsEntry : permissionSetBitsMap.entrySet()) {
-			Integer setId = permissionSetBitsEntry.getKey();
-			Integer permissionSetBits = permissionSetBitsEntry.getValue();
-			DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+    // Moved from  DocumentInitializer.initDocuments
+    private void initRoleIdToPermissionSetIdMap(DocumentMeta metaDO, Meta jpaMeta) {
+        RoleIdToDocumentPermissionSetTypeMappings rolePermissionMappings =
+                new RoleIdToDocumentPermissionSetTypeMappings();
 
-			if (permissionSetBits != 0 && restricted.isEmpty()) {
-				restricted.setFromBits(permissionSetBits);
-			}
-		}
+        for (Map.Entry<Integer, Permission> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermission().entrySet()) {
+            rolePermissionMappings.setPermissionSetTypeForRole(
+                    new RoleId(roleIdToPermissionSetId.getKey()),
+                    roleIdToPermissionSetId.getValue());
+        }
 
-		for (Meta.PermissionSetEx ex : permissionSetEx) {
-			Integer setId = ex.getSetId();
-			DocumentPermissionSetDomainObject restricted = permissionSets.getRestricted(setId);
+        metaDO.setRoleIdToDocumentPermissionSetTypeMappings(rolePermissionMappings);
+    }
 
-			setPermissionData(restricted, ex.getPermissionId(), ex.getPermissionData());
-		}
+    private DocumentMeta toDomainObject(Meta meta) {
+        if (meta == null) return null;
 
-		return permissionSets;
-	}
+        DocumentMeta metaDO = new DocumentMeta();
 
-	private void setPermissionData(DocumentPermissionSetDomainObject permissionSet, Integer permissionId, Integer permissionData) {
-		if (null != permissionId) {
-			TextDocumentPermissionSetDomainObject textDocumentPermissionSet = (TextDocumentPermissionSetDomainObject) permissionSet;
-			switch (permissionId) {
-				case PERM_CREATE_DOCUMENT:
-					textDocumentPermissionSet.addAllowedDocumentTypeId(permissionData);
-					break;
-				case ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE:
-					textDocumentPermissionSet.addAllowedTemplateGroupId(permissionData);
-					break;
-				default:
-			}
-		}
-	}
-
-	private DocumentMeta toDomainObject(Meta meta) {
-		if (meta == null) return null;
-
-		DocumentMeta metaDO = new DocumentMeta();
-
-		metaDO.setArchivedDatetime(meta.getArchivedDatetime());
+        metaDO.setArchivedDatetime(meta.getArchivedDatetime());
         metaDO.setArchiverId(meta.getArchiverId());
-		metaDO.setCategoryIds(meta.getCategoryIds());
-		metaDO.setCreatedDatetime(meta.getCreatedDatetime());
-		metaDO.setCreatorId(meta.getCreatorId());
-		metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
-		metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
-		metaDO.setDocumentType(meta.getDocumentType());
-
-		Set<DocumentLanguage> apiLanguages = meta.getEnabledLanguages().stream()
-				.map(jpaLanguage -> languageMapper.toApiObject(jpaLanguage))
-				.collect(Collectors.toSet());
-
-		metaDO.setEnabledLanguages(apiLanguages);
-		metaDO.setId(meta.getId());
-		metaDO.setKeywords(meta.getKeywords());
-		metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
-		metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
-		metaDO.setModifiedDatetime(meta.getModifiedDatetime());
-		metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());
-		//m.setPermissionSets(entity.getPermissionSets)
-		//m.setPermissionSetsForNew(entity.getPermissionSetExForNew)
-		//m.setPermissionSetsForNewDocuments(entity.getPermissionSetsForNewDocuments)
-		metaDO.setProperties(meta.getProperties());
-		metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
+        metaDO.setCategories(meta.getCategories());
+        metaDO.setCreatedDatetime(meta.getCreatedDatetime());
+        metaDO.setCreatorId(meta.getCreatorId());
+        metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
+        metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
+        metaDO.setDocumentType(meta.getDocumentType().ordinal());
+        metaDO.setId(meta.getId());
+        metaDO.setKeywords(meta.getKeywords());
+        metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
+        metaDO.setLinkedForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
+        metaDO.setModifiedDatetime(meta.getModifiedDatetime());
+        metaDO.setActualModifiedDatetime(meta.getModifiedDatetime());
+        metaDO.setProperties(meta.getProperties());
+        metaDO.setPublicationEndDatetime(meta.getPublicationEndDatetime());
         metaDO.setDepublisherId(meta.getDepublisherId());
-		metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
-		metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatusInt()));
-		metaDO.setPublisherId(meta.getPublisherId());
-		metaDO.setRestrictedOneMorePrivilegedThanRestrictedTwo(meta.getRestrictedOneMorePrivilegedThanRestrictedTwo());
-		//m.setRoleIdToDocumentPermissionSetTypeMappings()
-		metaDO.setSearchDisabled(meta.getSearchDisabled());
-		metaDO.setTarget(meta.getTarget());
+        metaDO.setPublicationStartDatetime(meta.getPublicationStartDatetime());
+        metaDO.setPublicationStatus(publicationStatusFromInt(meta.getPublicationStatus().ordinal()));
+        metaDO.setPublisherId(meta.getPublisherId());
+        metaDO.setSearchDisabled(meta.isSearchDisabled());
+        metaDO.setTarget(meta.getTarget());
+        metaDO.setRestrictedPermissions(meta.getRestrictedPermissions());
 
-		initRoleIdToPermissionSetIdMap(metaDO, meta);
-		initDocumentsPermissionSets(metaDO, meta);
-		initDocumentsPermissionSetsForNew(metaDO, meta);
+        initRoleIdToPermissionSetIdMap(metaDO, meta);
 
-		return metaDO;
-	}
+        return metaDO;
+    }
 
-	public PropertyRepository getPropertyRepository() {
-		return propertyRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public void setPropertyRepository(PropertyRepository propertyRepository) {
-		this.propertyRepository = propertyRepository;
-	}
-
-	public VersionRepository getVersionRepository() {
-		return versionRepository;
-	}
-
-	/////////////// unused /////////////////
-
-	public void setVersionRepository(VersionRepository versionRepository) {
-		this.versionRepository = versionRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public DocRepository getDocRepository() {
-		return docRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public void setDocRepository(DocRepository docRepository) {
-		this.docRepository = docRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public MetaRepository getMetaRepository() {
-		return metaRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public void setMetaRepository(MetaRepository metaRepository) {
-		this.metaRepository = metaRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public CommonContentRepository getCommonContentRepository() {
-		return commonContentRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public void setCommonContentRepository(CommonContentRepository commonContentRepository) {
-		this.commonContentRepository = commonContentRepository;
-	}
-
-	@SuppressWarnings("unused")
-	public DocumentContentInitializingVisitor getDocumentContentInitializingVisitor() {
-		return documentContentInitializingVisitor;
-	}
-
-	@SuppressWarnings("unused")
-	public void setDocumentContentInitializingVisitor(DocumentContentInitializingVisitor documentContentInitializingVisitor) {
-		this.documentContentInitializingVisitor = documentContentInitializingVisitor;
-	}
 }

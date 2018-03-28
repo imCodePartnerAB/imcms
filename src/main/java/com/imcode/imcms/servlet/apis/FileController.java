@@ -35,9 +35,8 @@ public class FileController {
     /**
      * Create RegExp {@link Pattern} file filter based on special file name and extension
      *
-     * @param filename File name
+     * @param filename  File name
      * @param extension File extension
-     *
      * @return Return created {@link Pattern}
      */
     private static Pattern filterOf(String filename, String extension) {
@@ -51,17 +50,16 @@ public class FileController {
     /**
      * List files from special folder, that presented in request.
      * Path to folder presented as a part of url, for example:
-     *
-     *  http:localhost:8080/content/files/images/some/folder
+     * <p>
+     * http:localhost:8080/content/files/images/some/folder
      * {         |         }{      |     }{        |        }
      * {  server  address  }{  API part  }{   folder path   }
      *
-     * @param request Request object {@link HttpServletRequest}
+     * @param request   Request object {@link HttpServletRequest}
      * @param extension File extension. Using for find files, with specify extension.
      *                  If extension equals to `*` then all files extensions are valid
-     * @param filename File name. Using for find files, with specify name.
-     *                 If file name equals to `*` then all files names are valid
-     *
+     * @param filename  File name. Using for find files, with specify name.
+     *                  If file name equals to `*` then all files names are valid
      * @return Array of {@link File}
      **/
     File[] readFiles(HttpServletRequest request, String extension, String filename) {
@@ -94,7 +92,7 @@ public class FileController {
 
     @RequestMapping(method = RequestMethod.POST, value = {"/**/{filename}.{extension}"})
     public Object create(HttpServletRequest request, @PathVariable("extension") String extension,
-                          @PathVariable("filename") String filename)
+                         @PathVariable("filename") String filename)
             throws IOException {
         MultipartFile multipartFile = null;
         String path = FolderController.folderFromRequest(request);
@@ -104,11 +102,12 @@ public class FileController {
         if (!(createdFile = new File(
                 dir.getSource(),
                 String.format("%s.%s", filename, extension))).createNewFile()
-                ) {
+                )
+        {
             throw new FileAlreadyExistsException(String.format("File '%s.%s' has already exists", filename, extension));
         }
 
-       /* @RequestParam(value = "file", required = false)*/
+        /* @RequestParam(value = "file", required = false)*/
         if (request instanceof MultipartHttpServletRequest) {
             multipartFile = ((MultipartHttpServletRequest) request).getFile("file");
         }

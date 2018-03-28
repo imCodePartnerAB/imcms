@@ -4,12 +4,77 @@ import java.util.Objects;
 
 public final class DocRef implements LanguageContainer {
 
+    private final int id;
+    private final int versionNo;
+    private final String languageCode;
+    private final int cachedHashCode;
+    private final String cachedToString;
+
+    public DocRef(int id, int versionNo, String languageCode) {
+        this.id = id;
+        this.versionNo = versionNo;
+        this.languageCode = Objects.requireNonNull(languageCode);
+        this.cachedHashCode = Objects.hash(id, versionNo);
+        this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
+                .add("id", id)
+                .add("versionNo", versionNo)
+                .add("languageCode", languageCode)
+                .toString();
+    }
+
     public static Builder builder() {
         return new Builder();
     }
 
     public static Builder builder(DocRef docRef) {
         return new Builder(docRef);
+    }
+
+    public static DocRef of(VersionRef versionRef, String languageCode) {
+        Objects.requireNonNull(versionRef);
+
+        return new DocRef(versionRef.getDocId(), versionRef.getNo(), languageCode);
+    }
+
+    public static DocRef of(int id, int versionNo, String languageCode) {
+        return new DocRef(id, versionNo, languageCode);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return (o == this) || (o instanceof DocRef && equals((DocRef) o));
+    }
+
+    private boolean equals(DocRef that) {
+        return id == that.id
+                && versionNo == that.versionNo
+                && Objects.equals(languageCode, that.languageCode);
+    }
+
+    @Override
+    public int hashCode() {
+        return cachedHashCode;
+    }
+
+    @Override
+    public String toString() {
+        return cachedToString;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getVersionNo() {
+        return versionNo;
+    }
+
+    public String getLanguageCode() {
+        return languageCode;
+    }
+
+    public VersionRef getVersionRef() {
+        return VersionRef.of(id, versionNo);
     }
 
     public static class Builder {
@@ -54,75 +119,6 @@ public final class DocRef implements LanguageContainer {
             return DocRef.of(id, versionNo, languageCode);
         }
 
-    }
-
-    public static DocRef of(VersionRef versionRef, String languageCode) {
-        Objects.requireNonNull(versionRef);
-
-        return new DocRef(versionRef.getDocId(), versionRef.getNo(), languageCode);
-    }
-
-    public static DocRef of(int id, int versionNo, String languageCode) {
-        return new DocRef(id, versionNo, languageCode);
-    }
-
-    private final int id;
-
-    private final int versionNo;
-
-    private final String languageCode;
-
-    private final int cachedHashCode;
-
-    private final String cachedToString;
-
-    public DocRef(int id, int versionNo, String languageCode) {
-        this.id = id;
-        this.versionNo = versionNo;
-        this.languageCode = Objects.requireNonNull(languageCode);
-        this.cachedHashCode = Objects.hash(id, versionNo);
-        this.cachedToString = com.google.common.base.Objects.toStringHelper(this)
-                .add("id", id)
-                .add("versionNo", versionNo)
-                .add("languageCode", languageCode)
-                .toString();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return (o == this) || (o instanceof DocRef && equals((DocRef) o));
-    }
-
-    private boolean equals(DocRef that) {
-        return id == that.id
-                && versionNo == that.versionNo
-                && Objects.equals(languageCode, that.languageCode);
-    }
-
-    @Override
-    public int hashCode() {
-        return cachedHashCode;
-    }
-
-    @Override
-    public String toString() {
-        return cachedToString;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public int getVersionNo() {
-        return versionNo;
-    }
-
-    public String getLanguageCode() {
-        return languageCode;
-    }
-
-    public VersionRef getVersionRef() {
-        return VersionRef.of(id, versionNo);
     }
 }
 

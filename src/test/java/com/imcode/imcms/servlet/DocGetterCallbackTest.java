@@ -1,22 +1,34 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.test.fixtures.LanguageFX;
+import com.imcode.imcms.config.TestConfig;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {TestConfig.class})
+@WebAppConfiguration
+@Transactional
 public class DocGetterCallbackTest {
 
-    DocumentLanguages dls = LanguageFX.mkI18nSupport();
     ImcmsServices services = mock(ImcmsServices.class);
+
+    @Autowired
+    private DocumentLanguages dls;
 
     @Before
     public void beforeTest() {

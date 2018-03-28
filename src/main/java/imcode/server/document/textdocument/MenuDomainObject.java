@@ -3,8 +3,7 @@ package imcode.server.document.textdocument;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -98,7 +97,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
      */
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
         List<MenuItemDomainObject> menuItems = getMenuItemsVisibleToUser(user);
-        CollectionUtils.filter(menuItems, object -> ((MenuItemDomainObject) object).getDocument().isActive());
+        CollectionUtils.filter(menuItems, menuItem -> menuItem.getDocument().isActive());
         return menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
     }
 
@@ -195,8 +194,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     /**
      * Adds menu item to this menu only if it contains a document.
-     *
-     * @param menuItem
      */
     public void addMenuItem(MenuItemDomainObject menuItem) {
         if (null == menuItem.getSortKey()) {
@@ -209,8 +206,6 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     /**
      * Adds menu item to this menu without checking if it references a document.
-     *
-     * @param menuItem
      */
     public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
         if (null == menuItem.getSortKey()) {
@@ -224,7 +219,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
         Integer maxSortKey = getMaxSortKey();
         Integer sortKey;
         if (null != maxSortKey) {
-            sortKey = maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT;
+            sortKey = maxSortKey + DEFAULT_SORT_KEY_INCREMENT;
         } else {
             sortKey = DEFAULT_SORT_KEY;
         }
@@ -232,26 +227,22 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     private Integer getMaxSortKey() {
-        Collection<Integer> menuItemSortKeys = CollectionUtils.collect(menuItems.values(), new Transformer() {
-            public Integer transform(Object o) {
-                return ((MenuItemDomainObject) o).getSortKey();
-            }
-        });
+        Collection<Integer> menuItemSortKeys = CollectionUtils.collect(menuItems.values(), MenuItemDomainObject::getSortKey);
 
         return menuItemSortKeys.isEmpty() ? null : Collections.max(menuItemSortKeys);
     }
 
     private Comparator getMenuItemComparatorForSortOrder(int sortOrder) {
 
-        Comparator comparator = MenuItemComparator.HEADLINE.chain(MenuItemComparator.ID);
+        Comparator comparator = MenuItemComparators.HEADLINE.chain(MenuItemComparators.ID);
         if (sortOrder == MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) {
-            comparator = MenuItemComparator.TREE_SORT_KEY.chain(comparator);
+            comparator = MenuItemComparators.TREE_SORT_KEY.chain(comparator);
         } else if (sortOrder == MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED) {
-            comparator = MenuItemComparator.SORT_KEY.reversed().chain(comparator);
+            comparator = MenuItemComparators.SORT_KEY.reversed().chain(comparator);
         } else if (sortOrder == MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED) {
-            comparator = MenuItemComparator.MODIFIED_DATETIME.reversed().chain(comparator);
+            comparator = MenuItemComparators.MODIFIED_DATETIME.reversed().chain(comparator);
         } else if (sortOrder == MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED) {
-            comparator = MenuItemComparator.PUBLISHED_DATETIME.reversed().chain(comparator);
+            comparator = MenuItemComparators.PUBLISHED_DATETIME.reversed().chain(comparator);
         }
         return comparator;
     }
@@ -260,7 +251,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
         menuItems.remove(childId);
     }
 
-    public void removeAllMenuItems(){
+    public void removeAllMenuItems() {
         menuItems.clear();
     }
 

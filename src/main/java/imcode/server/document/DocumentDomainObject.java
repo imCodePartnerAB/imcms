@@ -4,12 +4,16 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
+import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -29,530 +33,497 @@ import java.util.stream.Stream;
  */
 public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
-	public static final int ID_NEW = 0;
+    public static final int ID_NEW = 0;
 
-	/**
-	 * Document's alias.
-	 * Can be set, changed and removed by an user which have rights to modify document information.
-	 * Must not be used as a hardcoded identity to access documents through API.
-	 *
-	 * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(String)
-	 */
-	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
+    /**
+     * Document's alias.
+     * Can be set, changed and removed by an user which have rights to modify document information.
+     * Must not be used as a hardcoded identity to access documents through API.
+     *
+     * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(String)
+     */
+    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 
-	/**
-	 * Document's internal id assigned by an application developer.
-	 * Intended to be used as a private identity to access documents through the API.
-	 */
-	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_INTERNAL_ID = "imcms.document.internal.id";
+    private static final long serialVersionUID = 9196527330127566553L;
 
-	/**
-	 * Legacy, property based modifier support.
-	 */
-	public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY = "imcms.document.modified_by";
+    private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 
-	private static Logger log = Logger.getLogger(DocumentDomainObject.class);
+    private volatile DocumentMeta meta = new DocumentMeta();
 
-	private volatile DocumentMeta meta = new DocumentMeta();
+    private volatile DocumentCommonContent commonContent = DocumentCommonContent.builder().build();
 
-	private volatile DocumentCommonContent commonContent = DocumentCommonContent.builder().build();
+    private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
 
-	private volatile int versionNo = DocumentVersion.WORKING_VERSION_NO;
+    /*
+     * Stub.
+     * Documents instances are created directly (using new) only in tests.
+     * In production instances are created via factories that are responsible for injecting an appropriate language.
+     */
+    private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").build();
 
-	/*
-	 * Stub.
-	 * Documents instances are created directly (using new) only in tests.
-	 * In production instances are created via factories that are responsible for injecting an appropriate language.
-	 */
-	private volatile DocumentLanguage language = DocumentLanguage.builder().code("en").build();
+    /**
+     * Factory method. Creates new document.
+     *
+     * @param documentTypeId document type id.
+     * @return new document
+     */
+    public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
+        DocumentDomainObject document;
 
-	/**
-	 * Factory method. Creates new document.
-	 *
-	 * @param documentTypeId document type id.
-	 * @return new document
-	 */
-	public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
-		DocumentDomainObject document;
+        final DocumentType documentType = DocumentType.values()[documentTypeId];
 
-		switch (documentTypeId) {
-			case DocumentTypeDomainObject.TEXT_ID:
-				document = new TextDocumentDomainObject();
-				break;
-			case DocumentTypeDomainObject.URL_ID:
-				document = new UrlDocumentDomainObject();
-				break;
-			case DocumentTypeDomainObject.FILE_ID:
-				document = new FileDocumentDomainObject();
-				break;
-			case DocumentTypeDomainObject.HTML_ID:
-				document = new HtmlDocumentDomainObject();
-				break;
-			default:
-				String errorMessage = "Unknown document-type-id: " + documentTypeId;
-				log.error(errorMessage);
-				throw new IllegalArgumentException(errorMessage);
-		}
+        switch (documentType) {
+            case TEXT:
+                document = new TextDocumentDomainObject();
+                break;
+            case URL:
+                document = new UrlDocumentDomainObject();
+                break;
+            case FILE:
+                document = new FileDocumentDomainObject();
+                break;
+            case HTML:
+                document = new HtmlDocumentDomainObject();
+                break;
+            default:
+                String errorMessage = "Unknown document-type-id: " + documentTypeId;
+                log.error(errorMessage);
+                throw new IllegalArgumentException(errorMessage);
+        }
 
-		document.setLanguage(Imcms.getServices().getDocumentLanguages().getDefault());
-		document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
+        document.setLanguage(Imcms.getServices().getDocumentLanguages().getDefault());
+        document.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
 
-		return (T) document;
-	}
+        return (T) document;
+    }
 
-	private static boolean isActiveAtTime(DocumentMeta meta, Date now) {
-		return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
-	}
+    private static boolean isActiveAtTime(DocumentMeta meta, Date now) {
+        return isPublishedAtTime(meta, now) && !hasBeenArchivedAtTime(meta, now);
+    }
 
-	private static boolean hasBeenArchivedAtTime(DocumentMeta meta, Date time) {
-		Date archivedDatetime = meta.getArchivedDatetime();
-		return archivedDatetime != null && archivedDatetime.before(time);
-	}
+    private static boolean hasBeenArchivedAtTime(DocumentMeta meta, Date time) {
+        Date archivedDatetime = meta.getArchivedDatetime();
+        return archivedDatetime != null && archivedDatetime.before(time);
+    }
 
-	private static boolean isPublishedAtTime(DocumentMeta meta, Date date) {
-		boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
+    private static boolean isPublishedAtTime(DocumentMeta meta, Date date) {
+        boolean statusIsApproved = Document.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
 
-		return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
-	}
+        return statusIsApproved && publicationHasStartedAtTime(meta, date) && !publicationHasEndedAtTime(meta, date);
+    }
 
-	private static boolean publicationHasStartedAtTime(DocumentMeta meta, Date date) {
-		Date publicationStartDatetime = meta.getPublicationStartDatetime();
-		return publicationStartDatetime != null && publicationStartDatetime.before(date);
-	}
+    private static boolean publicationHasStartedAtTime(DocumentMeta meta, Date date) {
+        Date publicationStartDatetime = meta.getPublicationStartDatetime();
+        return publicationStartDatetime != null && publicationStartDatetime.before(date);
+    }
 
-	private static boolean publicationHasEndedAtTime(DocumentMeta meta, Date date) {
-		Date publicationEndDatetime = meta.getPublicationEndDatetime();
-		return publicationEndDatetime != null && publicationEndDatetime.before(date);
-	}
+    private static boolean publicationHasEndedAtTime(DocumentMeta meta, Date date) {
+        Date publicationEndDatetime = meta.getPublicationEndDatetime();
+        return publicationEndDatetime != null && publicationEndDatetime.before(date);
+    }
 
-	public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
-		DocumentMeta meta = doc.getMeta();
-		LifeCyclePhase lifeCyclePhase;
+    static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
+        DocumentMeta meta = doc.getMeta();
+        LifeCyclePhase lifeCyclePhase;
 
-		Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
-		if (publicationStatus == Document.PublicationStatus.NEW) {
-			lifeCyclePhase = LifeCyclePhase.NEW;
-		} else if (publicationStatus == Document.PublicationStatus.DISAPPROVED) {
-			lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
-		} else {
-			if (publicationHasEndedAtTime(meta, time)) {
-				lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
-			} else if (publicationHasStartedAtTime(meta, time)) {
-				if (hasBeenArchivedAtTime(meta, time)) {
-					lifeCyclePhase = LifeCyclePhase.ARCHIVED;
-				} else {
-					lifeCyclePhase = LifeCyclePhase.PUBLISHED;
-				}
-			} else {
-				lifeCyclePhase = LifeCyclePhase.APPROVED;
-			}
-		}
+        Document.PublicationStatus publicationStatus = meta.getPublicationStatus();
+        if (publicationStatus == Document.PublicationStatus.NEW) {
+            lifeCyclePhase = LifeCyclePhase.NEW;
+        } else if (publicationStatus == Document.PublicationStatus.DISAPPROVED) {
+            lifeCyclePhase = LifeCyclePhase.DISAPPROVED;
+        } else {
+            if (publicationHasEndedAtTime(meta, time)) {
+                lifeCyclePhase = LifeCyclePhase.UNPUBLISHED;
+            } else if (publicationHasStartedAtTime(meta, time)) {
+                if (hasBeenArchivedAtTime(meta, time)) {
+                    lifeCyclePhase = LifeCyclePhase.ARCHIVED;
+                } else {
+                    lifeCyclePhase = LifeCyclePhase.PUBLISHED;
+                }
+            } else {
+                lifeCyclePhase = LifeCyclePhase.APPROVED;
+            }
+        }
 
-		return lifeCyclePhase;
-	}
+        return lifeCyclePhase;
+    }
 
-	@Override
-	public DocumentDomainObject clone() {
-		DocumentDomainObject clone;
+    private static DocumentDomainObject asDefaultUser(int docId, DocumentLanguage language) {
+        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
-		try {
-			clone = (DocumentDomainObject) super.clone();
-		} catch (CloneNotSupportedException e) {
-			throw new RuntimeException(e);
-		}
+        DocGetterCallback docGetterCallback = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper()
+                .getDefaultUser() // check callback as default user because admin should see docs in menu as others
+                .getDocGetterCallback();
 
-		if (clone.meta != null) {
-			clone.meta = meta.clone();
-		}
+        docGetterCallback.setLanguage(language);
+        return docGetterCallback.getDoc(docId, documentMapper);
+    }
 
-		return clone;
-	}
+    public static DocumentDomainObject asDefaultUser(DocumentDomainObject document) {
+        return DocumentDomainObject.asDefaultUser(document.getId(), document.getLanguage());
+    }
 
-	/**
-	 * Returns this document's version no.
-	 */
-	public int getVersionNo() {
-		return versionNo;
-	}
+    @Override
+    public DocumentDomainObject clone() {
+        DocumentDomainObject clone;
 
-	public void setVersionNo(int no) {
-		versionNo = no;
-	}
+        try {
+            clone = (DocumentDomainObject) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
 
-	public DocRef getRef() {
-		return DocRef.of(getId(), getVersionNo(), getLanguage().getCode());
-	}
+        if (clone.meta != null) {
+            clone.meta = meta.clone();
+        }
 
-	public VersionRef getVersionRef() {
-		return VersionRef.of(getId(), getVersionNo());
-	}
+        return clone;
+    }
 
-	public Date getArchivedDatetime() {
-		return meta.getArchivedDatetime();
-	}
+    /**
+     * Returns this document's version no.
+     */
+    public int getVersionNo() {
+        return versionNo;
+    }
 
-	public void setArchivedDatetime(Date v) {
-		meta.setArchivedDatetime(v);
-	}
+    public void setVersionNo(int no) {
+        versionNo = no;
+    }
+
+    public DocRef getRef() {
+        return DocRef.of(getId(), getVersionNo(), getLanguage().getCode());
+    }
+
+    public VersionRef getVersionRef() {
+        return VersionRef.of(getId(), getVersionNo());
+    }
+
+    public Date getArchivedDatetime() {
+        return meta.getArchivedDatetime();
+    }
+
+    public void setArchivedDatetime(Date v) {
+        meta.setArchivedDatetime(v);
+    }
+
+    private Integer getArchiverId() {
+        return meta.getArchiverId();
+    }
 
     public void setArchiverId(Integer id) {
         meta.setArchiverId(id);
     }
 
-    public Integer getArchiverId() {
-        return meta.getArchiverId();
+    public Set<Category> getCategories() {
+        return meta.getCategories();
     }
 
-	public Set<Integer> getCategoryIds() {
-		return meta.getCategoryIds();
-	}
+    public void setCategories(Set<Category> categories) {
+        meta.setCategories(categories);
+    }
 
-	public void setCategoryIds(Set<Integer> categoryIds) {
-		meta.setCategoryIds(categoryIds);
-	}
+    public Date getCreatedDatetime() {
+        return meta.getCreatedDatetime();
+    }
 
-	public Date getCreatedDatetime() {
-		return meta.getCreatedDatetime();
-	}
+    public int getCreatorId() {
+        return meta.getCreatorId();
+    }
 
-	public void setCreatedDatetime(Date v) {
-		meta.setCreatedDatetime(v);
-	}
+    public void setCreatorId(int creatorId) {
+        meta.setCreatorId(creatorId);
+    }
 
-	public int getCreatorId() {
-		return meta.getCreatorId();
-	}
+    public void setCreator(UserDomainObject creator) {
+        setCreatorId(creator.getId());
+    }
 
-	public void setCreatorId(int creatorId) {
-		meta.setCreatorId(creatorId);
-	}
+    public String getHeadline() {
+        return commonContent.getHeadline();
+    }
 
-	public void setCreator(UserDomainObject creator) {
-		setCreatorId(creator.getId());
-	}
+    public void setHeadline(String v) {
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).headline(v).build());
+    }
 
-	public String getHeadline() {
-		return commonContent.getHeadline();
-	}
+    public int getId() {
+        Integer id = meta.getId();
+        return id == null ? ID_NEW : id;
+    }
 
-	public void setHeadline(String v) {
-		setCommonContent(DocumentCommonContent.builder(getCommonContent()).headline(v).build());
-	}
+    public void setId(int id) {
+        meta.setId(id == ID_NEW ? null : id);
+    }
 
-	public int getId() {
-		Integer id = meta.getId();
-		return id == null ? ID_NEW : id;
-	}
+    public String getMenuImage() {
+        return commonContent.getMenuImageURL();
+    }
 
-	public void setId(int id) {
-		meta.setId(id == ID_NEW ? null : id);
-	}
+    public void setMenuImage(String v) {
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuImageURL(v).build());
+    }
 
-	public String getMenuImage() {
-		return commonContent.getMenuImageURL();
-	}
+    public Set<String> getKeywords() {
+        return meta.getKeywords();
+    }
 
-	public void setMenuImage(String v) {
-		setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuImageURL(v).build());
-	}
+    public void setKeywords(Set<String> keywords) {
+        meta.setKeywords(keywords);
+    }
 
-	public Set<String> getKeywords() {
-		return meta.getKeywords();
-	}
+    public Map<String, String> getProperties() {
+        return meta.getProperties();
+    }
 
-	public void setKeywords(Set<String> keywords) {
-		meta.setKeywords(keywords);
-	}
+    public void setProperties(Map<String, String> properties) {
+        meta.setProperties(properties);
+    }
 
-	public Map<String, String> getProperties() {
-		return meta.getProperties();
-	}
+    public String getProperty(String key) {
+        Map<String, String> properties = meta.getProperties();
+        return properties.get(key);
+    }
 
-	public void setProperties(Map<String, String> properties) {
-		meta.setProperties(properties);
-	}
+    public void setProperty(String key, String value) {
+        Map<String, String> properties = meta.getProperties();
+        properties.put(key, value);
+    }
 
-	public String getProperty(String key) {
-		Map<String, String> properties = meta.getProperties();
-		return properties.get(key);
-	}
+    public String getMenuText() {
+        return commonContent.getMenuText();
+    }
 
-	public void setProperty(String key, String value) {
-		Map<String, String> properties = meta.getProperties();
-		properties.put(key, value);
-	}
+    public void setMenuText(String v) {
+        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuText(v).build());
+    }
 
-	public void removeProperty(String key) {
-		Map<String, String> properties = meta.getProperties();
-		properties.remove(key);
-	}
+    public Date getModifiedDatetime() {
+        return meta.getModifiedDatetime();
+    }
 
-	public String getMenuText() {
-		return commonContent.getMenuText();
-	}
+    public void setModifiedDatetime(Date v) {
+        meta.setModifiedDatetime(v);
+    }
 
-	public void setMenuText(String v) {
-		setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuText(v).build());
-	}
+    public Date getActualModifiedDatetime() {
+        return meta.getActualModifiedDatetime();
+    }
 
-	public Date getModifiedDatetime() {
-		return meta.getModifiedDatetime();
-	}
+    public Date getPublicationEndDatetime() {
+        return meta.getPublicationEndDatetime();
+    }
 
-	public void setModifiedDatetime(Date v) {
-		meta.setModifiedDatetime(v);
-	}
+    public void setPublicationEndDatetime(Date datetime) {
+        meta.setPublicationEndDatetime(datetime);
+    }
 
-	public Date getActualModifiedDatetime() {
-		return meta.getActualModifiedDatetime();
-	}
-
-	public void setActualModifiedDatetime(Date modifiedDatetime) {
-		meta.setActualModifiedDatetime(modifiedDatetime);
-	}
-
-	public Date getPublicationEndDatetime() {
-		return meta.getPublicationEndDatetime();
-	}
-
-	public void setPublicationEndDatetime(Date datetime) {
-		meta.setPublicationEndDatetime(datetime);
-	}
+    private Integer getDepublisherId() {
+        return meta.getDepublisherId();
+    }
 
     public void setDepublisherId(Integer id) {
         meta.setDepublisherId(id);
     }
 
-    public Integer getDepublisherId() {
-        return meta.getDepublisherId();
-    }
-
     public Date getPublicationStartDatetime() {
-		return meta.getPublicationStartDatetime();
-	}
-
-	public void setPublicationStartDatetime(Date v) {
-		meta.setPublicationStartDatetime(v);
-	}
-
-	public Integer getPublisherId() {
-		return meta.getPublisherId();
-	}
-
-	public void setPublisherId(Integer publisherId) {
-		meta.setPublisherId(publisherId);
-	}
-
-	public void setPublisher(UserDomainObject user) {
-		setPublisherId(user.getId());
-	}
-
-	public Integer getModifierId() {
-	    return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy();
+        return meta.getPublicationStartDatetime();
     }
 
-	public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
-		return getRolePermissionMappings().clone();
-	}
+    public void setPublicationStartDatetime(Date v) {
+        meta.setPublicationStartDatetime(v);
+    }
 
-	public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-		meta.setRoleIdToDocumentPermissionSetTypeMappings(roleIdToDocumentPermissionSetTypeMappings);
-	}
+    public Integer getPublisherId() {
+        return meta.getPublisherId();
+    }
 
-	private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
-		return meta.getRoleIdToDocumentPermissionSetTypeMappings();
-	}
+    public void setPublisherId(Integer publisherId) {
+        meta.setPublisherId(publisherId);
+    }
 
-	public Document.PublicationStatus getPublicationStatus() {
-		return meta.getPublicationStatus();
-	}
+    public void setPublisher(UserDomainObject user) {
+        setPublisherId(user.getId());
+    }
 
-	public void setPublicationStatus(Document.PublicationStatus status) {
-		meta.setPublicationStatus(status);
-	}
+    private Integer getModifierId() {
+        return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy();
+    }
 
-	public String getTarget() {
-		return meta.getTarget();
-	}
+    public void setDocumentPermissionSetTypeForRoleId(RoleId roleId, Meta.Permission permission) {
+        this.getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permission);
+    }
 
-	public void setTarget(String v) {
-		meta.setTarget(v);
-	}
+    public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
+        return getRolePermissionMappings().clone();
+    }
 
-	public boolean isArchived() {
-		return hasBeenArchivedAtTime(meta, new Date());
-	}
+    private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
+        return meta.getRoleIdToDocumentPermissionSetTypeMappings();
+    }
 
-	public boolean isLinkableByOtherUsers() {
-		return meta.getLinkableByOtherUsers();
-	}
+    public Document.PublicationStatus getPublicationStatus() {
+        return meta.getPublicationStatus();
+    }
 
-	public void setLinkableByOtherUsers(boolean linkableByOtherUsers) {
-		meta.setLinkableByOtherUsers(linkableByOtherUsers);
-	}
+    public void setPublicationStatus(Document.PublicationStatus status) {
+        meta.setPublicationStatus(status);
+    }
 
-	public boolean isRestrictedOneMorePrivilegedThanRestrictedTwo() {
-		return meta.getRestrictedOneMorePrivilegedThanRestrictedTwo();
-	}
+    public String getTarget() {
+        return meta.getTarget();
+    }
 
-	public void setRestrictedOneMorePrivilegedThanRestrictedTwo(boolean b) {
-		meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(b);
-	}
+    public void setTarget(String v) {
+        meta.setTarget(v);
+    }
 
-	public boolean isPublished() {
-		return isPublishedAtTime(meta, new Date());
-	}
+    public boolean isArchived() {
+        return hasBeenArchivedAtTime(meta, new Date());
+    }
 
-	public boolean isActive() {
-		return isActiveAtTime(meta, new Date());
-	}
+    public boolean isLinkableByOtherUsers() {
+        return meta.getLinkableByOtherUsers();
+    }
 
-	public boolean isSearchDisabled() {
-		return meta.getSearchDisabled();
-	}
+    public void setLinkableByOtherUsers(boolean linkableByOtherUsers) {
+        meta.setLinkableByOtherUsers(linkableByOtherUsers);
+    }
 
-	public void setSearchDisabled(boolean searchDisabled) {
-		meta.setSearchDisabled(searchDisabled);
-	}
+    public boolean isPublished() {
+        return isPublishedAtTime(meta, new Date());
+    }
 
-	public boolean isLinkedForUnauthorizedUsers() {
-		return meta.getLinkedForUnauthorizedUsers();
-	}
+    public boolean isActive() {
+        return isActiveAtTime(meta, new Date());
+    }
 
-	public void setLinkedForUnauthorizedUsers(boolean linkedForUnauthorizedUsers) {
-		meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
-	}
+    public boolean isSearchDisabled() {
+        return meta.getSearchDisabled();
+    }
 
-	public void addCategoryId(int categoryId) {
-		meta.getCategoryIds().add(categoryId);
-	}
+    public void setSearchDisabled(boolean searchDisabled) {
+        meta.setSearchDisabled(searchDisabled);
+    }
 
-	public boolean equals(Object o) {
-		if (this == o) {
-			return true;
-		}
-		if (!(o instanceof DocumentDomainObject)) {
-			return false;
-		}
+    public boolean isLinkedForUnauthorizedUsers() {
+        return meta.getLinkedForUnauthorizedUsers();
+    }
 
-		final DocumentDomainObject document = (DocumentDomainObject) o;
+    public void setLinkedForUnauthorizedUsers(boolean linkedForUnauthorizedUsers) {
+        meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
+    }
 
-		return getId() == document.getId();
+    public void addCategory(Category category) {
+        meta.getCategories().add(category);
+    }
 
-	}
+    @Deprecated
+    public void addCategory(com.imcode.imcms.api.Category category) {
+        final CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setId(category.getId());
+        categoryDTO.setName(category.getName());
+        categoryDTO.setImageUrl(category.getImage());
+        categoryDTO.setDescription(category.getDescription());
+        categoryDTO.setType(category.getType());
 
-	public abstract DocumentTypeDomainObject getDocumentType();
+        addCategory(categoryDTO);
+    }
 
-	public final int getDocumentTypeId() {
-		return getDocumentType().getId();
-	}
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DocumentDomainObject)) {
+            return false;
+        }
 
-	public final LocalizedMessage getDocumentTypeName() {
-		return getDocumentType().getName();
-	}
+        final DocumentDomainObject document = (DocumentDomainObject) o;
 
-	public int hashCode() {
-		return getId();
-	}
+        return getId() == document.getId();
 
-	public void removeAllCategories() {
-		meta.setCategoryIds(new HashSet<>());
-	}
+    }
 
-	public void removeCategoryId(int categoryId) {
-		meta.getCategoryIds().remove(categoryId);
-	}
+    public abstract DocumentTypeDomainObject getDocumentType();
 
-	public void setDocumentPermissionSetTypeForRoleId(RoleId roleId,
-													  DocumentPermissionSetTypeDomainObject permissionSetType) {
-		getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permissionSetType);
-	}
+    public final int getDocumentTypeId() {
+        return getDocumentType().getId();
+    }
 
-	public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
-		return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
-	}
+    public final LocalizedMessage getDocumentTypeName() {
+        return getDocumentType().getName();
+    }
 
-	public DocumentPermissionSets getPermissionSets() {
-		return meta.getPermissionSets();
-	}
+    public int hashCode() {
+        return getId();
+    }
 
-	public void setPermissionSets(DocumentPermissionSets permissionSets) {
-		meta.setPermissionSets(permissionSets);
-	}
+    public void removeCategoryId(int categoryId) {
+        meta.getCategories().remove(categoryId);
+    }
 
-	public DocumentPermissionSets getPermissionSetsForNewDocument() {
-		return meta.getPermissionSetsForNewDocument();
-	}
+    public abstract void accept(DocumentVisitor documentVisitor);
 
-	public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNew) {
-		meta.setPermissionSetsForNewDocument(permissionSetsForNew);
-	}
+    public LifeCyclePhase getLifeCyclePhase() {
+        return getLifeCyclePhaseAtTime(this, new Date());
+    }
 
-	public abstract void accept(DocumentVisitor documentVisitor);
+    public String getAlias() {
+        return meta.getAlias();
+    }
 
-	public LifeCyclePhase getLifeCyclePhase() {
-		return getLifeCyclePhaseAtTime(this, new Date());
-	}
+    public void setAlias(String alias) {
+        meta.setAlias(alias);
+    }
 
-	public String getAlias() {
-		return meta.getAlias();
-	}
+    public String getName() {
+        return StringUtils.defaultString(getAlias(), getId() + "");
+    }
 
-	public void setAlias(String alias) {
-		meta.setAlias(alias);
-	}
+    public DocumentMeta getMeta() {
+        return meta;
+    }
 
-	public String getName() {
-		return StringUtils.defaultString(getAlias(), getId() + "");
-	}
+    public void setMeta(DocumentMeta meta) {
+        Objects.requireNonNull(meta, "meta argument can not be null.");
 
-	public DocumentMeta getMeta() {
-		return meta;
-	}
+        this.meta = meta.clone();
+    }
 
-	public void setMeta(DocumentMeta meta) {
-		Objects.requireNonNull(meta, "meta argument can not be null.");
+    public DocumentLanguage getLanguage() {
+        return language;
+    }
 
-		this.meta = meta.clone();
-	}
+    public void setLanguage(DocumentLanguage language) {
+        this.language = Objects.requireNonNull(language, "language argument can not be null.");
+    }
 
-	public DocumentLanguage getLanguage() {
-		return language;
-	}
+    public DocumentCommonContent getCommonContent() {
+        return commonContent;
+    }
 
-	public void setLanguage(DocumentLanguage language) {
-		this.language = Objects.requireNonNull(language, "language argument can not be null.");
-	}
+    public void setCommonContent(DocumentCommonContent commonContent) {
+        this.commonContent = Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
+    }
 
-	public DocumentCommonContent getCommonContent() {
-		return commonContent;
-	}
+    public Date[] getArrDates() {
+        return new Date[]{
+                getCreatedDatetime(),
+                getModifiedDatetime(),
+                getArchivedDatetime(),
+                getPublicationStartDatetime(),
+                getPublicationEndDatetime()
+        };
+    }
 
-	public void setCommonContent(DocumentCommonContent commonContent) {
-		this.commonContent = Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
-	}
-
-	public List<Date> getListDates() {
-		return Arrays.asList(getArrDates());
-	}
-
-	public Date[] getArrDates() {
-		return new Date[]{
-				getCreatedDatetime(),
-				getModifiedDatetime(),
-				getArchivedDatetime(),
-				getPublicationStartDatetime(),
-				getPublicationEndDatetime()
-		};
-	}
-
-	public boolean isNew() {
-		return getId() == ID_NEW;
-	}
+    public boolean isNew() {
+        return getId() == ID_NEW;
+    }
 
     public String[] getByUsersArr(UserService userService) {
 
-        Integer[] usersIds = new Integer[] {
+        Integer[] usersIds = new Integer[]{
                 getCreatorId(),
                 getModifierId(),
                 getArchiverId(),
@@ -573,21 +544,5 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setDisabledLanguageShowMode(String disabledLanguageShowMode) {
         meta.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(disabledLanguageShowMode));
-    }
-
-    public static DocumentDomainObject asDefaultUser(int docId, DocumentLanguage language) {
-        DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
-
-        DocGetterCallback docGetterCallback = Imcms.getServices()
-                .getImcmsAuthenticatorAndUserAndRoleMapper()
-                .getDefaultUser() // check callback as default user because admin should see docs in menu as others
-                .getDocGetterCallback();
-
-        docGetterCallback.setLanguage(language);
-        return docGetterCallback.getDoc(docId, documentMapper);
-    }
-
-    public static DocumentDomainObject asDefaultUser(DocumentDomainObject document) {
-        return DocumentDomainObject.asDefaultUser(document.getId(), document.getLanguage());
     }
 }

@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,32 +29,21 @@ import java.util.stream.Collectors;
  * @see com.imcode.imcms.servlet.ImcmsSetupFilter
  * @see com.imcode.imcms.mapping.DocumentGetter#getDocument(int)
  */
-public class DocGetterCallback {
-
-    private interface Callback {
-        DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
-    }
+public class DocGetterCallback implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
-
+    private static final long serialVersionUID = 2496394918087427549L;
     private volatile DocumentLanguage language;
-
-    private volatile boolean isDefaultLanguage;
-
     private UserDomainObject user;
-
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
-
     private Callback workingDocCallback = (docId, docMapper) -> {
         logger.trace("Working doc requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getWorkingDocument(docId, language);
     };
-
     private Callback uncheckedDefaultDocCallback = (docId, docMapper) -> {
         logger.trace("Default doc (unchecked) requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getDefaultDocument(docId, language);
     };
-
     private Callback defaultDocCallback = (docId, docMapper) -> {
         logger.trace("Default doc requested - user: {}, docId: {}, language: {}.", docId, language);
 
@@ -79,13 +69,13 @@ public class DocGetterCallback {
         return doc;
     };
 
+    public DocGetterCallback(UserDomainObject user) {
+        this.user = user;
+    }
+
     private boolean shouldDocBeShownWithDefaultLang(DocumentDomainObject doc, List<DocumentLanguage> docLanguages) {
         return (doc.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE
                 && docLanguages.contains(Imcms.getServices().getDocumentLanguages().getDefault()));
-    }
-
-    public DocGetterCallback(UserDomainObject user) {
-        this.user = user;
     }
 
     @SuppressWarnings("unchecked")
@@ -124,12 +114,11 @@ public class DocGetterCallback {
         return language;
     }
 
-    public void setLanguage(DocumentLanguage language, boolean isDefaultLanguage) {
-        this.language = language;
-        this.isDefaultLanguage = isDefaultLanguage;
-    }
-
     public void setLanguage(DocumentLanguage language) {
         this.language = language;
+    }
+
+    private interface Callback extends Serializable {
+        DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
     }
 }

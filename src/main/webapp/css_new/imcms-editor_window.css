@@ -1,0 +1,20 @@
+.imcms-editor-window {
+    display: block;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 10003;
+}
+
+.imcms-editor-window.imcms-document-editor,
+.imcms-editor-window.imcms-menu-editor {
+    z-index: 10001;
+}
+
+.imcms-editor-window:after {
+    content: "";
+    display: block;
+    clear: both;
+}

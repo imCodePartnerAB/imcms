@@ -6,14 +6,10 @@ import imcode.server.document.UrlDocumentDomainObject;
 public class UrlDocument extends Document {
 
     public final static int TYPE_ID = DocumentTypeDomainObject.URL_ID;
+    private static final long serialVersionUID = 4023512323646165396L;
 
     UrlDocument(UrlDocumentDomainObject document, ContentManagementSystem contentManagementSystem) {
         super(document, contentManagementSystem);
-    }
-
-    public void setUrl(String url) {
-        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
-        urlDocumentDomainObject.setUrl(url);
     }
 
     private UrlDocumentDomainObject getInternalUrlDocument() {
@@ -23,5 +19,10 @@ public class UrlDocument extends Document {
 
     public String getUrl() {
         return getInternalUrlDocument().getUrl();
+    }
+
+    public void setUrl(String url) {
+        UrlDocumentDomainObject urlDocumentDomainObject = getInternalUrlDocument();
+        urlDocumentDomainObject.setUrl(url);
     }
 }

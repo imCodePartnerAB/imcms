@@ -18,12 +18,12 @@ public abstract class SearchQuery {
         this.sort = sort;
     }
 
-    public void setLogged(boolean logged) {
-        this.logged = logged;
-    }
-
     boolean isLogged() {
         return logged;
+    }
+
+    public void setLogged(boolean logged) {
+        this.logged = logged;
     }
 
 }

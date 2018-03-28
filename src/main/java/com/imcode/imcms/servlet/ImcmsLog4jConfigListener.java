@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Map;
 import java.util.regex.Matcher;
 
 public class ImcmsLog4jConfigListener implements ServletContextListener {

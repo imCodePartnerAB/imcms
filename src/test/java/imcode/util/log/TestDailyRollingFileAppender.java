@@ -1,5 +1,6 @@
 package imcode.util.log;
 
+import imcode.util.io.FileUtility;
 import junit.framework.TestCase;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -12,47 +13,60 @@ import java.io.IOException;
 
 public class TestDailyRollingFileAppender extends TestCase {
 
-	private static final String DATE_PATTERN = ".yyyy-MM-dd-HH-mm";
+    private static final String DATE_PATTERN = ".yyyy-MM-dd-HH-mm";
 
-	public TestDailyRollingFileAppender(String name) {
-		super(name);
-	}
+    private File tmpDir = new File("tmp");
+    private File tempFile = new File(tmpDir, TestDailyRollingFileAppender.class.getName() + ".test");
 
-	private static DailyRollingFileAppender createAppender(File filePath) throws IOException {
-		String fileName = filePath.getPath();
-		Layout layout = new SimpleLayout();
-		return new DailyRollingFileAppender(layout, fileName, DATE_PATTERN);
-	}
+    public TestDailyRollingFileAppender(String name) {
+        super(name);
+    }
 
-	private static File getTempFile() {
-		String tmpDir = "tmp";
-		return new File(tmpDir, TestDailyRollingFileAppender.class.getName() + ".test");
-	}
+    private static DailyRollingFileAppender createAppender(File filePath) throws IOException {
+        String fileName = filePath.getPath();
+        Layout layout = new SimpleLayout();
+        return new DailyRollingFileAppender(layout, fileName, DATE_PATTERN);
+    }
 
-	public void setUp() {
-		getTempFile().delete();
-	}
+    public void setUp() throws Exception {
+        super.setUp();
 
-	public void testLogFileCreated() throws IOException {
-		createAppender(getTempFile());
-		assertTrue(getTempFile().exists());
-	}
+        if (tempFile.exists()) {
+            FileUtility.forceDelete(tempFile);
+        }
+    }
 
-	public void testLineLogged() throws IOException {
-		DailyRollingFileAppender appender = createAppender(getTempFile());
-		appender.doAppend(getLoggingEvent());
-		appender.close();
-		assertTrue(getTempFile().length() > 0);
-	}
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        FileUtility.forceDelete(tmpDir);
+    }
 
-	private LoggingEvent getLoggingEvent() {
-		return new LoggingEvent(MockLogger.class.getName(), new MockLogger("mock"), Level.DEBUG, "Test", null);
-	}
+    public void testLogFileCreated() throws IOException {
+        final DailyRollingFileAppender appender = createAppender(tempFile);
 
-	private class MockLogger extends Logger {
-		private MockLogger(String name) {
-			super(name);
-		}
-	}
+        try {
+            assertTrue(tempFile.exists());
+        } finally {
+            appender.close();
+        }
+    }
+
+    public void testLineLogged() throws IOException {
+        final DailyRollingFileAppender appender = createAppender(tempFile);
+        appender.doAppend(getLoggingEvent());
+        appender.close();
+        assertTrue(tempFile.length() > 0);
+    }
+
+    private LoggingEvent getLoggingEvent() {
+        return new LoggingEvent(MockLogger.class.getName(), new MockLogger("mock"), Level.DEBUG, "Test", null);
+    }
+
+    private class MockLogger extends Logger {
+        private MockLogger(String name) {
+            super(name);
+        }
+    }
 
 }

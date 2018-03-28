@@ -1,45 +1,44 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
-import com.imcode.imcms.mapping.jpa.doc.Category;
-import com.imcode.imcms.mapping.jpa.doc.CategoryRepository;
-import com.imcode.imcms.mapping.jpa.doc.CategoryType;
-import com.imcode.imcms.mapping.jpa.doc.CategoryTypeRepository;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import com.imcode.imcms.persistence.repository.CategoryRepository;
+import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
 @Transactional(rollbackFor = Throwable.class)
 public class CategoryMapper {
 
-    /*
-    static final String SQL__GET_DOCUMENT_CATEGORIES = "SELECT meta_id, category_id"
-                                                       + " FROM document_categories"
-                                                       + " WHERE meta_id ";
-  */
+    private static int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
-    private int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
+    private final CategoryRepository categoryRepository;
+    private final CategoryTypeRepository categoryTypeRepository;
 
     @Inject
-    private CategoryRepository categoryRepository;
+    public CategoryMapper(CategoryRepository categoryRepository, CategoryTypeRepository categoryTypeRepository) {
+        this.categoryRepository = categoryRepository;
+        this.categoryTypeRepository = categoryTypeRepository;
+    }
 
-    @Inject
-    private CategoryTypeRepository categoryTypeRepository;
-    
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
-        List<Category> categoryList = categoryRepository.findByType(docCategoryType);
+        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        List<CategoryJPA> categoryList = categoryRepository.findByType(docCategoryType);
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
-        for (Category category : categoryList) {
+        for (CategoryJPA category : categoryList) {
             categoryDomainObjectList.add(toDomainObject(category));
         }
 
@@ -52,10 +51,10 @@ public class CategoryMapper {
     }
 
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
-        List<CategoryType> categoryTypeList = categoryTypeRepository.findAll();
+        List<CategoryTypeJPA> categoryTypeList = categoryTypeRepository.findAll();
         List<CategoryTypeDomainObject> categoryTypeDomainObjectList = new ArrayList<>(categoryTypeList.size());
 
-        for (CategoryType categoryType : categoryTypeList) {
+        for (CategoryTypeJPA categoryType : categoryTypeList) {
             categoryTypeDomainObjectList.add(toDomainObject(categoryType));
         }
 
@@ -64,7 +63,7 @@ public class CategoryMapper {
 
 
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
-        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
         return toDomainObject(categoryRepository.findByNameAndType(categoryName, docCategoryType));
     }
 
@@ -83,13 +82,13 @@ public class CategoryMapper {
 
 
     public void deleteCategoryTypeFromDb(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
+        CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
 
         if (docCategoryType != null) categoryTypeRepository.delete(docCategoryType);
     }
 
     public CategoryTypeDomainObject addCategoryTypeToDb(CategoryTypeDomainObject categoryType) {
-        CategoryType docCategoryType = toJpaObject(categoryType);
+        CategoryTypeJPA docCategoryType = toJpaObject(categoryType);
 
         docCategoryType.setId(null);
 
@@ -104,7 +103,7 @@ public class CategoryMapper {
         categoryTypeRepository.saveAndFlush(toJpaObject(categoryType));
     }
 
-    public CategoryDomainObject addCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
+    public CategoryDomainObject addCategory(CategoryDomainObject category) {
         return toDomainObject(categoryRepository.saveAndFlush(toJpaObject(category)));
     }
 
@@ -116,7 +115,7 @@ public class CategoryMapper {
         categoryRepository.delete(category.getId());
     }
 
-    public String[] getAllDocumentsOfOneCategory(CategoryDomainObject category) {
+    public List<Integer> getAllDocumentsOfOneCategory(CategoryDomainObject category) {
         return categoryRepository.findCategoryDocIds(category.getId());
     }
 
@@ -129,39 +128,37 @@ public class CategoryMapper {
     void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
             throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (int i = 0; i < categoryTypes.length; i++) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
-            int maxChoices = categoryType.getMaxChoices();
-            Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategoryIds());
-            if (UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.size() > maxChoices) {
-                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + maxChoices
+        for (CategoryTypeDomainObject categoryType : categoryTypes) {
+            boolean multiselect = categoryType.isMultiSelect();
+            Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategories());
+            if (!multiselect && documentCategoriesOfType.size() > UNLIMITED_MAX_CATEGORY_CHOICES) {
+                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + UNLIMITED_MAX_CATEGORY_CHOICES
                         + " categories of type '"
                         + categoryType.getName()
-                        + "'" );
+                        + "'");
             }
         }
     }
 
     public CategoryDomainObject saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
         if (category.getId() == 0) {
-            Category docCategory = categoryRepository.findByNameAndType(category.getName(), toJpaObject(category.getType()));
+            CategoryJPA docCategory = categoryRepository.findByNameAndType(category.getName(), toJpaObject(category.getType()));
 
             if (docCategory != null) {
                 throw new CategoryAlreadyExistsException("A category with name \"" + category.getName()
                         + "\" already exists in category type \""
                         + category.getType().getName()
-                        + "\"." );
+                        + "\".");
             }
         }
 
         return toDomainObject(categoryRepository.saveAndFlush(toJpaObject(category)));
     }
 
-    public Set<CategoryDomainObject> getCategories(Collection<Integer> categoryIds) {
-        List<Category> categoryList = categoryRepository.findAll(categoryIds);
+    public Set<CategoryDomainObject> getCategories(Collection<Category> categories) {
         Set<CategoryDomainObject> categoryDomainObjectSet = new HashSet<>();
 
-        for (Category category : categoryList) {
+        for (Category category : categories) {
             categoryDomainObjectSet.add(toDomainObject(category));
         }
 
@@ -169,22 +166,20 @@ public class CategoryMapper {
     }
 
     public List<CategoryDomainObject> getAllCategories() {
-        List<Category> categoryList = categoryRepository.findAll();
+        List<CategoryJPA> categoryList = categoryRepository.findAll();
         List<CategoryDomainObject> categoryDomainObjectList = new ArrayList<>(categoryList.size());
 
-        for (Category category : categoryList) {
+        for (CategoryJPA category : categoryList) {
             categoryDomainObjectList.add(toDomainObject(category));
         }
 
         return categoryDomainObjectList;
     }
 
-    public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Integer> categoryIds) {
-        Set<CategoryDomainObject> categoryDomainObjectSet = getCategories(categoryIds);
+    public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Category> categories) {
+        Set<CategoryDomainObject> categoryDomainObjectSet = getCategories(categories);
 
-        for (Iterator<CategoryDomainObject> i = categoryDomainObjectSet.iterator(); i.hasNext(); ) {
-            if (!i.next().getType().equals(categoryType)) i.remove();
-        }
+        categoryDomainObjectSet.removeIf(categoryDomainObject -> !categoryDomainObject.getType().equals(categoryType));
 
         return categoryDomainObjectSet;
     }
@@ -196,7 +191,7 @@ public class CategoryMapper {
                 : new CategoryTypeDomainObject(
                 jpaType.getId(),
                 jpaType.getName(),
-                jpaType.getMaxChoices(),
+                jpaType.isMultiSelect(),
                 jpaType.isInherited(),
                 jpaType.isImageArchive());
     }
@@ -212,14 +207,14 @@ public class CategoryMapper {
                 toDomainObject(jpaCategory.getType()));
     }
 
-    private CategoryType toJpaObject(CategoryTypeDomainObject typeDO) {
-        return new CategoryType(
-                typeDO.getId(), typeDO.getName(), typeDO.getMaxChoices(), typeDO.isInherited(), typeDO.isImageArchive()
+    private CategoryTypeJPA toJpaObject(CategoryType typeDO) {
+        return new CategoryTypeJPA(
+                typeDO.getId(), typeDO.getName(), typeDO.isMultiSelect(), typeDO.isInherited(), typeDO.isImageArchive()
         );
     }
 
-    private Category toJpaObject(CategoryDomainObject categoryDO) {
-        return new Category(
+    private CategoryJPA toJpaObject(CategoryDomainObject categoryDO) {
+        return new CategoryJPA(
                 categoryDO.getId(), categoryDO.getName(), categoryDO.getDescription(), categoryDO.getImageUrl(), toJpaObject(categoryDO.getType())
         );
     }

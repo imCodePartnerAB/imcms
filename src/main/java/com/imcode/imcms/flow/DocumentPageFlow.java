@@ -27,6 +27,10 @@ public abstract class DocumentPageFlow extends PageFlow {
         this.saveDocumentCommand = saveDocumentCommand;
     }
 
+    public static DocumentPageFlow fromRequest(HttpServletRequest request) {
+        return (DocumentPageFlow) HttpSessionUtils.getSessionAttributeWithNameInRequest(request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW);
+    }
+
     public abstract DocumentDomainObject getDocument();
 
     protected synchronized void saveDocument(HttpServletRequest request) {
@@ -41,16 +45,10 @@ public abstract class DocumentPageFlow extends PageFlow {
         }
     }
 
-
     protected void saveDocumentAndReturn(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         saveDocument(request);
         dispatchReturn(request, response);
     }
-
-    public static DocumentPageFlow fromRequest(HttpServletRequest request) {
-        return (DocumentPageFlow) HttpSessionUtils.getSessionAttributeWithNameInRequest(request, REQUEST_ATTRIBUTE_OR_PARAMETER__FLOW);
-    }
-
 
     public static abstract class SaveDocumentCommand implements Serializable {
 

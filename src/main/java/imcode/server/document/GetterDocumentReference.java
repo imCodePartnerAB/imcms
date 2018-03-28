@@ -1,7 +1,7 @@
 package imcode.server.document;
 
-import imcode.server.Imcms;
 import com.imcode.imcms.mapping.DocumentGetter;
+import imcode.server.Imcms;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

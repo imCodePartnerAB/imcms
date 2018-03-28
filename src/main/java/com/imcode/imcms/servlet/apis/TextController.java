@@ -1,59 +1,59 @@
 package com.imcode.imcms.servlet.apis;
 
 import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.document.text.AllowedTagsCheckingResult;
-import com.imcode.imcms.document.text.TextContentFilter;
+import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.mapping.TextDocumentContentLoader;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.LoopEntryRef;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.TextHistory;
-import com.imcode.imcms.servlet.tags.TextTag;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
 import com.jcabi.w3c.Defect;
 import com.jcabi.w3c.ValidationResponse;
 import com.jcabi.w3c.ValidatorBuilder;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by Shadowgun
- * on 23.12.2014.
+ * Created by Shadowgun on 23.12.2014.
+ * <p>
+ * Refactored by Serhii Maksymchuk in 2017
  */
 /*
  todo: Since {@link RequestMapping} can get in request path parameters like "/{id}/{someparam1}/{someparam2}" it would be better to REPLACE  {@link RequestParam} with {@link PathParam}
  */
-@RestController
-@RequestMapping("/text")
+//@RestController
+//@RequestMapping("/text")
 public class TextController {
+    public static final String TEXT = "text";
+    public static final String HTML = "html";
     private static final Logger log = Logger.getLogger(TextController.class);
-
+    private static final String SOURCE_FROM_HTML = "source-from-html";
+    private static final String CLEAN_SOURCE_FROM_HTML = "clean-source-from-html";
+    private static final String CLEAN_HTML = "cleanhtml";
+    private final TextContentFilter textContentFilter;
     private ImcmsServices imcmsServices;
 
-    @Autowired
-    private TextContentFilter textContentFilter;
+    //    @Autowired
+    public TextController(TextContentFilter textContentFilter) {
+        this.textContentFilter = textContentFilter;
+    }
 
     @PostConstruct
     public void init() {
@@ -65,11 +65,11 @@ public class TextController {
      *
      * @param docId           {@link imcode.server.document.DocumentDomainObject} id
      * @param textNo          text id
-     * @param locale          Content language. For more information about languages see {@link com.imcode.imcms.mapping.jpa.doc.Language} and {@link imcode.server.LanguageMapper}
+     * @param locale          Content language. For more information about languages see {@link LanguageJPA} and {@link imcode.server.LanguageMapper}
      * @param loopEntryRefStr {@link com.imcode.imcms.mapping.container.LoopEntryRef} represented in text form
      * @return List of textHistory entities
      * @see TextDocumentContentLoader#getTextHistory(DocRef, int)
-     * @see TextDocumentContentLoader#getTextHistory(DocRef, LoopEntryRef, int)
+     * @see TextDocumentContentLoader#getTextHistory(DocRef, LoopEntryRefJPA, int)
      */
     @RequestMapping
     public List<TextHistoryWebEntity> getTextHistory(@RequestParam("meta") int docId,
@@ -78,7 +78,7 @@ public class TextController {
                                                      @RequestParam(value = "loopentryref", required = false) String loopEntryRefStr) {
 
         final com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt;
-        LoopEntryRef loopEntryRef = null;
+        LoopEntryRefJPA loopEntryRef = null;
 
         if (!StringUtils.isEmpty(loopEntryRefStr)) {
             final String[] items = loopEntryRefStr.split("_", 2);
@@ -89,7 +89,7 @@ public class TextController {
                         Integer.parseInt(items[1])
                 );
 
-                loopEntryRef = new LoopEntryRef(
+                loopEntryRef = new LoopEntryRefJPA(
                         loopEntryRefOpt.getLoopNo(),
                         loopEntryRefOpt.getEntryNo()
                 );
@@ -109,33 +109,24 @@ public class TextController {
     }
 
     /**
-     * Save passed text into database. Also passed text saved into {@link TextHistory} table
+     * Save passed text into database. Also passed text saved into {@link TextHistoryJPA} table
      *
      * @param content      Content to save
-     * @param locale       Content language. For more information about languages see {@link com.imcode.imcms.mapping.jpa.doc.Language} and {@link imcode.server.LanguageMapper}
+     * @param locale       Content language. For more information about languages see {@link LanguageJPA} and {@link imcode.server.LanguageMapper}
      * @param docId        {@link imcode.server.document.DocumentDomainObject} id
      * @param textNo       text id
      * @param loopEntryRef {@link com.imcode.imcms.mapping.container.LoopEntryRef} represented in text form
      * @see VersionRef
      */
     @RequestMapping(method = RequestMethod.POST)
-    public TextSavingResult saveText(@RequestParam("content") String content,
-                                     @RequestParam("locale") String locale,
-                                     @RequestParam("meta") int docId,
-                                     @RequestParam("no") int textNo,
-                                     @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
-                                     @RequestParam(value = "contenttype", required = false) String contentType) {
+    public String saveText(@RequestParam("content") String content,
+                           @RequestParam("locale") String locale,
+                           @RequestParam("meta") int docId,
+                           @RequestParam("no") int textNo,
+                           @RequestParam(value = "loopentryref", required = false) String loopEntryRef,
+                           @RequestParam(value = "contenttype", required = false) String contentType) {
 
         final UserDomainObject user = Imcms.getUser();
-        final TextDocumentDomainObject doc = imcmsServices.getDocumentMapper().getWorkingDocument(docId);
-        final TextDocumentPermissionSetDomainObject permissionSet = (TextDocumentPermissionSetDomainObject)
-                user.getPermissionSetFor(doc);
-
-        // fixme: v4.
-        if (!permissionSet.getEditTexts()) {
-            //AdminDoc.adminDoc(documentId, user, request, res, getServletContext)
-            return null;
-        }
 
         com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRefOpt = null;
 
@@ -149,17 +140,14 @@ public class TextController {
                 );
         }
 
-        AllowedTagsCheckingResult checkingResult = textContentFilter.checkBadTags(content);
-
-        if (checkingResult.isFail()) {
-            return new FailTextSavingResult(checkingResult);
+        if ((contentType != null) && (contentType.equals(CLEAN_SOURCE_FROM_HTML) || contentType.equals(CLEAN_HTML))) {
+            content = textContentFilter.cleanText(content);
         }
 
         try {
             final int contentTypeInt = Optional.ofNullable(contentType)
-                    .map(type -> (type.contains(TextTag.TEXT) || type.contains(TextTag.SOURCE_FROM_HTML))
-                            ? TextDomainObject.TEXT_TYPE_PLAIN
-                            : TextDomainObject.TEXT_TYPE_HTML)
+                    .filter(type -> (type.contains(TEXT) || type.contains(SOURCE_FROM_HTML)))
+                    .map(type -> TextDomainObject.TEXT_TYPE_PLAIN)
                     .orElse(TextDomainObject.TEXT_TYPE_HTML);
 
             final TextDomainObject textDomainObject = new TextDomainObject(
@@ -179,10 +167,9 @@ public class TextController {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("Error while saving text", e);
-            return null;
         }
 
-        return new SuccessTextSavingResult();
+        return content;
     }
 
     /**
@@ -253,33 +240,11 @@ public class TextController {
         public String text;
         public String type;
 
-        TextHistoryWebEntity(TextHistory textHistory) {
-            this.modifiedBy = textHistory.getModifiedBy().getFirstName();
-            this.modifiedDate = textHistory.getModifiedDt().getTime();
-            this.text = textHistory.getText();
-            this.type = textHistory.getType().name().toLowerCase();
-        }
-    }
-
-    private class TextSavingResult {
-        public boolean success;
-        public Set<String> notAllowedTags;
-
-        protected TextSavingResult(boolean success, Set<String> notAllowedTags) {
-            this.success = success;
-            this.notAllowedTags = notAllowedTags;
-        }
-    }
-
-    private class FailTextSavingResult extends TextSavingResult {
-        FailTextSavingResult(AllowedTagsCheckingResult checkingResult) {
-            super(false, checkingResult.getBadTags());
-        }
-    }
-
-    private class SuccessTextSavingResult extends TextSavingResult {
-        SuccessTextSavingResult() {
-            super(true, Collections.emptySet());
+        TextHistoryWebEntity(TextHistoryJPA textHistoryJPA) {
+            this.modifiedBy = textHistoryJPA.getModifiedBy().getFirstName();
+            this.modifiedDate = textHistoryJPA.getModifiedDt().getTime();
+            this.text = textHistoryJPA.getText();
+            this.type = textHistoryJPA.getType().name().toLowerCase();
         }
     }
 }

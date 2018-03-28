@@ -1,0 +1,87 @@
+.imcms-editable-controls-area {
+    overflow: auto;
+    width: 100%;
+    height: 85%;
+    height: -webkit-calc(100% - 125px);
+    height: -moz-calc(100% - 125px);
+    height: -o-calc(100% - 125px);
+    height: calc(100% - 125px);
+    padding: 20px 42px;
+}
+
+.imcms-editable-controls-area__buttons {
+    display: block;
+    overflow: hidden;
+}
+
+.imcms-editable-controls-area__buttons .imcms-button--neutral {
+    float: right;
+}
+
+.imcms-editable-controls-area__text-box,
+.imcms-editable-controls-area__select,
+.imcms-editable-controls-area__flags {
+    margin-bottom: 18px;
+}
+
+.imcms-editable-controls-area__text-box .imcms-text-box__input {
+    width: 100%;
+}
+
+.imcms-editable-controls-area__select {
+    display: block;
+}
+
+.imcms-editable-controls-area__select .imcms-drop-down-list {
+    display: block;
+    width: 100%;
+}
+
+.imcms-editable-controls-area__flags {
+    float: left;
+}
+
+.imcms-editable-controls-area__checkboxes {
+    float: right;
+}
+
+.imcms-editable-controls-area__buttons {
+    clear: both;
+}
+
+.imcms-editable-controls-area__buttons .imcms-button--negative {
+    width: 60%;
+    float: none;
+    display: block;
+    margin: 0 auto 10px;
+}
+
+.imcms-editable-controls-area__checkboxes .imcms-checkbox__label {
+    padding-right: 20px;
+    padding-left: 0;
+}
+
+.imcms-editable-controls-area__checkboxes .imcms-checkbox__label:before {
+    right: 0;
+    left: unset;
+}
+
+.imcms-advanced-mode__file-format {
+    float: left;
+    width: 40%;
+}
+
+.imcms-advanced-mode__file-format .imcms-drop-down-list {
+    display: block;
+    width: 100%;
+}
+
+.imcms-advanced-mode__file-format .imcms-select {
+    display: block;
+}
+
+.imcms-advanced-mode__button {
+    padding-top: 30px;
+    float: right;
+    line-height: 40px;
+}

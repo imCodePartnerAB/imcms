@@ -34,7 +34,8 @@ public class Parser {
             length = tagsAndData[i].length();
             if (length > 0) {
                 String replacement = (null == tagsAndData[i + 1]) ? "" : tagsAndData[i + 1];
-                for (int start = 0; (start = sb.toString().indexOf(tagsAndData[i], start)) != -1; start += replacement.length()) {
+                for (int start = 0; (start = sb.toString().indexOf(tagsAndData[i], start)) != -1; start += replacement.length())
+                {
                     sb.replace(start, start + length, replacement);
                 }
             }

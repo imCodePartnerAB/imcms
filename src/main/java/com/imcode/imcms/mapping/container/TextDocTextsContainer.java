@@ -11,19 +11,19 @@ import java.util.Objects;
  */
 public class TextDocTextsContainer extends TextDocObjectVersionedContainer {
 
+    private final Map<DocumentLanguage, TextDomainObject> texts;
+
+    public TextDocTextsContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
+        super(loopEntryRef, textNo, versionRef);
+        this.texts = Objects.requireNonNull(texts);
+    }
+
     public static TextDocTextsContainer of(VersionRef versionRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
         return new TextDocTextsContainer(versionRef, null, textNo, texts);
     }
 
     public static TextDocTextsContainer of(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
         return new TextDocTextsContainer(versionRef, loopEntryRef, textNo, texts);
-    }
-
-    private final Map<DocumentLanguage, TextDomainObject> texts;
-
-    public TextDocTextsContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int textNo, Map<DocumentLanguage, TextDomainObject> texts) {
-        super(loopEntryRef, textNo, versionRef);
-        this.texts = Objects.requireNonNull(texts);
     }
 
     public int getTextNo() {

@@ -1,11 +1,11 @@
 package com.imcode.imcms.filters;
 
-import imcode.server.Imcms;
-import imcode.util.PropertyManager;
 import imcode.util.Utility;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +24,7 @@ import java.util.stream.Stream;
  * Cache Supervisor Filter, desires should chain go through ehcache filter or not
  *
  * @author Serhii from Ubrainians for Imcode
- *         04.11.16
+ * 04.11.16
  */
 public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter {
 
@@ -57,11 +58,11 @@ public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter 
             );
         }
 
-        ServletContext servletContext = filterConfig.getServletContext();
-        Imcms.setRootPath(servletContext.getRealPath("/"));
-
-        String imageUrl = PropertyManager.getServerProperty("ImageUrl");
-        String generatedImagesPath = servletContext.getContextPath() + imageUrl + "generated";
+        final ServletContext servletContext = filterConfig.getServletContext();
+        final ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        final Properties properties = ctx.getBean("imcmsProperties", Properties.class);
+        final String imageUrl = properties.getProperty("ImageUrl");
+        final String generatedImagesPath = servletContext.getContextPath() + imageUrl + "generated";
         cacheURLs.add(generatedImagesPath);
 
         super.doInit(filterConfig);

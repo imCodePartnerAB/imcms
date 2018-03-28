@@ -1,15 +1,14 @@
 package imcode.util;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
+import org.apache.commons.collections4.map.LRUMap;
+import org.apache.commons.text.RandomStringGenerator;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.log4j.Logger;
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 
 public class HttpSessionUtils {
 
@@ -44,7 +43,7 @@ public class HttpSessionUtils {
 
     public static void put(HttpServletRequest request, String sessionAttributeName,
                            final Serializable objectToAddToSession) {
-        Map sessionMap = getSessionMap(request);
+        Map<String, Object> sessionMap = getSessionMap(request);
         if (MAX_COUNT__SESSION_OBJECTS == sessionMap.size()) {
             log.debug("SessionMap is full. Least recently used object will be evicted.");
         }
@@ -56,11 +55,11 @@ public class HttpSessionUtils {
                 + sessionMap.size());
     }
 
-    private static Map getSessionMap(HttpServletRequest request) {
+    private static Map<String, Object> getSessionMap(HttpServletRequest request) {
         HttpSession session = request.getSession();
-        Map sessionMap = (Map) session.getAttribute(SESSION_ATTRIBUTE_NAME__SESSION_MAP);
+        Map<String, Object> sessionMap = (Map<String, Object>) session.getAttribute(SESSION_ATTRIBUTE_NAME__SESSION_MAP);
         if (null == sessionMap) {
-            sessionMap = Collections.synchronizedMap(new LRUMap(MAX_COUNT__SESSION_OBJECTS));
+            sessionMap = Collections.synchronizedMap(new LRUMap<String, Object>(MAX_COUNT__SESSION_OBJECTS));
             session.setAttribute(SESSION_ATTRIBUTE_NAME__SESSION_MAP, sessionMap);
         }
         return sessionMap;
@@ -68,13 +67,13 @@ public class HttpSessionUtils {
 
     public static String createUniqueNameForObject(Object object) {
         return Integer.toString(object.getClass().hashCode(), Character.MAX_RADIX)
-                + RandomStringUtils.randomAlphanumeric(4);
+                + new RandomStringGenerator.Builder().withinRange('A', 'z').build().generate(4);
     }
 
     public static Object getSessionAttributeWithNameInRequest(HttpServletRequest request,
                                                               String requestAttributeOrParameterName) {
         String sessionAttributeName = getSessionAttributeNameFromRequest(request, requestAttributeOrParameterName);
-        Map sessionMap = getSessionMap(request);
+        Map<String, Object> sessionMap = getSessionMap(request);
         Object sessionAttribute = sessionMap.get(sessionAttributeName);
         if (null == sessionAttribute) {
             removeSessionAttribute(request, sessionAttributeName);
@@ -82,14 +81,13 @@ public class HttpSessionUtils {
         return sessionAttribute;
     }
 
-    public static Object removeSessionAttribute(HttpServletRequest request, String sessionAttributeName) {
-        Map sessionMap = getSessionMap(request);
+    public static void removeSessionAttribute(HttpServletRequest request, String sessionAttributeName) {
+        Map<String, Object> sessionMap = getSessionMap(request);
         Object object = sessionMap.remove(sessionAttributeName);
         if (null != object) {
             log.debug("Removed from session: \"" + sessionAttributeName + "\": " + object.getClass()
                     + ". Size: " + sessionMap.size());
         }
-        return object;
     }
 
     public static String getSessionAttributeNameFromRequest(HttpServletRequest request,

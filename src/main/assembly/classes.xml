@@ -17,6 +17,8 @@
             -->
             <excludes>
                 <exclude>/org/apache/jsp/**</exclude>
+                <exclude>**/*.js</exclude>
+                <exclude>**/*.css</exclude>
                 <exclude>**/*.xml</exclude>
                 <exclude>**/*.xsd</exclude>
                 <exclude>**/*.properties</exclude>

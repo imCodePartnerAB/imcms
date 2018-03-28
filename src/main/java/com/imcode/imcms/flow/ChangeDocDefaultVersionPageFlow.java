@@ -1,28 +1,23 @@
 package com.imcode.imcms.flow;
 
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.UserDomainObject;
-import imcode.server.Imcms;
-
-import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 // Experimental
 public class ChangeDocDefaultVersionPageFlow extends DocumentPageFlow {
 
+    private static final long serialVersionUID = 1203685374461509107L;
     private DocumentDomainObject document;
 
-    private UserDomainObject user;
-
     public ChangeDocDefaultVersionPageFlow(DocumentDomainObject document, DispatchCommand returnCommand,
-                                           SaveDocumentCommand saveDocumentCommand, UserDomainObject user) {
+                                           SaveDocumentCommand saveDocumentCommand) {
         super(returnCommand, saveDocumentCommand);
 
         this.document = document;
-        this.user = user;
     }
 
     @Override

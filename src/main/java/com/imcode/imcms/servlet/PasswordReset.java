@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 
+import com.imcode.imcms.api.Mail;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
@@ -9,7 +10,6 @@ import imcode.server.SystemData;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.net.SMTP;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -18,46 +18,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PasswordReset extends HttpServlet {
-
-    public static abstract class UserIdentity {
-        public abstract UserDomainObject user();
-
-        public abstract String identity();
-
-        public static UserIdentity of(final UserDomainObject user, final String identity) {
-            return new UserIdentity() {
-                @Override
-                public UserDomainObject user() {
-                    return user;
-                }
-
-                @Override
-                public String identity() {
-                    return identity;
-                }
-            };
-        }
-    }
-
-    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
-
-    // Ops
-    public enum Op {
-        REQUEST_RESET,
-        SEND_RESET_URL,
-        RESET,
-        SAVE_NEW_PASSWORD,
-        UNDEFINED
-    }
-
 
     // Request parameters associated with ops.
     public static final String
@@ -66,23 +31,33 @@ public class PasswordReset extends HttpServlet {
             REQUEST_USER_IDENTITY = "uid",
             REQUEST_PARAM_PASSWORD = "password",
             REQUEST_PARAM_PASSWORD_CHECK = "password_check";
-
     // Attribute is bounded to List<String> of error messages.
     public static final String REQUEST_ATTR_VALIDATION_ERRORS = "validation_errors";
-
-
+    private static final Logger logger = org.apache.log4j.Logger.getLogger(PasswordReset.class);
     // Views
     private static final String
             identity_form_view = "identity_form.jsp",
             email_sent_confirmation_view = "email_sent_confirmation.jsp",
             password_reset_form_view = "password_reset_form.jsp",
             password_changed_confirmation_view = "password_changed_confirmation.jsp";
-
-
+    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
     private ExecutorService emailSender = Executors.newSingleThreadExecutor();
 
-    private final LocalizedMessage validationErrorMissingUserId = new LocalizedMessage("passwordreset.error.missing_identity");
+    private static void render(HttpServletRequest request, HttpServletResponse response, String view)
+            throws IOException, ServletException {
 
+        if (view == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        } else {
+            request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
+        }
+    }
+
+    private static UserDomainObject getUserByPasswordResetId(HttpServletRequest request) {
+        String resetId = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_RESET_ID));
+
+        return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByPasswordResetId(resetId);
+    }
 
     /**
      * Forwards request to password reset or password edit view.
@@ -91,11 +66,6 @@ public class PasswordReset extends HttpServlet {
      * Password edit request required valid reset-id parameter.
      * <p/>
      * Forwards to 404 if request parameters do not met requirements.
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
@@ -111,11 +81,6 @@ public class PasswordReset extends HttpServlet {
 
     /**
      * Handles password recovery email sending and new password saving.
-     *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         Op op = getOp(request);
@@ -163,25 +128,6 @@ public class PasswordReset extends HttpServlet {
         render(request, response, view);
     }
 
-
-    private static void render(HttpServletRequest request, HttpServletResponse response, String view)
-            throws IOException, ServletException {
-
-        if (view == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-        } else {
-            request.getRequestDispatcher("/WEB-INF/passwordreset/" + view).forward(request, response);
-        }
-    }
-
-
-    private static UserDomainObject getUserByPasswordResetId(HttpServletRequest request) {
-        String resetId = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_RESET_ID));
-
-        return Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByPasswordResetId(resetId);
-    }
-
-
     private Op getOp(HttpServletRequest request) {
         String opValue = StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAM_OP)).toUpperCase();
 
@@ -192,19 +138,14 @@ public class PasswordReset extends HttpServlet {
         }
     }
 
-
     private void setValidationErrors(HttpServletRequest request, String first, String... rest) {
-        List<String> errors = new LinkedList<String>();
+        List<String> errors = new LinkedList<>();
 
         errors.add(first);
-
-        for (String error : rest) {
-            errors.add(error);
-        }
+        errors.addAll(Arrays.asList(rest));
 
         request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, errors);
     }
-
 
     private UserIdentity createPasswordReset(String identity) {
         UserIdentity result = null;
@@ -287,52 +228,75 @@ public class PasswordReset extends HttpServlet {
         return result;
     }
 
-
     private void asyncSendPasswordResetURL(final UserIdentity userAndEmail, final String serverName, final String url) {
-        emailSender.submit(new Runnable() {
-            public void run() {
-                UserDomainObject user = userAndEmail.user();
-                String emailAddress = userAndEmail.identity();
+        emailSender.submit(() -> {
+            final UserDomainObject user = userAndEmail.user();
+            final String emailAddress = userAndEmail.identity();
+            final String loginName = user.getLoginName();
 
-                try {
-                    logger.debug(String.format(
-                            "Sending password reset URL to the user %s, using e-mail address %s.", user, emailAddress));
+            try {
+                logger.debug(String.format(
+                        "Sending password reset URL to the user %s, using e-mail address %s.", user, emailAddress));
 
-                    String subject = new LocalizedMessageFormat("passwordreset.password_reset_email.subject", serverName).toLocalizedString(user);
-                    String body = new LocalizedMessageFormat("passwordreset.password_reset_email.body", serverName, url).toLocalizedString(user);
+                final String passResetMessageSubjectKey = "passwordreset.password_reset_email.subject";
+                final String subject = new LocalizedMessageFormat(passResetMessageSubjectKey, serverName)
+                        .toLocalizedString(user);
 
-                    SystemData sysData = Imcms.getServices().getSystemData();
-                    String eMailServerMaster = sysData.getServerMasterAddress();
-                    SMTP smtp = Imcms.getServices().getSMTP();
+                final String passResetMessageBodyKey = "passwordreset.password_reset_email.body";
+                final String body = new LocalizedMessageFormat(passResetMessageBodyKey, serverName, url, loginName)
+                        .toLocalizedString(user);
 
-                    smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[]{emailAddress}, subject, body));
+                final SystemData sysData = Imcms.getServices().getSystemData();
+                final String eMailServerMaster = sysData.getServerMasterAddress();
 
-//                        Email email = new SimpleEmail();
-//                        email.setDebug(true);
-//                        email.setHostName("smtp.gmail.com");
-//                        email.setSmtpPort(587);
-//                        email.setDebug(true);
-//                        email.setAuthenticator(new DefaultAuthenticator("@gmail.com", ""));
-//                        email.setTLS(true);
-//                        email.setFrom("admin@imcode.com");
-//                        email.setSubject(subject);
-//                        email.setMsg(body);
-//                        email.addTo("@gmail.com");
-//                        email.send();
-                } catch (Exception e) {
-                    logger.error(String.format(
-                            "Failed to send password reset URL to the user %s, using e-mail address %s.",
-                            user, emailAddress),
-                            e);
-                }
+                Mail mail = new Mail(eMailServerMaster);
+                mail.setSubject(subject);
+                mail.setBody(body);
+                mail.setToAddresses(new String[]{emailAddress});
+                Imcms.getServices().getMailService().sendMail(mail);
+
+            } catch (Exception e) {
+                logger.error(String.format(
+                        "Failed to send password reset URL to the user %s, using e-mail address %s.",
+                        user, emailAddress),
+                        e);
             }
         });
     }
-
 
     @Override
     public void destroy() {
         super.destroy();
         emailSender.shutdownNow();
+    }
+
+
+    // Ops
+    public enum Op {
+        REQUEST_RESET,
+        SEND_RESET_URL,
+        RESET,
+        SAVE_NEW_PASSWORD,
+        UNDEFINED
+    }
+
+    public static abstract class UserIdentity {
+        public static UserIdentity of(final UserDomainObject user, final String identity) {
+            return new UserIdentity() {
+                @Override
+                public UserDomainObject user() {
+                    return user;
+                }
+
+                @Override
+                public String identity() {
+                    return identity;
+                }
+            };
+        }
+
+        public abstract UserDomainObject user();
+
+        public abstract String identity();
     }
 }

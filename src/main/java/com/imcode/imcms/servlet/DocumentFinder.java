@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.servlet.admin.Handler;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
@@ -8,27 +10,18 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.QueryParser;
 import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.util.Utility;
-
-import java.io.IOException;
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.apache.commons.collections.SetUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.collections.SetUtils;
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-
-import com.imcode.imcms.servlet.admin.Handler;
-import com.imcode.imcms.util.l10n.LocalizedMessage;
-import org.apache.lucene.search.BooleanClause.Occur;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
 
 public class DocumentFinder extends WebComponent {
 
@@ -49,7 +42,7 @@ public class DocumentFinder extends WebComponent {
         page.setDocumentFinder(this);
     }
 
-    public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
+    public void selectDocument(DocumentDomainObject selectedDocument) {
         selectDocumentCommand.handle(selectedDocument.getId());
     }
 
@@ -60,14 +53,18 @@ public class DocumentFinder extends WebComponent {
     void forwardWithPage(HttpServletRequest request, HttpServletResponse response, DocumentFinderPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
-        final BooleanQuery booleanQuery = new BooleanQuery();
+        final BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+
         if (null != page.getQuery()) {
-            booleanQuery.add(page.getQuery(), Occur.MUST);
+            booleanQueryBuilder.add(page.getQuery(), Occur.MUST);
         }
         if (null != restrictingQuery) {
-            booleanQuery.add(restrictingQuery, Occur.MUST);
+            booleanQueryBuilder.add(restrictingQuery, Occur.MUST);
         }
-        if (booleanQuery.getClauses().length > 0) {
+
+        final BooleanQuery booleanQuery = booleanQueryBuilder.build();
+
+        if (booleanQuery.iterator().hasNext()) {
             List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser(request));
             if (null != documentComparator) {
                 Collections.sort(documentsFound, documentComparator);

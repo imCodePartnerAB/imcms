@@ -1,6 +1,5 @@
 package com.imcode.imcms.flow;
 
-import imcode.server.document.DocumentDomainObject;
 import imcode.util.HttpSessionAttribute;
 import imcode.util.HttpSessionUtils;
 

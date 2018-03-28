@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import imcode.util.image.ImageInfo;
 import imcode.util.io.EmptyInputStreamSource;
 import imcode.util.io.InputStreamSource;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
+@EqualsAndHashCode(callSuper = true)
 public class NullImageSource extends ImageSource {
     @JsonIgnore
     public InputStreamSource getInputStreamSource() {
@@ -43,5 +45,9 @@ public class NullImageSource extends ImageSource {
     public ImageInfo getImageInfo() {
         return new ImageInfo();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return (obj instanceof NullImageSource);
+    }
 }
- 

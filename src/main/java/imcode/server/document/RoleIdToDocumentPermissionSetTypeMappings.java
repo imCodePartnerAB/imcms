@@ -1,5 +1,6 @@
 package imcode.server.document;
 
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import imcode.server.user.RoleId;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -13,11 +14,11 @@ import java.util.Map;
  * Represents mapping between roles and permissions sets for a document.
  * <p/>
  * For any role which is not mapped explicitly
- * permission set type defaults to DocumentPermissionSetTypeDomainObject.NONE.
+ * permission set type defaults to Permission.NONE.
  */
 public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
 
-    volatile HashMap<RoleId, DocumentPermissionSetTypeDomainObject> map = new HashMap<>();
+    volatile HashMap<RoleId, Permission> map = new HashMap<>();
 
     @Override
     public RoleIdToDocumentPermissionSetTypeMappings clone() {
@@ -37,7 +38,7 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
      * @param roleId                    a mapping key.
      * @param documentPermissionSetType mapping value. If null then entry is removed from this mapping.
      */
-    public void setPermissionSetTypeForRole(RoleId roleId, DocumentPermissionSetTypeDomainObject documentPermissionSetType) {
+    public void setPermissionSetTypeForRole(RoleId roleId, Permission documentPermissionSetType) {
         if (null == documentPermissionSetType) {
             map.remove(roleId);
         } else {
@@ -46,15 +47,14 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
     }
 
 
-
     /**
      * @param roleId mapping key.
      * @return permission set type for given role.
      */
-    public DocumentPermissionSetTypeDomainObject getPermissionSetTypeForRole(RoleId roleId) {
-        DocumentPermissionSetTypeDomainObject documentPermissionSetType = map.get(roleId);
+    public Permission getPermissionSetTypeForRole(RoleId roleId) {
+        Permission documentPermissionSetType = map.get(roleId);
         if (null == documentPermissionSetType) {
-            documentPermissionSetType = DocumentPermissionSetTypeDomainObject.NONE;
+            documentPermissionSetType = Permission.NONE;
         }
         return documentPermissionSetType;
     }
@@ -66,7 +66,7 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
         Collection pairs = CollectionUtils.collect(map.entrySet(), new Transformer() {
             public Object transform(Object object) {
                 Map.Entry entry = (Map.Entry) object;
-                return new Mapping((RoleId) entry.getKey(), (DocumentPermissionSetTypeDomainObject) entry.getValue());
+                return new Mapping((RoleId) entry.getKey(), (Permission) entry.getValue());
             }
         });
         return (Mapping[]) pairs.toArray(new Mapping[pairs.size()]);
@@ -78,14 +78,14 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
     public static class Mapping {
 
         private final RoleId roleId;
-        private final DocumentPermissionSetTypeDomainObject documentPermissionSetType;
+        private final Permission documentPermissionSetType;
 
-        public Mapping(RoleId roleId, DocumentPermissionSetTypeDomainObject documentPermissionSetType) {
+        public Mapping(RoleId roleId, Permission documentPermissionSetType) {
             this.roleId = roleId;
             this.documentPermissionSetType = documentPermissionSetType;
         }
 
-        public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetType() {
+        public Permission getDocumentPermissionSetType() {
             return documentPermissionSetType;
         }
 

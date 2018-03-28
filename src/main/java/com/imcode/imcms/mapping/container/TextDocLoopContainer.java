@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping.container;
 
-import com.imcode.imcms.api.Loop;
-import imcode.server.document.textdocument.MenuDomainObject;
+import com.imcode.imcms.model.Loop;
 
 import java.util.Objects;
 
@@ -10,10 +9,6 @@ import java.util.Objects;
  */
 public class TextDocLoopContainer extends TextDocVersionedContainer {
 
-    public static TextDocLoopContainer of(VersionRef versionRef, int loopNo, Loop loop) {
-        return new TextDocLoopContainer(versionRef, loopNo, loop);
-    }
-
     private final int loopNo;
     private final Loop loop;
 
@@ -21,6 +16,10 @@ public class TextDocLoopContainer extends TextDocVersionedContainer {
         super(versionRef);
         this.loop = Objects.requireNonNull(loop);
         this.loopNo = loopNo;
+    }
+
+    public static TextDocLoopContainer of(VersionRef versionRef, int loopNo, Loop loop) {
+        return new TextDocLoopContainer(versionRef, loopNo, loop);
     }
 
     public int getLoopNo() {

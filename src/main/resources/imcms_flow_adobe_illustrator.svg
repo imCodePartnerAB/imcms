@@ -1,0 +1,165 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1767.5 598.91">
+    <defs>
+        <style>
+            .cls-1,.cls-17,.cls-18,.cls-19,.cls-26,.cls-37,.cls-4{fill:none;}.cls-1,.cls-16,.cls-17{stroke:#757575;}.cls-1,.cls-16,.cls-17,.cls-19,.cls-4{stroke-miterlimit:10;}.cls-1{stroke-width:10px;}.cls-2{fill:#fed217;}.cls-2,.cls-5{stroke:#90caf9;}.cls-12,.cls-19,.cls-2,.cls-20,.cls-26,.cls-27,.cls-37,.cls-38,.cls-5{stroke-width:8px;}.cls-10,.cls-11,.cls-21,.cls-23,.cls-24,.cls-25,.cls-28,.cls-29,.cls-3,.cls-31,.cls-32,.cls-33,.cls-36,.cls-39,.cls-40,.cls-41,.cls-42,.cls-43,.cls-44,.cls-45,.cls-46,.cls-47,.cls-48,.cls-6,.cls-7{isolation:isolate;}.cls-21,.cls-3,.cls-32,.cls-33,.cls-7{font-size:27px;font-family:Arial-BoldMT,
+            Arial;font-weight:700;}.cls-10,.cls-11,.cls-21,.cls-23,.cls-24,.cls-25,.cls-3,.cls-32,.cls-33,.cls-36,.cls-45,.cls-46,.cls-47,.cls-48,.cls-49,.cls-7{fill:#fff;}.cls-4{stroke:#fff;stroke-width:2px;}.cls-5{fill:#ffc001;}.cls-7{letter-spacing:-0.14em;}.cls-8{letter-spacing:-0.07em;}.cls-9{fill:#397daa;}.cls-10,.cls-11{font-size:14px;font-family:ArialMT,
+            Arial;}.cls-11{letter-spacing:-0.04em;}.cls-12{fill:#ffb001;stroke:#1e88e5;}.cls-13{fill:#ef9353;}.cls-14{fill:url(#linear-gradient);}.cls-15{fill:#fff2cc;}.cls-16,.cls-17{stroke-width:6px;}.cls-16{fill:url(#linear-gradient-2);}.cls-18{stroke:#1000aa;}.cls-19{stroke:#009;}.cls-20{fill:#ff9a00;}.cls-20,.cls-26,.cls-38{stroke:#5c6bc0;}.cls-21{letter-spacing:-0.02em;}.cls-22{fill:#68b85c;}.cls-23,.cls-24,.cls-25,.cls-36{font-size:25px;}.cls-23,.cls-24,.cls-25,.cls-28,.cls-29,.cls-31,.cls-36,.cls-39,.cls-40,.cls-41,.cls-42,.cls-43,.cls-44,.cls-45,.cls-46,.cls-47,.cls-48,.cls-49{font-family:MyriadPro-Regular,
+            Myriad
+            Pro;}.cls-23{letter-spacing:-0.02em;}.cls-24{letter-spacing:-0.03em;}.cls-27,.cls-38{fill:#c60;}.cls-27,.cls-37{stroke:#4527a0;}.cls-28,.cls-29,.cls-31,.cls-43,.cls-44{font-size:36px;}.cls-28{letter-spacing:-0.03em;}.cls-30{letter-spacing:-0.01em;}.cls-31{letter-spacing:-0.01em;}.cls-32{letter-spacing:-0.04em;}.cls-33{letter-spacing:-0.04em;}.cls-34{fill:#bf639a;}.cls-35{fill:#b3b3b3;}.cls-36{letter-spacing:0.03em;}.cls-39,.cls-40,.cls-41,.cls-42{font-size:72px;}.cls-39{letter-spacing:0.01em;}.cls-41{letter-spacing:0.02em;}.cls-42{letter-spacing:-0.01em;}.cls-43{letter-spacing:-0.01em;}.cls-44{letter-spacing:-0.02em;}.cls-45,.cls-46,.cls-47,.cls-48{font-size:40px;}.cls-45{letter-spacing:-0.01em;}.cls-46{letter-spacing:-0.08em;}.cls-47{letter-spacing:-0.07em;}.cls-49{font-size:18px;}.cls-50{letter-spacing:0.02em;}
+        </style>
+        <linearGradient id="linear-gradient" x1="1465.65" y1="-111.9" x2="1465.65" y2="-110.9"
+                        gradientTransform="translate(-168492 13270.66) scale(115)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#e6d0de"/>
+            <stop offset="1" stop-color="#d5739d"/>
+        </linearGradient>
+        <linearGradient id="linear-gradient-2" x1="1521.5" y1="131.6" x2="1767.5" y2="131.6"
+                        gradientTransform="matrix(1, 0, 0, -1, 1.02, 560.52)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#fff"/>
+            <stop offset="1"/>
+        </linearGradient>
+    </defs>
+    <title>Imcms basic flow_UPD</title>
+    <line class="cls-1" x1="605.35" y1="0.02" x2="606.5" y2="343.91"/>
+    <rect class="cls-2" x="45.5" y="259.91" width="280" height="335" rx="42" ry="42"/>
+    <text class="cls-3" transform="translate(115.5 323.41)">BROWSER</text>
+    <path class="cls-4" d="M69.52,344.91h240" transform="translate(-4.02 0)"/>
+    <path class="cls-4" d="M69.52,564.91h240" transform="translate(-4.02 0)"/>
+    <rect class="cls-5" x="325.5" y="259.91" width="280" height="335" rx="42" ry="42"/>
+    <g class="cls-6">
+        <text class="cls-3" transform="translate(381.49 323.41)">J</text>
+        <text class="cls-7" transform="translate(396.51 323.41)">A
+            <tspan class="cls-8" x="15.6" y="0">V</tspan>
+        </text>
+        <text class="cls-3" transform="translate(430.01 323.41)">ASCRIPT</text>
+    </g>
+    <path class="cls-4" d="M349.52,344.91h240" transform="translate(-4.02 0)"/>
+    <path class="cls-4" d="M349.52,564.91h240" transform="translate(-4.02 0)"/>
+    <circle class="cls-9" cx="326.5" cy="457.91" r="57.5"/>
+    <g class="cls-6">
+        <text class="cls-10" transform="translate(305 464.41)">INPU</text>
+        <text class="cls-11" transform="translate(338.45 464.41)">T</text>
+    </g>
+    <rect class="cls-12" x="603.5" y="259.91" width="280" height="335" rx="42" ry="42"/>
+    <text class="cls-3" transform="translate(651.26 323.41)">CONTROLLER</text>
+    <path class="cls-4" d="M629.52,344.91h240" transform="translate(-4.02 0)"/>
+    <path class="cls-4" d="M629.52,564.91h240" transform="translate(-4.02 0)"/>
+    <circle class="cls-13" cx="606.5" cy="457.91" r="57.5"/>
+    <circle class="cls-14" cx="57.5" cy="458.91" r="57.5"/>
+    <text class="cls-10" transform="translate(37.55 465.41)">USER</text>
+    <path class="cls-15" d="M173.85,444.71l40.67,1.2-10-18,50,30-50,30,10-18-40.67,1.2,1.75-13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-15" d="M214.18,471.11l-40.67-1.2,10,18-50-30,50-30-10,18,40.67-1.2-1.75,13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-15" d="M450.85,442.71l40.67,1.2-10-18,50,30-50,30,10-18-40.67,1.2,1.75-13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-15" d="M491.18,469.11l-40.67-1.2,10,18-50-30,50-30-10,18,40.67-1.2-1.75,13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-15" d="M729.85,445.71l40.67,1.2-10-18,50,30-50,30,10-18-40.67,1.2,1.75-13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-15" d="M770.18,472.11l-40.67-1.2,10,18-50-30,50-30-10,18,40.67-1.2-1.75,13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-16" d="M1522.52,314.62c0-68.92,246-68.92,246,0v228.6c0,68.92-246,68.92-246,0Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-17"
+          d="M1522.52,314.62c0,51.68,246,51.68,246,0m-246,25.84c0,51.68,246,51.68,246,0m-246,25.84c0,51.68,246,51.68,246,0"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-18" d="M1173.52,394.91a57.5,57.5,0,0,0,0,115" transform="translate(-4.02 0)"/>
+    <path class="cls-19" d="M1171.52,390.41a62.38,62.38,0,0,0,0,124" transform="translate(-4.02 0)"/>
+    <rect class="cls-20" x="889.5" y="259.91" width="280" height="335" rx="42" ry="42"/>
+    <g class="cls-6">
+        <text class="cls-3" transform="translate(965.98 323.41)">SE</text>
+        <text class="cls-21" transform="translate(1002 323.41)">R</text>
+        <text class="cls-3" transform="translate(1021.01 323.41)">VICE</text>
+    </g>
+    <path class="cls-4" d="M909.52,344.91h240" transform="translate(-4.02 0)"/>
+    <path class="cls-4" d="M909.52,564.91h240" transform="translate(-4.02 0)"/>
+    <circle class="cls-22" cx="885.5" cy="456.91" r="57.5"/>
+    <path class="cls-15" d="M1008.85,440.71l40.67,1.2-10-18,50,30-50,30,10-18-40.67,1.2,1.75-13.2Z"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-15" d="M1049.18,467.11l-40.67-1.2,10,18-50-30,50-30-10,18,40.67-1.2-1.75,13.2Z"
+          transform="translate(-4.02 0)"/>
+    <g class="cls-6">
+        <text class="cls-23" transform="translate(867.08 464.41)">D</text>
+        <text class="cls-24" transform="translate(883.1 464.41)">T</text>
+        <text class="cls-25" transform="translate(894.85 464.41)">O</text>
+    </g>
+    <path class="cls-26" d="M891.57,394.91C857,398.28,830.82,426.52,832,459s29.33,58.72,64,59.92"
+          transform="translate(-4.02 0)"/>
+    <path class="cls-27" d="M1422,216.91H1255.26" transform="translate(-4.02 0)"/>
+    <g class="cls-6">
+        <text class="cls-28" transform="translate(1251.24 192.41)">P</text>
+        <text class="cls-29" transform="translate(1269.49 192.41)">ersis
+            <tspan class="cls-30" x="66.74" y="0">t</tspan>
+            <tspan x="78.44" y="0">en</tspan>
+        </text>
+        <text class="cls-31" transform="translate(1385.48 192.41)">c</text>
+        <text class="cls-29" transform="translate(1401.39 192.41)">e</text>
+    </g>
+    <path class="cls-27" d="M1186.52,266.91q10,0,34.33-25t34.34-25" transform="translate(-4.02 0)"/>
+    <rect class="cls-27" x="1167.5" y="258.91" width="280" height="335" rx="42" ry="42"/>
+    <g class="cls-6">
+        <text class="cls-3" transform="translate(1223.23 322.41)">REPOSI</text>
+        <text class="cls-21" transform="translate(1325.26 322.41)">T</text>
+        <text class="cls-3" transform="translate(1341.26 322.41)">O</text>
+        <text class="cls-32" transform="translate(1362.26 322.41)">R</text>
+        <text class="cls-33" transform="translate(1380.76 322.41)">Y</text>
+    </g>
+    <path class="cls-4" d="M1195.52,343.91h240" transform="translate(-4.02 0)"/>
+    <path class="cls-4" d="M1195.52,563.91h240" transform="translate(-4.02 0)"/>
+    <circle class="cls-34" cx="1169.5" cy="452.41" r="57.5"/>
+    <path class="cls-35" d="M1338.64,444l129.75,1.08-12.28-16.2,61.41,27-61.41,27,12.28-16.2-129.75,1.08Z"
+          transform="translate(-4.02 0)"/>
+    <g class="cls-6">
+        <text class="cls-25" transform="translate(1134 458.74)">ENTI</text>
+        <text class="cls-36" transform="translate(1181.15 458.74)">T</text>
+        <text class="cls-25" transform="translate(1194.27 458.74)">Y</text>
+    </g>
+    <path class="cls-37" d="M1171.52,390.41a62.38,62.38,0,0,0,0,124" transform="translate(-4.02 0)"/>
+    <path class="cls-38" d="M1186.52,212.93H990.17" transform="translate(-4.02 0)"/>
+    <path class="cls-38" d="M921.43,262.93q10,0,34.33-25t34.34-25" transform="translate(-4.02 0)"/>
+    <path class="cls-12" d="M885,212.93H706.76" transform="translate(-4.02 0)"/>
+    <path class="cls-12" d="M638,262.93q10,0,34.33-25t34.34-25" transform="translate(-4.02 0)"/>
+    <g class="cls-6">
+        <text class="cls-39" transform="translate(1108.41 100.41)">S</text>
+        <text class="cls-40" transform="translate(1144.34 100.41)">e</text>
+        <text class="cls-41" transform="translate(1180.41 100.41)">r</text>
+        <text class="cls-42" transform="translate(1205.75 100.41)">v</text>
+        <text class="cls-40" transform="translate(1239.66 100.41)">er side</text>
+    </g>
+    <g class="cls-6">
+        <text class="cls-40" transform="translate(137.92 100.41)">Clie</text>
+        <text class="cls-40" transform="translate(249.59 100.41)">n</text>
+        <text class="cls-40" transform="translate(289.26 100.41)">t side</text>
+    </g>
+    <g class="cls-6">
+        <text class="cls-29" transform="translate(977.23 192.41)">Business lo</text>
+        <text class="cls-43" transform="translate(1141.68 192.41)">g</text>
+        <text class="cls-29" transform="translate(1161.58 192.41)">ic</text>
+    </g>
+    <g class="cls-6">
+        <text class="cls-44" transform="translate(691.32 186.91)">P</text>
+        <text class="cls-31" transform="translate(709.9 186.91)">r</text>
+        <text class="cls-29" transform="translate(721.31 186.91)">ese</text>
+        <text class="cls-29" transform="translate(771.64 186.91)">n</text>
+        <text class="cls-29" transform="translate(791.47 186.91)">t</text>
+        <text class="cls-29" transform="translate(803.39 186.91)">a</text>
+        <text class="cls-29" transform="translate(820.6 186.91)">tion</text>
+    </g>
+    <g class="cls-6">
+        <text class="cls-45" transform="translate(1558.96 322.41)">D</text>
+        <text class="cls-46" transform="translate(1585.04 322.41)">A</text>
+        <text class="cls-47" transform="translate(1606.44 322.41)">T</text>
+        <text class="cls-48" transform="translate(1623.32 322.41)">ABASE</text>
+    </g>
+    <path class="cls-35" d="M1456.16,467.79l-105.64-1.08,10,16.2-50-27,50-27-10,16.2L1456.16,444v23.76Z"
+          transform="translate(-4.02 0)"/>
+    <text class="cls-49" transform="translate(590.49 427.91)">G
+        <tspan class="cls-50" x="11.63" y="0">E</tspan>
+        <tspan x="20.77" y="0">T</tspan>
+        <tspan x="-5.04" y="21.6">POST</tspan>
+        <tspan x="-0.23" y="43.2">PUT</tspan>
+        <tspan x="-13.28" y="64.8">DEL</tspan>
+        <tspan class="cls-50" x="16.06" y="64.8">E</tspan>
+        <tspan x="25.2" y="64.8">TE</tspan>
+    </text>
+</svg>

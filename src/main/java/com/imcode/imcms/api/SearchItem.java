@@ -1,6 +1,5 @@
 package com.imcode.imcms.api;
 
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.index.DocumentStoredFields;
 
 /**

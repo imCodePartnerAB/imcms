@@ -9,7 +9,6 @@ import imcode.server.ImcmsServices;
 import imcode.server.user.*;
 import imcode.util.Html;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
-import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,10 +17,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,7 +57,7 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
     private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
-    private static final int MAXIMUM_PASSWORD_LENGTH = 15;
+    private static final int MAXIMUM_PASSWORD_LENGTH = 128;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
@@ -75,10 +72,6 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     /**
-     * @param login
-     * @param password
-     * @param passwordCheck
-     * @return
      * @since 4.0.7
      */
     public static LocalizedMessage validatePassword(String login, String password, String passwordCheck) {
@@ -231,11 +224,13 @@ public class UserEditorPage extends OkCancelPage {
             editedUser.addPhoneNumber(editedPhoneNumber);
             currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
         } else if (null != request.getParameter(REQUEST_PARAMETER__REMOVE_PHONE_NUMBER)
-                && null != selectedPhoneNumber) {
+                && null != selectedPhoneNumber)
+        {
             editedUser.removePhoneNumber(selectedPhoneNumber);
             currentPhoneNumber = selectedPhoneNumber;
         } else if (null != request.getParameter(REQUEST_PARAMETER__EDIT_PHONE_NUMBER)
-                && null != selectedPhoneNumber) {
+                && null != selectedPhoneNumber)
+        {
             currentPhoneNumber = selectedPhoneNumber;
         }
         forward(request, response);
@@ -250,7 +245,8 @@ public class UserEditorPage extends OkCancelPage {
                 boolean editedUserHasOnlyTheUsersRole = 1 == editedUser.getRoleIds().length;
                 UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
                 if (editedUserHasOnlyTheUsersRole || loggedOnUser.isUserAdminAndNotSuperAdmin()
-                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser)) {
+                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser))
+                {
                     errorMessage = ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE;
                 } else {
                     super.dispatchOk(request, response);
@@ -306,12 +302,11 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     public String createPhoneTypesHtmlOptionList(final UserDomainObject loggedOnUser, PhoneNumberType selectedType) {
-        return Html.createOptionList(Arrays.asList(PhoneNumberType.getAllPhoneNumberTypes()), selectedType, new ToStringPairTransformer() {
-            public String[] transformToStringPair(Object object) {
-                PhoneNumberType phoneType = (PhoneNumberType) object;
-                return new String[]{"" + phoneType.getId(), phoneType.getName().toLocalizedString(loggedOnUser)};
-            }
-        });
+        return Html.createOptionList(
+                Arrays.asList(PhoneNumberType.getAllPhoneNumberTypes()),
+                Collections.singleton(selectedType),
+                phoneType -> new String[]{"" + phoneType.getId(), phoneType.getName().toLocalizedString(loggedOnUser)}
+        );
     }
 
     public PhoneNumber getCurrentPhoneNumber() {
@@ -319,15 +314,10 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     public String getUserPhoneNumbersHtmlOptionList(final HttpServletRequest request) {
-        Set phoneNumbers = editedUser.getPhoneNumbers();
-        return Html.createOptionList(phoneNumbers, currentPhoneNumber, new ToStringPairTransformer() {
-            protected String[] transformToStringPair(Object object) {
-                PhoneNumber phoneNumber = (PhoneNumber) object;
-                return new String[]{phoneNumber.getType().getId() + " " + phoneNumber.getNumber(), "("
-                        + phoneNumber.getType().getName().toLocalizedString(request)
-                        + ") "
-                        + phoneNumber.getNumber()};
-            }
+        Set<PhoneNumber> phoneNumbers = editedUser.getPhoneNumbers();
+        return Html.createOptionList(phoneNumbers, Collections.singleton(currentPhoneNumber), phoneNumber -> new String[]{
+                phoneNumber.getType().getId() + " " + phoneNumber.getNumber(),
+                "(" + phoneNumber.getType().getName().toLocalizedString(request) + ") " + phoneNumber.getNumber()
         });
     }
 
@@ -355,7 +345,7 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     private String createRolesHtmlOptionList(RoleDomainObject[] allRoles, RoleDomainObject[] usersRoles) {
-        return Html.createOptionList(Arrays.asList(allRoles), Arrays.asList(usersRoles), new RoleToStringPairTransformer());
+        return Html.createOptionList(Arrays.asList(allRoles), Arrays.asList(usersRoles), role -> new String[]{"" + role.getId(), role.getName()});
     }
 
     public String createUserAdminRolesHtmlOptionList() {
@@ -394,9 +384,8 @@ public class UserEditorPage extends OkCancelPage {
         super.forward(request, response);
     }
 
-    public static class RoleToStringPairTransformer extends ToStringPairTransformer {
-        protected String[] transformToStringPair(Object object) {
-            RoleDomainObject role = (RoleDomainObject) object;
+    public static class RoleToStringPairTransformer implements Function<RoleDomainObject, String[]> {
+        public String[] apply(RoleDomainObject role) {
             return new String[]{"" + role.getId(), role.getName()};
         }
     }

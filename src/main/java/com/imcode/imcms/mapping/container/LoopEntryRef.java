@@ -12,10 +12,6 @@ import java.util.regex.Pattern;
  */
 public class LoopEntryRef {
 
-    public static LoopEntryRef of(int loopNo, int entryNo) {
-        return new LoopEntryRef(loopNo, entryNo);
-    }
-
     private final int loopNo;
     private final int entryNo;
     private final int cachedHashCode;
@@ -24,6 +20,10 @@ public class LoopEntryRef {
         this.loopNo = loopNo;
         this.entryNo = entryNo;
         this.cachedHashCode = Objects.hash(loopNo, entryNo);
+    }
+
+    public static LoopEntryRef of(int loopNo, int entryNo) {
+        return new LoopEntryRef(loopNo, entryNo);
     }
 
     public static Optional<LoopEntryRef> parse(String ref) {

@@ -2,6 +2,10 @@ package com.imcode.imcms.api;
 
 import imcode.server.document.TemplateDomainObject;
 
+/**
+ * @deprecated use {@link com.imcode.imcms.domain.dto.TemplateDTO} class instead
+ */
+@Deprecated
 public class Template {
 
     private final TemplateDomainObject internalTemplate;

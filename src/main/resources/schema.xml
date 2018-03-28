@@ -1,4 +1,4 @@
-<schema version="6.22" scripts-dir="WEB-INF/sql"
+<schema version="6.46"
         xsi:noNamespaceSchemaLocation="schema.xsd"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -93,6 +93,78 @@
         </diff>
         <diff from="6.21" to="6.22">
             <script>diff/diff-6.21-6.22-mysql.sql</script>
+        </diff>
+        <diff from="6.22" to="6.23">
+            <script>diff/diff-6.22-6.23-mysql.sql</script>
+        </diff>
+        <diff from="6.23" to="6.24">
+            <script>diff/diff-6.23-6.24-mysql.sql</script>
+        </diff>
+        <diff from="6.24" to="6.25">
+            <script>diff/diff-6.24-6.25-mysql.sql</script>
+        </diff>
+        <diff from="6.25" to="6.26">
+            <script>diff/diff-6.25-6.26-mysql.sql</script>
+        </diff>
+        <diff from="6.26" to="6.27">
+            <script>diff/diff-6.26-6.27-mysql.sql</script>
+        </diff>
+        <diff from="6.27" to="6.28">
+            <script>diff/diff-6.27-6.28-mysql.sql</script>
+        </diff>
+        <diff from="6.28" to="6.29">
+            <script>diff/diff-6.28-6.29-mysql.sql</script>
+        </diff>
+        <diff from="6.29" to="6.30">
+            <script>diff/diff-6.29-6.30-mysql.sql</script>
+        </diff>
+        <diff from="6.30" to="6.31">
+            <script>diff/diff-6.30-6.31-mysql.sql</script>
+        </diff>
+        <diff from="6.31" to="6.32">
+            <script>diff/diff-6.31-6.32-mysql.sql</script>
+        </diff>
+        <diff from="6.32" to="6.33">
+            <script>diff/diff-6.32-6.33-mysql.sql</script>
+        </diff>
+        <diff from="6.33" to="6.34">
+            <script>diff/diff-6.33-6.34-mysql.sql</script>
+        </diff>
+        <diff from="6.34" to="6.35">
+            <script>diff/diff-6.34-6.35-mysql.sql</script>
+        </diff>
+        <diff from="6.35" to="6.36">
+            <script>diff/diff-6.35-6.36-mysql.sql</script>
+        </diff>
+        <diff from="6.36" to="6.37">
+            <script>diff/diff-6.36-6.37-mysql.sql</script>
+        </diff>
+        <diff from="6.37" to="6.38">
+            <script>diff/diff-6.37-6.38-mysql.sql</script>
+        </diff>
+        <diff from="6.38" to="6.39">
+            <script>diff/diff-6.38-6.39-mysql.sql</script>
+        </diff>
+        <diff from="6.39" to="6.40">
+            <script>diff/diff-6.39-6.40-mysql.sql</script>
+        </diff>
+        <diff from="6.40" to="6.41">
+            <script>diff/diff-6.40-6.41-mysql.sql</script>
+        </diff>
+        <diff from="6.41" to="6.42">
+            <script>diff/diff-6.41-6.42-mysql.sql</script>
+        </diff>
+        <diff from="6.42" to="6.43">
+            <script>diff/diff-6.42-6.43-mysql.sql</script>
+        </diff>
+        <diff from="6.43" to="6.44">
+            <script>diff/diff-6.43-6.44-mysql.sql</script>
+        </diff>
+        <diff from="6.44" to="6.45">
+            <script>diff/diff-6.44-6.45-mysql.sql</script>
+        </diff>
+        <diff from="6.45" to="6.46">
+            <script>diff/diff-6.45-6.46-mysql.sql</script>
         </diff>
     </diffs>
 </schema>

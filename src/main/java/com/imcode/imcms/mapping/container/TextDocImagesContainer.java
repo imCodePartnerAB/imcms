@@ -11,19 +11,19 @@ import java.util.Objects;
  */
 public class TextDocImagesContainer extends TextDocObjectVersionedContainer {
 
+    private final Map<DocumentLanguage, ImageDomainObject> images;
+
+    public TextDocImagesContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
+        super(loopEntryRef, imageNo, versionRef);
+        this.images = Objects.requireNonNull(images);
+    }
+
     public static TextDocImagesContainer of(VersionRef versionRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
         return new TextDocImagesContainer(versionRef, null, imageNo, images);
     }
 
     public static TextDocImagesContainer of(VersionRef versionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
         return new TextDocImagesContainer(versionRef, loopEntryRef, imageNo, images);
-    }
-
-    private final Map<DocumentLanguage, ImageDomainObject> images;
-
-    public TextDocImagesContainer(VersionRef versionRef, LoopEntryRef loopEntryRef, int imageNo, Map<DocumentLanguage, ImageDomainObject> images) {
-        super(loopEntryRef, imageNo, versionRef);
-        this.images = Objects.requireNonNull(images);
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getImages() {

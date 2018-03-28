@@ -1,0 +1,46 @@
+.imcms-space-around__label {
+    margin-bottom: 12px;
+    display: inline-block;
+}
+
+.imcms-space-around__input-box {
+    display: block;
+    overflow: hidden;
+    max-width: 322px;
+}
+
+.imcms-space-around__input {
+    background-color: #fff;
+    border-top: 1px solid #d3d8de;
+    border-bottom: 1px solid #d3d8de;
+    border-right: none;
+    border-left: none;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    color: #2f4047;
+    outline: none;
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 10px 15px;
+    width: 25%;
+}
+
+.imcms-space-around__input:focus {
+    border-color: #d3d8de;
+}
+
+.imcms-space-around__input:first-child {
+    border-left: 1px solid #d3d8de;
+    -webkit-border-radius: 0 0 5px 5px;
+    -moz-border-radius: 0 0 5px 5px;
+    border-radius: 5px 0 0 5px;
+}
+
+.imcms-space-around__input:last-child {
+    border-right: 1px solid #d3d8de;
+    -webkit-border-radius: 5px 5px 0 0;
+    -moz-border-radius: 5px 5px 0 0;
+    border-radius: 0 5px 5px 0;
+}

@@ -1,1 +1,0 @@
-<input type="text" name="#meta_id#" value="#sortkey#" size="10" maxlength="12" style="font: 11px Tahoma,Verdana,sans-serif;">

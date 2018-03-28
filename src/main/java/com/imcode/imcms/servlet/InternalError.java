@@ -2,8 +2,8 @@ package com.imcode.imcms.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -13,16 +13,21 @@ import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
-import org.apache.http.conn.ssl.*;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.context.ApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,11 +43,20 @@ import static org.apache.commons.lang3.StringUtils.defaultString;
 
 public class InternalError extends HttpServlet {
 
-    private final String ERROR_500_VIEW_URL = "/imcms/500.jsp";
-
-    private final String DEFAULT_RESPONSE = "N/A";
-
     private final static Logger LOGGER = Logger.getLogger(InternalError.class);
+    private final static String ERROR_500_VIEW_URL = "/imcms/500.jsp";
+    private final static String DEFAULT_RESPONSE = "N/A";
+    private static final long serialVersionUID = 4218112557790098610L;
+
+    private Properties properties;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        final ServletContext servletContext = config.getServletContext();
+        final ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
+        this.properties = ctx.getBean("imcmsProperties", Properties.class);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -50,8 +64,9 @@ public class InternalError extends HttpServlet {
         Object exception = request.getAttribute(attributeName);
         request.setAttribute(attributeName, null);
 
-        String userId = Utility.getLoggedOnUser(request).getId() + "";
-
+        int userId = Optional.ofNullable(Utility.getLoggedOnUser(request))
+                .map(UserDomainObject::getId)
+                .orElse(2);
         try {
             String responseJson = sendError((Throwable) exception, request, userId);
             String errorId = logError(responseJson, userId);
@@ -63,22 +78,19 @@ public class InternalError extends HttpServlet {
         request.getRequestDispatcher(ERROR_500_VIEW_URL).forward(request, response);
     }
 
-    private String sendError(Throwable exception, HttpServletRequest request, String userId) throws Exception {
-        Properties serverProperties = Imcms.getServerProperties();
-
+    private String sendError(Throwable exception, HttpServletRequest request, int userId) throws Exception {
         Map<String, String> exceptionInfo = parse(exception);
-
         Map<String, String> requestInfo = parse(request);
 
         setInfo(request, exceptionInfo, requestInfo);
 
-        String errorLoggerUrl = ofNullable(serverProperties.getProperty("ErrorLoggerUrl"))
-                                    .map(url -> !url.isEmpty() ? url : Imcms.ERROR_LOGGER_URL)
-                                    .orElse(Imcms.ERROR_LOGGER_URL);
+        String errorLoggerUrl = ofNullable(properties.getProperty("ErrorLoggerUrl"))
+                .filter(url -> !url.isEmpty())
+                .orElse(Imcms.ERROR_LOGGER_URL);
 
-        String jdbcUrl = serverProperties.getProperty("JdbcUrl");
+        String jdbcUrl = properties.getProperty("JdbcUrl");
         String dbName = jdbcUrl.substring(jdbcUrl.lastIndexOf("/"),
-                jdbcUrl.contains("?") ?  jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
+                jdbcUrl.contains("?") ? jdbcUrl.lastIndexOf('?') : jdbcUrl.length());
 
         HttpClient httpClient = createHttpClient();
 
@@ -101,7 +113,7 @@ public class InternalError extends HttpServlet {
                 .add("imcms-version", Version.getImcmsVersion(getServletContext()))
                 .add("database-version", defaultString(Version.getRequiredDbVersion(), DEFAULT_RESPONSE))
 
-                .add("user-id", userId)
+                .add("user-id", String.valueOf(userId))
 
                 .build();
 
@@ -156,7 +168,7 @@ public class InternalError extends HttpServlet {
         return requestInfo;
     }
 
-    private String logError(String response, String userId) throws IOException {
+    private String logError(String response, int userId) throws IOException {
         HashMap<String, Object> responseMap = new ObjectMapper().readValue(response, HashMap.class);
         String errorId = (String) responseMap.get("error_id");
         String state = (String) responseMap.get("state");
@@ -173,9 +185,9 @@ public class InternalError extends HttpServlet {
         HttpClientBuilder builder = HttpClientBuilder.create();
 
         SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, (x509Certificates, str) -> true).build();
-        builder.setSslcontext(sslContext);
+        builder.setSSLContext(sslContext);
 
-        HostnameVerifier hostnameVerifier = SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
+        HostnameVerifier hostnameVerifier = NoopHostnameVerifier.INSTANCE;
 
         SSLConnectionSocketFactory sslSocketFactory = new SSLConnectionSocketFactory(sslContext, hostnameVerifier);
         Registry<ConnectionSocketFactory> socketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()

@@ -1,0 +1,48 @@
+.imcms-folders {
+    display: block;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-folders:before {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.imcms-folders--close,
+.imcms-folders__subfolder {
+    display: none;
+}
+
+.imcms-folders[data-folders-lvl="2"] .imcms-folder {
+    padding-left: 98px;
+}
+
+.imcms-folders[data-folders-lvl="2"] .imcms-folder__btn {
+    left: 70px;
+}
+
+.imcms-folders[data-folders-lvl="3"] .imcms-folder {
+    padding-left: 126px;
+}
+
+.imcms-folders[data-folders-lvl="3"] .imcms-folder__btn {
+    left: 98px;
+}
+
+.imcms-folders[data-folders-lvl="4"] .imcms-folder {
+    padding-left: 154px;
+}
+
+.imcms-folders[data-folders-lvl="4"] .imcms-folder__btn {
+    left: 126px;
+}
+
+.imcms-folders[data-folders-lvl="5"] .imcms-folder {
+    padding-left: 182px;
+}
+
+.imcms-folders[data-folders-lvl="5"] .imcms-folder__btn {
+    left: 154px;
+}
