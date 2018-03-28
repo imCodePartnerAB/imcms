@@ -62,8 +62,8 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      * </code></pre>
      *
      * @param block {null|string}
-     * @param element {null|string}
-     * @param modifier {null|string}
+     * @param element {null|string?}
+     * @param modifier {string?}
      * @returns {string} BEM-styled class
      */
     BemBuilder.buildClass = function (block, element, modifier) {
@@ -82,8 +82,8 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      * </code></pre>
      *
      * @param block {null|string}
-     * @param element {null|string}
-     * @param modifier {null|string}
+     * @param element {null|string?}
+     * @param modifier {string?}
      * @returns {string} selector for BEM-styled class
      */
     BemBuilder.buildClassSelector = function (block, element, modifier) {
