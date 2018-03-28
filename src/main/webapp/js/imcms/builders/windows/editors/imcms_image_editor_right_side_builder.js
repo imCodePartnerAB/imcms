@@ -9,7 +9,7 @@ Imcms.define(
               imageCropper, WindowBuilder, imageRotate) {
 
         texts = texts.editors.image;
-        var $tag, imageData, $fileFormat;
+        var $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
         var imgPosition = {
             align: "NONE",
             spaceAround: {
@@ -53,6 +53,12 @@ Imcms.define(
             clearDataStrategy: clearExifData
         });
 
+        var alignButtonSelectorToAlignName = {
+            NONE: BEM.buildClassSelector(null, "imcms-button", "align-none"),
+            LEFT: BEM.buildClassSelector(null, "imcms-button", "align-left"),
+            RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
+        };
+
         return {
             updateImageData: function ($newTag, newImageData) {
                 $tag = $newTag;
@@ -65,6 +71,8 @@ Imcms.define(
                 spaceAround.left && $("#image-space-left").val(spaceAround.left).blur();
 
                 $fileFormat.selectValue(imageData.format);
+
+                $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align]).click();
             },
             build: function (opts) {
 
@@ -142,28 +150,37 @@ Imcms.define(
                 }
 
                 function buildTextAlignmentBtnsContainer() {
+                    var $alignContainer;
+                    var activeAlignClass = "imcms-button--align-active";
+
+                    function setAlign(align, button) {
+                        imgPosition.align = align;
+
+                        $alignContainer.find("." + activeAlignClass).removeClass(activeAlignClass);
+                        $(button).addClass(activeAlignClass);
+                    }
+
+                    function onAlignNoneClick() {
+                        setAlign("NONE", this);
+                    }
+
+                    function onAlignLeftClick() {
+                        setAlign("LEFT", this);
+                    }
+
+                    function onAlignRightClick() {
+                        setAlign("RIGHT", this);
+                    }
+
                     function buildAlignButton(modifiers, onClick) {
                         return components.buttons.imcmsButton({click: onClick}, ["align"].concat(modifiers));
                     }
 
-                    // todo: implement onClick!
-                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"]).text(texts.none);
-                    var $alignLeftBtn = buildAlignButton(["align-left"]);
-                    var $alignRightBtn = buildAlignButton(["align-right"]);
+                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], onAlignNoneClick).text(texts.none);
+                    var $alignLeftBtn = buildAlignButton(["align-left"], onAlignLeftClick);
+                    var $alignRightBtn = buildAlignButton(["align-right"], onAlignRightClick);
 
-                    $alignNoneBtn.click(function () {
-                        imgPosition.align = "NONE";
-                    });
-
-                    $alignLeftBtn.click(function () {
-                        imgPosition.align = "LEFT";
-                    });
-
-                    $alignRightBtn.click(function () {
-                        imgPosition.align = "RIGHT";
-                    });
-
-                    return components.buttons.buttonsContainer("<div>", [
+                    return $alignContainer = components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,
                         $alignLeftBtn,
                         $alignRightBtn
@@ -347,7 +364,7 @@ Imcms.define(
                     });
 
                     var $textAlignmentBtnsTitle = advancedModeBEM.buildElement("title", "<div>", {text: texts.alignment});
-                    var $textAlignmentBtnsContainer = buildTextAlignmentBtnsContainer();
+                    $textAlignmentBtnsContainer = buildTextAlignmentBtnsContainer();
                     var $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
                     var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
                     var $cropCoordinatesContainer = buildCropCoordinatesContainer();

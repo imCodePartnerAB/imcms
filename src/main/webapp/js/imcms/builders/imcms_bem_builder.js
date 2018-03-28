@@ -61,9 +61,9 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      *     var bemClass = BEM.buildClass("one", "two", "three"); // = "one__two--three"
      * </code></pre>
      *
-     * @param block {string?}
-     * @param element {string?}
-     * @param modifier {string?}
+     * @param block {null|string}
+     * @param element {null|string}
+     * @param modifier {null|string}
      * @returns {string} BEM-styled class
      */
     BemBuilder.buildClass = function (block, element, modifier) {
@@ -81,9 +81,9 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      *     var bemClassSelector = BEM.buildClassSelector("one", "two", "three"); // = ".one__two--three"
      * </code></pre>
      *
-     * @param block {string}
-     * @param element {string}
-     * @param modifier {string}
+     * @param block {null|string}
+     * @param element {null|string}
+     * @param modifier {null|string}
      * @returns {string} selector for BEM-styled class
      */
     BemBuilder.buildClassSelector = function (block, element, modifier) {
