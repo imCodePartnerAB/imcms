@@ -155,7 +155,7 @@ Imcms.define(
         function fillData(image) {
 
             function fillBodyHeadData(imageData) {
-                var titleText = imageData.name + "." + imageData.format;
+                var titleText = imageData.name;
                 var fullTitle = titleText;
                 var pathText = imageData.path;
                 var fullPath = pathText;
