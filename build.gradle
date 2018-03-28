@@ -1,28 +1,11 @@
 apply plugin: 'java'
 apply plugin: 'maven'
-apply plugin: 'idea'
-
 apply plugin: 'war'
 
-apply plugin: 'scala'
-
-//Tomcat plugin
-//https://github.com/bmuschko/gradle-tomcat-plugin
-//apply plugin: 'com.bmuschko.tomcat-base'
-
 group = 'com.imcode.imcms'
-version = '6.0.0-alpha108-SNAPSHOT'
+version = '6.0.0-SNAPSHOT'
 
 description = """imCMS"""
-
-ant.importBuild 'pom-ant.xml'
-//<property name="version" value="${project.version}"/>
-//<property name="build.webapp.dir" value="${build.webapp.dir}"/>
-ant.property(name: 'version', location: project.version)
-ant.property(name: 'build.webapp.dir', location: project.webAppDirName)
-
-project.webAppDirName = 'src/main/web'
-
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -30,278 +13,112 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
-//https://github.com/eriwen/gradle-js-plugin
-//plugins {
-//    id "com.eriwen.gradle.css" version "2.14.0"
-//    id "com.eriwen.gradle.js" version "2.14.1"
-//}
-
-sourceSets {
-    main {
-        scala {
-            srcDirs = ['src/main/scala', 'src/main/java']
-            srcDirs = ['src/main/scala', 'src/main/java', 'src/*']
-        }
-        java {
-            srcDirs = []
-        }
-    }
-    test {
-        scala {
-            srcDirs = ['src/test/scala', 'src/test/java']
-//            srcDirs = ['src/test/*']
-        }
-        java {
-            srcDirs = []
-        }
-    }
-}
-
-
-//task runAnt {
-//    doLast {
-//        ant.taskdef(name: 'pmd',
-//                classname: 'net.sourceforge.pmd.ant.PMDTask',
-//                classpath: configurations.pmd.asPath)
-//        ant.pmd(shortFilenames: 'true',
-//                failonruleviolation: 'true',
-//                rulesetfiles: file('pmd-rules.xml').toURI().toString()) {
-//            formatter(type: 'text', toConsole: 'true')
-//            fileset(dir: 'src')
-//        }
-////        ant.run(resource: 'checkstyletask.properties') {
-////            classpath {
-////                fileset(dir: 'libs', includes: '*.jar')
-////            }
-////        }
-////        ant.checkstyle(config: 'checkstyle.xml') {
-////            fileset(dir: 'src')
-////        }
-//    }
-//}
-
-
-
-//
-//buildscript {
-//    repositories {
-//        jcenter()
-//    }
-//
-//    dependencies {
-//        classpath 'com.bmuschko:gradle-tomcat-plugin:2.2.5'
-//    }
-//}
-
 repositories {
-    mavenCentral()
-    maven { url "http://repo.imcode.com/maven2/" }
-    maven { url "http://repo1.maven.org/maven2/" }
-//    maven { url "http://mirrors.ibiblio.org/pub/mirrors/maven2" }
-    maven { url "http://repository.codehaus.org" }
+    maven { url "http://repo.imcode.com/maven2" }
+    maven { url "http://repo.maven.apache.org/maven2" }
     maven { url "http://repository.jboss.org/maven2/" }
-    maven { url "http://download.java.net/maven/2/" }
-    maven { url "http://download.java.net/maven/1" }
     maven { url "http://repo.springsource.org/release" }
-    maven { url "http://m2.neo4j.org/content/repositories/releases/" }
-    maven { url "http://repo.spring.io/libs-snapshot" }
-    maven { url "http://jcenter.bintray.com/" }
+    maven { url "http://repo.boundlessgeo.com/main/" }
 }
+
 dependencies {
-    compile group: 'org.restlet.jee', name: 'org.restlet.ext.servlet', version: '2.1.1'
-    compile group: 'org.restlet.jee', name: 'org.restlet', version: '2.1.1'
-    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'
-    compile group: 'log4j', name: 'log4j', version: '1.2.17'
-    compile group: 'com.google.guava', name: 'guava', version: '19.0'
-    compile(group: 'org.apache.tika', name: 'tika-parsers', version: '1.11') {
+    compile group: 'org.slf4j', name: 'slf4j-api', version:'1.7.25'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version:'2.10.0'
+    compile group: 'org.projectlombok', name: 'lombok', version:'1.16.20'
+    compile group: 'com.drewnoakes', name: 'metadata-extractor', version:'2.11.0'
+    compile group: 'commons-beanutils', name: 'commons-beanutils', version:'1.9.3'
+    compile(group: 'org.apache.tika', name: 'tika-parsers', version:'1.11') {
         exclude(module: 'commons-logging')
         exclude(module: 'asm')
+        exclude(module: 'commons-io')
     }
-    compile group: 'joda-time', name: 'joda-time', version: '2.9.1'
-    compile group: 'org.joda', name: 'joda-convert', version: '1.8.1'
-    compile(group: 'commons-validator', name: 'commons-validator', version: '1.5.0') {
+    compile(group: 'commons-validator', name: 'commons-validator', version:'1.6') {
         exclude(module: 'commons-logging')
     }
-    compile(group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.2') {
-        exclude(module: 'commons-logging')
-    }
-    compile group: 'commons-codec', name: 'commons-codec', version: '1.10'
-    compile(group: 'commons-betwixt', name: 'commons-betwixt', version: '0.8') {
-        exclude(module: 'commons-logging')
-    }
-    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
-    compile group: 'net.sf.ehcache', name: 'ehcache-core', version: '2.6.9'
-    compile group: 'net.sf.ehcache', name: 'ehcache-web', version: '2.0.4'
-    compile group: 'commons-dbutils', name: 'commons-dbutils', version: '1.6'
-    compile(group: 'org.apache.commons', name: 'commons-digester3', version: '3.2', classifier: 'with-deps') {
-        exclude(module: 'commons-logging')
-        exclude(module: 'cglib')
-    }
-    compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.1'
-    compile group: 'commons-io', name: 'commons-io', version: '2.4'
-    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-    compile group: 'commons-pool', name: 'commons-pool', version: '1.6'
-    compile group: 'dom4j', name: 'dom4j', version: '1.6.1'
-    compile group: 'org.apache.commons', name: 'commons-email', version: '1.4'
-    compile group: 'gnu-inetlib', name: 'gnu-inetlib', version: '1.1'
-    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.11.Final'
-    compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.2.2.Final'
-    compile group: 'com.fasterxml', name: 'classmate', version: '1.3.3'
-    compile group: 'com.imcode.db', name: 'imcode-db', version: '0.3'
-    compile(group: 'com.imcode.util', name: 'imcode-util', version: '2.0.4') {
+    compile group: 'org.apache.commons', name: 'commons-collections4', version:'4.1'
+    compile group: 'net.sf.ehcache', name: 'ehcache-core', version:'2.6.9'
+    compile group: 'net.sf.ehcache', name: 'ehcache-web', version:'2.0.4'
+    compile group: 'commons-dbutils', name: 'commons-dbutils', version:'1.6'
+    compile group: 'commons-lang', name: 'commons-lang', version:'2.6'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version:'3.6'
+    compile group: 'org.apache.commons', name: 'commons-text', version:'1.1'
+    compile group: 'org.apache.commons', name: 'commons-email', version:'1.4'
+    compile group: 'org.hibernate', name: 'hibernate-entitymanager', version:'4.3.11.Final'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version:'5.4.2.Final'
+    compile group: 'com.fasterxml', name: 'classmate', version:'1.3.3'
+    compile group: 'com.imcode.db', name: 'imcode-db', version:'0.5-SNAPSHOT'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-impl', version:'2.3.0'
+    compile group: 'com.sun.xml.bind', name: 'jaxb-core', version:'2.3.0'
+    compile(group: 'com.imcode.util', name: 'imcode-util', version:'2.0.4') {
         exclude(module: 'servlet-api')
+        exclude(module: 'commons-io')
     }
-    compile group: 'com.imcode.ldap', name: 'imcode-ldap', version: '0.1'
-    compile group: 'oro', name: 'oro', version: '2.0.8'
-    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
-    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.38'
-    compile group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.1.1'
-    compile(group: 'org.springframework', name: 'spring-core', version: '4.1.2.RELEASE') {
+    compile group: 'com.imcode.ldap', name: 'imcode-ldap', version:'0.1'
+    compile group: 'mysql', name: 'mysql-connector-java', version:'5.1.38'
+    compile group: 'org.apache.commons', name: 'commons-dbcp2', version:'2.1.1'
+    compile(group: 'org.springframework', name: 'spring-core', version:'4.3.13.RELEASE') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'org.springframework', name: 'spring-webmvc', version: '4.1.2.RELEASE'
-    compile group: 'org.springframework', name: 'spring-orm', version: '4.1.2.RELEASE'
-    compile group: 'org.springframework', name: 'spring-aop', version: '4.1.2.RELEASE'
-    compile(group: 'org.springframework.data', name: 'spring-data-jpa', version: '1.7.1.RELEASE') {
+    compile group: 'org.springframework', name: 'spring-webmvc', version:'4.3.13.RELEASE'
+    compile group: 'org.springframework', name: 'spring-orm', version:'4.3.13.RELEASE'
+    compile group: 'org.springframework', name: 'spring-aop', version:'4.3.13.RELEASE'
+    compile group: 'org.aspectj', name: 'aspectjrt', version:'1.8.13'
+    compile group: 'org.aspectj', name: 'aspectjweaver', version:'1.8.13'
+    compile(group: 'org.springframework.data', name: 'spring-data-jpa', version:'1.11.7.RELEASE') {
         exclude(module: 'hibernate-jpa-2.1-api')
     }
-    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
-    compile group: 'org.aspectj', name: 'aspectjweaver', version: '1.8.8'
-    compile(group: 'org.apache.velocity', name: 'velocity', version: '1.7') {
-        exclude(module: 'velocity-dep')
-    }
-    compile group: 'org.apache.sanselan', name: 'sanselan', version: '0.97-incubator'
-    compile group: 'jakarta-regexp', name: 'jakarta-regexp', version: '1.4'
-    compile group: 'org.scala-lang', name: 'scala-compiler', version: '2.11.7'
-    compile group: 'org.scala-lang', name: 'scala-library', version: '2.11.7'
-    compile group: 'org.scala-lang', name: 'scala-actors', version: '2.11.7'
-    compile group: 'org.apache.solr', name: 'solr-core', version: '4.10.2'
-    compile(group: 'org.apache.solr', name: 'solr-core', version: '4.10.2') {
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version:'3.1.0'
+    compile group: 'org.apache.sanselan', name: 'sanselan', version:'0.97-incubator'
+    compile(group: 'org.apache.solr', name: 'solr-core', version:'7.2.1') {
         exclude(module: 'slf4j-jdk14')
         exclude(module: 'javax.servlet')
         exclude(module: 'javax.transaction')
         exclude(module: 'javax.annotation')
+        exclude(module: 'jackson-databind')
+        exclude(module: 'jackson-core')
+        exclude(module: 'commons-codec')
+        exclude(module: 'commons-collections')
+        exclude(module: 'commons-fileupload')
+        exclude(module: 'commons-lang3')
+        exclude(module: 'commons-lang')
+        exclude(module: 'dom4j')
+        exclude(module: 'javax.servlet-api')
+        exclude(module: 'httpclient')
+        exclude(module: 'httpcore')
+        exclude(module: 'asm')
+        exclude(module: 'asm')
+        exclude(module: 'jcl-over-slf4j')
+        exclude(module: 'slf4j-api')
+        exclude(module: 'commons-exec')
+        exclude(module: 'commons.lang')
+        exclude(module: 'jackson-annotations')
     }
-    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2') {
+    compile(group: 'org.apache.httpcomponents', name: 'httpclient', version:'4.5.2') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'org.apache.httpcomponents', name: 'httpcore', version: '4.4.4'
-    compile group: 'net.jcip', name: 'jcip-annotations', version: '1.0'
-    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.3.6'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.8.1'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.1'
-    compile group: 'javax.servlet', name: 'jstl', version: '1.2'
-    compile group: 'org.apache.tomcat', name: 'tomcat-jsp-api', version: '7.0.57'
-    compile group: 'org.apache.tomcat', name: 'tomcat-el-api', version: '7.0.57'
-    compile group: 'org.apache.tomcat', name: 'tomcat-jasper-el', version: '7.0.57'
-    compile group: 'xml-apis', name: 'xml-apis', version: '2.0.2'
-    compile group: 'javax.validation', name: 'validation-api', version: '1.1.0.Final'
-    compile group: 'javax.inject', name: 'javax.inject', version: '1'
-    compile group: 'org.jsoup', name: 'jsoup', version: '1.8.3'
-    compile group: 'com.jcabi', name: 'jcabi-w3c', version: '1.2'
-    compile group: 'com.jcabi', name: 'jcabi-matchers', version: '1.3'
-    compile group: 'javax.ws.rs', name: 'javax.ws.rs-api', version: '2.0.1'
-    compile group: 'org.glassfish.jersey.core', name: 'jersey-common', version: '2.22.1'
-    runtime group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.13'
-    runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.7.13'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile group: 'org.mockito', name: 'mockito-all', version: '1.10.19'
-    testCompile group: 'org.dbunit', name: 'dbunit', version: '2.5.1'
-    testCompile group: 'org.springframework', name: 'spring-test', version: '4.1.2.RELEASE'
-    testCompile(group: 'org.scalatest', name: 'scalatest_2.11', version: '2.2.6') {
-        exclude(module: 'scala-library')
-        exclude(module: 'scala-actors')
-        exclude(module: 'scala-reflect')
+    compile group: 'org.apache.httpcomponents', name: 'httpcore', version:'4.4.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.9.4'
+    compile group: 'javax.servlet', name: 'jstl', version:'1.2'
+    compile group: 'org.apache.tomcat', name: 'tomcat-jsp-api', version:'7.0.57'
+    compile group: 'org.apache.tomcat', name: 'tomcat-el-api', version:'7.0.57'
+    compile group: 'org.apache.tomcat', name: 'tomcat-jasper-el', version:'7.0.57'
+    compile group: 'javax.validation', name: 'validation-api', version:'1.1.0.Final'
+    compile group: 'javax.inject', name: 'javax.inject', version:'1'
+    compile group: 'org.jsoup', name: 'jsoup', version:'1.10.2'
+    compile group: 'com.jcabi', name: 'jcabi-matchers', version:'1.4'
+    compile group: 'javax.json', name: 'javax.json-api', version:'1.1.2'
+    compile group: 'com.jayway.jsonpath', name: 'json-path-assert', version:'2.2.0'
+    compile(group: 'com.jcabi', name: 'jcabi-w3c', version:'1.3') {
+        exclude(module: 'commons-io')
     }
-
-    //Tomcat 6
-//        def tomcatVersion = '6.0.51'
-//        tomcat "org.apache.tomcat:catalina:${tomcatVersion}",
-//                "org.apache.tomcat:coyote:${tomcatVersion}",
-//                "org.apache.tomcat:jasper:${tomcatVersion}"
-
-    //Tomcat7
-//    def tomcatVersion = '7.0.57'
-//    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-//            "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
-//            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
-
-//    Tomcat 8
-//        def tomcatVersion = '8.5.12'
-//        tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
-//                "org.apache.tomcat.embed:tomcat-embed-logging-juli:${tomcatVersion}",
-//                "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
-
+    runtime group: 'org.slf4j', name: 'slf4j-log4j12', version:'1.7.25'
+    runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version:'1.7.25'
+    testCompile group: 'org.lazyluke', name: 'log4jdbc-remix', version:'0.2.7'
+    testCompile group: 'junit', name: 'junit', version:'4.12'
+    testCompile group: 'org.mockito', name: 'mockito-all', version:'1.10.19'
+    testCompile group: 'org.dbunit', name: 'dbunit', version:'2.5.1'
+    testCompile group: 'org.powermock', name: 'powermock-api-mockito', version:'1.6.2'
+    testCompile group: 'org.powermock', name: 'powermock-module-junit4', version:'1.6.2'
+    testCompile group: 'org.springframework', name: 'spring-test', version:'4.3.13.RELEASE'
+    testCompile group: 'org.skyscreamer', name: 'jsonassert', version:'1.5.0'
 }
-
-task explodedWar(type: Copy) {
-    into "${buildDir}/exploded/${war.archiveName}"
-    with war
-}
-
-
-//Attempt to migrate pom-ant.xml
-//ant.copy(todir: '/copy/to/dir', encoding: 'UTF-8', outputEncoding: 'Windows-31J') {
-//    fileset(dir: '/copy/from/dir')
-//}
-
-
-
-
-
-
-
-//war {
-//    from 'src/main/web'
-////    webAppDirName = 'src/main/web'
-////    webInf { from 'src/main/web/WEB-INF' }
-////    classpath fileTree('additionalLibs') // adds a file-set to the WEB-INF/lib dir.
-//////    classpath configurations.moreLibs // adds a configuration to the WEB-INF/lib dir.
-////    webXml = file('src/main/web/WEB-INF/web.xml') // copies a file to WEB-INF/web.xml
-//}
-
-//Tomcat plugin settings
-//tomcat {
-//    httpPort = 8080
-//    enableSSL = true
-///*    contextPath = 'sample-app'
-//
-//    users {
-//        user {
-//            username = 'user1'
-//            password = '123456'
-//            roles = ['developers', 'admin']
-//        }
-//
-//        user {
-//            username = 'user2'
-//            password = 'abcdef'
-//            roles = ['manager']
-//        }
-//    }*/
-//}
-
-//uploadArchives {
-//    repositories {
-//        mavenDeployer {
-//            repository(url: "file://localhost/tmp/myRepo/")
-//        }
-//    }
-//}
-
-//Basic property output
-//task printProps {
-//    doLast {
-//        println gradlePropertiesProp
-//        println projectBuildSourceEncoding
-//    }
-//}
-
-//task merge{
-//    doLast{
-//        ant.importBuild '${project.basedir}/pom-ant.xml'
-//    }
-//}
-
-
