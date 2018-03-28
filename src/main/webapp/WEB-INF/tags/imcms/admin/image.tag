@@ -30,7 +30,15 @@
      ? imageService.getImage(targetDocId, index, language, loopEntryRef)
      : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
     <c:set var="imgPath" value="${image.generatedFilePath}"/>
-    <c:set var="style" value="${empty style ? '' : ' style=\"'.concat(style).concat('\"')}"/>
+
+    <c:set var="spaceTop">margin-top: ${image.spaceAround.top}px;</c:set>
+    <c:set var="spaceRight">margin-right: ${image.spaceAround.right}px;</c:set>
+    <c:set var="spaceBottom">margin-bottom: ${image.spaceAround.bottom}px;</c:set>
+    <c:set var="spaceLeft">margin-left: ${image.spaceAround.left}px;</c:set>
+
+    <c:set var="spaceStyle">${spaceTop} ${spaceRight} ${spaceBottom} ${spaceLeft}</c:set>
+
+    <c:set var="style" value=" style=\"${not empty style?style.concat(' '):''}${spaceStyle}\""/>
     <c:set var="alt" value="${empty image.alternateText ? '' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
 
     <c:choose>
