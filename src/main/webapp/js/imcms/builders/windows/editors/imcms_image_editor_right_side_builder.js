@@ -148,9 +148,6 @@ Imcms.define(
 
                     // todo: implement onClick!
                     var $alignNoneBtn = buildAlignButton(["align-none", "align-active"]).text(texts.none);
-                    var $alignTopBtn = buildAlignButton(["align-top"]);
-                    var $alignCenterBtn = buildAlignButton(["align-center"]);
-                    var $alignBottomBtn = buildAlignButton(["align-bottom"]);
                     var $alignLeftBtn = buildAlignButton(["align-left"]);
                     var $alignRightBtn = buildAlignButton(["align-right"]);
 
@@ -168,9 +165,6 @@ Imcms.define(
 
                     return components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,
-                        $alignTopBtn,
-                        $alignCenterBtn,
-                        $alignBottomBtn,
                         $alignLeftBtn,
                         $alignRightBtn
                     ]);
