@@ -7,8 +7,7 @@ Imcms.define(
     ["imcms-events", "imcms-image-crop-angles", "imcms-numeric-limiter", "imcms-image-cropping-elements"],
     function (events, angles, Limit, cropElements) {
 
-        var $imageEditor, croppingAreaParams, angleBorderSize, imageCoords,
-            imageData;
+        var $imageEditor, croppingAreaParams, angleBorderSize, doubleAngleBorderSize, imageCoords, imageData;
 
         function moveCropImage(newTop, newLeft) {
             var cropImgTop = -newTop + angleBorderSize,
@@ -168,16 +167,16 @@ Imcms.define(
         }
 
         function resizeCroppingTopLeft(deltaX, deltaY) {
-            var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() + deltaX);
-            var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() + deltaY);
+            var newWidth = cropElements.$cropArea.width() + deltaX;
+            var newHeight = cropElements.$cropArea.height() + deltaY;
 
             var newTop = cropElements.$cropArea.getTop() - deltaY;
             newTop = getValidTopOnResize(newTop);
             var newLeft = cropElements.$cropArea.getLeft() - deltaX;
             newLeft = getValidLeftOnResize(newLeft);
 
-            var legalWidth = getValidLeftCropWidth(newWidth);
-            var legalHeight = getValidCropHeightTop(newHeight);
+            var legalWidth = croppingAreaParams.width = getValidLeftCropWidth(newWidth);
+            var legalHeight = croppingAreaParams.height = getValidCropHeightTop(newHeight);
 
             setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
             setElementTopLeft(cropElements.$cropImg, (angleBorderSize - newTop), (angleBorderSize - newLeft));
@@ -185,14 +184,14 @@ Imcms.define(
         }
 
         function resizeCroppingTopRight(deltaX, deltaY) {
-            var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() - deltaX);
-            var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() + deltaY);
+            var newWidth = cropElements.$cropArea.width() - deltaX;
+            var newHeight = cropElements.$cropArea.height() + deltaY;
 
             var newTop = cropElements.$cropArea.getTop() - deltaY;
             newTop = getValidTopOnResize(newTop);
 
-            var legalWidth = getValidRightCropWidth(newWidth);
-            var legalHeight = getValidCropHeightTop(newHeight);
+            var legalWidth = croppingAreaParams.width = getValidRightCropWidth(newWidth);
+            var legalHeight = croppingAreaParams.height = getValidCropHeightTop(newHeight);
 
             setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
             cropElements.$cropImg.css("top", angleBorderSize - newTop);
@@ -200,24 +199,24 @@ Imcms.define(
         }
 
         function resizeCroppingBottomRight(deltaX, deltaY) {
-            var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() - deltaX);
-            var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() - deltaY);
+            var newWidth = cropElements.$cropArea.width() - deltaX;
+            var newHeight = cropElements.$cropArea.height() - deltaY;
 
-            var legalWidth = getValidRightCropWidth(newWidth);
-            var legalHeight = getValidCropHeightBottom(newHeight);
+            var legalWidth = croppingAreaParams.width = getValidRightCropWidth(newWidth);
+            var legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
 
             setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
         }
 
         function resizeCroppingBottomLeft(deltaX, deltaY) {
-            var newWidth = (croppingAreaParams.width = cropElements.$cropArea.width() + deltaX);
-            var newHeight = (croppingAreaParams.height = cropElements.$cropArea.height() - deltaY);
+            var newWidth = cropElements.$cropArea.width() + deltaX;
+            var newHeight = cropElements.$cropArea.height() - deltaY;
 
             var newLeft = cropElements.$cropArea.getLeft() - deltaX;
             newLeft = getValidLeftOnResize(newLeft);
 
-            var legalWidth = getValidLeftCropWidth(newWidth);
-            var legalHeight = getValidCropHeightBottom(newHeight);
+            var legalWidth = croppingAreaParams.width = getValidLeftCropWidth(newWidth);
+            var legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
 
             setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
             cropElements.$cropImg.css("left", angleBorderSize - newLeft);
@@ -271,6 +270,7 @@ Imcms.define(
             $imageEditor = imageCropComponents.$imageEditor;
 
             angleBorderSize = angles.getBorderSize();
+            doubleAngleBorderSize = angles.getDoubleBorderSize();
             imageCoords = cropElements.$image.offset();
             imageCoords.top -= angleBorderSize;
             imageCoords.left -= angleBorderSize;

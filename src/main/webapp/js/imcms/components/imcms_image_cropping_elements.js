@@ -36,11 +36,11 @@ Imcms.define(
             };
 
             $element.getTop = function () {
-                return $element.position().top;
+                return parseInt($element.css("top"));
             };
 
             $element.getLeft = function () {
-                return $element.position().left;
+                return parseInt($element.css("left"));
             };
 
             return $element;
@@ -50,7 +50,11 @@ Imcms.define(
             var oldCss = $element.css;
             $element.css = function () {
                 var retVal = oldCss.apply($element, arguments);
-                events.trigger(eventName);
+
+                if (!((arguments.length === 1) && (arguments[0].constructor === String))) {
+                    events.trigger(eventName);
+                }
+
                 return retVal;
             };
 

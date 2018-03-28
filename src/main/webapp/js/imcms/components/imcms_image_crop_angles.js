@@ -55,13 +55,13 @@ Imcms.define(
                 this.$angle.css({top: newTop});
             },
             getTop: function () {
-                return this.$angle.position().top;
+                return parseInt(this.$angle.css("top"));
             },
             setLeft: function (newLeft) {
                 this.$angle.css({left: newLeft});
             },
             getLeft: function () {
-                return this.$angle.position().left;
+                return parseInt(this.$angle.css("left"));
             },
             setTopLeft: function (top, left) {
                 this.$angle.css({
