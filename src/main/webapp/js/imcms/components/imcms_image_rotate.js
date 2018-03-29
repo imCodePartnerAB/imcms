@@ -67,9 +67,9 @@ Imcms.define(
         }
 
         function rotate(newAngle) {
-            var sameAngle = !currentAngle || (newAngle === currentAngle);
+            var sameAngle = !currentAngle || !newAngle || (newAngle === currentAngle);
 
-            currentAngle = newAngle;
+            currentAngle = newAngle || angleNorth;
 
             var isImageProportionsInverted = currentAngle.proportionsInverted;
             var style = getRotateCss(currentAngle);

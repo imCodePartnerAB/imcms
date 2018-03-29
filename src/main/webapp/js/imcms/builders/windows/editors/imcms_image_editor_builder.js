@@ -263,6 +263,10 @@ Imcms.define(
 
             // direct reassign because $.extend skip 'undefined' but it's needed!
             imageData.cropRegion = image.cropRegion;
+            // imageData.align = image.align;
+            imageData.rotateDirection = image.rotateDirection;
+            imageData.rotateAngle = image.rotateAngle;
+
             $.extend(imageData, image);
 
             if (imageData.inText) {
@@ -274,7 +278,7 @@ Imcms.define(
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
 
-            imageDataContainers.$altText.$input.val(image.alternateText);
+            imageDataContainers.$altText.$input.val(imageData.alternateText);
             imageDataContainers.$imgLink.$input.val(image.linkUrl);
 
             if (image.allLanguages !== undefined) {
