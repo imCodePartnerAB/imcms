@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'war'
@@ -121,16 +123,11 @@ dependencies {
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version:'1.5.0'
 }
 
-//sourceSets {
-//    main.resources.srcDirs += 'src/main/resources'
-//    main.resources.srcDirs += 'src/main/resources-conf'
-//
-////    main {
-////        resources {
-////            srcDir 'src/main/java'
-////        }
-////    }
-//}
+def localProps = new Properties()
+
+file("build.properties").withInputStream { localProps.load(it) }
+
+
 
 war {
 //    duplicatesStrategy 'include'
@@ -142,8 +139,9 @@ war {
         include '*.conf'
         include 'log4j.xml'
         include '*.json'
-
+//
         into "/WEB-INF/conf"
+        filter(ReplaceTokens, tokens: localProps)
     }
 }
 
