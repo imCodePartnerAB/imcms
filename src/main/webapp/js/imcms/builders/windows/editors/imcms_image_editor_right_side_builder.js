@@ -177,14 +177,27 @@ Imcms.define(
                         setAlign("RIGHT", this);
                     }
 
-                    function buildAlignButton(modifiers, onClick) {
-                        return components.buttons.imcmsButton({click: onClick}, ["align"].concat(modifiers));
+                    function buildAlignButton(modifiers, attributes) {
+                        return components.buttons.imcmsButton(attributes, ["align"].concat(modifiers));
                     }
 
-                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], onAlignNoneClick).text(texts.none);
-                    var $alignCenterBtn = buildAlignButton(["align-center"], onAlignCenterClick);
-                    var $alignLeftBtn = buildAlignButton(["align-left"], onAlignLeftClick);
-                    var $alignRightBtn = buildAlignButton(["align-right"], onAlignRightClick);
+                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], {
+                        click: onAlignNoneClick,
+                        title: texts.align.none,
+                        text: texts.none
+                    });
+                    var $alignCenterBtn = buildAlignButton(["align-center"], {
+                        click: onAlignCenterClick,
+                        title: texts.align.center
+                    });
+                    var $alignLeftBtn = buildAlignButton(["align-left"], {
+                        click: onAlignLeftClick,
+                        title: texts.align.left
+                    });
+                    var $alignRightBtn = buildAlignButton(["align-right"], {
+                        click: onAlignRightClick,
+                        title: texts.align.right
+                    });
 
                     return $alignContainer = components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,
