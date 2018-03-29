@@ -140,7 +140,7 @@ war {
 
         include '*.properties'
         include '*.conf'
-        include '*.xml'
+        include 'log4j.xml'
         include '*.json'
 
         into "/WEB-INF/conf"
