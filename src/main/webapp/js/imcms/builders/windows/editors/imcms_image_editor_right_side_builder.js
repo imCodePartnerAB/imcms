@@ -55,6 +55,7 @@ Imcms.define(
 
         var alignButtonSelectorToAlignName = {
             NONE: BEM.buildClassSelector(null, "imcms-button", "align-none"),
+            CENTER: BEM.buildClassSelector(null, "imcms-button", "align-center"),
             LEFT: BEM.buildClassSelector(null, "imcms-button", "align-left"),
             RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
         };
@@ -164,6 +165,10 @@ Imcms.define(
                         setAlign("NONE", this);
                     }
 
+                    function onAlignCenterClick() {
+                        setAlign("CENTER", this);
+                    }
+
                     function onAlignLeftClick() {
                         setAlign("LEFT", this);
                     }
@@ -177,11 +182,13 @@ Imcms.define(
                     }
 
                     var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], onAlignNoneClick).text(texts.none);
+                    var $alignCenterBtn = buildAlignButton(["align-center"], onAlignCenterClick);
                     var $alignLeftBtn = buildAlignButton(["align-left"], onAlignLeftClick);
                     var $alignRightBtn = buildAlignButton(["align-right"], onAlignRightClick);
 
                     return $alignContainer = components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,
+                        $alignCenterBtn,
                         $alignLeftBtn,
                         $alignRightBtn
                     ]);
@@ -463,6 +470,41 @@ Imcms.define(
                     }
                 }
 
+                function removeAlign() {
+                    this.css({
+                        float: "none",
+                        margin: 0
+                    });
+                }
+
+                function doCenterAlign() {
+                    this.css({
+                        float: "none",
+                        margin: "0 auto"
+                    });
+                }
+
+                function doLeftAlign() {
+                    this.css({
+                        float: "left",
+                        margin: 0
+                    });
+                }
+
+                function doRightAlign() {
+                    this.css({
+                        float: "right",
+                        margin: "0 auto"
+                    });
+                }
+
+                var alignNameToAction = {
+                    NONE: removeAlign,
+                    CENTER: doCenterAlign,
+                    LEFT: doLeftAlign,
+                    RIGHT: doRightAlign
+                };
+
                 function reloadImageOnPage(imageDTO) {
 
                     var $image = $tag.find(".imcms-editor-content>a>img").first();
@@ -499,6 +541,10 @@ Imcms.define(
                                 tinyMCE.activeEditor.setDirty(true);
                             });
                         }
+
+                        if ($tag.hasClass("imcms-image-in-text") && alignNameToAction[imageDTO.align]) {
+                            alignNameToAction[imageDTO.align].call($tag);
+                        }
                     }
                 }
 
@@ -516,10 +562,10 @@ Imcms.define(
                     if (continueSaving) {
                         imageData.width = cropElements.$image.width();
                         imageData.height = cropElements.$image.height();
-                        // these two should be done before close
+                        var currentAngle = imageRotate.getCurrentAngle();
+                        // these three should be done before close
                         imageWindowBuilder.closeWindow();
 
-                        var currentAngle = imageRotate.getCurrentAngle();
                         imageData.rotateAngle = currentAngle.degrees;
                         imageData.rotateDirection = currentAngle.name;
 
