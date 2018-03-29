@@ -192,7 +192,10 @@ Imcms.define(
                     cropElements.$cropImg.removeAttr("src");
                     cropElements.$cropImg.removeAttr("style");
 
+                    cropElements.$cropArea.removeAttr("style").width(0);
+
                     cropAngles.hideAll();
+                    events.trigger("clean crop coordinates");
 
                     return;
                 }

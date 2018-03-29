@@ -301,6 +301,20 @@ Imcms.define(
                         onValidChange: setValidation(imageCropper.setCropY1)
                     });
 
+                    events.on("clean crop coordinates", function () {
+                        $xCropCoord.getInput().val(0);
+                        $yCropCoord.getInput().val(0);
+                        $x1CropCoord.getInput().val(0);
+                        $y1CropCoord.getInput().val(0);
+
+                        imageData.cropRegion = {
+                            cropX1: 0,
+                            cropX2: 0,
+                            cropY1: 0,
+                            cropY2: 0
+                        }
+                    });
+
                     events.on("crop area position changed", function () {
                         var x = cropElements.$cropArea.getLeft() - 2;
                         var y = cropElements.$cropArea.getTop() - 2;
