@@ -14,10 +14,8 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
+    mavenCentral()
     maven { url "http://repo.imcode.com/maven2" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-    maven { url "http://repository.jboss.org/maven2/" }
-    maven { url "http://repo.springsource.org/release" }
     maven { url "http://repo.boundlessgeo.com/main/" }
 }
 
