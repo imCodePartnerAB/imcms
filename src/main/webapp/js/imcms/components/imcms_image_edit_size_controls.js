@@ -15,7 +15,7 @@ Imcms.define(
 
         function setCropAreaHeight(newImageHeight, oldImgHeight) {
             var cropAreaHeight = cropElements.$cropArea.height();
-            var cropAreaTop = cropElements.$cropArea.position().top; // note: .position() and .offset() works different
+            var cropAreaTop = cropElements.$cropArea.getTop();
 
             var newCropAreaHeight = (newImageHeight * cropAreaHeight) / oldImgHeight;
             var angleBorderSize = croppingAngles.getBorderSize();
@@ -28,7 +28,7 @@ Imcms.define(
 
             if (newCropAreaHeight !== 0) {
                 cropElements.$cropArea.height(newCropAreaHeight - delta);
-                var newTop = cropAreaTop + newCropAreaHeight - delta - cropAngleHeight - angleBorderSize;
+                var newTop = cropAreaTop + newCropAreaHeight - delta - cropAngleHeight;
                 croppingAngles.bottomRight.setTop(newTop);
                 croppingAngles.bottomLeft.setTop(newTop);
 
@@ -39,15 +39,15 @@ Imcms.define(
 
                 croppingAngles.topLeft.setTop(0);
                 croppingAngles.topRight.setTop(0);
-                croppingAngles.bottomLeft.setTop(newImageHeight - cropAngleHeight);
-                croppingAngles.bottomRight.setTop(newImageHeight - cropAngleHeight);
+                croppingAngles.bottomLeft.setTop(newImageHeight - cropAngleHeight - angleBorderSize);
+                croppingAngles.bottomRight.setTop(newImageHeight - cropAngleHeight - angleBorderSize);
             }
             events.trigger("update cropArea");
         }
 
         function setCropAreaWidth(newImageWidth, oldImgWidth) {
             var cropAreaWidth = cropElements.$cropArea.width();
-            var cropAreaLeft = cropElements.$cropArea.offset().left; // note: .position() and .offset() works different
+            var cropAreaLeft = cropElements.$cropArea.getLeft();
 
             var newCropAreaWidth = (newImageWidth * cropAreaWidth) / oldImgWidth;
             var angleBorderSize = croppingAngles.getBorderSize();
@@ -60,7 +60,7 @@ Imcms.define(
 
             if (newCropAreaWidth !== 0) {
                 cropElements.$cropArea.width(newCropAreaWidth - delta);
-                var newLeft = cropAreaLeft + newCropAreaWidth - delta - cropAngleWidth - angleBorderSize;
+                var newLeft = cropAreaLeft + newCropAreaWidth - delta - cropAngleWidth;
 
                 croppingAngles.bottomRight.setLeft(newLeft);
                 croppingAngles.topRight.setLeft(newLeft);
@@ -72,8 +72,8 @@ Imcms.define(
 
                 croppingAngles.topLeft.setLeft(0);
                 croppingAngles.bottomLeft.setLeft(0);
-                croppingAngles.topRight.setLeft(newImageWidth - cropAngleWidth);
-                croppingAngles.bottomRight.setLeft(newImageWidth - cropAngleWidth);
+                croppingAngles.topRight.setLeft(newImageWidth - cropAngleWidth - angleBorderSize);
+                croppingAngles.bottomRight.setLeft(newImageWidth - cropAngleWidth - angleBorderSize);
             }
             events.trigger("update cropArea");
         }
@@ -81,7 +81,7 @@ Imcms.define(
         function setWidth(newWidth, imageDataContainers) {
             var newShadowWidth = Math.max(
                 newWidth + croppingAngles.getDoubleBorderSize(),
-                imageDataContainers.$editableImageArea.width()
+                imageDataContainers.$editableImageArea.width() - 6
             );
 
             cropElements.$image.width(newWidth);
@@ -92,7 +92,7 @@ Imcms.define(
         function setHeight(newHeight, imageDataContainers) {
             var newShadowHeight = Math.max(
                 newHeight + croppingAngles.getDoubleBorderSize(),
-                imageDataContainers.$editableImageArea.height()
+                imageDataContainers.$editableImageArea.height() - 6
             );
 
             cropElements.$image.height(newHeight);
@@ -117,6 +117,10 @@ Imcms.define(
                     var previousWidth = cropElements.$cropImg.width();
                     setWidth(width, imageDataContainers);
                     setCropAreaWidth(width, previousWidth, imageDataContainers);
+
+                    if (saveProportions) {
+
+                    }
                 }
 
                 function onValidHeightChange() {
@@ -129,6 +133,10 @@ Imcms.define(
                     var previousHeight = cropElements.$cropImg.height();
                     setHeight(height, imageDataContainers);
                     setCropAreaHeight(height, previousHeight, imageDataContainers);
+
+                    if (saveProportions) {
+
+                    }
                 }
 
                 imageDataContainers.$heightControlInput = components.texts.textNumber("<div>", {
