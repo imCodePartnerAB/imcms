@@ -2,11 +2,13 @@ package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.DocumentFile;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class DocumentFileDTO extends DocumentFile implements Cloneable {
 
     private Integer id;

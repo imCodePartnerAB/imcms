@@ -3,10 +3,12 @@ package imcode.server.document;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
 public class CategoryDomainObject extends Category implements Comparable<CategoryDomainObject>, Serializable {
 
     private static final long serialVersionUID = -9154498328953229889L;

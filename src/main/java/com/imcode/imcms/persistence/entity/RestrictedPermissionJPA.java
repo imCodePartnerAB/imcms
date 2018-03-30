@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -19,6 +20,7 @@ import javax.persistence.*;
 @Embeddable
 @NoArgsConstructor
 @Table(name = "imcms_doc_restricted_permissions")
+@EqualsAndHashCode(callSuper=false)
 public class RestrictedPermissionJPA extends RestrictedPermission {
 
     @Column(columnDefinition = "VARCHAR(16)")

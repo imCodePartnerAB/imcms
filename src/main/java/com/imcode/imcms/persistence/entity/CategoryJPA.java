@@ -4,6 +4,7 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Entity
 @Table(name = "categories")
+@EqualsAndHashCode(callSuper=false)
 public class CategoryJPA extends Category {
 
     @Id

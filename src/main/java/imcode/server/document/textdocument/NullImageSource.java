@@ -8,8 +8,9 @@ import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
-@EqualsAndHashCode(callSuper = true)
 public class NullImageSource extends ImageSource {
+    private static final long serialVersionUID = -7330157356707491656L;
+
     @JsonIgnore
     public InputStreamSource getInputStreamSource() {
         return new EmptyInputStreamSource();

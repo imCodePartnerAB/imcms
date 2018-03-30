@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.SpaceAround;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
@@ -9,7 +10,8 @@ import javax.persistence.Embeddable;
 @Data
 @Embeddable
 @NoArgsConstructor
-public class SpaceAroundDTO extends SpaceAround {
+@EqualsAndHashCode(callSuper=false)
+class SpaceAroundDTO extends SpaceAround {
 
     private int top;
 
@@ -19,7 +21,7 @@ public class SpaceAroundDTO extends SpaceAround {
 
     private int left;
 
-    public SpaceAroundDTO(SpaceAround from) {
+    SpaceAroundDTO(SpaceAround from) {
         super(from);
     }
 }

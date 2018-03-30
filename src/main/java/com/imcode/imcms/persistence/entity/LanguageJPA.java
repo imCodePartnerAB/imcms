@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.Language;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "imcms_languages")
+@EqualsAndHashCode(callSuper=false)
 public class LanguageJPA extends Language {
 
     private static final long serialVersionUID = -7712182762931242124L;

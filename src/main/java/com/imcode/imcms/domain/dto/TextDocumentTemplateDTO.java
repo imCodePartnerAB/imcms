@@ -4,11 +4,13 @@ import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.util.Value;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class TextDocumentTemplateDTO extends TextDocumentTemplate implements Cloneable {
 
     private Integer docId;

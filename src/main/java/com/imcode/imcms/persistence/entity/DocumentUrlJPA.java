@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.DocumentURL;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Entity
 @Table(name = "imcms_url_docs")
+@EqualsAndHashCode(callSuper=false)
 public class DocumentUrlJPA extends DocumentURL {
 
     @Id

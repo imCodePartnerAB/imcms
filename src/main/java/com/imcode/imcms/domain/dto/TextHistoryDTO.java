@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Optional;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 public class TextHistoryDTO extends TextHistory {
 

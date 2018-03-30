@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Data
 @Entity
 @NoArgsConstructor
-@ToString(callSuper = true)
+@ToString(callSuper = false)
 @Table(name = "fileupload_docs")
 @EqualsAndHashCode(callSuper = true)
 public class DocumentFileJPA extends DocumentFile {

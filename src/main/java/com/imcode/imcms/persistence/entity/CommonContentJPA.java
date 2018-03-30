@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_doc_i18n_meta")
+@EqualsAndHashCode(callSuper=false)
 public class CommonContentJPA extends CommonContent {
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;

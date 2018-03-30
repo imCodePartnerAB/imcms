@@ -4,6 +4,7 @@ import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class TemplateGroupDTO extends TemplateGroup {
 
     private Integer id;

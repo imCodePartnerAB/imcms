@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_texts_history")

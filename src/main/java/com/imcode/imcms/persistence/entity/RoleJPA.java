@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Role;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -15,6 +16,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class RoleJPA extends Role {
 
     @Id

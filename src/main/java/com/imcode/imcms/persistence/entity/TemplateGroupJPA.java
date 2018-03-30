@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @Table(name = "imcms_template_group")
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class TemplateGroupJPA extends TemplateGroup {
 
     @Id

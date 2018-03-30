@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Data
 @NoArgsConstructor
 @ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class DocumentDTO extends Document implements Serializable, Cloneable {
 
     protected static final long serialVersionUID = -1197329246115859534L;
