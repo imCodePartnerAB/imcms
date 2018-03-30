@@ -124,28 +124,205 @@ dependencies {
 }
 
 def localProps = new Properties()
+def local2Props = new Properties()
 
-file("build.properties").withInputStream { localProps.load(it) }
+
+
+//from "build.properties"
+//into ""${buildDir}/tmp"
+
+//file("build.properties").withInputStream { localProps.load(it) }
+
+//
+//from("build.properties")
+//filter (ReplaceTokens, tokens: localProps)
+//into "${buildDir}/tmp"
+//
+//file("${buildDir}/tmp/build.properties").withInputStream { local2Props.load(it) }
+
+//println local2Props
+
+
+//copy ( from: "build.properties", to: "${buildDir}/tmp/build.properties" )
+
+    from(projectDir.absolutePath)
+//    filter (ReplaceTokens, tokens: localProps)
+    into "${buildDir}/tmp"
+include("build.properties")
+
 
 
 
 war {
 //    duplicatesStrategy 'include'
     webInf {
+        file("${buildDir}/tmp/build.properties").withInputStream { local2Props.load(it) }
+
+//        local2Props.load(new FileInputStream("src/main/resources-conf/server.properties"))
+//        println local2Props;
+
+
+
         from 'src/main/resources'
         from 'src/main/resources-conf'
 
-        include '*.properties'
+        include 'server.properties'
         include '*.conf'
         include 'log4j.xml'
         include '*.json'
+
+
+
+//        eachFile {
+//            if(it.name == "server.properties"){
+//                local2Props.load(new FileInputStream(it.file))
+////            println "XXXXXX"
+//                println local2Props
+//            }
+//        }
 //
-        into "/WEB-INF/conf"
+//        if(it.) {
+//
+//        }
+
+
+//
+//        into "/WEB-INF/conf"
+//        def globalProps = new Properties()
+
+//        file.withInputStream {
+//            globalProps.load(it)
+//        }
+
+//         {item ->
+//             println item
+//             item filter(ReplaceTokens, tokens: localProps)
+//             local2Props.load(item)
+//
+//         }
+
+//        println local2Props
+//        filter(ReplaceTokens, tokens: globalProps)
+
+
+//        filter(FilterReader, tokens: localProps)
+//        filter(ReplaceTokens, tokens: localProps)
+
+//        eachFile {
+//            if(it.name == "server.properties"){
+//                println it
+//                println it.name//local2Props
+////                println it.file.path
+////                println it.file.getAbsolutePath()
+////                        it.file.withInputStream { local2Props.load(it) }
+//                        it.file.withInputStream { local2Props.load(it) }
+////                local2Props.load(new FileInputStream(it.file.absolutePath))
+////            println "XXXXXX"
+//
+////                println local2Props
+//            }
+//        }
+
+//        def location = "";
+//        eachFile {
+//            if (it.name == "server.properties") {
+//                location =it.file
+//            }
+//        }
+
+
+        file("build.properties").into
         filter(ReplaceTokens, tokens: localProps)
+
+//        filter(ReplaceTokens, tokens: localProps)
+//
+//
+//        if(location != ""){
+//            file(location).withInputStream { local2Props.load(it) }
+//
+//        }
+//
+//
+//        filter(ReplaceTokens, tokens: local2Props)
+
+
+//        filter(ReplaceTokens, tokens: it.withInputStream { localProps.load(it) })
+//        filter(ReplaceTokens, tokens: this)
+//        filter(TokenFilter.ReplaceString, tokens: localProps)
     }
 }
+
+
+//task loadProp(dependsOn:war) {
+//war {
+//    doLast {
+//        local2Props.load(new FileInputStream("${buildDir}/exploded/WEB-INF/conf/server.properties"))
+//        println local2Props
+//    }
+//}
 
 task explodedWar(type: Sync) {
     into "${buildDir}/exploded"
     with war
 }
+
+
+
+def props = new Properties()
+//def localProps = new Properties()
+//
+//file("build.properties").withInputStream { localProps.load(it) }
+
+file("src/main/resources-conf/server.properties").withInputStream { props.load(it) }
+
+
+
+/*task printProps {
+    doFirst {
+        println props.getProperty("db-name")
+    }
+}
+task printPropsAll {
+        println props
+        println localProps
+}*/
+//
+//processResources {
+//    doFirst {
+//        expand(props.asImmutable())
+//    }
+//}
+
+
+//tasks.withType(War).all { War war ->
+//    war.doFirst {
+////        String tempDir = "build/tmp/war";
+////        String warType = war.extension
+////        if (war.classifier) warType = war.classifier
+////        String fileName = "server.properties"
+////        ant.copy(file: "${project.rootDir}/src/main/resources-conf/${fileName}",
+////                tofile: "${tempDir}/${fileName}")
+////
+////        ant.propertyfile(file: "${tempDir}/${fileName}") {
+//////            entry(key: "db-name", value: props.getProperty("db-name"))
+////            entry(key: "DBName", value: props.getProperty("db-name"))
+////        }
+//
+//
+//        def myProps = new Properties()
+//        file("src/main/resources-conf/server.properties").withInputStream{
+//            myProps.load(it);
+//        }
+//        filter(org.apache.tools.ant.filters.ReplaceTokens, tokens: myProps)
+//
+//
+////
+////        String intoPath = "${warType}"
+////        war.from(tempDir) {
+////            include fileName
+////            intoPath = "WEB-INF/classes"
+////            into(intoPath)
+////        }
+//
+//    }
+//}
