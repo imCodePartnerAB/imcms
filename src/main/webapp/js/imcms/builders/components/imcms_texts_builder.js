@@ -164,18 +164,10 @@ Imcms.define("imcms-texts-builder",
                         })
                         .on('change keyup input', function (e) { // click
                             if (e.key === "ArrowDown") {
-                                if (attributes.positive && ($(this).val() <= 0)) {
-                                    return;
-                                }
-
                                 decrementNumberBoxValue.call(this);
 
                             } else if (e.key === "ArrowUp") {
                                 incrementNumberBoxValue.call(this);
-                            }
-
-                            if (attributes.positive && ($(this).val() < 0)) {
-                                return;
                             }
 
                             validation.call(this, attributes.onValidChange);
