@@ -81,7 +81,7 @@ Imcms.define(
         function setWidth(newWidth, imageDataContainers) {
             var newShadowWidth = Math.max(
                 newWidth + croppingAngles.getDoubleBorderSize(),
-                imageDataContainers.$editableImageArea.width() - 6
+                imageDataContainers.$editableImageArea.width() - 6 // 6px to skip scroll bar size
             );
 
             cropElements.$image.width(newWidth);
@@ -92,12 +92,40 @@ Imcms.define(
         function setHeight(newHeight, imageDataContainers) {
             var newShadowHeight = Math.max(
                 newHeight + croppingAngles.getDoubleBorderSize(),
-                imageDataContainers.$editableImageArea.height() - 6
+                imageDataContainers.$editableImageArea.height() - 6 // 6px to skip scroll bar size
             );
 
             cropElements.$image.height(newHeight);
             cropElements.$cropImg.height(newHeight);
             imageDataContainers.$shadow.height(newShadowHeight);
+        }
+
+        function updateHeight(newHeight, imageDataContainers) {
+            var previousHeight = cropElements.$cropImg.height();
+            setHeight(newHeight, imageDataContainers);
+            setCropAreaHeight(newHeight, previousHeight, imageDataContainers);
+        }
+
+        function updateWidth(newWidth, imageDataContainers) {
+            var previousWidth = cropElements.$cropImg.width();
+            setWidth(newWidth, imageDataContainers);
+            setCropAreaWidth(newWidth, previousWidth, imageDataContainers);
+        }
+
+        function updateWidthProportionally(newHeight, imageDataContainers) {
+            var original = imageDataContainers.original;
+            var proportionalWidth = (newHeight * original.width) / original.height;
+
+            imageDataContainers.$widthControlInput.getInput().val(~~proportionalWidth);
+            updateWidth(proportionalWidth, imageDataContainers);
+        }
+
+        function updateHeightProportionally(newWidth, imageDataContainers) {
+            var original = imageDataContainers.original;
+            var proportionalHeight = (newWidth * original.height) / original.width;
+
+            imageDataContainers.$heightControlInput.getInput().val(~~proportionalHeight);
+            updateHeight(proportionalHeight, imageDataContainers);
         }
 
         var saveProportions = true; // by default
@@ -108,35 +136,25 @@ Imcms.define(
                 var $title = components.texts.titleText("<div>", texts.displaySize);
 
                 function onValidWidthChange() {
-                    var width = +$(this).val();
+                    var newWidth = +$(this).val();
 
-                    if (isNaN(width)) {
+                    if (isNaN(newWidth)) {
                         return;
                     }
 
-                    var previousWidth = cropElements.$cropImg.width();
-                    setWidth(width, imageDataContainers);
-                    setCropAreaWidth(width, previousWidth, imageDataContainers);
-
-                    if (saveProportions) {
-
-                    }
+                    updateWidth(newWidth, imageDataContainers);
+                    saveProportions && updateHeightProportionally(newWidth, imageDataContainers);
                 }
 
                 function onValidHeightChange() {
-                    var height = +$(this).val();
+                    var newHeight = +$(this).val();
 
-                    if (isNaN(height)) {
+                    if (isNaN(newHeight)) {
                         return;
                     }
 
-                    var previousHeight = cropElements.$cropImg.height();
-                    setHeight(height, imageDataContainers);
-                    setCropAreaHeight(height, previousHeight, imageDataContainers);
-
-                    if (saveProportions) {
-
-                    }
+                    updateHeight(newHeight, imageDataContainers);
+                    saveProportions && updateWidthProportionally(newHeight, imageDataContainers);
                 }
 
                 imageDataContainers.$heightControlInput = components.texts.textNumber("<div>", {
@@ -149,8 +167,10 @@ Imcms.define(
 
                 var $proportionsBtn = components.buttons.proportionsButton({
                     "data-state": "active",
+                    title: texts.proportionsButtonTitle,
                     click: function () {
                         saveProportions = !saveProportions;
+                        $(this).attr("data-state", saveProportions ? "active" : "passive");
                     }
                 });
 

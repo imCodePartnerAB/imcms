@@ -208,6 +208,11 @@ Imcms.define(
                     var imageWidth = cropElements.$image.width();
                     var imageHeight = cropElements.$image.height();
 
+                    imageDataContainers.original = {
+                        width: imageWidth,
+                        height: imageHeight
+                    };
+
                     imageDataContainers.$heightValue.text(imageHeight);
                     imageDataContainers.$widthValue.text(imageWidth);
 

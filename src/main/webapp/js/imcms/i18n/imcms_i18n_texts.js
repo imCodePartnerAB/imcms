@@ -222,6 +222,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         left: "Justera tillämpas endast om det finns en bild i textredigeraren och det krävs att ändringar i textredigeraren sparas, 'imcms-image-align-left' klass läggs till för vanlig imcms bildtagare så utvecklaren ska hantera den.",
                         right: "Justera tillämpas endast om det finns en bild i textredigeraren och det krävs att ändringar i textredigeraren sparas, 'imcms-image-align-right' klass läggs till för vanlig imcms bildtagare så utvecklaren ska hantera den."
                     },
+                    proportionsButtonTitle: "Aktivera/inaktivera spara bildandelar",
                     displaySize: "Skärmstorlek",
                     height: "Höjd",
                     width: "Bredd",
@@ -481,6 +482,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         left: "Align is applied only in case of image in text editor and saving changes in text editor is required, 'imcms-image-align-left' class is added for regular imcms image tag so developer should handle with it.",
                         right: "Align is applied only in case of image in text editor and saving changes in text editor is required, 'imcms-image-align-right' class is added for regular imcms image tag so developer should handle with it."
                     },
+                    proportionsButtonTitle: "Enable/disable saving image proportions",
                     displaySize: "Display size",
                     height: "Height",
                     width: "Width",
