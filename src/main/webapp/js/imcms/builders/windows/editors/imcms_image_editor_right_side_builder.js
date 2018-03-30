@@ -55,6 +55,7 @@ Imcms.define(
 
         var alignButtonSelectorToAlignName = {
             NONE: BEM.buildClassSelector(null, "imcms-button", "align-none"),
+            CENTER: BEM.buildClassSelector(null, "imcms-button", "align-center"),
             LEFT: BEM.buildClassSelector(null, "imcms-button", "align-left"),
             RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
         };
@@ -64,7 +65,7 @@ Imcms.define(
                 $tag = $newTag;
                 imageData = newImageData;
 
-                var spaceAround = newImageData.spaceAround;
+                var spaceAround = imageData.spaceAround;
                 spaceAround.top && $("#image-space-top").val(spaceAround.top).blur();
                 spaceAround.right && $("#image-space-right").val(spaceAround.right).blur();
                 spaceAround.bottom && $("#image-space-bottom").val(spaceAround.bottom).blur();
@@ -72,7 +73,7 @@ Imcms.define(
 
                 $fileFormat.selectValue(imageData.format);
 
-                $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align]).click();
+                $textAlignmentBtnsContainer.find(alignButtonSelectorToAlignName[imageData.align || 'NONE']).click();
             },
             build: function (opts) {
 
@@ -164,6 +165,10 @@ Imcms.define(
                         setAlign("NONE", this);
                     }
 
+                    function onAlignCenterClick() {
+                        setAlign("CENTER", this);
+                    }
+
                     function onAlignLeftClick() {
                         setAlign("LEFT", this);
                     }
@@ -172,16 +177,31 @@ Imcms.define(
                         setAlign("RIGHT", this);
                     }
 
-                    function buildAlignButton(modifiers, onClick) {
-                        return components.buttons.imcmsButton({click: onClick}, ["align"].concat(modifiers));
+                    function buildAlignButton(modifiers, attributes) {
+                        return components.buttons.imcmsButton(attributes, ["align"].concat(modifiers));
                     }
 
-                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], onAlignNoneClick).text(texts.none);
-                    var $alignLeftBtn = buildAlignButton(["align-left"], onAlignLeftClick);
-                    var $alignRightBtn = buildAlignButton(["align-right"], onAlignRightClick);
+                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], {
+                        click: onAlignNoneClick,
+                        title: texts.align.none,
+                        text: texts.none
+                    });
+                    var $alignCenterBtn = buildAlignButton(["align-center"], {
+                        click: onAlignCenterClick,
+                        title: texts.align.center
+                    });
+                    var $alignLeftBtn = buildAlignButton(["align-left"], {
+                        click: onAlignLeftClick,
+                        title: texts.align.left
+                    });
+                    var $alignRightBtn = buildAlignButton(["align-right"], {
+                        click: onAlignRightClick,
+                        title: texts.align.right
+                    });
 
                     return $alignContainer = components.buttons.buttonsContainer("<div>", [
                         $alignNoneBtn,
+                        $alignCenterBtn,
                         $alignLeftBtn,
                         $alignRightBtn
                     ]);
@@ -279,6 +299,20 @@ Imcms.define(
                         text: "Y1",
                         error: "Error",
                         onValidChange: setValidation(imageCropper.setCropY1)
+                    });
+
+                    events.on("clean crop coordinates", function () {
+                        $xCropCoord.getInput().val(0);
+                        $yCropCoord.getInput().val(0);
+                        $x1CropCoord.getInput().val(0);
+                        $y1CropCoord.getInput().val(0);
+
+                        imageData.cropRegion = {
+                            cropX1: 0,
+                            cropX2: 0,
+                            cropY1: 0,
+                            cropY2: 0
+                        }
                     });
 
                     events.on("crop area position changed", function () {
@@ -463,6 +497,41 @@ Imcms.define(
                     }
                 }
 
+                function removeAlign() {
+                    this.css({
+                        float: "none",
+                        margin: 0
+                    });
+                }
+
+                function doCenterAlign() {
+                    this.css({
+                        float: "none",
+                        margin: "0 auto"
+                    });
+                }
+
+                function doLeftAlign() {
+                    this.css({
+                        float: "left",
+                        margin: 0
+                    });
+                }
+
+                function doRightAlign() {
+                    this.css({
+                        float: "right",
+                        margin: "0 auto"
+                    });
+                }
+
+                var alignNameToAction = {
+                    NONE: removeAlign,
+                    CENTER: doCenterAlign,
+                    LEFT: doLeftAlign,
+                    RIGHT: doRightAlign
+                };
+
                 function reloadImageOnPage(imageDTO) {
 
                     var $image = $tag.find(".imcms-editor-content>a>img").first();
@@ -499,6 +568,10 @@ Imcms.define(
                                 tinyMCE.activeEditor.setDirty(true);
                             });
                         }
+
+                        if ($tag.hasClass("imcms-image-in-text") && alignNameToAction[imageDTO.align]) {
+                            alignNameToAction[imageDTO.align].call($tag);
+                        }
                     }
                 }
 
@@ -516,10 +589,10 @@ Imcms.define(
                     if (continueSaving) {
                         imageData.width = cropElements.$image.width();
                         imageData.height = cropElements.$image.height();
-                        // these two should be done before close
+                        var currentAngle = imageRotate.getCurrentAngle();
+                        // these three should be done before close
                         imageWindowBuilder.closeWindow();
 
-                        var currentAngle = imageRotate.getCurrentAngle();
                         imageData.rotateAngle = currentAngle.degrees;
                         imageData.rotateDirection = currentAngle.name;
 

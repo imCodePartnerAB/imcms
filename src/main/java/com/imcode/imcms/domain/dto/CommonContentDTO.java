@@ -5,11 +5,13 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class CommonContentDTO extends CommonContent implements Cloneable {
 
     private Integer id;

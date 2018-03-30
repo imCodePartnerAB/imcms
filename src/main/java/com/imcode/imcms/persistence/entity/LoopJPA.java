@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntry;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_content_loops")
+@EqualsAndHashCode(callSuper=false)
 public class LoopJPA extends Loop {
 
     @Id

@@ -262,16 +262,8 @@
     font-weight: 400;
 }
 
-.imcms-button--align-top {
-    background-image: url("../images_new/image_editor/icon_text-decoration_top.png");
-}
-
 .imcms-button--align-center {
     background-image: url("../images_new/image_editor/icon_text-decoration_center.png");
-}
-
-.imcms-button--align-bottom {
-    background-image: url("../images_new/image_editor/icon_text-decoration_bottom.png");
 }
 
 .imcms-button--align-left {

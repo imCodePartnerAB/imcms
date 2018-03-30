@@ -192,7 +192,10 @@ Imcms.define(
                     cropElements.$cropImg.removeAttr("src");
                     cropElements.$cropImg.removeAttr("style");
 
+                    cropElements.$cropArea.removeAttr("style").width(0);
+
                     cropAngles.hideAll();
+                    events.trigger("clean crop coordinates");
 
                     return;
                 }
@@ -204,6 +207,11 @@ Imcms.define(
                     // fixes to prevent stupid little scroll because of borders
                     var imageWidth = cropElements.$image.width();
                     var imageHeight = cropElements.$image.height();
+
+                    imageDataContainers.original = {
+                        width: imageWidth,
+                        height: imageHeight
+                    };
 
                     imageDataContainers.$heightValue.text(imageHeight);
                     imageDataContainers.$widthValue.text(imageWidth);
@@ -263,6 +271,10 @@ Imcms.define(
 
             // direct reassign because $.extend skip 'undefined' but it's needed!
             imageData.cropRegion = image.cropRegion;
+            // imageData.align = image.align;
+            imageData.rotateDirection = image.rotateDirection;
+            imageData.rotateAngle = image.rotateAngle;
+
             $.extend(imageData, image);
 
             if (imageData.inText) {
@@ -274,7 +286,7 @@ Imcms.define(
             fillBodyHeadData(imageData);
             fillLeftSideData(imageData);
 
-            imageDataContainers.$altText.$input.val(image.alternateText);
+            imageDataContainers.$altText.$input.val(imageData.alternateText);
             imageDataContainers.$imgLink.$input.val(image.linkUrl);
 
             if (image.allLanguages !== undefined) {

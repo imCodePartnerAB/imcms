@@ -3,11 +3,13 @@ package com.imcode.imcms.domain.dto;
 import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class CategoryTypeDTO extends CategoryType implements Serializable {
 
     private static final long serialVersionUID = -4636053716188761920L;

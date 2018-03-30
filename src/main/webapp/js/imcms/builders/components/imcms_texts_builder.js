@@ -157,20 +157,29 @@ Imcms.define("imcms-texts-builder",
             textNumber: function (tag, attributes) {
                 var id = attributes.id || uuidGenerator.generateUUID(),
                     $input = primitives.imcmsInputText({
-                        id: id,
-                        name: attributes.name,
-                        placeholder: attributes.placeholder,
-                        click: activateNumberBox
-                    }).on('change keyup input', function (e) { // click
-                        if (e.key === "ArrowDown") {
-                            decrementNumberBoxValue.call(this);
+                            id: id,
+                            name: attributes.name,
+                            placeholder: attributes.placeholder,
+                            click: activateNumberBox
+                        })
+                        .on('change keyup input', function (e) { // click
+                            if (e.key === "ArrowDown") {
+                                if (attributes.positive && ($(this).val() <= 0)) {
+                                    return;
+                                }
 
-                        } else if (e.key === "ArrowUp") {
-                            incrementNumberBoxValue.call(this);
-                        }
+                                decrementNumberBoxValue.call(this);
 
-                        validation.call(this, attributes.onValidChange);
-                    }),
+                            } else if (e.key === "ArrowUp") {
+                                incrementNumberBoxValue.call(this);
+                            }
+
+                            if (attributes.positive && ($(this).val() < 0)) {
+                                return;
+                            }
+
+                            validation.call(this, attributes.onValidChange);
+                        }),
 
                     $buttonIncrement = buttons.incrementButton({
                         click: function () {

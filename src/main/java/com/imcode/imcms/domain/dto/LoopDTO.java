@@ -4,6 +4,7 @@ import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.LoopEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class LoopDTO extends Loop implements Serializable {
 
     private static final long serialVersionUID = 7251620455605095203L;

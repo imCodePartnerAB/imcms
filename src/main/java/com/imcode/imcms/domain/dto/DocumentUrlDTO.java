@@ -2,10 +2,12 @@ package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.DocumentURL;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class DocumentUrlDTO extends DocumentURL implements Cloneable {
 
     private Integer id;

@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.ImageCropRegion;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
@@ -10,6 +11,7 @@ import javax.persistence.Embeddable;
 @Data
 @Embeddable
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class ImageCropRegionJPA extends ImageCropRegion {
 
     @Column(name = "crop_x1", nullable = false)

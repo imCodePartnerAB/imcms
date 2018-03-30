@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 @Table(name = "imcms_text_doc_texts")
 @NoArgsConstructor
 @Data
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 public class TextJPA extends Text {
 
     @Id

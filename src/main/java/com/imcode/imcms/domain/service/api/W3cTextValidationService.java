@@ -31,7 +31,7 @@ class W3cTextValidationService implements TextValidationService {
     public TextValidationResult validateText(String content) throws IOException {
         // this wrapping is necessary because validator checks full page, not the piece of html.
         final String contentWrapper = "<!DOCTYPE html>\n"
-                + "<html>\n"
+                + "<html lang=\"en\">\n"
                 + "  <head>\n"
                 + "    <meta charset=\"utf-8\">\n"
                 + "    <title>ImCMS HTML validation</title>\n"

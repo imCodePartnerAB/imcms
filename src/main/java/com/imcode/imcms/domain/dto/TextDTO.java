@@ -4,6 +4,7 @@ import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.Optional;
@@ -11,6 +12,7 @@ import java.util.Optional;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class TextDTO extends Text {
 
     private Integer index;
