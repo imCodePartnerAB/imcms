@@ -16,12 +16,11 @@ import imcode.util.Utility;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
@@ -53,6 +52,7 @@ public class LinkCheck extends HttpServlet {
     private static final int CONNECTION_TIMEOUT_MILLISECONDS = 10000;
     private static final int READ_TIMEOUT_MILLISECONDS = 10000;
     private final static Logger log = Logger.getLogger(LinkCheck.class.getName());
+    private static final long serialVersionUID = 7511371897549465582L;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -76,7 +76,7 @@ public class LinkCheck extends HttpServlet {
 
         addUrlDocumentLinks(links, reindexingIndex, user, request, range);
         addTextAndImageLinks(links, reindexingIndex, user, request, range);
-        Collections.sort(links, (o1, o2) -> o1.getDocument().getId() - o2.getDocument().getId());
+        links.sort(Comparator.comparingInt(o -> o.getDocument().getId()));
 
         LinkCheckPage linkCheckPage = new LinkCheckPage();
         linkCheckPage.setLinksIterator(links.iterator());
@@ -113,12 +113,12 @@ public class LinkCheck extends HttpServlet {
 
     private void addTextAndImageLinks(List<Link> links, DocumentIndex reindexingIndex, UserDomainObject user,
                                       HttpServletRequest request, IntRange range) {
-        BooleanQuery query = new BooleanQuery();
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "http")), Occur.SHOULD);
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__NONSTRIPPED_TEXT, "href")), Occur.SHOULD);
-        query.add(new PrefixQuery(new Term(DocumentIndex.FIELD__IMAGE_LINK_URL, "http")), Occur.SHOULD);
+        BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+        queryBuilder.add(new PrefixQuery(new Term(DocumentIndex.FIELD__TEXT, "http")), Occur.SHOULD);
+        queryBuilder.add(new PrefixQuery(new Term(DocumentIndex.FIELD__TEXT, "href")), Occur.SHOULD);
+        queryBuilder.add(new PrefixQuery(new Term(DocumentIndex.FIELD__IMAGE_LINK_URL, "http")), Occur.SHOULD);
 
-        List textDocuments = reindexingIndex.search(new SimpleDocumentQuery(query), user);
+        List textDocuments = reindexingIndex.search(new SimpleDocumentQuery(queryBuilder.build()), user);
 
         for (Object textDocument1 : textDocuments) {
             TextDocumentDomainObject textDocument = (TextDocumentDomainObject) textDocument1;
@@ -149,8 +149,8 @@ public class LinkCheck extends HttpServlet {
         }
     }
 
-    boolean matchesUrl(Perl5Util perl5Util,
-                       PatternMatcherInput patternMatcherInput) {
+    private boolean matchesUrl(Perl5Util perl5Util,
+                               PatternMatcherInput patternMatcherInput) {
         String urlWithoutSchemePattern = "[^\\s\"'()]+";
         return perl5Util.match("m,\\bhttp://" + urlWithoutSchemePattern + "|\\bhref=[\"']?("
                 + urlWithoutSchemePattern
@@ -174,7 +174,7 @@ public class LinkCheck extends HttpServlet {
 
         private Iterator iterator;
 
-        public LinkCheckThread(Iterator iterator) {
+        LinkCheckThread(Iterator iterator) {
             this.iterator = iterator;
         }
 
@@ -192,6 +192,7 @@ public class LinkCheck extends HttpServlet {
     public static class LinkCheckPage implements Serializable {
 
         public static final String REQUEST_ATTRIBUTE__PAGE = "linkpage";
+        private static final long serialVersionUID = -375690009096069106L;
 
         boolean brokenOnly;
         boolean doCheckLinks;
@@ -213,7 +214,7 @@ public class LinkCheck extends HttpServlet {
             return doCheckLinks;
         }
 
-        public void setDoCheckLinks(boolean doCheckLinks) {
+        void setDoCheckLinks(boolean doCheckLinks) {
             this.doCheckLinks = doCheckLinks;
         }
 
@@ -221,7 +222,7 @@ public class LinkCheck extends HttpServlet {
             return brokenOnly;
         }
 
-        public void setBrokenOnly(boolean brokenOnly) {
+        void setBrokenOnly(boolean brokenOnly) {
             this.brokenOnly = brokenOnly;
         }
 
@@ -229,7 +230,7 @@ public class LinkCheck extends HttpServlet {
             return linksIterator;
         }
 
-        public void setLinksIterator(Iterator linksIterator) {
+        void setLinksIterator(Iterator linksIterator) {
             this.linksIterator = linksIterator;
         }
 
@@ -237,7 +238,7 @@ public class LinkCheck extends HttpServlet {
             return startId;
         }
 
-        public void setStartId(int startId) {
+        void setStartId(int startId) {
             this.startId = startId;
         }
 
@@ -245,7 +246,7 @@ public class LinkCheck extends HttpServlet {
             return endId;
         }
 
-        public void setEndId(int endId) {
+        void setEndId(int endId) {
             this.endId = endId;
         }
     }
@@ -311,11 +312,16 @@ public class LinkCheck extends HttpServlet {
 
         private void checkUrl(String url) {
             log.debug("checkUrl(" + url + ")");
-            HttpClient httpClient = new DefaultHttpClient();
             HttpHead httpMethod;
-            HttpParams params = httpClient.getParams();
-            HttpConnectionParams.setConnectionTimeout(params, CONNECTION_TIMEOUT_MILLISECONDS);
-            HttpConnectionParams.setSoTimeout(params, READ_TIMEOUT_MILLISECONDS);
+
+            final RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(CONNECTION_TIMEOUT_MILLISECONDS)
+                    .setSocketTimeout(READ_TIMEOUT_MILLISECONDS)
+                    .build();
+
+            final CloseableHttpClient httpClient = HttpClientBuilder.create()
+                    .setDefaultRequestConfig(requestConfig)
+                    .build();
             try {
                 httpMethod = new HttpHead(url);
             } catch (Exception e) {
@@ -333,7 +339,7 @@ public class LinkCheck extends HttpServlet {
                 }
             } catch (IllegalArgumentException e) {
                 log.debug("Error testing url " + url, e);
-            } catch (UnknownHostException e) {
+            } catch (UnknownHostException ignored) {
             } catch (ConnectTimeoutException | ConnectException e) {
                 hostFound = true;
             } catch (IOException e) {
@@ -349,7 +355,7 @@ public class LinkCheck extends HttpServlet {
         private UrlDocumentDomainObject urlDocument;
         private DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument;
 
-        public UrlDocumentLink(UrlDocumentDomainObject urlDocument, HttpServletRequest request) {
+        UrlDocumentLink(UrlDocumentDomainObject urlDocument, HttpServletRequest request) {
             super(request);
             this.urlDocument = urlDocument;
             documentMenuPairsContainingUrlDocument = Imcms.getServices().getDocumentMapper().getDocumentMenuPairsContainingDocument(urlDocument);
@@ -374,8 +380,8 @@ public class LinkCheck extends HttpServlet {
         protected int index;
         protected String url;
 
-        public TextDocumentElementLink(TextDocumentDomainObject textDocument, int index, String url,
-                                       HttpServletRequest request) {
+        TextDocumentElementLink(TextDocumentDomainObject textDocument, int index, String url,
+                                HttpServletRequest request) {
             super(request);
             this.textDocument = textDocument;
             this.index = index;
@@ -398,16 +404,16 @@ public class LinkCheck extends HttpServlet {
 
     public static class TextLink extends TextDocumentElementLink {
 
-        public TextLink(TextDocumentDomainObject textDocument, int index, String url,
-                        HttpServletRequest request) {
+        TextLink(TextDocumentDomainObject textDocument, int index, String url,
+                 HttpServletRequest request) {
             super(textDocument, index, url, request);
         }
     }
 
     public static class ImageLink extends TextDocumentElementLink {
 
-        public ImageLink(TextDocumentDomainObject textDocument, int index, String url,
-                         HttpServletRequest request) {
+        ImageLink(TextDocumentDomainObject textDocument, int index, String url,
+                  HttpServletRequest request) {
             super(textDocument, index, url, request);
         }
     }

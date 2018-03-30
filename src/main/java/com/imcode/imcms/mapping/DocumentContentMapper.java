@@ -3,10 +3,10 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.DocRef;
-import com.imcode.imcms.mapping.jpa.doc.Language;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContent;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
+import com.imcode.imcms.persistence.entity.CommonContentJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.repository.CommonContentRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
@@ -21,14 +21,17 @@ import java.util.Map;
 @Transactional
 public class DocumentContentMapper {
 
-    @Inject
-    private CommonContentRepository commonContentRepository;
+    private final CommonContentRepository commonContentRepository;
+    private final LanguageRepository languageRepository;
+    private final DocumentLanguageMapper languageMapper;
 
     @Inject
-    private LanguageRepository languageRepository;
-
-    @Inject
-    private DocumentLanguageMapper languageMapper;
+    public DocumentContentMapper(CommonContentRepository commonContentRepository, LanguageRepository languageRepository,
+                                 DocumentLanguageMapper languageMapper) {
+        this.commonContentRepository = commonContentRepository;
+        this.languageRepository = languageRepository;
+        this.languageMapper = languageMapper;
+    }
 
     /**
      * @deprecated use {@link #getCommonContents(int, int)}
@@ -43,7 +46,7 @@ public class DocumentContentMapper {
     public Map<DocumentLanguage, DocumentCommonContent> getCommonContents(int docId, int versionNo) {
         Map<DocumentLanguage, DocumentCommonContent> result = new HashMap<>();
 
-        for (CommonContent commonContent : commonContentRepository.findByDocIdAndVersionNo(docId, versionNo)) {
+        for (CommonContentJPA commonContent : commonContentRepository.findByDocIdAndVersionNo(docId, versionNo)) {
             result.put(
                     languageMapper.toApiObject(commonContent.getLanguage()),
                     toApiObject(commonContent)
@@ -55,7 +58,7 @@ public class DocumentContentMapper {
 
     @Transactional(propagation = Propagation.SUPPORTS)
     public DocumentCommonContent getCommonContent(DocRef docRef) {
-        final CommonContent commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(
+        final CommonContentJPA commonContent = commonContentRepository.findByDocIdAndVersionNoAndLanguageCode(
                 docRef.getId(), docRef.getVersionNo(), docRef.getLanguageCode());
         return toApiObject(commonContent);
     }
@@ -69,12 +72,12 @@ public class DocumentContentMapper {
     }
 
     public void saveCommonContent(DocumentDomainObject doc) {
-        Language language = languageRepository.findByCode(doc.getLanguage().getCode());
-        CommonContent dcc = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
+        LanguageJPA language = languageRepository.findByCode(doc.getLanguage().getCode());
+        CommonContentJPA dcc = commonContentRepository.findByDocIdAndVersionNoAndLanguage(
                 doc.getId(), doc.getVersionNo(), language);
 
         if (dcc == null) {
-            dcc = new CommonContent();
+            dcc = new CommonContentJPA();
         }
 
         DocumentCommonContent dccDO = doc.getCommonContent();
@@ -90,14 +93,14 @@ public class DocumentContentMapper {
         commonContentRepository.save(dcc);
     }
 
-    private DocumentCommonContent toApiObject(CommonContent commonContent) {
+    private DocumentCommonContent toApiObject(CommonContentJPA commonContent) {
         return commonContent == null
                 ? null
                 : DocumentCommonContent.builder()
                 .headline(commonContent.getHeadline())
                 .menuImageURL(commonContent.getMenuImageURL())
                 .menuText(commonContent.getMenuText())
-                .enabled(commonContent.getEnabled())
+                .enabled(commonContent.isEnabled())
                 .build();
     }
 }

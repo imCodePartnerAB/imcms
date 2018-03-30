@@ -12,7 +12,9 @@
                 <td>
 							<table border="0" cellspacing="0" cellpadding="0">
 							<tr>
-								<td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MAX_CHOICES%>" value="1" <%= categoryTypeToEdit.getMaxChoices() == 1 ?  "checked" : "" %> ></td>
+                                <td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MAX_CHOICES%>"
+                                                       value="1" <%= categoryTypeToEdit.isMultiSelect() ? "" : "checked" %> >
+                                </td>
 								<td>&nbsp;&nbsp;</td>
 								<td><? install/htdocs/sv/jsp/category_admin/singel_choice ?></td>
 							</tr>
@@ -23,7 +25,9 @@
                  <td>
 							<table border="0" cellspacing="0" cellpadding="0">
 							<tr>
-								<td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MAX_CHOICES%>" value="0" <%= categoryTypeToEdit.getMaxChoices() == 0 ? "checked" : "" %> ></td>
+                                <td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MAX_CHOICES%>"
+                                                       value="0" <%= categoryTypeToEdit.isMultiSelect() ? "checked" : "" %> >
+                                </td>
 								<td>&nbsp;&nbsp;</td>
 								<td><? install/htdocs/sv/jsp/category_admin/multi_choice ?></td>
 							</tr>

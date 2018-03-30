@@ -1,0 +1,19 @@
+.imcms-buttons::after {
+    content: '';
+    display: block;
+    clear: both;
+}
+
+.imcms-buttons__button {
+    float: left;
+    margin-right: 5px;
+}
+
+.buttons__button:last-child {
+    margin-right: 0;
+}
+
+.imcms-buttons .imcms-button--neutral {
+    line-height: 40px;
+    margin: 0 10px;
+}

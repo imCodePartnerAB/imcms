@@ -1,0 +1,112 @@
+.imcms-admin {
+    position: fixed;
+    top: -90px;
+    left: 0;
+    width: 100%;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+    z-index: 1500;
+}
+
+.imcms-admin-panel {
+    background-color: #fff;
+    -webkit-box-shadow: 0 6px 29px 15px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 6px 29px 15px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 6px 29px 15px rgba(0, 0, 0, 0.07);
+    display: block;
+    overflow: hidden;
+    padding-left: 2%;
+    width: 100%;
+    min-height: 90px;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+}
+
+.imcms-admin-panel__item {
+    display: block;
+    float: left;
+    margin: 17px 30px 17px 0;
+    height: 56px;
+}
+
+.imcms-admin-panel__logo {
+    background: url("../../images_new/icon_logo_main.png") no-repeat 0 0;
+    background-size: contain;
+    text-indent: -99999px;
+    display: block;
+    height: 100%;
+    width: 115px;
+}
+
+.imcms-admin-panel__title {
+    color: #587380;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 56px;
+    text-transform: uppercase;
+}
+
+.imcms-admin-panel__item .imcms-flag {
+    margin: 19px 53px 19px 0;
+}
+
+.imcms-admin-panel__item .imcms-flag--en:after,
+.imcms-admin-panel__item .imcms-flag--sw:after {
+    display: block;
+}
+
+@media screen and (max-width: 1600px) {
+    .imcms-admin-panel {
+        min-height: 72px;
+    }
+
+    .imcms-admin-panel__item {
+        height: 35px;
+        margin-right: 17px;
+    }
+
+    .imcms-admin-panel__logo {
+        width: 72px;
+    }
+
+    .imcms-admin-panel__title {
+        line-height: 35px;
+    }
+
+    .imcms-admin-panel .imcms-flags {
+        margin-right: 0;
+    }
+
+    .imcms-admin-panel__item .imcms-flag {
+        margin: 10px 35px 0 0;
+    }
+}
+
+@media screen and (max-width: 1300px) {
+    .imcms-admin-panel__title {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 1300px) {
+    .imcms-admin-panel__item .imcms-flag {
+        margin: 10px 30px 0 0;
+    }
+
+    .imcms-admin-panel__item .imcms-flag:after {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .imcms-admin-panel__item:first-of-type,
+    .imcms-flags {
+        display: none;
+    }
+}

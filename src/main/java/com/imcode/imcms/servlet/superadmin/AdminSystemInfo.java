@@ -21,7 +21,7 @@ public class AdminSystemInfo extends HttpServlet {
 
     private final static Logger log = Logger.getLogger(AdminSystemInfo.class.getName());
 
-    private final static String HTML_TEMPLATE = "AdminSystemMessage.htm";
+    private final static String HTML_TEMPLATE = "AdminSystemMessage.jsp";
 
     /**
      * The GET method creates the html page when this side has been

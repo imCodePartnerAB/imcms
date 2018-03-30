@@ -1,0 +1,10 @@
+.imcms-label {
+    display: inline-block;
+    color: #2f4047;
+    cursor: pointer;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 15px;
+    margin-bottom: 15px;
+}

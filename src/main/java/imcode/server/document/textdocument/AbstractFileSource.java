@@ -11,6 +11,8 @@ import java.util.Date;
  * Created by Shadowgun on 30.03.2015.
  */
 public abstract class AbstractFileSource implements Serializable {
+    private static final long serialVersionUID = -9188906880715095283L;
+
     public abstract InputStreamSource getInputStreamSource();
 
     public abstract String getUrlPathRelativeToContextPath();

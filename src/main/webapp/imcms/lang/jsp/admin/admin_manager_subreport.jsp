@@ -1,7 +1,7 @@
-<%@ page import="imcode.server.document.DocumentDomainObject,
-				 com.imcode.imcms.util.l10n.LocalizedMessage,
+<%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage,
+				 imcode.server.document.DocumentDomainObject,
 				 imcode.util.Utility,
-				 org.apache.commons.lang3.StringEscapeUtils,
+				 org.apache.commons.text.StringEscapeUtils,
 				 java.util.List" %>
 <%@page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreport"/>

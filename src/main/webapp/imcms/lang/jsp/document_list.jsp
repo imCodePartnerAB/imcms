@@ -1,21 +1,29 @@
-<%@ page import="com.imcode.imcms.servlet.superadmin.ListDocuments,
-                 imcode.server.document.DocumentDomainObject,
-                 com.imcode.imcms.servlet.superadmin.DocumentReferences,
-                 org.apache.commons.lang3.StringEscapeUtils,
+<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
+                 com.imcode.imcms.servlet.superadmin.ListDocuments,
                  imcode.server.Imcms,
-                 imcode.util.Utility,
-                 imcode.server.user.UserDomainObject,
+                 imcode.server.document.DocumentComparators,
+                 imcode.server.document.DocumentDomainObject,
                  imcode.server.document.textdocument.TextDocumentDomainObject,
-                 java.util.*,
+                 imcode.server.user.UserDomainObject,
+                 imcode.util.Utility,
+                 org.apache.commons.lang3.ObjectUtils,
+                org.apache.commons.text.StringEscapeUtils,
                  java.net.URLEncoder,
-                org.apache.commons.lang3.ObjectUtils,
-                 imcode.util.Html,
-                 imcode.server.document.DocumentComparator"%><%@ page import="com.imcode.imcms.mapping.DocumentMapper"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
-<% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
-<vel:velocity>
+                 java.util.Collections" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 
-#gui_start_of_page( "<? imcms/lang/jsp/document_list.jsp/title ?>" "AdminManager" "" "ListDocument" "" )
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<% ListDocuments.FormData formData = (ListDocuments.FormData)request.getAttribute( ListDocuments.REQUEST_ATTRIBUTE__FORM_DATA ) ;%>
+
+<c:set var="heading">
+    <fmt:message key="imcms/lang/jsp/document_list.jsp/title"/>
+</c:set>
+<ui:imcms_gui_start_of_page titleAndHeading="${heading}"/>
 
 <table border="0" cellspacing="0" cellpadding="2" width="680">
 <tr>
@@ -37,7 +45,7 @@
 	</table></td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 </table><%
 
@@ -61,25 +69,28 @@ if (null != formData.documentsIterator) { %>
 		DocumentDomainObject document = (DocumentDomainObject)formData.documentsIterator.next();
 		DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument( document ); %>
 <tr>
-	<td colspan="6"><img src="$contextPath/imcms/$language/images/admin/1x1_cccccc.gif" width="100%" height="1"></td>
+    <td colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif" width="100%" height="1">
+    </td>
 </tr>
 <tr valign="top"><%String alias = document.getAlias();
                    if ( alias != null ) { %>
-    <td><a name="alias" href="$contextPath/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
+    <td><a name="alias"
+           href="${contextPath}/<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %>
+    </a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
-    <td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-        <%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td>
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
+        <ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
+    <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
 	<%= StringEscapeUtils.escapeHtml4((String)documentTypes.get(new Integer( document.getDocumentTypeId() )))%>&nbsp;</td>
-	<td><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br>
-	<a name="<%= document.getId() %>" href="$contextPath/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
+    <td><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
+        <a name="<%= document.getId() %>" href="${contextPath}/servlet/AdminDoc?meta_id=<%= document.getId() %>"><%=
 		document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
-	<td nowrap><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="2"><br><%
+    <td nowrap><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			String backUrl = "ListDocuments?" + ObjectUtils.defaultIfNull(request.getQueryString(),"") ;
-			String escapedBackUrl = URLEncoder.encode(backUrl); %>
-	<a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%= DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=<%= escapedBackUrl %>&<%= DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%= document.getId() %>"><%
+            String escapedBackUrl = URLEncoder.encode(backUrl, Imcms.UTF_8_ENCODING); %>
+        <a href="<%= request.getContextPath() %>/servlet/DocumentReferences?returnurl=<%= escapedBackUrl %>&id=<%= document.getId() %>"><%
 		} %><%= documentMenuPairsContainingDocument.length %> <? webapp/imcms/lang/jsp/parent_count_unit ?><%
 		if (documentMenuPairsContainingDocument.length > 0 ) {
 			%></a><%
@@ -90,7 +101,7 @@ if (null != formData.documentsIterator) { %>
 			List childDocuments = documentMapper.getDocuments(textDocument.getChildDocumentIds());
 			if (!childDocuments.isEmpty()) { %>
 	<table border="0" cellpadding="2" cellspacing="0"><%
-				Collections.sort(childDocuments, DocumentComparator.ID) ;
+        Collections.sort(childDocuments, DocumentComparators.ID);
 				for ( Iterator iterator = childDocuments.iterator(); iterator.hasNext(); ) {
 					DocumentDomainObject childDocument = (DocumentDomainObject)iterator.next(); %>
   <tr valign="top">
@@ -106,7 +117,7 @@ if (null != formData.documentsIterator) { %>
 </tr><%
 	} %>
 <tr>
-	<td colspan="6">#gui_hr( "blue" )</td>
+    <td colspan="6"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <form method="get" action="AdminManager">
 <tr>
@@ -115,5 +126,4 @@ if (null != formData.documentsIterator) { %>
 </form>
 </table><%
 } %>
-#gui_end_of_page()
-</vel:velocity>
+    <ui:imcms_gui_end_of_page/>

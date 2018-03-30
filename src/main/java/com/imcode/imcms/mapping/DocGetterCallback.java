@@ -9,6 +9,7 @@ import imcode.server.user.UserDomainObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,11 +29,11 @@ import java.util.stream.Collectors;
  * @see com.imcode.imcms.servlet.ImcmsSetupFilter
  * @see com.imcode.imcms.mapping.DocumentGetter#getDocument(int)
  */
-public class DocGetterCallback {
+public class DocGetterCallback implements Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DocGetterCallback.class);
+    private static final long serialVersionUID = 2496394918087427549L;
     private volatile DocumentLanguage language;
-    private volatile boolean isDefaultLanguage;
     private UserDomainObject user;
     private Map<Integer, Callback> callbacks = new ConcurrentHashMap<>();
     private Callback workingDocCallback = (docId, docMapper) -> {
@@ -117,12 +118,7 @@ public class DocGetterCallback {
         this.language = language;
     }
 
-    public void setLanguage(DocumentLanguage language, boolean isDefaultLanguage) {
-        this.language = language;
-        this.isDefaultLanguage = isDefaultLanguage;
-    }
-
-    private interface Callback {
+    private interface Callback extends Serializable {
         DocumentDomainObject getDoc(int docId, DocumentMapper docMapper);
     }
 }

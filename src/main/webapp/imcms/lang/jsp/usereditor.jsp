@@ -1,11 +1,14 @@
-<%@ page import="com.imcode.imcms.flow.OkCancelPage"%><%@ page  import="com.imcode.imcms.flow.Page"%>
+<%@ page import="com.imcode.imcms.flow.OkCancelPage" %>
+<%@ page import="com.imcode.imcms.flow.Page" %>
 <%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage"%><%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage"%>
-<%@ page import="imcode.server.user.UserDomainObject"%><%@  page import="imcode.util.DateConstants"%>
-<%@ page import="imcode.util.Utility"%><%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
-<%@ page import="java.text.SimpleDateFormat, imcode.server.Imcms"%>
+<%@ page import="imcode.server.Imcms" %>
+<%@  page import="imcode.server.user.UserDomainObject" %>
+<%@ page import="imcode.util.DateConstants" %>
+<%@ page import="imcode.util.Utility" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils, java.text.SimpleDateFormat" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
-    UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);
+    UserEditorPage userEditorPage = Page.fromRequest(request);
     UserDomainObject editedUser = userEditorPage.getEditedUser() ;
 		try {
 			if (editedUser != null && (editedUser.getLanguageIso639_2() == null || editedUser.getLanguageIso639_2().equals(""))) {
@@ -15,32 +18,35 @@
 		} catch(Exception e) {}
     UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
     LocalizedMessage errorMessage = userEditorPage.getErrorMessage() ;
-%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<vel:velocity><html>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+
+<html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <script language="javascript">
 <!--
 function evalPrepareAdd() {
 	// Lets check that those fields which are mandatory
 	var valFieldsOk = true;
-	if( document.forms[0].login_name.value == "" ) valFieldsOk = false
+    if (document.forms[0].login_name.value == "") valFieldsOk = false;
 
 	if(!valFieldsOk) {
-		var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>"
-		alert(msg)
+        var msg = "<? templates/sv/AdminUserResp.htm/2/1 ?>";
+        alert(msg);
 		return false
 	}
 
 	if(document.forms[0].password1.value != document.forms[0].password2.value){
-		var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>"
-		document.forms[0].password1.value = ""
-		document.forms[0].password2.value = ""
-		document.forms[0].password1.focus()
-		alert(msg)
+        var msg = "<? templates/sv/AdminUserResp.htm/2/2 ?>";
+        document.forms[0].password1.value = "";
+        document.forms[0].password2.value = "";
+        document.forms[0].password1.focus();
+        alert(msg);
 		return false
 	}
 
@@ -66,10 +72,13 @@ function activateUseradmin_roles(){
 <body bgcolor="#FFFFFF" onLoad="focusField(0,'<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>'); activateUseradmin_roles(); return true">
 
 
-#gui_outer_start()
-#gui_head( "<? global/imcms_administration ?>" )
+<ui:imcms_gui_outer_start/>
+<c:set var="heading">
+    <fmt:message key="global/imcms_administration"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
 
-<form method="post" action="$contextPath/servlet/PageDispatcher">
+<form method="post" action="${contextPath}/servlet/PageDispatcher">
 <%= Page.htmlHidden(request) %>
 <table border="0" cellspacing="0" cellpadding="0">
 <tr>
@@ -78,18 +87,23 @@ function activateUseradmin_roles(){
     <td><input type="button" value="<? templates/sv/AdminUserResp.htm/2002 ?>" title="<? templates/sv/AdminUserResp.htm/2003 ?>" class="imcmsFormBtn" onClick="openHelpW('UserEdit')"></td>
 </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 
 <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
 <tr>
-	<td colspan="2">#gui_heading( "<? templates/sv/AdminUserResp.htm/5/1 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminUserResp.htm/5/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
 	<td colspan="2" class="imcmsAdmText">
 	<? templates/sv/AdminUserResp.htm/6 ?></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/8 ?></td>
@@ -150,7 +164,7 @@ function activateUseradmin_roles(){
     <td><select name="<%= UserEditorPage.REQUEST_PARAMETER__LANGUAGE %>"><%= userEditorPage.createLanguagesHtmlOptionList( loggedOnUser, editedUser ) %></select></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp.htm/32 ?></td>
@@ -194,7 +208,7 @@ function activateUseradmin_roles(){
 	<td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50" value="<%= StringEscapeUtils.escapeHtml4(editedUser.getEmailAddress())%>"></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td class="imcmsAdmText"><? templates/sv/AdminUserResp_superadmin_part.htm/2 ?></td>
@@ -212,7 +226,12 @@ function activateUseradmin_roles(){
 </tr>
 <% if (loggedOnUser.canEditRolesFor(userEditorPage.getUneditedUser())) { %>
 <tr>
-	<td colspan="2">&nbsp;<br>#gui_heading( "<? templates/sv/AdminUserResp_superadmin_part.htm/3/1 ?>" )</td>
+    <td colspan="2">&nbsp;<br>
+        <c:set var="heading">
+            <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr valign="top">
 	<td class="imcmsAdmText" nowrap>
@@ -245,7 +264,7 @@ function activateUseradmin_roles(){
 </tr>
 <% } %>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td colspan="2">
@@ -272,8 +291,7 @@ function activateUseradmin_roles(){
 </tr>
 </table>
 </form>
-#gui_bottom()
-#gui_outer_end()
+<ui:imcms_gui_bottom/>
+<ui:imcms_gui_outer_end/>
 </body>
 </html>
-</vel:velocity>

@@ -7,7 +7,6 @@ import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.*;
 import imcode.util.Html;
-import imcode.util.ToStringPairTransformer;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
@@ -24,17 +23,17 @@ public class AdminRoles extends HttpServlet {
 
     private final static Logger LOG = Logger.getLogger(AdminRoles.class.getName());
 
-    private final static String HTML_ADMIN_ROLES = "AdminRoles_roles.htm";
-    private final static String HTML_ADD_ROLE = "AdminRoles_Add.htm";
-    private final static String HTML_RENAME_ROLE = "AdminRoles_Rename.htm";
-    private final static String HTML_DELETE_ROLE_1 = "AdminRoles_Delete1.htm";
-    private final static String HTML_DELETE_ROLE_2 = "AdminRoles_Delete2.htm";
-    private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.html";
-    private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.html";
+    private final static String HTML_ADMIN_ROLES = "AdminRoles_roles.jsp";
+    private final static String HTML_ADD_ROLE = "AdminRoles_Add.jsp";
+    private final static String HTML_RENAME_ROLE = "AdminRoles_Rename.jsp";
+    private final static String HTML_DELETE_ROLE_1 = "AdminRoles_Delete1.jsp";
+    private final static String HTML_DELETE_ROLE_2 = "AdminRoles_Delete2.jsp";
+    private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.jsp";
+    private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.jsp";
     private final static String HTML_EDIT_ROLE_TABLE_ROW = "AdminRoles_Edit_Permission.html";
 
-    public static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg
-    ) throws IOException {
+    static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg)
+            throws IOException {
         List<String> tagsAndData = new ArrayList<>();
         tagsAndData.add("#ERROR_HEADER#");
         tagsAndData.add(header);
@@ -52,28 +51,20 @@ public class AdminRoles extends HttpServlet {
         res.getWriter().println(html);
     }
 
-    static String createHtml(HttpServletRequest req,
-                             Map<String, String> vm, String htmlFile) {
+    static String createHtml(String htmlFile, HttpServletRequest request, Map<String, String> attributeToValue,
+                             HttpServletResponse response) throws ServletException, IOException {
 
-        ImcmsServices imcref = Imcms.getServices();
-        UserDomainObject user = Utility.getLoggedOnUser(req);
-
-        vm.put("SERVLET_URL", "");
-        vm.put("SERVLET_URL2", "");
-
-        List<String> tagsAndData1 = new ArrayList<>(vm.size() * 2);
-        for (Map.Entry<String, String> entry1 : vm.entrySet()) {
-            tagsAndData1.add("#" + entry1.getKey() + "#");
-            tagsAndData1.add(entry1.getValue());
+        for (Map.Entry<String, String> attributeToValueSet : attributeToValue.entrySet()) {
+            request.setAttribute(attributeToValueSet.getKey(), attributeToValueSet.getValue());
         }
 
-        return imcref.getAdminTemplate(htmlFile, user, tagsAndData1);
+        return Utility.getAdminContents(htmlFile, request, response);
     }
 
-    public static void sendHtml(HttpServletRequest req, HttpServletResponse res,
-                                Map<String, String> vm, String htmlFile) throws IOException {
+    static void sendHtml(HttpServletRequest req, HttpServletResponse res,
+                         Map<String, String> vm, String htmlFile) throws IOException, ServletException {
 
-        String str = createHtml(req, vm, htmlFile);
+        String str = createHtml(htmlFile, req, vm, res);
         Utility.setDefaultHtmlContentType(res);
         PrintWriter out = res.getWriter();
 
@@ -102,13 +93,13 @@ public class AdminRoles extends HttpServlet {
 
         final Object[] parameters = new String[0];
         String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
-        List rolesV = Arrays.asList(rolesArr);
+        List<String> rolesV = Arrays.asList(rolesArr);
 
-        Map<String, String> vm = new HashMap<>();
-        String opt = Html.createOptionList(rolesV, Arrays.asList(new String[]{""}));
-        vm.put("ROLES_MENU", opt);
+        String opt = Html.createOptionList(rolesV, "");
+        req.setAttribute("ROLES_MENU", opt);
 
-        sendHtml(req, res, vm, HTML_ADMIN_ROLES);
+        final String adminTemplatePath = imcref.getAdminTemplatePath(HTML_ADMIN_ROLES);
+        req.getRequestDispatcher(adminTemplatePath).forward(req, res);
 
     } // End doGet
 
@@ -131,7 +122,7 @@ public class AdminRoles extends HttpServlet {
                 // Lets get all ROLES from DB
                 final Object[] parameters = new String[0];
                 String[] rolesArr = imcref.getProcedureExecutor().executeProcedure("RoleAdminGetAll", parameters, new StringArrayResultSetHandler());
-                List rolesV = Arrays.asList(rolesArr);
+                List<String> rolesV = Arrays.asList(rolesArr);
 
 
                 // Lets generate the html page
@@ -161,7 +152,7 @@ public class AdminRoles extends HttpServlet {
                 }
 
                 // lets get data on permissions and values
-                String permissionComponent = createPermissionComponent(req, permissionList);
+                String permissionComponent = createPermissionComponent(req, res, permissionList);
 
                 Map<String, String> vm = new HashMap<>();
                 vm.put("ROLE_PERMISSIONS", permissionComponent);
@@ -219,7 +210,7 @@ public class AdminRoles extends HttpServlet {
                 }
 
                 // lets get data on permissions and values
-                String permissionComponent = createPermissionComponent(req, permissionList);
+                String permissionComponent = createPermissionComponent(req, res, permissionList);
 
                 /* create output page */
                 Map<String, String> vm = new HashMap<>();
@@ -325,13 +316,13 @@ public class AdminRoles extends HttpServlet {
                 String roleIdStr = params.getProperty("ROLE_ID");
                 int roleId = Integer.parseInt(roleIdStr);
                 RoleDomainObject role = userAndRoleMapper.getRoleById(roleId);
-                List affectedDocuments = imcref.getDocumentMapper().getDocumentsWithPermissionsForRole(role);
+                List<DocumentDomainObject> affectedDocuments = imcref.getDocumentMapper().getDocumentsWithPermissionsForRole(role);
                 int affectedDocumentsCount = affectedDocuments.size();
                 if (affectedDocuments.size() > 50) {
                     affectedDocuments = affectedDocuments.subList(0, 50);
                 }
 
-                List affectedUsers = Arrays.asList(userAndRoleMapper.getAllUsersWithRole(role));
+                List<UserDomainObject> affectedUsers = Arrays.asList(userAndRoleMapper.getAllUsersWithRole(role));
                 if (affectedUsers.size() > 50) {
                     affectedUsers = affectedUsers.subList(0, 50);
                 }
@@ -339,20 +330,10 @@ public class AdminRoles extends HttpServlet {
                 if (!affectedUsers.isEmpty() || !affectedDocuments.isEmpty()) {
 
                     // Lets generate the affected users & metaid warning html page
-                    String opt = Html.createOptionList(affectedDocuments, new ToStringPairTransformer() {
-                        public String[] transformToStringPair(Object input) {
-                            DocumentDomainObject d = (DocumentDomainObject) input;
-                            return new String[]{"" + d.getId(), "" + d.getId()};
-                        }
-                    });
-                    String users = Html.createOptionList(affectedUsers, new ToStringPairTransformer() {
-                        public String[] transformToStringPair(Object input) {
-                            UserDomainObject user = (UserDomainObject) input;
-                            return new String[]{"" + user.getId(),
-                                    user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName()
-                                            + ")"};
-                        }
-                    });
+                    String opt = Html.createOptionList(affectedDocuments, doc -> new String[]{"" + doc.getId(), "" + doc.getId()});
+                    String users = Html.createOptionList(affectedUsers, user1 -> new String[]{"" + user1.getId(),
+                            user1.getLastName() + ", " + user1.getFirstName() + " (" + user1.getLoginName()
+                                    + ")"});
                     Map<String, String> vm = new HashMap<>();
                     vm.put("META_ID_LIST", opt);
                     vm.put("USER_ID_LIST", users);
@@ -488,8 +469,8 @@ public class AdminRoles extends HttpServlet {
     }
 
     /* create permissions tag */
-    private String createPermissionComponent(HttpServletRequest req,
-                                             String[][] permissionList) {
+    private String createPermissionComponent(HttpServletRequest req, HttpServletResponse response,
+                                             String[][] permissionList) throws ServletException, IOException {
 
         /* create rows of permission */
         StringBuffer permissionTableRows = new StringBuffer();
@@ -514,7 +495,7 @@ public class AdminRoles extends HttpServlet {
                 vm.put("PERMISSION_CHECKED", "");
             }
 
-            String rowString = createHtml(req, vm, HTML_EDIT_ROLE_TABLE_ROW);
+            String rowString = createHtml(HTML_EDIT_ROLE_TABLE_ROW, req, vm, response);
 
             permissionTableRows.append(rowString);
 
@@ -524,7 +505,7 @@ public class AdminRoles extends HttpServlet {
         Map<String, String> vmTable = new HashMap<>();
         vmTable.put("PERMISSION_ROWS", permissionTableRows.toString());
 
-        return createHtml(req, vmTable, HTML_EDIT_ROLE_TABLE);
+        return createHtml(HTML_EDIT_ROLE_TABLE, req, vmTable, response);
     }
 
     private int collectPermissionsState(String[] checkedPermissions) {

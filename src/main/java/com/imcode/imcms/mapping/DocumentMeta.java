@@ -1,10 +1,10 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.DocumentPermissionSets;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.apache.commons.lang.NullArgumentException;
 
@@ -31,7 +31,6 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
     // todo: rename to documentTypeId
     private volatile Integer documentType;
-    private volatile Boolean restrictedOneMorePrivilegedThanRestrictedTwo;
     private volatile Boolean linkableByOtherUsers;
     private volatile Boolean linkedForUnauthorizedUsers;
     /**
@@ -55,13 +54,11 @@ public class DocumentMeta implements Serializable, Cloneable {
     private volatile Integer publisherId;
     private volatile Integer depublisherId;
     private volatile Map<String, String> properties = new ConcurrentHashMap<>();
-    private volatile Set<Integer> categoryIds = new CopyOnWriteArraySet<>();
-    private volatile Set<DocumentLanguage> enabledLanguages = new CopyOnWriteArraySet<>();
+    private volatile Set<Category> categories = new CopyOnWriteArraySet<>();
     private volatile Set<String> keywords = new CopyOnWriteArraySet<>();
-    private volatile DocumentPermissionSets permissionSets = new DocumentPermissionSets();
-    private volatile DocumentPermissionSets permissionSetsForNewDocuments = new DocumentPermissionSets();
     private volatile RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = new RoleIdToDocumentPermissionSetTypeMappings();
     private volatile Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
+    private volatile Set<RestrictedPermissionJPA> restrictedPermissions;
 
     @Override
     public DocumentMeta clone() {
@@ -70,18 +67,9 @@ public class DocumentMeta implements Serializable, Cloneable {
 
             clone.disabledLanguageShowMode = disabledLanguageShowMode;
             clone.properties = new ConcurrentHashMap<>(properties);
-            clone.categoryIds = new CopyOnWriteArraySet<>(categoryIds);
+            clone.categories = new CopyOnWriteArraySet<>(categories);
 
             clone.keywords = new CopyOnWriteArraySet<>(keywords);
-            clone.enabledLanguages = new CopyOnWriteArraySet<>(enabledLanguages);
-
-            if (permissionSets != null) {
-                clone.permissionSets = permissionSets.clone();
-            }
-
-            if (permissionSetsForNewDocuments != null) {
-                clone.permissionSetsForNewDocuments = permissionSetsForNewDocuments.clone();
-            }
 
             if (roleIdToDocumentPermissionSetTypeMappings != null) {
                 clone.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
@@ -116,15 +104,6 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setCreatorId(Integer creatorId) {
         this.creatorId = creatorId;
-    }
-
-    public Boolean getRestrictedOneMorePrivilegedThanRestrictedTwo() {
-        return restrictedOneMorePrivilegedThanRestrictedTwo;
-    }
-
-    public void setRestrictedOneMorePrivilegedThanRestrictedTwo(
-            Boolean restrictedOneMorePrivilegedThanRestrictedTwo) {
-        this.restrictedOneMorePrivilegedThanRestrictedTwo = restrictedOneMorePrivilegedThanRestrictedTwo;
     }
 
     public Boolean getLinkableByOtherUsers() {
@@ -239,12 +218,12 @@ public class DocumentMeta implements Serializable, Cloneable {
         this.properties = properties;
     }
 
-    public Set<Integer> getCategoryIds() {
-        return categoryIds;
+    public Set<Category> getCategories() {
+        return categories;
     }
 
-    public void setCategoryIds(Set<Integer> categoryIds) {
-        this.categoryIds = categoryIds;
+    public void setCategories(Set<Category> categories) {
+        this.categories = categories;
     }
 
     public Set<String> getKeywords() {
@@ -252,7 +231,7 @@ public class DocumentMeta implements Serializable, Cloneable {
     }
 
     public void setKeywords(Set<String> keywords) {
-        this.keywords = new CopyOnWriteArraySet<>(keywords != null ? keywords : Collections.<String>emptySet());
+        this.keywords = new CopyOnWriteArraySet<>(keywords != null ? keywords : Collections.emptySet());
     }
 
     public DisabledLanguageShowMode getDisabledLanguageShowMode() {
@@ -261,32 +240,6 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode) {
         this.disabledLanguageShowMode = disabledLanguageShowMode;
-    }
-
-    public Set<DocumentLanguage> getEnabledLanguages() {
-        return enabledLanguages;
-    }
-
-    public void setEnabledLanguages(Set<DocumentLanguage> languages) {
-        this.enabledLanguages = new CopyOnWriteArraySet<>(
-                languages != null ? languages : Collections.<DocumentLanguage>emptySet()
-        );
-    }
-
-    public DocumentPermissionSets getPermissionSets() {
-        return permissionSets;
-    }
-
-    public void setPermissionSets(DocumentPermissionSets permissionSets) {
-        this.permissionSets = permissionSets;
-    }
-
-    public DocumentPermissionSets getPermissionSetsForNewDocument() {
-        return permissionSetsForNewDocuments;
-    }
-
-    public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNewDocuments) {
-        this.permissionSetsForNewDocuments = permissionSetsForNewDocuments;
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdToDocumentPermissionSetTypeMappings() {
@@ -330,6 +283,14 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setDefaultVersionNo(Integer defaultVersionNo) {
         this.defaultVersionNo = defaultVersionNo;
+    }
+
+    public Set<RestrictedPermissionJPA> getRestrictedPermissions() {
+        return restrictedPermissions;
+    }
+
+    public void setRestrictedPermissions(Set<RestrictedPermissionJPA> restrictedPermissions) {
+        this.restrictedPermissions = restrictedPermissions;
     }
 
     /**

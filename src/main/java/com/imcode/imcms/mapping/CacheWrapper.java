@@ -1,10 +1,11 @@
 package com.imcode.imcms.mapping;
 
-import com.google.common.base.Supplier;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
+
+import java.util.function.Supplier;
 
 public class CacheWrapper<K, V> {
 

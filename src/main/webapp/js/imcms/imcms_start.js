@@ -1,15 +1,41 @@
-(function (Imcms) {
-    $.ajaxSetup({cache: false});
-    CKEDITOR.disableAutoInline = true;
+/**
+ * Init script for admin functionality
+ *
+ * Created by Serhii Maksymchuk from Ubrainians for imCode
+ * 07.08.17.
+ */
+Imcms.require(
+    ["imcms-admin-panel-builder", "imcms", "imcms-tests", "imcms-events"],
+    function (panelBuilder, imcms, tests, events) {
+        Imcms.tests = tests;
+        console.info("%c Tests loaded.", "color: green");
 
-    $(document).ready(function () {
-        new Imcms.Bootstrapper().bootstrap(Imcms.isEditMode);
-    });
+        events.on("imcms-version-modified", function () {
+            imcms.document.hasNewerVersion = true;
+        });
 
-    $(document).ajaxError(function (event, jqxhr) {
-        Imcms.BackgroundWorker.closeProcessWindow();
-        console.log(jqxhr);
-    });
+        events.on("imcms-publish-new-version-current-doc", function () {
+            window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
+        });
 
-    return Imcms;
-})(Imcms);
+        function detectActiveMenuItem() {
+            if (imcms.isEditMode) {
+                return 'edit';
+            }
+
+            if (imcms.isPreviewMode) {
+                return 'preview'
+            }
+
+            return 'public';
+        }
+
+        panelBuilder.buildPanel({
+            active: detectActiveMenuItem()
+        });
+        imcms.isEditMode && imcms.require("imcms-editors-initializer", function (editorsInit) {
+            editorsInit.initEditors();
+            console.timeEnd("imCMS JS loaded");
+        });
+    }
+);

@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
 import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
-import com.imcode.imcms.mapping.jpa.doc.content.UrlDocContent;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.HtmlDocumentDomainObject;
@@ -28,7 +28,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
     private TextDocumentContentInitializer textDocumentContentInitializer;
 
     @Inject
-    private DocRepository metaRepository;
+    private DocRepository docRepository;
 
     /**
      * Initializes file document.
@@ -38,15 +38,15 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
      * ?? If file can not be found by original filename tries to find the same file but with "_se" suffix.
      */
     public void visitFileDocument(FileDocumentDomainObject doc) {
-        Collection<FileDocFile> fileDocItems = metaRepository.getFileDocContent(doc.getRef());
+        Collection<DocumentFileJPA> fileDocItems = docRepository.getFileDocContent(doc.getRef());
 
-        for (FileDocFile item : fileDocItems) {
+        for (DocumentFileJPA item : fileDocItems) {
             String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
 
             file.setFilename(item.getFilename());
             file.setMimeType(item.getMimeType());
-            file.setCreatedAsImage(item.getCreatedAsImage());
+            file.setCreatedAsImage(item.isCreatedAsImage());
 
             File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getVersionRef(), fileId);
             if (!fileForFileDocument.exists()) {
@@ -62,7 +62,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
             doc.addFile(fileId, file);
 
-            if (item.isDefaultFileId()) {
+            if (item.isDefaultFile()) {
                 doc.setDefaultFileId(fileId);
             }
 
@@ -71,32 +71,16 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
 
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
-        HtmlDocContent html = metaRepository.getHtmlDocContent(doc.getRef());
+        HtmlDocContent html = docRepository.getHtmlDocContent(doc.getRef());
         doc.setHtml(html.getHtml());
     }
 
     public void visitUrlDocument(UrlDocumentDomainObject doc) {
-        UrlDocContent reference = metaRepository.getUrlDocContent(doc.getRef());
+        DocumentUrlJPA reference = docRepository.getUrlDocContent(doc.getRef());
         doc.setUrl(reference.getUrl());
     }
 
     public void visitTextDocument(TextDocumentDomainObject document) {
         textDocumentContentInitializer.initialize(document);
-    }
-
-    public DocRepository getMetaRepository() {
-        return metaRepository;
-    }
-
-    public void setMetaRepository(DocRepository metaRepository) {
-        this.metaRepository = metaRepository;
-    }
-
-    public TextDocumentContentInitializer getTextDocumentContentInitializer() {
-        return textDocumentContentInitializer;
-    }
-
-    public void setTextDocumentContentInitializer(TextDocumentContentInitializer textDocumentContentInitializer) {
-        this.textDocumentContentInitializer = textDocumentContentInitializer;
     }
 }

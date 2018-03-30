@@ -42,7 +42,7 @@ public class DocumentFinder extends WebComponent {
         page.setDocumentFinder(this);
     }
 
-    public void selectDocument(DocumentDomainObject selectedDocument) throws IOException, ServletException {
+    public void selectDocument(DocumentDomainObject selectedDocument) {
         selectDocumentCommand.handle(selectedDocument.getId());
     }
 
@@ -53,14 +53,18 @@ public class DocumentFinder extends WebComponent {
     void forwardWithPage(HttpServletRequest request, HttpServletResponse response, DocumentFinderPage page) throws IOException, ServletException {
         ImcmsServices service = Imcms.getServices();
         DocumentIndex index = service.getDocumentMapper().getDocumentIndex();
-        final BooleanQuery booleanQuery = new BooleanQuery();
+        final BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+
         if (null != page.getQuery()) {
-            booleanQuery.add(page.getQuery(), Occur.MUST);
+            booleanQueryBuilder.add(page.getQuery(), Occur.MUST);
         }
         if (null != restrictingQuery) {
-            booleanQuery.add(restrictingQuery, Occur.MUST);
+            booleanQueryBuilder.add(restrictingQuery, Occur.MUST);
         }
-        if (booleanQuery.getClauses().length > 0) {
+
+        final BooleanQuery booleanQuery = booleanQueryBuilder.build();
+
+        if (booleanQuery.iterator().hasNext()) {
             List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser(request));
             if (null != documentComparator) {
                 Collections.sort(documentsFound, documentComparator);

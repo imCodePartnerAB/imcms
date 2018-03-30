@@ -3,57 +3,49 @@ package imcode.server;
 import com.imcode.db.Database;
 import com.imcode.db.commands.SqlQueryCommand;
 import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
-import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.DocumentIndex;
-import imcode.server.document.index.DocumentIndexFactory;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.parser.ParserParameters;
-import imcode.server.parser.TextDocumentParser;
 import imcode.server.user.*;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
-import imcode.util.net.SMTP;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.beanutils.ConvertUtils;
-import org.apache.commons.beanutils.Converter;
-import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Service;
 
-import java.beans.PropertyDescriptor;
-import java.io.*;
+import javax.annotation.PostConstruct;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
-import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@Service
 public class DefaultImcmsServices implements ImcmsServices {
 
-    private static final int DEFAULT_STARTDOCUMENT = 1001;
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
     private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
@@ -65,7 +57,8 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private final Database database;
     private final LocalizedMessageProvider localizedMessageProvider;
-    private TextDocumentParser textDocParser;
+    private final Properties properties;
+    private final MenuService menuService;
     private Config config;
     private SystemData sysData;
     private CachingFileLoader fileLoader;
@@ -73,88 +66,295 @@ public class DefaultImcmsServices implements ImcmsServices {
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
     private DocumentMapper documentMapper;
     private TemplateMapper templateMapper;
-    @Autowired
-    private ImageCacheMapper imageCacheMapper;
     private KeyStore keyStore;
     private KerberosLoginService kerberosLoginService;
-    private Map<String, VelocityEngine> velocityEngines = new TreeMap<>();
     private LanguageMapper languageMapper;
     private ProcedureExecutor procedureExecutor;
     private DocumentLanguages documentLanguages;
     private ApplicationContext applicationContext;
 
-    @SuppressWarnings("unused")
-    /**
-     * Constructor for unit testing.
-     */
-    public DefaultImcmsServices() {
-        database = null;
-        localizedMessageProvider = null;
-    }
+    private DatabaseService databaseService;
+    private MailService mailService;
+    private TemplateService templateService;
 
-    /**
-     * Constructs an DefaultImcmsServices object.
-     */
-    public DefaultImcmsServices(Database database, Properties props, LocalizedMessageProvider localizedMessageProvider,
-                                CachingFileLoader fileLoader, DefaultProcedureExecutor procedureExecutor,
+    @Autowired
+    public DefaultImcmsServices(Database database,
+                                Properties imcmsProperties,
+                                LocalizedMessageProvider localizedMessageProvider,
+                                CachingFileLoader fileLoader,
                                 ApplicationContext applicationContext,
-                                DocumentLanguages documentLanguages) {
+                                Config config,
+                                DocumentLanguages documentLanguages,
+                                DatabaseService databaseService,
+                                MailService mailService,
+                                TemplateService templateService,
+                                DocumentMapper documentMapper,
+                                ProcedureExecutor procedureExecutor,
+                                LanguageMapper languageMapper,
+                                MenuService menuService) {
+
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
-        this.procedureExecutor = procedureExecutor;
         this.fileLoader = fileLoader;
         this.applicationContext = applicationContext;
         this.documentLanguages = documentLanguages;
+        this.config = config;
+        this.properties = imcmsProperties;
+        this.databaseService = databaseService;
+        this.mailService = mailService;
+        this.templateService = templateService;
+        this.procedureExecutor = procedureExecutor;
+        this.documentMapper = documentMapper;
+        this.languageMapper = languageMapper;
 
-        initConfig(props);
+        this.kerberosLoginService = new KerberosLoginService(config);
+        this.menuService = menuService;
+    }
+
+    @PostConstruct
+    private void init() {
         initSso();
         initKeyStore();
         initSysData();
         initSessionCounter();
-        languageMapper = new LanguageMapper(this.database, config.getDefaultLanguage());
-        initAuthenticatorsAndUserAndRoleMappers(props);
-        initDocumentMapper();
+        initAuthenticatorsAndUserAndRoleMappers(properties);
         initTemplateMapper();
-        initImageCacheMapper();
-        initTextDocParser();
-
-        kerberosLoginService = new KerberosLoginService(config);
     }
 
-    private static Config createConfigFromProperties(Properties props) {
-        Config config = new Config();
-        ConvertUtils.register(new WebappRelativeFileConverter(), File.class);
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(config);
-        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-            if (null == propertyDescriptor.getWriteMethod()) {
-                continue;
-            }
-            String uncapitalizedPropertyName = propertyDescriptor.getName();
-            String capitalizedPropertyName = StringUtils.capitalize(uncapitalizedPropertyName);
-            String propertyValue = props.getProperty(capitalizedPropertyName);
-            if (null != propertyValue) {
-                try {
-                    BeanUtils.setProperty(config, uncapitalizedPropertyName, propertyValue);
-                } catch (Exception e) {
-                    log.error("Failed to set property " + capitalizedPropertyName, e.getCause());
-                    continue;
-                }
-            }
-            try {
-                String setPropertyValue = BeanUtils.getProperty(config, uncapitalizedPropertyName);
-                if (null != setPropertyValue) {
-                    log.info(capitalizedPropertyName + " = " + setPropertyValue);
-                } else {
-                    log.warn(capitalizedPropertyName + " not set.");
-                }
-            } catch (Exception e) {
-                log.error(e, e);
-            }
+    public synchronized int getSessionCounter() {
+        return getSessionCounterFromDb();
+    }
+
+    /**
+     * Set session counter.
+     */
+    public synchronized void setSessionCounter(int value) {
+        setSessionCounterInDb(value);
+    }
+
+    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
+        UserDomainObject user = imcmsAuthenticatorAndUserAndRoleMapper.getUserByIpAddress(remoteAddr);
+        if (null == user) {
+            user = imcmsAuthenticatorAndUserAndRoleMapper.getDefaultUser();
         }
+        UserDomainObject result = null;
+        if (!user.isActive()) {
+            logUserDeactivated(user);
+        } else {
+            result = user;
+            logUserLoggedIn(user);
+        }
+        return result;
+    }
+
+    public LocalizedMessageProvider getLocalizedMessageProvider() {
+        return localizedMessageProvider;
+    }
+
+    public UserDomainObject verifyUser(String login, String password) {
+        NDC.push("verifyUser");
+        try {
+            UserDomainObject result = null;
+
+            boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate(login, password);
+            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
+            if (null == user) {
+                mainLog.info("->User '" + login + "' failed to log in: User not found.");
+            } else if (!user.isActive()) {
+                logUserDeactivated(user);
+            } else if (!userAuthenticates) {
+                mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
+            } else {
+                result = user;
+                logUserLoggedIn(user);
+            }
+            return result;
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    public UserDomainObject verifyUser(String clientPrincipalName) {
+        String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
+
+        NDC.push("verifyUser");
+        try {
+            UserDomainObject result = null;
+
+            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
+            if (null == user) {
+                mainLog.info("->User '" + login + "' failed to log in: User not found.");
+            } else if (!user.isActive()) {
+                logUserDeactivated(user);
+            } else {
+                result = user;
+                logUserLoggedIn(user);
+            }
+            return result;
+        } finally {
+            NDC.pop();
+        }
+    }
+
+    public void incrementSessionCounter() {
+        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[]{}));
+    }
+
+    public void updateMainLog(String event) {
+        mainLog.info(event);
+    }
+
+    public DocumentMapper getDocumentMapper() {
+        return documentMapper;
+    }
+
+    public void setDocumentMapper(DocumentMapper documentMapper) {
+        this.documentMapper = documentMapper;
+    }
+
+    public TemplateMapper getTemplateMapper() {
+        return templateMapper;
+    }
+
+    public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
+    }
+
+    // todo: move to TemplateService!
+    public String getAdminTemplatePath(String adminTemplateName) {
+        return "/" + config.getTemplatePath().getPath() + "/" + Imcms.getUser().getLanguageIso639_2() + "/admin/"
+                + adminTemplateName;
+    }
+
+    /**
+     * Parse doc replace variables with data, use only for HTML files
+     */
+    public String getAdminTemplate(String adminTemplateName, UserDomainObject user,
+                                   List<String> tagsWithReplacements) {
+        return getTemplateFromDirectory(adminTemplateName, user, tagsWithReplacements, "admin");
+    }
+
+    /**
+     * Parse doc replace variables with data , use template
+     */
+    public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List<String> variables,
+                                           String directory) {
+        if (null == user) {
+            throw new NullArgumentException("user");
+        }
+        String langPrefix = user.getLanguageIso639_2();
+        return getTemplate(langPrefix + "/" + directory + "/" + adminTemplateName, variables);
+    }
+
+    public Config getConfig() {
         return config;
     }
 
-    private static Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
+    private File getRealContextPath() {
+        return Imcms.getPath();
+    }
+
+    public KeyStore getKeyStore() {
+        return keyStore;
+    }
+
+    /**
+     * Get session counter date.
+     */
+    public Date getSessionCounterDate() {
+        return getSessionCounterDateFromDb();
+    }
+
+    /**
+     * Set session counter date.
+     */
+    public void setSessionCounterDate(Date date) {
+        setSessionCounterDateInDb(date);
+    }
+
+    public SystemData getSystemData() {
+        return sysData;
+    }
+
+    public void setSystemData(SystemData sd) {
+        String[] sqlParams;
+
+        sqlParams = new String[]{"" + sd.getStartDocument()};
+        getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
+
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[]{
+                sd.getServerMaster()}));
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[]{
+                sd.getServerMasterAddress()}));
+
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[]{
+                sd.getWebMaster()}));
+        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[]{
+                sd.getWebMasterAddress()}));
+
+        sqlParams = new String[]{sd.getSystemMessage()};
+        getProcedureExecutor().executeUpdateProcedure("SystemMessageSet", sqlParams);
+
+        /* Update the local copy last, so we stay aware of any database errors */
+        this.sysData = sd;
+    }
+
+    public Database getDatabase() {
+        return database;
+    }
+
+    public CategoryMapper getCategoryMapper() {
+        return documentMapper.getCategoryMapper();
+    }
+
+    public LanguageMapper getLanguageMapper() {
+        return this.languageMapper;
+    }
+
+    public CachingFileLoader getFileCache() {
+        return fileLoader;
+    }
+
+    public RoleGetter getRoleGetter() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
+    }
+
+    public ProcedureExecutor getProcedureExecutor() {
+        return procedureExecutor;
+    }
+
+    public KerberosLoginService getKerberosLoginService() {
+        return kerberosLoginService;
+    }
+
+    public DocumentLanguages getDocumentLanguages() {
+        return documentLanguages;
+    }
+
+    public <T> T getManagedBean(Class<T> requiredType) {
+        return applicationContext.getBean(requiredType);
+    }
+
+    public DatabaseService getDatabaseService() {
+        return databaseService;
+    }
+
+    @Override
+    public MailService getMailService() {
+        return mailService;
+    }
+
+    @Override
+    public TemplateService getTemplateService() {
+        return templateService;
+    }
+
+    @Override
+    public MenuService getMenuService() {
+        return menuService;
+    }
+
+    private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
         try {
             if (null == mapperName) {
                 return null;
@@ -217,16 +417,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    private void initTextDocParser() {
-        textDocParser = new TextDocumentParser(this);
-    }
-
     private void initSysData() {
         sysData = getSystemDataFromDb();
-    }
-
-    private void initConfig(Properties props) {
-        this.config = createConfigFromProperties(props);
     }
 
     private void initSessionCounter() {
@@ -261,25 +453,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         return Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
     }
 
-    // todo: implement rebuild scheduler ...getConfig().getIndexingSchedulePeriodInMinutes()...
-    // todo: Search Terms Logging: Do not parse and write query term into db every time - queue and write in a separate worker
-    private void initDocumentMapper() {
-        documentMapper = getManagedBean(DocumentMapper.class);
-        documentMapper.init(this, getDatabase(), null);
-        //documentMapper = new DocumentMapper(this, this.getDatabase());
-
-        DocumentIndex documentIndexService = new LoggingDocumentIndex(database,
-                new PhaseQueryFixingDocumentIndex(DocumentIndexFactory.create(this)));
-
-        documentMapper.setDocumentIndex(documentIndexService);
-    }
-
     private void initTemplateMapper() {
         templateMapper = new TemplateMapper(this);
-    }
-
-    private void initImageCacheMapper() {
-        imageCacheMapper = getManagedBean(ImageCacheMapper.class);
     }
 
     private void initAuthenticatorsAndUserAndRoleMappers(Properties props) {
@@ -336,6 +511,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                 new ExternalizedImcmsAuthenticatorAndUserRegistry(imcmsAuthenticatorAndUserAndRoleMapper, externalAuthenticator,
                         externalUserAndRoleRegistry, getLanguageMapper().getDefaultLanguage());
         externalizedImcmsAuthAndMapper.synchRolesWithExternal();
+        imcmsAuthenticatorAndUserAndRoleMapper.encryptUnencryptedUsersLoginPasswords();
     }
 
     /**
@@ -408,87 +584,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    public synchronized int getSessionCounter() {
-        return getSessionCounterFromDb();
-    }
-
-    /**
-     * Set session counter.
-     */
-    public synchronized void setSessionCounter(int value) {
-        setSessionCounterInDb(value);
-    }
-
-    public String getSessionCounterDateAsString() {
-        DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
-
-        return dateFormat.format(getSessionCounterDate());
-    }
-
-    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
-        UserDomainObject user = imcmsAuthenticatorAndUserAndRoleMapper.getUserByIpAddress(remoteAddr);
-        if (null == user) {
-            user = imcmsAuthenticatorAndUserAndRoleMapper.getDefaultUser();
-        }
-        UserDomainObject result = null;
-        if (!user.isActive()) {
-            logUserDeactivated(user);
-        } else {
-            result = user;
-            logUserLoggedIn(user);
-        }
-        return result;
-    }
-
-    public LocalizedMessageProvider getLocalizedMessageProvider() {
-        return localizedMessageProvider;
-    }
-
-    public UserDomainObject verifyUser(String login, String password) {
-        NDC.push("verifyUser");
-        try {
-            UserDomainObject result = null;
-
-            boolean userAuthenticates = externalizedImcmsAuthAndMapper.authenticate(login, password);
-            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
-            if (null == user) {
-                mainLog.info("->User '" + login + "' failed to log in: User not found.");
-            } else if (!user.isActive()) {
-                logUserDeactivated(user);
-            } else if (!userAuthenticates) {
-                mainLog.info("->User '" + login + "' failed to log in: Wrong password.");
-            } else {
-                result = user;
-                logUserLoggedIn(user);
-            }
-            return result;
-        } finally {
-            NDC.pop();
-        }
-    }
-
-    public UserDomainObject verifyUser(String clientPrincipalName) {
-        String login = clientPrincipalName.substring(0, clientPrincipalName.lastIndexOf('@'));
-
-        NDC.push("verifyUser");
-        try {
-            UserDomainObject result = null;
-
-            UserDomainObject user = externalizedImcmsAuthAndMapper.getUser(login);
-            if (null == user) {
-                mainLog.info("->User '" + login + "' failed to log in: User not found.");
-            } else if (!user.isActive()) {
-                logUserDeactivated(user);
-            } else {
-                result = user;
-                logUserLoggedIn(user);
-            }
-            return result;
-        } finally {
-            NDC.pop();
-        }
-    }
-
     private void logUserDeactivated(UserDomainObject user) {
         mainLog.info("->User '" + user.getLoginName() + "' failed to log in: User deactivated.");
     }
@@ -497,10 +592,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         if (!user.isDefaultUser()) {
             mainLog.info("->User '" + user.getLoginName() + "' successfully logged in.");
         }
-    }
-
-    public void incrementSessionCounter() {
-        getDatabase().execute(new SqlUpdateCommand("UPDATE sys_data SET value = value + 1 WHERE type_id = 1", new Object[]{}));
     }
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
@@ -517,67 +608,14 @@ public class DefaultImcmsServices implements ImcmsServices {
                 externalAuthenticatorName, authenticatorPropertiesSubset);
     }
 
-    public void parsePage(ParserParameters paramsToParse, Writer writer)
-            throws IOException {
-        textDocParser.parsePage(paramsToParse, writer);
-    }
-
-    public void updateMainLog(String event) {
-        mainLog.info(event);
-    }
-
-    public DocumentMapper getDocumentMapper() {
-        return documentMapper;
-    }
-
-    public void setDocumentMapper(DocumentMapper documentMapper) {
-        this.documentMapper = documentMapper;
-    }
-
-    public TemplateMapper getTemplateMapper() {
-        return templateMapper;
-    }
-
-    public SMTP getSMTP() {
-        return new SMTP(config.getSmtpServer(), config.getSmtpPort());
-    }
-
-    public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
-        return imcmsAuthenticatorAndUserAndRoleMapper;
-    }
-
-    /**
-     * Parse doc replace variables with data , use template
-     */
-    public String getAdminTemplate(String adminTemplateName, UserDomainObject user,
-                                   List<String> tagsWithReplacements) {
-        return getTemplateFromDirectory(adminTemplateName, user, tagsWithReplacements, "admin");
-    }
-
-    /**
-     * Parse doc replace variables with data , use template
-     */
-    public String getTemplateFromDirectory(String adminTemplateName, UserDomainObject user, List<String> variables,
-                                           String directory) {
-        if (null == user) {
-            throw new NullArgumentException("user");
-        }
-        String langPrefix = user.getLanguageIso639_2();
-        return getTemplate(langPrefix + "/" + directory + "/"
-                + adminTemplateName, user, variables);
-    }
-
-    private String getTemplate(String path, UserDomainObject user, List<String> variables) {
+    private String getTemplate(String path, List<String> variables) {
         try {
-            VelocityEngine velocity = getVelocityEngine(user);
-            VelocityContext context = getVelocityContext(user);
             if (null != variables) {
                 List<String> parseDocVariables = new ArrayList<>(variables.size());
                 for (Iterator<String> iterator = variables.iterator(); iterator.hasNext(); ) {
                     String key = iterator.next();
                     String value = iterator.next();
-                    context.put(key, value);
-                    boolean isVelocityVariable = StringUtils.isAlpha(key) || !(value != null);
+                    boolean isVelocityVariable = StringUtils.isAlpha(key) || (value == null);
                     if (!isVelocityVariable) {
                         parseDocVariables.add(key);
                         parseDocVariables.add(value);
@@ -585,9 +623,11 @@ public class DefaultImcmsServices implements ImcmsServices {
                 }
                 variables = parseDocVariables;
             }
-            StringWriter stringWriter = new StringWriter();
-            velocity.mergeTemplate(path, Imcms.DEFAULT_ENCODING, context, stringWriter);
-            String result = stringWriter.toString();
+
+            final String templateFolderPath = getTemplateFolderPath();
+            final File templateFile = new File(templateFolderPath, path);
+            String result = FileUtils.readFileToString(templateFile, Imcms.DEFAULT_ENCODING);
+
             if (null != variables) {
                 result = Parser.parseDoc(result, variables.toArray(new String[variables.size()]));
             }
@@ -597,50 +637,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         }
     }
 
-    private synchronized VelocityEngine createVelocityEngine(String languageIso639_2) throws Exception {
-        VelocityEngine velocity = new VelocityEngine();
-        velocity.setProperty(VelocityEngine.FILE_RESOURCE_LOADER_PATH, config.getTemplatePath().getCanonicalPath());
-        velocity.setProperty(VelocityEngine.VM_LIBRARY, languageIso639_2 + "/gui.vm");
-        velocity.setProperty(VelocityEngine.VM_LIBRARY_AUTORELOAD, "true");
-        velocity.setProperty(VelocityEngine.RUNTIME_LOG_LOGSYSTEM_CLASS, "org.apache.velocity.runtime.log.SimpleLog4JLogSystem");
-        velocity.setProperty(VelocityEngine.INPUT_ENCODING, Imcms.DEFAULT_ENCODING);
-        velocity.setProperty("runtime.log.logsystem.log4j.category", "org.apache.velocity");
-        velocity.init();
-        return velocity;
-    }
-
-    public VelocityEngine getVelocityEngine(UserDomainObject user) {
-        try {
-            String languageIso639_2 = user.getLanguageIso639_2();
-            VelocityEngine velocityEngine = velocityEngines.get(languageIso639_2);
-            if (velocityEngine == null) {
-                velocityEngine = createVelocityEngine(languageIso639_2);
-                velocityEngines.put(languageIso639_2, velocityEngine);
-            }
-            return velocityEngine;
-        } catch (Exception e) {
-            throw new UnhandledException(e);
-        }
-    }
-
-    public VelocityContext getVelocityContext(UserDomainObject user) {
-        VelocityContext context = new VelocityContext();
-        // todo: FIXME: This method needs an HttpServletRequest in, to get the context path from
-        context.put("contextPath", user.getCurrentContextPath());
-        context.put("language", user.getLanguageIso639_2());
-        return context;
-    }
-
-    public Config getConfig() {
-        return config;
-    }
-
-    public File getRealContextPath() {
-        return Imcms.getPath();
-    }
-
-    public KeyStore getKeyStore() {
-        return keyStore;
+    private String getTemplateFolderPath() throws IOException {
+        return new File(Imcms.getPath(), config.getTemplatePath().getPath()).getCanonicalPath();
     }
 
     private void setSessionCounterInDb(int value) {
@@ -655,35 +653,13 @@ public class DefaultImcmsServices implements ImcmsServices {
         getProcedureExecutor().executeUpdateProcedure("SetSessionCounterDate", parameters);
     }
 
-    /**
-     * Get session counter date.
-     */
-    public Date getSessionCounterDate() {
-        return getSessionCounterDateFromDb();
-    }
-
-    /**
-     * Set session counter date.
-     */
-    public void setSessionCounterDate(Date date) {
-        setSessionCounterDateInDb(date);
-    }
-
-    /**
-     * get doctype
-     */
-    public int getDocType(int meta_id) {
-        DocumentDomainObject document = documentMapper.getDocument(meta_id);
-        return Optional.ofNullable(document).map(DocumentDomainObject::getDocumentTypeId).orElse(0);
-    }
-
     private SystemData getSystemDataFromDb() {
 
         SystemData sd = new SystemData();
 
         final Object[] parameters5 = new String[0];
         String startDocument = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
-        sd.setStartDocument(startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt(startDocument));
+        sd.setStartDocument(startDocument == null ? ImcmsConstants.DEFAULT_START_DOC_ID : Integer.parseInt(startDocument));
 
         final Object[] parameters4 = new String[0];
         String systemMessage = (String) getDatabase().execute(new SqlQueryCommand("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
@@ -728,111 +704,5 @@ public class DefaultImcmsServices implements ImcmsServices {
         }
 
         return sd;
-    }
-
-    public SystemData getSystemData() {
-        return sysData;
-    }
-
-    public void setSystemData(SystemData sd) {
-        String[] sqlParams;
-
-        sqlParams = new String[]{"" + sd.getStartDocument()};
-        getProcedureExecutor().executeUpdateProcedure("StartDocSet", sqlParams);
-
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 4", new Object[]{
-                sd.getServerMaster()}));
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 5", new Object[]{
-                sd.getServerMasterAddress()}));
-
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 6", new Object[]{
-                sd.getWebMaster()}));
-        database.execute(new SqlUpdateCommand("UPDATE sys_data SET value = ? WHERE type_id = 7", new Object[]{
-                sd.getWebMasterAddress()}));
-
-        sqlParams = new String[]{sd.getSystemMessage()};
-        getProcedureExecutor().executeUpdateProcedure("SystemMessageSet", sqlParams);
-
-        /* Update the local copy last, so we stay aware of any database errors */
-        this.sysData = sd;
-    }
-
-    /**
-     * Returns an array with with all the documenttypes stored in the database
-     * the array consists of pairs of id:, value. Suitable for parsing into select boxes etc.
-     */
-    public String[][] getAllDocumentTypes(String langPrefixStr) {
-        final Object[] parameters = new String[]{langPrefixStr};
-        return getProcedureExecutor().executeProcedure("GetDocTypes", parameters, new StringArrayArrayResultSetHandler());
-    }
-
-    public File getIncludePath() {
-        return config.getIncludePath();
-    }
-
-    public Collator getDefaultLanguageCollator() {
-        try {
-            return Collator.getInstance(new Locale(LanguageMapper.convert639_2to639_1(config.getDefaultLanguage())));
-        } catch (LanguageMapper.LanguageNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Database getDatabase() {
-        return database;
-    }
-
-    public CategoryMapper getCategoryMapper() {
-        return documentMapper.getCategoryMapper();
-    }
-
-    public ImageCacheMapper getImageCacheMapper() {
-        return imageCacheMapper;
-    }
-
-    public LanguageMapper getLanguageMapper() {
-        return this.languageMapper;
-    }
-
-    public CachingFileLoader getFileCache() {
-        return fileLoader;
-    }
-
-    public RoleGetter getRoleGetter() {
-        return imcmsAuthenticatorAndUserAndRoleMapper;
-    }
-
-    public ProcedureExecutor getProcedureExecutor() {
-        return procedureExecutor;
-    }
-
-    public KerberosLoginService getKerberosLoginService() {
-        return kerberosLoginService;
-    }
-
-    public DocumentLanguages getDocumentLanguages() {
-        return documentLanguages;
-    }
-
-    @SuppressWarnings("unused")
-    public void setDocumentLanguages(DocumentLanguages documentLanguages) {
-        this.documentLanguages = documentLanguages;
-    }
-
-    @Override
-    public <T> T getManagedBean(Class<T> requiredType) {
-        return applicationContext.getBean(requiredType);
-    }
-
-    @Override
-    public <T> T getManagedBean(String name, Class<T> requiredType) {
-        return applicationContext.getBean(name, requiredType);
-    }
-
-    private static class WebappRelativeFileConverter implements Converter {
-        @SuppressWarnings("unchecked")
-        public File convert(Class type, Object value) {
-            return FileUtility.getFileFromWebappRelativePath((String) value);
-        }
     }
 }

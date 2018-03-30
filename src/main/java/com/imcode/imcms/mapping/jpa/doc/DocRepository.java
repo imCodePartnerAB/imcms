@@ -2,7 +2,13 @@ package com.imcode.imcms.mapping.jpa.doc;
 
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.doc.content.*;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContent;
+import com.imcode.imcms.mapping.jpa.doc.content.HtmlDocContentRepository;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
+import com.imcode.imcms.persistence.repository.DocumentFileRepository;
+import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -23,26 +29,27 @@ import java.util.stream.Stream;
 @Transactional
 public class DocRepository {
 
-    @Inject
-    private MetaRepository metaRepository;
-
-    @Inject
-    private PropertyRepository propertyRepository;
-
-    @Inject
-    private HtmlDocContentRepository htmlDocContentRepository;
-
-    @Inject
-    private UrlDocContentRepository urlDocContentRepository;
-
-    @Inject
-    private FileDocFileRepository fileDocFileRepository;
+    private final MetaRepository metaRepository;
+    private final PropertyRepository propertyRepository;
+    private final HtmlDocContentRepository htmlDocContentRepository;
+    private final DocumentUrlRepository documentUrlRepository;
+    private final DocumentFileRepository documentFileRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     private Logger logger = Logger.getLogger(getClass());
 
+    @Inject
+    public DocRepository(MetaRepository metaRepository, PropertyRepository propertyRepository,
+                         HtmlDocContentRepository htmlDocContentRepository,
+                         DocumentUrlRepository documentUrlRepository, DocumentFileRepository documentFileRepository) {
+        this.metaRepository = metaRepository;
+        this.propertyRepository = propertyRepository;
+        this.htmlDocContentRepository = htmlDocContentRepository;
+        this.documentUrlRepository = documentUrlRepository;
+        this.documentFileRepository = documentFileRepository;
+    }
 
     public void touch(VersionRef docIdentity, UserDomainObject user) {
         touch(docIdentity, user, new Date());
@@ -66,7 +73,6 @@ public class DocRepository {
                 .executeUpdate();
     }
 
-
     public void insertPropertyIfNotExists(int docId, String name, String value) {
         Property property = propertyRepository.findByDocIdAndName(docId, name);
 
@@ -80,40 +86,32 @@ public class DocRepository {
         }
     }
 
-
     public void deleteHtmlDocContent(DocRef docIdentity) {
         htmlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
-
-    public void deleteUrlDocContent(DocRef docIdentity) {
-        urlDocContentRepository.deleteByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
-    }
-
-    public List<FileDocFile> getFileDocContent(DocRef docIdentity) {
-        return fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+    public List<DocumentFileJPA> getFileDocContent(DocRef docIdentity) {
+        return documentFileRepository.findByDocId(docIdentity.getId());
     }
 
 
-    public FileDocFile saveFileDocFile(FileDocFile fileDocItem) {
+    public DocumentFileJPA saveFileDocFile(DocumentFileJPA fileDocItem) {
         return entityManager.merge(fileDocItem);
     }
 
-
     public void deleteFileDocContent(DocRef docIdentity) {
-        List<FileDocFile> fileDocFile = fileDocFileRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+        List<DocumentFileJPA> documentFile = documentFileRepository.findByDocId(docIdentity.getId());
 
-        if (fileDocFile.size() == 0) {
+        if (documentFile.size() == 0) {
             return;
         }
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaDelete<FileDocFile> query = cb.createCriteriaDelete(FileDocFile.class);
-        query.where(query.from(FileDocFile.class).get("id").in(fileDocFile.stream().map(FileDocFile::getId).collect(Collectors.toList())));
+        CriteriaDelete<DocumentFileJPA> query = cb.createCriteriaDelete(DocumentFileJPA.class);
+        query.where(query.from(DocumentFileJPA.class).get("id").in(documentFile.stream().map(DocumentFileJPA::getId).collect(Collectors.toList())));
 
         entityManager.createQuery(query).executeUpdate();
     }
-
 
     public HtmlDocContent getHtmlDocContent(DocRef docIdentity) {
         return htmlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
@@ -124,16 +122,14 @@ public class DocRepository {
         return entityManager.merge(content);
     }
 
-
-    public UrlDocContent getUrlDocContent(DocRef docIdentity) {
-        return urlDocContentRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
+    public DocumentUrlJPA getUrlDocContent(DocRef docIdentity) {
+        return documentUrlRepository.findByDocIdAndVersionNo(docIdentity.getId(), docIdentity.getVersionNo());
     }
 
 
-    public UrlDocContent saveUrlDocContent(UrlDocContent reference) {
+    public DocumentUrlJPA saveUrlDocContent(DocumentUrlJPA reference) {
         return entityManager.merge(reference);
     }
-
 
     public void deleteDocument(int docId) {
         Stream.of(
@@ -171,21 +167,17 @@ public class DocRepository {
         ).forEach(query -> entityManager.createNativeQuery(query).setParameter(1, docId).executeUpdate());
     }
 
-
     public List<Integer> getAllDocumentIds() {
         return metaRepository.findAllIds();
     }
-
 
     public List<Integer> getDocumentIdsInRange(int min, int max) {
         return metaRepository.findIdsBetween(min, max);
     }
 
-
     public Integer getMaxDocumentId() {
         return metaRepository.findMaxId();
     }
-
 
     public Integer getMinDocumentId() {
         return metaRepository.findMinId();

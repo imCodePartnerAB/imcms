@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
-import com.imcode.db.handlers.ObjectFromFirstRowResultSetHandler;
+import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -23,7 +23,8 @@ public class AdminDeleteDoc extends HttpServlet {
 
     private final static Logger log = Logger.getLogger(AdminDeleteDoc.class.getName());
 
-    private final static String HTML_TEMPLATE = "AdminDeleteDoc.htm";
+    private final static String HTML_TEMPLATE = "AdminDeleteDoc.jsp";
+    private static final long serialVersionUID = -5257851780772885425L;
 
     /**
      * The GET method creates the html page when this side has been
@@ -68,7 +69,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
                 final Object[] parameters = new String[]{""
                         + metaId};
-                String foundMetaId = imcref.getProcedureExecutor().executeProcedure("FindMetaId", parameters, new ObjectFromFirstRowResultSetHandler(new StringFromRowFactory()));
+                String foundMetaId = imcref.getProcedureExecutor().executeProcedure("FindMetaId", parameters, new SingleObjectHandler(new StringFromRowFactory()));
                 log.debug("FoundMetaId: " + foundMetaId);
 
                 if (foundMetaId == null) {

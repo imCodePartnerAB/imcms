@@ -7,8 +7,9 @@ import com.imcode.db.commands.*;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
-import com.imcode.imcms.mapping.jpa.User;
-import com.imcode.imcms.mapping.jpa.UserRepository;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.repository.UserRepository;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.ImcmsServices;
 import imcode.util.Utility;
@@ -21,6 +22,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
 import java.util.*;
+import java.util.concurrent.Executors;
 
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
 
@@ -39,6 +41,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
 
     private final ImcmsServices services;
+    private final UserService userService;
 
     private UserRepository userRepository;
 
@@ -51,6 +54,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         this.services = services;
         this.loginPasswordManager = userLoginPasswordManager;
         this.userRepository = services.getManagedBean(UserRepository.class);
+        this.userService = services.getManagedBean(UserService.class);
     }
 
     /**
@@ -461,7 +465,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject[] getUsers(boolean includeUserExtern, boolean includeInactiveUsers) {
-        return userRepository.findAll(includeUserExtern, includeInactiveUsers).stream()
+        return userService.findAll(includeUserExtern, includeInactiveUsers).stream()
                 .map(this::toDomainObject)
                 .toArray(UserDomainObject[]::new);
     }
@@ -614,7 +618,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     public UserDomainObject[] findUsersByNamePrefix(String namePrefix, boolean includeInactiveUsers) {
-        return userRepository.findByNamePrefix(namePrefix, includeInactiveUsers).stream()
+        return userService.findByNamePrefix(namePrefix, includeInactiveUsers).stream()
                 .map(this::toDomainObject)
                 .toArray(UserDomainObject[]::new);
     }
@@ -751,11 +755,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
      */
     public void encryptUnencryptedUsersLoginPasswords() {
         if (services.getConfig().isLoginPasswordEncryptionEnabled()) {
-            for (UserDomainObject user : getAllUsers()) {
-                if (!user.isImcmsExternal() && !user.isPasswordEncrypted() && StringUtils.isNotBlank(user.getPassword())) {
-                    saveUser(user);
+            Executors.newSingleThreadExecutor().submit(() -> {
+                for (UserDomainObject user : getAllUsers()) {
+                    if (!user.isImcmsExternal() && !user.isPasswordEncrypted() && StringUtils.isNotBlank(user.getPassword())) {
+                        saveUser(user);
+                    }
                 }
-            }
+            });
         }
     }
 }

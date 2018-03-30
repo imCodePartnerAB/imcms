@@ -3,16 +3,19 @@ package com.imcode.imcms.db;
 import com.imcode.db.Database;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlQueryCommand;
-import com.imcode.db.commands.SqlUpdateDatabaseCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.imcms.persistence.components.SqlResourcePathResolver;
 import imcode.util.CachingFileLoader;
-import imcode.util.io.FileUtility;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Component;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,16 +23,22 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Component
 public class DefaultProcedureExecutor implements ProcedureExecutor {
 
     private final static Logger log = Logger.getLogger(DefaultProcedureExecutor.class.getName());
     private final Database database;
     private final CachingFileLoader fileLoader;
-    private Map<String, Procedure> procedureCache = new HashMap<>();
+    private final Map<String, Procedure> procedureCache = CachingFileLoader.createSynchronizedMapDefaultInitialSize();
+    private final Resource sqlResource;
 
-    public DefaultProcedureExecutor(Database database, CachingFileLoader fileLoader) {
+    public DefaultProcedureExecutor(Database database,
+                                    CachingFileLoader fileLoader,
+                                    @Value("classpath:sql") Resource sqlResource) {
+
         this.database = database;
         this.fileLoader = fileLoader;
+        this.sqlResource = sqlResource;
     }
 
     @Override
@@ -38,7 +47,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure(procedure, parameters);
         String body = procedure.getBody();
         logProcedureCall(procedureName, body, parametersAtCorrectIndices);
-        return (Integer) database.execute(new SqlUpdateDatabaseCommand(body, parametersAtCorrectIndices));
+        return (Integer) database.execute(new SqlUpdateCommand(body, parametersAtCorrectIndices));
     }
 
     private void logProcedureCall(String procedureName, String body, Object[] parametersAtCorrectIndices) {
@@ -66,20 +75,32 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     private Procedure getProcedure(String wantedProcedure) {
-        String procedureName = wantedProcedure.toLowerCase();
-        File file = getFile(procedureName);
+        final String procedureName = wantedProcedure.toLowerCase();
         Procedure procedure = procedureCache.get(procedureName);
-        String procedureContents = fileLoader.getCachedFileStringIfRecent(file);
-        if (null == procedureContents) {
-            String procedureContents1 = loadFile(file);
+
+        if (procedure == null) {
             log.debug("Loading procedure " + procedureName);
-            procedure = prepareProcedure(procedureContents1, procedureName);
-            procedureCache.put(procedureName, procedure);
+
+            try (SqlResourcePathResolver pathResolver = new SqlResourcePathResolver(sqlResource.getURI())) {
+                final String procedureSubPath = "sprocs/" + wantedProcedure.toLowerCase() + ".prc";
+                final Path procedurePath = pathResolver.resolveSqlResourceSubPath(procedureSubPath);
+                final String procedureContents = loadFile(procedurePath);
+
+                procedure = prepareProcedure(procedureContents, procedureName);
+                procedureCache.put(procedureName, procedure);
+
+            } catch (Exception e) {
+                final String message = "SQL procedure resource path can't be resolved!";
+                log.error(message, e);
+                e.printStackTrace();
+                throw new RuntimeException(message);
+            }
         }
+
         return procedure;
     }
 
-    Procedure prepareProcedure(String procedureContents, String procedureName) {
+    private Procedure prepareProcedure(String procedureContents, String procedureName) {
         Pattern headerPattern = Pattern.compile("CREATE\\s+PROCEDURE\\s+\\S+\\s+(.*)\\bAS\\s+", Pattern.CASE_INSENSITIVE
                 | Pattern.DOTALL);
         Matcher headerMatcher = headerPattern.matcher(procedureContents);
@@ -97,17 +118,12 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         return new Procedure(bodyWithParametersReplaced, parameterIndicesArray);
     }
 
-    private String loadFile(File file) {
+    private String loadFile(Path filePath) {
         try {
-            return fileLoader.getCachedFileString(file);
+            return fileLoader.getCachedFileString(filePath);
         } catch (IOException e) {
             throw new UnhandledException(e);
         }
-    }
-
-    protected File getFile(String wantedProcedure) {
-        return FileUtility.getFileFromWebappRelativePath("WEB-INF/sql/sprocs/"
-                + wantedProcedure.toLowerCase() + ".prc");
     }
 
     private Map<String, Integer> getParameterNameToIndexMapParsedFromHeader(Pattern parameterPattern, String headerParameters) {
@@ -149,7 +165,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
             this.parameterIndices = parameterIndices;
         }
 
-        public int[] getParameterIndices() {
+        int[] getParameterIndices() {
             return parameterIndices;
         }
 

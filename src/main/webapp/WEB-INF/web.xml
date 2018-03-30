@@ -10,20 +10,11 @@
 
     <display-name>imCMS</display-name>
 
-    <!--
-     imCMS setup:
-        com.imcode.imcms.servlet.ImcmsLog4jConfigListener must be registered first prior to
-        org.springframework.web.context.ContextLoaderListener.
-    -->
-
     <context-param>
         <param-name>contextClass</param-name>
         <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
     </context-param>
 
-    <!-- Configuration locations must consist of one or more comma- or space-delimited
-        fully-qualified @Configuration classes. Fully-qualified packages may also be
-        specified for component-scanning -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
         <param-value>com.imcode.imcms.config.MainConfig</param-value>
@@ -93,11 +84,6 @@
     </filter>
 
     <filter>
-        <filter-name>ImageArchiveAccessFilter</filter-name>
-        <filter-class>com.imcode.imcms.imagearchive.util.AccessFilter</filter-class>
-    </filter>
-
-    <filter>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <filter-class>org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter</filter-class>
     </filter>
@@ -123,11 +109,6 @@
     </filter-mapping>
 
     <filter-mapping>
-        <filter-name>ImageArchiveAccessFilter</filter-name>
-        <url-pattern>/archive/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
         <filter-name>Spring OpenEntityManagerInViewFilter</filter-name>
         <url-pattern>/archive/*</url-pattern>
     </filter-mapping>
@@ -140,8 +121,6 @@
             <param-name>contextClass</param-name>
             <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
         </init-param>
-        <!-- Again, config locations must consist of one or more comma- or space-delimited
-             and fully-qualified @Configuration classes -->
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>com.imcode.imcms.config.WebConfig</param-value>
@@ -151,11 +130,6 @@
     <servlet>
         <servlet-name>RD</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.ReDirecter</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.Help</servlet-class>
     </servlet>
 
     <servlet>
@@ -216,19 +190,10 @@
     <!--
     fixme: remove???
     -->
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ChangeImage</servlet-class>
-    </servlet>
 
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-class>
     </servlet>
 
     <servlet>
@@ -242,21 +207,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.EditImage</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.EditLink</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.LogOut</servlet-class>
     </servlet>
@@ -264,11 +214,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.MenuRss</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.MenuRss</servlet-class>
     </servlet>
 
     <servlet>
@@ -289,16 +234,6 @@
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.Restart</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.Restart</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveInclude</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.admin.SaveInPage</servlet-class>
     </servlet>
 
     <servlet>
@@ -357,31 +292,6 @@
     </servlet>
 
     <servlet>
-        <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.ImageHandling</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.RebuildImageCache</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.ImagePreview</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.AjaxServlet</servlet-class>
-    </servlet>
-
-    <servlet>
-        <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
-        <servlet-class>com.imcode.imcms.servlet.AdminPanelServlet</servlet-class>
-    </servlet>
-
-    <servlet>
         <servlet-name>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-class>
     </servlet>
@@ -409,11 +319,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminProfiles</servlet-name>
         <url-pattern>/imcms/admin/profile/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.Help</servlet-name>
-        <url-pattern>/Help/*</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -477,18 +382,8 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ChangeImage</servlet-name>
-        <url-pattern>/servlet/ChangeImage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.admin.DocumentPageFlowDispatcher</servlet-name>
         <url-pattern>/servlet/DocumentPageFlowDispatcher</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
-        <url-pattern>/servlet/DocumentReferences</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -507,21 +402,6 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.EditImage</servlet-name>
-        <url-pattern>/servlet/EditImage</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.EditLink</servlet-name>
-        <url-pattern>/servlet/EditLink</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.ImageBrowse</servlet-name>
-        <url-pattern>/servlet/ImageBrowse</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.LogOut</servlet-name>
         <url-pattern>/servlet/LogOut</url-pattern>
     </servlet-mapping>
@@ -529,11 +409,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.ListDocuments</servlet-name>
         <url-pattern>/servlet/ListDocuments</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.MenuRss</servlet-name>
-        <url-pattern>/servlet/MenuRss</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -561,20 +436,9 @@
         <url-pattern>/servlet/Restart</url-pattern>
     </servlet-mapping>
 
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInclude</servlet-name>
-        <url-pattern>/servlet/SaveInclude</url-pattern>
-    </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.EncryptPasswords</servlet-name>
         <url-pattern>/servlet/EncryptPasswords</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.admin.SaveInPage</servlet-name>
-        <url-pattern>/servlet/SaveInPage</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>
@@ -625,31 +489,6 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.XmlDoc</servlet-name>
         <url-pattern>/servlet/XmlDoc</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.ImageHandling</servlet-name>
-        <url-pattern>/imagehandling/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.ImagePreview</servlet-name>
-        <url-pattern>/servlet/ImagePreview</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.AjaxServlet</servlet-name>
-        <url-pattern>/servlet/AjaxServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.RebuildImageCache</servlet-name>
-        <url-pattern>/servlet/RebuildImageCache</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>com.imcode.imcms.servlet.AdminPanelServlet</servlet-name>
-        <url-pattern>/servlet/AdminPanelServlet</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

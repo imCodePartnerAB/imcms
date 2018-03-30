@@ -1,10 +1,14 @@
 package imcode.server.user;
 
-import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
-import com.imcode.imcms.mapping.DocumentMeta;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.Permission;
 import imcode.server.Imcms;
-import imcode.server.document.*;
+import imcode.server.LanguageMapper;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.document.TemplateGroupDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
@@ -56,10 +60,7 @@ public class UserDomainObject implements Cloneable, Serializable {
      */
     private volatile String sessionId;
     private volatile boolean authenticatedByIp;
-    /**
-     * todo: FIXME - Kludge to get context path into template methods *
-     */
-    private volatile String currentContextPath;
+
     /**
      * @since 4.0.7
      */
@@ -433,6 +434,10 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.templateGroup = templateGroup;
     }
 
+    public String getLanguage() {
+        return LanguageMapper.convert639_2to639_1(languageIso639_2);
+    }
+
     /**
      * Return the users language
      */
@@ -517,34 +522,15 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canEdit(DocumentDomainObject document) {
-        return hasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject.RESTRICTED_2, document);
+        return hasAtLeastPermissionSetIdOn(Permission.RESTRICTED_2, document);
     }
 
     public boolean canAccess(DocumentDomainObject document) {
-        return hasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject.READ, document);
+        return hasAtLeastPermissionSetIdOn(Permission.VIEW, document);
     }
 
     public boolean isSuperAdminOrHasFullPermissionOn(DocumentDomainObject document) {
-        return isSuperAdminOrHasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject.FULL, document);
-    }
-
-    public boolean canDefineRestrictedOneFor(DocumentDomainObject document) {
-        return isSuperAdminOrHasFullPermissionOn(document);
-    }
-
-    public boolean canDefineRestrictedTwoFor(DocumentDomainObject document) {
-        boolean hasFullPermission = isSuperAdminOrHasFullPermissionOn(document);
-        boolean canEditPermissionsForDocument = canEditPermissionsFor(document);
-        boolean hasAtLeastRestrictedOne = hasAtLeastRestrictedOnePermissionOn(document);
-        boolean hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo = hasAtLeastRestrictedOne
-                && document.isRestrictedOneMorePrivilegedThanRestrictedTwo();
-        return hasFullPermission
-                || canEditPermissionsForDocument
-                && hasAtLeastRestrictedOnePermissionAndIsMorePrivilegedThanRestrictedTwo;
-    }
-
-    private boolean hasAtLeastRestrictedOnePermissionOn(DocumentDomainObject document) {
-        return hasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject.RESTRICTED_1, document);
+        return isSuperAdminOrHasAtLeastPermissionSetIdOn(Permission.EDIT, document);
     }
 
     public String toString() {
@@ -559,95 +545,41 @@ public class UserDomainObject implements Cloneable, Serializable {
         phoneNumbers.remove(number);
     }
 
-    public String getCurrentContextPath() {
-        return currentContextPath;
-    }
-
-    /* FIXME: Current context path should be sent in a HttpServletRequest, not in an UserDomainObject. */
-    public void setCurrentContextPath(String currentContextPath) {
-        this.currentContextPath = currentContextPath;
-    }
-
-    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject documentPermissionSetType, DocumentDomainObject document) {
+    public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn(Permission documentPermissionSetType, DocumentDomainObject document) {
         return isSuperAdmin() || hasAtLeastPermissionSetIdOn(documentPermissionSetType, document);
-    }
-
-    public boolean canEditPermissionsFor(DocumentDomainObject document) {
-        return getPermissionSetFor(document).getEditPermissions();
-    }
-
-    public boolean canSetDocumentPermissionSetTypeForRoleIdOnDocument(DocumentPermissionSetTypeDomainObject documentPermissionSetType, RoleId roleId,
-                                                                      DocumentDomainObject document) {
-        if (!canEditPermissionsFor(document)) {
-            return false;
-        }
-        DocumentPermissionSetTypeDomainObject currentPermissionSetType = document.getDocumentPermissionSetTypeForRoleId(roleId);
-        boolean userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn(currentPermissionSetType, document);
-        boolean userIsSuperAdminOrHasAtLeastTheWantedPermissionSet = isSuperAdminOrHasAtLeastPermissionSetIdOn(documentPermissionSetType, document);
-        boolean userHasAtLeastRestrictedOne = hasAtLeastRestrictedOnePermissionOn(document);
-        boolean changingRestrictedTwo = DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(documentPermissionSetType)
-                || DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(currentPermissionSetType);
-        boolean canDefineRestrictedTwoForDocument = canDefineRestrictedTwoFor(document);
-
-        return userIsSuperAdminOrHasAtLeastTheWantedPermissionSet
-                && userIsSuperAdminOrHasAtLeastTheCurrentPermissionSet
-                && (!changingRestrictedTwo || !userHasAtLeastRestrictedOne
-                || canDefineRestrictedTwoForDocument);
-
-    }
-
-    public boolean canCreateDocumentOfTypeIdFromParent(int documentTypeId, DocumentDomainObject parent) {
-        TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject) getPermissionSetFor(parent);
-        Set allowedDocumentTypeIds = documentPermissionSet.getAllowedDocumentTypeIds();
-        return allowedDocumentTypeIds.contains(new Integer(documentTypeId));
-    }
-
-    public DocumentPermissionSetDomainObject getPermissionSetFor(DocumentDomainObject document) {
-        DocumentPermissionSetTypeDomainObject permissionSetId = getDocumentPermissionSetTypeFor(document);
-        if (DocumentPermissionSetTypeDomainObject.FULL.equals(permissionSetId)) {
-            return DocumentPermissionSetDomainObject.FULL;
-        } else if (DocumentPermissionSetTypeDomainObject.READ.equals(permissionSetId)) {
-            return DocumentPermissionSetDomainObject.READ;
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_1.equals(permissionSetId)) {
-            return document.getPermissionSets().getRestricted1();
-        } else if (DocumentPermissionSetTypeDomainObject.RESTRICTED_2.equals(permissionSetId)) {
-            return document.getPermissionSets().getRestricted2();
-        } else {
-            return DocumentPermissionSetDomainObject.NONE;
-        }
     }
 
     /**
      * Returns most privileged permission set type for the provided doc.
      * <p>
-     * If doc is null returns {@link DocumentPermissionSetTypeDomainObject#NONE}
-     * If user is in a SUPER_ADMIN role returns {@link DocumentPermissionSetTypeDomainObject#FULL}
+     * If doc is null returns {@link Permission#NONE}
+     * If user is in a SUPER_ADMIN role returns {@link Permission#EDIT}
      * Otherwise searches for most privileged perm set in the intersection of user roles and doc's roles.
      *
      * @param document
      * @return most privileged permission set for the provided doc.
      */
-    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeFor(DocumentDomainObject document) {
+    public Permission getDocumentPermissionSetTypeFor(DocumentDomainObject document) {
         if (null == document)
-            return DocumentPermissionSetTypeDomainObject.NONE;
+            return Permission.NONE;
 
         if (isSuperAdmin())
-            return DocumentPermissionSetTypeDomainObject.FULL;
+            return Permission.EDIT;
 
         RoleIdToDocumentPermissionSetTypeMappings roleIdsMappedToDocumentPermissionSetTypes =
                 document.getRoleIdsMappedToDocumentPermissionSetTypes();
 
-        DocumentPermissionSetTypeDomainObject mostPrivilegedPermissionSetIdFoundYet =
-                DocumentPermissionSetTypeDomainObject.NONE;
+        Permission mostPrivilegedPermissionSetIdFoundYet =
+                Permission.NONE;
 
         for (RoleId roleId : getRoleIds()) {
-            DocumentPermissionSetTypeDomainObject documentPermissionSetType =
+            Permission documentPermissionSetType =
                     roleIdsMappedToDocumentPermissionSetTypes.getPermissionSetTypeForRole(roleId);
 
             if (documentPermissionSetType.isMorePrivilegedThan(mostPrivilegedPermissionSetIdFoundYet)) {
                 mostPrivilegedPermissionSetIdFoundYet = documentPermissionSetType;
 
-                if (mostPrivilegedPermissionSetIdFoundYet == DocumentPermissionSetTypeDomainObject.FULL) {
+                if (mostPrivilegedPermissionSetIdFoundYet == Permission.EDIT) {
                     break;
                 }
             }
@@ -656,34 +588,10 @@ public class UserDomainObject implements Cloneable, Serializable {
         return mostPrivilegedPermissionSetIdFoundYet;
     }
 
-    public boolean hasAtLeastPermissionSetIdOn(DocumentPermissionSetTypeDomainObject leastPrivilegedPermissionSetIdWanted,
+    public boolean hasAtLeastPermissionSetIdOn(Permission leastPrivilegedPermissionSetIdWanted,
                                                DocumentDomainObject document) {
-        DocumentPermissionSetTypeDomainObject usersDocumentPermissionSetType = getDocumentPermissionSetTypeFor(document);
+        Permission usersDocumentPermissionSetType = getDocumentPermissionSetTypeFor(document);
         return usersDocumentPermissionSetType.isAtLeastAsPrivilegedAs(leastPrivilegedPermissionSetIdWanted);
-    }
-
-    public boolean canAddDocumentToAnyMenu(DocumentDomainObject document) {
-        if (null == document) {
-            return false;
-        }
-        boolean canEdit = canEdit(document);
-        boolean linkableByOtherUsers = document.isLinkableByOtherUsers();
-        return canEdit || linkableByOtherUsers;
-    }
-
-    public boolean canSearchFor(DocumentDomainObject document) {
-        return
-                isSuperAdmin()
-                        || (!document.isSearchDisabled()
-                        && (canEdit(document)
-                        || (document.isPublished()
-                        && (document.isLinkedForUnauthorizedUsers() || canAccess(document)))
-                )
-                );
-    }
-
-    public boolean canEditDocumentInformationFor(DocumentDomainObject document) {
-        return getPermissionSetFor(document).getEditDocumentInformation();
     }
 
     public boolean canAccessAdminPages() {
@@ -701,20 +609,6 @@ public class UserDomainObject implements Cloneable, Serializable {
             }
         }
         return false;
-    }
-
-    public boolean canSeeDocumentInMenus(DocumentDomainObject document) {
-        return document.isActive() && canSeeDocumentWhenEditingMenus(document)
-                && languageIsActive(document);
-    }
-
-    private boolean languageIsActive(DocumentDomainObject document) {
-        DocumentLanguage currentLanguage = getDocGetterCallback().getLanguage();
-        DocumentMeta meta = document.getMeta();
-        boolean enabled = meta.getEnabledLanguages().contains(currentLanguage);
-
-        return enabled ||
-                meta.getDisabledLanguageShowMode() == DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
     }
 
     public boolean canSeeDocumentWhenEditingMenus(DocumentDomainObject document) {
@@ -773,6 +667,23 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean hasAdminPanelForDocument(DocumentDomainObject document) {
         return !(null == document || !(canEdit(document) || isUserAdminAndCanEditAtLeastOneRole() || canAccessAdminPages()));
+    }
+
+    public boolean hasUserAccessToDoc(Meta meta) {
+        if (meta == null) throw new DocumentNotExistException();
+
+        if (meta.getLinkedForUnauthorizedUsers()) {
+            return true;
+        }
+
+        final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
+
+        return Arrays.stream(getRoleIds())
+                .map(RoleId::getRoleId)
+                .map(docPermissions::get)
+                .filter(Objects::nonNull)
+                .anyMatch(documentPermissionSetTypeDomainObject
+                        -> documentPermissionSetTypeDomainObject.isAtLeastAsPrivilegedAs(Permission.VIEW));
     }
 
     /**
@@ -845,6 +756,10 @@ public class UserDomainObject implements Cloneable, Serializable {
      */
     void setPasswordReset(String resetId, long time) {
         this.passwordReset = new PasswordReset(resetId, time);
+    }
+
+    public boolean isAdmin() {
+        return isSuperAdmin() || isUserAdmin();
     }
 
     /**

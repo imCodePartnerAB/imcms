@@ -1,9 +1,10 @@
 package imcode.server.document.textdocument;
 
 import com.imcode.util.ImageSize;
-import imcode.server.Imcms;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
+import lombok.EqualsAndHashCode;
 
 import java.io.IOException;
 import java.util.Date;
@@ -13,6 +14,7 @@ public abstract class ImageSource extends AbstractFileSource {
     public static final int IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH = 0;
     public static final int IMAGE_TYPE_ID__FILE_DOCUMENT = 1;
     public static final int IMAGE_TYPE_ID__IMAGE_ARCHIVE = 2;
+    private static final long serialVersionUID = -8968488500648667313L;
 
     private ImageInfo cachedImageInfo;
     private Date cachedImageInfoTime;
@@ -42,7 +44,7 @@ public abstract class ImageSource extends AbstractFileSource {
     }
 
     ImageInfo getNonCachedImageInfo() throws IOException {
-        return ImageOp.getImageInfo(Imcms.getServices().getConfig(), getInputStreamSource().getInputStream());
+        return ImageOp.getImageInfo(ImcmsImageUtils.imageMagickPath, getInputStreamSource().getInputStream());
     }
 }
 

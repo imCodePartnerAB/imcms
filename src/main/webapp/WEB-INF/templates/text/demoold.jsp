@@ -231,7 +231,7 @@
                         <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
                         <div>
                             <span>Demo menu</span>
-                            <imcms:menu no='1' docId="1001" label='<br/><br/>Meny (punktlista)'>
+                            <imcms:menu index='1' document="1001" label='<br/><br/>Meny (punktlista)'>
                                 <ul>
                                     <imcms:menuloop>
                                         <imcms:menuitem>
@@ -258,16 +258,16 @@
                         <imcms:include no='1' label='Dynamisk inkludering 1'/>
 
 
-                        <imcms:loop no="1" label="Loop (main)" pre='<div class="loop">' post='</div>'>
+                        <imcms:contentLoop no="1" label="Loop (main)" pre='<div class="loop">' post='</div>'>
                             <imcms:text no='2' label='<br/>Text' pre='<div class="text">' post='</div>'/>
                             <imcms:image no="33"/>
-                        </imcms:loop>
+                        </imcms:contentLoop>
 
 
-                        <imcms:loop no="100" label="Loop (secondary)" pre='<div class="loop">' post='</div>'>
+                        <imcms:contentLoop no="100" label="Loop (secondary)" pre='<div class="loop">' post='</div>'>
                             <imcms:text no='100' label='<br/>Text' pre='<div class="text">' post='</div>'/>
                             <imcms:image no='3' label='Bild' pre='<br/><br/>' post='<br/>'/><br/>
-                        </imcms:loop>
+                        </imcms:contentLoop>
 
                     </td>
 

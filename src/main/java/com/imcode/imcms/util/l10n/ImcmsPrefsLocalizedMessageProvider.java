@@ -2,7 +2,7 @@ package com.imcode.imcms.util.l10n;
 
 import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
-import org.apache.commons.collections.iterators.IteratorEnumeration;
+import org.apache.commons.collections4.iterators.IteratorEnumeration;
 
 import java.util.Enumeration;
 import java.util.Properties;

@@ -3,10 +3,12 @@
                  javax.servlet.http.HttpServletRequest,
                  javax.servlet.http.HttpServletResponse,
                  java.io.IOException,
-                 java.util.Arrays,
-                 java.util.HashSet"
-%><%@ page import="java.util.Iterator"%><%@ page import="java.util.Set"%><%@ page import="java.util.TreeSet"%><%@taglib prefix="vel" uri="imcmsvelocity"
-%><vel:velocity><%!
+                 java.util.*"
+%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%!
 
 private final static String ACTION_SAVE_USER       = "SAVE_USER" ;
 private final static String ACTION_CANCEL          = "CANCEL" ;
@@ -66,25 +68,34 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <head>
 <title><? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body>
 
-#gui_outer_start()
-#gui_head( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?>" )
-<form method="POST" action="$contextPath/imcms/$language/jsp/changeexternaluser.jsp">
+    <ui:imcms_gui_outer_start/>
+    <c:set var="heading">
+        <fmt:message key="install/htdocs/sv/adminuser/changeexternaluser.jsp/1"/>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
+
+    <form method="POST" action="${contextPath}/imcms/${language}/jsp/changeexternaluser.jsp">
 <table border="0" cellspacing="0" cellpadding="0">
 <input type="hidden" name="<%= AdminUser.USER_LOGIN_NAME_PARAMETER_NAME %>" value="<%= userLoginName %>">
 <tr>
 	<td><input type="submit" class="imcmsFormBtn" name="<%= ACTION_CANCEL %>" value="<? global/back ?>"></td>
 </tr>
 </table>
-#gui_mid()
+    <ui:imcms_gui_mid/>
 <table border="0" cellspacing="0" cellpadding="2" width="400">
 <tr>
-	<td colspan="2">#gui_heading( "<? install/htdocs/sv/adminuser/changeexternaluser.jsp/2 ?>" )</td>
+    <td colspan="2">
+        <c:set var="heading">
+            <fmt:message key="install/htdocs/sv/adminuser/changeexternaluser.jsp/2"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
 	<td colspan="2"><? install/htdocs/sv/adminuser/changeexternaluser.jsp/3 ?><br>&nbsp;</td>
@@ -149,11 +160,13 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	<td><%= user.getEmailAddress() %>&nbsp;</td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "cccccc" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr>
 <tr>
 	<td><? install/htdocs/sv/adminuser/changeexternaluser.jsp/18 ?></td>
-	<td><img src="$contextPath/imcms/$language/images/admin/btn_checked_<%= user.isActive() ? "1" : "0" %>.gif" width="13" height="12" alt="">&nbsp;</td>
+    <td><img src="${contextPath}/imcms/${language}/images/admin/btn_checked_<%= user.isActive() ? "1" : "0" %>.gif"
+             width="13" height="12" alt="">&nbsp;
+    </td>
 </tr>
 <tr valign="top">
 	<td nowrap><? install/htdocs/sv/adminuser/changeexternaluser.jsp/19 ?></td>
@@ -179,7 +192,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 	</table></td>
 </tr>
 <tr>
-	<td colspan="2">#gui_hr( "blue" )</td>
+    <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td colspan="2" align="right">
@@ -188,5 +201,4 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 </tr>
 </table>
 </form>
-#gui_end_of_page()
-</vel:velocity>
+    <ui:imcms_gui_end_of_page/>

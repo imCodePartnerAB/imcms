@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
+import imcode.util.ImcmsImageUtils;
 import imcode.util.image.ImageInfo;
 import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
@@ -33,9 +33,8 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
         return new FileInputStreamSource(getFile());
     }
 
-    private File getFile() {
-        ImcmsServices service = Imcms.getServices();
-        File basePath = isAbsolute() ? Imcms.getPath() : service.getConfig().getImagePath();
+    public File getFile() {
+        File basePath = isAbsolute() ? Imcms.getPath() : ImcmsImageUtils.imagesPath;
         return new File(basePath, path);
     }
 

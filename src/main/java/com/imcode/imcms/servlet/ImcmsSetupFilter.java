@@ -4,9 +4,11 @@ import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
+import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
@@ -14,7 +16,6 @@ import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.Cookie;
@@ -25,6 +26,7 @@ import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -39,6 +41,8 @@ public class ImcmsSetupFilter implements Filter {
 
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
+    public static final String USER_LANGUAGE_IN_COOKIE_NAME = "userLanguage";
+
     private final Logger logger = Logger.getLogger(getClass());
     private FilterDelegate filterDelegate;
 
@@ -65,7 +69,7 @@ public class ImcmsSetupFilter implements Filter {
                         .orElse(Optional.ofNullable(dls.getForHost(request.getServerName()))
                                 .orElse(defaultLanguage)));
 
-        docGetterCallback.setLanguage(preferredLanguage, dls.isDefault(preferredLanguage));
+        docGetterCallback.setLanguage(preferredLanguage);
 
         Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
         String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
@@ -90,14 +94,13 @@ public class ImcmsSetupFilter implements Filter {
     }
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException {
-        ServletContext servletContext = filterConfig.getServletContext();
-        Imcms.setRootPath(servletContext.getRealPath("/"));
-        Imcms.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext));
+    public void init(FilterConfig filterConfig) {
+
         try {
             logger.info("Starting CMS.");
-            Imcms.start();
+            Imcms.invokeStart();
             filterDelegate = this::doFilterNormally;
+
         } catch (Exception e) {
             logger.error("Error starting CMS.", e);
             filterDelegate = this::doFilterSendError;
@@ -106,12 +109,7 @@ public class ImcmsSetupFilter implements Filter {
 
     @Override
     public void destroy() {
-        try {
-            logger.info("Stopping CMS.");
-            Imcms.stop();
-        } catch (Exception e) {
-            logger.error("Error stopping CMS.", e);
-        }
+        logger.info("Stopping CMS.");
     }
 
     /**
@@ -123,12 +121,12 @@ public class ImcmsSetupFilter implements Filter {
         filterDelegate.doFilter(request, response, filterChain);
     }
 
-    void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
-            throws IOException, ServletException {
+    private void doFilterSendError(ServletRequest request, ServletResponse response, FilterChain filterChain)
+            throws IOException {
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
     }
 
-    void doFilterNormally(ServletRequest req, ServletResponse res, FilterChain filterChain)
+    private void doFilterNormally(ServletRequest req, ServletResponse res, FilterChain filterChain)
             throws IOException, ServletException {
         try {
             HttpServletRequest request = (HttpServletRequest) req;
@@ -183,7 +181,37 @@ public class ImcmsSetupFilter implements Filter {
             Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
             Imcms.setUser(user);
-            ImcmsSetupFilter.updateUserDocGetterCallback(request, Imcms.getServices(), user);
+
+            final Cookie[] cookies = request.getCookies();
+            final LanguageMapper languageMapper = service.getLanguageMapper();
+
+            if (cookies != null) {
+                final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+                        .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+                        .findFirst();
+
+                final String langCode;
+
+                if (userLanguageCookie.isPresent()) {
+                    langCode = userLanguageCookie.get().getValue();
+
+                } else {
+                    langCode = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
+
+                    final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+                    newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                    newUserLanguageCookie.setPath("/");
+
+                    response.addCookie(newUserLanguageCookie);
+                }
+
+                final Language language = languageMapper.getLanguageByCode(langCode);
+                Imcms.setLanguage(language);
+            } else {
+                Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+            }
+
+            ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
 
             Utility.initRequestWithApi(request, user);
 
@@ -204,37 +232,43 @@ public class ImcmsSetupFilter implements Filter {
     /**
      * When request path matches a physical or mapped resource then processes request normally.
      * Otherwise threats a request as a document request.
-     *
-     * @throws ServletException
-     * @throws IOException
-     * @see GetDoc#viewDoc(String, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    void handleDocumentUri(FilterChain chain, HttpServletRequest request, ServletResponse response,
-                           ImcmsServices service, FallbackDecoder fallbackDecoder) throws ServletException, IOException {
+    private void handleDocumentUri(FilterChain chain,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   ImcmsServices service,
+                                   FallbackDecoder fallbackDecoder)
+            throws ServletException, IOException {
+
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
         path = StringUtils.substringAfter(path, request.getContextPath());
-        ServletContext servletContext = request.getSession().getServletContext();
-        Set resourcePaths = servletContext.getResourcePaths(path);
+        final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
         if (resourcePaths == null || resourcePaths.size() == 0) {
-            String documentIdString = getDocumentIdString(service, path);
-
+            final String documentIdString = getDocumentIdString(service, path);
             final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
-            DocumentDomainObject document = service.getDocumentMapper()
+            final DocumentDomainObject document = service.getDocumentMapper()
                     .getVersionedDocument(documentIdString, langCode, request);
 
+            request.setAttribute("contextPath", request.getContextPath());
+            request.setAttribute("language", LanguageMapper.convert639_1to639_2(langCode));
+
             if (null != document) {
-                try {
-                    GetDoc.viewDoc(document, request, (HttpServletResponse) response);
-                    return;
-                } catch (NumberFormatException ignore) {
+                if (Utility.isTextDocument(document)) {
+                    final String newPath = "/api/viewDoc" + request.getServletPath();
+                    request.getRequestDispatcher(newPath).forward(request, response);
+
+                } else {
+                    GetDoc.viewDoc(document, request, response);
                 }
+
+                return;
             }
         }
         chain.doFilter(request, response);
     }
 
-    void setDomainSessionCookie(ServletResponse response, HttpSession session) {
+    private void setDomainSessionCookie(ServletResponse response, HttpSession session) {
 
         String domain = Imcms.getServices().getConfig().getSessionCookieDomain();
         if (StringUtils.isNotBlank(domain)) {

@@ -2,11 +2,13 @@ package imcode.server.document;
 
 import imcode.util.Utility;
 import imcode.util.io.ExceptionFreeInputStreamSource;
+import imcode.util.io.FileInputStreamSource;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,7 +103,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
     public void setDefaultFileId(String defaultFileId) {
         if (!files.containsKey(defaultFileId)) {
-            throw new IllegalArgumentException("Cannot set defaultFileId to non-existant key "
+            throw new IllegalArgumentException("Cannot set defaultFile to non-existant key "
                     + defaultFileId);
         }
         this.defaultFileId = defaultFileId;
@@ -193,6 +195,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
             this.inputStreamSource = inputStreamSource;
         }
 
+        public boolean isFileInputStreamSource() {
+            return inputStreamSource instanceof FileInputStreamSource;
+        }
+
         public boolean isCreatedAsImage() {
             return createdAsImage;
         }
@@ -211,6 +217,10 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
 
         public FileDocumentFile clone() throws CloneNotSupportedException {
             return (FileDocumentFile) super.clone();
+        }
+
+        public File getFile() {
+            return ((FileInputStreamSource) inputStreamSource).getFile();
         }
     }
 }

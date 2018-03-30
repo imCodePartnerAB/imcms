@@ -1,4 +1,5 @@
-<%@ tag import="java.text.DateFormat, java.text.SimpleDateFormat, org.apache.log4j.Logger"%><%@attribute name="value" type="java.util.Date" %>
+<%@ tag import="org.apache.log4j.Logger, java.text.DateFormat, java.text.SimpleDateFormat" %>
+<%@attribute name="value" type="java.util.Date" %>
 <%@attribute name="dateid" required="true" %>
 <%@attribute name="timeid"%>
 <%

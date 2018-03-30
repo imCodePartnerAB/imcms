@@ -4,12 +4,16 @@ import com.imcode.imcms.api.Document;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
+import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentMeta;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -40,16 +44,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      */
     public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 
-    /**
-     * Document's internal id assigned by an application developer.
-     * Intended to be used as a private identity to access documents through the API.
-     */
-    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_INTERNAL_ID = "imcms.document.internal.id";
-
-    /**
-     * Legacy, property based modifier support.
-     */
-    public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_MODIFIED_BY = "imcms.document.modified_by";
+    private static final long serialVersionUID = 9196527330127566553L;
 
     private static Logger log = Logger.getLogger(DocumentDomainObject.class);
 
@@ -75,17 +70,19 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
         DocumentDomainObject document;
 
-        switch (documentTypeId) {
-            case DocumentTypeDomainObject.TEXT_ID:
+        final DocumentType documentType = DocumentType.values()[documentTypeId];
+
+        switch (documentType) {
+            case TEXT:
                 document = new TextDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.URL_ID:
+            case URL:
                 document = new UrlDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.FILE_ID:
+            case FILE:
                 document = new FileDocumentDomainObject();
                 break;
-            case DocumentTypeDomainObject.HTML_ID:
+            case HTML:
                 document = new HtmlDocumentDomainObject();
                 break;
             default:
@@ -125,7 +122,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return publicationEndDatetime != null && publicationEndDatetime.before(date);
     }
 
-    public static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
+    static LifeCyclePhase getLifeCyclePhaseAtTime(DocumentDomainObject doc, Date time) {
         DocumentMeta meta = doc.getMeta();
         LifeCyclePhase lifeCyclePhase;
 
@@ -151,7 +148,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return lifeCyclePhase;
     }
 
-    public static DocumentDomainObject asDefaultUser(int docId, DocumentLanguage language) {
+    private static DocumentDomainObject asDefaultUser(int docId, DocumentLanguage language) {
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
 
         DocGetterCallback docGetterCallback = Imcms.getServices()
@@ -211,7 +208,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setArchivedDatetime(v);
     }
 
-    public Integer getArchiverId() {
+    private Integer getArchiverId() {
         return meta.getArchiverId();
     }
 
@@ -219,20 +216,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setArchiverId(id);
     }
 
-    public Set<Integer> getCategoryIds() {
-        return meta.getCategoryIds();
+    public Set<Category> getCategories() {
+        return meta.getCategories();
     }
 
-    public void setCategoryIds(Set<Integer> categoryIds) {
-        meta.setCategoryIds(categoryIds);
+    public void setCategories(Set<Category> categories) {
+        meta.setCategories(categories);
     }
 
     public Date getCreatedDatetime() {
         return meta.getCreatedDatetime();
-    }
-
-    public void setCreatedDatetime(Date v) {
-        meta.setCreatedDatetime(v);
     }
 
     public int getCreatorId() {
@@ -298,11 +291,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         properties.put(key, value);
     }
 
-    public void removeProperty(String key) {
-        Map<String, String> properties = meta.getProperties();
-        properties.remove(key);
-    }
-
     public String getMenuText() {
         return commonContent.getMenuText();
     }
@@ -323,10 +311,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return meta.getActualModifiedDatetime();
     }
 
-    public void setActualModifiedDatetime(Date modifiedDatetime) {
-        meta.setActualModifiedDatetime(modifiedDatetime);
-    }
-
     public Date getPublicationEndDatetime() {
         return meta.getPublicationEndDatetime();
     }
@@ -335,7 +319,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setPublicationEndDatetime(datetime);
     }
 
-    public Integer getDepublisherId() {
+    private Integer getDepublisherId() {
         return meta.getDepublisherId();
     }
 
@@ -363,16 +347,16 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         setPublisherId(user.getId());
     }
 
-    public Integer getModifierId() {
+    private Integer getModifierId() {
         return Imcms.getServices().getDocumentMapper().getDocumentVersionInfo(getId()).getLatestVersion().getModifiedBy();
+    }
+
+    public void setDocumentPermissionSetTypeForRoleId(RoleId roleId, Meta.Permission permission) {
+        this.getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permission);
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {
         return getRolePermissionMappings().clone();
-    }
-
-    public void setRoleIdsMappedToDocumentPermissionSetTypes(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-        meta.setRoleIdToDocumentPermissionSetTypeMappings(roleIdToDocumentPermissionSetTypeMappings);
     }
 
     private RoleIdToDocumentPermissionSetTypeMappings getRolePermissionMappings() {
@@ -407,14 +391,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkableByOtherUsers(linkableByOtherUsers);
     }
 
-    public boolean isRestrictedOneMorePrivilegedThanRestrictedTwo() {
-        return meta.getRestrictedOneMorePrivilegedThanRestrictedTwo();
-    }
-
-    public void setRestrictedOneMorePrivilegedThanRestrictedTwo(boolean b) {
-        meta.setRestrictedOneMorePrivilegedThanRestrictedTwo(b);
-    }
-
     public boolean isPublished() {
         return isPublishedAtTime(meta, new Date());
     }
@@ -439,8 +415,20 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setLinkedForUnauthorizedUsers(linkedForUnauthorizedUsers);
     }
 
-    public void addCategoryId(int categoryId) {
-        meta.getCategoryIds().add(categoryId);
+    public void addCategory(Category category) {
+        meta.getCategories().add(category);
+    }
+
+    @Deprecated
+    public void addCategory(com.imcode.imcms.api.Category category) {
+        final CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setId(category.getId());
+        categoryDTO.setName(category.getName());
+        categoryDTO.setImageUrl(category.getImage());
+        categoryDTO.setDescription(category.getDescription());
+        categoryDTO.setType(category.getType());
+
+        addCategory(categoryDTO);
     }
 
     public boolean equals(Object o) {
@@ -471,37 +459,8 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return getId();
     }
 
-    public void removeAllCategories() {
-        meta.setCategoryIds(new HashSet<>());
-    }
-
     public void removeCategoryId(int categoryId) {
-        meta.getCategoryIds().remove(categoryId);
-    }
-
-    public void setDocumentPermissionSetTypeForRoleId(RoleId roleId,
-                                                      DocumentPermissionSetTypeDomainObject permissionSetType) {
-        getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permissionSetType);
-    }
-
-    public DocumentPermissionSetTypeDomainObject getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
-        return getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
-    }
-
-    public DocumentPermissionSets getPermissionSets() {
-        return meta.getPermissionSets();
-    }
-
-    public void setPermissionSets(DocumentPermissionSets permissionSets) {
-        meta.setPermissionSets(permissionSets);
-    }
-
-    public DocumentPermissionSets getPermissionSetsForNewDocument() {
-        return meta.getPermissionSetsForNewDocument();
-    }
-
-    public void setPermissionSetsForNewDocument(DocumentPermissionSets permissionSetsForNew) {
-        meta.setPermissionSetsForNewDocument(permissionSetsForNew);
+        meta.getCategories().remove(categoryId);
     }
 
     public abstract void accept(DocumentVisitor documentVisitor);
@@ -546,10 +505,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setCommonContent(DocumentCommonContent commonContent) {
         this.commonContent = Objects.requireNonNull(commonContent, "commonContent argument can not be null.");
-    }
-
-    public List<Date> getListDates() {
-        return Arrays.asList(getArrDates());
     }
 
     public Date[] getArrDates() {

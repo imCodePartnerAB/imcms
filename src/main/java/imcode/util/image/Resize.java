@@ -26,7 +26,7 @@ public enum Resize {
     private final String modifier;
     private final int ordinal;
 
-    private Resize(String modifier, int ordinal) {
+    Resize(String modifier, int ordinal) {
         this.modifier = modifier;
         this.ordinal = ordinal;
     }

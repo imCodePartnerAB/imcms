@@ -5,14 +5,20 @@
 	
   pageEncoding="UTF-8"
 	
-%><%@ taglib prefix="vel" uri="imcmsvelocity"
-%><%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%!
+%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui"
+%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%!
 
 /* Validation errors and common heading */
 
-%><vel:velocity>
-#gui_start_of_page( "<fmt:message key="passwordreset.title" />" "$contextPath/login" "<fmt:message key="global/back" />" "" "" )
-
+%>
+<c:set var="heading">
+    <fmt:message key="passwordreset.title"/>
+</c:set>
+<ui:imcms_gui_start_of_page titleAndHeading="${heading}"/>
 <%
 List<String> errors = (List<String>)request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
 
@@ -22,4 +28,3 @@ if (errors != null) { %>
 		<p><%= errors.get(0) %></p>
 	</div><%
 } %>
-</vel:velocity>

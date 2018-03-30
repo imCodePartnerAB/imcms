@@ -26,7 +26,7 @@ public class ClientHttpRequest {
     /**
      * Creates a new multipart POST HTTP request on a freshly opened URLConnection
      */
-    public ClientHttpRequest(URLConnection connection) throws IOException {
+    public ClientHttpRequest(URLConnection connection) {
         this.connection = connection;
         connection.setDoOutput(true);
         connection.setRequestProperty("Content-Type",
@@ -173,14 +173,14 @@ public class ClientHttpRequest {
     /**
      * adds a cookie to the requst
      */
-    public void setCookie(String name, String value) throws IOException {
+    public void setCookie(String name, String value) {
         cookies.put(name, value);
     }
 
     /**
      * adds cookies to the request
      */
-    public void setCookies(Map cookies) throws IOException {
+    public void setCookies(Map cookies) {
         if (cookies == null) {
             return;
         }
@@ -228,7 +228,7 @@ public class ClientHttpRequest {
         write('"');
         newline();
         write("Content-Type: ");
-        String type = connection.guessContentTypeFromName(filename);
+        String type = URLConnection.guessContentTypeFromName(filename);
         if (type == null) {
             type = "application/octet-stream";
         }

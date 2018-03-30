@@ -1,0 +1,41 @@
+.imcms-loop-item {
+    cursor: pointer;
+    display: block;
+    overflow: hidden;
+    padding-left: 70px;
+    padding-right: 35px;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-loop-item__info {
+    cursor: pointer;
+    height: 45px;
+    line-height: 45px;
+    text-transform: none;
+    text-align: left;
+    float: left;
+}
+
+.imcms-loop-item__controls {
+    display: none;
+    padding: 14px 0;
+    position: absolute;
+    top: 0;
+    right: 27px;
+    float: right;
+}
+
+.imcms-loop-item:hover {
+    background: #d0e9f9;
+}
+
+.imcms-loop-item:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.imcms-loop-item:hover .imcms-loop-item__controls {
+    display: block;
+}

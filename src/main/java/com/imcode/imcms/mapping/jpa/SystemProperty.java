@@ -15,7 +15,7 @@ import java.util.Objects;
 public class SystemProperty {
 
     @Id
-    @Column(name = "type_id")
+    @Column(name = "type_id", columnDefinition = "smallint")
     private Integer id;
 
     private String name;

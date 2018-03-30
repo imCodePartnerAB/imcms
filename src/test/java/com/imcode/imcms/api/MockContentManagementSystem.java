@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.service.TemplateService;
 import imcode.server.ImcmsServices;
 import imcode.server.user.UserDomainObject;
 
@@ -7,6 +8,10 @@ public class MockContentManagementSystem extends ContentManagementSystem {
 
     private ImcmsServices imcmsServices;
     private User currentUser;
+
+    MockContentManagementSystem() {
+        super(null, null);
+    }
 
     public UserService getUserService() {
         return null;  // TODO

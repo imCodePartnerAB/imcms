@@ -1,35 +1,28 @@
 package imcode.util;
 
 import com.imcode.db.handlers.SingleObjectHandler;
-import com.imcode.imcms.I18nMessage$;
 import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.api.linker.LinkService;
 import com.imcode.imcms.db.BooleanFromRowFactory;
 import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
-import com.imcode.imcms.document.text.TextContentFilter;
-import com.imcode.imcms.imagearchive.service.Facade;
-import com.imcode.imcms.imagearchive.service.TextService;
+import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.*;
-import org.apache.commons.collections.iterators.ObjectArrayIterator;
-import org.apache.commons.collections.iterators.TransformIterator;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.SetUtils;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.UnhandledException;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
@@ -37,6 +30,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.*;
+import javax.servlet.jsp.PageContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -52,9 +46,7 @@ import java.net.URLEncoder;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.cert.Certificate;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.ParseException;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -75,14 +67,48 @@ public class Utility {
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
 
-    private static Facade facade;
-    private static TextService textService;
+    private static TextContentFilter textContentFilter;
+    private static ImcmsServices services;
 
-    private Utility() {
+    public Utility(TextContentFilter textContentFilter, ImcmsServices services) {
+        Utility.textContentFilter = textContentFilter;
+        Utility.services = services;
     }
 
     public static TextContentFilter getTextContentFilter() {
-        return textService.getTextContentFilter();
+        return textContentFilter;
+    }
+
+    /**
+     * String normalize, escapes special characters and whitespace.
+     *
+     * @param normalizeMe string to normalize
+     * @return normalized string
+     */
+    public static String normalizeString(String normalizeMe) {
+        String[][] specialCharacterReplacements = {
+                {"\u00e5", "a"},// å
+                {"\u00c5", "A"},
+                {"\u00e4", "a"},// ä
+                {"\u00c4", "A"},
+                {"\u00f6", "o"},// ö
+                {"\u00d6", "O"},
+                {"\u00e9", "e"},// é
+                {"\u00c9", "E"},
+                {"\u00f8", "o"},// ø
+                {"\u00d8", "O"},
+                {"\u00e6", "ae"},// æ
+                {"\u00c6", "AE"},
+                {"\u0020", "_"} // space
+        };
+
+        normalizeMe = Normalizer.normalize(normalizeMe, Normalizer.Form.NFC);
+
+        for (String[] replacement : specialCharacterReplacements) {
+            normalizeMe = normalizeMe.replace(replacement[0], replacement[1]);
+        }
+
+        return normalizeMe;
     }
 
     /**
@@ -131,6 +157,10 @@ public class Utility {
         res.setDateHeader("Expires", 0);
     }
 
+    public static boolean isTextDocument(DocumentDomainObject document) {
+        return DocumentTypeDomainObject.TEXT.equals(document.getDocumentType());
+    }
+
     public static UserDomainObject getLoggedOnUser(HttpServletRequest req) {
         return getLoggedOnUser(req.getSession());
     }
@@ -175,12 +205,22 @@ public class Utility {
         return convertStringArrayToIntArray(parameterValues);
     }
 
+    /**
+     * Also this method is using by clients
+     */
     public static int[] convertStringArrayToIntArray(String[] strings) {
         int[] parameterInts = new int[strings.length];
         for (int i = 0; i < strings.length; i++) {
             parameterInts[i] = Integer.parseInt(strings[i]);
         }
         return parameterInts;
+    }
+
+    public static String getAdminContents(String templateName, HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        final String templatePath = services.getAdminTemplatePath(templateName);
+        return getContents(templatePath, request, response);
     }
 
     public static String getContents(String path, HttpServletRequest request,
@@ -238,11 +278,11 @@ public class Utility {
         return formatDatetimeWithSpecial(dateTime, "-- --");
     }
 
-    public static String formatDatetimeWithSpecial(Date dateTime, String ifNull) {
+    private static String formatDatetimeWithSpecial(Date dateTime, String ifNull) {
         return (null == dateTime) ? ifNull : newSimpleDateFormat(dateTime);
     }
 
-    public static String newSimpleDateFormat(Date dateTime) {
+    private static String newSimpleDateFormat(Date dateTime) {
         return new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING + " "
                 + DateConstants.TIME_NO_SECONDS_FORMAT_STRING).format(dateTime);
     }
@@ -374,10 +414,6 @@ public class Utility {
             return;
         }
         req.getSession().setAttribute(LOGGED_IN_USER, user);
-        if (null != user) {
-            // todo FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
-            user.setCurrentContextPath(req.getContextPath());
-        }
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {
@@ -389,7 +425,7 @@ public class Utility {
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
         NDC.push("initRequestWithApi");
         ImcmsServices service = Imcms.getServices();
-        ContentManagementSystem imcmsSystem = DefaultContentManagementSystem.create(service, currentUser, Imcms.getApiDataSource());
+        ContentManagementSystem imcmsSystem = ContentManagementSystem.create(service, currentUser);
         request.setAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE, imcmsSystem);
         NDC.pop();
         return imcmsSystem;
@@ -397,6 +433,14 @@ public class Utility {
 
     public static ContentManagementSystem getContentManagementSystemFromRequest(ServletRequest request) {
         return (ContentManagementSystem) request.getAttribute(CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE);
+    }
+
+    public static ContentManagementSystem getCMS(ServletRequest request) {
+        return getContentManagementSystemFromRequest(request);
+    }
+
+    public static ContentManagementSystem getCMS(PageContext context) {
+        return getCMS(context.getRequest());
     }
 
     public static String fallbackUrlDecode(String input, FallbackDecoder fallbackDecoder) {
@@ -431,7 +475,7 @@ public class Utility {
         response.addCookie(cookie);
     }
 
-    public static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
+    private static void setCookieDomain(HttpServletRequest request, Cookie cookie) {
         String serverName = request.getServerName();
         if (!IP_PATTERN.matcher(serverName).matches()) {
             Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
@@ -469,76 +513,6 @@ public class Utility {
         }
     }
 
-    /**
-     * Pass through to {@link com.imcode.imcms.I18nMessage$#i(String)}.
-     *
-     * @param key a localisation key
-     * @return a localised message for the {@code key}
-     */
-    public static String i(String key) {
-        return I18nMessage$.MODULE$.i(key);
-    }
-
-    /**
-     * @param key  a localisation key
-     * @param args format paramaters for the localisation message
-     * @return a localised message for the {@code key} formatted with the parameters {@code args}
-     */
-    public static String f(String key, Object... args) {
-        return new MessageFormat(i(key)).format(args);
-    }
-
-    public static LinkService getLinkService() {
-        return facade.getLinkService();
-    }
-
-    public static Facade getFacade() {
-        return facade;
-    }
-
-    public static void setFacade(Facade facade) {
-        Utility.facade = facade;
-    }
-
-    @SuppressWarnings("unused")
-    public static void setRememberCdCookie(HttpServletRequest request, HttpServletResponse response, String rememberCd) {
-        Cookie cookie = new Cookie("im_remember_cd", rememberCd);
-        cookie.setMaxAge(60 * 60 * 2);
-        cookie.setPath("/");
-
-        setCookieDomain(request, cookie);
-        response.addCookie(cookie);
-    }
-
-	/*
-
-				Unused methods
-
-	*/
-
-    @SuppressWarnings("unused")
-    public static int compareDatesWithNullFirst(Date date1, Date date2) {
-        if (null == date1 && null == date2) {
-            return 0;
-        } else if (null == date1) {
-            return -1;
-        } else if (null == date2) {
-            return +1;
-        } else {
-            return date1.compareTo(date2);
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static void removeNullValuesFromMap(Map map) {
-        Collection values = map.values();
-        for (Iterator iterator = values.iterator(); iterator.hasNext(); ) {
-            if (null == iterator.next()) {
-                iterator.remove();
-            }
-        }
-    }
-
     @SuppressWarnings("unchecked")
     public static String createQueryStringFromParameterMultiMap(MultiMap requestParameters) {
         Set<String> requestParameterStrings = SetUtils.orderedSet(new HashSet());
@@ -558,96 +532,4 @@ public class Utility {
         return StringUtils.join(requestParameterStrings.iterator(), "&");
     }
 
-    @SuppressWarnings("unused")
-    public static String formatUser(UserDomainObject user) {
-        return StringEscapeUtils.escapeHtml4(user.getLastName() + ", " + user.getFirstName() + " (" + user.getLoginName() + ")");
-    }
-
-    @SuppressWarnings("unused")
-    public static String formatNullableHtmlDatetime(Date datetime) {
-        return formatHtmlDatetimeWithSpecial(datetime, null);
-    }
-
-    @SuppressWarnings("unused")
-    public static Map getMapViewOfObjectPairArray(final Object[][] array) {
-        return new ArrayMap(array, new ObjectPairToMapEntryTransformer());
-    }
-
-    @SuppressWarnings("unused")
-    public static Date parseDateFormat(DateFormat dateFormat, String dateString) {
-        try {
-            return dateFormat.parse(dateString);
-        } catch (NullPointerException npe) {
-            return null;
-        } catch (ParseException pe) {
-            return null;
-        }
-    }
-
-    @SuppressWarnings("unused")
-    public static Object findMatch(Factory factory, Predicate predicate) {
-        Object unique;
-        do {
-            unique = factory.create();
-        } while (!predicate.evaluate(unique));
-        return unique;
-    }
-
-    @SuppressWarnings("unused")
-    public static String numberToAlphaNumerics(long identityHashCode) {
-        return Long.toString(identityHashCode, Character.MAX_RADIX);
-    }
-
-    @SuppressWarnings("unused")
-    public static Integer getInteger(Object object) {
-        return null == object ? null : ((Number) object).intValue();
-    }
-
-    @Autowired
-    public void init(Facade facade, TextService textService) {
-        Utility.facade = facade;
-        Utility.textService = textService;
-    }
-
-    private static class ObjectPairToMapEntryTransformer implements Transformer {
-        public Object transform(Object input) {
-            final Object[] pair = (Object[]) input;
-            return new Map.Entry() {
-                public Object getKey() {
-                    return pair[0];
-                }
-
-                public Object getValue() {
-                    return pair[1];
-                }
-
-                public Object setValue(Object value) {
-                    throw new UnsupportedOperationException();
-                }
-            };
-        }
-    }
-
-    private static class ArrayMap extends AbstractMap {
-
-        private final Object[] array;
-        private Transformer transformer;
-
-        ArrayMap(Object[] array, Transformer transformer) {
-            this.array = array;
-            this.transformer = transformer;
-        }
-
-        public Set entrySet() {
-            return new AbstractSet() {
-                public int size() {
-                    return array.length;
-                }
-
-                public Iterator iterator() {
-                    return new TransformIterator(new ObjectArrayIterator(array), transformer);
-                }
-            };
-        }
-    }
 }

@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 
+import com.imcode.imcms.api.Mail;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import com.imcode.imcms.util.l10n.LocalizedMessageFormat;
@@ -9,7 +10,6 @@ import imcode.server.SystemData;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import imcode.util.net.SMTP;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -248,9 +248,12 @@ public class PasswordReset extends HttpServlet {
 
                 final SystemData sysData = Imcms.getServices().getSystemData();
                 final String eMailServerMaster = sysData.getServerMasterAddress();
-                final SMTP smtp = Imcms.getServices().getSMTP();
 
-                smtp.sendMail(new SMTP.Mail(eMailServerMaster, new String[]{emailAddress}, subject, body));
+                Mail mail = new Mail(eMailServerMaster);
+                mail.setSubject(subject);
+                mail.setBody(body);
+                mail.setToAddresses(new String[]{emailAddress});
+                Imcms.getServices().getMailService().sendMail(mail);
 
             } catch (Exception e) {
                 logger.error(String.format(

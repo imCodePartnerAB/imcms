@@ -1,5 +1,4 @@
-<%@ page import="imcode.server.Imcms"%><%@
-    page contentType="text/javascript" pageEncoding="UTF-8"
+<%@ page contentType="text/javascript" pageEncoding="UTF-8"
 %>
 
         /* *******************************************************************************************
@@ -77,14 +76,6 @@
         /* *******************************************************************************************
          *         POPUP functions                                                                   *
          ******************************************************************************************* */
-
-    function openHelpW(helpDocName) {
-        <%--window.open("@documentationurl@/Help?name=" + helpDocName + "&lang=$language", "help");--%>
-        <%-- IMCMS-94: replaced without arguments since we have new documentation--%>
-        <%--window.open('@documentationurl@'); --%>
-        <%-- IMCMS-149: replaced with URL from system properties since we do not use velocity tag here --%>
-        window.open("<%= Imcms.getServerProperties().getProperty("documentation-host") %>");
-    }
 
     function popWinOpen(winW, winH, sUrl, sName, iResize, iScroll) {
         var winX, winY;

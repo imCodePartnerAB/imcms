@@ -1,13 +1,12 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
 import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
-import com.imcode.imcms.mapping.jpa.doc.Language;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,21 +15,25 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
+// todo: move to LanguageService
 public class DocumentLanguageMapper {
 
+    private final LanguageRepository languageRepository;
+    private final SystemPropertyRepository systemRepository;
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private LanguageRepository languageRepository;
-
-    @Inject
-    private SystemPropertyRepository systemRepository;
+    public DocumentLanguageMapper(LanguageRepository languageRepository, SystemPropertyRepository systemRepository) {
+        this.languageRepository = languageRepository;
+        this.systemRepository = systemRepository;
+    }
 
     public List<DocumentLanguage> getAll() {
-        return Lists.transform(languageRepository.findAll(), this::toApiObject);
+        return languageRepository.findAll().stream().map(this::toApiObject).collect(Collectors.toList());
     }
 
     public DocumentLanguage findByCode(String code) {
@@ -38,7 +41,7 @@ public class DocumentLanguageMapper {
     }
 
     public void deleteByCode(String code) {
-        Language language = languageRepository.findByCode(code);
+        LanguageJPA language = languageRepository.findByCode(code);
         if (language != null) languageRepository.delete(language);
     }
 
@@ -47,14 +50,14 @@ public class DocumentLanguageMapper {
     }
 
     public void save(DocumentLanguage language) {
-        Language jpaLanguage = languageRepository.findByCode(language.getCode());
+        LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
 
         if (jpaLanguage != null) {
             jpaLanguage.setName(language.getName());
             jpaLanguage.setNativeName(language.getNativeName());
         } else {
             languageRepository.save(
-                    new Language(language.getCode(), language.getName(), language.getNativeName())
+                    new LanguageJPA(language.getCode(), language.getName(), language.getNativeName())
             );
         }
     }
@@ -80,7 +83,7 @@ public class DocumentLanguageMapper {
             throw new IllegalStateException(message);
         }
 
-        Language language = languageRepository.findOne(languageId);
+        LanguageJPA language = languageRepository.findOne(languageId);
 
         if (language == null) {
             String message = String.format("Configuration error. Default language (id: %d) can not be found.", languageId);
@@ -92,7 +95,7 @@ public class DocumentLanguageMapper {
     }
 
     public void setDefault(String code) {
-        Language language = languageRepository.findByCode(code);
+        LanguageJPA language = languageRepository.findByCode(code);
 
         if (language != null) {
             String propertyValue = String.valueOf(language.getId());
@@ -106,7 +109,7 @@ public class DocumentLanguageMapper {
         }
     }
 
-    public DocumentLanguage toApiObject(Language jpaLanguage) {
+    public DocumentLanguage toApiObject(LanguageJPA jpaLanguage) {
         return jpaLanguage == null
                 ? null
                 : DocumentLanguage.builder()

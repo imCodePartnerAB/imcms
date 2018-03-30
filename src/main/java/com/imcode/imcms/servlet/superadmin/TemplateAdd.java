@@ -28,7 +28,6 @@ public class TemplateAdd extends HttpServlet {
     private static final String REQUEST_PARAMETER__HIDDEN = "hidden";
     private static final String REQUEST_PARAMETER__NAME = "name";
     private static final String REQUEST_PARAMETER__ACTION = "action";
-    private static final String REQUEST_PARAMETER__LANGUAGE = "language";
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         ImcmsServices imcref = Imcms.getServices();
@@ -57,14 +56,13 @@ public class TemplateAdd extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        ImcmsServices imcref = Imcms.getServices();
         UserDomainObject user = Utility.getLoggedOnUser(req);
         if (!user.isSuperAdmin()) {
             Utility.redirectToStartDocument(req, res);
             return;
         }
 
-        TemplateMapper templateMapper = imcref.getTemplateMapper();
+        TemplateMapper templateMapper = Imcms.getServices().getTemplateMapper();
         PrintWriter out = res.getWriter();
         MultipartHttpServletRequest request = new MultipartHttpServletRequest(req);
 
@@ -74,26 +72,17 @@ public class TemplateAdd extends HttpServlet {
         }
         Utility.setDefaultHtmlContentType(res);
 
-        String language = request.getParameter(REQUEST_PARAMETER__LANGUAGE);
         String simpleName = request.getParameter(REQUEST_PARAMETER__NAME);
 
         if (simpleName == null || simpleName.equals("")) {
-//todo: remove these code duplicates
-            List<String> vec = new ArrayList<>();
-            vec.add("#language#");
-            vec.add(language);
-            String htmlStr = imcref.getAdminTemplate("template_upload_name_blank.html", user, vec);
+            String htmlStr = Utility.getAdminContents("template_upload_name_blank.jsp", request, res);
             out.print(htmlStr);
             return;
         }
 
         FileItem file = request.getParameterFileItem(REQUEST_PARAMETER__FILE);
         if (file == null || file.getSize() == 0) {
-//todo: remove these code duplicates
-            List<String> vec = new ArrayList<>();
-            vec.add("#language#");
-            vec.add(language);
-            String htmlStr = imcref.getAdminTemplate("template_upload_file_blank.html", user, vec);
+            String htmlStr = Utility.getAdminContents("template_upload_file_blank.jsp", request, res);
             out.print(htmlStr);
             return;
         }
@@ -104,19 +93,11 @@ public class TemplateAdd extends HttpServlet {
         boolean isHidden = request.getParameter(REQUEST_PARAMETER__HIDDEN) != null;
         String htmlStr;
 
-        int result = imcref.getTemplateMapper().saveTemplate(simpleName, fn.getName(), file.getInputStream(), overwrite, isHidden);
+        int result = templateMapper.saveTemplate(simpleName, fn.getName(), file.getInputStream(), overwrite, isHidden);
         if (result == -2) {
-            //todo: remove these code duplicates
-            List<String> vec = new ArrayList<>();
-            vec.add("#language#");
-            vec.add(language);
-            htmlStr = imcref.getAdminTemplate("template_upload_error.html", user, vec);
+            htmlStr = Utility.getAdminContents("template_upload_error.jsp", request, res);
         } else if (result == -1) {
-            //todo: remove these code duplicates
-            List<String> vec = new ArrayList<>();
-            vec.add("#language#");
-            vec.add(language);
-            htmlStr = imcref.getAdminTemplate("template_upload_file_exists.html", user, vec);
+            htmlStr = Utility.getAdminContents("template_upload_file_exists.jsp", request, res);
         } else {
             TemplateDomainObject template = templateMapper.getTemplateByName(simpleName);
 
@@ -130,11 +111,7 @@ public class TemplateAdd extends HttpServlet {
                 }
             }
 
-            //todo: remove these code duplicates
-            List<String> vec = new ArrayList<>();
-            vec.add("#language#");
-            vec.add(language);
-            htmlStr = imcref.getAdminTemplate("template_upload_done.html", user, vec);
+            htmlStr = Utility.getAdminContents("template_upload_done.jsp", request, res);
         }
         out.print(htmlStr);
     }

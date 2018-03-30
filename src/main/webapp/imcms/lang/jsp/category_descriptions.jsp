@@ -1,11 +1,15 @@
 <%@ page
-	
-	import="com.imcode.imcms.api.*,
-            org.apache.commons.lang3.StringEscapeUtils"
-    errorPage="no_category_type_by_that_name.jsp"
-    contentType="text/html; charset=UTF-8"
 
-%><%
+        import="com.imcode.imcms.api.Category,
+                com.imcode.imcms.api.CategoryType"
+        errorPage="no_category_type_by_that_name.jsp"
+        contentType="text/html; charset=UTF-8"
+
+%>
+<%@ page import="com.imcode.imcms.api.ContentManagementSystem" %>
+<%@ page import="com.imcode.imcms.api.DocumentService" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
+<%
 
 ContentManagementSystem imcms   = ContentManagementSystem.fromRequest(request) ;
 DocumentService documentService = imcms.getDocumentService();

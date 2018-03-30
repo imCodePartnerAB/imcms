@@ -1,0 +1,56 @@
+.imcms-pop-up-modal.text-history .imcms-pop-up-modal__head {
+    height: 5%;
+}
+
+.imcms-pop-up-modal.text-history .imcms-pop-up-modal__right-side {
+    background-color: #f3f3fc;
+    height: 85%;
+}
+
+.imcms-right-side .imcms-right-side__text-history-view {
+    height: 90%;
+    padding-top: 20px;
+    overflow: auto;
+}
+
+.imcms-right-side .imcms-right-side__buttons {
+    padding-top: 1%;
+    height: 10%;
+}
+
+.imcms-pop-up-modal.text-history .text-history-list.imcms-pop-up-modal__left-side {
+    padding: 5px 0 5px 5px;
+    overflow: auto;
+    height: 95%;
+}
+
+.imcms-pop-up-modal.text-history .imcms-pop-up-modal__footer {
+    border-top: solid 1px #d3d8de;
+    padding: 15px;
+    height: 10%;
+}
+
+.text-history .text-history-list .text-history-date-unit .text-history-date-unit__date .text-history-date-container__date {
+    padding-top: 10px;
+    padding-left: 5px;
+    font-weight: bold;
+    cursor: default;
+}
+
+.text-history .text-history-list .text-history-date-unit .text-history-date-unit__date .text-history-date-container__separator {
+    border-bottom: solid 1px #d3d8de;
+}
+
+.text-history .text-history-list .text-history-date-unit .text-history-date-unit__unit {
+    padding: 5px 0 5px 10px;
+    cursor: pointer;
+}
+
+.text-history .text-history-list .text-history-date-unit .text-history-date-unit__unit.text-history-date-unit__unit--active {
+    background-color: #4ca9d82e;
+}
+
+.text-history .text-history-list .text-history-date-unit .text-history-date-unit__unit:hover {
+    background-color: #d3d8de61;
+}
+

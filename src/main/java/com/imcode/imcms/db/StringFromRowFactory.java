@@ -1,11 +1,11 @@
 package com.imcode.imcms.db;
 
-import com.imcode.db.handlers.ObjectFromRowFactory;
+import com.imcode.db.handlers.RowTransformer;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class StringFromRowFactory implements ObjectFromRowFactory {
+public class StringFromRowFactory implements RowTransformer {
 
     private final int columnIndex;
 

@@ -24,7 +24,7 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
     }
 
     public E get(Object id) {
-        return (E) database.execute(new SqlQueryCommand(getSelectSql() + " WHERE " + getIdColumnName() + " = ?", new Object[]{id}, new SingleObjectHandler(getRowTransformer())));
+        return database.execute(new SqlQueryCommand<>(getSelectSql() + " WHERE " + getIdColumnName() + " = ?", new Object[]{id}, new SingleObjectHandler<>(getRowTransformer())));
     }
 
     public List<E> getAll() {
@@ -39,7 +39,7 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
         if (null != orderBy) {
             selectSql += " ORDER BY " + orderBy;
         }
-        return (List<E>) database.execute(new SqlQueryCommand(selectSql, null, new CollectionHandler(new ArrayList(), getRowTransformer())));
+        return database.execute(new SqlQueryCommand<>(selectSql, null, new CollectionHandler<>(new ArrayList<>(), getRowTransformer())));
     }
 
     public E create(E e) {
@@ -59,18 +59,18 @@ public abstract class Mapper<E extends Mapper.MapperObject> {
     }
 
     private List<String> getColumnNames() {
-        List<String> columnNames = new ArrayList(getDataColumnNames());
+        List<String> columnNames = new ArrayList<>(getDataColumnNames());
         columnNames.add(0, getIdColumnName());
         return columnNames;
     }
 
-    private RowTransformer getRowTransformer() {
-        return new RowTransformer() {
-            public Object createObjectFromResultSetRow(ResultSet rs) throws SQLException {
+    private RowTransformer<E> getRowTransformer() {
+        return new RowTransformer<E>() {
+            public E createObjectFromResultSetRow(ResultSet rs) throws SQLException {
                 return convertRow(rs);
             }
 
-            public Class getClassOfCreatedObjects() {
+            public Class<E> getClassOfCreatedObjects() {
                 return null;
             }
         };

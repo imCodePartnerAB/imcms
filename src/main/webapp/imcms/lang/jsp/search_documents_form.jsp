@@ -5,13 +5,14 @@
                  imcode.server.document.LifeCyclePhase,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Html,
-                 imcode.util.ToDoubleObjectStringPairTransformer,
                  imcode.util.Utility,
                  imcode.util.jscalendar.JSCalendar,
-                 org.apache.commons.lang3.ArrayUtils" %>
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils" %>
-<%@ page import="org.apache.commons.lang3.StringUtils" %>
+                 org.apache.commons.lang3.ArrayUtils,
+                 org.apache.commons.lang3.StringUtils" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
 <%@ page import="java.util.Arrays" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.function.Function" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
 	SearchDocumentsPage searchDocumentsPage = Page.fromRequest(request);
@@ -173,15 +174,14 @@
 			<td>
 				<select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DOCUMENTS_PER_PAGE %>">
 					<%
-						Integer[] ranges = new Integer[]{
-								new Integer(5),
-								new Integer(10),
-								new Integer(20),
-								new Integer(100),
-								new Integer(1000),
-						};
+                        Integer[] ranges = new Integer[]{5, 10, 20, 100, 1000};
 					%>
-					<%= Html.createOptionList(Arrays.asList(ranges), documentsPerPage, new ToDoubleObjectStringPairTransformer()) %>
+                    <%= Html.createOptionList(Arrays.asList(ranges), Collections.singleton(documentsPerPage), new Function<Integer, String[]>() {
+                        @Override
+                        public String[] apply(Integer number) {
+                            return new String[]{String.valueOf(number), String.valueOf(number)};
+                        }
+                    }) %>
 				</select>
 			</td>
 		</tr>

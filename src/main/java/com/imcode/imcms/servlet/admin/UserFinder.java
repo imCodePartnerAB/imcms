@@ -74,7 +74,7 @@ public class UserFinder extends WebComponent {
         this.headline = headline;
     }
 
-    public static interface SelectUserCommand extends Serializable {
+    public interface SelectUserCommand extends Serializable {
 
         void selectUser(UserDomainObject selectedUser, HttpServletRequest request,
                         HttpServletResponse response) throws ServletException, IOException;

@@ -1,5 +1,5 @@
-<%@ tag import="imcode.server.document.DocumentDomainObject, imcode.util.Html, imcode.util.Utility" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="imcms" uri="imcms" %>
+<%@ attribute name="lifeCyclePhase" required="true" type="imcode.server.document.LifeCyclePhase" %>
 
-<%@ attribute name="document" required="true" type="imcode.server.document.DocumentDomainObject" %>
-
-<%= Html.getStatusIconTemplate((DocumentDomainObject) jspContext.getAttribute("document"), Utility.getLoggedOnUser(request)) %>
+<jsp:include page="${imcms:getStatusIconTemplatePath(lifeCyclePhase)}"/>

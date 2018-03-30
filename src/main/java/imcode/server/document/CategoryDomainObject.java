@@ -1,17 +1,22 @@
 package imcode.server.document;
 
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 
-public class CategoryDomainObject implements Comparable<CategoryDomainObject>, Serializable, Cloneable {
+@Data
+@EqualsAndHashCode(callSuper=false)
+public class CategoryDomainObject extends Category implements Comparable<CategoryDomainObject>, Serializable {
 
-    private int id;
+    private static final long serialVersionUID = -9154498328953229889L;
+    private Integer id;
     private String name;
-    private String description = "";
-    private String imageUrl = "";
-    private CategoryTypeDomainObject type;
-
-    public CategoryDomainObject() {
-    }
+    private String description;
+    private String imageUrl;
+    private CategoryType type;
 
     public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
         this.id = id;
@@ -21,82 +26,9 @@ public class CategoryDomainObject implements Comparable<CategoryDomainObject>, S
         this.imageUrl = imageUrl;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public CategoryTypeDomainObject getType() {
-        return type;
-    }
-
-    public void setType(CategoryTypeDomainObject type) {
-        this.type = type;
-    }
-
-    public String toString() {
-        return type + ": " + name;
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof CategoryDomainObject)) {
-            return false;
-        }
-
-        final CategoryDomainObject categoryDomainObject = (CategoryDomainObject) o;
-
-        return id == categoryDomainObject.id;
-
-    }
-
-    public int hashCode() {
-        return id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
     @Override
     public int compareTo(CategoryDomainObject category) {
         return name.compareToIgnoreCase(category.name);
     }
 
-    @Override
-    public CategoryDomainObject clone() {
-        try {
-            CategoryDomainObject clone = (CategoryDomainObject) super.clone();
-            if (type != null) clone.setType(type.clone());
-
-            return clone;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
-    }
 }

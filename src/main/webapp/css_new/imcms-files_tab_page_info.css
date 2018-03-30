@@ -1,0 +1,48 @@
+.files-container__head .files-container-head__title:first-child,
+.files-container__head .files-container-head__title:nth-child(2) {
+    text-align: left;
+}
+
+.files-container__head .files-container-head__title:last-child {
+    text-align: right;
+}
+
+.files-container__head .files-container-head__title {
+    text-align: center;
+    text-transform: uppercase;
+    display: block;
+    float: left;
+    width: 30%;
+}
+
+.files-container-body__file-row {
+    display: inline-block;
+    width: 100%;
+}
+
+.files-container-body__file-row * {
+    float: left;
+    text-align: right;
+}
+
+.files-container-body__file-row .file-row__id {
+    width: 28%;
+}
+
+.files-container-body__file-row .file-row__name {
+    width: 55%;
+    text-align: left;
+    margin-left: 2%;
+    line-height: 2;
+}
+
+.files-container-body__file-row .file-row__default {
+    width: auto;
+    margin-top: 1.5%;
+}
+
+.files-container-body__file-row .file-row__delete {
+    width: 16px;
+    margin-top: 1.5%;
+    margin-left: 7%;
+}

@@ -22,10 +22,10 @@ public class AdminIpAccess extends HttpServlet {
 
     private final static Logger log = Logger.getLogger(AdminIpAccess.class);
 
-    private static final String HTML_TEMPLATE = "AdminIpAccess.htm";
-    private static final String HTML_IP_SNIPPET = "AdminIpAccessList.htm";
-    private static final String ADD_IP_TEMPLATE = "AdminIpAccess_Add.htm";
-    private static final String WARN_DEL_IP_TEMPLATE = "AdminIpAccess_Delete2.htm";
+    private static final String HTML_TEMPLATE = "AdminIpAccess.jsp";
+    private static final String HTML_IP_SNIPPET = "AdminIpAccessList.jsp";
+    private static final String ADD_IP_TEMPLATE = "AdminIpAccess_Add.jsp";
+    private static final String WARN_DEL_IP_TEMPLATE = "AdminIpAccess_Delete2.jsp";
 
     static void printNonAdminError(UserDomainObject user, HttpServletRequest req,
                                    HttpServletResponse res, Class clazz) throws IOException {
@@ -71,7 +71,7 @@ public class AdminIpAccess extends HttpServlet {
                 vmRec.put(tags.get(i), aRecV.get(i));
             }
             vmRec.put("RECORD_COUNTER", "" + counter);
-            recs += AdminRoles.createHtml(req, vmRec, HTML_IP_SNIPPET);
+            recs += AdminRoles.createHtml(HTML_IP_SNIPPET, req, vmRec, res);
         }
 
         // Lets generate the html page

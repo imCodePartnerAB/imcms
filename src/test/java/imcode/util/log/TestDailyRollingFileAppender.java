@@ -1,5 +1,6 @@
 package imcode.util.log;
 
+import imcode.util.io.FileUtility;
 import junit.framework.TestCase;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
@@ -14,6 +15,9 @@ public class TestDailyRollingFileAppender extends TestCase {
 
     private static final String DATE_PATTERN = ".yyyy-MM-dd-HH-mm";
 
+    private File tmpDir = new File("tmp");
+    private File tempFile = new File(tmpDir, TestDailyRollingFileAppender.class.getName() + ".test");
+
     public TestDailyRollingFileAppender(String name) {
         super(name);
     }
@@ -24,25 +28,35 @@ public class TestDailyRollingFileAppender extends TestCase {
         return new DailyRollingFileAppender(layout, fileName, DATE_PATTERN);
     }
 
-    private static File getTempFile() {
-        String tmpDir = "tmp";
-        return new File(tmpDir, TestDailyRollingFileAppender.class.getName() + ".test");
+    public void setUp() throws Exception {
+        super.setUp();
+
+        if (tempFile.exists()) {
+            FileUtility.forceDelete(tempFile);
+        }
     }
 
-    public void setUp() {
-        getTempFile().delete();
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        FileUtility.forceDelete(tmpDir);
     }
 
     public void testLogFileCreated() throws IOException {
-        createAppender(getTempFile());
-        assertTrue(getTempFile().exists());
+        final DailyRollingFileAppender appender = createAppender(tempFile);
+
+        try {
+            assertTrue(tempFile.exists());
+        } finally {
+            appender.close();
+        }
     }
 
     public void testLineLogged() throws IOException {
-        DailyRollingFileAppender appender = createAppender(getTempFile());
+        final DailyRollingFileAppender appender = createAppender(tempFile);
         appender.doAppend(getLoggingEvent());
         appender.close();
-        assertTrue(getTempFile().length() > 0);
+        assertTrue(tempFile.length() > 0);
     }
 
     private LoggingEvent getLoggingEvent() {

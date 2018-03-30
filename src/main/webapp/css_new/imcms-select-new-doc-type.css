@@ -1,0 +1,41 @@
+.imcms-document-type-select-window {
+    -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    position: fixed;
+    top: 50%;
+    margin-top: -200px;
+    left: 50%;
+    margin-left: -180px;
+    height: auto;
+    width: 360px;
+    z-index: 10005;
+}
+
+.imcms-document-type-select-window__body {
+    background-color: #f3f5f7;
+    display: block;
+    padding: 25px 20px 50px 20px;
+    width: 100%;
+    height: auto;
+}
+
+.imcms-document-type-select-window__head {
+    background-color: #389ecf;
+}
+
+.imcms-document-type-select-window__head button {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+}
+
+.imcms-document-type-select-window__head .imcms-button--close:before,
+.imcms-document-type-select-window__head .imcms-button--close:after {
+    background-color: #fff;
+}
+
+.imcms-document-type-select-window__body .imcms-button {
+    margin: 15px auto;
+}

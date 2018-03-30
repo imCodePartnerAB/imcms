@@ -2,13 +2,12 @@
 	
 	import="imcode.server.Imcms,
 	        imcode.util.Utility,
+	        org.apache.commons.text.StringEscapeUtils,
 	        org.apache.oro.text.perl.Perl5Util,
 	        javax.imageio.ImageIO,
 	        java.awt.image.BufferedImage,
-	        java.io.BufferedReader,
-	        java.io.File,
-	        java.io.FileInputStream,
-	        java.io.InputStreamReader, java.text.DecimalFormat, org.apache.commons.lang3.StringEscapeUtils, java.io.IOException"
+	        java.io.*,
+	        java.text.DecimalFormat"
         contentType="text/html; charset=UTF-8"
 	
 %><%
@@ -49,11 +48,11 @@ String border     = "" ;
 boolean hasBorder = false ;
 if (request.getParameter("border") != null) {
 	border          = (request.getParameter("border").equals("1")) ? " border=\"1\"" : "" ;
-	hasBorder       = (request.getParameter("border").equals("1")) ? true : false ;
+    hasBorder = request.getParameter("border").equals("1");
 	session.setAttribute("border", request.getParameter("border")) ;
 } else if (session.getAttribute("border") != null) {
 	border          = (session.getAttribute("border").equals("1")) ? " border=\"1\"" : "" ;
-	hasBorder       = (session.getAttribute("border").equals("1")) ? true : false ;
+    hasBorder = session.getAttribute("border").equals("1");
 }
 
     File webRoot    = Imcms.getPath() ;
@@ -67,12 +66,12 @@ boolean isImage    = re.match(acceptedExtPattern, file) ;
 
 String uAgent = request.getHeader("USER-AGENT") ;
 boolean hasDocumentAll  = re.match("/(MSIE 5\\.5|MSIE 6|MSIE 7)/i", uAgent) ;
-boolean hasDocumentLayers  = (re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent)) ? true : false ;
+    boolean hasDocumentLayers = re.match("/Mozilla/i", uAgent) && !re.match("/Gecko/i", uAgent);
 boolean hasGetElementById = re.match("/Gecko/i", uAgent) ;
 boolean isMac = re.match("/Mac/i", uAgent) ;
 
 /* if Stat-Report - Read file and show it */
-boolean isStat    = (request.getParameter("isStat") != null) ? true : false ;
+    boolean isStat = request.getParameter("isStat") != null;
 
 if (isStat && frame.equalsIgnoreCase("MAIN")) {
 
@@ -134,7 +133,7 @@ try {
 
 //out.print("fn.length(): " + fn.length() + "<br><br>iSize: " + iSize + "<br><br>size: " + size) ;
 
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><vel:velocity><%
+%><%
 
 /* *******************************************************************************************
  *         FRAME MAIN                                                                        *
@@ -145,8 +144,8 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <head>
 <title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
 <body class="imcmsAdmBgCont" style="margin:10px">
@@ -189,8 +188,8 @@ if (isImage) {
 <head>
 <title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 <% /*<STYLE TYPE="text/css">
 <!--
@@ -364,4 +363,3 @@ function findIt(str) {
 </html>
 <%
 } %>
-</vel:velocity>

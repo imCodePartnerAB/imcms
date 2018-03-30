@@ -1,27 +1,38 @@
 <%@ page import="com.imcode.imcms.mapping.DocumentMapper,
                  com.imcode.imcms.servlet.admin.AdminDoc,
-                 com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  com.imcode.imcms.servlet.superadmin.LinkCheck,
                  imcode.server.ImcmsConstants,
                  imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
-                 imcode.util.Html,
                  imcode.util.Utility,
-                 org.apache.commons.lang3.StringEscapeUtils"%><%@ page import="java.util.Iterator"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%><%
+                 org.apache.commons.text.StringEscapeUtils,
+                 java.util.Iterator" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
 boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
 String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 
 %>
-<vel:velocity>
-#gui_start_of_page( "<? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" "AdminManager" "" "LinksValidate" "" )
+
+<c:set var="heading">
+    <fmt:message key="webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading"/>
+</c:set>
+<ui:imcms_gui_start_of_page titleAndHeading="${heading}"/>
 
 <form method="GET" action="LinkCheck">
 <table border="0" cellspacing="0" cellpadding="2" width="100%">
 <tr>
-	<td>#gui_heading( "<? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading ?>" )</td>
+    <td>
+        <c:set var="heading">
+            <fmt:message key="webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading"/>
+        </c:set>
+        <ui:imcms_gui_heading heading="${heading}"/>
+    </td>
 </tr>
 <tr>
 	<td>
@@ -38,10 +49,11 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 		<td><? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/end_id ?></td>
 		<td><input type="text" name="<%= LinkCheck.REQUEST_PARAMETER__END_ID %>" size="5" value="<%= linkCheckPage.getEndId() %>"></td>
 	</tr>
-	</table><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="396" height="1"></td>
+    </table>
+        <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="396" height="1"></td>
 </tr>
 <tr>
-	<td>#gui_hr( "blue" )</td>
+    <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
 </tr>
 <tr>
 	<td align="right">
@@ -49,15 +61,15 @@ String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
 </tr>
 </table>
 </form>
-</vel:velocity><%
+<%
 
 if (doCheckLinks) {
 	UserDomainObject user = Utility.getLoggedOnUser( request ) ;
-	Iterator linksIterator = (Iterator)linkCheckPage.getLinksIterator() ;
+    Iterator linksIterator = linkCheckPage.getLinksIterator();
 	while ( linksIterator.hasNext() ) { %>
 <table border="0" cellspacing="2" cellpadding="2" width="100%">
 <tr>
-	<td colspan="9"><vel:velocity><img src="$contextPath/imcms/$language/images/admin/1x1.gif" width="1" height="15"></vel:velocity></td>
+    <td colspan="9"><img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="15"></td>
 </tr>
 <tr>
     <td><b><? global/Page_alias ?>&nbsp;</b></td>
@@ -71,7 +83,7 @@ if (doCheckLinks) {
 	<td align="center" style="width: 5em;"><b><? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/heading_ok ?></b></td>
 </tr>
 <tr>
-	<td colspan="9"><vel:velocity>#gui_hr( "cccccc" )</vel:velocity></td>
+    <td colspan="9"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
 </tr><%
 		for (int i = 0; linksIterator.hasNext() && i < 10; ++i) {
 			response.flushBuffer();
@@ -86,7 +98,8 @@ if (doCheckLinks) {
     <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
     <% }else { %>
     <td>&nbsp;</td> <%}%>
-    <td nowrap><%= Html.getLinkedStatusIconTemplate( document, user, request ) %></td><%
+    <td nowrap><ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/></td>
+    <%
 			if (link instanceof LinkCheck.UrlDocumentLink) {
 				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
 				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
@@ -98,11 +111,8 @@ if (doCheckLinks) {
 				document.getId() %> - <%= StringEscapeUtils.escapeHtml4( document.getHeadline() ) %></a></td>
 	<td nowrap><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
-//                    todo: remove dead reference to /servlet/DocumentReferences or whole this page if not used any more
-					%><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?<%=
-					DocumentReferences.REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID %>=<%=
-					document.getId() %>&<%=
-					DocumentReferences.REQUEST_PARAMETER__RETURNURL %>=LinkCheck"><%
+    %><a href="<%= request.getContextPath() %>/servlet/DocumentReferences?id=<%=
+					document.getId() %>&returnurl=LinkCheck"><%
 				}
 				%><%= documentMenuPairsContainingUrlDocument.length %> <? webapp/imcms/lang/jsp/parent_count_unit ?><%
 				if (documentMenuPairsContainingUrlDocument.length > 0) {
@@ -148,6 +158,4 @@ if (doCheckLinks) {
 </table><%
 	}
 } %>
-<vel:velocity>
-#gui_end_of_page()
-</vel:velocity>
+    <ui:imcms_gui_end_of_page/>

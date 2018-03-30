@@ -1,29 +1,31 @@
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils,
-                 imcode.util.jscalendar.JSCalendar,
-                 com.imcode.imcms.servlet.superadmin.AdminCounter,
-                 com.imcode.imcms.servlet.SearchDocumentsPage,
-                 imcode.util.Utility"%>
-<%@page contentType="text/html; charset=UTF-8"%><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ page import="com.imcode.imcms.servlet.superadmin.AdminCounter,
+                 imcode.util.jscalendar.JSCalendar" %>
+<%@page contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%
     AdminCounter.AdminSessionCounterPage adminSessionCounterPage = (AdminCounter.AdminSessionCounterPage)request.getAttribute(AdminCounter.AdminSessionCounterPage.REQUEST_ATTRIBUTE__PAGE);;
     JSCalendar jsCalendar = adminSessionCounterPage.getJSCalendar(request);
     String calendarButtonTitle = "<? webapp/imcms/lang/jscalendar/show_calendar_button ?>";
 
 %>
-<vel:velocity>
 <html>
 <head>
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
-<link rel="stylesheet" href="$contextPath/imcms/css/imcms_admin.css.jsp" type="text/css">
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" href="${contextPath}/imcms/css/imcms_admin.css.jsp" type="text/css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
 </head>
 
 <body bgcolor="#FFFFFF">
-#gui_outer_start()
-#gui_head( "<? webapp/imcms/lang/jsp/admin_session_counter.jsp/headline ?>" )
+    <ui:imcms_gui_outer_start/>
+    <c:set var="heading">
+        <fmt:message key="webapp/imcms/lang/jsp/admin_session_counter.jsp/headline"/>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
 
 
 <table border="0" cellspacing="0" cellpadding="0">
@@ -35,8 +37,7 @@
     </form>
 </table>
 
-
-#gui_mid()
+    <ui:imcms_gui_mid/>
 
 <table width="370">
     <form method="post" action="AdminCounter">
@@ -58,5 +59,4 @@
     </form>
 </table>
 
-#gui_end_of_page()
-</vel:velocity>
+    <ui:imcms_gui_end_of_page/>

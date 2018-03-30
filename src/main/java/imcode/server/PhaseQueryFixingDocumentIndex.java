@@ -10,6 +10,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -38,9 +39,17 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
     Query fixQuery(Query query) {
         if (query instanceof BooleanQuery) {
             BooleanQuery booleanQuery = (BooleanQuery) query;
-            BooleanClause[] clauses = booleanQuery.getClauses();
-            for (BooleanClause clause : clauses) {
-                clause.setQuery(fixQuery(clause.getQuery()));
+
+            final List<BooleanClause> booleanClauses = new ArrayList<>();
+            booleanQuery.iterator().forEachRemaining(booleanClauses::add);
+
+            for (int i = 0; i < booleanClauses.size(); i++) {
+                final BooleanClause booleanClause = booleanClauses.get(i);
+                final BooleanClause fixedBooleanClause = new BooleanClause(
+                        fixQuery(booleanClause.getQuery()), booleanClause.getOccur()
+                );
+
+                booleanQuery.clauses().set(i, fixedBooleanClause);
             }
         } else if (query instanceof TermQuery) {
             TermQuery termQuery = (TermQuery) query;

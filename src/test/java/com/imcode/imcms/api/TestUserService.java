@@ -20,7 +20,6 @@ public class TestUserService extends TestCase {
     private MockContentManagementSystem contentManagementSystem;
     private MockDatabase database;
     private UserDomainObject internalUser;
-    private MockImcmsServices mockImcmsServices;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -30,7 +29,7 @@ public class TestUserService extends TestCase {
         internalUser = new UserDomainObject(HIGHEST_USER_ID);
         contentManagementSystem.setCurrentUser(new User(internalUser));
 
-        mockImcmsServices = new MockImcmsServices();
+        MockImcmsServices mockImcmsServices = new MockImcmsServices();
         database = new MockDatabase();
         mockImcmsServices.setDatabase(database);
         mockImcmsServices.setLanguageMapper(new LanguageMapper(database, "eng"));
@@ -53,7 +52,7 @@ public class TestUserService extends TestCase {
 //		database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), HIGHEST_USER_ID + 1);
 //
 //		User user = userService.createNewUser("test", "test");
-//		user.addRole(new Role(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
+//		user.addRole(new RoleJPA(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
 //		userService.saveUser(user);
 //
 //		database.assertExpectedSqlCalls();
@@ -112,7 +111,7 @@ public class TestUserService extends TestCase {
 
         private MockDatabase database;
 
-        public MockProcedureExecutor(MockDatabase database) {
+        MockProcedureExecutor(MockDatabase database) {
             this.database = database;
         }
 

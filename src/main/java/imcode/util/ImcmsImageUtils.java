@@ -1,333 +1,134 @@
 package imcode.util;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
+import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.Image;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.ImageCropRegion;
+import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.*;
-import imcode.server.document.textdocument.ImageDomainObject.CropRegion;
-import imcode.server.document.textdocument.ImageDomainObject.RotateDirection;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
-import org.apache.commons.codec.digest.DigestUtils;
+import imcode.util.io.FileUtility;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.*;
-import java.util.Date;
+import javax.annotation.PostConstruct;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.FileImageInputStream;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.Dimension;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
+import java.util.Optional;
+import java.util.UUID;
 
-//fixme: image no + image in a loop
+@Component
 public class ImcmsImageUtils {
+
     private static final Log log = LogFactory.getLog(ImcmsImageUtils.class);
+    private static final int GEN_FILE_LENGTH = 255;
 
+    public static File imagesPath;
+    public static String imageMagickPath;
 
-    private ImcmsImageUtils() {
-    }
+    @Value("${ImagePath}")
+    private File imgPath;
 
-    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
-        return getImageHtmlTag(image, request, attributes, false);
-    }
+    @Value("${ImageMagickPath}")
+    private String imgMagickPath;
 
-    public static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
-        return getImageHtmlTag(image, request, attributes, absoluteUrl, false);
-    }
+    public static String generateImageFileName(ImageData imageData) {
+        String suffix = "_" + UUID.randomUUID().toString();
 
-    public static String getEmptyImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes, boolean absoluteUrl) {
-        return getImageHtmlTag(image, request, attributes, absoluteUrl, false, true);
-    }
-
-    public static String getImagePreviewHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes) {
-        return getImageHtmlTag(image, request, attributes, false, true);
-    }
-
-    private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
-                                          boolean absoluteUrl, boolean forPreview) {
-        return getImageHtmlTag(image, request, attributes, absoluteUrl, forPreview, false);
-    }
-
-    private static String getImageHtmlTag(ImageDomainObject image, HttpServletRequest request, Properties attributes,
-                                          boolean absoluteUrl, boolean forPreview, boolean isEmpty) {
-
-        StringBuffer imageTagBuffer = new StringBuffer(96);
-        if (image.getSize() > 0 || isEmpty) {
-
-            String urlEscapedImageUrl = "";
-            if (!isEmpty) {
-                if (StringUtils.isNotBlank(image.getLinkUrl())) {
-                    imageTagBuffer.append("<a href=\"").append(StringEscapeUtils.escapeHtml4(image.getLinkUrl())).append("\"");
-                    if (!"".equals(image.getTarget())) {
-                        imageTagBuffer.append(" target=\"").append(StringEscapeUtils.escapeHtml4(image.getTarget())).append("\"");
-                    }
-                    imageTagBuffer.append('>');
-                }
-
-                if (forPreview) {
-                    urlEscapedImageUrl = getImagePreviewUrl(image, request.getContextPath());
-                } else {
-                    urlEscapedImageUrl = getImageUrl(image, request.getContextPath());
-                }
-
-                if (absoluteUrl) {
-                    StringBuffer requestURL = request.getRequestURL();
-                    urlEscapedImageUrl = requestURL.substring(0, StringUtils.ordinalIndexOf(requestURL.toString(), "/", 3)) + urlEscapedImageUrl;
-                }
-            }
-
-            imageTagBuffer.append("<img ");
-            if (!isEmpty) {
-                imageTagBuffer.append("src=\"").append(StringEscapeUtils.escapeHtml4(urlEscapedImageUrl)).append("\"");
-                imageTagBuffer.append(" alt=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append(" \"");
-                imageTagBuffer.append(" title=\"").append(StringEscapeUtils.escapeHtml4(image.getAlternateText())).append("\"");
-
-                String id = image.getName();
-                String idAttribute = attributes.getProperty("id");
-                if (StringUtils.isNotBlank(idAttribute)) {
-                    id = idAttribute;
-                }
-                if (StringUtils.isNotBlank(id)) {
-                    imageTagBuffer.append(" id=\"").append(StringEscapeUtils.escapeHtml4(id)).append("\"");
-                }
-            }
-
-            String classAttribute = attributes.getProperty("class");
-            if (null != classAttribute) {
-                imageTagBuffer.append(" class=\"").append(StringEscapeUtils.escapeHtml4(classAttribute)).append("\"");
-            }
-
-            String usemapAttribute = attributes.getProperty("usemap");
-            if (null != usemapAttribute) {
-                imageTagBuffer.append(" usemap=\"").append(StringEscapeUtils.escapeHtml4(usemapAttribute)).append("\"");
-            }
-
-            StringBuilder styleBuffer = new StringBuilder();
-
-            styleBuffer.append("border-width: ").append(image.getBorder()).append("px;");
-
-            styleBuffer.append(" margin: ")
-                    .append(image.getVerticalSpace()).append("px ")
-                    .append(image.getHorizontalSpace()).append("px;");
-
-            if (StringUtils.isNotBlank(image.getAlign()) && "left".equals(image.getAlign())) {
-                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
-            }
-            if (StringUtils.isNotBlank(image.getAlign()) && "right".equals(image.getAlign())) {
-                styleBuffer.append(" align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
-            }
-            if (StringUtils.isNotBlank(image.getAlign()) && !"none".equals(image.getAlign())) {
-                styleBuffer.append(" vertical-align: ").append(StringEscapeUtils.escapeHtml4(image.getAlign())).append(";");
-            }
-
-            String styleAttribute = attributes.getProperty("style");
-            if (null != styleAttribute) {
-                styleBuffer.append(" ").append(styleAttribute);
-            }
-
-            imageTagBuffer.append(" style=\"").append(StringEscapeUtils.escapeHtml4(styleBuffer.toString())).append("\"");
-            imageTagBuffer.append(" />");
-
-            if (!isEmpty) {
-                if (StringUtils.isNotBlank(image.getLinkUrl())) {
-                    imageTagBuffer.append("</a>");
-                }
-            }
-        }
-        return imageTagBuffer.toString();
-    }
-
-    public static String getImageUrl(ImageDomainObject image, String contextPath) {
-        return getImageUrl(image, contextPath, false);
-    }
-
-    public static String getImageUrl(ImageDomainObject image, String contextPath, boolean includeQueryParams) {
-        String generatedFilename = image.getGeneratedFilename();
-
-        if (generatedFilename == null) {
-            return getImageHandlingUrl(image, contextPath);
+        Format fmt = imageData.getFormat();
+        if (fmt != null) {
+            suffix += "." + fmt.getExtension();
         }
 
-        String url = image.getGeneratedUrlPath(contextPath);
+        final int maxLength = GEN_FILE_LENGTH - suffix.length();
 
-        if (includeQueryParams) {
-            url += getImageQueryString(image, false);
+        String filename = imageData.getSource().getNameWithoutExt();
+
+        if (filename.length() > maxLength) {
+            filename = filename.substring(0, maxLength);
         }
 
-        return url;
+        filename = Utility.normalizeString(filename);
+
+        return filename + suffix;
     }
 
-    public static String getImageUrl(Integer metaId, ImageDomainObject image, String contextPath, boolean includeQueryParams) {
-        String generatedFilename = image.getGeneratedFilename();
+    /**
+     * Gets image dimensions for given file
+     *
+     * @param imgFile image file
+     * @return dimensions of image
+     * @see <a href="https://stackoverflow.com/questions/672916/how-to-get-image-height-and-width-using-java#answer-12164026">method source</a>
+     */
+    public static Dimension getImageDimension(File imgFile) {
+        final String suffix = FilenameUtils.getExtension(imgFile.getName());
+        final Iterator<ImageReader> imageReaders = ImageIO.getImageReadersBySuffix(suffix);
 
-        if (generatedFilename == null) {
-            return getImageHandlingUrl(metaId, image, contextPath);
-        }
+        while (imageReaders.hasNext()) {
+            final ImageReader reader = imageReaders.next();
+            try (ImageInputStream stream = new FileImageInputStream(imgFile)) {
+                reader.setInput(stream);
+                final int width = reader.getWidth(reader.getMinIndex());
+                final int height = reader.getHeight(reader.getMinIndex());
+                return new Dimension(width, height);
 
-        File generatedFile = image.getGeneratedFile();
+            } catch (IOException e) {
+                log.warn("Error reading: " + imgFile.getAbsolutePath(), e);
 
-        if (!generatedFile.exists()) {
-            generateImage(image, false);
-
-        } else if (isImageModified(image, generatedFile)) {
-            generateImage(image, true);
-
-        }
-
-        String url = image.getGeneratedUrlPath(contextPath);
-
-        if (includeQueryParams) {
-            url += getImageQueryString(metaId, image, false);
-        }
-
-        return url;
-    }
-
-    @Deprecated
-    public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
-
-        return contextPath + "/imagehandling" + getImageQueryString(image, false);
-    }
-
-    public static String getImageHandlingUrl(Integer metaId, ImageDomainObject image, String contextPath) {
-
-        return contextPath + "/imagehandling" + getImageQueryString(metaId, image, false);
-    }
-
-    public static String getImagePreviewUrl(ImageDomainObject image, String contextPath) {
-
-        return contextPath + "/servlet/ImagePreview" + getImageQueryString(image, true);
-    }
-
-    private static String getImageQueryString(ImageDomainObject image, boolean forPreview) {
-        StringBuilder builder = new StringBuilder("?");
-
-        if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
-            FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
-            builder.append("file_id=");
-            builder.append(source.getFileDocument().getId());
-        } else {
-            builder.append("path=");
-            builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
-        }
-
-        builder.append("&width=");
-        builder.append(image.getWidth());
-        builder.append("&height=");
-        builder.append(image.getHeight());
-
-        if (image.getFormat() != null) {
-            builder.append("&format=");
-            builder.append(image.getFormat().getExtension());
-        }
-
-        CropRegion region = image.getCropRegion();
-        if (region.isValid()) {
-            builder.append("&crop_x1=");
-            builder.append(region.getCropX1());
-            builder.append("&crop_y1=");
-            builder.append(region.getCropY1());
-            builder.append("&crop_x2=");
-            builder.append(region.getCropX2());
-            builder.append("&crop_y2=");
-            builder.append(region.getCropY2());
-        }
-
-        builder.append("&rangle=");
-        builder.append(image.getRotateDirection().getAngle());
-
-        if (!forPreview && image.getGeneratedFilename() != null) {
-            builder.append("&gen_file=");
-            builder.append(image.getGeneratedFilename());
-        }
-
-        if (image.getResize() != null) {
-            builder.append("&resize=");
-            builder.append(image.getResize().name().toLowerCase());
-        }
-
-        return builder.toString();
-    }
-
-    private static String getImageQueryString(Integer metaId, ImageDomainObject image, boolean forPreview) {
-        StringBuilder builder = new StringBuilder("?");
-
-        if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
-            FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
-            FileDocumentDomainObject fileDocument = source.getFileDocument();
-            builder.append("file_id=");
-            builder.append(fileDocument.getId());
-            builder.append("&file_no=");
-            builder.append(fileDocument.getDefaultFileId());
-        } else {
-            builder.append("path=");
-            builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
-        }
-
-        if (!forPreview) {
-            builder.append("&meta_id=");
-            builder.append(metaId);
-
-            //fixme: provide image no, language and optionally loop-entry-ref
-            Integer imageIndex = null;//image.getNo();
-            if (imageIndex != null) {
-                builder.append("&no=");
-                builder.append(imageIndex);
+            } finally {
+                reader.dispose();
             }
         }
 
-        if (image.getWidth() > 0) {
-            builder.append("&width=");
-            builder.append(image.getWidth());
-        }
-        if (image.getHeight() > 0) {
-            builder.append("&height=");
-            builder.append(image.getHeight());
+        return null;
+    }
+
+    public static ImageSource getImageSource(String imagePath) {
+        ImageSource imageSource = new NullImageSource();
+
+        if (imagePath.startsWith("/")) {
+            imagePath = imagePath.substring(1);
         }
 
-        if (image.getFormat() != null) {
-            builder.append("&format=");
-            builder.append(image.getFormat().getExtension());
+        if (StringUtils.isNotBlank(imagePath)) {
+            imageSource = new ImagesPathRelativePathImageSource(imagePath);
         }
-
-        CropRegion region = image.getCropRegion();
-        if (region.isValid()) {
-            builder.append("&crop_x1=");
-            builder.append(region.getCropX1());
-            builder.append("&crop_y1=");
-            builder.append(region.getCropY1());
-            builder.append("&crop_x2=");
-            builder.append(region.getCropX2());
-            builder.append("&crop_y2=");
-            builder.append(region.getCropY2());
-        }
-
-        RotateDirection rotateDir = image.getRotateDirection();
-        if (!rotateDir.isDefault()) {
-            builder.append("&rangle=");
-            builder.append(rotateDir.getAngle());
-        }
-
-        if (!forPreview && image.getGeneratedFilename() != null) {
-            builder.append("&gen_file=");
-            builder.append(image.getGeneratedFilename());
-        }
-
-        if (image.getResize() != null) {
-            builder.append("&resize=");
-            builder.append(image.getResize().name().toLowerCase());
-        }
-
-        return builder.toString();
+        return imageSource;
     }
 
     public static ImageSource createImageSourceFromString(String imageUrl) {
@@ -362,24 +163,8 @@ public class ImcmsImageUtils {
         return imageSource;
     }
 
-    private static boolean isImageModified(ImageDomainObject image, File generatedFile) {
-        Date sourceModDate = image.getSource().getModifiedDatetime();
-
-        if (sourceModDate == null) {
-            return true;
-        }
-
-        long lastModified = generatedFile.lastModified();
-        if (lastModified == 0L) {
-            return true;
-        }
-        Date generatedModDate = new Date(lastModified);
-
-        return sourceModDate.after(generatedModDate);
-    }
-
-    public static void generateImage(ImageDomainObject image, boolean overwrite) {
-        File genFile = image.getGeneratedFile();
+    public static void generateImage(ImageData image, boolean overwrite) {
+        File genFile = new File(imagesPath, "generated/" + image.getGeneratedFilename());
 
         if (!overwrite && genFile.exists()) {
             return;
@@ -396,8 +181,7 @@ public class ImcmsImageUtils {
         File tempFile = null;
 
         try {
-            File imagePath = Imcms.getServices().getConfig().getImagePath();
-            String imagePathCanon = imagePath.getCanonicalPath();
+            String imagePathCanon = imagesPath.getCanonicalPath();
             String genFileCanon = genFile.getCanonicalPath();
 
             if (!genFileCanon.startsWith(imagePathCanon)) {
@@ -417,8 +201,7 @@ public class ImcmsImageUtils {
             IOUtils.copy(input, output);
             IOUtils.closeQuietly(output);
 
-            generateImage(tempFile, genFile, image.getFormat(), image.getWidth(), image.getHeight(), image.getResize(),
-                    image.getCropRegion(), image.getRotateDirection());
+            generateImage(tempFile, genFile, image);
 
         } catch (Exception ex) {
             log.warn(ex.getMessage(), ex);
@@ -428,95 +211,118 @@ public class ImcmsImageUtils {
             IOUtils.closeQuietly(output);
 
             if (tempFile != null) {
-                tempFile.delete();
+                try {
+                    FileUtility.forceDelete(tempFile);
+                } catch (IOException e) {
+                    log.error("Can't delete file " + tempFile, e);
+                }
             }
         }
     }
 
-    public static boolean generateImage(File imageFile, File destFile, Format format, int width, int height,
-                                        Resize resize, CropRegion cropRegion, RotateDirection rotateDir) {
+    private static void generateImage(File imageFile, File destFile, ImageData image) {
 
-        ImageOp operation = new ImageOp().input(imageFile);
+        final ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
+        setSize(image, operation);
+        setRotateDirection(image, operation);
+        setCropRegion(image, operation);
+        setFormat(image.getFormat(), operation);
 
-        if (rotateDir != RotateDirection.NORTH) {
-            operation.rotate(rotateDir.getAngle());
-        }
+        operation.processToFile(destFile);
+    }
+
+    private static void setFormat(Format format, ImageOp operation) {
+        Optional.ofNullable(format).ifPresent(operation::outputFormat);
+    }
+
+    private static void setCropRegion(ImageData image, ImageOp operation) {
+        final ImageCropRegionDTO cropRegion = image.getCropRegion();
 
         if (cropRegion.isValid()) {
-            int cropWidth = cropRegion.getWidth();
-            int cropHeight = cropRegion.getHeight();
-
-            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
+            operation.crop(
+                    cropRegion.getCropX1(),
+                    cropRegion.getCropY1(),
+                    cropRegion.getWidth(),
+                    cropRegion.getHeight()
+            );
         }
+    }
+
+    private static void setSize(ImageData image, ImageOp operation) {
+        final int height = image.getHeight();
+        final int width = image.getWidth();
 
         if (width > 0 || height > 0) {
             Integer w = (width > 0 ? width : null);
             Integer h = (height > 0 ? height : null);
 
-            if (resize == null) {
-                resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
-            }
+            final Resize resize = Optional.ofNullable(image.getResize())
+                    .orElse(width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
 
             operation.filter(Filter.LANCZOS);
             operation.resize(w, h, resize);
         }
-
-        if (format != null) {
-            operation.outputFormat(format);
-        }
-
-        return operation.processToFile(destFile);
     }
 
-    public static String getImageETag(String path, File imageFile, Format format, int width, int height,
-                                      CropRegion cropRegion, RotateDirection rotateDirection) {
+    private static void setRotateDirection(ImageData image, ImageOp operation) {
+        final RotateDirection rotateDir = image.getRotateDirection();
 
-        StringBuilder builder = new StringBuilder();
-        builder.append(path);
-        builder.append(imageFile.length());
-        builder.append(imageFile.lastModified());
-        builder.append(width);
-        builder.append(height);
-        builder.append(rotateDirection.name());
-
-        if (format != null) {
-            builder.append(format.getOrdinal());
+        if (rotateDir != RotateDirection.NORTH) {
+            operation.rotate(rotateDir.getAngle());
         }
-        if (cropRegion != null) {
-            builder.append(cropRegion.getCropX1());
-            builder.append(cropRegion.getCropY1());
-            builder.append(cropRegion.getCropX2());
-            builder.append(cropRegion.getCropY2());
+    }
+
+    public static List<String> getExifInfo(String imageUrl) {
+        final List<String> exifInfo = new ArrayList<>();
+        final ImageSource imageSource = ImcmsImageUtils.getImageSource(imageUrl);
+
+        if (imageSource instanceof ImagesPathRelativePathImageSource) {
+
+            final boolean exists = ((ImagesPathRelativePathImageSource) imageSource).getFile().exists();
+
+            if (!exists) {
+                return exifInfo;
+            }
+
+            try (final InputStream inputStream = imageSource.getInputStreamSource().getInputStream()) {
+                final Metadata metadata = ImageMetadataReader.readMetadata(inputStream);
+
+                for (Directory directory : metadata.getDirectories()) {
+                    for (Tag tag : directory.getTags()) {
+                        exifInfo.add(tag.toString());
+                    }
+                    for (String error : directory.getErrors()) {
+                        exifInfo.add("ERROR: " + error);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
-        return "W/\"" + DigestUtils.md5Hex(builder.toString()) + "\"";
+        return exifInfo;
     }
 
     public static ImageDomainObject toDomainObject(Image image) {
         if (image == null) return null;
 
-        ImageDomainObject imageDO = new ImageDomainObject();
+        final ImageDomainObject imageDO = new ImageDomainObject();
 
         imageDO.setAlign(image.getAlign());
         imageDO.setAlternateText(image.getAlternateText());
         imageDO.setArchiveImageId(image.getArchiveImageId());
         imageDO.setBorder(image.getBorder());
 
-        ImageCropRegion cropRegion = image.getCropRegion();
-        ImageDomainObject.CropRegion cropRegionDO = new ImageDomainObject.CropRegion(
-                cropRegion.getCropX1(), cropRegion.getCropY1(), cropRegion.getCropX2(), cropRegion.getCropY2()
-        );
-        imageDO.setCropRegion(cropRegionDO);
+        imageDO.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
         imageDO.setGeneratedFilename(image.getGeneratedFilename());
         imageDO.setHeight(image.getHeight());
-        imageDO.setHorizontalSpace(image.getHorizontalSpace());
+        imageDO.setSpaceAround(image.getSpaceAround());
         imageDO.setLinkUrl(image.getLinkUrl());
         imageDO.setLowResolutionUrl(image.getLowResolutionUrl());
         imageDO.setName(image.getName());
         imageDO.setResize(Resize.getByOrdinal(image.getResize()));
         imageDO.setTarget(image.getTarget());
-        imageDO.setVerticalSpace(image.getVerticalSpace());
         imageDO.setWidth(image.getWidth());
 
         return initImageSource(image, imageDO);
@@ -550,5 +356,11 @@ public class ImcmsImageUtils {
             default:
                 return new NullImageSource();
         }
+    }
+
+    @PostConstruct
+    public void init() {
+        ImcmsImageUtils.imagesPath = imgPath;
+        ImcmsImageUtils.imageMagickPath = imgMagickPath;
     }
 }

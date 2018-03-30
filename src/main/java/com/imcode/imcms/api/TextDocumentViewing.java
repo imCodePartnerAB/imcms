@@ -1,72 +1,66 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
+import com.imcode.imcms.model.RestrictedPermission;
+import imcode.server.Imcms;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
-import imcode.server.parser.ParserParameters;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
-/**
- * An instance of this class is fetchable in JSPs included in text documents (with &lt;?imcms:include path="..."?&gt;)
- * via {@link #fromRequest(javax.servlet.http.HttpServletRequest)},
- * and in velocity code in text templates as <code>$viewing</code>.
- *
- * @since 2.0
- */
+@Deprecated
 public class TextDocumentViewing {
 
-    private static final String REQUEST_ATTRIBUTE__VIEWING = TextDocumentViewing.class.getName();
-    private TextDocument textDocument;
-    private ParserParameters parserParameters;
+    private final TextDocument textDocument;
+    private final RestrictedPermission restrictedPermission;
 
-    public TextDocumentViewing(ParserParameters parserParameters) {
-        this.parserParameters = parserParameters;
-        textDocument = new TextDocument((TextDocumentDomainObject) parserParameters.getDocumentRequest().getDocument(), ContentManagementSystem.fromRequest(parserParameters.getDocumentRequest().getHttpServletRequest()));
+    private TextDocumentViewing(TextDocument textDocument, RestrictedPermission restrictedPermission) {
+        this.textDocument = textDocument;
+        this.restrictedPermission = restrictedPermission;
     }
 
+    @Deprecated
     public static TextDocumentViewing fromRequest(HttpServletRequest request) {
-        return (TextDocumentViewing) request.getAttribute(REQUEST_ATTRIBUTE__VIEWING);
+        final TextDocumentDomainObject currentDocument =
+                (TextDocumentDomainObject) request.getAttribute("currentDocument");
+
+        final ContentManagementSystem contentManagementSystem = new ContentManagementSystem(
+                Imcms.getServices(), Imcms.getUser()
+        );
+
+        final TextDocument textDocument = new TextDocument(currentDocument, contentManagementSystem);
+
+        final RestrictedPermission restrictedPermission = Optional
+                .ofNullable((RestrictedPermission) request.getAttribute("editOptions"))
+                .orElse(new RestrictedPermissionDTO());
+
+        return new TextDocumentViewing(textDocument, restrictedPermission);
     }
 
-    public static TextDocumentViewing putInRequest(TextDocumentViewing viewing) {
-        HttpServletRequest httpServletRequest = viewing.parserParameters.getDocumentRequest().getHttpServletRequest();
-        TextDocumentViewing previousViewing = fromRequest(httpServletRequest);
-        httpServletRequest.setAttribute(REQUEST_ATTRIBUTE__VIEWING, viewing);
-        return previousViewing;
-    }
-
+    @Deprecated
     public TextDocument getTextDocument() {
-        return textDocument;
+        return this.textDocument;
     }
 
-    public boolean isEditing() {
-        return parserParameters.isAnyMode();
-    }
-
+    @Deprecated
     public boolean isEditingTexts() {
-        return parserParameters.isTextMode();
+        return restrictedPermission.isEditText();
     }
 
+    @Deprecated
+    public boolean isEditing() {
+        return restrictedPermission.isEditText() || restrictedPermission.isEditMenu()
+                || restrictedPermission.isEditLoop() || restrictedPermission.isEditImage()
+                || restrictedPermission.isEditDocInfo();
+    }
+
+    @Deprecated
     public boolean isEditingImages() {
-        return parserParameters.isImageMode();
+        return restrictedPermission.isEditImage();
     }
 
+    @Deprecated
     public boolean isEditingMenus() {
-        return parserParameters.isMenuMode();
+        return restrictedPermission.isEditMenu();
     }
-
-    public boolean isEditingIncludes() {
-        return parserParameters.isIncludesMode();
-    }
-
-    public boolean isEditingTemplate() {
-        return parserParameters.isTemplateMode();
-    }
-
-    /**
-     * @return The index of the menu currently being edited, or null if none.
-     */
-    public Integer getEditedMenuIndex() {
-        return parserParameters.getEditingMenuIndex();
-    }
-
 }

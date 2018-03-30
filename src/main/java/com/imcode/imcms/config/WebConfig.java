@@ -1,48 +1,64 @@
 package com.imcode.imcms.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.view.UrlBasedViewResolver;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.view.ResourceBundleViewResolver;
+
+import javax.servlet.ServletContext;
+import java.util.Properties;
 
 @Configuration
 @EnableWebMvc
+@EnableAspectJAutoProxy
 @ComponentScan({
-        "com.imcode.imcms.servlet.apis"
+        "com.imcode.imcms.servlet.apis",
+        "com.imcode.imcms.controller",
+        "imcode.util",
+        "imcode.server",
+        "com.imcode.imcms.aspects"
 })
-public class WebConfig extends WebMvcConfigurerAdapter {
-
-    public final Environment environment;
-
-    @Autowired
-    public WebConfig(Environment environment) {
-        this.environment = environment;
-    }
+class WebConfig {
 
     @Bean
-    public CommonsMultipartResolver multipartResolver() {
+    public CommonsMultipartResolver multipartResolver(Properties imcmsProperties) {
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        multipartResolver.setMaxUploadSize(Long.parseLong(environment.getProperty("ImageArchiveMaxImageUploadSize")));
+        multipartResolver.setMaxUploadSize(Long.parseLong(imcmsProperties.getProperty("ImageArchiveMaxImageUploadSize")));
         return multipartResolver;
     }
 
     @Bean
-    public UrlBasedViewResolver urlBasedViewResolver() {
-        UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
-        urlBasedViewResolver.setViewClass(org.springframework.web.servlet.view.JstlView.class);
-        urlBasedViewResolver.setPrefix("/WEB-INF/jsp/imcms/views/");
-        urlBasedViewResolver.setSuffix(".jsp");
-        return urlBasedViewResolver;
+    public ViewResolver templateViewResolver() {
+        InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+        viewResolver.setViewClass(JstlView.class);
+        viewResolver.setPrefix("/WEB-INF/templates/text/");
+        viewResolver.setSuffix(".jsp");
+        viewResolver.setOrder(1);
+        viewResolver.setExposedContextBeanNames("loopService", "imageService", "menuService", "textService");
+        return viewResolver;
     }
 
     @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter() {
-        return new MappingJackson2HttpMessageConverter();
+    public ViewResolver internalViewResolver() {
+        final ResourceBundleViewResolver viewResolver = new ResourceBundleViewResolver();
+        viewResolver.setBasename("views");
+        viewResolver.setOrder(0);
+        return viewResolver;
+    }
+
+    @Bean
+    public Imcms imcms(ServletContext servletContext,
+                       ImcmsServices imcmsServices,
+                       Properties imcmsProperties) {
+
+        return new Imcms(servletContext, imcmsServices, imcmsProperties);
     }
 }

@@ -1,0 +1,291 @@
+.imcms-button {
+    border: 1px solid transparent;
+    -webkit-border-radius: 23px;
+    -moz-border-radius: 23px;
+    border-radius: 23px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 13px;
+    text-transform: uppercase;
+    display: block;
+    outline: none;
+    padding: 15px 28px;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+}
+
+.imcms-button:hover {
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+}
+
+.imcms-button--negative {
+    background-color: #fbfbfe;
+    border-color: #d3d8de;
+    color: #587380;
+    opacity: 0.8;
+}
+
+.imcms-button--negative:hover {
+    background-color: #fff;
+    color: #2f4047;
+}
+
+.imcms-button--positive {
+    background-color: #0b94d8;
+    border-color: #0b94d8;
+    color: #fff;
+}
+
+.imcms-button--positive:hover {
+    background-color: transparent;
+    color: #2f4047;
+}
+
+.imcms-button--neutral {
+    background-color: transparent;
+    border-color: transparent;
+    color: #0b94d8;
+    padding: 0;
+}
+
+.imcms-button--neutral:hover {
+    color: #2f4047;
+}
+
+.imcms-button--save {
+    background-color: #27b864;
+    border-color: #27b864;
+    color: #fff;
+}
+
+.imcms-button--save:hover {
+    background-color: transparent;
+    color: #2f4047;
+}
+
+/***********************************/
+
+/*****************************************/
+.imcms-button--drop-down {
+    background: url("../images_new/icon_arrow_down.png") no-repeat center;
+    display: block;
+    padding: 0;
+    position: absolute;
+    width: 25px;
+    height: 100%;
+}
+
+.imcms-button--increment {
+    background: url("../images_new/icon_arrow_up.png") no-repeat center;
+    padding: 0;
+    position: absolute;
+    width: 6px;
+    height: 20px;
+}
+
+.imcms-button--decrement {
+    background: url("../images_new/icon_arrow_down.png") no-repeat center;
+    padding: 0;
+    position: absolute;
+    width: 6px;
+    height: 20px;
+}
+
+.imcms-button--close {
+    background-color: transparent;
+    display: block;
+    float: right;
+    margin: 0 0 0 11px;
+    padding: 0;
+    position: relative;
+    width: 15px;
+    height: 15px;
+}
+
+.imcms-button--close:before {
+    content: "";
+    background-color: #2f4047;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 13px;
+    height: 1px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.imcms-button--close:after {
+    content: "";
+    background-color: #2f4047;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 13px;
+    height: 1px;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.imcms-button--close:hover:before,
+.imcms-button--close:hover:after {
+    background-color: #da1a1a;
+}
+
+.imcms-button--prev {
+    background: url("../images_new/icon_arrow_down.png") no-repeat center;
+    display: block;
+    padding: 0;
+    width: 6px;
+    height: 4px;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.imcms-button--next {
+    background: url("../images_new/icon_arrow_down.png") no-repeat center;
+    display: block;
+    padding: 0;
+    width: 6px;
+    height: 4px;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+
+.imcms-button--proportions {
+    background: transparent url("../images_new/image_editor/icon_size_smth.png") no-repeat center;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--proportions[data-state="active"] {
+    background-color: #fff;
+    border-color: #0b94d8;
+}
+
+.imcms-button--zoom-plus {
+    background: #fff url("../images_new/image_editor/icon_zoom_plus.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--zoom-minus {
+    background: #fff url("../images_new/image_editor/icon_zoom_minus.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--zoom-contain {
+    background: #fff url("../images_new/image_editor/icon_img_smth.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--rotate-left {
+    background: #fff url("../images_new/image_editor/icon_rotation_left.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--rotate-right {
+    background: #fff url("../images_new/image_editor/icon_rotation_right.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--align {
+    background: #fff no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--align:hover,
+.imcms-button--align-active {
+    border-color: #0b94d8;
+}
+
+.imcms-button--align-none {
+    background-image: none;
+    text-transform: capitalize;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.imcms-button--align-center {
+    background-image: url("../images_new/image_editor/icon_text-decoration_center.png");
+}
+
+.imcms-button--align-left {
+    background-image: url("../images_new/image_editor/icon_text-decoration_left.png");
+}
+
+.imcms-button--align-right {
+    background-image: url("../images_new/image_editor/icon_text-decoration_right.png");
+}
+
+.imcms-button--search {
+    background: url("../images_new/icon_search.png") no-repeat center center;
+    display: block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 22px;
+    height: 22px;
+    cursor: auto;
+}
+
+.imcms-button--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

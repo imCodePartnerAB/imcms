@@ -1,6 +1,10 @@
 package imcode.server.document.index;
 
 
+import com.imcode.imcms.domain.dto.DocumentStatus;
+import com.imcode.imcms.persistence.entity.Meta.DocumentType;
+import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
+import imcode.server.Imcms;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Date;
@@ -25,7 +29,8 @@ public class DocumentStoredFields {
     }
 
     public String headline() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE);
+        final String language = Imcms.getUser().getLanguage();
+        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_HEADLINE + "_" + language);
     }
 
     public String alias() {
@@ -36,27 +41,29 @@ public class DocumentStoredFields {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
     }
 
-    public int documentType() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID);
+    public DocumentType documentType() {
+        final Integer typeOrdinal = (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__DOC_TYPE_ID);
+        return DocumentType.values()[typeOrdinal];
     }
 
-    public int publicationStatusId() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__STATUS);
+    public PublicationStatus publicationStatus() {
+        final Integer statusOrdinal = (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__STATUS);
+        return PublicationStatus.values()[statusOrdinal];
     }
 
-    public Date createdDt() {
+    public Date created() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__CREATED_DATETIME);
     }
 
-    public Date modifiedDt() {
+    public Date modified() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__MODIFIED_DATETIME);
     }
 
-    public Date publicationStartDt() {
+    public Date publicationStart() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_START_DATETIME);
     }
 
-    public Date archivingDt() {
+    public Date archived() {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__ARCHIVED_DATETIME);
     }
 
@@ -64,11 +71,38 @@ public class DocumentStoredFields {
         return (Date) solrDocument.getFieldValue(DocumentIndex.FIELD__PUBLICATION_END_DATETIME);
     }
 
-    public int parentsCount() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__PARENTS_COUNT);
+    public DocumentStatus documentStatus() {
+        final PublicationStatus publicationStatus = publicationStatus();
+
+        if (PublicationStatus.NEW.equals(publicationStatus)) {
+            return DocumentStatus.IN_PROCESS;
+
+        } else if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
+            return DocumentStatus.DISAPPROVED;
+
+        } else if (isDateInPast(archived())) {
+            return DocumentStatus.ARCHIVED;
+
+        } else if (isDateInPast(publicationEndDt())) {
+            return DocumentStatus.PASSED;
+
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast(publicationStart())) {
+            return DocumentStatus.PUBLISHED;
+
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture(publicationStart())) {
+            return DocumentStatus.PUBLISHED_WAITING;
+
+        } else { // should newer happen
+            return DocumentStatus.PUBLISHED;
+        }
     }
 
-    public int childrenCount() {
-        return (Integer) solrDocument.getFieldValue(DocumentIndex.FIELD__CHILDREN_COUNT);
+    private boolean isDateInPast(Date dateToCheck) {
+        return (dateToCheck != null) && new Date().after(dateToCheck);
     }
+
+    private boolean isDateInFuture(Date dateToCheck) {
+        return (dateToCheck != null) && new Date().before(dateToCheck);
+    }
+
 }

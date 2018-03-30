@@ -1,14 +1,24 @@
-<%@ page import="imcode.server.document.Profile, com.imcode.imcms.servlet.superadmin.AdminProfiles, org.apache.commons.lang3.StringEscapeUtils" contentType="text/html; charset=UTF-8" %><%
+<%@ page
+        import="com.imcode.imcms.servlet.superadmin.AdminProfiles, imcode.server.document.Profile, org.apache.commons.text.StringEscapeUtils"
+        contentType="text/html; charset=UTF-8" %>
+<%
     Profile profile = (Profile) request.getAttribute("profile");
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><vel:velocity>
+%>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <html>
 <head>
-    <link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
-    <script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 </head>
 <body>
-    #gui_outer_start()
-    #gui_head( "<fmt:message key="profile/headline"/>" )
+<ui:imcms_gui_outer_start/>
+<c:set var="heading">
+    <fmt:message key="profile/headline"/>
+</c:set>
+<ui:imcms_gui_head heading="${heading}"/>
     
     <form action="<%= request.getContextPath() %>/imcms/admin/profile/edit" method="POST">
         <table border="0" cellspacing="0" cellpadding="2" width="400" align="center">
@@ -19,7 +29,7 @@
                 </td>
             </tr>
         </table>
-        #gui_mid()
+        <ui:imcms_gui_mid/>
         <input type="hidden" name="<%= AdminProfiles.Parameter.PROFILE_ID %>" value="<%= profile.getId() %>"/>
         <table border="0" cellspacing="0" cellpadding="2" width="100%" align="center">
             <tr>
@@ -33,8 +43,7 @@
         </table>
             <input type="submit" value="<fmt:message key="profile/save"/>" class="imcmsFormBtn"/>
     </form>
-    #gui_bottom()
-    #gui_outer_end()
+    <ui:imcms_gui_bottom/>
+    <ui:imcms_gui_outer_end/>
 </body>
 </html>
-</vel:velocity>

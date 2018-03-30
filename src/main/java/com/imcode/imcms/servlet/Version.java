@@ -5,6 +5,8 @@ import com.imcode.imcms.db.Schema;
 import imcode.server.Imcms;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServlet;
@@ -22,17 +24,20 @@ import java.sql.SQLException;
  */
 public class Version extends HttpServlet {
 
-    private final static String VERSION_FILE = "/WEB-INF/version.txt";
+    private static final Log logger = LogFactory.getLog(Version.class);
 
+    private final static String VERSION_FILE = "/WEB-INF/version.txt";
     private final static String DB_SCHEMA_FILE = "schema.xml";
 
     public static String getImcmsVersion(ServletContext servletContext) {
         try {
             try (Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE))) {
-                return "imCMS " + IOUtils.toString(in).trim();
+                return IOUtils.toString(in).trim();
             }
-        } catch (Exception npe) {
-            return "imCMS";
+        } catch (Exception e) {
+            final String errMessage = "Error reading imcms version.";
+            logger.error(errMessage, e);
+            return errMessage;
         }
     }
 
@@ -40,15 +45,16 @@ public class Version extends HttpServlet {
         try {
             return Schema.fromInputStream(Thread.currentThread().getContextClassLoader().getResourceAsStream(DB_SCHEMA_FILE)).getVersion().toString();
         } catch (Exception e) {
-            System.out.println(e);
+            logger.error(e);
             return null;
         }
     }
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
-        String imcmsVersion = getImcmsVersion();
-        String serverInfo = getServletContext().getServerInfo();
+        final ServletContext servletContext = getServletContext();
+        String imcmsVersion = getImcmsVersion(servletContext);
+        String serverInfo = servletContext.getServerInfo();
         String databaseProductNameAndVersion = getDatabaseProductNameAndVersion();
         String javaVersion = getJavaVersion();
 
@@ -63,16 +69,6 @@ public class Version extends HttpServlet {
 
     private String getJavaVersion() {
         return System.getProperty("java.vm.vendor") + " " + System.getProperty("java.vm.name") + " " + System.getProperty("java.vm.version");
-    }
-
-    private String getImcmsVersion() {
-        try {
-            try (Reader in = new InputStreamReader(getServletContext().getResourceAsStream(VERSION_FILE))) {
-                return "imCMS " + IOUtils.toString(in).trim();
-            }
-        } catch (Exception npe) {
-            return "imCMS";
-        }
     }
 
     private String getDatabaseProductNameAndVersion() {

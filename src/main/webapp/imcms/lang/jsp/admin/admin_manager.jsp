@@ -3,7 +3,12 @@
                  imcode.util.jscalendar.JSCalendar,
                  java.util.Iterator,
                  java.util.List" %>
-<%@page contentType="text/html; charset=UTF-8" %><%@taglib prefix="vel" uri="imcmsvelocity"%>
+<%@ page contentType="text/html; charset=UTF-8" %>
+
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
@@ -26,16 +31,15 @@
     String tabString = getTabs(tabs, adminManagerPage.getTabName(), request ) ;
 %>
 
-<vel:velocity>
 <html>
 <head>
 
 <title><? webapp/imcms/lang/jsp/admin/admin_manager.jsp/6 ?></title>
 
-<link rel="stylesheet" type="text/css" href="$contextPath/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 	<script src="//code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
-<script src="$contextPath/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts()%>
 
 </head>
@@ -43,9 +47,13 @@
 
 
 <!--gui_outer_start -->
-#gui_outer_start()
+    <ui:imcms_gui_outer_start/>
 <!--gui_head -->
-#gui_head( "<? webapp/imcms/lang/jsp/admin/admin_manager.jsp/1 ?> - <%= adminManagerPage.getHeading().toLocalizedString( request ) %>" )
+    <c:set var="heading">
+        <fmt:message
+                key="webapp/imcms/lang/jsp/admin/admin_manager.jsp/1"/> - <%= adminManagerPage.getHeading().toLocalizedString(request) %>
+    </c:set>
+    <ui:imcms_gui_head heading="${heading}"/>
 <!-- /gui_head -->
 		<table border="0" cellspacing="0" cellpadding="0" width="656">
         <tr>
@@ -75,9 +83,10 @@
 		    </form>
 		</tr>
 		</table>
-#gui_mid_tabs1()
+<ui:imcms_gui_mid_tabs1/>
 <%= tabString %>
-#gui_mid_tabs2()<%
+<ui:imcms_gui_mid_tabs2/>
+<%
 if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabName())) {
 	if (null != adminManagerPage.getErrorMessage()) { %>
 	<div style="color: red"><%=
@@ -164,8 +173,7 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 		<jsp:include page="../search_documents_results.jsp" />
 	</form><%
 } %>
-	#gui_bottom()
-	#gui_outer_end()
-</vel:velocity>
+    <ui:imcms_gui_bottom/>
+    <ui:imcms_gui_outer_end/>
 </body>
 </html>

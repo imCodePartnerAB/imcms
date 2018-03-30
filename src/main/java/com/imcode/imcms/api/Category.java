@@ -71,6 +71,10 @@ public class Category implements Comparable<Category> {
         internalCategory.setImageUrl(imageUrl);
     }
 
+    public com.imcode.imcms.model.CategoryType getType() {
+        return internalCategory.getType();
+    }
+
     @Override
     public int compareTo(Category category) {
         return internalCategory.compareTo(category.internalCategory);

@@ -10,7 +10,8 @@ import java.util.Set;
 
 public class RoleIds implements Cloneable, Serializable {
 
-    private HashSet set = new HashSet();
+    private static final long serialVersionUID = 8052627139165762597L;
+    private HashSet<RoleId> set = new HashSet<>();
 
     public RoleIds() {
     }
@@ -26,7 +27,7 @@ public class RoleIds implements Cloneable, Serializable {
     protected Object clone() {
         try {
             RoleIds clone = (RoleIds) super.clone();
-            clone.set = (HashSet) set.clone();
+            clone.set = (HashSet<RoleId>) set.clone();
             return clone;
         } catch (CloneNotSupportedException e) {
             throw new ShouldNotBeThrownException(e);
@@ -42,7 +43,7 @@ public class RoleIds implements Cloneable, Serializable {
     }
 
     public RoleId[] toArray() {
-        return (RoleId[]) set.toArray(new RoleId[set.size()]);
+        return set.toArray(new RoleId[set.size()]);
     }
 
     public Set asSet() {

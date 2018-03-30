@@ -1,6 +1,9 @@
 package imcode.server;
 
-public class ImcmsConstants {
+public class
+ImcmsConstants {
+
+    public static final int DEFAULT_START_DOC_ID = 1001;
 
     /* Permissions for restricted permission-sets 1 and 2, applicable for all document-types. */
 
@@ -139,6 +142,12 @@ public class ImcmsConstants {
      * Single element editor view name, file is %name%.jsp
      */
     public static final String SINGLE_EDITOR_VIEW = "editElement";
+
+    public static final String ENG_CODE = "en";
+    public static final String SWE_CODE = "sv";
+
+    public static final String ENG_CODE_ISO_639_2 = "eng";
+    public static final String SWE_CODE_ISO_639_2 = "swe";
 
     private ImcmsConstants() {
         throw new AssertionError();

@@ -1,15 +1,17 @@
-<%@ page import="com.imcode.imcms.servlet.DocumentFinder,
-                 imcode.server.document.DocumentDomainObject,
+<%@ page import="com.imcode.imcms.flow.Page,
+                 com.imcode.imcms.servlet.DocumentFinder,
                  com.imcode.imcms.servlet.SearchDocumentsPage,
+                 imcode.server.document.DocumentDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 imcode.util.Html,
-                 com.imcode.imcms.flow.Page"
-        contentType="text/html; charset=UTF-8" %><%@ page import="java.util.List"%>
-<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
-<%@ page import="org.apache.commons.lang3.ObjectUtils"%>
+                 org.apache.commons.lang3.ObjectUtils"
+         contentType="text/html; charset=UTF-8" %>
+<%@ page import="org.apache.commons.text.StringEscapeUtils" %>
+<%@ page import="java.util.List" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
+
 <%
-    SearchDocumentsPage searchDocumentsPage = (SearchDocumentsPage)Page.fromRequest(request);
+    SearchDocumentsPage searchDocumentsPage = Page.fromRequest(request);
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
     List documentsFound = searchDocumentsPage.getDocumentsFound() ;
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;
@@ -65,14 +67,21 @@
                             <td><a name="alias" href="<%= request.getContextPath() + "/" + document.getAlias() %>" title="<%= document.getAlias() %>"><%= StringEscapeUtils.escapeHtml4(document.getAlias()) %></a></td>
                             <% }else { %>
                             <td>&nbsp;</td> <%}%>
-                            <td><%
-							if (user.canEditDocumentInformationFor(document)) {
-								%><a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>"><%
-							}
-							%><%= Html.getStatusIconTemplate(document, user) %><%
-							if (user.canEditDocumentInformationFor(document)) {
-								%></a><%
-							} %></td>
+                            <td>
+                                <%--<%--%>
+                                <%--if (user.canEditDocumentInformationFor(document)) {%>--%>
+                                <a href="SearchDocuments?<%= searchDocumentsPage.getParameterStringWithParameter(request, SearchDocumentsPage.REQUEST_PARAMETER__TO_EDIT_DOCUMENT_ID, ""+document.getId()) %>">
+                                    <%--<%--%>
+                                    <%--}--%>
+                                    <%--%>--%>
+                                    <ui:statusIcon lifeCyclePhase="<%=document.getLifeCyclePhase()%>"/>
+                                    <%--<%--%>
+                                    <%--if (user.canEditDocumentInformationFor(document)) {--%>
+                                    <%--%>--%>
+                                </a>
+                                <%--<%--%>
+                                <%--} %>--%>
+                            </td>
 							<td><img src="<%= IMG_PATH %>/1x1.gif" width="1" height="3"><br><%
 							if (user.canEdit(document)) {
 								%><a href="AdminDoc?meta_id=<%= document.getId() %>" title="AdminDoc?meta_id=<%= document.getId() %>"><%

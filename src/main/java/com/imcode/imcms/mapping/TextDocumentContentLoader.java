@@ -1,26 +1,27 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
-import com.imcode.imcms.api.Loop;
+import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.VersionRef;
-import com.imcode.imcms.mapping.jpa.doc.Language;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.textdoc.*;
-import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import com.imcode.imcms.model.Loop;
+import com.imcode.imcms.model.TextDocumentTemplate;
+import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.repository.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.util.ImcmsImageUtils;
-import org.apache.commons.collections4.map.ListOrderedMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -28,75 +29,66 @@ import static java.util.stream.Collectors.toMap;
 @Transactional(propagation = Propagation.SUPPORTS)
 public class TextDocumentContentLoader {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final VersionRepository versionRepository;
+    private final TextRepository textRepository;
+    private final TextHistoryRepository textHistoryRepository;
+    private final ImageRepository imageRepository;
+    private final TextDocumentTemplateRepository textDocumentTemplateRepository;
+    private final LanguageRepository languageRepository;
+    private final DocumentLanguageMapper languageMapper;
+    private final LoopService loopService;
 
     @Inject
-    private VersionRepository versionRepository;
+    public TextDocumentContentLoader(VersionRepository versionRepository,
+                                     TextRepository textRepository,
+                                     TextHistoryRepository textHistoryRepository,
+                                     ImageRepository imageRepository,
+                                     TextDocumentTemplateRepository textDocumentTemplateRepository,
+                                     LanguageRepository languageRepository,
+                                     DocumentLanguageMapper languageMapper,
+                                     LoopService loopService) {
 
-    @Inject
-    private TextRepository textRepository;
+        this.versionRepository = versionRepository;
+        this.textRepository = textRepository;
+        this.textHistoryRepository = textHistoryRepository;
+        this.imageRepository = imageRepository;
+        this.textDocumentTemplateRepository = textDocumentTemplateRepository;
+        this.languageRepository = languageRepository;
+        this.languageMapper = languageMapper;
+        this.loopService = loopService;
+    }
 
-    @Inject
-    private TextHistoryRepository textHistoryRepository;
 
-    @Inject
-    private ImageRepository imageRepository;
+    TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
+        TextDocumentTemplate jpaTextDocumentTemplate = textDocumentTemplateRepository.findOne(docId);
 
-    @Inject
-    private MenuRepository menuRepository;
-
-    @Inject
-    private TemplateNamesRepository templateNamesRepository;
-
-    @Inject
-    private LoopRepository loopRepository;
-
-    @Inject
-    private LanguageRepository languageRepository;
-
-    @Inject
-    private IncludeRepository includeRepository;
-
-    @Inject
-    private DocumentGetter menuItemDocumentGetter;
-
-    @Inject
-    private DocumentLanguageMapper languageMapper;
-
-    public TextDocumentDomainObject.TemplateNames getTemplateNames(int docId) {
-        TemplateNames jpaTemplateNames = templateNamesRepository.findOne(docId);
-
-        if (jpaTemplateNames == null) return null;
+        if (jpaTextDocumentTemplate == null) return null;
 
         TextDocumentDomainObject.TemplateNames templateNamesDO = new TextDocumentDomainObject.TemplateNames();
 
-        templateNamesDO.setDefaultTemplateName(jpaTemplateNames.getDefaultTemplateName());
-        templateNamesDO.setDefaultTemplateNameForRestricted1(jpaTemplateNames.getDefaultTemplateNameForRestricted1());
-        templateNamesDO.setDefaultTemplateNameForRestricted2(jpaTemplateNames.getDefaultTemplateNameForRestricted2());
-        templateNamesDO.setTemplateGroupId(jpaTemplateNames.getTemplateGroupId());
-        templateNamesDO.setTemplateName(jpaTemplateNames.getTemplateName());
+        templateNamesDO.setDefaultTemplateName(jpaTextDocumentTemplate.getChildrenTemplateName());
+        templateNamesDO.setTemplateName(jpaTextDocumentTemplate.getTemplateName());
 
         return templateNamesDO;
     }
 
     public Map<Integer, TextDomainObject> getTexts(final DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
-                .stream().collect(toMap(Text::getNo, this::toDomainObject));
+                .stream().collect(toMap(TextJPA::getIndex, this::toDomainObject));
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         final Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> result = new HashMap<>();
 
-        for (Text text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
+        for (TextJPA text : textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
-                    text.getLoopEntryRef().getLoopNo(), text.getLoopEntryRef().getEntryNo(), text.getNo()
+                    text.getLoopEntryRef().getLoopIndex(), text.getLoopEntryRef().getLoopEntryIndex(), text.getIndex()
             );
 
             result.put(loopItemRef, toDomainObject(text));
@@ -105,122 +97,72 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-
-    public Map<DocumentLanguage, TextDomainObject> getTexts(VersionRef versionRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-        Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
-
-        for (Text text : textRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, textNo)) {
-            result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
-        }
-
-        return result;
-    }
-
-    public Map<DocumentLanguage, TextDomainObject> getLoopTexts(VersionRef versionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-        Map<DocumentLanguage, TextDomainObject> result = new HashMap<>();
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
-
-        for (Text text : textRepository.findByVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
-            result.put(languageMapper.toApiObject(text.getLanguage()), toDomainObject(text));
-        }
-
-        return result;
-    }
-
-    public TextDomainObject getFirstLoopEntryText(DocRef docRef, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        LoopEntryRef loopEntryRefJpa = new LoopEntryRef(loopEntryRef.getLoopNo(), loopEntryRef.getEntryNo());
-
-        return toDomainObject(
-                textRepository.findFirst(version, language, loopEntryRefJpa)
-        );
-    }
-
-    public Set<TextHistory> getTextHistory(int docId, int textNo) {
-        return textHistoryRepository.findAllByDocumentAndTextNo(docId, textNo);
-    }
-
     /**
-     * Return text history based on special document {@link Version}, {@link Language}, and text id
+     * Return text history based on special document {@link Version}, {@link LanguageJPA}, and text id
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Set<TextHistory>} of text history
+     * @return {@link Set<TextHistoryJPA>} of text history
      * @see Version
-     * @see Language
+     * @see LanguageJPA
      * @see DocRef
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, int textNo) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+    public Collection<TextHistoryJPA> getTextHistory(DocRef docRef, int textNo) {
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return textHistoryRepository.findAllByVersionAndLanguageAndNo(version, language, textNo);
+        return textHistoryRepository.findTextHistoryNotInLoop(docRef.getId(), language, textNo);
     }
 
     /**
-     * Return text history based on special document {@link Version}, {@link Language},{@link LoopEntryRef} and text id
+     * Return text history based on special document {@link Version}, {@link LanguageJPA},{@link LoopEntryRefJPA} and text id
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Collection<TextHistory>} of text history
+     * @return {@link Collection<TextHistoryJPA>} of text history
      * @see Version
-     * @see Language
+     * @see LanguageJPA
      * @see DocRef
-     * @see LoopEntryRef
+     * @see LoopEntryRefJPA
      * @see imcode.server.document.DocumentDomainObject
      */
-    public Collection<TextHistory> getTextHistory(DocRef docRef, LoopEntryRef loopEntryRef, int textNo) {
+    public Collection<TextHistoryJPA> getTextHistory(DocRef docRef, LoopEntryRefJPA loopEntryRef, int textNo) {
         if (loopEntryRef == null) {
             return getTextHistory(docRef, textNo);
         }
 
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
-        return textHistoryRepository.findAllByVersionAndLanguageAndLoopEntryRefAndNo(version, language, loopEntryRef, textNo);
+        return textHistoryRepository.findTextHistoryInLoop(docRef.getId(), language, loopEntryRef, textNo);
     }
 
 
     public TextDomainObject getText(DocRef docRef, int textNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return toDomainObject(
-                textRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, textNo)
-        );
-    }
-
-    public TextDomainObject getLoopText(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
-        Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
-
-        return toDomainObject(
-                textRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
+                textRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, textNo)
         );
     }
 
     public Map<Integer, ImageDomainObject> getImages(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
-                .stream().collect(toMap(Image::getNo, ImcmsImageUtils::toDomainObject));
+                .stream().collect(toMap(Image::getIndex, ImcmsImageUtils::toDomainObject));
 
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> getLoopImages(DocRef docRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
 
         for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
-                    image.getLoopEntryRef().getLoopNo(), image.getLoopEntryRef().getEntryNo(), image.getNo()
+                    image.getLoopEntryRef().getLoopIndex(), image.getLoopEntryRef().getLoopEntryIndex(), image.getIndex()
             );
 
             result.put(loopItemRef, ImcmsImageUtils.toDomainObject(image));
@@ -229,17 +171,16 @@ public class TextDocumentContentLoader {
         return result;
     }
 
-    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
-        return loopEntryRefOpt.isPresent()
-                ? getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRefOpt.get(), imageNo))
-                : getImages(versionRef, imageNo);
+    public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
+        return (null == loopEntryRef) ? getImages(versionRef, imageNo)
+                : getLoopImages(versionRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, imageNo));
     }
 
     public Map<DocumentLanguage, ImageDomainObject> getImages(VersionRef versionRef, int imageNo) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByVersionAndNoWhereLoopEntryRefIsNull(version, imageNo)) {
+        for (Image image : imageRepository.findByVersionAndIndexWhereLoopEntryRefIsNull(version, imageNo)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
         }
 
@@ -249,98 +190,48 @@ public class TextDocumentContentLoader {
     public Map<DocumentLanguage, ImageDomainObject> getLoopImages(VersionRef versionRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+        LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        for (Image image : imageRepository.findByVersionAndNoAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+        for (Image image : imageRepository.findByVersionAndIndexAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
         }
 
         return result;
     }
 
-    public ImageDomainObject getImage(DocRef docRef, int imageNo, Optional<com.imcode.imcms.mapping.container.LoopEntryRef> loopEntryRefOpt) {
-        return loopEntryRefOpt.isPresent()
-                ? getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRefOpt.get(), imageNo))
-                : getImage(docRef, imageNo);
+    public ImageDomainObject getImage(DocRef docRef, int imageNo, com.imcode.imcms.mapping.container.LoopEntryRef loopEntryRef) {
+        return (loopEntryRef == null) ? getImage(docRef, imageNo)
+                : getLoopImage(docRef, TextDocumentDomainObject.LoopItemRef.of(loopEntryRef, imageNo));
     }
 
     public ImageDomainObject getImage(DocRef docRef, int imageNo) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return ImcmsImageUtils.toDomainObject(
-                imageRepository.findByVersionAndLanguageAndNoWhereLoopEntryRefIsNull(version, language, imageNo)
+                imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, language, imageNo)
         );
     }
 
     public ImageDomainObject getLoopImage(DocRef docRef, TextDocumentDomainObject.LoopItemRef loopItemRef) {
         Version version = versionRepository.findByDocIdAndNo(docRef.getId(), docRef.getVersionNo());
-        Language language = languageRepository.findByCode(docRef.getLanguageCode());
-        LoopEntryRef loopEntryRef = new LoopEntryRef(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
+        LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
+        LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
         return ImcmsImageUtils.toDomainObject(
-                imageRepository.findByVersionAndLanguageAndNoAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
+                imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, language, loopItemRef.getEntryNo(), loopEntryRef)
         );
     }
-
 
     public Map<Integer, Loop> getLoops(VersionRef versionRef) {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
 
-        return loopRepository.findByVersion(version).stream().collect(toMap(loop -> loop.getNo(), this::toApiObject));
-    }
-
-    public Loop getLoop(VersionRef versionRef, int loopNo) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-
-        return toApiObject(loopRepository.findByVersionAndNo(version, loopNo));
+        return loopService.getByVersion(version).stream().collect(toMap(Loop::getIndex, loop -> loop));
     }
 
 
-    public Map<Integer, MenuDomainObject> getMenus(VersionRef versionRef) {
-        Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
-
-        return menuRepository.findByVersion(version).stream().collect(toMap(Menu::getNo, this::toDomainObject));
+    private TextDomainObject toDomainObject(TextJPA jpaText) {
+        return (jpaText == null) ? null : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
     }
 
-    public Map<Integer, Integer> getIncludes(int docId) {
-        return includeRepository.findByDocId(docId)
-                .stream().collect(toMap(Include::getNo, Include::getIncludedDocumentId));
-    }
-
-    private TextDomainObject toDomainObject(Text jpaText) {
-        return jpaText == null
-                ? null
-                : new TextDomainObject(jpaText.getText(), jpaText.getType().ordinal());
-    }
-
-    private MenuDomainObject toDomainObject(Menu menu) {
-        MenuDomainObject menuDO = new MenuDomainObject();
-
-        menuDO.setSortOrder(menu.getSortOrder());
-
-        menu.getItems().forEach((referencedDocumentId, menuItem) -> {
-            MenuItemDomainObject menuItemDO = new MenuItemDomainObject();
-            GetterDocumentReference gtr = new GetterDocumentReference(referencedDocumentId, menuItemDocumentGetter);
-
-            menuItemDO.setDocumentReference(gtr);
-            menuItemDO.setSortKey(menuItem.getSortKey());
-            menuItemDO.setTreeSortIndex(menuItem.getTreeSortIndex());
-
-            menuDO.addMenuItemUnchecked(menuItemDO);
-        });
-
-        return menuDO;
-    }
-
-    private Loop toApiObject(com.imcode.imcms.mapping.jpa.doc.content.textdoc.Loop jpaLoop) {
-        if (jpaLoop == null) {
-            return null;
-
-        } else {
-            Map<Integer, Boolean> entries = new ListOrderedMap<>();
-            jpaLoop.getEntries().forEach(entry -> entries.put(entry.getNo(), entry.isEnabled()));
-            return Loop.of(entries, jpaLoop.getNextEntryNo());
-        }
-    }
 }

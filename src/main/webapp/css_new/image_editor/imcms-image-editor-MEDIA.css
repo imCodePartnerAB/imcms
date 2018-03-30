@@ -1,0 +1,131 @@
+@media screen and (max-width: 1000px) {
+    .imcms-image_editor {
+        overflow: hidden;
+        position: relative;
+    }
+
+    .imcms-image_editor__right-side {
+        background-color: #f3f3fc;
+        position: absolute;
+        top: 106px;
+        right: -350px;
+        width: 350px;
+        z-index: 999;
+    }
+
+    .imcms-image_editor__left-side {
+        width: 100%;
+    }
+
+    .imcms-image-characteristics__button {
+        display: block;
+    }
+
+    .imcms-editable-img-controls {
+        background-color: #f3f3fc;
+        position: absolute;
+        left: 0;
+        bottom: -124px;
+        height: 124px;
+        z-index: 990;
+    }
+
+    .imcms-editable-img-area {
+        height: 100%;
+    }
+}
+
+@media screen and (max-width: 790px) {
+    .imcms-editable-img-controls {
+        padding: 0 20px;
+        height: 215px;
+        bottom: -215px;
+    }
+
+    .imcms-editable-img-controls__control-size,
+    .imcms-editable-img-controls__control-scale-n-rotate,
+    .imcms-editable-img-controls__control-view {
+        display: block;
+        float: none;
+        margin: 5px auto;
+        overflow: hidden;
+        width: 100%;
+        height: auto;
+    }
+
+    .imcms-edit-image,
+    .imcms-editable-img-control-tabs {
+        padding-top: 0;
+    }
+
+    .imcms-edit-size {
+        text-align: center;
+    }
+
+    .imcms-edit-size__button,
+    .imcms-edit-size__number {
+        float: none;
+        display: inline-block;
+        overflow: hidden;
+    }
+
+    .imcms-edit-size__button {
+        margin: 0 10px;
+    }
+
+    .imcms-edit-size .imcms-number-box__input {
+        padding: 7px 15px;
+    }
+}
+
+@media screen and (max-width: 735px) {
+    .imcms-image_editor__image-characteristics {
+        padding-top: 30px;
+        position: relative;
+        height: 120px;
+    }
+
+    .imcms-image-characteristic {
+        line-height: 25px;
+        float: none;
+    }
+
+    .imcms-image-characteristic__origin-size {
+        line-height: 25px;
+        display: inline-block;
+        float: none;
+    }
+
+    .imcms-image-characteristics__button {
+        margin: 0;
+        position: absolute;
+        top: 5px;
+    }
+
+    .imcms-image-characteristics__button--bottom-panel {
+        left: 20px;
+    }
+
+    .imcms-image-characteristics__button--right-panel {
+        right: 20px;
+    }
+
+    .imcms-image_editor__left-side {
+        height: 82.6%;
+        height: -webkit-calc(100% - 162px);
+        height: -moz-calc(100% - 162px);
+        height: -o-calc(100% - 162px);
+        height: calc(100% - 162px);
+    }
+
+    .imcms-image_editor__right-side {
+        top: 162px;
+        right: -100%;
+        width: 100%;
+        height: 82.6%;
+        height: -webkit-calc(100% - 162px);
+        height: -moz-calc(100% - 162px);
+        height: -o-calc(100% - 162px);
+        height: calc(100% - 162px);
+    }
+}

@@ -1,0 +1,46 @@
+.imcms-radio__input {
+    display: none;
+}
+
+.imcms-radio__label {
+    padding-left: 20px;
+    position: relative;
+}
+
+.imcms-radio__label:before {
+    content: "";
+    background-color: #fff;
+    border: 1px solid #d3d8de;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 15px;
+    width: 15px;
+}
+
+.imcms-radio__label:after {
+    content: "";
+    background-color: #fff;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    display: none;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+    height: 5px;
+    width: 5px;
+}
+
+.imcms-radio__input:checked + .imcms-radio__label:before {
+    background: #42b070;
+    border-color: #ebedef;
+}
+
+.imcms-radio__input:checked + .imcms-radio__label:after {
+    display: block;
+}

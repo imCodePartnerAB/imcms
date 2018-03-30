@@ -3,13 +3,10 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
-import com.imcode.imcms.mapping.jpa.doc.LanguageRepository;
-import com.imcode.imcms.mapping.jpa.doc.Version;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.CommonContentRepository;
-import com.imcode.imcms.mapping.jpa.doc.content.FileDocFile;
+import com.imcode.imcms.persistence.entity.DocumentFileJPA;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.io.FileInputStreamSource;
@@ -33,20 +30,20 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     private static final int FILE_BUFFER_LENGTH = 2048;
     private static final int DB_FIELD_MAX_LENGTH__FILENAME = 255;
-    protected ImcmsServices services;
-    protected DocRepository docRepository;
     protected VersionRepository versionRepository;
     protected LanguageRepository languageRepository;
-    protected CommonContentRepository commonContentRepository;
-    protected TextDocumentContentSaver textDocumentContentSaver;
+    DocRepository docRepository;
+    TextDocumentContentSaver textDocumentContentSaver;
 
-    public DocumentStoringVisitor(ImcmsServices services) {
-        this.services = services;
-        this.docRepository = services.getManagedBean(DocRepository.class);
-        this.versionRepository = services.getManagedBean(VersionRepository.class);
-        this.languageRepository = services.getManagedBean(LanguageRepository.class);
-        this.commonContentRepository = services.getManagedBean(CommonContentRepository.class);
-        this.textDocumentContentSaver = services.getManagedBean(TextDocumentContentSaver.class);
+    DocumentStoringVisitor(DocRepository docRepository,
+                           VersionRepository versionRepository,
+                           LanguageRepository languageRepository,
+                           TextDocumentContentSaver textDocumentContentSaver) {
+
+        this.docRepository = docRepository;
+        this.versionRepository = versionRepository;
+        this.languageRepository = languageRepository;
+        this.textDocumentContentSaver = textDocumentContentSaver;
     }
 
     /**
@@ -72,7 +69,6 @@ class DocumentStoringVisitor extends DocumentVisitor {
      * 1002_3.xxx - 1002 is a doc id, 3 is a version no and xxx is fileId.
      * 1002_2 - 1002 is a doc id, 2 is a version no and fileId is blank.
      *
-     * @param fileId
      * @return FileDocumentFile filename
      */
     public static String getFilenameForFileDocumentFile(VersionRef versionRef, String fileId) {
@@ -94,9 +90,6 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Saves (possibly rewrites) file if its InputStreamSource has been changed.
-     *
-     * @param fileDocumentFile
-     * @param fileId
      */
     protected void saveFileDocumentFile(VersionRef versionRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                         String fileId) {
@@ -140,13 +133,11 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Saves or updates file document
-     *
-     * @param fileDocument
      */
     public void visitFileDocument(FileDocumentDomainObject fileDocument) {
         docRepository.deleteFileDocContent(fileDocument.getRef());
 
-        Version version = versionRepository.findByDocIdAndNo(fileDocument.getId(), fileDocument.getVersionNo());
+//        Version version = versionRepository.findByDocIdAndNo(fileDocument.getId(), fileDocument.getVersionNo());
 
         for (Map.Entry<String, FileDocumentDomainObject.FileDocumentFile> entry : fileDocument.getFiles().entrySet()) {
             String fileId = entry.getKey();
@@ -158,15 +149,16 @@ class DocumentStoringVisitor extends DocumentVisitor {
             }
 
             boolean isDefaultFile = fileId.equals(fileDocument.getDefaultFileId());
-            FileDocFile fileDocFile = new FileDocFile();
-            fileDocFile.setVersion(version);
-            fileDocFile.setFileId(fileId);
-            fileDocFile.setFilename(filename);
-            fileDocFile.setDefaultFileId(isDefaultFile);
-            fileDocFile.setMimeType(fileDocumentFile.getMimeType());
-            fileDocFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
+            DocumentFileJPA documentFile = new DocumentFileJPA();
+            documentFile.setDocId(fileDocument.getId());
+            documentFile.setVersionIndex(fileDocument.getVersionNo());
+            documentFile.setFileId(fileId);
+            documentFile.setFilename(filename);
+            documentFile.setDefaultFile(isDefaultFile);
+            documentFile.setMimeType(fileDocumentFile.getMimeType());
+            documentFile.setCreatedAsImage(fileDocumentFile.isCreatedAsImage());
 
-            docRepository.saveFileDocFile(fileDocFile);
+            docRepository.saveFileDocFile(documentFile);
 
             saveFileDocumentFile(fileDocument.getVersionRef(), fileDocumentFile, fileId);
         }
@@ -180,7 +172,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
         if (extensions.length() > length) {
             return truncatedFilename;
         }
-        String basename = StringUtils.chomp(filename, extensions);
+        String basename = StringUtils.removeEnd(filename, extensions);
         String truncatedBasename = StringUtils.substring(basename, 0, length - extensions.length());
         truncatedFilename = truncatedBasename + extensions;
         return truncatedFilename;

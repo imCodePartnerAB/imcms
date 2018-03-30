@@ -10,13 +10,14 @@ public class SearchResult<T> {
 
     public SearchResult() {
     }
+
     public SearchResult(List<T> documents, int totalCount) {
         this.documents = documents;
         this.totalCount = totalCount;
     }
 
     public static <T> SearchResult<T> empty() {
-        return new SearchResult<T>(Collections.<T>emptyList(), 0);
+        return new SearchResult<T>(Collections.emptyList(), 0);
     }
 
     public static <T> SearchResult<T> of(List<T> documents, int totalCount) {
