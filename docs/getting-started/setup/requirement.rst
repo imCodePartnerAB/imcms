@@ -11,4 +11,4 @@ Local Development and Hosting
 -----------------------------
 * Java 8 or higher
 * Tomcat 8 or higher
-* SQL CE, SQL Server 2008 and higher or MySQL
+* MySQL 5.7.21 or higher
