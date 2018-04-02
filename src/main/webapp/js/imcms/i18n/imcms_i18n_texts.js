@@ -248,7 +248,6 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     saveAndClose: "Spara och stäng",
                     exif: {
                         button: "Visa exif"
-                        // todo: implement rest part
                     }
                 }
             },
@@ -508,7 +507,6 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     saveAndClose: "Save and close",
                     exif: {
                         button: "Show exif"
-                        // todo: implement rest part
                     }
                 }
             },
