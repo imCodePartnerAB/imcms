@@ -10,12 +10,19 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
         "sv": {
             panel: {
                 public: "offentlig",
+                publicTitle: 'Visar den publicerade vyn',
                 edit: "redigera",
+                editTitle: 'Visar den redigerbara arbetsversionen',
                 preview: "förhandsvisning",
+                previewTitle: 'Previes den redigerbara arbetsversionen',
                 publish: "publicera offline",
+                publishTitle: 'Publicerar arbetsversionen direkt',
                 pageInfo: "sida info",
+                pageInfoTitle: 'Visar alla sidinställningar och metadata',
                 document: "dokumentera",
+                documentTitle: 'Visar dokumentredigeraren',
                 admin: "administration",
+                adminTitle: 'Visar alla systeminställningar (endast för systemadministratörer)',
                 logout: "logga ut"
             },
             pageInfo: {
@@ -269,12 +276,19 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
         "en": {
             panel: {
                 public: 'public',
+                publicTitle: 'Shows the published view',
                 edit: 'edit',
+                editTitle: 'Shows the editable working version',
                 preview: "preview",
+                previewTitle: 'Previes the editable working version',
                 publish: "publish offline",
+                publishTitle: 'Publishes the working version directly',
                 pageInfo: "page info",
+                pageInfoTitle: 'Shows all page-settings and meta-data',
                 document: "document",
+                documentTitle: 'Shows the document editor',
                 admin: "admin",
+                adminTitle: 'Shows all system settings (only for system administrators)',
                 logout: "log out"
             },
             pageInfo: {

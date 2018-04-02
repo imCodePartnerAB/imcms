@@ -57,12 +57,12 @@
             <param-name>cacheMarkers</param-name>
             <!-- Note that markers will be searched in request URL using String#contains() method -->
             <param-value>
-                .jpg
-                .gif
-                .png
-                .css
-                .js
-                .properties
+                <!--.jpg-->
+                <!--.gif-->
+                <!--.png-->
+                <!--.css-->
+                <!--.js-->
+                <!--.properties-->
             </param-value>
         </init-param>
     </filter>
