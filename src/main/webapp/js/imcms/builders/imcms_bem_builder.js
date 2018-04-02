@@ -81,7 +81,7 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
      *     var bemClassSelector = BEM.buildClassSelector("one", "two", "three"); // = ".one__two--three"
      * </code></pre>
      *
-     * @param block {null|string}
+     * @param block {*|string}
      * @param element {null|string?}
      * @param modifier {string?}
      * @returns {string} selector for BEM-styled class
