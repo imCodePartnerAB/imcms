@@ -5,7 +5,8 @@ Browsers
 --------
 * Firefox (Latest)
 * Chrome (Latest)
-* IE10+ (will not always work correctly in lower versions)
+* Safari (Latest)
+* IE10+
 
 Local Development and Hosting
 -----------------------------
