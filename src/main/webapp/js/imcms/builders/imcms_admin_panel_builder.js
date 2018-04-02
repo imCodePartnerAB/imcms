@@ -41,6 +41,7 @@ Imcms.define("imcms-admin-panel-builder",
             function buildPanelButton(buttonData) {
                 var attributes = {
                     html: buttonData.content,
+                    title: buttonData.title,
                     href: buttonData.href,
                     click: buttonData.onClick,
                     style: buttonData.style
@@ -66,6 +67,7 @@ Imcms.define("imcms-admin-panel-builder",
                         tag: '<a>',
                         href: imcms.contextPath + '/' + imcms.document.id,
                         content: texts.public,
+                        title: texts.publicTitle,
                         modifiers: ["public"],
                         style: editContentDisplayProperty
                     }, {
@@ -73,6 +75,7 @@ Imcms.define("imcms-admin-panel-builder",
                         tag: '<a>',
                         href: imcms.contextPath + "/servlet/AdminDoc?meta_id=" + imcms.document.id,
                         content: texts.edit,
+                        title: texts.editTitle,
                         modifiers: ["edit"],
                         style: editContentDisplayProperty
                     }, {
@@ -80,12 +83,14 @@ Imcms.define("imcms-admin-panel-builder",
                         tag: "<a>",
                         href: imcms.contextPath + '/api/viewDoc/' + imcms.document.id + "?working-preview=true",
                         content: texts.preview,
+                        title: texts.previewTitle,
                         modifiers: ["preview"].concat(versionedContentModifiers),
                         style: editContentDisplayProperty
                     }, {
                         name: 'publish_offline',
                         tag: "<li>",
                         content: texts.publish,
+                        title: texts.publishTitle,
                         onClick: publishDoc,
                         modifiers: ["publish-of"].concat(versionedContentModifiers, publishVersionButtonModifiers),
                         style: adminDisplayProperty
@@ -93,6 +98,7 @@ Imcms.define("imcms-admin-panel-builder",
                         name: 'page_info',
                         tag: "<li>",
                         content: texts.pageInfo,
+                        title: texts.pageInfoTitle,
                         onClick: showPageInfo,
                         modifiers: ["page-info"],
                         style: editDocInfoDisplayProperty
@@ -100,6 +106,7 @@ Imcms.define("imcms-admin-panel-builder",
                         name: 'document',
                         tag: "<li>",
                         content: texts.document,
+                        title: texts.documentTitle,
                         onClick: initDocumentEditor,
                         modifiers: ["document"],
                         style: adminDisplayProperty
@@ -108,6 +115,7 @@ Imcms.define("imcms-admin-panel-builder",
                         tag: "<a>",
                         href: imcms.contextPath + "/servlet/AdminManager",
                         content: texts.admin,
+                        title: texts.adminTitle,
                         modifiers: ["admin"],
                         style: adminDisplayProperty
                     }, {
