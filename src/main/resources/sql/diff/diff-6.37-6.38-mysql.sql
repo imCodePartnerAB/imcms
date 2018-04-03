@@ -11,6 +11,13 @@ ALTER TABLE template
 INSERT INTO template (template_name, is_hidden) VALUES ('demo', 0)
 ON DUPLICATE KEY UPDATE template_name = template_name;
 
+insert into template (template_name, is_hidden)
+  select
+    tg.template_name,
+    0
+  from templates_cref tg
+ON DUPLICATE KEY UPDATE template.template_name = tg.template_name;
+
 ALTER TABLE templategroups
   RENAME imcms_template_group;
 
