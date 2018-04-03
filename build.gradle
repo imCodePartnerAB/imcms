@@ -126,6 +126,11 @@ def buildProps = new Properties()
 def tmpProps = new Properties()
 def tmpDir = "${buildDir}/tmp/"
 
+def langs = new ArrayList()
+langs.add("eng")
+langs.add("swe")
+
+
 file("build.properties").withInputStream { buildProps.load(it) }
 
 task copyProperties(type: Copy) {
@@ -161,6 +166,18 @@ war {
         include '*.json'
         into "/WEB-INF/conf"
         filter(ReplaceTokens, tokens: tmpProps)
+    }
+
+    def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/"
+    def langProperties
+    langs.each { lang ->
+        webInf {
+            langProperties = new Properties()
+            file("src/main/resources-conf/imcms_${lang}.properties").withInputStream { langProperties.load(it) }
+            from "${rootFolderForTemplates}/lang"
+            filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
+            into "/WEB-INF/templates/${lang}"
+        }
     }
 }
 
