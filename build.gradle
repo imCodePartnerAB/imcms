@@ -128,7 +128,7 @@ def tmpDir = "${buildDir}/tmp/"
 
 file("build.properties").withInputStream { buildProps.load(it) }
 
-task copyFiles(type: Copy) {
+task copyProperties(type: Copy) {
     from "${projectDir}"
     include "build.properties"
 
@@ -138,13 +138,13 @@ task copyFiles(type: Copy) {
     into tmpDir
 }
 
-task importProperties(dependsOn: copyFiles) {
+task importProperties(dependsOn: copyProperties) {
     doLast {
         file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
     }
 }
 
-copyFiles.finalizedBy importProperties
+copyProperties.finalizedBy importProperties
 
 tasks.war.dependsOn importProperties
 
