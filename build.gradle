@@ -122,28 +122,31 @@ dependencies {
     testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.13.RELEASE'
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
 }
-
 def buildProps = new Properties()
 def tmpProps = new Properties()
+def tmpDir = "${buildDir}/tmp/"
 
 file("build.properties").withInputStream { buildProps.load(it) }
 
 task copyFiles(type: Copy) {
-    println buildProps
-    from "${projectDir}/"
+    from "${projectDir}"
     include "build.properties"
 
     filter(ReplaceTokens, tokens: buildProps)
     filter(ReplaceTokens, tokens: buildProps)
-    into "${buildDir}/tmp/"
+    into tmpDir
 
 }
 
 task importProperties(dependsOn: copyFiles) {
-    file("${buildDir}/tmp/build.properties").withInputStream { tmpProps.load(it) }
+    doLast {
+        file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
+    }
 }
 
-tasks.war.dependsOn("importProperties")
+copyFiles.finalizedBy importProperties
+
+tasks.war.dependsOn importProperties
 
 war {
 //    duplicatesStrategy 'include'
@@ -160,7 +163,7 @@ war {
     }
 }
 
-task explodedWar(type: Sync) {
+task explodedWar(type: Sync, dependsOn: war) {
     into "${buildDir}/exploded"
     with war
 }
