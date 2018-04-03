@@ -168,15 +168,24 @@ war {
         filter(ReplaceTokens, tokens: tmpProps)
     }
 
-    def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/"
+    def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
+    def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
+
     def langProperties
     langs.each { lang ->
+        langProperties = new Properties()
+        file("src/main/resources-conf/imcms_${lang}.properties").withInputStream { langProperties.load(it) }
+
         webInf {
-            langProperties = new Properties()
-            file("src/main/resources-conf/imcms_${lang}.properties").withInputStream { langProperties.load(it) }
-            from "${rootFolderForTemplates}/lang"
+            from rootFolderForTemplates
             filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
             into "/WEB-INF/templates/${lang}"
+        }
+
+        webInf {
+            from rootFolderForImcmsTemplates
+            filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
+            into "/imcms/${lang}"
         }
     }
 }
