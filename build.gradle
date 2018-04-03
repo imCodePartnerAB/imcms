@@ -167,7 +167,3 @@ task explodedWar(type: Sync, dependsOn: war) {
     into "${buildDir}/exploded"
     with war
 }
-
-def props = new Properties()
-
-file("src/main/resources-conf/server.properties").withInputStream { props.load(it) }
