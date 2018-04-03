@@ -497,11 +497,16 @@ Imcms.define(
                     }
                 }
 
+                function copyStyleToTinymceSpecificAttribute($element) {
+                    $element.attr("data-mce-style", $element.attr("style"));
+                }
+
                 function removeAlign() {
                     this.css({
                         float: "none",
                         margin: 0
                     });
+                    copyStyleToTinymceSpecificAttribute(this);
                 }
 
                 function doCenterAlign() {
@@ -509,6 +514,7 @@ Imcms.define(
                         float: "none",
                         margin: "0 auto"
                     });
+                    copyStyleToTinymceSpecificAttribute(this);
                 }
 
                 function doLeftAlign() {
@@ -516,6 +522,7 @@ Imcms.define(
                         float: "left",
                         margin: 0
                     });
+                    copyStyleToTinymceSpecificAttribute(this);
                 }
 
                 function doRightAlign() {
@@ -523,6 +530,7 @@ Imcms.define(
                         float: "right",
                         margin: "0 auto"
                     });
+                    copyStyleToTinymceSpecificAttribute(this);
                 }
 
                 var alignNameToAction = {

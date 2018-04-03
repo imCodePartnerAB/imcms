@@ -10,111 +10,118 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
         "sv": {
             panel: {
                 public: "offentlig",
+                publicTitle: 'Visar den publicerade vyn',
                 edit: "redigera",
+                editTitle: 'Visar den redigerbara arbetsversionen',
                 preview: "förhandsvisning",
-                publish: "publicera offline",
-                pageInfo: "sida info",
-                document: "dokumentera",
-                admin: "administration",
+                previewTitle: 'Visar den redigerbara arbetsversionen',
+                publish: "publicera",
+                publishTitle: 'Publicerar arbetsversionen direkt',
+                pageInfo: "sid-info",
+                pageInfoTitle: 'Visar alla sidinställningar och metadata',
+                document: "dokument",
+                documentTitle: 'Visar alla dokument i dokumentredigeraren',
+                admin: "admin",
+                adminTitle: 'Visar alla systeminställningar (endast för systemadministratörer)',
                 logout: "logga ut"
             },
             pageInfo: {
-                document: "Dokumentera",
+                document: "Dokument",
                 newDocument: "Nytt dokument",
                 confirmMessage: "Spara ändringar?",
                 title: {
-                    name: "Titel",
-                    title: "Titel",
-                    menuText: "Titel",
-                    linkToImage: "Meny text",
+                    name: "Rubrik",
+                    title: "Rubrik",
+                    menuText: "Menytext",
+                    linkToImage: "Bild URL",
                     linkToImagePlaceholder: "Länk till bild",
-                    chooseImage: "Bildväg",
-                    showIn: "välja...",
-                    sameFrame: "Visa in",
-                    newWindow: "Samma ram",
-                    replaceAll: "Nytt fönster",
-                    alias: "Ersätt alla",
-                    aliasPlaceholder: "Dokument alias",
-                    missingLangRule: "detta-dokument-alias",
-                    showInDefault: "Om det begärda språket saknas:",
-                    doNotShow: "Visa i standardspråk om det är aktiverat"
+                    chooseImage: "Välj bild",
+                    showIn: "Visa i",
+                    sameFrame: "Samma ram",
+                    newWindow: "Nytt fönster",
+                    replaceAll: "Ersätt alla",
+                    alias: "Dokumentets alias",
+                    aliasPlaceholder: "detta-dokument-alias",
+                    missingLangRule: "Om det begärda språket saknas:",
+                    showInDefault: "Visa i standardspråk om det är aktiverat",
+                    doNotShow: "Visa inte alls"
                 },
                 lifeCycle: {
                     name: "Livscykel",
                     status: {
                         title: "Status",
-                        inProcess: "Pågående",
+                        inProcess: "Nytt",
                         disapproved: "Ej godkänd",
                         approved: "Godkänd"
                     },
                     now: "Nu",
-                    clear: "Klar",
+                    clear: "Rensa",
                     published: {
-                        title: "Publicerat",
+                        title: "Publicerad",
                         dateTitle: "Ange publicerat datum",
                         timeTitle: "Ange publicerad tid",
-                        dateTimeTitle: "Sparade datum och tid för publicering"
+                        dateTimeTitle: "Sparad datum / tid"
                     },
                     archived: {
                         title: "Arkiverat ",
-                        dateTitle: "Ange arkiverat datum",
-                        timeTitle: "Ange arkiverad tid",
-                        dateTimeTitle: "Sparade arkiverad datum-tid"
+                        dateTitle: "Ange datum för arkivering",
+                        timeTitle: "Ange tid datum för arkivering",
+                        dateTimeTitle: "Sparad arkiveringsdatum-tid"
                     },
                     publicationEnd: {
-                        title: "Publiceringsänden",
-                        dateTitle: "Ange publikationsslut datum",
-                        timeTitle: "Ange publikationsslut tid",
-                        dateTimeTitle: "Sparat slutet av publikationen datum-tid"
+                        title: "Publicering slutar",
+                        dateTitle: "Ange slutdatum för publicering",
+                        timeTitle: "Ange sluttid för publicering",
+                        dateTimeTitle: "Sparat slutdatum-tid"
                     },
                     publisher: "Utgivare",
                     currentVersion: "Aktuell version:",
-                    versionHasChanges: "Denna offline version har ändringar.",
-                    publishMessage: "Vänligen tryck \"Spara och publicera den här versionen\" för att publicera som: version"
+                    versionHasChanges: "Denna arbetsversion har ändringar",
+                    publishMessage: "Tryck \"Spara och publicera den här versionen\" för att publicera"
                 },
                 appearance: {
                     name: "Utseende",
                     template: "Mall",
-                    defaultChildTemplate: "Standard barnmall"
+                    defaultChildTemplate: "Standardmall för nya dokument"
                 },
                 keywords: {
                     name: "Nyckelord",
                     title: "Nyckelord",
                     placeholder: "nyckelord",
-                    add: "TILLÄGGA+",
-                    disableSearch: "Inaktivera sökningen"
+                    add: "LÄGG TILL+",
+                    disableSearch: "Inaktivera sökning"
                 },
                 categories: {
                     name: "Kategorier"
                 },
                 access: {
-                    name: "Tillgång",
+                    name: "Behörigheter",
                     role: "roll",
-                    view: "se",
+                    view: "läsa/se",
                     edit: "redigera",
                     restricted_1: "begränsad 1",
                     restricted_2: "begränsad 2",
                     addRole: "Lägg till roll"
                 },
                 permissions: {
-                    name: "Tillstånd",
+                    name: "Behörighetsinställningar",
                     editText: "Redigera text",
                     editMenu: "Redigera meny",
                     editImage: "Redigera bild",
                     editLoop: "Redigera loop",
-                    editDocInfo: "Redigera dok info"
+                    editDocInfo: "Redigera sid-info"
                 },
                 status: {
                     name: "Status",
                     created: "Skapad",
                     modified: "Ändrad",
-                    archived: "Arkiverat",
-                    published: "Publicerat",
-                    publicationEnd: "Publiceringsänden",
+                    archived: "Arkiverad",
+                    published: "Publicerad",
+                    publicationEnd: "Publicering avslutad",
                     by: "Av"
                 },
                 file: {
-                    name: "Files",
+                    name: "Filer",
                     upload: "Ladda upp",
                     id: "ID",
                     fileName: "Namn",
@@ -126,21 +133,21 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 },
                 buttons: {
                     ok: "ok",
-                    cancel: "annullera",
+                    cancel: "avbryt",
                     saveAndPublish: "spara och publicera den här versionen"
                 }
             },
             modal: {
-                title: "Bekräftelse",
+                title: "Bekräfta",
                 yes: "Ja",
                 no: "Nej"
             },
             editors: {
                 document: {
                     title: "Dokumenthanterare",
-                    newDoc: "Ny",
+                    newDoc: "Nytt dokument",
                     freeText: "Fri text",
-                    freeTextPlaceholder: "Skriv för att hitta dokument",
+                    freeTextPlaceholder: "Skriv för att söka dokument",
                     owner: "Ägare",
                     category: "Kategori",
                     sort: {
@@ -153,7 +160,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     status: {
                         published: "Godkänd, publicerad",
                         publishedWaiting: "Godkänd, väntar",
-                        inProcess: "Ny",
+                        inProcess: "Nytt, under arbete",
                         disapproved: "Ej godkänd",
                         archived: "Arkiverat",
                         passed: "Publiceringsänden"
@@ -162,39 +169,39 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 newDocument: {
                     title: "Skapa nytt dokument",
                     textDoc: "Textdokument",
-                    fileDoc: "File Document",
-                    urlDoc: "URL-dokument"
+                    fileDoc: "Uppladdad fil",
+                    urlDoc: "Länk (URL)"
                 },
                 newDocumentProfile: {
                     title: "Skapa nytt dokument",
                     createDocButton: "Skapa",
-                    chooseProfileOrParent: "Vilka inställningar ska användas för att skapa det nya dokumentet:",
-                    validationErrorMessage: "Du måste välja antingen befintlig profil eller ange TEXT-dokumentidentifierare (meta-id eller alias)",
+                    chooseProfileOrParent: "Välj profil för det nya dokumentet:",
+                    validationErrorMessage: "Du måste välja en befintlig profil eller ange meta-id eller alias för ett textdokument",
                     buildByProfile: "Välj efter profil",
-                    buildByParent: "Alla textdokument ID",
-                    buildByCurrentDocId: "Detta dokument är",
+                    buildByParent: "Välj valfritt textdokuments ID",
+                    buildByCurrentDocId: "Välj detta dokument som profil",
                     selectProfile: "Välj profil",
-                    selectParent: "Välj förälder"
+                    selectParent: "Välj 'förälder'"
                 },
                 menu: {
                     newDoc: "Ny",
-                    title: "Menyredigerare",
+                    title: "Meny-redigerare",
                     id: "ID",
-                    docTitle: "Titel",
+                    docTitle: "Rubrik",
                     status: "Status",
                     removeConfirmation: "Vill du ta bort menyalternativet \"",
                     saveAndClose: "Spara och stäng"
                 },
                 loop: {
-                    title: "Loop Editor",
+                    title: ";odul-redigerare",
                     createNew: "Skapa ny",
                     saveAndClose: "Spara och stäng",
                     id: "ID",
-                    content: "textinnehåll",
+                    content: "innehåll",
                     isEnabled: "är aktiverad"
                 },
                 content: {
-                    title: "Content Manager",
+                    title: "Bildarkiv",
                     hideFolders: "Dölj mappar",
                     showFolders: "Visa mappar",
                     upload: "Ladda upp",
@@ -202,35 +209,35 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     removeFolderMessage: "Vill du ta bort mapp \"",
                     removeImageConfirm: "Vill du ta bort bilden ",
                     newFolderName: "Nytt mappnamn",
-                    add: "TILLÄGGA+"
+                    add: "LÄGG TILL+"
                 },
                 image: {
-                    title: "Bildredigerare",
+                    title: "Bild-redigerare",
                     panels: {
                         bottom: {
                             hide: "Dölj bottenpanelen",
                             show: "Visa bottenpanelen"
                         },
                         right: {
-                            hide: "Dölj höger panel",
-                            show: "Visa rätt panel"
+                            hide: "Dölj högerpanelen",
+                            show: "Visa högerpanelen"
                         }
                     },
                     align: {
-                        none: "Justera är inte angivet.",
-                        center: "Justera tillämpas endast om det finns en bild i textredigeraren och det krävs att ändringar i textredigeraren sparas, 'imcms-image-align-center' klass läggs till för vanlig imcms bildtagare så utvecklaren ska hantera den.",
-                        left: "Justera tillämpas endast om det finns en bild i textredigeraren och det krävs att ändringar i textredigeraren sparas, 'imcms-image-align-left' klass läggs till för vanlig imcms bildtagare så utvecklaren ska hantera den.",
-                        right: "Justera tillämpas endast om det finns en bild i textredigeraren och det krävs att ändringar i textredigeraren sparas, 'imcms-image-align-right' klass läggs till för vanlig imcms bildtagare så utvecklaren ska hantera den."
+                        none: "Ingen justering",
+                        center: "Fungerar endast om funktionen har implementerats av utvecklaren. [Utvecklarinformation: 'imcms-image-align-center' klass läggs till för vanlig imcms bildtagg]",
+                        left: "Fungerar endast om funktionen har implementerats av utvecklaren. [Utvecklarinformation: 'imcms-image-align-left' klass läggs till för vanlig imcms bildtagg]",
+                        right: "Fungerar endast om funktionen har implementerats av utvecklaren. [Utvecklarinformation: 'imcms-image-align-center' klass läggs till för vanlig imcms bildtagg]"
                     },
-                    proportionsButtonTitle: "Aktivera/inaktivera spara bildandelar",
-                    displaySize: "Skärmstorlek",
+                    proportionsButtonTitle: "Bevara bildens proportioner Av/På",
+                    displaySize: "Visad storlek",
                     height: "Höjd",
                     width: "Bredd",
                     preview: "Förhandsvisning",
                     original: "Original",
                     selectImage: "Välj bild",
-                    altText: "Alt text",
-                    imageLink: "Bildlänk",
+                    altText: "Alt-text",
+                    imageLink: "Bildlänk (URL)",
                     allLangs: "Alla språk",
                     advanced: "Avancerad",
                     simple: "Enkel",
@@ -239,30 +246,29 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     right: "höger",
                     bottom: "botten",
                     left: "vänster",
-                    spaceAround: "Space around image",
-                    cropCoords: "Crop Coordinates",
+                    spaceAround: "Luft runt bild",
+                    cropCoords: "Krop-koordinater",
                     fileFormat: "Filformat",
                     alignment: "Textjustering",
-                    altTextConfirm: "Alternativ text saknas. Är du säker på att fortsätta?",
+                    altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
                     removeAndClose: "Ta bort och stäng",
                     saveAndClose: "Spara och stäng",
                     exif: {
-                        button: "Visa exif"
-                        // todo: implement rest part
+                        button: "Visa exif info"
                     }
                 }
             },
             textHistory: {
                 title: "Texthistorik",
-                cancel: "Annullera",
+                cancel: "Avbryt",
                 writeToText: "Skriv till textfält",
                 viewSource: "Visa källa",
                 viewText: "Visa text"
             },
             textValidation: {
-                title: "Valideringsresultat",
+                title: "Validering på W3C",
                 ok: "OK",
-                output: "Valideringsutgång: ",
+                output: "Valideringsresultat: ",
                 errors: " Fel",
                 warnings: " Varningar"
             }
@@ -270,12 +276,19 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
         "en": {
             panel: {
                 public: 'public',
+                publicTitle: 'Shows the published view',
                 edit: 'edit',
+                editTitle: 'Shows the editable working version',
                 preview: "preview",
+                previewTitle: 'Previews the editable working version',
                 publish: "publish offline",
+                publishTitle: 'Publishes the working version directly',
                 pageInfo: "page info",
+                pageInfoTitle: 'Shows all page settings and meta-data',
                 document: "document",
+                documentTitle: 'Shows all documents in the document editor',
                 admin: "admin",
+                adminTitle: 'Shows all system settings (only for system administrators)',
                 logout: "log out"
             },
             pageInfo: {
@@ -303,7 +316,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: "Life Cycle",
                     status: {
                         title: "Status",
-                        inProcess: "In Process",
+                        inProcess: "New",
                         disapproved: "Disapproved",
                         approved: "Approved"
                     },
@@ -311,8 +324,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     clear: "Clear",
                     published: {
                         title: "Published",
-                        dateTitle: "Set published date",
-                        timeTitle: "Set published time",
+                        dateTitle: "Set publish date",
+                        timeTitle: "Set publish time",
                         dateTimeTitle: "Saved publish date-time"
                     },
                     archived: {
@@ -330,7 +343,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     publisher: "Publisher",
                     currentVersion: "Current version:",
                     versionHasChanges: "This offline version has changes.",
-                    publishMessage: "Please press \"Save and publish this version\" to publish as: version "
+                    publishMessage: "Please press \"Save and publish this version\" to publish"
                 },
                 appearance: {
                     name: "Appearance",
@@ -357,7 +370,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     addRole: "Add role"
                 },
                 permissions: {
-                    name: "Permissions",
+                    name: "Permission settings",
                     editText: "Edit text",
                     editMenu: "Edit menu",
                     editImage: "Edit image",
@@ -391,7 +404,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 }
             },
             modal: {
-                title: "Confirmation",
+                title: "Confirm",
                 yes: "Yes",
                 no: "No"
             },
@@ -428,13 +441,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 newDocumentProfile: {
                     title: "Create new document",
                     createDocButton: "Create",
-                    chooseProfileOrParent: "What settings are to be used to create the new document:",
-                    validationErrorMessage: "You have to choose either existing profile or specify TEXT document identifier (meta id or alias)",
-                    buildByProfile: "Select by profile",
-                    buildByParent: "Any text document id",
-                    buildByCurrentDocId: "This document’s",
+                    chooseProfileOrParent: "What settings shall be used to create the new document?",
+                    validationErrorMessage: "You have to choose either an existing profile or specify a text document meta id or alias",
+                    buildByProfile: "Use a profile",
+                    buildByParent: "Use any text document id",
+                    buildByCurrentDocId: "This document’s settings",
                     selectProfile: "Select profile",
-                    selectParent: "Select parent"
+                    selectParent: "Select parent document"
                 },
                 menu: {
                     newDoc: "New",
@@ -442,7 +455,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     id: "ID",
                     docTitle: "Title",
                     status: "Status",
-                    removeConfirmation: "Do you want to remove menu item \"",
+                    removeConfirmation: "Do you want to remove the menu item \"",
                     saveAndClose: "Save and close"
                 },
                 loop: {
@@ -478,11 +491,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     },
                     align: {
                         none: "Align is not specified.",
-                        center: "Align is applied only in case of image in text editor and saving changes in text editor is required, 'imcms-image-align-center' class is added for regular imcms image tag so developer should handle with it.",
-                        left: "Align is applied only in case of image in text editor and saving changes in text editor is required, 'imcms-image-align-left' class is added for regular imcms image tag so developer should handle with it.",
-                        right: "Align is applied only in case of image in text editor and saving changes in text editor is required, 'imcms-image-align-right' class is added for regular imcms image tag so developer should handle with it."
+                        center: "Works only if allowed by developer. [Developer info: 'imcms-image-align-center' class must be added for regular imcms image tag]",
+                        left: "Works only if allowed by developer. [Developer info: 'imcms-image-align-left' class must be added for regular imcms image tag]",
+                        right: "Works only if allowed by developer. [Developer info: 'imcms-image-align-right' class must be added for regular imcms image tag]"
                     },
-                    proportionsButtonTitle: "Enable/disable saving image proportions",
+                    proportionsButtonTitle: "Keep image proportion On/Off",
                     displaySize: "Display size",
                     height: "Height",
                     width: "Width",
@@ -490,10 +503,10 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     original: "Original",
                     selectImage: "Select Image",
                     altText: "Alt text",
-                    imageLink: "Image link",
+                    imageLink: "Image link (URL)",
                     allLangs: "All languages",
                     advanced: "Advanced",
-                    simple: "Simple",
+                    simple: "Standard",
                     none: "None",
                     top: "top",
                     right: "right",
@@ -503,12 +516,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     cropCoords: "Crop Coordinates",
                     fileFormat: "File format",
                     alignment: "Text alignment",
-                    altTextConfirm: "Alternate text is missing. Are you sure to continue?",
+                    altTextConfirm: "Alternate text is missing. Are you sure you wish to continue?",
                     removeAndClose: "Remove and close",
                     saveAndClose: "Save and close",
                     exif: {
-                        button: "Show exif"
-                        // todo: implement rest part
+                        button: "Show exif info"
                     }
                 }
             },
@@ -520,9 +532,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 viewText: "View Text"
             },
             textValidation: {
-                title: "Validation Result",
+                title: "Validation on W3C",
                 ok: "OK",
-                output: "Validation Output: ",
+                output: "Validation result: ",
                 errors: " Errors",
                 warnings: " Warnings"
             }

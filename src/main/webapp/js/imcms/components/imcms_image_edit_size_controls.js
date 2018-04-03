@@ -139,6 +139,7 @@ Imcms.define(
                     var newWidth = +$(this).val();
 
                     if (isNaN(newWidth) || newWidth < 0) {
+                        $(this).val($(this).val().replace(/[^0-9]/g, ''));
                         return;
                     }
 
@@ -150,6 +151,7 @@ Imcms.define(
                     var newHeight = +$(this).val();
 
                     if (isNaN(newHeight) || newHeight < 0) {
+                        $(this).val($(this).val().replace(/[^0-9]/g, ''));
                         return;
                     }
 
@@ -162,7 +164,6 @@ Imcms.define(
                     placeholder: texts.height,
                     text: "H",
                     error: "Error",
-                    positive: true,
                     onValidChange: onValidHeightChange
                 });
 
@@ -180,7 +181,6 @@ Imcms.define(
                     placeholder: texts.width,
                     text: "W",
                     error: "Error",
-                    positive: true,
                     onValidChange: onValidWidthChange
                 });
 
