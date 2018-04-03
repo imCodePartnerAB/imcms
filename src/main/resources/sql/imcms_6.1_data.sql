@@ -40,7 +40,7 @@ SET @start_document__text1__english = 'Welcome to imCMS';
 SET @start_document__text2__english = '<p><a href="<?imcms:contextpath?>/login/" title="Link to login-page"><b>Log in!</b></a></p>
   <p><a href="<?imcms:contextpath?>/servlet/SearchDocuments" target="_blank" title="Link to search-page"><b>Search-page</b></a><br/>
   Opens in new window.</p>
-  <p><a href="@documentationwebappurl@/" target="_blank" title="Link to documentation-site"><b>Documentation</b></a><br/>
+  <p><a href="@documentation-host@/" target="_blank" title="Link to documentation-site"><b>Documentation</b></a><br/>
   External site, opens in new window.</p>
   <p><a href="http://www.imcms.net" target="_blank" title="Link to www.imcms.net"><b>More about imCMS</b></a><br/>
   imCMS Product-site. External site, opens in new window.</p>
@@ -56,7 +56,7 @@ SET @start_document__text1__swedish = 'Välkommen till imCMS';
 SET @start_document__text2__swedish = '<p><a href="<?imcms:contextpath?>/login/" title="Länk till inloggningssida"><b>Logga in!</b></a></p>
   <p><a href="<?imcms:contextpath?>/servlet/SearchDocuments" target="_blank" title="Länk till söksida"><b>Söksida</b></a><br/>
   Öppnas i nytt fönster.</p>
-  <p><a href="@documentationwebappurl@/" target="_blank" title="Länk till dokumentationssajt"><b>Dokumentation</b></a><br/>
+  <p><a href="@documentation-host@/" target="_blank" title="Länk till dokumentationssajt"><b>Dokumentation</b></a><br/>
   Extern sajt, öppnas i nytt fönster.</p>
   <p><a href="http://www.imcms.net" target="_blank" title="Länk till www.imcms.net"><b>Mer om imCMS</b></a><br/>
   Produktsajt om imCMS. Extern sajt, öppnas i nytt fönster.</p>

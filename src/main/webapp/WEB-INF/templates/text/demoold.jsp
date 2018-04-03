@@ -11,7 +11,7 @@
 
     // TODO: Add support for imCMS versions > 5
 
-    String documentationUrl = "@documentationwebappurl@";
+    String documentationUrl = "@documentation-host@";
 
     Perl5Util re = new Perl5Util();
 
