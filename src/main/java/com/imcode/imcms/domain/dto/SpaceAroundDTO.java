@@ -5,13 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Embeddable;
-
 @Data
-@Embeddable
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-class SpaceAroundDTO extends SpaceAround {
+public class SpaceAroundDTO extends SpaceAround {
 
     private int top;
 

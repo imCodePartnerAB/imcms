@@ -2,8 +2,10 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
+import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
@@ -11,7 +13,12 @@ import imcode.server.user.RoleGetter;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class Document implements Serializable {
 
@@ -150,6 +157,16 @@ public class Document implements Serializable {
     @SuppressWarnings("unused")
     public void setPermissionSetTypeForRole(Role role, Meta.Permission permission) {
         this.internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), permission);
+    }
+
+    @SuppressWarnings("unused")
+    public Meta.Permission getPermissionSetIdForRole(Role role) {
+        return this.internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId());
+    }
+
+    @SuppressWarnings("unused")
+    public RestrictedPermission getDocumentPermissionSetForUser() {
+        return Imcms.getServices().getAccessService().getEditPermission(Imcms.getUser().getId(), getId());
     }
 
     @Deprecated

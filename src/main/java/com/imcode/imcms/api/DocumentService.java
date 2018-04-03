@@ -4,7 +4,15 @@ import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.DocumentVisitor;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.XmlDocumentBuilder;
 import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
@@ -93,6 +101,40 @@ public class DocumentService {
 
     public FileDocument createNewFileDocument(Document parent) throws NoPermissionException {
         return (FileDocument) createNewDocument(DocumentTypeDomainObject.FILE_ID, parent);
+    }
+
+    /**
+     * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
+     *                         or the document name also known as "alias".
+     * @return The document
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
+     */
+    public UrlDocument getUrlDocument(String documentIdString) throws NoPermissionException {
+        return (UrlDocument) getDocument(documentIdString);
+    }
+
+    /**
+     * @param documentId The id number of the document requested, also known as "meta_id"
+     * @return The document
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
+     */
+    public UrlDocument getUrlDocument(int documentId) throws NoPermissionException {
+        return (UrlDocument) getDocument(documentId);
+    }
+
+    public CategoryType getCategoryType(int categoryTypeId) {
+        final CategoryTypeDomainObject categoryType = getCategoryMapper().getCategoryTypeById(categoryTypeId);
+        return returnCategoryTypeAPIObjectOrNull(categoryType);
+    }
+
+    public SearchQuery parseLuceneSearchQuery(String query) throws BadQueryException {
+        return new LuceneParsedQuery(query);
+    }
+
+    public org.w3c.dom.Document getXmlDomForDocument(Document document) {
+        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(contentManagementSystem.getCurrentUser().getInternal());
+        xmlDocumentBuilder.addDocument(document.getInternal());
+        return xmlDocumentBuilder.getXmlDocument();
     }
 
     private Document createNewDocument(int doctype, Document parent) throws NoPermissionException {
@@ -200,7 +242,7 @@ public class DocumentService {
     }
 
 
-    public List getDocuments(final SearchQuery query) throws SearchException {
+    public List<Document> getDocuments(final SearchQuery query) throws SearchException {
         try {
             final List<DocumentDomainObject> documentList = documentMapper.getDocumentIndex().search(new DocumentQuery() {
                 public Query getQuery() {
@@ -247,8 +289,7 @@ public class DocumentService {
     }
 
     public Document[] search(SearchQuery query) throws SearchException {
-        List documents = getDocuments(query);
-        return (Document[]) documents.toArray(new Document[documents.size()]);
+        return getDocuments(query).toArray(new Document[0]);
     }
 
     public void saveCategory(Category category) throws NoPermissionException, CategoryAlreadyExistsException {

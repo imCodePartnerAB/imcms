@@ -11,7 +11,12 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -161,7 +166,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         includesMap.put(includeIndex, includedDocumentId);
     }
 
-    private void setMenu(int no, MenuDTO menu) {
+    public void setMenu(int no, MenuDTO menu) {
         menus.put(no, menu);
     }
 

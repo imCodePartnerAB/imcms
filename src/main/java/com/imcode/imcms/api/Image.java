@@ -4,6 +4,7 @@ import com.imcode.imcms.model.SpaceAround;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.util.ImcmsImageUtils;
+import org.apache.commons.text.StringEscapeUtils;
 
 public class Image {
 
@@ -121,5 +122,9 @@ public class Image {
 
     public String getSrc(String contextPath) { // image srcurl relative webapp ( /imcms/images/theimage.gif )
         return internalImage.getUrlPath(contextPath);
+    }
+
+    public String toHtmlUrl(String contextPath) {
+        return StringEscapeUtils.escapeHtml4(ImcmsImageUtils.getImageUrl(internalImage, contextPath));
     }
 }
