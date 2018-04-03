@@ -41,4 +41,13 @@ public class CategoryTypeDomainObject extends CategoryType implements Comparable
         return name.compareToIgnoreCase(((CategoryTypeDomainObject) o).name);
     }
 
+    /**
+     * @param maxChoices max number of choices but sensitive values are 1 (single select) or any non-1 (multi select)
+     * @deprecated use {@link CategoryTypeDomainObject#setMultiSelect(boolean)}
+     */
+    @Deprecated
+    public void setMaxChoices(int maxChoices) {
+        setMultiSelect(maxChoices != 1);
+    }
+
 }
