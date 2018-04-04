@@ -18,7 +18,7 @@ Imcms.require(
             window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
         });
 
-        function detectActiveMenuItem() {
+        function detectActivePanelButton() {
             if (imcms.isEditMode) {
                 return 'edit';
             }
@@ -31,10 +31,10 @@ Imcms.require(
         }
 
         panelBuilder.buildPanel({
-            active: detectActiveMenuItem()
+            active: detectActivePanelButton()
         });
-        imcms.isEditMode && imcms.require("imcms-editors-initializer", function (editorsInit) {
-            editorsInit.initEditors();
+        imcms.isEditMode && imcms.require(["imcms-editors-initializer", "jquery"], function (editorsInit, $) {
+            $(editorsInit.initEditors);
             console.timeEnd("imCMS JS loaded");
         });
     }
