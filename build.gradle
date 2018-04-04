@@ -168,6 +168,12 @@ war {
         filter(ReplaceTokens, tokens: tmpProps)
     }
 
+    def templatePatterns = new ArrayList()
+
+    templatePatterns.add("**/*.jsp")
+    templatePatterns.add("**/*.htm")
+    templatePatterns.add("**/*.html")
+
     def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
     def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
 
@@ -178,13 +184,27 @@ war {
 
         webInf {
             from rootFolderForTemplates
+            include templatePatterns
             filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
             into "/WEB-INF/templates/${lang}"
         }
 
         webInf {
+            from rootFolderForTemplates
+            exclude templatePatterns
+            into "/WEB-INF/templates/${lang}"
+        }
+
+        webInf {
             from rootFolderForImcmsTemplates
+            include templatePatterns
             filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
+            into "/imcms/${lang}"
+        }
+
+        webInf {
+            from rootFolderForImcmsTemplates
+            exclude templatePatterns
             into "/imcms/${lang}"
         }
     }
