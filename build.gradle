@@ -122,6 +122,13 @@ dependencies {
     testCompile group: 'org.springframework', name: 'spring-test', version: '4.3.13.RELEASE'
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
 }
+
+def mavenProps = new Properties()
+
+mavenProps.setProperty('log4j.threshold', 'info')
+mavenProps.setProperty('log4j.hibernate.level', 'error')
+mavenProps.setProperty('log4j.console-appender.threshold', 'off')
+
 def buildProps = new Properties()
 def tmpProps = new Properties()
 def tmpDir = "${buildDir}/tmp/"
@@ -166,6 +173,7 @@ war {
         include '*.json'
         into "/WEB-INF/conf"
         filter(ReplaceTokens, tokens: tmpProps)
+        filter(ReplaceTokens, tokens: mavenProps, beginToken: '${', endToken: '}')
     }
 
     def templatePatterns = new ArrayList()
