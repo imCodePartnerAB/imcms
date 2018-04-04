@@ -5,6 +5,7 @@
 }
 
 .imcms-buttons__button {
+    text-align: center;
     float: left;
     margin-right: 5px;
 }
