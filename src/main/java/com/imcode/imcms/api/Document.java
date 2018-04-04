@@ -2,8 +2,11 @@ package com.imcode.imcms.api;
 
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
+import com.imcode.util.ChainableReversibleNullComparator;
+import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
@@ -11,7 +14,12 @@ import imcode.server.user.RoleGetter;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class Document implements Serializable {
 
@@ -150,6 +158,16 @@ public class Document implements Serializable {
     @SuppressWarnings("unused")
     public void setPermissionSetTypeForRole(Role role, Meta.Permission permission) {
         this.internalDocument.setDocumentPermissionSetTypeForRoleId(role.getInternal().getId(), permission);
+    }
+
+    @SuppressWarnings("unused")
+    public Meta.Permission getPermissionSetIdForRole(Role role) {
+        return this.internalDocument.getDocumentPermissionSetTypeForRoleId(role.getInternal().getId());
+    }
+
+    @SuppressWarnings("unused")
+    public RestrictedPermission getDocumentPermissionSetForUser() {
+        return Imcms.getServices().getAccessService().getEditPermission(Imcms.getUser().getId(), getId());
     }
 
     @Deprecated
@@ -323,6 +341,65 @@ public class Document implements Serializable {
         Set<CategoryDomainObject> categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategories());
         CategoryDomainObject[] categories = categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
         return getCategoryArrayFromCategoryDomainObjectArray(categories);
+    }
+
+    @SuppressWarnings("serial")
+    public abstract static class Comparator extends ChainableReversibleNullComparator<Document> {
+
+        @SuppressWarnings("unused")
+        public final static Comparator ID = new Comparator() {
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getId() - d2.getId();
+            }
+        };
+        @SuppressWarnings("unused")
+        public final static Comparator HEADLINE = new Comparator() {
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getHeadline().compareToIgnoreCase(d2.getHeadline());
+            }
+        };
+        @SuppressWarnings("unused")
+        public final static Comparator CREATED_DATETIME = new Comparator() {
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getCreatedDatetime().compareTo(d2.getCreatedDatetime());
+            }
+        };
+        @SuppressWarnings("unused")
+        public final static Comparator MODIFIED_DATETIME = new Comparator() {
+            protected int compareDocuments(Document d1, Document d2) {
+                return d1.getModifiedDatetime().compareTo(d2.getModifiedDatetime());
+            }
+        };
+        @SuppressWarnings("unused")
+        public final static Comparator PUBLICATION_START_DATETIME = new Comparator() {
+            protected int compareDocuments(Document document1, Document document2) {
+                return document1.getPublicationStartDatetime().compareTo(document2.getPublicationStartDatetime());
+            }
+        };
+        @SuppressWarnings("unused")
+        public final static Comparator PUBLICATION_END_DATETIME = new Comparator() {
+            protected int compareDocuments(Document document1, Document document2) {
+                return document1.getPublicationEndDatetime().compareTo(document2.getPublicationEndDatetime());
+            }
+        };
+        @SuppressWarnings("unused")
+        public final static Comparator ARCHIVED_DATETIME = new Comparator() {
+            protected int compareDocuments(Document document1, Document document2) {
+                return document1.getArchivedDatetime().compareTo(document2.getArchivedDatetime());
+            }
+        };
+
+        public int compare(Document d1, Document d2) {
+            try {
+                return compareDocuments(d1, d2);
+            } catch (NullPointerException npe) {
+                NullPointerException nullPointerException = new NullPointerException("Tried sorting on null fields! You need to call .nullsFirst() or .nullsLast() on your Comparator.");
+                nullPointerException.initCause(npe);
+                throw nullPointerException;
+            }
+        }
+
+        protected abstract int compareDocuments(Document d1, Document d2);
     }
 
     /**

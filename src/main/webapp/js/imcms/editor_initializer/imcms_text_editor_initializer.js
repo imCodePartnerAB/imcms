@@ -58,7 +58,7 @@ Imcms.define("imcms-text-editor-initializer",
         };
 
         var inlineEditorConfig = $.extend({
-            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save table contextmenu'],
+            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |'
             + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
             + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName

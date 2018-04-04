@@ -59,6 +59,7 @@ CREATE PROCEDURE temp_main_procedure()
           to_doc_id
         FROM imcms_text_doc_menu_items
         WHERE menu_id = v_menu_id
+              AND to_doc_id <> 0
               AND tree_sort_index COLLATE utf8_general_ci REGEXP empty_reg_exp;
 
     END LOOP loop_label;

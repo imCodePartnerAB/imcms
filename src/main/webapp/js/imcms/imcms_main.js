@@ -157,7 +157,6 @@ if (!String.prototype.startsWith) {
 
     function appendScript(url, id) {
         var script = document.createElement("script");
-        script.type = "text/javascript";
         script.async = true;
         script.setAttribute("data-loader", "imcms");
 

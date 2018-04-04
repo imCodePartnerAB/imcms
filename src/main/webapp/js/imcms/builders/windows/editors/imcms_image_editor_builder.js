@@ -160,11 +160,11 @@ Imcms.define(
                 var pathText = imageData.path;
                 var fullPath = pathText;
 
-                if (titleText.length > 15) {
+                if (titleText.length > 50) {
                     titleText = titleText.substr(0, 50) + "...";
                 }
 
-                if (pathText.length > 15) {
+                if (pathText.length > 50) {
                     pathText = pathText.substr(0, 50) + "...";
                 }
 

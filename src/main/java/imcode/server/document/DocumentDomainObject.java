@@ -23,7 +23,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -353,6 +357,10 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     public void setDocumentPermissionSetTypeForRoleId(RoleId roleId, Meta.Permission permission) {
         this.getRolePermissionMappings().setPermissionSetTypeForRole(roleId, permission);
+    }
+
+    public Meta.Permission getDocumentPermissionSetTypeForRoleId(RoleId roleId) {
+        return this.getRolePermissionMappings().getPermissionSetTypeForRole(roleId);
     }
 
     public RoleIdToDocumentPermissionSetTypeMappings getRoleIdsMappedToDocumentPermissionSetTypes() {

@@ -13,6 +13,7 @@ ${"-->"}
 <%@ attribute name="formats" required="false" %>
 <%@ attribute name="pre" required="false" %>
 <%@ attribute name="post" required="false" %>
+<%@ attribute name="showlabel" required="false" %>
 
 <c:if test="${empty index}">
     <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>

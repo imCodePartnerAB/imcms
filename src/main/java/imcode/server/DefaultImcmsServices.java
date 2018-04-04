@@ -7,6 +7,7 @@ import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -16,7 +17,14 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.TemplateMapper;
 import imcode.server.kerberos.KerberosLoginService;
-import imcode.server.user.*;
+import imcode.server.user.Authenticator;
+import imcode.server.user.ChainedLdapUserAndRoleRegistry;
+import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.LdapUserAndRoleRegistry;
+import imcode.server.user.RoleGetter;
+import imcode.server.user.UserAndRoleRegistry;
+import imcode.server.user.UserDomainObject;
 import imcode.util.CachingFileLoader;
 import imcode.util.DateConstants;
 import imcode.util.Parser;
@@ -41,7 +49,12 @@ import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
 
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
@@ -58,6 +71,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final Database database;
     private final LocalizedMessageProvider localizedMessageProvider;
     private final Properties properties;
+    private final AccessService accessService;
     private final MenuService menuService;
     private Config config;
     private SystemData sysData;
@@ -91,6 +105,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 DocumentMapper documentMapper,
                                 ProcedureExecutor procedureExecutor,
                                 LanguageMapper languageMapper,
+                                AccessService accessService,
                                 MenuService menuService) {
 
         this.database = database;
@@ -108,6 +123,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.languageMapper = languageMapper;
 
         this.kerberosLoginService = new KerberosLoginService(config);
+        this.accessService = accessService;
         this.menuService = menuService;
     }
 
@@ -352,6 +368,11 @@ public class DefaultImcmsServices implements ImcmsServices {
     @Override
     public MenuService getMenuService() {
         return menuService;
+    }
+
+    @Override
+    public AccessService getAccessService() {
+        return accessService;
     }
 
     private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {

@@ -67,6 +67,81 @@ public class ImcmsImageUtils {
     @Value("${ImageMagickPath}")
     private String imgMagickPath;
 
+    public static String getImageUrl(ImageDomainObject image, String contextPath) {
+        return getImageUrl(image, contextPath, false);
+    }
+
+    @Deprecated
+    public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
+        return contextPath + "/imagehandling" + getImageQueryString(image, false);
+    }
+
+    private static String getImageQueryString(ImageDomainObject image, boolean forPreview) {
+        StringBuilder builder = new StringBuilder("?");
+
+        if (!forPreview && image.getSource() instanceof FileDocumentImageSource) {
+            FileDocumentImageSource source = (FileDocumentImageSource) image.getSource();
+            builder.append("file_id=");
+            builder.append(source.getFileDocument().getId());
+        } else {
+            builder.append("path=");
+            builder.append(Utility.encodeUrl(image.getUrlPathRelativeToContextPath()));
+        }
+
+        builder.append("&width=");
+        builder.append(image.getWidth());
+        builder.append("&height=");
+        builder.append(image.getHeight());
+
+        if (image.getFormat() != null) {
+            builder.append("&format=");
+            builder.append(image.getFormat().getExtension());
+        }
+
+        ImageCropRegionDTO region = image.getCropRegion();
+        if (region.isValid()) {
+            builder.append("&crop_x1=");
+            builder.append(region.getCropX1());
+            builder.append("&crop_y1=");
+            builder.append(region.getCropY1());
+            builder.append("&crop_x2=");
+            builder.append(region.getCropX2());
+            builder.append("&crop_y2=");
+            builder.append(region.getCropY2());
+        }
+
+        builder.append("&rangle=");
+        builder.append(image.getRotateDirection().getAngle());
+
+        if (!forPreview && image.getGeneratedFilename() != null) {
+            builder.append("&gen_file=");
+            builder.append(image.getGeneratedFilename());
+        }
+
+        if (image.getResize() != null) {
+            builder.append("&resize=");
+            builder.append(image.getResize().name().toLowerCase());
+        }
+
+        return builder.toString();
+    }
+
+    public static String getImageUrl(ImageDomainObject image, String contextPath, boolean includeQueryParams) {
+        String generatedFilename = image.getGeneratedFilename();
+
+        if (generatedFilename == null) {
+            return getImageHandlingUrl(image, contextPath);
+        }
+
+        String url = image.getUrlPathRelativeToContextPath();
+
+        if (includeQueryParams) {
+            url += getImageQueryString(image, false);
+        }
+
+        return url;
+    }
+
     public static String generateImageFileName(ImageData imageData) {
         String suffix = "_" + UUID.randomUUID().toString();
 

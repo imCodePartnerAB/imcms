@@ -29,6 +29,18 @@ public class CategoryTypeDomainObject extends CategoryType implements Comparable
         this.inherited = inherited;
     }
 
+    /**
+     * @param id         id
+     * @param name       name
+     * @param maxChoices max number of choices but sensitive values are 1 (single select) or any non-1 (multi select)
+     * @param inherited  inherited
+     * @deprecated use {@link CategoryTypeDomainObject#CategoryTypeDomainObject(int, java.lang.String, boolean, boolean)}
+     */
+    @Deprecated
+    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
+        this(id, name, (maxChoices != 1), inherited);
+    }
+
     public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited, boolean imageArchive) {
         this.id = id;
         this.name = name;
@@ -39,6 +51,15 @@ public class CategoryTypeDomainObject extends CategoryType implements Comparable
 
     public int compareTo(Object o) {
         return name.compareToIgnoreCase(((CategoryTypeDomainObject) o).name);
+    }
+
+    /**
+     * @deprecated use {@link CategoryTypeDomainObject#setMultiSelect(boolean)}
+     * @param maxChoices max number of choices but sensitive values are 1 (single select) or any non-1 (multi select)
+     */
+    @Deprecated
+    public void setMaxChoices(int maxChoices) {
+        setMultiSelect(maxChoices != 1);
     }
 
 }

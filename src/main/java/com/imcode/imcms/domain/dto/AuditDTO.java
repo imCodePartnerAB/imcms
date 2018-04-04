@@ -5,10 +5,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.Date;
 
-import static imcode.util.DateConstants.*;
+import static imcode.util.DateConstants.DATETIME_DOC_FORMAT;
+import static imcode.util.DateConstants.DATE_FORMAT;
+import static imcode.util.DateConstants.TIME_FORMAT;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class AuditDTO implements Serializable {
     public Date getFormattedDate() {
         try {
             return DATETIME_DOC_FORMAT.parse(date + " " + time);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             return null;
         }
     }
