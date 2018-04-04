@@ -99,7 +99,7 @@ Imcms.define("imcms-text-editor-initializer",
         }
 
         function showEditButton($editor) {
-            $editor.parent(".imcms-editor-area--text")
+            $editor.parents(".imcms-editor-area--text")
                 .find(".imcms-control--edit.imcms-control--text")
                 .css("display", "block");
         }
@@ -144,7 +144,7 @@ Imcms.define("imcms-text-editor-initializer",
             setMaxRows($(editor.$()));
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
-            showEditButton(editor.$());
+            showEditButton($(editor.$()));
             initSaveContentConfirmation(editor);
         }
 
