@@ -160,6 +160,20 @@ copyProperties.finalizedBy importProperties
 
 tasks.war.dependsOn importProperties
 
+jar.doFirst {
+    manifest {
+        def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
+        if (new File(manifestFile).exists())
+            from(manifestFile)
+
+        attributes 'Build-Date': new Date()
+        attributes 'Application-Version': project.version
+        attributes 'Created-By': System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')'
+        attributes 'Built-With': "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
+        attributes 'Built-By': project.hasProperty('BF_USER') ? project.getProperty('BF_USER') : System.getProperty('user.name')
+    }
+}
+
 war {
     classpath = jar.outputs.files + configurations.runtime - configurations.providedRuntime
 
