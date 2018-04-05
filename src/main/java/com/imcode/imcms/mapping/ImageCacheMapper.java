@@ -7,17 +7,14 @@ import imcode.server.document.textdocument.FileDocumentImageSource;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import org.apache.log4j.Logger;
-import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -28,13 +25,10 @@ public class ImageCacheMapper {
     @SuppressWarnings("unused")
     private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
 
-    @PersistenceContext(unitName = "com.imcode.imcms")
-//	@Autowired
-    private EntityManager entityManager;
+    private final ImageCacheRepository imageCacheRepository;
 
-
-    private Session getCurrentSession() {
-        return entityManager.unwrap(Session.class);
+    public ImageCacheMapper(ImageCacheRepository imageCacheRepository) {
+        this.imageCacheRepository = imageCacheRepository;
     }
 
 
@@ -73,74 +67,45 @@ public class ImageCacheMapper {
             return;
         }
 
-        getCurrentSession()
-                .getNamedQuery("ImageCache.deleteAllById")
-                .setParameterList("ids", cacheIds)
-                .executeUpdate();
+        imageCacheRepository.deleteAllById(cacheIds);
 
         ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
     }
 
     @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public long getTextImageCacheFileSizeTotal() {
-        Number total = (Number) getCurrentSession()
-                .getNamedQuery("ImageCache.fileSizeTotal")
-                .uniqueResult();
-
-        return (total != null ? total.longValue() : 0L);
+        return Optional.ofNullable(imageCacheRepository.fileSizeTotal()).orElse(0L);
     }
 
     public void deleteTextImageCacheLFUEntries() {
-        Session session = getCurrentSession();
+        long count = Optional.ofNullable(imageCacheRepository.countEntries()).orElse(0L);
 
-        Number count = (Number) session
-                .getNamedQuery("ImageCache.countEntries")
-                .uniqueResult();
-
-        int deleteCount = (int) Math.ceil(count.longValue() * 0.1);
+        int deleteCount = (int) Math.ceil(count * 0.1);
         if (deleteCount < 1) {
             return;
         }
 
-        @SuppressWarnings("unchecked")
-        List<String> cacheIds = session
-                .getNamedQuery("ImageCache.idsByFrequency")
-                .setMaxResults(deleteCount)
-                .list();
+        List<String> cacheIds = imageCacheRepository.idsByFrequency();
 
         if (cacheIds.isEmpty()) {
             return;
         }
 
-        session.getNamedQuery("ImageCache.deleteAllById")
-                .setParameterList("ids", cacheIds)
-                .executeUpdate();
+        cacheIds = cacheIds.subList(0, deleteCount);
+
+        imageCacheRepository.deleteAllById(cacheIds);
 
         ImageCacheManager.deleteTextImageCacheEntries(cacheIds);
     }
 
     public void addImageCache(ImageCacheDomainObject imageCache) {
-        Session session = getCurrentSession();
-
-        session.getNamedQuery("ImageCache.deleteById")
-                .setString("id", imageCache.getId())
-                .executeUpdate();
-
-        session.persist(imageCache);
-        session.flush();
+        imageCacheRepository.deleteById(imageCache.getId());
+        imageCacheRepository.save(imageCache);
+        imageCacheRepository.flush();
     }
 
     public void incrementFrequency(String cacheId) {
-        getCurrentSession()
-                .getNamedQuery("ImageCache.incFrequency")
-                .setString("id", cacheId)
-                .setInteger("maxFreq", Integer.MAX_VALUE)
-                .executeUpdate();
+        imageCacheRepository.incFrequency(cacheId, Integer.MAX_VALUE);
     }
 
-    //fixme: implement - document version?
-    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
-    public List<ImageDomainObject> getAllDocumentImages() {
-        throw new NotImplementedException();
-    }
 }
