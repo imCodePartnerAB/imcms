@@ -1,4 +1,4 @@
-package imcode.server.document.textdocument;
+package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
@@ -13,37 +13,16 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Optional;
 
 @Entity(name = "ImageCache")
 @Table(name = "imcms_text_doc_images_cache")
-@NamedQueries({
-        @NamedQuery(name = "ImageCache.deleteAllById",
-                query = "DELETE FROM ImageCache ic WHERE ic.id IN (:ids)"),
-
-        @NamedQuery(name = "ImageCache.deleteById",
-                query = "DELETE FROM ImageCache ic WHERE ic.id = :id"),
-
-        @NamedQuery(name = "ImageCache.fileSizeTotal",
-                query = "SELECT sum(ic.fileSize) FROM ImageCache ic"),
-
-        @NamedQuery(name = "ImageCache.countEntries",
-                query = "SELECT count(ic.id) FROM ImageCache ic"),
-
-        @NamedQuery(name = "ImageCache.idsByFrequency",
-                query = "SELECT ic.id FROM ImageCache ic ORDER BY ic.frequency ASC"),
-
-        @NamedQuery(name = "ImageCache.incFrequency",
-                query = "UPDATE ImageCache ic SET ic.frequency = ic.frequency + 1 WHERE ic.id = :id AND ic.frequency < :maxFreq"),
-})
-
 public class ImageCacheDomainObject implements Serializable {
     public static final short TYPE_PATH = 1;
     public static final short TYPE_FILE_DOCUMENT = 2;
@@ -205,7 +184,7 @@ public class ImageCacheDomainObject implements Serializable {
     }
 
     public Format getFormat() {
-        return format;
+        return Optional.ofNullable(format).orElse(Format.JPEG);
     }
 
     public void setFormat(Format format) {
@@ -260,7 +239,7 @@ public class ImageCacheDomainObject implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("imcode.server.document.textdocument.ImageCacheDomainObject" +
+        return String.format("com.imcode.imcms.persistence.entity.ImageCacheDomainObject" +
                 "[id: %s, resource: %s, type: %d, format: %s]", id, resource, type, format);
     }
 }

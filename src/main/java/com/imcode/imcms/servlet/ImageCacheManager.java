@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.mapping.ImageCacheMapper;
+import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.server.Config;
-import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

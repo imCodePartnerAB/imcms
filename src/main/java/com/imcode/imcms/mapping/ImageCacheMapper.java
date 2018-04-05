@@ -1,8 +1,9 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
+import com.imcode.imcms.persistence.repository.ImageCacheRepository;
 import com.imcode.imcms.servlet.ImageCacheManager;
 import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageCacheDomainObject;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.ImageSource;
 import org.apache.log4j.Logger;
