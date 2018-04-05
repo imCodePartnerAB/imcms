@@ -178,6 +178,13 @@ war {
         filter(ReplaceTokens, tokens: mavenProps, beginToken: '${', endToken: '}')
     }
 
+    webInf {
+        from 'src/main/resources'
+        include "ehcache.xml"
+        include "ehcache.xsd"
+        into "/WEB-INF/clases"
+    }
+
     def templatePatterns = new ArrayList()
 
     templatePatterns.add("**/*.jsp")
