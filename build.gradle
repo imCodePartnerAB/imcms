@@ -181,6 +181,7 @@ war {
     def templatePatterns = new ArrayList()
 
     templatePatterns.add("**/*.jsp")
+    templatePatterns.add("**/*.jspx")
     templatePatterns.add("**/*.htm")
     templatePatterns.add("**/*.html")
 
