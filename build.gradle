@@ -255,12 +255,12 @@ war {
 
     }
 
-//    webInf {
-//        def versionFile = new File("WEB-INF/version.txt")
-//        versionFile.text = version
-//        from versionFile
-//        into "/"
-//    }
+    webInf {
+        def versionFile = new File("${tmpDir}/version.txt")
+        versionFile.text = version
+        from versionFile
+        into "/WEB-INF/"
+    }
 }
 
 task explodedWar(type: Sync, dependsOn: war) {
