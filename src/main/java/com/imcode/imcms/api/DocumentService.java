@@ -244,19 +244,10 @@ public class DocumentService {
 
     public List<Document> getDocuments(final SearchQuery query) throws SearchException {
         try {
-            final List<DocumentDomainObject> documentList = documentMapper.getDocumentIndex().search(new DocumentQuery() {
-                public Query getQuery() {
-                    return query.getQuery();
-                }
-
-                public Sort getSort() {
-                    return query.getSort();
-                }
-
-                public boolean isLogged() {
-                    return query.isLogged();
-                }
-            }, contentManagementSystem.getCurrentUser().getInternal());
+            final List<DocumentDomainObject> documentList = documentMapper.getDocumentIndex().search(
+                    new WrappingDocumentQuery(query),
+                    contentManagementSystem.getCurrentUser().getInternal()
+            );
             return new ApiDocumentWrappingList(documentList, contentManagementSystem);
         } catch (RuntimeException e) {
             throw new SearchException(e);
@@ -266,19 +257,12 @@ public class DocumentService {
 
     public SearchResult<Document> getDocuments(final SearchQuery query, int startPosition, int maxResults) throws SearchException {
         try {
-            SearchResult<DocumentDomainObject> result = documentMapper.getDocumentIndex().search(new DocumentQuery() {
-                public Query getQuery() {
-                    return query.getQuery();
-                }
-
-                public Sort getSort() {
-                    return query.getSort();
-                }
-
-                public boolean isLogged() {
-                    return query.isLogged();
-                }
-            }, contentManagementSystem.getCurrentUser().getInternal(), startPosition, maxResults);
+            SearchResult<DocumentDomainObject> result = documentMapper.getDocumentIndex().search(
+                    new WrappingDocumentQuery(query),
+                    contentManagementSystem.getCurrentUser().getInternal(),
+                    startPosition,
+                    maxResults
+            );
 
             ApiDocumentWrappingList documents = new ApiDocumentWrappingList(result.getDocuments(), contentManagementSystem);
 
@@ -294,6 +278,27 @@ public class DocumentService {
 
     public void saveCategory(Category category) throws NoPermissionException, CategoryAlreadyExistsException {
         getCategoryMapper().saveCategory(category.getInternal());
+    }
+
+    class WrappingDocumentQuery implements DocumentQuery {
+
+        private final SearchQuery query;
+
+        public WrappingDocumentQuery(SearchQuery query) {
+            this.query = query;
+        }
+
+        public Query getQuery() {
+            return query.getQuery();
+        }
+
+        public Sort getSort() {
+            return query.getSort();
+        }
+
+        public boolean isLogged() {
+            return query.isLogged();
+        }
     }
 
     static class ApiWrappingDocumentVisitor extends DocumentVisitor {
