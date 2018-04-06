@@ -8,6 +8,7 @@ import imcode.server.Imcms;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Document's fields stored in a Solr index.
@@ -37,8 +38,8 @@ public class DocumentStoredFields {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__ALIAS);
     }
 
-    public String languageCode() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
+    public List<String> languages() {
+        return (List<String>) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
     }
 
     public DocumentType documentType() {
