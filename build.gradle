@@ -256,10 +256,14 @@ war {
     }
 
     webInf {
-        def versionFile = new File("${tmpDir}/version.txt")
-        versionFile.text = version
-        from versionFile
-        into "/WEB-INF/"
+        doLast {
+            def versionFile = new File("${tmpDir}/version.txt")
+            versionFile.text = version
+
+            from tmpDir
+            include "version.txt"
+            into "/WEB-INF"
+        }
     }
 }
 
