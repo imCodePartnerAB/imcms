@@ -5,8 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -15,6 +22,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @Table(name = "imcms_languages")
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class LanguageJPA extends Language {
 
     private static final long serialVersionUID = -7712182762931242124L;

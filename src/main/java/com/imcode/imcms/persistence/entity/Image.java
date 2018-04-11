@@ -4,14 +4,27 @@ import com.imcode.imcms.model.SpaceAround;
 import imcode.util.image.Format;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_images")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Image {
 
     @Id
@@ -24,11 +37,13 @@ public class Image {
             @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
             @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
     })
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Version version;
 
     @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private LanguageJPA language;
 
     @Column(name = "`index`")

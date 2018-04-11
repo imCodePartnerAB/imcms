@@ -2,8 +2,20 @@ package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +23,7 @@ import java.util.List;
 @Table(name = "imcms_menu_item")
 @Data
 @NoArgsConstructor
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class MenuItem {
 
     @Id
@@ -23,6 +36,7 @@ public class MenuItem {
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private List<MenuItem> children = new ArrayList<>();
 
     @Column(name = "sort_order", nullable = false)

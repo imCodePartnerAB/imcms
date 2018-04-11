@@ -1,8 +1,23 @@
 package com.imcode.imcms.persistence.entity;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -10,6 +25,7 @@ import java.util.Date;
 @Entity
 @Table(name = "imcms_doc_versions")
 @NoArgsConstructor
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Version implements Cloneable, Serializable {
 
     public static final int WORKING_VERSION_INDEX = 0;
@@ -32,6 +48,7 @@ public class Version implements Cloneable, Serializable {
 
     @ManyToOne
     @JoinColumn(name = "created_by")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private User createdBy;
 
     @Column(name = "created_dt", updatable = false)
@@ -40,6 +57,7 @@ public class Version implements Cloneable, Serializable {
 
     @ManyToOne
     @JoinColumn(name = "modified_by")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private User modifiedBy;
 
     @Column(name = "modified_dt", updatable = true, nullable = false)

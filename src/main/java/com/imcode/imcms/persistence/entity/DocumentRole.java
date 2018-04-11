@@ -2,13 +2,23 @@ package com.imcode.imcms.persistence.entity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "roles_rights")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DocumentRole {
 
     @EmbeddedId
@@ -16,10 +26,12 @@ public class DocumentRole {
 
     @ManyToOne
     @JoinColumn(name = "meta_id", insertable = false, updatable = false)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Meta document;
 
     @ManyToOne
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private RoleJPA role;
 
     @Column(name = "permission", nullable = false)

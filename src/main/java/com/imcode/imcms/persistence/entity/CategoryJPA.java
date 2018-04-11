@@ -6,8 +6,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -16,6 +27,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "categories")
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CategoryJPA extends Category {
 
     @Id
@@ -33,6 +45,7 @@ public class CategoryJPA extends Category {
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "category_type_id", nullable = false)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private CategoryTypeJPA type;
 
     public CategoryJPA(String name, String description, String imageUrl, CategoryTypeJPA type) {

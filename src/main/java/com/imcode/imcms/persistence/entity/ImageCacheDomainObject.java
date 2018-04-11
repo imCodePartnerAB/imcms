@@ -7,6 +7,8 @@ import imcode.util.image.Format;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,11 +25,15 @@ import java.util.Optional;
 
 @Entity(name = "ImageCache")
 @Table(name = "imcms_text_doc_images_cache")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ImageCacheDomainObject implements Serializable {
+
     public static final short TYPE_PATH = 1;
     public static final short TYPE_FILE_DOCUMENT = 2;
     public static final short TYPE_URL = 3;
+
     private static final long serialVersionUID = -2547384841538448930L;
+
     @Id
     @Column(name = "id", length = 40, nullable = false)
     private String id;

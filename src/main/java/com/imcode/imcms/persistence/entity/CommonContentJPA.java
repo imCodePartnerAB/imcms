@@ -5,8 +5,18 @@ import com.imcode.imcms.model.Language;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  * Content common to all document types.
@@ -16,6 +26,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "imcms_doc_i18n_meta")
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CommonContentJPA extends CommonContent {
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;
@@ -30,6 +41,7 @@ public class CommonContentJPA extends CommonContent {
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private LanguageJPA language;
 
     /**

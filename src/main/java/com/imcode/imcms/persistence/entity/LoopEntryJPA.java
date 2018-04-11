@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -16,6 +18,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Table(name = "imcms_text_doc_contents")
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class LoopEntryJPA extends LoopEntry {
 
     @Column(name = "`index`")

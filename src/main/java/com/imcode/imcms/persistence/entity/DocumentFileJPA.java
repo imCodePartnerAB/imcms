@@ -5,9 +5,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Data
 @Entity
@@ -15,6 +23,7 @@ import javax.persistence.*;
 @ToString(callSuper = false)
 @Table(name = "fileupload_docs")
 @EqualsAndHashCode(callSuper = true)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DocumentFileJPA extends DocumentFile {
 
     @Id

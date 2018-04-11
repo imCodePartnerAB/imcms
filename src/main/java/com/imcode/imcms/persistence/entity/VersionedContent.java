@@ -4,8 +4,16 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -25,6 +33,7 @@ public abstract class VersionedContent {
             @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
             @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
     })
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Version version;
 
 }
