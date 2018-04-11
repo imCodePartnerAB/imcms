@@ -272,7 +272,7 @@ war {
 
     webInf {
         def versionFile = new File("${tmpDir}/version.txt")
-        doLast {
+        doFirst {
             versionFile.text = version
         }
         from versionFile
