@@ -15,9 +15,17 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.imcode.imcms.api.Role.USERS_ID;
 
 @Service
 public class DefaultDocumentMenuService implements DocumentMenuService {
@@ -37,6 +45,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         this.metaToDocumentDTO = metaToDocumentDTO;
     }
 
+    // it's not adopted to all access rules that could exist
     @Override
     public boolean hasUserAccessToDoc(int docId, UserDomainObject user) {
         final Meta meta = Optional.ofNullable(metaRepository.findOne(docId))
@@ -82,5 +91,43 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
 
         return menuItemDTO;
+    }
+
+    @Override
+    public boolean isPublicMenuItem(int docId) {
+        final Meta meta = metaRepository.findOne(docId);
+
+        if (meta == null) throw new DocumentNotExistException(docId);
+
+        return (isDocumentApproved(meta)
+                && isNotArchivedYet(meta)
+                && isNotUnPublishedYet(meta)
+                && isAlreadyPublished(meta)
+                && isDefaultUserPermittedForView(meta)
+        );
+    }
+
+    private boolean isDocumentApproved(Meta meta) {
+        return Meta.PublicationStatus.APPROVED.equals(meta.getPublicationStatus());
+    }
+
+    private boolean isNotArchivedYet(Meta meta) {
+        final Date archivedDatetime = meta.getArchivedDatetime();
+        return Utility.isDateInFutureOrNull.test(archivedDatetime);
+    }
+
+    private boolean isNotUnPublishedYet(Meta meta) {
+        final Date publicationEndDatetime = meta.getPublicationEndDatetime();
+        return Utility.isDateInFutureOrNull.test(publicationEndDatetime);
+    }
+
+    private boolean isAlreadyPublished(Meta meta) {
+        final Date publicationStartDatetime = meta.getPublicationStartDatetime();
+        return Utility.isDateInPast.test(publicationStartDatetime);
+    }
+
+    private boolean isDefaultUserPermittedForView(Meta meta) {
+        final Permission userPermission = meta.getRoleIdToPermission().get(USERS_ID);
+        return (userPermission == null) || userPermission.isAtLeastAsPrivilegedAs(Permission.VIEW);
     }
 }

@@ -27,11 +27,15 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -118,6 +122,109 @@ public class DocumentMenuServiceTest {
     @Test
     public void getMenuItemDTO_When_NoAlias_Expect_DocIdInLink() {
         testMenuItemDTO(false);
+    }
+
+    @Test(expected = DocumentNotExistException.class)
+    public void isPublicMenuItem_When_DocIsNotExist_Expect_DocumentNotExistException() {
+        assertTrue(documentMenuService.isPublicMenuItem(Integer.MAX_VALUE));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasStatusNew_Expect_False() {
+        meta.setPublicationStatus(Meta.PublicationStatus.NEW);
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasStatusDisapproved_Expect_False() {
+        meta.setPublicationStatus(Meta.PublicationStatus.DISAPPROVED);
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasStatusApproved_Expect_True() {
+        meta.setPublicationStatus(Meta.PublicationStatus.APPROVED);
+        meta.setPublicationStartDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertTrue(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasArchivedDateInFuture_Expect_True() {
+        meta.setArchivedDatetime(new Date(Integer.MAX_VALUE, 1, 1));
+        meta.setPublicationStartDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertTrue(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasArchivedDateInPast_Expect_False() {
+        meta.setArchivedDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasPublicationEndDateInPast_Expect_False() {
+        meta.setPublicationEndDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasPublicationEndDateInFuture_Expect_True() {
+        meta.setPublicationEndDatetime(new Date(Integer.MAX_VALUE, 1, 1));
+        meta.setPublicationStartDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertTrue(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasPublicationStartDateInPast_Expect_True() {
+        meta.setPublicationStartDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertTrue(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasPublicationStartDateInFuture_Expect_False() {
+        meta.setPublicationStartDatetime(new Date(Integer.MAX_VALUE, 1, 1));
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasViewPermissionsForDefaultUser_Expect_True() {
+        final Map<Integer, Permission> roleIdToPermission = new HashMap<>(
+                Collections.singletonMap(RoleId.USERS_ID, Permission.VIEW)
+        );
+        meta.setRoleIdToPermission(roleIdToPermission);
+        meta.setPublicationStartDatetime(new Date(0, 1, 1));
+        metaRepository.save(meta);
+
+        assertTrue(documentMenuService.isPublicMenuItem(meta.getId()));
+    }
+
+    @Test
+    public void isPublicMenuItem_When_MetaHasNonePermissionsForDefaultUser_Expect_False() {
+        final Map<Integer, Permission> roleIdToPermission = new HashMap<>(
+                Collections.singletonMap(RoleId.USERS_ID, Permission.NONE)
+        );
+        meta.setRoleIdToPermission(roleIdToPermission);
+        metaRepository.save(meta);
+
+        assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
     }
 
     private void testMenuItemDTO(boolean aliasExist) {
