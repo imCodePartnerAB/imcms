@@ -225,7 +225,7 @@ war {
         from 'src/main/resources'
         include "ehcache.xml"
         include "ehcache.xsd"
-        into "/WEB-INF/clases"
+        into "/WEB-INF/classes"
     }
 
     //Template localization
