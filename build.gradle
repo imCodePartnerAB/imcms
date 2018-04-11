@@ -172,6 +172,7 @@ task explodedWar(type: Sync, dependsOn: war) {
 //Task dependency settings
 copyProperties.finalizedBy importProperties
 tasks.war.dependsOn importProperties
+tasks.war.dependsOn test
 
 //Plugins setting up
 jar.doFirst {
