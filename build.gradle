@@ -123,18 +123,53 @@ dependencies {
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
 }
 
-//Directory to hold temporary data
-def tmpDir = "${buildDir}/tmp/"
-
 //Migrated maven properties
 def mavenProps = new Properties()
+
+mavenProps.setProperty('log4j.threshold', 'info')
+mavenProps.setProperty('log4j.hibernate.level', 'error')
+mavenProps.setProperty('log4j.console-appender.threshold', 'off')
 
 //Used to merge build and server properties file with replacement of inplace variables usage
 def buildProps = new Properties()
 def tmpProps = new Properties()
 
+//Directory to hold temporary data
+def tmpDir = "${buildDir}/tmp/"
+
 //Translation Languages
 def localizationLanguages = new ArrayList()
+localizationLanguages.add("eng")
+localizationLanguages.add("swe")
+
+file("build.properties").withInputStream { buildProps.load(it) }
+
+task copyProperties(type: Copy) {
+    from "${projectDir}"
+    include "build.properties"
+
+    //Needed to perform this two times to replace inplace variables
+    filter(ReplaceTokens, tokens: buildProps)
+    filter(ReplaceTokens, tokens: buildProps)
+    into tmpDir
+}
+
+task importProperties(dependsOn: copyProperties) {
+    doLast {
+        file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
+    }
+}
+
+
+task explodedWar(type: Sync, dependsOn: war) {
+    into "${buildDir}/exploded"
+    with war
+}
+
+
+copyProperties.finalizedBy importProperties
+
+tasks.war.dependsOn importProperties
 
 jar.doFirst {
     manifest {
@@ -192,6 +227,7 @@ war {
     //Template localization
     def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
     def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
+
     def templatePatterns = new ArrayList()
 
     templatePatterns.add("**/*.jsp")
@@ -240,41 +276,3 @@ war {
         into "/WEB-INF/"
     }
 }
-
-task initParams {
-    doFirst {
-        mavenProps.setProperty('log4j.threshold', 'info')
-        mavenProps.setProperty('log4j.hibernate.level', 'error')
-        mavenProps.setProperty('log4j.console-appender.threshold', 'off')
-
-        localizationLanguages.add("eng")
-        localizationLanguages.add("swe")
-
-        file("build.properties").withInputStream { buildProps.load(it) }
-    }
-}
-
-task copyProperties(type: Copy, dependsOn: initParams) {
-    from "${projectDir}"
-    include "build.properties"
-
-    //Needed to perform this two times to replace inplace variables
-    filter(ReplaceTokens, tokens: buildProps)
-    filter(ReplaceTokens, tokens: buildProps)
-    into tmpDir
-}
-
-task importProperties(dependsOn: copyProperties) {
-    doLast {
-        file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
-    }
-}
-
-task explodedWar(type: Sync, dependsOn: war) {
-    into "${buildDir}/exploded"
-    with war
-}
-
-//Task dependency settings
-copyProperties.finalizedBy importProperties
-tasks.war.dependsOn importProperties
