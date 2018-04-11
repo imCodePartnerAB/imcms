@@ -8,6 +8,10 @@ import imcode.server.Imcms;
 import org.apache.solr.common.SolrDocument;
 
 import java.util.Date;
+import java.util.List;
+
+import static imcode.util.Utility.isDateInFuture;
+import static imcode.util.Utility.isDateInPast;
 
 /**
  * Document's fields stored in a Solr index.
@@ -37,8 +41,8 @@ public class DocumentStoredFields {
         return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__ALIAS);
     }
 
-    public String languageCode() {
-        return (String) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
+    public List<String> languages() {
+        return (List<String>) solrDocument.getFieldValue(DocumentIndex.FIELD__LANGUAGE_CODE);
     }
 
     public DocumentType documentType() {
@@ -80,29 +84,21 @@ public class DocumentStoredFields {
         } else if (PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
             return DocumentStatus.DISAPPROVED;
 
-        } else if (isDateInPast(archived())) {
+        } else if (isDateInPast.test(archived())) {
             return DocumentStatus.ARCHIVED;
 
-        } else if (isDateInPast(publicationEndDt())) {
+        } else if (isDateInPast.test(publicationEndDt())) {
             return DocumentStatus.PASSED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast(publicationStart())) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInPast.test(publicationStart())) {
             return DocumentStatus.PUBLISHED;
 
-        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture(publicationStart())) {
+        } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(publicationStart())) {
             return DocumentStatus.PUBLISHED_WAITING;
 
         } else { // should newer happen
             return DocumentStatus.PUBLISHED;
         }
-    }
-
-    private boolean isDateInPast(Date dateToCheck) {
-        return (dateToCheck != null) && new Date().after(dateToCheck);
-    }
-
-    private boolean isDateInFuture(Date dateToCheck) {
-        return (dateToCheck != null) && new Date().before(dateToCheck);
     }
 
 }

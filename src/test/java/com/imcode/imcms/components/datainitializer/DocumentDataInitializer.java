@@ -40,7 +40,6 @@ public class DocumentDataInitializer extends TestDataCleaner {
     protected DocumentDTO createData(Meta.DocumentType type) {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
-            meta.setArchivedDatetime(new Date());
             meta.setArchiverId(1);
             meta.setCategories(new HashSet<>());
             meta.setCreatedDatetime(new Date());
@@ -53,12 +52,10 @@ public class DocumentDataInitializer extends TestDataCleaner {
             meta.setKeywords(new HashSet<>());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
-            meta.setPublicationStartDatetime(new Date());
             meta.setPublicationStatus(Meta.PublicationStatus.APPROVED);
             meta.setPublisherId(1);
             meta.setSearchDisabled(false);
             meta.setTarget("test");
-
         });
 
         metaRepository.save(metaDoc);

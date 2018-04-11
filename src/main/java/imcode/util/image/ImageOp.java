@@ -1,12 +1,17 @@
 package imcode.util.image;
 
+import imcode.util.ImcmsImageUtils;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -47,6 +52,25 @@ public class ImageOp {
         }
 
         return input;
+    }
+
+    public static ImageInfo getImageInfo(File file) {
+        try {
+            String fileToIdentify = addQuotes(file.getAbsolutePath() + "[0]");
+            final String[] processArgs = getIdentifyProcessArgs(ImcmsImageUtils.imageMagickPath, fileToIdentify);
+            Process process = new ProcessBuilder(processArgs).start();
+
+            StringInputStreamHandler errorHandler = new StringInputStreamHandler(process.getErrorStream());
+            StringInputStreamHandler inputHandler = new StringInputStreamHandler(process.getInputStream());
+            errorHandler.start();
+            inputHandler.start();
+            inputHandler.join();
+
+            return processImageInfo(inputHandler);
+        } catch (Exception ex) {
+            log.fatal(ex.getMessage(), ex);
+        }
+        return null;
     }
 
     public static ImageInfo getImageInfo(String imageMagickPath, InputStream inputStream) {

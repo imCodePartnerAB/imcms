@@ -104,7 +104,7 @@ public class DocumentIndexServiceOps {
             SolrInputDocument solrInputDoc = mkSolrInputDoc(id);
             if (solrInputDoc != null) {
                 solrClient.add(solrInputDoc);
-                logger.debug(String.format("Added input docs [%s] to index.", solrInputDoc));
+                logger.debug("Added input doc with id " + id + " to index.");
             }
 
             docNo += 1;

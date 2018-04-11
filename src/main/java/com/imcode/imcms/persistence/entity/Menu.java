@@ -1,9 +1,20 @@
 package com.imcode.imcms.persistence.entity;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -14,6 +25,7 @@ import java.util.List;
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Menu extends VersionedContent {
 
     @NotNull
@@ -23,6 +35,7 @@ public class Menu extends VersionedContent {
     @JoinColumn(name = "menu_id")
     @Where(clause = "menu_id is not null")
     @OrderBy("sortOrder")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private List<MenuItem> menuItems;
 
 }

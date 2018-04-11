@@ -3,10 +3,33 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.Category;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.MapKeyColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +41,7 @@ import java.util.stream.Collectors;
 @Table(name = "meta")
 @Data
 @NoArgsConstructor
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Meta implements Serializable {
 
     private static final long serialVersionUID = 9024338066876530277L;
@@ -98,6 +122,7 @@ public class Meta implements Serializable {
     )
     @MapKeyColumn(name = "key_name")
     @Column(name = "value", nullable = false)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Map<String, String> properties = new HashMap<>();
 
     @OneToMany(fetch = FetchType.EAGER)
@@ -106,6 +131,7 @@ public class Meta implements Serializable {
             joinColumns = @JoinColumn(name = "meta_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id", nullable = false)
     )
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<CategoryJPA> categories = new HashSet<>();
 
     /**
@@ -120,6 +146,7 @@ public class Meta implements Serializable {
     @MapKeyColumn(name = "role_id")
     @Column(name = "permission", columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Map<Integer, Permission> roleIdToPermission = new HashMap<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -128,6 +155,7 @@ public class Meta implements Serializable {
             joinColumns = @JoinColumn(name = "doc_id")
     )
     @Column(name = "value")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<String> keywords = new HashSet<>();
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -136,6 +164,7 @@ public class Meta implements Serializable {
             joinColumns = @JoinColumn(name = "meta_id")
     )
     @OrderColumn(name = "order_index")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<RestrictedPermissionJPA> restrictedPermissions = new HashSet<>();
 
     /**

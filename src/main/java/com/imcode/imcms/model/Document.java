@@ -6,10 +6,10 @@ import com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
+import imcode.util.Utility;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -158,15 +158,11 @@ public abstract class Document {
     }
 
     private boolean isAuditDateInPast(AuditDTO auditToCheck) {
-        return (auditToCheck != null)
-                && (auditToCheck.getFormattedDate() != null)
-                && new Date().after(auditToCheck.getFormattedDate());
+        return !isNullAuditDate(auditToCheck) && Utility.isDateInPast.test(auditToCheck.getFormattedDate());
     }
 
     private boolean isAuditDateInFuture(AuditDTO auditToCheck) {
-        return (auditToCheck != null)
-                && (auditToCheck.getFormattedDate() != null)
-                && new Date().before(auditToCheck.getFormattedDate());
+        return !isNullAuditDate(auditToCheck) && Utility.isDateInFuture.test(auditToCheck.getFormattedDate());
     }
 
 }

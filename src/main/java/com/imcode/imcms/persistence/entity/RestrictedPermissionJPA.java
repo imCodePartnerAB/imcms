@@ -5,8 +5,14 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.Table;
 
 /**
  * Restricted permissions (by default 1 and 2) class.
@@ -21,6 +27,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Table(name = "imcms_doc_restricted_permissions")
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RestrictedPermissionJPA extends RestrictedPermission {
 
     @Column(columnDefinition = "VARCHAR(16)")

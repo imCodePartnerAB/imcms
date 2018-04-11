@@ -44,11 +44,7 @@
     padding-top: 12px;
     overflow: auto;
     width: 100%;
-    height: -webkit-calc(100% - 25px);
-    height: -moz-calc(100% - 25px);
-    height: -ms-calc(100% - 25px);
-    height: -o-calc(100% - 25px);
-    height: calc(100% - 25px);
+    height: 90%;
 }
 
 .imcms-menu-list__titles:after {

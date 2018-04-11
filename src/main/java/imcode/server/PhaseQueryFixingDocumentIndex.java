@@ -2,7 +2,11 @@ package imcode.server;
 
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.LifeCyclePhase;
-import imcode.server.document.index.*;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.DocumentIndexWrapper;
+import imcode.server.document.index.DocumentQuery;
+import imcode.server.document.index.IndexException;
+import imcode.server.document.index.SimpleDocumentQuery;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
@@ -10,7 +14,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -40,17 +43,19 @@ public class PhaseQueryFixingDocumentIndex extends DocumentIndexWrapper {
         if (query instanceof BooleanQuery) {
             BooleanQuery booleanQuery = (BooleanQuery) query;
 
-            final List<BooleanClause> booleanClauses = new ArrayList<>();
-            booleanQuery.iterator().forEachRemaining(booleanClauses::add);
+            final BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
+            final List<BooleanClause> booleanClauses = booleanQuery.clauses();
 
-            for (int i = 0; i < booleanClauses.size(); i++) {
-                final BooleanClause booleanClause = booleanClauses.get(i);
+            for (final BooleanClause booleanClause : booleanClauses) {
                 final BooleanClause fixedBooleanClause = new BooleanClause(
                         fixQuery(booleanClause.getQuery()), booleanClause.getOccur()
                 );
 
-                booleanQuery.clauses().set(i, fixedBooleanClause);
+                queryBuilder.add(fixedBooleanClause);
             }
+
+            return queryBuilder.build();
+
         } else if (query instanceof TermQuery) {
             TermQuery termQuery = (TermQuery) query;
             Term term = termQuery.getTerm();

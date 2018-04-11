@@ -3,6 +3,8 @@ package com.imcode.imcms.persistence.entity;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Email;
 
 import javax.persistence.Column;
@@ -27,6 +29,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name = "users")
 @ToString(exclude = "password")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class User {
 
     @Id

@@ -1,8 +1,15 @@
 package com.imcode.imcms.mapping.jpa;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Subselect;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
+import javax.persistence.Table;
 import java.util.Objects;
 
 /**
@@ -12,6 +19,7 @@ import java.util.Objects;
 @Subselect("select * from sys_types")
 @Table(name = "sys_types")
 @SecondaryTable(name = "sys_data", pkJoinColumns = @PrimaryKeyJoinColumn(name = "type_id"))
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class SystemProperty {
 
     @Id

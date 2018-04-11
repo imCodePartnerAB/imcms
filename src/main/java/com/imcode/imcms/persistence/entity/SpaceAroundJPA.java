@@ -4,6 +4,8 @@ import com.imcode.imcms.model.SpaceAround;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -12,6 +14,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 class SpaceAroundJPA extends SpaceAround {
 
     @Column(name = "top_space")

@@ -8,7 +8,9 @@ import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.model.ImageCropRegion;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -25,6 +27,7 @@ import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
 import imcode.util.image.Resize;
 import imcode.util.io.FileUtility;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -74,6 +77,30 @@ public class ImcmsImageUtils {
     @Deprecated
     public static String getImageHandlingUrl(ImageDomainObject image, String contextPath) {
         return contextPath + "/imagehandling" + getImageQueryString(image, false);
+    }
+
+    public static String getImageETag(String path, File imageFile, Format format, int width, int height,
+                                      ImageCropRegion cropRegion, RotateDirection rotateDirection) {
+
+        StringBuilder builder = new StringBuilder();
+        builder.append(path);
+        builder.append(imageFile.length());
+        builder.append(imageFile.lastModified());
+        builder.append(width);
+        builder.append(height);
+        builder.append(rotateDirection.name());
+
+        if (format != null) {
+            builder.append(format.getOrdinal());
+        }
+        if (cropRegion != null) {
+            builder.append(cropRegion.getCropX1());
+            builder.append(cropRegion.getCropY1());
+            builder.append(cropRegion.getCropX2());
+            builder.append(cropRegion.getCropY2());
+        }
+
+        return "W/\"" + DigestUtils.md5Hex(builder.toString()) + "\"";
     }
 
     private static String getImageQueryString(ImageDomainObject image, boolean forPreview) {
@@ -236,6 +263,47 @@ public class ImcmsImageUtils {
             }
         }
         return imageSource;
+    }
+
+    public static boolean generateImage(File imageFile, File destFile, ImageCacheDomainObject imageCache) {
+
+        ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
+
+        final RotateDirection rotateDir = imageCache.getRotateDirection();
+
+        if (rotateDir != RotateDirection.NORTH) {
+            operation.rotate(rotateDir.getAngle());
+        }
+
+        final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(imageCache.getCropRegion());
+
+        if (cropRegion.isValid()) {
+            int cropWidth = cropRegion.getWidth();
+            int cropHeight = cropRegion.getHeight();
+
+            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
+        }
+
+        final int width = imageCache.getWidth();
+        final int height = imageCache.getHeight();
+
+        if (width > 0 || height > 0) {
+            Integer w = (width > 0 ? width : null);
+            Integer h = (height > 0 ? height : null);
+
+            Resize resize = (width > 0 && height > 0 ? Resize.FORCE : Resize.DEFAULT);
+
+            operation.filter(Filter.LANCZOS);
+            operation.resize(w, h, resize);
+        }
+
+        final Format format = imageCache.getFormat();
+
+        if (format != null) {
+            operation.outputFormat(format);
+        }
+
+        return operation.processToFile(destFile);
     }
 
     public static void generateImage(ImageData image, boolean overwrite) {

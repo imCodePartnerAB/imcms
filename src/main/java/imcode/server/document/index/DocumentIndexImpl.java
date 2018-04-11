@@ -50,7 +50,6 @@ public class DocumentIndexImpl implements DocumentIndex {
             for (SortField sortField : sortFields) {
                 final String field = sortField.getField();
                 solrQuery.addSort(field, (sortField.getReverse()) ? SolrQuery.ORDER.desc : SolrQuery.ORDER.asc);
-//            sortField.getReverse(); not sure
             }
         }
 
@@ -60,12 +59,12 @@ public class DocumentIndexImpl implements DocumentIndex {
             return search(solrQuery, searchingUser)
                     .documentStoredFieldsList()
                     .stream()
-                    .map(storedDocumentMeta -> (DocumentDomainObject) documentMapper.getDefaultDocument(
-                            storedDocumentMeta.id(), storedDocumentMeta.languageCode()
-                    ))
+                    .map(DocumentStoredFields::id)
+                    .map(documentMapper::<DocumentDomainObject>getDefaultDocument)
                     .collect(Collectors.toList());
 
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             return Collections.emptyList();
         }
     }

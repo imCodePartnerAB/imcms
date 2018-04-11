@@ -7,8 +7,19 @@ import com.imcode.imcms.model.TextHistory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
@@ -17,6 +28,7 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_texts_history")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TextHistoryJPA extends TextHistory {
 
     @Id
@@ -39,12 +51,14 @@ public class TextHistoryJPA extends TextHistory {
     @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private LanguageJPA language;
 
     private LoopEntryRefJPA loopEntryRef;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private User modifiedBy;
 
     @Column(name = "modified_dt")

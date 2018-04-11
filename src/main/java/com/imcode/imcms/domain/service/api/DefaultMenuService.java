@@ -2,7 +2,11 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
@@ -10,12 +14,12 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
-import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -129,13 +133,13 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private List<MenuItemDTO> getMenuItemsOf(
             int menuIndex, int docId, MenuItemsStatus status, String langCode, boolean isVisible
     ) {
-        final Version version = versionService.getVersion(docId, status.equals(MenuItemsStatus.ALL)
+        final Function<Integer, Version> versionReceiver = MenuItemsStatus.ALL.equals(status)
                 ? versionService::getDocumentWorkingVersion
-                : versionService::getLatestVersion);
+                : versionService::getLatestVersion;
 
+        final Version version = versionService.getVersion(docId, versionReceiver);
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
-        final UserDomainObject user = Imcms.getUser();
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
                 ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version)
@@ -146,24 +150,23 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .orElseGet(ArrayList::new)
                 .stream()
                 .map(menuItemFunction)
-                .filter(menuItemDTO -> (menuItemDTO != null)
-                        && ((status == MenuItemsStatus.ALL) || isMenuItemVisibleToUser(menuItemDTO, user)))
+                .filter(Objects::nonNull)
+                .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
+                .peek(menuItemDTO -> {
+                    if (status == MenuItemsStatus.ALL) return;
+
+                    final List<MenuItemDTO> children = menuItemDTO.getChildren()
+                            .stream()
+                            .filter(this::isPublicMenuItem)
+                            .collect(Collectors.toList());
+
+                    menuItemDTO.setChildren(children);
+                })
                 .collect(Collectors.toList());
     }
 
-    private boolean isMenuItemVisibleToUser(MenuItemDTO menuItemDTO, UserDomainObject user) {
-        final boolean hasAccess = documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user);
-
-        if (hasAccess) {
-            final List<MenuItemDTO> children = menuItemDTO.getChildren()
-                    .stream()
-                    .filter(menuItem -> isMenuItemVisibleToUser(menuItem, user))
-                    .collect(Collectors.toList());
-
-            menuItemDTO.setChildren(children);
-        }
-
-        return hasAccess;
+    private boolean isPublicMenuItem(MenuItemDTO menuItemDTO) {
+        return documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId());
     }
 
 }

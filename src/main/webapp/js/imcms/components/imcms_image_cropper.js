@@ -285,7 +285,9 @@ Imcms.define(
                 return;
             }
 
-            if (!imageData.cropRegion) {
+            var cropRegion = imageData.cropRegion;
+
+            if (!cropRegion) {
                 imageData.cropRegion = {
                     cropX1: 0,
                     cropY1: 0,
@@ -293,22 +295,39 @@ Imcms.define(
                     cropY2: cropElements.$cropArea.height()
                 };
             } else {
-                imageData.cropRegion.cropX1 /= croppingCoefficientX;
-                imageData.cropRegion.cropY1 /= croppingCoefficientY;
-                imageData.cropRegion.cropX2 /= croppingCoefficientX;
-                imageData.cropRegion.cropY2 /= croppingCoefficientY;
+                if (cropRegion.cropX1 === -1) {
+                    cropRegion.cropX1 = 0;
+                } else {
+                    cropRegion.cropX1 /= croppingCoefficientX;
+                }
+
+                if (cropRegion.cropY1 === -1) {
+                    cropRegion.cropY1 = 0;
+                } else {
+                    cropRegion.cropY1 /= croppingCoefficientY;
+                }
+
+                if (cropRegion.cropX2 === -1) {
+                    cropRegion.cropX2 = cropElements.$cropArea.width();
+                }
+                if (cropRegion.cropY2 === -1) {
+                    cropRegion.cropY2 = cropElements.$cropArea.height();
+                }
+
+                cropRegion.cropX2 /= croppingCoefficientX;
+                cropRegion.cropY2 /= croppingCoefficientY;
             }
 
             croppingAreaParams = {
-                height: imageData.cropRegion.cropY2 - imageData.cropRegion.cropY1,
-                width: imageData.cropRegion.cropX2 - imageData.cropRegion.cropX1
+                height: cropRegion.cropY2 - cropRegion.cropY1,
+                width: cropRegion.cropX2 - cropRegion.cropX1
             };
 
             removeCroppingListeners();
             setElementWidthHeight(cropElements.$cropImg, originImageWidth, originImageHeight);
             setElementWidthHeight(cropElements.$cropArea, croppingAreaParams.width, croppingAreaParams.height);
-            setElementTopLeft(cropElements.$cropArea, imageData.cropRegion.cropY1 + angleBorderSize, imageData.cropRegion.cropX1 + angleBorderSize);
-            setElementTopLeft(cropElements.$cropImg, -imageData.cropRegion.cropY1, -imageData.cropRegion.cropX1);
+            setElementTopLeft(cropElements.$cropArea, cropRegion.cropY1 + angleBorderSize, cropRegion.cropX1 + angleBorderSize);
+            setElementTopLeft(cropElements.$cropImg, -cropRegion.cropY1, -cropRegion.cropX1);
 
             !function setStartCroppingAngles() {
                 setCroppingAnglesTopLeft(
@@ -317,10 +336,10 @@ Imcms.define(
                 );
             }();
 
-            imageData.cropRegion.cropX1 *= croppingCoefficientX;
-            imageData.cropRegion.cropY1 *= croppingCoefficientY;
-            imageData.cropRegion.cropX2 *= croppingCoefficientX;
-            imageData.cropRegion.cropY2 *= croppingCoefficientY;
+            cropRegion.cropX1 *= croppingCoefficientX;
+            cropRegion.cropY1 *= croppingCoefficientY;
+            cropRegion.cropX2 *= croppingCoefficientX;
+            cropRegion.cropY2 *= croppingCoefficientY;
 
             angles.showAll();
 

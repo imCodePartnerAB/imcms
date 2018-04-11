@@ -5,8 +5,21 @@ import com.imcode.imcms.model.LoopEntry;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
-import javax.persistence.*;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -18,6 +31,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_content_loops")
 @EqualsAndHashCode(callSuper=false)
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class LoopJPA extends Loop {
 
     @Id
@@ -30,6 +44,7 @@ public class LoopJPA extends Loop {
             @JoinColumn(name = "doc_id", referencedColumnName = "doc_id"),
             @JoinColumn(name = "doc_version_no", referencedColumnName = "no")
     })
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Version version;
 
     @Min(1)
