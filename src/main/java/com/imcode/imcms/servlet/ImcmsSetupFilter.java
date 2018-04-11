@@ -17,7 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -182,33 +187,40 @@ public class ImcmsSetupFilter implements Filter {
 
             Imcms.setUser(user);
 
-            final Cookie[] cookies = request.getCookies();
             final LanguageMapper languageMapper = service.getLanguageMapper();
+            final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
-            if (cookies != null) {
-                final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
-                        .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-                        .findFirst();
+            if (requestedLangCode != null) {
+                Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
 
-                final String langCode;
-
-                if (userLanguageCookie.isPresent()) {
-                    langCode = userLanguageCookie.get().getValue();
-
-                } else {
-                    langCode = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
-
-                    final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
-                    newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
-                    newUserLanguageCookie.setPath("/");
-
-                    response.addCookie(newUserLanguageCookie);
-                }
-
-                final Language language = languageMapper.getLanguageByCode(langCode);
-                Imcms.setLanguage(language);
             } else {
-                Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+                final Cookie[] cookies = request.getCookies();
+
+                if (cookies != null) {
+                    final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+                            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+                            .findFirst();
+
+                    final String langCode;
+
+                    if (userLanguageCookie.isPresent()) {
+                        langCode = userLanguageCookie.get().getValue();
+
+                    } else {
+                        langCode = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
+
+                        final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+                        newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                        newUserLanguageCookie.setPath("/");
+
+                        response.addCookie(newUserLanguageCookie);
+                    }
+
+                    final Language language = languageMapper.getLanguageByCode(langCode);
+                    Imcms.setLanguage(language);
+                } else {
+                    Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+                }
             }
 
             ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
