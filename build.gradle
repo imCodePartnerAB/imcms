@@ -5,7 +5,7 @@ apply plugin: 'maven'
 apply plugin: 'war'
 
 group = 'com.imcode.imcms'
-version = '6.0.0-rc2-SNAPSHOT'
+version = '6.0.0-beta1-SNAPSHOT'
 
 description = """imCMS"""
 
