@@ -123,41 +123,26 @@ dependencies {
     testCompile group: 'org.skyscreamer', name: 'jsonassert', version: '1.5.0'
 }
 
+//Directory to hold temporary data
+def tmpDir = "${buildDir}/tmp/"
+
+//Migrated maven properties
 def mavenProps = new Properties()
 
 mavenProps.setProperty('log4j.threshold', 'info')
 mavenProps.setProperty('log4j.hibernate.level', 'error')
 mavenProps.setProperty('log4j.console-appender.threshold', 'off')
 
+//Used to merge build and server properties file with replacement of inplace variables usage
 def buildProps = new Properties()
 def tmpProps = new Properties()
-def tmpDir = "${buildDir}/tmp/"
 
-def langs = new ArrayList()
-langs.add("eng")
-langs.add("swe")
+//Translation Languages
+def localizationLanguages = new ArrayList()
+localizationLanguages.add("eng")
+localizationLanguages.add("swe")
 
 file("build.properties").withInputStream { buildProps.load(it) }
-
-task copyProperties(type: Copy) {
-    from "${projectDir}"
-    include "build.properties"
-
-    //Needed to perform this two times to replace inplace variables
-    filter(ReplaceTokens, tokens: buildProps)
-    filter(ReplaceTokens, tokens: buildProps)
-    into tmpDir
-}
-
-task importProperties(dependsOn: copyProperties) {
-    doLast {
-        file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
-    }
-}
-
-copyProperties.finalizedBy importProperties
-
-tasks.war.dependsOn importProperties
 
 jar.doFirst {
     manifest {
@@ -189,6 +174,7 @@ war {
         attributes 'Built-By': project.hasProperty('BF_USER') ? project.getProperty('BF_USER') : System.getProperty('user.name')
     }
 
+    //Copying configuration files
     webInf {
         from 'src/main/resources'
         from 'src/main/resources-conf'
@@ -203,6 +189,7 @@ war {
         filter(ReplaceTokens, tokens: mavenProps, beginToken: '${', endToken: '}')
     }
 
+    //Copying ehcache configuration files
     webInf {
         from 'src/main/resources'
         include "ehcache.xml"
@@ -210,6 +197,9 @@ war {
         into "/WEB-INF/clases"
     }
 
+    //Template localization
+    def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
+    def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
     def templatePatterns = new ArrayList()
 
     templatePatterns.add("**/*.jsp")
@@ -217,11 +207,8 @@ war {
     templatePatterns.add("**/*.htm")
     templatePatterns.add("**/*.html")
 
-    def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
-    def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
-
     def langProperties
-    langs.each { lang ->
+    localizationLanguages.each { lang ->
         langProperties = new Properties()
         file("src/main/resources-conf/imcms_${lang}.properties").withInputStream { langProperties.load(it) }
 
@@ -266,3 +253,23 @@ task explodedWar(type: Sync, dependsOn: war) {
     into "${buildDir}/exploded"
     with war
 }
+
+task copyProperties(type: Copy) {
+    from "${projectDir}"
+    include "build.properties"
+
+    //Needed to perform this two times to replace inplace variables
+    filter(ReplaceTokens, tokens: buildProps)
+    filter(ReplaceTokens, tokens: buildProps)
+    into tmpDir
+}
+
+task importProperties(dependsOn: copyProperties) {
+    doLast {
+        file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
+    }
+}
+
+//Task dependency settings
+copyProperties.finalizedBy importProperties
+tasks.war.dependsOn importProperties
