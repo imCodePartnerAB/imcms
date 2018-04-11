@@ -126,10 +126,6 @@ dependencies {
 //Migrated maven properties
 def mavenProps = new Properties()
 
-mavenProps.setProperty('log4j.threshold', 'info')
-mavenProps.setProperty('log4j.hibernate.level', 'error')
-mavenProps.setProperty('log4j.console-appender.threshold', 'off')
-
 //Used to merge build and server properties file with replacement of inplace variables usage
 def buildProps = new Properties()
 def tmpProps = new Properties()
@@ -139,12 +135,19 @@ def tmpDir = "${buildDir}/tmp/"
 
 //Translation Languages
 def localizationLanguages = new ArrayList()
-localizationLanguages.add("eng")
-localizationLanguages.add("swe")
 
-file("build.properties").withInputStream { buildProps.load(it) }
+task initParams {
+    mavenProps.setProperty('log4j.threshold', 'info')
+    mavenProps.setProperty('log4j.hibernate.level', 'error')
+    mavenProps.setProperty('log4j.console-appender.threshold', 'off')
 
-task copyProperties(type: Copy) {
+    localizationLanguages.add("eng")
+    localizationLanguages.add("swe")
+
+    file("build.properties").withInputStream { buildProps.load(it) }
+}
+
+task copyProperties(type: Copy, dependsOn: initParams) {
     from "${projectDir}"
     include "build.properties"
 
@@ -166,11 +169,11 @@ task explodedWar(type: Sync, dependsOn: war) {
     with war
 }
 
-
+//Task dependency settings
 copyProperties.finalizedBy importProperties
-
 tasks.war.dependsOn importProperties
 
+//Plugins setting up
 jar.doFirst {
     manifest {
         def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
