@@ -137,7 +137,6 @@ def langs = new ArrayList()
 langs.add("eng")
 langs.add("swe")
 
-
 file("build.properties").withInputStream { buildProps.load(it) }
 
 task copyProperties(type: Copy) {
@@ -251,19 +250,15 @@ war {
             exclude templatePatterns
             into "/imcms/${lang}"
         }
-
-
     }
 
     webInf {
+        def versionFile = new File("${tmpDir}/version.txt")
         doLast {
-            def versionFile = new File("${tmpDir}/version.txt")
             versionFile.text = version
-
-            from tmpDir
-            include "version.txt"
-            into "/WEB-INF"
         }
+        from versionFile
+        into "/WEB-INF/"
     }
 }
 
