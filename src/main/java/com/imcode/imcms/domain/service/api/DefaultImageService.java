@@ -20,8 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -103,6 +101,17 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     public Set<String> getPublicImageLinks(int docId, Language language) {
         final Version latestVersion = versionService.getLatestVersion(docId);
         return repository.findNonEmptyImageLinkUrlByVersionAndLanguage(latestVersion, new LanguageJPA(language));
+    }
+
+    @Override
+    public void regenerateImages() { // If generated images was cleared before start up
+        repository.findAllGeneratedImages()
+                .stream()
+                .map(imageToImageDTO)
+                .forEach((img) -> {
+                    img.setSource(ImcmsImageUtils.getImageSource(img.getPath()));
+                    ImcmsImageUtils.generateImage(img, false);
+                });
     }
 
     @Override
@@ -197,23 +206,12 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
         return image.getId();
     }
 
-    private Collection<Image> getAllGeneratedImages() {
-        return repository.findAllGeneratedImages();
-    }
-
     private void saveImage(ImageDTO imageDTO, LanguageJPA language, Version version) {
         final Image image = imageDtoToImage.apply(imageDTO, version, language);
         final Integer imageId = getImageId(imageDTO, version, language);
 
         image.setId(imageId);
         repository.save(image);
-    }
-
-    @PostConstruct
-    private void regenerateImages() { // If generated images was cleared before start up
-        getAllGeneratedImages().forEach((img) -> ImcmsImageUtils.generateImage(
-                imageToImageDTO.apply(img), false)
-        );
     }
 
     @Override

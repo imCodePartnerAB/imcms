@@ -16,6 +16,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
 
     void saveImage(ImageDTO imageDTO);
 
+    void regenerateImages();
+
     /**
      * Returns a set of non-empty image links for latest document version and specified language
      */

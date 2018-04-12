@@ -1,5 +1,6 @@
 package com.imcode.imcms.config;
 
+import com.imcode.imcms.domain.service.ImageService;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import org.springframework.context.annotation.Bean;
@@ -57,8 +58,9 @@ class WebConfig {
     @Bean
     public Imcms imcms(ServletContext servletContext,
                        ImcmsServices imcmsServices,
+                       ImageService imageService,
                        Properties imcmsProperties) {
 
-        return new Imcms(servletContext, imcmsServices, imcmsProperties);
+        return new Imcms(servletContext, imcmsServices, imcmsProperties, imageService);
     }
 }
