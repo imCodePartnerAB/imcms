@@ -3,6 +3,7 @@ package com.imcode.imcms.config;
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
+import com.imcode.imcms.components.Validator;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
@@ -68,7 +69,8 @@ import java.util.Properties;
         "com.imcode.imcms.mapping",
         "imcode.util",
         "imcode.server",
-        "com.imcode.imcms.db"
+        "com.imcode.imcms.components",
+        "com.imcode.imcms.db",
 })
 class MainConfig {
 
@@ -81,10 +83,16 @@ class MainConfig {
     }
 
     @Bean
-    public Properties imcmsProperties(StandardEnvironment env, @Value("WEB-INF/solr") File defaultSolrFolder) {
+    public Properties imcmsProperties(StandardEnvironment env,
+                                      Validator<Properties> propertiesValidator,
+                                      @Value("WEB-INF/solr") File defaultSolrFolder) {
+
         final Properties imcmsProperties = (Properties) env.getPropertySources().get("imcms.properties").getSource();
         final String solrHome = defaultSolrFolder.getAbsolutePath();
         imcmsProperties.setProperty("SolrHome", solrHome);
+
+        propertiesValidator.validate(imcmsProperties);
+
         return imcmsProperties;
     }
 
