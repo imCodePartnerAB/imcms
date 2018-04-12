@@ -1,3 +1,4 @@
+import com.eriwen.gradle.js.tasks.MinifyJsTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -183,15 +184,37 @@ task explodedWar(type: Sync, dependsOn: war) {
     with war
 }
 
+task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
+
 //Task dependency settings
 copyProperties.finalizedBy importProperties
 tasks.war.dependsOn importProperties
 tasks.war.dependsOn test
+tasks.war.dependsOn individualJsMinify
 
 //Plugins setting up
 lombok {
     version = "1.16.20"
     sha256 = ""
+}
+
+javascript.source {
+    custom {
+        js {
+            srcDir 'src/main/webapp/'
+            include "**/*.js"
+        }
+    }
+}
+
+javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
+    tasks.create(name: "dominifyJs${idx}", type: MinifyJsTask) {
+        def tmpFile = new File("${projectDir}/src/main/webapp")
+        def fileLocation = tmpFile.toPath().relativize(jsFile.toPath()).toFile()
+
+        source = jsFile
+        dest = "${tmpDir}/jsMin/${fileLocation}"
+    }
 }
 
 jar.doFirst {
@@ -287,6 +310,13 @@ war {
             from rootFolderForImcmsTemplates
             exclude templatePatterns
             into "/imcms/${lang}"
+        }
+    }
+
+    webInf {
+        doLast {
+            from "${tmpDir}/jsMin/"
+            into "/"
         }
     }
 
