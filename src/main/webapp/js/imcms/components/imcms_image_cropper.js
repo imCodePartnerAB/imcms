@@ -329,12 +329,12 @@ Imcms.define(
             setElementTopLeft(cropElements.$cropArea, cropRegion.cropY1 + angleBorderSize, cropRegion.cropX1 + angleBorderSize);
             setElementTopLeft(cropElements.$cropImg, -cropRegion.cropY1, -cropRegion.cropX1);
 
-            !function setStartCroppingAngles() {
+            (function setStartCroppingAngles() {
                 setCroppingAnglesTopLeft(
                     imageData.cropRegion.cropY1 + angleBorderSize,
                     imageData.cropRegion.cropX1 + angleBorderSize
                 );
-            }();
+            })();
 
             cropRegion.cropX1 *= croppingCoefficientX;
             cropRegion.cropY1 *= croppingCoefficientY;
