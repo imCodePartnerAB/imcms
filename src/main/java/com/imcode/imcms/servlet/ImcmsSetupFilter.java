@@ -192,6 +192,11 @@ public class ImcmsSetupFilter implements Filter {
 
             if (requestedLangCode != null) {
                 Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
+                final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
+                newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                newUserLanguageCookie.setPath("/");
+
+                response.addCookie(newUserLanguageCookie);
 
             } else {
                 final Cookie[] cookies = request.getCookies();
@@ -207,7 +212,8 @@ public class ImcmsSetupFilter implements Filter {
                         langCode = userLanguageCookie.get().getValue();
 
                     } else {
-                        langCode = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
+                        final String defaultLanguage = service.getConfig().getDefaultLanguage();
+                        langCode = LanguageMapper.convert639_2to639_1(defaultLanguage);
 
                         final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
                         newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
