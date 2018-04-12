@@ -10,7 +10,7 @@ Imcms.require(
     function (documentEditorBuilder, events, imcms, $) {
         events.on("document-editor-closed", function () {
             var returnUrl = $("#return-url").val();
-            location = (returnUrl) ? returnUrl : imcms.contextPath;
+            window.location = (returnUrl) ? returnUrl : imcms.contextPath;
         });
 
         documentEditorBuilder.build();

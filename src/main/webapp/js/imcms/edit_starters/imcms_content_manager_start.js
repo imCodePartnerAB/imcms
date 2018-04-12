@@ -11,7 +11,7 @@ Imcms.require(
         imcms.disableContentManagerSaveButton = true;
         events.on("content manager closed", function () {
             var returnUrl = $("#return-url").val();
-            location = (returnUrl) ? returnUrl : imcms.contextPath;
+            window.location = (returnUrl) ? returnUrl : imcms.contextPath;
         });
 
         contentManagerBuilder.build();

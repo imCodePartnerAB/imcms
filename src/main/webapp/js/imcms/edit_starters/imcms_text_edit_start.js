@@ -15,7 +15,7 @@ Imcms.require(
 
         events.on("imcms-version-modified", function () {
             var returnUrl = $("#return-url").val();
-            location = (returnUrl) ? returnUrl : $("#targetDocId").val();
+            window.location = (returnUrl) ? returnUrl : $("#targetDocId").val();
         })
     }
 );

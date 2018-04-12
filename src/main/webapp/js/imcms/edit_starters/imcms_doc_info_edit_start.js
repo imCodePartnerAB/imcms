@@ -12,7 +12,7 @@ Imcms.require(
 
         function onPageInfoClosed() {
             var returnUrl = $("#return-url").val();
-            location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + docId);
+            window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + docId);
         }
 
         events.on("page info closed", onPageInfoClosed);
