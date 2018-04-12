@@ -2,11 +2,14 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.mapping.container.VersionRef;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 
 import static com.imcode.imcms.api.DocumentVersion.WORKING_VERSION_NO;
 import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFilenameForFileDocumentFile;
 import static org.junit.Assert.assertEquals;
 
+@RunWith(BlockJUnit4ClassRunner.class)
 public class FileDocFilenameSpec {
 
     @Test
