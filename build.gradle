@@ -206,6 +206,7 @@ javascript.source {
         js {
             srcDir 'src/main/webapp/'
             include "**/*.js"
+            exclude "**/*.min.js"
         }
     }
 }
