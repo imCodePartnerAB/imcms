@@ -125,3 +125,7 @@
     height: 30px !important;
     width: 100% !important;
 }
+
+.imcms-editor-content--text.mce-content-body > * {
+    margin: 0;
+}
