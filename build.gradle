@@ -1,4 +1,5 @@
 import com.eriwen.gradle.js.tasks.MinifyJsTask
+import com.eriwen.gradle.css.tasks.MinifyCssTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -185,12 +186,14 @@ task explodedWar(type: Sync, dependsOn: war) {
 }
 
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
+task individualCssMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyCss") })
 
 //Task dependency settings
 copyProperties.finalizedBy importProperties
 tasks.war.dependsOn importProperties
 tasks.war.dependsOn test
 tasks.war.dependsOn individualJsMinify
+tasks.war.dependsOn individualCssMinify
 
 //Plugins setting up
 lombok {
@@ -207,6 +210,16 @@ javascript.source {
     }
 }
 
+css.source {
+    custom {
+        css {
+            srcDir 'src/main/webapp/'
+            include "**/*.css"
+            exclude "**/*.min.css"
+        }
+    }
+}
+
 javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
     tasks.create(name: "dominifyJs${idx}", type: MinifyJsTask) {
         def tmpFile = new File("${projectDir}/src/main/webapp")
@@ -214,6 +227,16 @@ javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
 
         source = jsFile
         dest = "${tmpDir}/jsMin/${fileLocation}"
+    }
+}
+
+css.source.custom.css.files.eachWithIndex { cssFile, idx ->
+    tasks.create(name: "dominifyCss${idx}", type: MinifyCssTask) {
+        def tmpFile = new File("${projectDir}/src/main/webapp")
+        def fileLocation = tmpFile.toPath().relativize(cssFile.toPath()).toFile()
+
+        source = cssFile
+        dest = "${tmpDir}/cssMin/${fileLocation}"
     }
 }
 
@@ -316,6 +339,13 @@ war {
     webInf {
         doLast {
             from "${tmpDir}/jsMin/"
+            into "/"
+        }
+    }
+
+    webInf {
+        doLast {
+            from "${tmpDir}/cssMin/"
             into "/"
         }
     }
