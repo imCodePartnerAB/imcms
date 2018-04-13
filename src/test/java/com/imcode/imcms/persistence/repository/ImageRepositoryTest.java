@@ -26,7 +26,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -192,8 +195,89 @@ public class ImageRepositoryTest {
 
         final List<Image> images = new ArrayList<>(imageRepository.findAllGeneratedImages());
 
-        assertTrue(images.size() == 1);
+        assertEquals(1, images.size());
         assertEquals(images.get(0), imageSwe);
+    }
+
+    @Test
+    public void findAllPresentNotGeneratedImages_When_AllPossibleCasesExist_Expect_OnlyOneFound() {
+        final Image image = new Image(); // not empty url, genFile = null - should be found
+        image.setIndex(1);
+        image.setLanguage(swedish);
+        image.setVersion(version);
+        image.setLoopEntryRef(null);
+        image.setFormat(Format.JPEG);
+        image.setUrl("dummy");
+        imageRepository.save(image);
+
+        final Image image1 = new Image(); // empty url, genFile = null - should not be found
+        image1.setIndex(2);
+        image1.setLanguage(swedish);
+        image1.setVersion(version);
+        image1.setLoopEntryRef(null);
+        image1.setFormat(Format.JPEG);
+        image1.setUrl("");
+        imageRepository.save(image1);
+
+        final Image image2 = new Image(); // null url, genFile = null - should not be found
+        image2.setIndex(3);
+        image2.setLanguage(swedish);
+        image2.setVersion(version);
+        image2.setLoopEntryRef(null);
+        image2.setFormat(Format.JPEG);
+        image2.setUrl("");
+        imageRepository.save(image2);
+
+        final Image image3 = new Image(); // null url, genFile is empty - should not be found
+        image3.setIndex(4);
+        image3.setLanguage(swedish);
+        image3.setVersion(version);
+        image3.setLoopEntryRef(null);
+        image3.setFormat(Format.JPEG);
+        image3.setGeneratedFilename("");
+        imageRepository.save(image3);
+
+        final Image image4 = new Image(); // null url, genFile is not empty - should not be found
+        image4.setIndex(5);
+        image4.setLanguage(swedish);
+        image4.setVersion(version);
+        image4.setLoopEntryRef(null);
+        image4.setFormat(Format.JPEG);
+        image4.setGeneratedFilename("not_empty");
+        imageRepository.save(image4);
+
+        final Image image5 = new Image(); // empty url, empty genFile - should not be found
+        image5.setIndex(6);
+        image5.setLanguage(swedish);
+        image5.setVersion(version);
+        image5.setLoopEntryRef(null);
+        image5.setFormat(Format.JPEG);
+        image5.setGeneratedFilename("");
+        image5.setUrl("");
+        imageRepository.save(image5);
+
+        final Image image6 = new Image(); // not empty url, not empty genFile - should not be found
+        image6.setIndex(7);
+        image6.setLanguage(swedish);
+        image6.setVersion(version);
+        image6.setLoopEntryRef(null);
+        image6.setFormat(Format.JPEG);
+        image6.setGeneratedFilename("not_empty");
+        image6.setUrl("not_empty");
+        imageRepository.save(image6);
+
+        final Image image7 = new Image(); // null url, null genFile - should not be found
+        image7.setIndex(8);
+        image7.setLanguage(swedish);
+        image7.setVersion(version);
+        image7.setLoopEntryRef(null);
+        image7.setFormat(Format.JPEG);
+        imageRepository.save(image7);
+
+        final List<Image> images = new ArrayList<>(imageRepository.findAllPresentNotGeneratedImages());
+
+        assertEquals(1, images.size());
+        assertEquals(images.get(0), image);
     }
 
     @Test
@@ -201,7 +285,7 @@ public class ImageRepositoryTest {
         final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
         List<Image> images = imageRepository.findAll();
 
-        assertTrue(images.size() == 1);
+        assertEquals(1, images.size());
         assertEquals(images.get(0), imageEng);
 
         imageRepository.deleteByVersionAndLanguage(version, english);
