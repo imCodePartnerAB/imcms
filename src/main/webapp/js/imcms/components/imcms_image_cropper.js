@@ -288,7 +288,7 @@ Imcms.define(
             var cropRegion = imageData.cropRegion;
 
             if (!cropRegion) {
-                imageData.cropRegion = {
+                cropRegion = imageData.cropRegion = {
                     cropX1: 0,
                     cropY1: 0,
                     cropX2: cropElements.$cropArea.width(),
