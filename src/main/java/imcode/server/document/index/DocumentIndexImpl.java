@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.beans.support.PagedListHolder.DEFAULT_PAGE_SIZE;
+
 // translated from scala...
 public class DocumentIndexImpl implements DocumentIndex {
 
@@ -42,6 +44,7 @@ public class DocumentIndexImpl implements DocumentIndex {
         }
 
         final SolrQuery solrQuery = new SolrQuery(queryString);
+        solrQuery.setRows(DEFAULT_PAGE_SIZE * 1000); // dummy limit, use SearchDocumentService for better control
 
         final Sort sort = query.getSort();
         if (sort != null) {
