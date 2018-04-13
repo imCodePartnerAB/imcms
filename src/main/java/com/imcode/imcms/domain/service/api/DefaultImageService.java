@@ -105,12 +105,20 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
     @Override
     public void regenerateImages() { // If generated images was cleared before start up
-        repository.findAllGeneratedImages()
-                .stream()
-                .map(imageToImageDTO)
+        repository.findAllRegenerationCandidates()
                 .forEach((img) -> {
-                    img.setSource(ImcmsImageUtils.getImageSource(img.getPath()));
-                    ImcmsImageUtils.generateImage(img, false);
+                    final ImageDTO imageDTO = imageToImageDTO.apply(img);
+                    imageDTO.setSource(ImcmsImageUtils.getImageSource(imageDTO.getPath()));
+
+                    if (StringUtils.isBlank(imageDTO.getGeneratedFilename())) {
+                        final String generatedFilename = ImcmsImageUtils.generateImageFileName(imageDTO);
+                        imageDTO.setGeneratedFilename(generatedFilename);
+
+                        img.setGeneratedFilename(generatedFilename);
+                        repository.save(img);
+                    }
+
+                    ImcmsImageUtils.generateImage(imageDTO, false);
                 });
     }
 

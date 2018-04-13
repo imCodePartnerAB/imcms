@@ -46,11 +46,12 @@ public interface ImageRepository extends JpaRepository<Image, Integer>, Versione
     @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
     Integer findIdByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, LanguageJPA language, int index, LoopEntryRefJPA loopEntryRef);
 
-    @Query("SELECT i FROM Image i WHERE i.generatedFilename IS NOT NULL AND i.generatedFilename <> '' ORDER BY i.id DESC")
-    Collection<Image> findAllGeneratedImages();
-
-    @Query("SELECT i FROM Image i WHERE i.url IS NOT NULL AND i.url <> '' AND (i.generatedFilename IS NULL OR i.generatedFilename = '') ORDER BY i.id DESC")
-    Collection<Image> findAllPresentNotGeneratedImages();
+    @Query("SELECT i " +
+            "FROM Image i " +
+            "WHERE i.generatedFilename IS NOT NULL AND i.generatedFilename <> '' " +
+            "   OR i.url IS NOT NULL AND i.url <> '' " +
+            "ORDER BY i.id DESC")
+    Collection<Image> findAllRegenerationCandidates();
 
     @Override
     @Query("SELECT i FROM Image i WHERE i.version = ?1")

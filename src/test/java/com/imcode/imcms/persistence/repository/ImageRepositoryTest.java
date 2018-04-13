@@ -21,6 +21,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -183,24 +184,7 @@ public class ImageRepositoryTest {
     }
 
     @Test
-    public void findAllGeneratedImages() {
-        final Image imageSwe = new Image();
-        imageSwe.setIndex(1);
-        imageSwe.setLanguage(swedish);
-        imageSwe.setVersion(version);
-        imageSwe.setLoopEntryRef(null);
-        imageSwe.setFormat(Format.JPEG);
-        imageSwe.setGeneratedFilename("dummy"); // this line is extra
-        imageRepository.save(imageSwe);
-
-        final List<Image> images = new ArrayList<>(imageRepository.findAllGeneratedImages());
-
-        assertEquals(1, images.size());
-        assertEquals(images.get(0), imageSwe);
-    }
-
-    @Test
-    public void findAllPresentNotGeneratedImages_When_AllPossibleCasesExist_Expect_OnlyOneFound() {
+    public void findAllRegenerationCandidates_When_AllPossibleCasesExist_Expect_OnlyOneFound() {
         final Image image = new Image(); // not empty url, genFile = null - should be found
         image.setIndex(1);
         image.setLanguage(swedish);
@@ -228,7 +212,7 @@ public class ImageRepositoryTest {
         image2.setUrl("");
         imageRepository.save(image2);
 
-        final Image image3 = new Image(); // null url, genFile is empty - should not be found
+        final Image image3 = new Image(); // null url, empty genFile - should not be found
         image3.setIndex(4);
         image3.setLanguage(swedish);
         image3.setVersion(version);
@@ -237,7 +221,7 @@ public class ImageRepositoryTest {
         image3.setGeneratedFilename("");
         imageRepository.save(image3);
 
-        final Image image4 = new Image(); // null url, genFile is not empty - should not be found
+        final Image image4 = new Image(); // null url, not empty genFile - should be found
         image4.setIndex(5);
         image4.setLanguage(swedish);
         image4.setVersion(version);
@@ -256,7 +240,7 @@ public class ImageRepositoryTest {
         image5.setUrl("");
         imageRepository.save(image5);
 
-        final Image image6 = new Image(); // not empty url, not empty genFile - should not be found
+        final Image image6 = new Image(); // not empty url, not empty genFile - should be found
         image6.setIndex(7);
         image6.setLanguage(swedish);
         image6.setVersion(version);
@@ -266,18 +250,30 @@ public class ImageRepositoryTest {
         image6.setUrl("not_empty");
         imageRepository.save(image6);
 
-        final Image image7 = new Image(); // null url, null genFile - should not be found
+        final Image image7 = new Image(); // not empty url, empty genFile - should be found
         image7.setIndex(8);
         image7.setLanguage(swedish);
         image7.setVersion(version);
         image7.setLoopEntryRef(null);
         image7.setFormat(Format.JPEG);
+        image7.setUrl("not_empty");
+        image7.setGeneratedFilename("");
         imageRepository.save(image7);
 
-        final List<Image> images = new ArrayList<>(imageRepository.findAllPresentNotGeneratedImages());
+        final Image image8 = new Image(); // empty url, not empty genFile - should be found
+        image8.setIndex(9);
+        image8.setLanguage(swedish);
+        image8.setVersion(version);
+        image8.setLoopEntryRef(null);
+        image8.setFormat(Format.JPEG);
+        image8.setUrl("");
+        image8.setGeneratedFilename("not_empty");
+        imageRepository.save(image8);
 
-        assertEquals(1, images.size());
-        assertEquals(images.get(0), image);
+        final List<Image> images = new ArrayList<>(imageRepository.findAllRegenerationCandidates());
+
+        assertEquals(5, images.size());
+        assertTrue(images.containsAll(Arrays.asList(image, image4, image6, image7, image8)));
     }
 
     @Test
