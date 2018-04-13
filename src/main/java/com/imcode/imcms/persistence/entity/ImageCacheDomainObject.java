@@ -190,11 +190,15 @@ public class ImageCacheDomainObject implements Serializable {
     }
 
     public Format getFormat() {
-        return Optional.ofNullable(format).orElse(Format.JPEG);
+        return getFormatOrDefault(format);
     }
 
     public void setFormat(Format format) {
-        this.format = format;
+        this.format = getFormatOrDefault(format);
+    }
+
+    private Format getFormatOrDefault(Format format) {
+        return Optional.ofNullable(format).orElse(Format.JPEG);
     }
 
     public ImageCropRegion getCropRegion() {
