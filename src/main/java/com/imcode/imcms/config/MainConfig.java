@@ -14,13 +14,17 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
+import com.imcode.imcms.mapping.DocumentLoader;
+import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentVersionMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.servlet.ImageCacheManager;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -174,6 +178,16 @@ class MainConfig {
         documentMapper.setDocumentIndex(resolvingQueryIndex);
 
         return resolvingQueryIndex;
+    }
+
+    @Bean
+    public DocumentLoaderCachingProxy documentLoaderCachingProxy(DocumentVersionMapper docVersionMapper,
+                                                                 DocumentLoader documentLoader,
+                                                                 DocumentLanguages languages,
+                                                                 PropertyService propertyService,
+                                                                 Config config) {
+
+        return new DocumentLoaderCachingProxy(docVersionMapper, documentLoader, languages, propertyService, config);
     }
 
     @Bean
