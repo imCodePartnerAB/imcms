@@ -1,21 +1,58 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.*;
+import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
+import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
+import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
+import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.LoopDTO;
+import com.imcode.imcms.domain.dto.LoopEntryDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
+import com.imcode.imcms.domain.dto.RoleDTO;
+import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.model.*;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Loop;
+import com.imcode.imcms.model.RestrictedPermission;
+import com.imcode.imcms.model.Role;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.Menu;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
+import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.MenuRepository;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import imcode.server.document.index.MockDocumentIndex;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
@@ -32,15 +69,29 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -52,7 +103,6 @@ public class DocumentServiceTest {
 
     private DocumentDTO createdDoc;
 
-    @Autowired
     private DocumentService<DocumentDTO> documentService;
 
     @Autowired
@@ -110,10 +160,40 @@ public class DocumentServiceTest {
     private VersionService versionService;
 
     @Autowired
+    private MetaRepository metaRepository;
+
+    @Autowired
+    private TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
+
+    @Autowired
+    private Function<DocumentDTO, Meta> documentDtoToMeta;
+
+    @Autowired
+    private List<VersionedContentService> versionedContentServices;
+
+
+    @Autowired
     private Config config;
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
+
+    @PostConstruct
+    private void init() {
+        documentService = new DefaultDocumentService(
+                metaRepository,
+                metaToDocumentDTO,
+                documentDtoToMeta,
+                commonContentService,
+                versionService,
+                textService,
+                imageService,
+                loopService,
+                new MockDocumentIndex(),
+                versionedContentServices
+        );
+        ((DefaultDocumentService) documentService).init();
+    }
 
     @AfterClass
     public static void shutDownSolr() {
@@ -181,8 +261,8 @@ public class DocumentServiceTest {
             assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
             assertEquals(childCommonContent.getMenuImageURL(), commonContent.getMenuImageURL());
 
-            assertEquals(childCommonContent.getId(), null);
-            assertEquals(childCommonContent.getDocId(), null);
+            assertNull(childCommonContent.getId());
+            assertNull(childCommonContent.getDocId());
             assertEquals(childCommonContent.getVersionNo(), Integer.valueOf(Version.WORKING_VERSION_INDEX));
         }
     }
@@ -492,21 +572,14 @@ public class DocumentServiceTest {
         assertEquals(documentDTO1, documentDTO);
     }
 
-    @Test
-    public void deleteById_Expect_Deleted() {
+    @Test(expected = DocumentNotExistException.class)
+    public void deleteById_Expect_DocumentNotExistExceptionAfterDeletion() {
         final int docId = createdDoc.getId();
         documentService.deleteByDocId(docId);
-
-        try {
-            documentService.get(docId);
-            fail("Expected exception wasn't thrown!");
-
-        } catch (DocumentNotExistException e) {
-            // expected exception
-        }
+        documentService.get(docId);
     }
 
-    @Test
+    @Test(expected = DocumentNotExistException.class)
     public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(RoleId.SUPERADMIN);
@@ -561,13 +634,7 @@ public class DocumentServiceTest {
 
         documentService.deleteByDocId(documentDTO.getId());
 
-        try {
-            documentService.get(createdDocId);
-            fail("Expected exception wasn't thrown!");
-
-        } catch (DocumentNotExistException e) {
-            // expected exception
-        }
+        documentService.get(createdDocId);
     }
 
     @Test
