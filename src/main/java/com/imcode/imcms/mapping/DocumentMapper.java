@@ -1,16 +1,25 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.api.*;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.DocumentLanguage;
+import com.imcode.imcms.api.DocumentLanguages;
+import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.domain.service.PropertyService;
-import com.imcode.imcms.flow.DocumentPageFlow;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentReference;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.GetterDocumentReference;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
@@ -30,19 +39,31 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileFilter;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
+import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 
 @Component
+@SuppressWarnings("WeakerAccess")
 public class DocumentMapper implements DocumentGetter {
 
+    private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
     private final PropertyService propertyService;
-    private final DocumentVersionMapper versionMapper;
     private final Database database;
     private final NativeQueries nativeQueries;
-    private final DocumentLoader documentLoader;
     private final DocumentSaver documentSaver;
     private final CategoryMapper categoryMapper;
     private final DocumentContentMapper documentContentMapper;
@@ -60,8 +81,7 @@ public class DocumentMapper implements DocumentGetter {
                           Database database,
                           DocumentLanguages languages,
                           PropertyService propertyService,
-                          DocumentVersionMapper versionMapper,
-                          DocumentLoader documentLoader) {
+                          DocumentLoaderCachingProxy documentLoaderCachingProxy) {
 
         this.nativeQueries = nativeQueries;
         this.documentSaver = documentSaver;
@@ -71,14 +91,17 @@ public class DocumentMapper implements DocumentGetter {
         this.database = database;
         this.documentLanguages = languages;
         this.propertyService = propertyService;
-        this.versionMapper = versionMapper;
-        this.documentLoader = documentLoader;
+        this.documentLoaderCachingProxy = documentLoaderCachingProxy;
     }
 
     private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
-        File filePath = Imcms.getServices().getConfig().getFilePath();
-        File[] filesToDelete = filePath.listFiles(fileFilter);
-        Stream.of(filesToDelete).forEach(File::delete);
+        final File filePath = Imcms.getServices().getConfig().getFilePath();
+        final File[] filesToDelete = filePath.listFiles(fileFilter);
+
+        if (filesToDelete != null) {
+            //noinspection ResultOfMethodCallIgnored
+            Stream.of(filesToDelete).forEach(File::delete);
+        }
     }
 
     static void deleteAllFileDocumentFiles(FileDocumentDomainObject fileDocument) {
@@ -99,7 +122,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return version info for a given document or null if document does not exist.
      */
     public DocumentVersionInfo getDocumentVersionInfo(int documentId) {
-        return versionMapper.getInfo(documentId);
+        return documentLoaderCachingProxy.getDocVersionInfo(documentId);
     }
 
     /**
@@ -203,6 +226,7 @@ public class DocumentMapper implements DocumentGetter {
      * @see #createDocumentOfTypeFromParent(int, imcode.server.document.DocumentDomainObject, imcode.server.user.UserDomainObject)
      * @see imcode.server.document.DocumentDomainObject#fromDocumentTypeId(int)
      */
+    @SuppressWarnings("unchecked")
     public <T extends DocumentDomainObject> T saveNewDocument(T doc, UserDomainObject user)
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException {
         T docClone = (T) doc.clone();
@@ -228,6 +252,7 @@ public class DocumentMapper implements DocumentGetter {
      * @return saved document
      * @since 6.0
      */
+    @SuppressWarnings("unchecked")
     private <T extends DocumentDomainObject> T saveNewDocument(T doc, Map<DocumentLanguage, DocumentCommonContent> appearances,
                                                                EnumSet<SaveOpts> saveOpts,
                                                                UserDomainObject user)
@@ -339,6 +364,7 @@ public class DocumentMapper implements DocumentGetter {
     }
 
     private void invalidateDocument(int docId) {
+        documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
 
@@ -358,6 +384,7 @@ public class DocumentMapper implements DocumentGetter {
         documentSaver.getDocRepository().deleteDocument(document.getId());
         document.accept(new DocumentDeletingVisitor());
         documentIndex.removeDocument(document);
+        documentLoaderCachingProxy.removeDocFromCache(document.getId());
     }
 
     public Map<Integer, String> getAllDocumentTypeIdsAndNamesInUsersLanguage(UserDomainObject user) {
@@ -381,7 +408,7 @@ public class DocumentMapper implements DocumentGetter {
                 idRange.getMinimumInteger(),
                 idRange.getMaximumInteger());
 
-        return ArrayUtils.toPrimitive(ids.toArray(new Integer[ids.size()]));
+        return ArrayUtils.toPrimitive(ids.toArray(new Integer[0]));
     }
 
     public List<Integer> getAllDocumentIds() {
@@ -416,7 +443,7 @@ public class DocumentMapper implements DocumentGetter {
         try {
             return Integer.valueOf(documentIdentity);
         } catch (NumberFormatException e) {
-            return propertyService.getDocIdByAlias(documentIdentity);
+            return documentLoaderCachingProxy.getDocIdByAlias(documentIdentity);
         }
     }
 
@@ -462,7 +489,7 @@ public class DocumentMapper implements DocumentGetter {
         // todo: put into resource file.
         String copyHeadlineSuffix = "(Copy/Kopia)";
 
-        DocumentMeta documentMeta = documentLoader.loadMeta(versionRef.getDocId());
+        DocumentMeta documentMeta = documentLoaderCachingProxy.getMeta(versionRef.getDocId());
         Map<DocumentLanguage, DocumentCommonContent> dccMap = documentContentMapper
                 .getCommonContents(versionRef.getDocId(), versionRef.getNo());
         List<DocumentDomainObject> newDocs = new LinkedList<>();
@@ -562,7 +589,7 @@ public class DocumentMapper implements DocumentGetter {
      * @since 6.0
      */
     private <T extends DocumentDomainObject> T getWorkingDocument(int docId, String docLanguageCode) {
-        return documentLoader.getWorkingDoc(docId, docLanguageCode);
+        return documentLoaderCachingProxy.getWorkingDoc(docId, docLanguageCode);
     }
 
     /**
@@ -583,8 +610,8 @@ public class DocumentMapper implements DocumentGetter {
      */
     public <T extends DocumentDomainObject> T getDefaultDocument(int docId, String languageCode) {
         return (Imcms.isVersioningAllowed())
-                ? documentLoader.getDefaultDoc(docId, languageCode)
-                : documentLoader.getWorkingDoc(docId, languageCode);
+                ? documentLoaderCachingProxy.getDefaultDoc(docId, languageCode)
+                : documentLoaderCachingProxy.getWorkingDoc(docId, languageCode);
     }
 
     /**
@@ -600,7 +627,7 @@ public class DocumentMapper implements DocumentGetter {
             // force version changing to working
             docRef = DocRef.of(docRef.getId(), DocumentVersion.WORKING_VERSION_NO, docRef.getLanguageCode());
         }
-        return documentLoader.getCustomDoc(docRef);
+        return documentLoaderCachingProxy.getCustomDoc(docRef);
     }
 
     public CategoryMapper getCategoryMapper() {
@@ -735,43 +762,6 @@ public class DocumentMapper implements DocumentGetter {
 
         public TextDocumentDomainObject getDocument() {
             return document;
-        }
-    }
-
-    /**
-     * Sets default document version.
-     *
-     * @since 6.0
-     */
-    public static class SetDefaultDocumentVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
-
-        private static final long serialVersionUID = 7423525552360211171L;
-        private Integer docVersionNo;
-
-        public SetDefaultDocumentVersionCommand(Integer docVersionNo) {
-            this.docVersionNo = docVersionNo;
-        }
-
-        @Override
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionToEditDocumentException, NoPermissionToAddDocumentToMenuException {
-            Imcms.getServices().getDocumentMapper().changeDocumentDefaultVersion(document.getId(), docVersionNo, user);
-        }
-    }
-
-    /**
-     * Makes new version from a working/draft version and sets it as default version for current doc.
-     *
-     * @since 6.0
-     */
-    public static class PublishWorkingVersionCommand extends DocumentPageFlow.SaveDocumentCommand {
-
-        private static final long serialVersionUID = -8230649834443025925L;
-
-        @Override
-        public void saveDocument(DocumentDomainObject document, UserDomainObject user) throws NoPermissionInternalException {
-            final DocumentMapper mapper = Imcms.getServices().getDocumentMapper();
-            final DocumentVersion newVersion = mapper.makeDocumentVersion(document.getId(), user);
-            mapper.changeDocumentDefaultVersion(document.getId(), newVersion.getNo(), user);
         }
     }
 
