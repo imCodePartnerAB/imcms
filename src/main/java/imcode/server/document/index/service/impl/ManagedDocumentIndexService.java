@@ -10,7 +10,11 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.QueryResponse;
 
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -30,7 +34,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
     private final static Object lock = new Object();
 
     private final ExecutorService serviceFailureExecutor = Executors.newSingleThreadExecutor();
-    private final ScheduledExecutorService indexUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final ExecutorService indexUpdateExecutor = Executors.newSingleThreadExecutor();
     private final ExecutorService indexRebuildExecutor = Executors.newSingleThreadExecutor();
 
     private final AtomicBoolean shutdownRef = new AtomicBoolean(false);
@@ -152,7 +156,7 @@ public class ManagedDocumentIndexService implements DocumentIndexService {
 
     private void invokeIndexUpdateThread() {
         if (indexUpdateFuture.isDone() && indexRebuildFuture.isDone()) {
-            indexUpdateFuture = indexUpdateExecutor.schedule(this::updateIndexes, 1, TimeUnit.SECONDS);
+            indexUpdateFuture = indexUpdateExecutor.submit(this::updateIndexes);
             logger.info("Submitted new index update thread.");
         }
     }
