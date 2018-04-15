@@ -11,6 +11,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -381,7 +382,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
         return Collections.unmodifiableMap(loopImages);
     }
 
-    public static class TemplateNames implements Cloneable {
+    public static class TemplateNames implements Cloneable, Serializable {
         private String templateName;
         private int templateGroupId;
         private String defaultTemplateName;
