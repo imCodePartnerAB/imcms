@@ -1,7 +1,7 @@
 Installing ImCMS
 ================
 
-1. :download:`- <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-rc1/imcms-6.0.0-rc1.war>` `Download <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-rc1/imcms-6.0.0-rc1.war>`_ latest ImCMS installation package.
+1. :download:`- <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-beta1/imcms-6.0.0-beta1.war>` `Download <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-beta1/imcms-6.0.0-beta1.war>`_ latest ImCMS installation package.
 
 2. Copy imcms.war to **"tomcat/webapps"** .
 
