@@ -21,7 +21,7 @@ To create a MySQL database, a command like the following might be appropriate:
 
 Here is an example of such command execution:
 
-    .. image:: db-creation-example.png
+    .. image:: images/db-creation-example.png
 
 After you write the password for mysql user new database is created and is ready to use.
 Don't forget your DB name, it will be needed soon for next ImCMS configuration.

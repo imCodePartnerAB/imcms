@@ -2,11 +2,11 @@ Setup
 =====
 
 .. toctree::
-:titlesonly:
+    :titlesonly:
 
-        before
-        user
-        developer
-        requirement
-        install
-        configuration
+    before
+    user
+    developer
+    requirement
+    install
+    configuration
