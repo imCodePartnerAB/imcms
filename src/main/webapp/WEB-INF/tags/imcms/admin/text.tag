@@ -27,7 +27,7 @@ ${"-->"}
 
 <c:set var="content" value="${textField.text}"/>
 
-<c:if test="${(not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
+<c:if test="${not empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
 <c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
 
     <c:set var="loopData">
