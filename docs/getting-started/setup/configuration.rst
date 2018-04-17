@@ -2,8 +2,8 @@ Configure ImCMS
 ===============
 
 In this article:
-	- `Setting up database`_
-	- `Setting up ImCMS`_
+    - `Setting up database`_
+    - `Setting up ImCMS`_
 
 Setting up database
 -------------------
@@ -16,13 +16,13 @@ To create a **MySQL** database, a command like the following might be appropriat
 
 .. code-block:: console
 
-	mysql -u <user> -p -e "CREATE DATABASE imcms CHARACTER SET utf8"
+    mysql -u <user> -p -e "CREATE DATABASE imcms CHARACTER SET utf8"
 
 On **Microsoft SQL Server** you can use **"Enterprise Manager"** to create a database, or use "SQL Query Analyzer" to execute something like the following SQL command:
 
 .. code-block:: console
 
-         CREATE DATABASE imcms
+    CREATE DATABASE imcms
 
 See the documentation for your database server for details.
 
