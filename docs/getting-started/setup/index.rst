@@ -4,9 +4,9 @@ Setup
 .. toctree::
     :titlesonly:
 
+    requirement
     before
     user
     developer
-    requirement
     install
     configuration
