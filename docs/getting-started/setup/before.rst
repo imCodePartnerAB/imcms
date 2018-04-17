@@ -7,9 +7,8 @@ for ImCMS.
 Setting up database
 -------------------
 
-ImCMS works fine with **MySQL 5.7** but may work on higher versions too.
-Create new database on your database server, as appropriate for your type of database server
-and your preferred default language.
+ImCMS works fine with **MySQL 5.7+** but may work on higher versions too.
+You need to create new database on your database server.
 
 Example:
 ^^^^^^^^
