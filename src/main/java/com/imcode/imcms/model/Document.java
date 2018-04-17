@@ -10,6 +10,7 @@ import imcode.util.Utility;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,7 +21,9 @@ import java.util.Set;
  */
 @Data
 @NoArgsConstructor
-public abstract class Document {
+public abstract class Document implements Serializable {
+
+    private static final long serialVersionUID = 9097330155648052626L;
 
     protected Document(Document from) {
         setId(from.getId());

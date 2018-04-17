@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class ImageCropRegion {
+public abstract class ImageCropRegion implements Serializable {
+
+    private static final long serialVersionUID = -947412260935252455L;
 
     protected ImageCropRegion(ImageCropRegion from) {
         setCropX1(from.getCropX1());

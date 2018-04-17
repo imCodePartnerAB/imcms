@@ -3,8 +3,12 @@ package com.imcode.imcms.model;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class DocumentFile {
+public abstract class DocumentFile implements Serializable {
+
+    private static final long serialVersionUID = 2110183948754068864L;
 
     public DocumentFile(DocumentFile from) {
         setId(from.getId());

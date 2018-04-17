@@ -21,6 +21,8 @@ import javax.persistence.Table;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class LoopEntryJPA extends LoopEntry {
 
+    private static final long serialVersionUID = -3321568128823220813L;
+
     @Column(name = "`index`")
     private int index;
 

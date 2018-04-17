@@ -1,5 +1,6 @@
 package com.imcode.imcms.mapping.jpa;
 
+import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
@@ -8,11 +9,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "ip_accesses")
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class IPAccess implements Cloneable {
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+public class IPAccess implements Cloneable, Serializable {
+
+    private static final long serialVersionUID = 5860709877165802320L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

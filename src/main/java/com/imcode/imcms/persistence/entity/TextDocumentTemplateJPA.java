@@ -22,6 +22,8 @@ import javax.persistence.Table;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TextDocumentTemplateJPA extends TextDocumentTemplate {
 
+    private static final long serialVersionUID = -3060069885358830246L;
+
     @Id
     @Column(name = "meta_id")
     private Integer docId;

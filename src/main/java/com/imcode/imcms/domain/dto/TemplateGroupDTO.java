@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper=false)
 public class TemplateGroupDTO extends TemplateGroup {
 
+    private static final long serialVersionUID = -5039489943024804410L;
+
     private Integer id;
 
     private String name;

@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class Language {
+public abstract class Language implements Serializable {
+
+    private static final long serialVersionUID = -5874751837931922946L;
 
     protected Language(Language from) {
         setId(from.getId());

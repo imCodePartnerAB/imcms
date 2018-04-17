@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 25.01.18.
@@ -15,7 +13,8 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class ImageCropRegionDTO extends ImageCropRegion implements Serializable {
+public class ImageCropRegionDTO extends ImageCropRegion {
+
     private static final long serialVersionUID = -586488435877347784L;
 
     private volatile int cropX1;

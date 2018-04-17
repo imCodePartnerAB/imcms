@@ -6,13 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class LoopEntryDTO extends LoopEntry implements Serializable {
+public class LoopEntryDTO extends LoopEntry {
     private static final long serialVersionUID = 8928942908190412349L;
 
     private int index;

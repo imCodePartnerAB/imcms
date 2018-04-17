@@ -14,6 +14,8 @@ import java.util.Optional;
 @NoArgsConstructor
 public class TextHistoryDTO extends TextHistory {
 
+    private static final long serialVersionUID = 2910891635758327339L;
+
     private Integer docId;
     private AuditDTO modified;
     private Integer index;

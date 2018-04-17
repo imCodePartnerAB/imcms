@@ -29,6 +29,8 @@ import javax.validation.constraints.NotNull;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DocumentUrlJPA extends DocumentURL {
 
+    private static final long serialVersionUID = 3382770541292736409L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

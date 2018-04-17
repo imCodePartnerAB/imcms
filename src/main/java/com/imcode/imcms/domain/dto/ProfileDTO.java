@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class ProfileDTO extends Profile {
 
+    private static final long serialVersionUID = 6781576769488287699L;
+
     private String documentName;
     private String name;
     private Integer id;

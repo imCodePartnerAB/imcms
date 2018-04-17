@@ -15,13 +15,16 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @MappedSuperclass
 @ToString
-public abstract class VersionedContent {
+public abstract class VersionedContent implements Serializable {
+
+    private static final long serialVersionUID = -94157295804717051L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -17,6 +17,8 @@ import javax.persistence.Embeddable;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 class SpaceAroundJPA extends SpaceAround {
 
+    private static final long serialVersionUID = 3695235816906571485L;
+
     @Column(name = "top_space")
     private int top;
 

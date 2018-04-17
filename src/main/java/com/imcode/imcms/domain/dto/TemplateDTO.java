@@ -6,13 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class TemplateDTO extends Template implements Serializable {
+public class TemplateDTO extends Template {
 
     private static final long serialVersionUID = 441290133487733989L;
 

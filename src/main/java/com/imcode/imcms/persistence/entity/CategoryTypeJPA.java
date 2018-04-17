@@ -29,6 +29,8 @@ import javax.validation.constraints.NotNull;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CategoryTypeJPA extends CategoryType {
 
+    private static final long serialVersionUID = 2289471015338374731L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_type_id")

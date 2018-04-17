@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class LoopEntry {
+public abstract class LoopEntry implements Serializable {
+
+    private static final long serialVersionUID = 8794764831568545929L;
 
     protected LoopEntry(LoopEntry from) {
         setIndex(from.getIndex());

@@ -22,6 +22,8 @@ import javax.persistence.Table;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TemplateJPA extends Template {
 
+    private static final long serialVersionUID = 86902163555073323L;
+
     @Id
     @Column(name = "template_name", unique = true, nullable = false)
     private String name;

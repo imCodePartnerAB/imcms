@@ -29,6 +29,8 @@ import java.util.stream.Collectors;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TemplateGroupJPA extends TemplateGroup {
 
+    private static final long serialVersionUID = -8767918843878238301L;
+
     @Id
     @Column(name = "group_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

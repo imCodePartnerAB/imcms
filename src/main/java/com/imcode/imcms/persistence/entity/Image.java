@@ -19,13 +19,16 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_images")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Image {
+public class Image implements Serializable {
+
+    private static final long serialVersionUID = -4028479126820231301L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

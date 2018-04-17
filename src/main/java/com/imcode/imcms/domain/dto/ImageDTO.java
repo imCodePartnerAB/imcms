@@ -19,6 +19,7 @@ import static java.util.Optional.ofNullable;
 public class ImageDTO extends ImageData {
 
     private static final long serialVersionUID = -3103155597832120014L;
+
     private Integer index;
     private Integer docId;
     protected boolean inText;

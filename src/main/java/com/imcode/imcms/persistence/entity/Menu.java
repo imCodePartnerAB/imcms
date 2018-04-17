@@ -28,6 +28,8 @@ import java.util.List;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Menu extends VersionedContent {
 
+    private static final long serialVersionUID = 1481827218337826982L;
+
     @NotNull
     private Integer no;
 

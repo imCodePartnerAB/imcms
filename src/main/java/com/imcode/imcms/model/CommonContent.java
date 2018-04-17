@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class CommonContent {
+public abstract class CommonContent implements Serializable {
+
+    private static final long serialVersionUID = 4011970230207348148L;
 
     protected CommonContent(CommonContent from) {
         setId(from.getId());

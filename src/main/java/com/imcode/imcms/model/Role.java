@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class Role {
+public abstract class Role implements Serializable {
+
+    private static final long serialVersionUID = -9182955164406114663L;
 
     protected Role(Role from) {
         setId(from.getId());

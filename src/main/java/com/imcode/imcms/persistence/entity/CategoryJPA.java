@@ -20,7 +20,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +28,7 @@ import java.io.Serializable;
 @Table(name = "categories")
 @EqualsAndHashCode(callSuper=false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class CategoryJPA extends Category implements Serializable {
+public class CategoryJPA extends Category {
 
     private static final long serialVersionUID = 8984841419157038574L;
 
