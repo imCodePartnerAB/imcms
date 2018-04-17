@@ -60,4 +60,14 @@ and run startup script in terminal:
 
 In the end of result message you should receive this: **Tomcat started.**
 Tomcat started on standard path, check in your browser: http://localhost:8080/manager/
-In *Applications* section you should see path **/imcms** with state *Running* - false.
+You should see this:
+
+    .. image:: tomcat-imcms-example.png
+
+In *Applications* section find path **/imcms** (or how you renamed downloaded file) with state *Running* - true.
+Click on path and you should see this:
+
+    .. image:: imcms-start-page-example.png
+
+If not, check each step twice to be sure that you've done all things right.
+
