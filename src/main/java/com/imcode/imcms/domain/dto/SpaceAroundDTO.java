@@ -5,11 +5,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class SpaceAroundDTO extends SpaceAround {
+public class SpaceAroundDTO extends SpaceAround implements Serializable {
 
+    private static final long serialVersionUID = -1489089643170770251L;
     private int top;
 
     private int right;

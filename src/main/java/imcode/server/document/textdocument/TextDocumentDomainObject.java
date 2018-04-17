@@ -427,7 +427,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
      * In the current implementation a loop can contain texts ans images.
      * </p>
      */
-    public static class LoopItemRef {
+    public static class LoopItemRef implements Serializable {
+
+        private static final long serialVersionUID = -1466379121949797346L;
 
         private final int loopNo;
         private final int entryNo;
