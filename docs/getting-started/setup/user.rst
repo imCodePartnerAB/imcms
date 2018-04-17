@@ -30,7 +30,7 @@ simply extract an archive into any folder. We will call the result tomcat direct
 ImCMS Configuration
 -------------------
 
-Next step - `download latest ImCMS <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-rc1/imcms-6.0.0-rc1.war>`_.
+Next step - `download latest ImCMS <http://repo.imcode.com/maven2/com/imcode/imcms/imcms/6.0.0-beta1/imcms-6.0.0-beta1.war>`_.
 Then put downloaded file here: ``tomcat_home/webapps/``.
 You can rename this file, so result will look like this: ``tomcat_home/webapps/imcms.war``.
 
