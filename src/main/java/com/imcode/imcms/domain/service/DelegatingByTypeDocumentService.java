@@ -9,7 +9,7 @@ import com.imcode.imcms.model.Document;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.12.17.
  */
-public interface TypedDocumentService extends
+public interface DelegatingByTypeDocumentService extends
         TypedDocumentCreatingService<Document>,
         BasicDocumentService<Document>,
         DocumentSaver<Document> {

@@ -5,7 +5,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
-import com.imcode.imcms.domain.service.TypedDocumentService;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.Test;
@@ -146,7 +146,7 @@ public class DocumentControllerTest extends MockingControllerTest {
 //    private DocumentUrlRepository documentUrlRepository;
 
     @Mock
-    private TypedDocumentService documentService;
+    private DelegatingByTypeDocumentService documentService;
 
     @InjectMocks
     private DocumentController documentController;

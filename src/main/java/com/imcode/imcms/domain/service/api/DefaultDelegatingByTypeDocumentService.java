@@ -6,8 +6,8 @@ import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.TypedDocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -23,7 +23,7 @@ import java.util.Optional;
  * 22.12.17.
  */
 @Service
-class DefaultDelegatingByTypeDocumentService implements TypedDocumentService {
+class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocumentService {
 
     private final DocumentService<TextDocumentDTO> textDocumentService;
     private final DocumentService<FileDocumentDTO> fileDocumentService;
