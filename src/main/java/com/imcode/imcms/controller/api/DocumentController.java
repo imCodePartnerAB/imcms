@@ -8,7 +8,13 @@ import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
@@ -18,9 +24,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/documents")
 class DocumentController {
 
-    private TypedDocumentService<Document> documentService;
+    private TypedDocumentService documentService;
 
-    DocumentController(TypedDocumentService<Document> documentService) {
+    DocumentController(TypedDocumentService documentService) {
         this.documentService = documentService;
     }
 
@@ -47,7 +53,7 @@ class DocumentController {
      */
     @PostMapping
     @CheckAccess(AccessType.DOC_INFO)
-    public UberDocumentDTO save(@RequestBody UberDocumentDTO saveMe) {
+    public Document save(@RequestBody UberDocumentDTO saveMe) {
         return documentService.save(saveMe);
     }
 

@@ -8,7 +8,6 @@ import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TypedDocumentService;
-import com.imcode.imcms.domain.service.core.WrappingDocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -20,30 +19,27 @@ import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 /**
- * Central {@link com.imcode.imcms.domain.service.DocumentService} instance
- * that delegates calls to corresponding service by document's type.
- *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.12.17.
  */
 @Service
-class DelegatingByTypeDocumentService implements TypedDocumentService<Document> {
+class DefaultDelegatingByTypeDocumentService implements TypedDocumentService {
 
-    private final DocumentService<UberDocumentDTO> wrappedTextDocumentService;
-    private final DocumentService<UberDocumentDTO> wrappedFileDocumentService;
-    private final DocumentService<UberDocumentDTO> wrappedUrlDocumentService;
-    private DocumentIndexer documentIndexer;
+    private final DocumentService<TextDocumentDTO> textDocumentService;
+    private final DocumentService<FileDocumentDTO> fileDocumentService;
+    private final DocumentService<UrlDocumentDTO> urlDocumentService;
+    private final DocumentIndexer documentIndexer;
     private final MetaRepository metaRepository;
 
-    DelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
-                                    DocumentService<FileDocumentDTO> fileDocumentService,
-                                    DocumentService<UrlDocumentDTO> urlDocumentService,
-                                    DocumentIndexer documentIndexer,
-                                    MetaRepository metaRepository) {
+    DefaultDelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
+                                           DocumentService<FileDocumentDTO> fileDocumentService,
+                                           DocumentService<UrlDocumentDTO> urlDocumentService,
+                                           DocumentIndexer documentIndexer,
+                                           MetaRepository metaRepository) {
 
-        this.wrappedTextDocumentService = new WrappingDocumentService<>(textDocumentService);
-        this.wrappedFileDocumentService = new WrappingDocumentService<>(fileDocumentService);
-        this.wrappedUrlDocumentService = new WrappingDocumentService<>(urlDocumentService);
+        this.textDocumentService = textDocumentService;
+        this.fileDocumentService = fileDocumentService;
+        this.urlDocumentService = urlDocumentService;
         this.documentIndexer = documentIndexer;
         this.metaRepository = metaRepository;
     }
@@ -59,8 +55,8 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
     }
 
     @Override
-    public UberDocumentDTO save(UberDocumentDTO saveMe) {
-        return getCorrespondingDocumentService(saveMe.getType()).save(saveMe);
+    public Document save(Document saveMe) {
+        return getCorrespondingDocumentService(saveMe.getType()).save(UberDocumentDTO.of(saveMe).toTypedDocument());
     }
 
     @Override
@@ -88,22 +84,22 @@ class DelegatingByTypeDocumentService implements TypedDocumentService<Document> 
         documentIndexer.setDocumentService(this);
     }
 
-    private DocumentService<UberDocumentDTO> getCorrespondingDocumentService(int docId) {
+    private DocumentService<? extends Document> getCorrespondingDocumentService(int docId) {
         return Optional.ofNullable(metaRepository.findType(docId))
                 .map(this::getCorrespondingDocumentService)
                 .orElseThrow(DocumentNotExistException::new);
     }
 
-    private DocumentService<UberDocumentDTO> getCorrespondingDocumentService(DocumentType type) {
+    private DocumentService<? extends Document> getCorrespondingDocumentService(DocumentType type) {
         switch (type) {
             case TEXT:
-                return wrappedTextDocumentService;
+                return textDocumentService;
 
             case FILE:
-                return wrappedFileDocumentService;
+                return fileDocumentService;
 
             case URL:
-                return wrappedUrlDocumentService;
+                return urlDocumentService;
 
             default:
                 throw new UnsupportedDocumentTypeException(type);

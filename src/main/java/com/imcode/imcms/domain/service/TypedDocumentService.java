@@ -1,13 +1,16 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.model.Document;
 
 /**
+ * Central {@link com.imcode.imcms.domain.service.DocumentService} instance
+ * that delegates calls to corresponding service by document's type.
+ *
  * @author Serhii Maksymchuk from Ubrainians for imCode
- * 10.01.18.
+ * 22.12.17.
  */
-public interface TypedDocumentService<D extends Document> extends TypedDocumentCreatingService<D>,
-        BasicDocumentService<D>,
-        DocumentSaver<UberDocumentDTO> {
+public interface TypedDocumentService extends
+        TypedDocumentCreatingService<Document>,
+        BasicDocumentService<Document>,
+        DocumentSaver<Document> {
 }
