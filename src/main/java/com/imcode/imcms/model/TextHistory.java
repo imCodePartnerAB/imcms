@@ -7,6 +7,8 @@ import java.util.Date;
 @NoArgsConstructor
 public abstract class TextHistory extends Text {
 
+    private static final long serialVersionUID = -8675781839285867804L;
+
     public TextHistory(TextHistory from) {
         super(from);
 

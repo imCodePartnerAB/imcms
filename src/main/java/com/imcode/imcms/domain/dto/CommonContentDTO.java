@@ -14,6 +14,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class CommonContentDTO extends CommonContent implements Cloneable {
 
+    private static final long serialVersionUID = -8745654157487154505L;
+
     private Integer id;
     private Integer docId;
     private LanguageDTO language;

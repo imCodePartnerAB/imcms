@@ -15,6 +15,8 @@ import java.util.Optional;
 @EqualsAndHashCode(callSuper=false)
 public class TextDTO extends Text {
 
+    private static final long serialVersionUID = 972530393516788304L;
+
     private Integer index;
     private Integer docId;
     private LoopEntryRefDTO loopEntryRef;

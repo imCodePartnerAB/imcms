@@ -30,6 +30,8 @@ import javax.validation.constraints.NotNull;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CategoryJPA extends Category {
 
+    private static final long serialVersionUID = 8984841419157038574L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")

@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -20,7 +21,9 @@ import java.util.Objects;
 @Table(name = "sys_types")
 @SecondaryTable(name = "sys_data", pkJoinColumns = @PrimaryKeyJoinColumn(name = "type_id"))
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class SystemProperty {
+public class SystemProperty implements Serializable {
+
+    private static final long serialVersionUID = 2184872114549807788L;
 
     @Id
     @Column(name = "type_id", columnDefinition = "smallint")

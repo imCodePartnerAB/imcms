@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class LoopEntryRefDTO extends LoopEntryRef {
 
+    private static final long serialVersionUID = -871598354702891330L;
+
     private int loopIndex;
     private int loopEntryIndex;
 

@@ -7,13 +7,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class CategoryDTO extends Category implements Serializable {
+public class CategoryDTO extends Category {
 
     private static final long serialVersionUID = -848500041308510098L;
 

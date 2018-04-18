@@ -1,10 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.Document;
-import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.DocumentVersion;
-import com.imcode.imcms.api.DocumentVersionInfo;
-import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
@@ -18,23 +14,18 @@ import java.util.Map;
 /**
  * Loads documents from the database.
  */
+@SuppressWarnings("WeakerAccess")
 @Component
 public class DocumentLoader {
 
-    private final DocumentVersionMapper versionMapper;
-    private final DocumentLanguages documentLanguages;
     private final MetaRepository metaRepository;
     private final DocumentContentMapper contentMapper;
     private final DocumentContentInitializingVisitor documentContentInitializingVisitor;
 
-    public DocumentLoader(DocumentVersionMapper versionMapper,
-                          DocumentLanguages documentLanguages,
-                          MetaRepository metaRepository,
+    public DocumentLoader(MetaRepository metaRepository,
                           DocumentContentMapper contentMapper,
                           DocumentContentInitializingVisitor documentContentInitializingVisitor) {
 
-        this.versionMapper = versionMapper;
-        this.documentLanguages = documentLanguages;
         this.metaRepository = metaRepository;
         this.contentMapper = contentMapper;
         this.documentContentInitializingVisitor = documentContentInitializingVisitor;
@@ -63,69 +54,6 @@ public class DocumentLoader {
         document.accept(documentContentInitializingVisitor);
 
         return document;
-    }
-
-    /**
-     * @return custom doc or null if doc does not exists
-     */
-    public <T extends DocumentDomainObject> T getCustomDoc(DocRef docRef) {
-        DocumentMeta meta = loadMeta(docRef.getId());
-
-        if (meta == null) {
-            return null;
-        }
-
-        DocumentVersionInfo versionInfo = versionMapper.getInfo(docRef.getId());
-        DocumentVersion version = versionInfo.getVersion(docRef.getVersionNo());
-        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-
-        doc.setMeta(meta.clone());
-        doc.setVersionNo(version.getNo());
-        doc.setLanguage(documentLanguages.getByCode(docRef.getLanguageCode()));
-
-        return loadAndInitContent(doc);
-    }
-
-    /**
-     * @return default doc or null if doc does not exists
-     */
-    public <T extends DocumentDomainObject> T getDefaultDoc(int docId, String docLanguageCode) {
-        DocumentMeta meta = loadMeta(docId);
-
-        if (meta == null) {
-            return null;
-        }
-
-        DocumentVersionInfo versionInfo = versionMapper.getInfo(docId);
-        DocumentVersion version = versionInfo.getDefaultVersion();
-        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-
-        doc.setMeta(meta.clone());
-        doc.setVersionNo(version.getNo());
-        doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
-
-        return loadAndInitContent(doc);
-    }
-
-    /**
-     * @return working doc or null if doc does not exists
-     */
-    public <T extends DocumentDomainObject> T getWorkingDoc(int docId, String docLanguageCode) {
-        DocumentMeta meta = loadMeta(docId);
-
-        if (meta == null) {
-            return null;
-        }
-
-        DocumentVersionInfo versionInfo = versionMapper.getInfo(docId);
-        DocumentVersion version = versionInfo.getWorkingVersion();
-        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
-
-        doc.setMeta(meta.clone());
-        doc.setVersionNo(version.getNo());
-        doc.setLanguage(documentLanguages.getByCode(docLanguageCode));
-
-        return loadAndInitContent(doc);
     }
 
     private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {

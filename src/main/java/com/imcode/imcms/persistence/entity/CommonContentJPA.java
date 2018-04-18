@@ -31,6 +31,7 @@ public class CommonContentJPA extends CommonContent {
 
     private static final int META_HEADLINE_MAX_LENGTH = 255;
     private static final int META_TEXT_MAX_LENGTH = 1000;
+    private static final long serialVersionUID = 9218236106612630843L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

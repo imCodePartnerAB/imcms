@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class MenuItem {
+public class MenuItem implements Serializable {
+
+    private static final long serialVersionUID = -8580159104614047622L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

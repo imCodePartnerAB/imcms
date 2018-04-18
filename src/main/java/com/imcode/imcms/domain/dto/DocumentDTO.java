@@ -13,15 +13,20 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.beans.ConstructorProperties;
-import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = false)
-public class DocumentDTO extends Document implements Serializable, Cloneable {
+public class DocumentDTO extends Document implements Cloneable {
 
     protected static final long serialVersionUID = -1197329246115859534L;
 

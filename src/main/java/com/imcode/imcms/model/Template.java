@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class Template {
+public abstract class Template implements Serializable {
+
+    private static final long serialVersionUID = -9018871628940459460L;
 
     protected Template(Template templateFrom) {
         setName(templateFrom.getName());

@@ -10,13 +10,16 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "user_roles_crossref")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class UserRoles {
+public class UserRoles implements Serializable {
+
+    private static final long serialVersionUID = -4967498240170401817L;
 
     @EmbeddedId
     private UserRoleId id;

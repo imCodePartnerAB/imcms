@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class LoopJPA extends Loop {
 
+    private static final long serialVersionUID = 5387027625204254001L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

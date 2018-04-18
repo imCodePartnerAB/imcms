@@ -2,10 +2,13 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor
-public abstract class TemplateGroup {
+public abstract class TemplateGroup implements Serializable {
+
+    private static final long serialVersionUID = 1728725295437520411L;
 
     protected TemplateGroup(TemplateGroup from) {
         setId(from.getId());

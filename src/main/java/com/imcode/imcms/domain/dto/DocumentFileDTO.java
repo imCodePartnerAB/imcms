@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 @EqualsAndHashCode(callSuper=false)
 public class DocumentFileDTO extends DocumentFile implements Cloneable {
 
+    private static final long serialVersionUID = 7090558552422447802L;
+
     private Integer id;
 
     private Integer docId;

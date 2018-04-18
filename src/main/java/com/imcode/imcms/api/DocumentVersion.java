@@ -1,12 +1,13 @@
 package com.imcode.imcms.api;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 /**
  * Document version.
  */
-public final class DocumentVersion {
+public final class DocumentVersion implements Serializable {
 
     public static final int WORKING_VERSION_NO = 0;
     private final int no;

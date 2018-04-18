@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TextJPA extends Text {
 
+    private static final long serialVersionUID = -6847992188164492891L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -3,10 +3,13 @@ package com.imcode.imcms.model;
 import com.imcode.imcms.domain.dto.Documentable;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @NoArgsConstructor
-public abstract class Loop implements Documentable {
+public abstract class Loop implements Documentable, Serializable {
+
+    private static final long serialVersionUID = -119166244375182973L;
 
     protected Loop(Loop from) {
         setIndex(from.getIndex());

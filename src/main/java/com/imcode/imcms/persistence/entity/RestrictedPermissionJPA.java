@@ -30,6 +30,8 @@ import javax.persistence.Table;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RestrictedPermissionJPA extends RestrictedPermission {
 
+    private static final long serialVersionUID = -4360158661094922508L;
+
     @Column(columnDefinition = "VARCHAR(16)")
     @Enumerated(EnumType.STRING)
     private Permission permission;

@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class DocumentURL {
+public abstract class DocumentURL implements Serializable {
+
+    private static final long serialVersionUID = 3063393658924665003L;
 
     public DocumentURL(DocumentURL from) {
         setId(from.getId());

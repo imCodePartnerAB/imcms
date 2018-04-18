@@ -6,12 +6,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class RestrictedPermissionDTO extends RestrictedPermission implements Serializable {
+public class RestrictedPermissionDTO extends RestrictedPermission {
 
     private static final long serialVersionUID = -3568020825278050072L;
 

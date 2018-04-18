@@ -31,6 +31,8 @@ import java.util.Date;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TextHistoryJPA extends TextHistory {
 
+    private static final long serialVersionUID = -1635531214924772651L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

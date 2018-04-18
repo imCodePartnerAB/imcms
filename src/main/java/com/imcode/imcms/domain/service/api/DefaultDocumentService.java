@@ -1,7 +1,14 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DeleterByDocumentId;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
@@ -63,7 +70,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @PostConstruct
-    private void init() {
+    public void init() {
         docContentServices = new DeleterByDocumentId[]{
                 textService,
                 imageService,

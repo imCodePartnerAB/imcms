@@ -19,6 +19,8 @@ import javax.persistence.Embeddable;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class LoopEntryRefJPA extends LoopEntryRef {
 
+    private static final long serialVersionUID = 8008376855086586220L;
+
     @Column(name = "loop_index")
     private int loopIndex;
 

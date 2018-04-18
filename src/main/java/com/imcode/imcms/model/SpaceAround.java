@@ -3,9 +3,13 @@ package com.imcode.imcms.model;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @Data
 @NoArgsConstructor
-public abstract class SpaceAround {
+public abstract class SpaceAround implements Serializable {
+
+    private static final long serialVersionUID = 3471777360335790593L;
 
     public SpaceAround(SpaceAround from) {
         setBottom(from.getBottom());

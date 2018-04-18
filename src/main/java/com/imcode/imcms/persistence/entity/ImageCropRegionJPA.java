@@ -17,6 +17,8 @@ import javax.persistence.Embeddable;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ImageCropRegionJPA extends ImageCropRegion {
 
+    private static final long serialVersionUID = 6357984318376043657L;
+
     @Column(name = "crop_x1", nullable = false)
     private int cropX1;
     @Column(name = "crop_y1", nullable = false)

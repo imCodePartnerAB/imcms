@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class SpaceAroundDTO extends SpaceAround {
 
+    private static final long serialVersionUID = -1489089643170770251L;
     private int top;
 
     private int right;

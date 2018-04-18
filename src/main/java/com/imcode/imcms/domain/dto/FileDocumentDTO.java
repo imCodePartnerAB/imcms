@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.beans.ConstructorProperties;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FileDocumentDTO extends DocumentDTO implements Serializable {
+public class FileDocumentDTO extends DocumentDTO {
 
     private static final long serialVersionUID = -8104577284192730444L;
 

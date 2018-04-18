@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ImageInTextDTO extends ImageDTO {
+    private static final long serialVersionUID = -2870453434281137390L;
+
     {
         inText = true;
     }

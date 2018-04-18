@@ -3,8 +3,12 @@ package com.imcode.imcms.model;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class RestrictedPermission implements Comparable<RestrictedPermission> {
+public abstract class RestrictedPermission implements Comparable<RestrictedPermission>, Serializable {
+
+    private static final long serialVersionUID = 7859162686107051486L;
 
     protected RestrictedPermission(RestrictedPermission from) {
         setPermission(from.getPermission());

@@ -18,6 +18,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
@@ -30,7 +31,9 @@ import java.util.Objects;
 @Table(name = "users")
 @ToString(exclude = "password")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class User {
+public class User implements Serializable {
+
+    private static final long serialVersionUID = 5707282362269284484L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

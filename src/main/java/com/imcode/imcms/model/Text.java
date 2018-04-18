@@ -3,8 +3,12 @@ package com.imcode.imcms.model;
 import com.imcode.imcms.domain.dto.Documentable;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class Text implements Documentable {
+public abstract class Text implements Documentable, Serializable {
+
+    private static final long serialVersionUID = 9160535816003555084L;
 
     protected Text(Text from) {
         setIndex(from.getIndex());

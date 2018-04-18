@@ -1,5 +1,6 @@
 package imcode.server;
 
+import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.user.UserDomainObject;
 import imcode.util.PropertyManager;
@@ -24,6 +25,7 @@ public class Imcms {
     private static final Logger logger = Logger.getLogger(Imcms.class);
     private static final String DOCUMENT_VERSIONING_PROPERTY = "document.versioning";
     private static Properties properties;
+    private final ImageService imageService;
     /**
      * imCMS deployment (real context) path.
      */
@@ -51,10 +53,14 @@ public class Imcms {
 
     private static volatile boolean startInvoked;
 
-    public Imcms(ServletContext servletContext, ImcmsServices imcmsServices, Properties imcmsProperties) {
+    public Imcms(ServletContext servletContext,
+                 ImcmsServices imcmsServices,
+                 Properties imcmsProperties,
+                 ImageService imageService) {
 
         Imcms.services = imcmsServices;
         Imcms.properties = imcmsProperties;
+        this.imageService = imageService;
 
         final String versioningProperty = imcmsProperties.getProperty(DOCUMENT_VERSIONING_PROPERTY, "true");
         Imcms.isVersioningAllowed = Boolean.parseBoolean(versioningProperty);
@@ -158,6 +164,7 @@ public class Imcms {
     @PostConstruct
     private void init() {
         invokeStart();
+        new Thread(imageService::regenerateImages).start();
     }
 
     public synchronized void restartCms() {

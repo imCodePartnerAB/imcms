@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RoleJPA extends Role {
 
+    private static final long serialVersionUID = -6026648104017419915L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")

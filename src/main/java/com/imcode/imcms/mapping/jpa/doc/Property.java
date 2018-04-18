@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * Document (meta) property.
@@ -16,7 +17,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "document_properties")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Property {
+public class Property implements Serializable {
+
+    private static final long serialVersionUID = 4267983415355286886L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

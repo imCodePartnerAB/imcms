@@ -24,6 +24,8 @@ import javax.persistence.Table;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ProfileJPA extends Profile {
 
+    private static final long serialVersionUID = 1073806546803135420L;
+
     @Id
     @Column(name = "profile_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)

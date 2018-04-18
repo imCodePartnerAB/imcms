@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class TextDocumentTemplateDTO extends TextDocumentTemplate implements Cloneable {
 
+    private static final long serialVersionUID = -3328353784455342916L;
+
     private Integer docId;
 
     private String templateName;

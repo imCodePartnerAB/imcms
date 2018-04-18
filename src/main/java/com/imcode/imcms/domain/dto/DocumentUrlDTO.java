@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper=false)
 public class DocumentUrlDTO extends DocumentURL implements Cloneable {
 
+    private static final long serialVersionUID = -7558203958715812408L;
+
     private Integer id;
 
     private String urlFrameName;

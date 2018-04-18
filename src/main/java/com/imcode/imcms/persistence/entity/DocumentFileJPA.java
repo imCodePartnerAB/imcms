@@ -26,6 +26,8 @@ import javax.persistence.Transient;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class DocumentFileJPA extends DocumentFile {
 
+    private static final long serialVersionUID = -2994023358926079667L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

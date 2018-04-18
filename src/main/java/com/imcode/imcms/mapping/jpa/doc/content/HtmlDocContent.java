@@ -13,6 +13,8 @@ import javax.persistence.Table;
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class HtmlDocContent extends VersionedContent {
 
+    private static final long serialVersionUID = 2431782537777984020L;
+
     @Column(columnDefinition = "longtext")
     private String html;
 

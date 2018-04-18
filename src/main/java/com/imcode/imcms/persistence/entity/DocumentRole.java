@@ -13,13 +13,16 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "roles_rights")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class DocumentRole {
+public class DocumentRole implements Serializable {
+
+    private static final long serialVersionUID = -4793263166846000975L;
 
     @EmbeddedId
     private DocumentRoleId id;

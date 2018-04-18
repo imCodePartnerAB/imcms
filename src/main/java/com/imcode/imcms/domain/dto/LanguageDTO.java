@@ -5,12 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper=false)
-public class LanguageDTO extends Language implements Serializable {
+public class LanguageDTO extends Language {
 
     private static final long serialVersionUID = -3433592782831228045L;
 

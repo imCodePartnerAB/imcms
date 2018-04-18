@@ -2,8 +2,12 @@ package com.imcode.imcms.model;
 
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 @NoArgsConstructor
-public abstract class CategoryType {
+public abstract class CategoryType implements Serializable {
+
+    private static final long serialVersionUID = 6975350692159491957L;
 
     protected CategoryType(CategoryType from) {
         setId(from.getId());
