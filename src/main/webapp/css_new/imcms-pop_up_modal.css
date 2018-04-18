@@ -5,18 +5,18 @@
     display: none;
     overflow: hidden;
     position: fixed;
-    top: -webkit-calc(50% - 375px);
-    top: -moz-calc(50% - 375px);
-    top: -ms-calc(50% - 375px);
-    top: -o-calc(50% - 375px);
-    top: calc(50% - 375px);
+    top: -webkit-calc(50% - 360px);
+    top: -moz-calc(50% - 360px);
+    top: -ms-calc(50% - 360px);
+    top: -o-calc(50% - 360px);
+    top: calc(50% - 360px);
     left: -webkit-calc(50% - 475px);
     left: -moz-calc(50% - 475px);
     left: -ms-calc(50% - 475px);
     left: -o-calc(50% - 475px);
     left: calc(50% - 475px);
     z-index: 10002;
-    height: 750px;
+    height: 720px;
     width: 950px;
 }
 
