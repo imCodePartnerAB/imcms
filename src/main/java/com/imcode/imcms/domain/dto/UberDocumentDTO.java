@@ -73,6 +73,8 @@ public class UberDocumentDTO extends DocumentDTO {
     }
 
     public static <T extends Document> UberDocumentDTO of(T from) {
+        if (from instanceof UberDocumentDTO) return (UberDocumentDTO) from;
+
         switch (from.getType()) {
             case TEXT:
                 return new UberDocumentDTO((TextDocumentDTO) from);
