@@ -18,7 +18,7 @@ import org.springframework.web.util.NestedServletException;
 
 import java.io.IOException;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -93,7 +93,7 @@ public abstract class AbstractControllerTest {
             final String message = "Should be " + expectedExceptionClass.getName() + "!! Received: "
                     + exceptionClass.getName();
 
-            assertTrue(message, exceptionClass.equals(expectedExceptionClass));
+            assertEquals(message, exceptionClass, expectedExceptionClass);
             return;
         }
 
