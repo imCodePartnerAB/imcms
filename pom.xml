@@ -811,17 +811,11 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
-                <includes>
-                    <include>hibernate.cfg.xml</include>
-                </includes>
             </resource>
 
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
-                <excludes>
-                    <exclude>hibernate.cfg.xml</exclude>
-                </excludes>
             </resource>
         </resources>
 
@@ -996,6 +990,10 @@
                                     <then>
                                         <copy file="${project.basedir}/build.properties.template"
                                               tofile="${project.basedir}/build.properties"/>
+                                        <fail>
+                                            `build.properties` file was just created, fill in required properties and
+                                            run execution again
+                                        </fail>
                                     </then>
                                 </if>
 
