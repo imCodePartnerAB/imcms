@@ -15,8 +15,9 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,6 +43,7 @@ public class ViewDocumentController {
     private final VersionService versionService;
     private final CommonContentService commonContentService;
     private final AccessService accessService;
+    private final PathMatcher pathMatcher;
     private final String imagesPath;
     private final String version;
     private final boolean isVersioningAllowed;
@@ -50,6 +52,7 @@ public class ViewDocumentController {
                            VersionService versionService,
                            CommonContentService commonContentService,
                            AccessService accessService,
+                           PathMatcher pathMatcher,
                            @Value("${ImagePath}") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed) {
@@ -58,6 +61,7 @@ public class ViewDocumentController {
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.accessService = accessService;
+        this.pathMatcher = pathMatcher;
         this.imagesPath = imagesPath;
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
@@ -72,10 +76,12 @@ public class ViewDocumentController {
         return processDocView(textDocument, request, mav);
     }
 
-    @RequestMapping("/{docIdentifier}")
-    public ModelAndView getDocument(@PathVariable("docIdentifier") String docIdentifier,
-                                    HttpServletRequest request,
-                                    ModelAndView mav) {
+    @RequestMapping("/**")
+    public ModelAndView getDocument(HttpServletRequest request, ModelAndView mav) {
+
+        final String urlPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+
+        final String docIdentifier = pathMatcher.extractPathWithinPattern(urlPattern, request.getPathInfo());
 
         final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
 
