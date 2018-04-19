@@ -849,28 +849,6 @@
             </plugin>
 
             <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>yuicompressor-maven-plugin</artifactId>
-                <version>1.5.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>compress</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <force>true</force>
-                    <excludes>
-                        <!--excluding already minified files-->
-                        <exclude>**/*.min.js</exclude>
-                        <exclude>**/*.min.css</exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.8</version>
                 <dependencies>
