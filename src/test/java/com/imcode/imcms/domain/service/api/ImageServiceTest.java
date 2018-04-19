@@ -97,6 +97,7 @@ public class ImageServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        imageRepository.deleteAll();
         workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         final UserDomainObject user = new UserDomainObject(1);
