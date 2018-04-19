@@ -140,11 +140,10 @@ public class ImcmsSetupFilter implements Filter {
                 session.setAttribute(USER_REMOTE_ADDRESS, request.getRemoteAddr());
                 service.incrementSessionCounter();
                 setDomainSessionCookie(response, session);
-            } else {
-                if (isRemoteAddressInvalid(request, response)) {
-                    request.getRequestDispatcher("/login").forward(request, response);
-                    return;
-                }
+
+            } else if (isRemoteAddressInvalid(request, response)) {
+                request.getRequestDispatcher("/login").forward(request, response);
+                return;
             }
 
             String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
