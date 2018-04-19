@@ -143,6 +143,5 @@ public class SolrClientFactoryTest {
 
         cause = cause.getCause();
         assertTrue(cause instanceof ConnectException);
-        assertEquals(cause.getMessage(), "Connection refused: connect");
     }
 }
