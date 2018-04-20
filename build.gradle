@@ -1,5 +1,5 @@
-import com.eriwen.gradle.js.tasks.MinifyJsTask
 import com.eriwen.gradle.css.tasks.MinifyCssTask
+import com.eriwen.gradle.js.tasks.MinifyJsTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -152,7 +152,26 @@ def tmpDir = "${buildDir}/tmp/"
 //Translation Languages
 def localizationLanguages = new ArrayList()
 
-task initParams {
+task copyPropertyFileFromTemplate(type: Copy) {
+    from projectDir
+    into projectDir
+    include 'build.properties.template'
+    rename '(.*).template', '$1'
+    doLast {
+        throw new GradleException(
+                '`build.properties` file was just created, fill in required properties and run execution again'
+        )
+    }
+}
+
+task checkPropertyFile(type: Copy) {
+    def buildProperties = new File("${projectDir}/build.properties")
+    if (!buildProperties.exists()) {
+        copyPropertyFileFromTemplate.execute()
+    }
+}
+
+task initParams(dependsOn: checkPropertyFile) {
     mavenProps.setProperty("log4j.threshold", "info")
     mavenProps.setProperty("log4j.hibernate.level", "error")
     mavenProps.setProperty("log4j.console-appender.threshold", "off")
@@ -178,7 +197,6 @@ task importProperties(dependsOn: copyProperties) {
         file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
     }
 }
-
 
 task explodedWar(type: Sync, dependsOn: war) {
     into "${buildDir}/exploded"
