@@ -1,4 +1,4 @@
-Start with ImCMS as a developer
+Start With ImCMS as a Developer
 ===============================
 
 In this article:
@@ -14,7 +14,7 @@ There are some additional requirements if you want to develop ImCMS:
 
 * git
 * Maven 3+
-* Your favorite IDE or text editor
+* Your favorite IDE, text editor or even only terminal
 
 Download sources
 ----------------
@@ -37,7 +37,7 @@ Then package it:
 
 .. code-block:: console
 
-    mvn package
+    mvn clean package
 
 Your first package should fail with this message:
 
@@ -55,3 +55,25 @@ Besides a lot of defaults, find this:
 
 And write down your database host, name, user and password.
 
+It's not the end! There are a lot of tests that should be executed on maven's package phase.
+Test DB is needed for this purposes. Go to ``src/test/resources/test.server.properties``
+and write down correct values for next properties:
+
+.. code-block:: properties
+
+    JdbcDriver = com.mysql.jdbc.Driver
+    JdbcUrl = jdbc:mysql://localhost:3306/imcms_test?characterEncoding=utf8&useSSL=false
+    User = root
+    Password = root
+
+Pay attention to ``JdbcUrl`` property - there is a DB name after ``localhost:3306/``, by default it is ``imcms_test``,
+so you can create DB with such name (just like in :doc:`Before You Start </getting-started/setup/before>` section)
+or with another name - then simply put this name into ``test.server.properties`` file instead of default DB name.
+
+Since you've done, execute maven clean package again:
+
+.. code-block:: console
+
+    mvn clean package
+
+All tests should be executed successfully, application built and ready to use. Deploy it to Tomcat and run.

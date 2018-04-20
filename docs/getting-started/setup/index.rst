@@ -8,5 +8,3 @@ Setup
     before
     user
     developer
-    install
-    configuration

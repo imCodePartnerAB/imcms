@@ -1,4 +1,4 @@
-Start with ImCMS as a user
+Start With ImCMS as a User
 ==========================
 
 It is quite simple to to start working with ImCMS.
