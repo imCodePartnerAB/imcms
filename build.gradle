@@ -11,6 +11,9 @@ plugins {
     id "com.eriwen.gradle.css" version "2.14.0"
 }
 
+apply plugin: 'css'
+apply plugin: "com.eriwen.gradle.js"
+
 group = "com.imcode.imcms"
 version = "6.0.0-beta2-SNAPSHOT"
 
@@ -271,6 +274,16 @@ jar.doFirst {
         attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
         attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
     }
+}
+
+jshint {
+    jshint.options.source = javascript.source.custom.js.files
+    jshint.options.dest = "${buildDir}/jshint.out"
+}
+
+csslint {
+    source = css.source.custom.css.files
+    dest = "${buildDir}/csslint.out"
 }
 
 war {
