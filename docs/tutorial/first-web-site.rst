@@ -14,7 +14,7 @@ First Web Site
 
 #. If everything is okay you will see same page, but with **Admin Panel** (see :doc:`Admin Panel </content-management/admin-panel>` section).
 
-    .. image:: first-web-site/_static/03-PageWithAdminPanel.png
+    .. image:: images/imcms-logged-in-start-page-example.png
 
 #.
     Lets create new document. Click on Admin Panel **Document List** and follow :doc:`Document Management </content-management/document/index>` guide.
