@@ -35,15 +35,15 @@ Create new template
 
 4. Login into ImCMS as Admin. Open Sign In window and type in login field ``admin`` and in password field ``admin``
 
-.. image:: templates/_static/01-SingIn.png
+.. image:: _static/01-SingIn.png
 
 5. Find **Admin Panel** on page and click button with label **Page info**
 
-.. image:: templates/_static/02-AdminPanel.png
+.. image:: _static/02-AdminPanel.png
 
 6. In opened window choose **Appearance** tab, scroll down to field with name **Template**.
 
-.. image:: templates/_static/03-PageInfo.png
+.. image:: _static/03-PageInfo.png
 
 7. Choose created template from dropdown and click **"OK"** button
 
