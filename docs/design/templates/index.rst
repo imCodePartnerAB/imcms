@@ -4,9 +4,9 @@ Templates
 *Describes how to create/modify templates in ImCMS*
 
 In this article:
-	- `Create new template`_
-	- `Modify template`_
-	- `Summary`_
+    - `Create new template`_
+    - `Modify template`_
+    - `Summary`_
 
 
 Create new template
@@ -60,8 +60,3 @@ Summary
 
 You can create and modify template in simple way. All templates locate in path **"/WEB-INF/templates"**. 
 
-
-Related Resources
-^^^^^^^^^^^^^^^^^
-
-- :doc:`ImCMS tag engine </tag-engine/index>`.

@@ -6,6 +6,7 @@ whereas tags are reusable dynamic components used for embedding navigation, form
 
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
 
-   templates
+    templates/index
+    tag-engine/index
