@@ -2,15 +2,24 @@ import com.eriwen.gradle.css.tasks.MinifyCssTask
 import com.eriwen.gradle.js.tasks.MinifyJsTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath 'com.netflix.nebula:gradle-lint-plugin:latest.release'
+    }
+}
+
 plugins {
-    id 'java'
-    id 'maven'
-    id 'war'
     id 'io.franzbecker.gradle-lombok' version '1.12'
     id "com.eriwen.gradle.js" version "2.14.1"
     id "com.eriwen.gradle.css" version "2.14.0"
+    id 'nebula.lint' version '7.4.0'
 }
 
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'war'
 apply plugin: 'css'
 apply plugin: "com.eriwen.gradle.js"
 
@@ -39,6 +48,7 @@ ext {
 }
 
 dependencies {
+    compile "org.projectlombok:lombok:1.16.20"
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
     compile "org.apache.logging.log4j:log4j-core:2.10.0"
     compile "com.drewnoakes:metadata-extractor:2.11.0"
@@ -221,6 +231,14 @@ lombok {
     version = "1.16.20"
     sha256 = ""
 }
+
+idea {
+    module {
+        inheritOutputDirs = false
+    }
+}
+
+gradleLint.rules = ['all-dependency']
 
 javascript.source {
     custom {
