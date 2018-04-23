@@ -11,11 +11,9 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
-import imcode.server.document.index.service.impl.DocumentIndexer;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.Optional;
 
 /**
@@ -28,19 +26,16 @@ class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocument
     private final DocumentService<TextDocumentDTO> textDocumentService;
     private final DocumentService<FileDocumentDTO> fileDocumentService;
     private final DocumentService<UrlDocumentDTO> urlDocumentService;
-    private final DocumentIndexer documentIndexer;
     private final MetaRepository metaRepository;
 
     DefaultDelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
                                            DocumentService<FileDocumentDTO> fileDocumentService,
                                            DocumentService<UrlDocumentDTO> urlDocumentService,
-                                           DocumentIndexer documentIndexer,
                                            MetaRepository metaRepository) {
 
         this.textDocumentService = textDocumentService;
         this.fileDocumentService = fileDocumentService;
         this.urlDocumentService = urlDocumentService;
-        this.documentIndexer = documentIndexer;
         this.metaRepository = metaRepository;
     }
 
@@ -77,11 +72,6 @@ class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocument
     @Override
     public void deleteByDocId(Integer docIdToDelete) {
         getCorrespondingDocumentService(docIdToDelete).deleteByDocId(docIdToDelete);
-    }
-
-    @PostConstruct
-    private void init() {
-        documentIndexer.setDocumentService(this);
     }
 
     private DocumentService<? extends Document> getCorrespondingDocumentService(int docId) {
