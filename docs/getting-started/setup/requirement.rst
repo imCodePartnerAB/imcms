@@ -3,6 +3,8 @@ System Requirements
 
 Browsers
 --------
+ImCMS should work in next browsers:
+
 * Firefox (Latest)
 * Chrome (Latest)
 * Safari (Latest)
