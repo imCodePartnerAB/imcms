@@ -2,13 +2,14 @@ Content Management
 ==================
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
 
-   document/index
-   admin-panel
-   category
-   menu
-   text
-   image
-
+    document/index
+    admin-panel
+    text
+    image
+    loop
+    menu
+    category
+    role
 

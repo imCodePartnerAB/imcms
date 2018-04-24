@@ -8,7 +8,7 @@
 ImCMS Documentation
 ===================
 
-.. include:: /common/stub-overview.txt
+.. include:: /common/stub-topic.txt
 
 .. toctree::
     :titlesonly:
@@ -23,6 +23,6 @@ ImCMS Documentation
     image-archive/index
     bank-id/index
 
-.. include:: /common/contribute.txt
+.. include:: /common/authors.txt
 
 

@@ -17,30 +17,23 @@ First Web Site
     .. image:: images/imcms-logged-in-start-page-example.png
 
 #.
-    Lets create new document. Click on Admin Panel **Document List** and follow :doc:`Document Management </content-management/document/index>` guide.
+    Lets create new document. Follow :doc:`Document Management </content-management/document/base>` guide for that.
 
 #.
-    It is good, if document has been created, but nobody know, except you, about it, soo let's add created document to menu.
-    To add document to menu consider :doc:`Menu Management </content-management/menu>` topic.
-
-#.
-    Great - now you know how to create page and add it to menu, but you ask the question - 'How I should fill content on my new page'.
-    This is the time to enable **Edit Mode** - edit mode give ability to edit all editable content on the page all editable element you can find on :doc:`Content Management</content-management/index>` section.
-    Consider text editing, we try to write our first *Hello World*.
-
+    Great - now you know how to create new page, but you can ask the question: *How should I fill content on my new page?* -
+    This is the time to use **Edit Mode**. It gives an ability to manage all editable content you can find on
+    :doc:`Content Management</content-management/index>` section. The simplest is text editing, we will try to write our
+    first *Hello World*.
 
     .. |saveIcon| image:: first-web-site/_static/04-ApplyTextEditingIcon.png
         :width: 20pt
         :height: 20pt
 
-
-    - Enable *Edit Mode*
-    - Find on the left side of page label with text **Text Editor** and click it.
-    - Put "Hello World"
-    - On Text Editor panel find button with |saveIcon| icon and click it.
-    - Reload page to be sure that text has been saved.
-
-
+    - Enable *Edit Mode* on the panel
+    - Find pencil icon on the page and click it
+    - Type "Hello World"
+    - On Text Editor panel find button with |saveIcon| icon and click it
+    - Text has been saved - reload page to be sure
 
 #.
     Now - everything in prepared but this page opened for every one and maybe you don`t want to show data on it.
