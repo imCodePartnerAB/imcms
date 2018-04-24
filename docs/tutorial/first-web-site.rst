@@ -10,7 +10,7 @@ First Web Site
 
    it means that ImCMS system has started and now working perfectly.
 
-#. Lets login as admin. Go to ``/login`` (don't miss context path if such exist). By default login and password is the same - ``admin``
+#. Lets login as admin. Check :doc:`Logging in <login>` section.
 
 #. If everything is okay you will see same page, but with **Admin Panel** (see :doc:`Admin Panel </content-management/admin-panel>` section).
 
@@ -44,7 +44,4 @@ First Web Site
     - Text has been saved - reload page to be sure
 
 #.
-    Now everything in prepared but this page opened for every one and maybe you don`t want to show data on it.
-    There are two things that helps you to prevent access to this page - close it for every one, or create special group of users.
-    The better way is creating group of users and give them permissions to view current page - this has been described
-    in :doc:`Role Management </content-management/role>` section.
+    Check :doc:`Role Management </content-management/role>` section to know how to manage access to your document.
