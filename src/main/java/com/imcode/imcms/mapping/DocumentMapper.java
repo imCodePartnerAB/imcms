@@ -363,7 +363,7 @@ public class DocumentMapper implements DocumentGetter {
         invalidateDocument(document.getId());
     }
 
-    private void invalidateDocument(int docId) {
+    public void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
         documentIndex.indexDocument(docId);
     }
