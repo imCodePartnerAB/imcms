@@ -12,51 +12,47 @@ In this article:
 Create new template
 -------------------
 
-1. Create new file with ``jsp`` extension in **"tomcat/webapps/imcms/WEB-INF/templates"**.
+#. Create new file with ``jsp`` extension in ``WEB-INF/templates`` directory.
 
-2. Add follow code to created file
+#. Add following code to created file
 
 
-.. code-block:: jsp
+    .. code-block:: jsp
 
-    <!DOCTYPE html>
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <title>Template</title>
-        <meta charset="utf-8"/>
-    </head>
-    <body>
-        Hello World with New Template!
-    </body>
-    </html>
-	
+        <!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+        <head>
+            <title>Template</title>
+            <meta charset="utf-8"/>
+        </head>
+        <body>
+            Hello World with New Template!
+        </body>
+        </html>
 
-3. Restart **Tomcat**, run browser and in address line input ``http://localhost:8080/imcms``.
 
-4. Login into ImCMS as Admin. Open Sign In window and type in login field ``admin`` and in password field ``admin``
+#. Run application using **Tomcat** (make a package if you are using maven, of package only this new file if you are using your IDE).
 
-.. image:: _static/01-SingIn.png
+#. Login into ImCMS as Admin. Check :doc:`Logging in </tutorial/login>` section.
 
-5. Find **Admin Panel** on page and click button with label **Page info**
+#.
+    Open **Page info** on **Admin Panel** (see :doc:`Admin Panel guide </content-management/admin-panel>`),
+    choose **Appearance** tab and select your file in **Template** list.
 
-.. image:: _static/02-AdminPanel.png
-
-6. In opened window choose **Appearance** tab, scroll down to field with name **Template**.
-
-.. image:: _static/03-PageInfo.png
-
-7. Choose created template from dropdown and click **"OK"** button
+#. Save changes by clicking **"OK"** button
 
 ---------------
 ---------------
 Modify template
 ---------------
 
-Since all templates locate in path **"/WEB-INF/templates"** everything that needed is open this folder and edit needed template.
+Modify your templates in ``/WEB-INF/templates`` directory until you're done. Keep your templates as simple as possible.
+Try to use one template per document, move common used parts into separated JSP files with their including. Logic can be
+moved to functions in TLDs. Use JSTL tags over scriptlets.
 
 
 Summary
 -------
 
-You can create and modify template in simple way. All templates locate in path **"/WEB-INF/templates"**. 
+Now you know how to create, modify and use templates.
 
