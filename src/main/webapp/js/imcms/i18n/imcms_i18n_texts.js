@@ -271,7 +271,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 output: "Valideringsresultat: ",
                 errors: " Fel",
                 warnings: " Varningar"
-            }
+            },
+            sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet."
         },
         "en": {
             panel: {
@@ -537,7 +538,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 output: "Validation result: ",
                 errors: " Errors",
                 warnings: " Warnings"
-            }
+            },
+            sessionExpiredMessage: "You have been logged out due to inactivity."
         }
     };
 
