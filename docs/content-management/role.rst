@@ -23,3 +23,13 @@ Role editor located on address ``<domain-name>/servlet/AdminRoles`` and looks li
 To create new role click on button ``Add new role``, then, in opened window fill name of new role and choose basic permissions.
 
 .. image:: role/_static/02-CreateNewRoleWindow.png
+
+After the role has been created open PageInfo dialog and open *Access* section as has shown below.
+
+.. image:: role/_static/05-AccessSection.png
+
+
+Remove role **Users** if it has been presented and add created role from the list.
+
+.. image:: role/_static/06-ChangedRolePermission.png
+

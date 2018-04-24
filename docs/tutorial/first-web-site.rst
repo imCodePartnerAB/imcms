@@ -21,32 +21,30 @@ First Web Site
 
 #.
     Great - now you know how to create new page, but you can ask the question: *How should I fill content on my new page?* -
-    This is the time to use **Edit Mode**. It gives an ability to manage all editable content you can find on
-    :doc:`Content Management</content-management/index>` section. The simplest is text editing, we will try to write our
-    first *Hello World*.
+    This is the time to use **Edit Mode**. It gives an ability to manage all editable content you can find in
+    :doc:`Content Management</content-management/index>` section. The simplest one is text editing, we will try to write
+    our first *Hello World*.
 
-    .. |saveIcon| image:: first-web-site/_static/04-ApplyTextEditingIcon.png
-        :width: 20pt
-        :height: 20pt
+    .. |editIcon| image:: images/imcms-panel-edit-button.png
+        :width: 30pt
+        :height: 30pt
 
-    - Enable *Edit Mode* on the panel
-    - Find pencil icon on the page and click it
+    .. |saveIcon| image:: images/imcms-text-editor-save-button.png
+        :width: 25pt
+        :height: 25pt
+
+    .. |editTextIcon| image:: images/icon_edit.png
+        :width: 15pt
+        :height: 15pt
+
+    - Enable *Edit Mode* |editIcon| on the admin panel
+    - Find pencil icon |editTextIcon| on the page and click it
     - Type "Hello World"
     - On Text Editor panel find button with |saveIcon| icon and click it
     - Text has been saved - reload page to be sure
 
 #.
-    Now - everything in prepared but this page opened for every one and maybe you don`t want to show data on it.
+    Now everything in prepared but this page opened for every one and maybe you don`t want to show data on it.
     There are two things that helps you to prevent access to this page - close it for every one, or create special group of users.
-    The better way is  creating group of users and give them permissions to view current page. Since users grouped by role lets create new
-    role in system - this operation has been described in :doc:`Role Management </content-management/role>` section.
-
-After the role has been created open PageInfo dialog and open *Access* section as has shown below.
-
-.. image:: first-web-site/_static/05-AccessSection.png
-
-
-Remove role **Users** if it has been presented and add created role from the list.
-
-.. image:: first-web-site/_static/06-ChangedRolePermission.png
-
+    The better way is creating group of users and give them permissions to view current page - this has been described
+    in :doc:`Role Management </content-management/role>` section.
