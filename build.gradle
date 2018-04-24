@@ -75,16 +75,12 @@ dependencies {
     compile "org.apache.commons:commons-email:1.4"
     compile "org.hibernate:hibernate-entitymanager:4.3.11.Final"
     compile "org.hibernate:hibernate-validator:5.4.2.Final"
-    compile "com.fasterxml:classmate:1.3.3"
     compile "com.imcode.db:imcode-db:0.5"
-    compile "com.sun.xml.bind:jaxb-impl:2.3.0"
-    compile "com.sun.xml.bind:jaxb-core:2.3.0"
     compile("com.imcode.util:imcode-util:2.0.4") {
         exclude(module: "servlet-api")
         exclude(module: "commons-io")
     }
     compile "com.imcode.ldap:imcode-ldap:0.1"
-    compile "mysql:mysql-connector-java:5.1.38"
     compile "org.apache.commons:commons-dbcp2:2.1.1"
     compile("org.springframework:spring-core:${springframeworkVersion}")
     compile "org.springframework:spring-webmvc:${springframeworkVersion}"
@@ -94,7 +90,6 @@ dependencies {
     compile "org.aspectj:aspectjweaver:1.8.13"
     compile("org.springframework.data:spring-data-jpa:1.11.7.RELEASE")
     compile "javax.servlet:javax.servlet-api:3.1.0"
-    compile "org.apache.sanselan:sanselan:0.97-incubator"
     compile("org.apache.solr:solr-core:${solrVersion}")
     compile("org.apache.httpcomponents:httpclient:4.5.2") {
         exclude(module: "commons-logging")
@@ -107,10 +102,11 @@ dependencies {
     compile "javax.validation:validation-api:1.1.0.Final"
     compile "javax.inject:javax.inject:1"
     compile "org.jsoup:jsoup:1.10.2"
-    compile "javax.json:javax.json-api:1.1.2"
     compile("com.jcabi:jcabi-w3c:1.3") {
         exclude(module: "commons-io")
     }
+    runtime "com.fasterxml:classmate:1.3.3"
+    runtime "mysql:mysql-connector-java:5.1.38"
     runtime "org.slf4j:slf4j-log4j12:${slf4jVersion}"
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-all:1.10.19"
@@ -212,7 +208,7 @@ idea {
     }
 }
 
-jar.classifier="classes"
+jar.classifier = "classes"
 
 gradleLint.rules = ['all-dependency']
 
