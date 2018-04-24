@@ -17,7 +17,7 @@ First Web Site
     .. image:: images/imcms-logged-in-start-page-example.png
 
 #.
-    Lets create new document. Click on Admin Panel **Document List** and follow :doc:`Document Management </content-management/document/index>` guide.
+    Lets create new document. Follow :doc:`Document Management </content-management/document/base#create-document>` guide for that.
 
 #.
     It is good, if document has been created, but nobody know, except you, about it, soo let's add created document to menu.
