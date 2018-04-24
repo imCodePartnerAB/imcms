@@ -2,9 +2,9 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.persistence.entity.Meta;
-import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.service.impl.DocumentIndexer;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +17,16 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
 
     private final DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService;
     private final DocumentIndexer documentIndexer;
-    private final DocumentIndex documentIndex;
+    private final DocumentMapper documentMapper;
 
     @Autowired
     public IndexingDocumentService(DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService,
                                    DocumentIndexer documentIndexer,
-                                   DocumentIndex documentIndex) {
+                                   DocumentMapper documentMapper) {
 
         this.defaultDelegatingByTypeDocumentService = defaultDelegatingByTypeDocumentService;
         this.documentIndexer = documentIndexer;
-        this.documentIndex = documentIndex;
+        this.documentMapper = documentMapper;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
         final boolean isPublished = defaultDelegatingByTypeDocumentService.publishDocument(docId, userId);
 
         if (isPublished) {
-            indexDocument(docId);
+            invalidateDocument(docId);
         }
 
         return isPublished;
@@ -54,7 +54,7 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     public Document copy(int docId) {
         final Document copiedDocument = defaultDelegatingByTypeDocumentService.copy(docId);
 
-        indexDocument(copiedDocument.getId());
+        invalidateDocument(copiedDocument.getId());
 
         return copiedDocument;
     }
@@ -68,7 +68,7 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     public Document save(Document saveMe) {
         final Document savedDocument = defaultDelegatingByTypeDocumentService.save(saveMe);
 
-        indexDocument(savedDocument.getId());
+        invalidateDocument(savedDocument.getId());
 
         return savedDocument;
     }
@@ -83,7 +83,7 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
         documentIndexer.setDocumentService(this);
     }
 
-    private void indexDocument(int docId) {
-        documentIndex.indexDocument(docId);
+    private void invalidateDocument(int docId) {
+        documentMapper.invalidateDocument(docId);
     }
 }
