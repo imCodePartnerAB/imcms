@@ -212,6 +212,8 @@ idea {
     }
 }
 
+jar.classifier="classes"
+
 gradleLint.rules = ['all-dependency']
 
 javascript.source {
