@@ -67,7 +67,7 @@ and write down correct values for next properties:
     Password = root
 
 Pay attention to ``JdbcUrl`` property - there is a DB name after ``localhost:3306/``, by default it is ``imcms_test``,
-so you can create DB with such name (just like in :doc:`Before You Start </getting-started/setup/before>` section)
+so you can create DB with such name (just like in :doc:`Before You Start </getting-started/before>` section)
 or with another name - then simply put this name into ``test.server.properties`` file instead of default DB name.
 
 Since you've done, execute maven clean package again:

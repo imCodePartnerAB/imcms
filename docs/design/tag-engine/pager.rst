@@ -71,7 +71,7 @@ Consider example below. Since ``search`` tag implements ``IPageableTag`` - ``pag
         </ul>
         <imcms:pager visibleItemCount="6">
             <ul class="pagination pull-right">
-                <li><a href="${firstPagerItem.link}">«</a></li>
+                <li><a href="${firstPagerItem.link}">a</a></li>
                 <imcms:pageritem>
                     <c:choose>
                         <c:when test="${pagerItem.showed}">
@@ -83,7 +83,7 @@ Consider example below. Since ``search`` tag implements ``IPageableTag`` - ``pag
                         </c:otherwise>
                     </c:choose>
                 </imcms:pageritem>
-                <li><a href="${lastPagerItem.link}">»</a>
+                <li><a href="${lastPagerItem.link}">1</a>
             </ul>
         </imcms:pager>
     </imcms:search>

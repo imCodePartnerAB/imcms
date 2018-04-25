@@ -22,24 +22,25 @@ Set it up with next properties:
 Database Configuration
 ----------------------
 
-* For SQL Server:
-.. code-block:: properties
+*
+    For SQL Server:
+    .. code-block:: properties
 
         jdbc-driver = net.sourceforge.jtds.jdbc.Driver
         jdbc-url = jdbc:jtds:sqlserver://localhost:1433/;AppName=imCMS;DatabaseName=imcms
         hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
 
-
-* For MySQL:
-.. code-block:: properties
+*
+    For MySQL:
+    .. code-block:: properties
 
         jdbc-driver = com.mysql.jdbc.Driver
         jdbc-url = jdbc:mysql://localhost:3306/iarch_new?characterEncoding=utf8
         hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 
-
-* For both:
-.. code-block:: properties
+*
+    For both:
+    .. code-block:: properties
 
         jdbc-username =
         jdbc-password =

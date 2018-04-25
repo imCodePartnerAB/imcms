@@ -17,9 +17,8 @@ ImCMS Documentation
     getting-started/index
     tutorial/index
     design/index
-    document-engine/index
-    fundamental/index
     content-management/index
+    advanced-configuration/index
     image-archive/index
     bank-id/index
 
