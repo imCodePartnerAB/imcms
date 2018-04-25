@@ -81,7 +81,7 @@ Paging integration
 ------------------
 
 By default ``search`` tag provide paging. It is mean that ``pager`` tag can be inserted in to ``search`` tag body.
-(see also :doc:`Pager Tag </tag-engine/pager>` section).
+(see also :doc:`Pager Tag </design/tag-engine/pager>` section).
 
 For configure ``search`` tag to using paging look at example above.
 
@@ -107,7 +107,7 @@ Example:
         </ul>
         <imcms:pager visibleItemCount="6">
             <ul class="pagination pull-right">
-                <li><a href="${firstPagerItem.link}">«</a></li>
+                <li><a href="${firstPagerItem.link}">1</a></li>
                 <imcms:pageritem>
                     <c:choose>
                         <c:when test="${pagerItem.showed}">
@@ -119,7 +119,7 @@ Example:
                         </c:otherwise>
                     </c:choose>
                 </imcms:pageritem>
-                <li><a href="${lastPagerItem.link}">»</a>
+                <li><a href="${lastPagerItem.link}">2</a>
             </ul>
         </imcms:pager>
     </imcms:search>

@@ -2,8 +2,8 @@ Apache Solr
 ===========
 
 In this article:
-	- `Introduction`_
-	- `Configuration`_
+    - `Introduction`_
+    - `Configuration`_
 
 
 Introduction

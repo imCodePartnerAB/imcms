@@ -41,7 +41,7 @@ Create new template
 
 #. Save changes by clicking **"OK"** button
 
----------------
+
 ---------------
 Modify template
 ---------------

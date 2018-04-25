@@ -13,68 +13,65 @@ Image Archive is divided into two parts: server and client. Both of them needs t
 
 Client side includes into existing project by maven dependency:
 
-.. code-block:: maven
+.. code-block:: xml
 
     <dependency>
-	    <groupId>com.imcode.imcms.addon.imagearchive</groupId>
-		<artifactId>client</artifactId>
-		<version>1.0-SNAPSHOT</version>
-		<type>war</type>
-	</dependency>
-	<dependency>
-		<groupId>com.imcode.imcms.addon.imagearchive</groupId>
-		<artifactId>client</artifactId>
-		<version>1.0-SNAPSHOT</version>
-		<type>jar</type>
-		<classifier>classes</classifier>
-	</dependency>
+        <groupId>com.imcode.imcms.addon.imagearchive</groupId>
+        <artifactId>client</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <type>war</type>
+    </dependency>
+    <dependency>
+        <groupId>com.imcode.imcms.addon.imagearchive</groupId>
+        <artifactId>client</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <type>jar</type>
+        <classifier>classes</classifier>
+    </dependency>
 
 With this dependencies client's .war and required .jar are ready to use after some configuration. Most of next properties already available in project, but for full info lets see all required properties for client.
 
 Database and Hibernate Configuration
 ------------------------------------
 
-* For SQL Server:
-.. code-block:: properties
+*
+    For SQL Server:
+    .. code-block:: properties
 
-        jdbc-driver = net.sourceforge.jtds.jdbc.Driver
-        jdbc-url = jdbc:jtds:sqlserver://localhost:1433/;AppName=imCMS;DatabaseName=imcms
-        hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
+            jdbc-driver = net.sourceforge.jtds.jdbc.Driver
+            jdbc-url = jdbc:jtds:sqlserver://localhost:1433/;AppName=imCMS;DatabaseName=imcms
+            hibernate-dialect = com.imcode.imcms.addon.imagearchive.util.SQLServerDialect
+*
+    For MySQL:
+    .. code-block:: properties
 
+            jdbc-driver = com.mysql.jdbc.Driver
+            jdbc-url = jdbc:mysql://localhost:3306/iarch_new?characterEncoding=utf8
+            hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+*
+    For both:
+    .. code-block:: properties
 
-* For MySQL:
-.. code-block:: properties
+            jdbc-username =
+            jdbc-password =
+*
+    Hibernate Configuration
 
-        jdbc-driver = com.mysql.jdbc.Driver
-        jdbc-url = jdbc:mysql://localhost:3306/iarch_new?characterEncoding=utf8
-        hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+    Automatically validates or exports schema DDL to the database when the ``SessionFactory`` is created.
 
+    .. code-block:: properties
 
-* For both:
-.. code-block:: properties
+        hibernate-hbm2ddl-auto =
 
-        jdbc-username =
-        jdbc-password =
+    Possible values:
 
+       - **validate**: validate that the schema matches, make no changes to the schema of the database, you probably want this for production
 
-* Hibernate Configuration
+       - **update**: update the schema to reflect the entities being persisted
 
-Automatically validates or exports schema DDL to the database when the ``SessionFactory`` is created.
+       - **create**: creates the schema necessary for your entities, destroying any previous data
 
-.. code-block:: properties
-
-    hibernate-hbm2ddl-auto =
-
-
-Possible values:
-
-   - **validate**: validate that the schema matches, make no changes to the schema of the database, you probably want this for production
-
-   - **update**: update the schema to reflect the entities being persisted
-
-   - **create**: creates the schema necessary for your entities, destroying any previous data
-
-   - **create-drop**: create the schema as in create above, but also drop the schema at the end of the session. This is great in early development or for testing.
+       - **create-drop**: create the schema as in create above, but also drop the schema at the end of the session. This is great in early development or for testing.
 
 Image Archive Own Configuration
 -------------------------------
