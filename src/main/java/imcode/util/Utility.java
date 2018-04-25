@@ -312,8 +312,15 @@ public class Utility {
     }
 
     public static void forwardToLogin(HttpServletRequest request, HttpServletResponse response, int responseStatus) throws ServletException, IOException {
+        forwardToLogin(request, response, responseStatus, request.getRequestURL());
+    }
+
+    public static void forwardToLogin(final HttpServletRequest request,
+                                      final HttpServletResponse response,
+                                      final int responseStatus,
+                                      final StringBuffer loginTarget) throws IOException, ServletException {
+
         UserDomainObject user = getLoggedOnUser(request);
-        StringBuffer loginTarget = request.getRequestURL();
         String queryString = request.getQueryString();
         if (null != queryString) {
             loginTarget.append("?").append(queryString);
