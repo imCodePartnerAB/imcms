@@ -8,8 +8,12 @@ Imcms.define("imcms-session-timeout-management", ["imcms", "imcms-i18n-texts"], 
         }
 
         sessionTimeoutId = setTimeout(function () {
-            alert(texts.sessionExpiredMessage);
-            window.location.href = imcms.contextPath + "/login";
+            var redirectToLoginPage = confirm(texts.sessionExpiredMessage);
+
+            if (redirectToLoginPage) {
+                window.location.href = imcms.contextPath + "/login";
+            }
+
         }, imcms.expiredSessionTimeInMillis);
     }
 
