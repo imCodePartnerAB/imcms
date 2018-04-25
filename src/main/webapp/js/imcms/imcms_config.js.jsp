@@ -1,7 +1,7 @@
 <%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
 
     Imcms = {
-        expiredSessionTime: ${pageContext.session.maxInactiveInterval * 1000},
+        expiredSessionTimeInMillis: ${pageContext.session.maxInactiveInterval * 1000},
         userLanguage: "${userLanguage}",
         contextPath: "${pageContext.request.contextPath}",
         imagesPath: "${imagesPath}",
