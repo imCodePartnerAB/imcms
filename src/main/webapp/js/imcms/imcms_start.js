@@ -5,8 +5,8 @@
  * 07.08.17.
  */
 Imcms.require(
-    ["imcms-admin-panel-builder", "imcms", "imcms-tests", "imcms-events", "imcms-i18n-texts"],
-    function (panelBuilder, imcms, tests, events, texts) {
+    ["imcms-admin-panel-builder", "imcms", "imcms-tests", "imcms-events", "imcms-session-timeout-management"],
+    function (panelBuilder, imcms, tests, events, sessionTimeoutManagement) {
         Imcms.tests = tests;
         console.info("%c Tests loaded.", "color: green");
 
@@ -18,10 +18,7 @@ Imcms.require(
             window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
         });
 
-        setTimeout(function () {
-            alert(texts.sessionExpiredMessage);
-            window.location.href = imcms.contextPath + "/login";
-        }, imcms.expiredSessionTime);
+        sessionTimeoutManagement.initOrUpdateSessionTimeout();
 
         function detectActivePanelButton() {
             if (imcms.isEditMode) {
