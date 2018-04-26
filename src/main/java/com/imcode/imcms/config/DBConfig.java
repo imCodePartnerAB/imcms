@@ -108,7 +108,12 @@ class DBConfig {
     }
 
     @Bean
-    public Database createDatabase(DataSource dataSource) {
+    public Database database(DataSource dataSource) {
+        return new DataSourceDatabase(dataSource);
+    }
+
+    @Bean
+    public Database databaseWithAutoCommit(@Qualifier("dataSourceWithAutoCommit") DataSource dataSource) {
         return new DataSourceDatabase(dataSource);
     }
 
