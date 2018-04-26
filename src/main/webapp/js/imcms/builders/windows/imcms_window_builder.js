@@ -81,10 +81,12 @@ Imcms.define("imcms-window-builder", ["imcms-window-components-builder", "jquery
         /**
          * Builds head with specified title and close button
          * @param {string} title
+         * @param {function} onCloseClick
          * @returns {*} head as jQuery element
          */
-        buildHead: function (title) {
-            return windowComponents.buildHead(title, this.closeWindow.bind(this));
+        buildHead: function (title, onCloseClick) {
+            onCloseClick = onCloseClick || this.closeWindow.bind(this);
+            return windowComponents.buildHead(title, onCloseClick);
         },
         /**
          * Builds footer with specified buttons as it's block elements
