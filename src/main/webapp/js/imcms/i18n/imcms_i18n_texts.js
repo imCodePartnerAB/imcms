@@ -272,7 +272,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 errors: " Fel",
                 warnings: " Varningar"
             },
-            sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet. Omdirigera till inloggningssidan?"
+            sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet. Omdirigera till inloggningssidan?",
+            contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat."
         },
         "en": {
             panel: {
@@ -539,7 +540,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 errors: " Errors",
                 warnings: " Warnings"
             },
-            sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?"
+            sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?",
+            contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving."
         }
     };
 
