@@ -248,7 +248,7 @@
         <dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-parsers</artifactId>
-            <version>1.11</version>
+            <version>1.18</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-logging</artifactId>
@@ -263,6 +263,16 @@
                     <groupId>commons-io</groupId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>jbig2-imageio</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jai-imageio</groupId>
+            <artifactId>jai-imageio-jpeg2000</artifactId>
+            <version>1.3.0</version>
         </dependency>
 
         <dependency>
@@ -292,6 +302,12 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache-web</artifactId>
             <version>2.0.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>net.sf.ehcache</groupId>
+                    <artifactId>ehcache-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -359,7 +375,7 @@
         <dependency>
             <groupId>com.imcode.db</groupId>
             <artifactId>imcode-db</artifactId>
-            <version>0.5</version>
+            <version>0.6-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -918,9 +934,9 @@
                                 </uptodate>
 
                                 <fail unless="build-properties-up-to-date">
-                                'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
-                                for details.)
-                                Copy 'build.properties.template' content into 'build.properties' and edit it!
+                                    'build.properties.template' is newer than 'build.properties'. (See docs/BUILD.TXT
+                                    for details.)
+                                    Copy 'build.properties.template' content into 'build.properties' and edit it!
                                 </fail>
                             </target>
                         </configuration>
