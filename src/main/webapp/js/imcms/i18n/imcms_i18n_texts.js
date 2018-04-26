@@ -29,6 +29,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 document: "Dokument",
                 newDocument: "Nytt dokument",
                 confirmMessage: "Spara ändringar?",
+                confirmMessageOnCancel: "Vill du verkligen avsluta?",
                 title: {
                     name: "Rubrik",
                     title: "Rubrik",
@@ -297,6 +298,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 document: "Document",
                 newDocument: "New Document",
                 confirmMessage: "Save changes?",
+                confirmMessageOnCancel: "Do you really want to exit?",
                 title: {
                     name: "Title",
                     title: "Title",
