@@ -9,16 +9,32 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.DocumentFileService;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.DocumentUrlService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.PropertyService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
-import com.imcode.imcms.mapping.*;
+import com.imcode.imcms.mapping.DocumentLanguageMapper;
+import com.imcode.imcms.mapping.DocumentLoader;
+import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
+import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.DocumentVersionMapper;
+import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.servlet.ImageCacheManager;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
-import imcode.server.*;
+import imcode.server.Config;
+import imcode.server.DefaultResolvingQueryIndex;
+import imcode.server.LanguageMapper;
+import imcode.server.LoggingDocumentIndex;
+import imcode.server.PhaseQueryFixingDocumentIndex;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
 import imcode.server.document.index.ResolvingQueryIndex;
@@ -30,7 +46,11 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.AntPathMatcher;
@@ -198,10 +218,8 @@ class MainConfig {
     }
 
     @Bean
-    public LanguageMapper languageMapper(Database createDatabase,
-                                         LanguageService languageService,
-                                         Config config) {
-        return new LanguageMapper(createDatabase, config.getDefaultLanguage(), languageService);
+    public LanguageMapper languageMapper(Database database, LanguageService languageService, Config config) {
+        return new LanguageMapper(database, config.getDefaultLanguage(), languageService);
     }
 
     @Bean
