@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
 
 /**
  * General controller for document viewing in any mode.
@@ -113,9 +114,8 @@ public class ViewDocumentController {
 
         if ((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userEditPermission)) {
 
-            //TODO: Should I use contextPath? Check it!
             final Object loginTarget = Optional
-                    .ofNullable(request.getAttribute("javax.servlet.forward.request_uri"))
+                    .ofNullable(request.getAttribute(FORWARD_REQUEST_URI))
                     .orElse(request.getRequestURL());
 
             Utility.forwardToLogin(
