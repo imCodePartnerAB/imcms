@@ -6,6 +6,8 @@ Imcms.define("imcms-keywords-builder",
     ["imcms-bem-builder", "imcms-texts-builder", "imcms-buttons-builder", "imcms-primitives-builder", "imcms-uuid-generator", "jquery"],
     function (BEM, texts, buttons, primitives, uuidGenerator, $) {
 
+        var keywordMaxLength = 128;
+
         function createRemoveKeywordButton() {
             return buttons.closeButton({click: removeKeyword});
         }
@@ -105,6 +107,16 @@ Imcms.define("imcms-keywords-builder",
                         {"keywords": $keywordsContainer}
                     ])
                 ;
+
+                $input.on("input", function () {
+                    var $input = $(this);
+                    var keywordValue = $input.val().trim();
+
+                    if (keywordValue.length > keywordMaxLength) {
+                        $input.val(keywordValue.substring(0, keywordMaxLength));
+                    }
+                });
+
                 var $keywordsBlock = keywordsContainerBEM.buildBlock("<div>", [{"keywords-box": $keywordsBox}]);
 
                 $keywordsBlock.addKeyword = bindAddKeyword($input, $addKeywordButton, $keywordsBlock);
