@@ -192,8 +192,8 @@ Imcms.define("imcms-admin-panel-builder",
                 if (isPanelDisabledOrMouseNotInSensitiveArea) return;
 
                 var bodyCss = ($(window).scrollTop() === 0)
-                    ? {"top": "90px"}
-                    : {"padding-top": "0px"};
+                    ? {"top": $panel.height() + "px"}
+                    : {"padding-top": "0"};
 
                 $body.css(bodyCss);
                 showPanel();
@@ -211,7 +211,7 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         function hidePanel() {
-            setAdminPanelTop(-90);
+            setAdminPanelTop(-$panel.height());
         }
 
         function showPanel() {
