@@ -12,9 +12,9 @@
 
 .imcms-admin-panel {
     background-color: #fff;
-    -webkit-box-shadow: 0 6px 29px 15px rgba(0, 0, 0, 0.07);
-    -moz-box-shadow: 0 6px 29px 15px rgba(0, 0, 0, 0.07);
-    box-shadow: 0 6px 29px 15px rgba(0, 0, 0, 0.07);
+    -webkit-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
+    box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
     display: block;
     overflow: hidden;
     padding-left: 2%;
@@ -25,6 +25,9 @@
     -ms-transition: all .3s;
     -o-transition: all .3s;
     transition: all .3s;
+    position: relative;
+    z-index: 1502;
+    border-bottom: 1px solid #ccc;
 }
 
 .imcms-admin-panel__item {
@@ -119,6 +122,10 @@
 
 .imcms-panel__item:last-child:hover:before {
     display: none;
+}
+
+.imcms-panel__item--specific {
+    background-image: url('../../images_new/admin_panel/icon_edit.png');
 }
 
 .imcms-panel__item--publish-of:after,
