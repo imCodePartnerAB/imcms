@@ -1,26 +1,17 @@
-<%@ page
-
-        import="com.imcode.imcms.api.ContentManagementSystem, com.imcode.imcms.api.TextDocumentViewing"
-
-        contentType="text/html;charset=UTF-8"
-        pageEncoding="UTF-8"
-
-%>
+${"<!--"}
+<%@ page trimDirectiveWhitespaces="true" %>
+${"-->"}
+<%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
-<%
-
-    /*
+<%--
     TODO: Add a "pin" icon to imCMS's panel. Make it remember in/out state.
 
     - Maybe 3 way toggle:
         1. Normal (As now auto in/out)
         2. Out (As now but remembered out with cookie)
         3. Sticky (Not fixed. Scrolls with the page. Remembered with cookie)
-    */
-
-    boolean hasAdminRights = ContentManagementSystem.fromRequest(request).getCurrentUser().canEdit(TextDocumentViewing.fromRequest(request).getTextDocument());
-
-%><!DOCTYPE html>
+--%>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -207,7 +198,7 @@
             height: auto;
         }
 
-        <% if (hasAdminRights) { %>
+        <imcms:ifAdmin>
         /* *******************************************************************************************
          *         My admin                                                                          *
          ******************************************************************************************* */
@@ -278,14 +269,14 @@
             display: block;
         }
 
-        <% } %>
+        </imcms:ifAdmin>
     </style>
 
 </head>
 <body>
 
 <%-- TODO: Server-side controlled div for special administration (Not in imCMS): --%>
-<% if (hasAdminRights) { %>
+<imcms:ifAdmin>
 <div id="imcmsAdminSpecial" data-link-text="Site specific" class="imcms-collapsible imcms-collapsible-hidden">
     <div id="imcmsAdminSpecialInner">
         <%-- TODO: Whatever admin content needed for this client: --%>
@@ -322,7 +313,7 @@
         <%-- / TODO: Whatever admin content needed for this client: --%>
     </div>
 </div>
-<% } %>
+</imcms:ifAdmin>
 <%-- TODO: / Server-side controlled div for special administration: --%>
 
 <imcms:admin/>
