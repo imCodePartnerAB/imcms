@@ -197,12 +197,9 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator
 
         time[changedPosition] = $selectedTimeUnit.text();
 
-        var correspondingDateValue = $timeInput.parents(".imcms-field")
-            .find(".imcms-current-date__input")
-            .val()
-            .split("-");
+        if (dateTimeValidator
+                .isPublishedDateBeforePublicationEndDate($timeInput, time, true, ".imcms-current-date__input")) {
 
-        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($timeInput, correspondingDateValue, time)) {
             $timeInput.val(time.join(":"));
         }
     }

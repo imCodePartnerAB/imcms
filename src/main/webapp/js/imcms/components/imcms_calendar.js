@@ -24,13 +24,8 @@ Imcms.define("imcms-calendar", ["imcms", "jquery", "imcms-date-time-validator"],
             date = "0" + date;
         }
 
-        var correspondingTimeValue = curDateInput.parents(".imcms-field")
-            .find(".imcms-current-time__input")
-            .val()
-            .split(":");
-
         if (dateTimeValidator.isPublishedDateBeforePublicationEndDate(
-                $thisDay, [year, month, date], correspondingTimeValue)
+                $thisDay, [year, month, date], false, ".imcms-current-time__input")
         ) {
 
             $thisDay.parents(".imcms-calendar__body")
