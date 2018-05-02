@@ -323,10 +323,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO1));
 
-            final String expected = "true";
-            final String actual = getJsonResponse(requestBuilderPut);
-
-            assertEquals(expected, actual);
+            performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilderPut);
             assertFalse(renamedFolder.exists());
 
         } finally {

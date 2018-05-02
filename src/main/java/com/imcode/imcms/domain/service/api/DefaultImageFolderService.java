@@ -57,7 +57,15 @@ class DefaultImageFolderService implements ImageFolderService {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
         }
 
-        return newFolder.exists() || folder.renameTo(newFolder);
+        if (folder.getAbsolutePath().equals(newFolder.getAbsolutePath())) {
+            return true;
+        }
+
+        if (newFolder.exists()) {
+            throw new FolderAlreadyExistException("Folder with path " + path + File.separator + newName + " already exist!");
+        }
+
+        return folder.renameTo(newFolder);
     }
 
     @Override

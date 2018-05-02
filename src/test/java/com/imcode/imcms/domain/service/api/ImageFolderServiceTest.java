@@ -235,7 +235,7 @@ public class ImageFolderServiceTest {
         }
     }
 
-    @Test
+    @Test(expected = FolderAlreadyExistException.class)
     public void renameFolder_When_FolderWithSuchNameExist_Expect_CorrectException() throws Exception {
         final String newFolderName = "new_test_folder";
         final File newFolder = new File(imagesPath, newFolderName);
@@ -260,15 +260,12 @@ public class ImageFolderServiceTest {
             assertTrue(newFolder1.isDirectory());
             assertTrue(newFolder1.canRead());
 
-            final String folderNewName = newFolderName1;
+            final String folderNewName = newFolderName;
             final File renamedFolder = new File(imagesPath, folderNewName);
             imageFolderDTO1.setName(folderNewName);
 
             assertTrue(renamedFolder.exists());
-
-            final boolean isFolderRenamed = imageFolderService.renameFolder(imageFolderDTO1);
-
-            assertTrue(isFolderRenamed);
+            imageFolderService.renameFolder(imageFolderDTO1); // exception expected here!
 
         } finally {
             if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
