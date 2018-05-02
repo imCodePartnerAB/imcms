@@ -28,7 +28,7 @@ Imcms.define(
 
             $link.insertAfter('.imcms-admin-panel .imcms-panel__item--page-info:first');
 
-            $link.on('click', function () {
+            $link.click(function () {
                 var $collapsible = $('#imcmsAdminSpecial.imcms-collapsible');
 
                 if ($collapsible.hasClass('imcms-collapsible-hidden')) {
