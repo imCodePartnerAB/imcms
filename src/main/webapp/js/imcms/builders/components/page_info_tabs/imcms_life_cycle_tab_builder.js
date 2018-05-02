@@ -1,9 +1,9 @@
 Imcms.define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms-page-info-tab-form-builder",
-        "imcms", "imcms-i18n-texts"
+        "imcms", "imcms-i18n-texts", "imcms-date-time-validator"
     ],
-    function (BEM, components, usersRestApi, tabContentBuilder, imcms, texts) {
+    function (BEM, components, usersRestApi, tabContentBuilder, imcms, texts, dateTimeValidator) {
 
         texts = texts.pageInfo.lifeCycle;
 
@@ -56,6 +56,11 @@ Imcms.define("imcms-life-cycle-tab-builder",
             tabData["$" + dataTitle + "DateTime"] = $dateTime;
         }
 
+        function cleanUpDateAndTime($date, $time) {
+            $date.setDate('');
+            $time.setTime('');
+        }
+
         function buildDateTimeContainer(containerData) {
             var $title = components.texts.titleText("<div>", containerData.title),
                 $date = components.dateTime.datePickerCalendar({title: containerData.dateTitle}),
@@ -65,14 +70,19 @@ Imcms.define("imcms-life-cycle-tab-builder",
                     click: function () {
                         $date.setCurrentDate();
                         $time.setCurrentTime();
+
+                        var date = $date.getDate().split("-");
+
+                        if (!dateTimeValidator.isPublishedDateBeforePublicationEndDate($date, date, false)) {
+                            cleanUpDateAndTime($date, $time);
+                        }
                     }
                 }),
                 $setDateTimeNowContainer = components.buttons.buttonsContainer("<div>", [$setDateTimeNowBtn]),
                 $clearDateTimeBtn = components.buttons.neutralButton({
                     text: texts.clear,
                     click: function () {
-                        $date.setDate('');
-                        $time.setTime('');
+                        cleanUpDateAndTime($date, $time);
                     }
                 }),
                 $clearDateTimeContainer = components.buttons.buttonsContainer("<div>", [$clearDateTimeBtn]),
