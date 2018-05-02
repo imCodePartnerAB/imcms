@@ -7,15 +7,15 @@ import org.apache.log4j.NDC;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class IndexBuildingThread extends Thread {
 
     private final static Logger log = Logger.getLogger(IndexBuildingThread.class.getName());
-    private final Set<DocumentDomainObject> documentsToAddToNewIndex = Collections.synchronizedSet(new LinkedHashSet<DocumentDomainObject>());
-    private final Set<DocumentDomainObject> documentsToRemoveFromNewIndex = Collections.synchronizedSet(new LinkedHashSet<DocumentDomainObject>());
+    private final Map<Integer, DocumentDomainObject> idToDocumentsToAddToNewIndex = Collections.synchronizedMap(new LinkedHashMap<>());
+    private final Map<Integer, DocumentDomainObject> idToDocumentsToRemoveFromNewIndex = Collections.synchronizedMap(new LinkedHashMap<>());
     private final BackgroundIndexBuilder backgroundIndexBuilder;
     private final File indexDirectory;
 
@@ -55,33 +55,29 @@ class IndexBuildingThread extends Thread {
             acceptUpdatesRef.set(false);
         }
 
-        for (DocumentDomainObject document : documentsToAddToNewIndex) {
+        for (DocumentDomainObject document : idToDocumentsToAddToNewIndex.values()) {
             index.indexDocument(document);
         }
 
-        for (DocumentDomainObject document : documentsToRemoveFromNewIndex) {
+        for (DocumentDomainObject document : idToDocumentsToRemoveFromNewIndex.values()) {
             index.removeDocument(document);
         }
     }
 
     public boolean addDocument(DocumentDomainObject document) {
-        synchronized (acceptUpdatesRef) {
-            boolean acceptUpdates = acceptUpdatesRef.get();
-
-            if (acceptUpdates) {
-                documentsToAddToNewIndex.add(document);
-            }
-
-            return acceptUpdates;
-        }
+        return insertDocToProcessByNewIndex(document, idToDocumentsToAddToNewIndex);
     }
 
     public boolean removeDocument(DocumentDomainObject document) {
+        return insertDocToProcessByNewIndex(document, idToDocumentsToRemoveFromNewIndex);
+    }
+
+    private boolean insertDocToProcessByNewIndex(DocumentDomainObject document, Map<Integer, DocumentDomainObject> mapToAdd) {
         synchronized (acceptUpdatesRef) {
             boolean acceptUpdates = acceptUpdatesRef.get();
 
             if (acceptUpdates) {
-                documentsToRemoveFromNewIndex.add(document);
+                mapToAdd.put(document.getId(), document);
             }
 
             return acceptUpdates;
