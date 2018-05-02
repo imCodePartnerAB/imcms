@@ -20,143 +20,6 @@ ${"-->"}
     <script type="text/javascript" id="jqForSite"
             src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
-
-    <%-- TODO: Add logics to init script's load feature. Now with its own jQuery in a timeout to wait for panel to load: --%>
-    <script>
-        var loadImcmsSpecialAdmin = function ($) {
-            var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
-            if ($imcmsAdminSpecial.length) {
-                var $imcmsAdminPanelOuter = $('.imcms-admin:first');
-                var $imcmsAdminPanelInner = $imcmsAdminPanelOuter.find('.imcms-admin-panel:first');
-                $imcmsAdminPanelInner.attr('id', 'imcmsAdminPanel');
-                //console.clear();
-                $imcmsAdminSpecial.appendTo($imcmsAdminPanelOuter);
-                addLinkToSpecialAdmin($, $imcmsAdminSpecial);
-                <%-- TODO: Make a call to a specified function. If exists/defined. --%>
-                try {
-                    var specialAdmInitFn = eval('imcmsSpecialAdminInit') || function () {
-                    };
-                    if (specialAdmInitFn && $.isFunction(specialAdmInitFn)) {
-                        specialAdmInitFn($);
-                    }
-                } catch (ignore) {
-                }
-                <%-- TODO: Add the right height to the admin panel slideToggle feature (now 90px)! --%>
-            }
-        };
-
-        var addLinkToSpecialAdmin = function ($, $el) {
-            var linkText = $el.data('link-text') || 'Special';
-            var $link = $('<li title="Shows client specific administration" class="imcms-panel__item imcms-panel__item--specific">' + linkText + '</li>')
-                .insertAfter('.imcms-admin-panel .imcms-panel__item--page-info:first');
-            <%-- TODO: Collapsible click event - Re-code so it uses the same slide toggle type as the panel. Add cookie to remember in/out state: --%>
-            $link.on('click', function () {
-                var $collapsible = $('#imcmsAdminSpecial.imcms-collapsible');
-                if ($collapsible.hasClass('imcms-collapsible-hidden')) {
-                    $collapsible.removeClass('imcms-collapsible-hidden');
-                    window.setTimeout(function () {
-                        $('body').css('top', $('.imcms-admin:first').height() + 'px');
-                        <%-- TODO: A better solution to know the height! --%>
-                        $link.addClass('imcms-panel__item--active');
-                    }, 300);
-                } else {
-                    $collapsible.addClass('imcms-collapsible-hidden');
-                    $link.removeClass('imcms-panel__item--active');
-                    window.setTimeout(function () {
-                        $('body').css('top', '90px');
-                        <%-- TODO: A better solution to know the height! --%>
-                    }, 300);
-                }
-            });
-        };
-
-        jQuery(document).ready(function ($) {
-            window.setTimeout(function () {
-                loadImcmsSpecialAdmin($);
-                <%-- TODO: Move logics to init script's load feature. Now with its own jQuery in a timeout to wait for panel to load! --%>
-            }, 4000);
-        });
-    </script>
-
-    <%-- TODO: imCMS specific CSS (in imCMS' CSS): --%>
-    <style>
-        .imcms-panel__item--specific {
-            background-image: url('${contextPath}/images_new/admin_panel/icon_edit.png');
-        <%-- TODO: Other icon! Maybe 'gear'? Defaulttext? --%>
-        }
-
-        #imcmsAdminPanel {
-            position: relative;
-            z-index: 1502;
-            border-bottom: 1px solid #ccc !important;
-            -webkit-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
-            -moz-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
-            box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
-        }
-
-        #imcmsAdminSpecial {
-            position: relative;
-            z-index: 1501;
-            overflow: hidden;
-            border-bottom: 1px solid #ccc;
-            background-color: #fff;
-            -webkit-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25), inset 0 -23px 30px 0 rgba(0, 0, 0, 0.04);
-            -moz-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25), inset 0 -23px 30px 0 rgba(0, 0, 0, 0.04);
-            box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25), inset 0 -23px 30px 0 rgba(0, 0, 0, 0.04);
-        }
-
-        #imcmsAdminSpecial.imcms-collapsible {
-            max-height: 10000px;
-            border-bottom: 1px solid #ccc;
-            -webkit-transition: all .3s;
-            -moz-transition: all .3s;
-            -ms-transition: all .3s;
-            -o-transition: all .3s;
-            transition: all .3s;
-        }
-
-        #imcmsAdminSpecial.imcms-collapsible.imcms-collapsible-hidden {
-            padding-bottom: 0;
-            max-height: 0;
-            border-bottom: 0;
-            -webkit-box-shadow: none;
-            -moz-box-shadow: none;
-            box-shadow: none;
-        }
-
-        #imcmsAdminSpecialInner {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0;
-        }
-    </style>
-
-
-    <%-- TODO: Client specific JS (Init. Not in imCMS' JS): --%>
-    <script>
-        var imcmsSpecialAdminInit = function ($) {<%-- TODO: Standardized function name. Called by imCMS on init. --%>
-            addEventsToSpecialAdmin($);
-        };
-
-        var addEventsToSpecialAdmin = function ($) {
-            var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
-            var $tabs = $imcmsAdminSpecial.find('#imcmsAdminTabs li');
-            var $divs = $imcmsAdminSpecial.find('.imcms-admin-tab-div');
-            $tabs.on('click', function () {
-                var $thisTab = $(this);
-                var $thisDiv = $('#imcmsAdminTab_' + $thisTab.data('for'));
-                var $otherTabs = $tabs.filter(':visible').not($thisTab);
-                var $otherDivs = $divs.filter(':visible').not($thisDiv);
-                $otherDivs.fadeOut('fast', function () {
-                    $thisDiv.fadeIn('fast', function () {
-                        $otherTabs.removeClass('tab-active');
-                        $thisTab.addClass('tab-active');
-                    });
-                });
-            });
-        };
-    </script>
-    <%-- TODO: Client specific CSS (Override. Not in imCMS' CSS): --%>
     <style>
         /* *******************************************************************************************
          *         My site                                                                           *
@@ -224,9 +87,9 @@ ${"-->"}
             display: inline-block;
             width: auto;
             margin: 0 5px 0 0;
-            padding: 5px 10px !important;
-            background-color: #389ECF !important;
-            color: #fff !important;
+            padding: 5px 10px;
+            background-color: #389ECF;
+            color: #fff;
             font: 700 14px/16px 'Open Sans', Arial, sans-serif;
             -moz-border-radius: 3px;
             -webkit-border-radius: 3px;
@@ -245,10 +108,10 @@ ${"-->"}
         ul#imcmsAdminTabs li {
             display: inline-block;
             margin: 0 1px 3px 0;
-            padding: 5px 10px 3px 10px !important;
+            padding: 5px 10px 3px 10px;
             border-bottom: 2px solid #ccc;
-            background-color: #fff !important;
-            color: #000 !important;
+            background-color: #fff;
+            color: #000;
             font: 600 13px/15px 'Source Sans Pro', sans-serif;
             text-transform: uppercase;
             cursor: pointer;
@@ -256,7 +119,7 @@ ${"-->"}
 
         ul#imcmsAdminTabs li.tab-active,
         ul#imcmsAdminTabs li:hover {
-            color: #389ECF !important;
+            color: #389ECF;
             border-color: #389ECF;
         }
 
@@ -275,11 +138,9 @@ ${"-->"}
 </head>
 <body>
 
-<%-- TODO: Server-side controlled div for special administration (Not in imCMS): --%>
 <imcms:ifAdmin>
 <div id="imcmsAdminSpecial" data-link-text="Site specific" class="imcms-collapsible imcms-collapsible-hidden">
     <div id="imcmsAdminSpecialInner">
-        <%-- TODO: Whatever admin content needed for this client: --%>
         <ul id="imcmsAdminTabs">
             <li data-for="page" class="tab-active">For this page</li>
             <li data-for="section">For this section</li>
@@ -310,13 +171,37 @@ ${"-->"}
                 General admin content...
             </fieldset>
         </div>
-        <%-- / TODO: Whatever admin content needed for this client: --%>
     </div>
 </div>
 </imcms:ifAdmin>
-<%-- TODO: / Server-side controlled div for special administration: --%>
 
 <imcms:admin/>
+
+<script>
+    var addEventsToSpecialAdmin = function () {
+        var $imcmsAdminSpecial = jQuery('#imcmsAdminSpecial');
+        var $tabs = $imcmsAdminSpecial.find('#imcmsAdminTabs li');
+        var $divs = $imcmsAdminSpecial.find('.imcms-admin-tab-div');
+
+        $tabs.on('click', function () {
+            var $thisTab = jQuery(this);
+            var $thisDiv = jQuery('#imcmsAdminTab_' + $thisTab.data('for'));
+            var $otherTabs = $tabs.filter(':visible').not($thisTab);
+            var $otherDivs = $divs.filter(':visible').not($thisDiv);
+            $otherDivs.fadeOut('fast', function () {
+                $thisDiv.fadeIn('fast', function () {
+                    $otherTabs.removeClass('tab-active');
+                    $thisTab.addClass('tab-active');
+                });
+            });
+        });
+    };
+
+    Imcms && Imcms.require("imcms-site-specific", function (siteSpecific) {
+        siteSpecific.init(addEventsToSpecialAdmin);
+    });
+
+</script>
 
 <div id="outer">
     <%--<img src="http://lorempixel.com/1200/300/" alt="">--%>
