@@ -226,6 +226,9 @@ Imcms.define("imcms-admin-panel-builder",
             $panel.find(".imcms-panel__item--publish-of").addClass("imcms-panel__item--has-newer-version");
         }
 
+        var isPanelBuilt = false;
+        var onPanelBuiltCallbacks = [];
+
         return {
             buildPanel: function (opts) {
                 if ($panel) {
@@ -248,7 +251,22 @@ Imcms.define("imcms-admin-panel-builder",
                 setHidePanelRule();
                 $("body").prepend($panel);
 
-                events.on("imcms-version-modified", highlightPublishButton)
+                events.on("imcms-version-modified", highlightPublishButton);
+                isPanelBuilt = true;
+
+                onPanelBuiltCallbacks.forEach(function (callMe) {
+                    setTimeout(callMe);
+                });
+            },
+            callOnPanelBuilt: function (callOnPanelBuilt) {
+                if (!callOnPanelBuilt || !callOnPanelBuilt.call) return;
+
+                if (isPanelBuilt) {
+                    setTimeout(callOnPanelBuilt);
+                    return;
+                }
+
+                onPanelBuiltCallbacks.push(callOnPanelBuilt);
             }
         }
     }
