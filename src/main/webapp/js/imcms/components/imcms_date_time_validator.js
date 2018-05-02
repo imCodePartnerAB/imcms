@@ -1,26 +1,34 @@
 Imcms.define("imcms-date-time-validator", [], function () {
 
-    var defaultTime = ["00", "00"];
+    var PUBLISHED = "Published",
+        PUBLICATION_END = "Publication end",
+        defaultTime = ["00", "00"],
+        dateClassSelector = ".imcms-current-date__input",
+        timeClassSelector = ".imcms-current-time__input";
 
-    var dateClassSelector = ".imcms-current-date__input";
-    var timeClassSelector = ".imcms-current-time__input";
+    function isPublishedDateBeforePublicationEndDate($from, preExistingValue) {
 
-    function isPublishedDateBeforePublicationEndDate($from, preExistingValue, preExistingValueIsTime) {
+        var dateTimeTitle = getDateTimeTitle($from);
 
-        var preExistingDate;
-        var preExistingTime;
+        if ((dateTimeTitle !== PUBLISHED && dateTimeTitle !== PUBLICATION_END)) {
+            return true;
+        }
 
-        var dateOrTime = getDateOrTimeValue($from, preExistingValueIsTime);
+        var preExistingDate,
+            preExistingTime,
+            preExistingValueIsTime = preExistingValue.length === 2,
+            dateOrTime = getDateOrTimeValue($from, preExistingValueIsTime);
 
         if (preExistingValueIsTime) {
             preExistingTime = preExistingValue;
             preExistingDate = dateOrTime;
+
         } else {
             preExistingTime = dateOrTime;
             preExistingDate = preExistingValue;
         }
 
-        var dateTimeData = getDateTimeData($from, preExistingDate, preExistingTime);
+        var dateTimeData = getDateTimeData($from, dateTimeTitle, preExistingDate, preExistingTime);
 
         var publishedDate = dateTimeData.publishedDate,
             publishedTime = dateTimeData.publishedTime,
@@ -51,28 +59,27 @@ Imcms.define("imcms-date-time-validator", [], function () {
         return published < publicationEnd;
     }
 
-    function getDateTimeData($from, preExistingDate, preExistingTime) {
+    function getDateTimeData($from, dateTimeTitle, preExistingDate, preExistingTime) {
         var publishedDate, publishedTime, publicationEndDate, publicationEndTime;
 
         var $imcmsField = $from.parents(".imcms-field");
-        var dateTimeTitle = $imcmsField.find(".imcms-field__title").text();
 
-        if (dateTimeTitle === "Published") {
+        if (dateTimeTitle === PUBLISHED) {
             publishedDate = preExistingDate;
             publishedTime = preExistingTime;
 
-            var $imcmsFieldOfPublicationEnd = $imcmsField.next().next();
-            var dateTimeOfPublicationEnd = getDateTime($imcmsFieldOfPublicationEnd);
+            var $imcmsFieldOfPublicationEnd = $imcmsField.next().next(),
+                dateTimeOfPublicationEnd = getDateTime($imcmsFieldOfPublicationEnd);
 
             publicationEndDate = dateTimeOfPublicationEnd.date;
             publicationEndTime = dateTimeOfPublicationEnd.time;
 
-        } else if (dateTimeTitle === "Publication end") {
+        } else if (dateTimeTitle === PUBLICATION_END) {
             publicationEndDate = preExistingDate;
             publicationEndTime = preExistingTime;
 
-            var $imcmsFieldOfPublished = $imcmsField.prev().prev();
-            var dateTimeOfPublished = getDateTime($imcmsFieldOfPublished);
+            var $imcmsFieldOfPublished = $imcmsField.prev().prev(),
+                dateTimeOfPublished = getDateTime($imcmsFieldOfPublished);
 
             publishedDate = dateTimeOfPublished.date;
             publishedTime = dateTimeOfPublished.time;
@@ -89,12 +96,9 @@ Imcms.define("imcms-date-time-validator", [], function () {
     function getDateTime($imcmsField) {
         var $dateInputSelector = $imcmsField.find(".imcms-current-date__input");
 
-        var date = $dateInputSelector.val().split("-");
-        var time = getDateOrTimeValue($dateInputSelector, false);
-
         return {
-            date: date,
-            time: time
+            date: $dateInputSelector.val().split("-"),
+            time: getDateOrTimeValue($dateInputSelector, false)
         }
     }
 
@@ -103,6 +107,12 @@ Imcms.define("imcms-date-time-validator", [], function () {
             .find(isTime ? dateClassSelector : timeClassSelector)
             .val()
             .split(isTime ? "-" : ":");
+    }
+
+    function getDateTimeTitle($from) {
+        return $from.parents(".imcms-field")
+            .find(".imcms-field__title")
+            .text();
     }
 
     return {

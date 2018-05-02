@@ -25,7 +25,7 @@ Imcms.define("imcms-date-picker",
                     var currentDate = getCurrentDate();
 
                     var publishedDateBeforePublicationEndDate = dateTimeValidator
-                        .isPublishedDateBeforePublicationEndDate($currentDateInput, currentDate.split("-"), false);
+                        .isPublishedDateBeforePublicationEndDate($currentDateInput, currentDate.split("-"));
 
                     if (!publishedDateBeforePublicationEndDate) {
                         currentDate = "";
@@ -96,7 +96,7 @@ Imcms.define("imcms-date-picker",
 
             var date = [year, month, day];
 
-            if (isValid && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($currentDateInput, date, false)) {
+            if (isValid && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($currentDateInput, date)) {
                 $currentDateInput.val("");
             } else {
                 lastOrFirst.addClass("imcms-day--today");

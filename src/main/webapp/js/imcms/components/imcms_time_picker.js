@@ -197,7 +197,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator
 
         time[changedPosition] = $selectedTimeUnit.text();
 
-        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($timeInput, time, true)) {
+        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($timeInput, time)) {
             $timeInput.val(time.join(":"));
         }
     }
@@ -219,7 +219,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator
             var time = currentTime.hours + ":" + currentTime.minutes;
 
             var publishedDateBeforePublicationEndDate = dateTimeValidator
-                .isPublishedDateBeforePublicationEndDate($this, time, true);
+                .isPublishedDateBeforePublicationEndDate($this, time);
 
             if (!publishedDateBeforePublicationEndDate) {
                 time = "";
@@ -262,7 +262,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator
                     time = $inputTime.val().split(":");
 
                 if (isValid(time)
-                    && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($inputTime, time, true)) {
+                    && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($inputTime, time)) {
 
                     $inputTime.val("");
                 }

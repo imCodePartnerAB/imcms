@@ -73,7 +73,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
                         var date = $date.getDate().split("-");
 
-                        if (!dateTimeValidator.isPublishedDateBeforePublicationEndDate($date, date, false)) {
+                        if (!dateTimeValidator.isPublishedDateBeforePublicationEndDate($date, date)) {
                             cleanUpDateAndTime($date, $time);
                         }
                     }
