@@ -1,4 +1,5 @@
-<%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
+${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
+    <%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
 
     Imcms = {
         expiredSessionTimeInMillis: ${pageContext.session.maxInactiveInterval * 1000},
