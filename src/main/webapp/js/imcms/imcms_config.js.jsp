@@ -164,6 +164,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-bem-builder": "builders/imcms_bem_builder.js",
             "imcms-image-content-builder": "builders/imcms_image_content_builder.js",
             "imcms-admin-panel-builder": "builders/imcms_admin_panel_builder.js",
+            "imcms-site-specific": "builders/imcms_site_specific_admin_panel.js",
             // </builders>
             // rest api
             "imcms-rest-api": "rest/imcms_rest_api.js",
