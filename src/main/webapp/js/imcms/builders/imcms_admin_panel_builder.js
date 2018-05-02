@@ -178,7 +178,7 @@ Imcms.define("imcms-admin-panel-builder",
                 $flagsItem,
                 $buttonsContainer
             ];
-            return adminPanelBEM.buildBlock("<div>", adminPanelElements$, {}, "item");
+            return adminPanelBEM.buildBlock("<div>", adminPanelElements$, {id: "imcms-admin-panel"}, "item");
         }
 
         function setShowPanelRule() {
@@ -243,6 +243,7 @@ Imcms.define("imcms-admin-panel-builder",
                 });
 
                 $panel = $("<div>", {
+                    "id": "imcms-admin",
                     "class": "imcms-admin",
                     html: createAdminPanel(opts)
                 });
