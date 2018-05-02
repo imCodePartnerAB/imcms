@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 
 import static java.io.File.separator;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @Transactional
@@ -321,7 +323,10 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO1));
 
-            performRequestBuilderExpectException(FolderAlreadyExistException.class, requestBuilderPut);
+            final String expected = "true";
+            final String actual = getJsonResponse(requestBuilderPut);
+
+            assertEquals(expected, actual);
             assertFalse(renamedFolder.exists());
 
         } finally {

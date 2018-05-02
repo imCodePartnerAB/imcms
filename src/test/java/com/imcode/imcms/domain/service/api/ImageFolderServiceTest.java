@@ -19,7 +19,10 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.separator;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Transactional
 @WebAppConfiguration
@@ -232,7 +235,7 @@ public class ImageFolderServiceTest {
         }
     }
 
-    @Test(expected = FolderAlreadyExistException.class)
+    @Test
     public void renameFolder_When_FolderWithSuchNameExist_Expect_CorrectException() throws Exception {
         final String newFolderName = "new_test_folder";
         final File newFolder = new File(imagesPath, newFolderName);
@@ -262,7 +265,10 @@ public class ImageFolderServiceTest {
             imageFolderDTO1.setName(folderNewName);
 
             assertTrue(renamedFolder.exists());
-            imageFolderService.renameFolder(imageFolderDTO1); // exception expected here!
+
+            final boolean isFolderRenamed = imageFolderService.renameFolder(imageFolderDTO1);
+
+            assertTrue(isFolderRenamed);
 
         } finally {
             if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
