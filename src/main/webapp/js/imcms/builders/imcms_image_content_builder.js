@@ -297,7 +297,6 @@ Imcms.define("imcms-image-content-builder",
 
         function buildControls(subfolder, level) {
             var controlsElements = [
-                folderControlsBuilder.move(subfolder),
                 folderControlsBuilder.remove(subfolder),
                 folderControlsBuilder.edit(subfolder, level),
                 folderControlsBuilder.create(subfolder, level)
