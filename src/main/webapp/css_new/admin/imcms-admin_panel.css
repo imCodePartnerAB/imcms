@@ -163,6 +163,42 @@
     height: 3px
 }
 
+#imcmsAdminSpecial {
+    position: relative;
+    z-index: 1501;
+    overflow: hidden;
+    border-bottom: 1px solid #ccc;
+    background-color: #fff;
+    -webkit-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25), inset 0 -23px 30px 0 rgba(0, 0, 0, 0.04);
+    -moz-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25), inset 0 -23px 30px 0 rgba(0, 0, 0, 0.04);
+    box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25), inset 0 -23px 30px 0 rgba(0, 0, 0, 0.04);
+}
+
+#imcmsAdminSpecial.imcms-collapsible {
+    max-height: 10000px;
+    border-bottom: 1px solid #ccc;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -ms-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+}
+
+#imcmsAdminSpecial.imcms-collapsible.imcms-collapsible-hidden {
+    padding-bottom: 0;
+    max-height: 0;
+    border-bottom: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+#imcmsAdminSpecialInner {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0;
+}
+
 .imcms-panel__item--admin {
     background-image: url("../../images_new/admin_panel/icon_admin.png");
 }
