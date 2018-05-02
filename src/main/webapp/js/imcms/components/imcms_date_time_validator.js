@@ -45,7 +45,7 @@ Imcms.define("imcms-date-time-validator", [], function () {
             publicationEndTime[0], publicationEndTime[1], 0, 0
         );
 
-        return published < publicationEnd
+        return published < publicationEnd;
     }
 
     function getDateTimeData($from, preExistingDate, preExistingTime) {
@@ -58,7 +58,8 @@ Imcms.define("imcms-date-time-validator", [], function () {
             publishedDate = preExistingDate;
             publishedTime = preExistingTime;
 
-            var dateTimeOfPublicationEnd = getDateTimeOfPublicationEnd($imcmsField.next().next());
+            var $imcmsFieldOfPublicationEnd = $imcmsField.next().next();
+            var dateTimeOfPublicationEnd = getDateTime($imcmsFieldOfPublicationEnd);
 
             publicationEndDate = dateTimeOfPublicationEnd.date;
             publicationEndTime = dateTimeOfPublicationEnd.time;
@@ -67,7 +68,8 @@ Imcms.define("imcms-date-time-validator", [], function () {
             publicationEndDate = preExistingDate;
             publicationEndTime = preExistingTime;
 
-            var dateTimeOfPublished = getDateTimeOfPublished($imcmsField.prev().prev());
+            var $imcmsFieldOfPublished = $imcmsField.prev().prev();
+            var dateTimeOfPublished = getDateTime($imcmsFieldOfPublished);
 
             publishedDate = dateTimeOfPublished.date;
             publishedTime = dateTimeOfPublished.time;
@@ -79,14 +81,6 @@ Imcms.define("imcms-date-time-validator", [], function () {
             publicationEndDate: publicationEndDate,
             publicationEndTime: publicationEndTime
         }
-    }
-
-    function getDateTimeOfPublished($imcmsField) {
-        return getDateTime($imcmsField);
-    }
-
-    function getDateTimeOfPublicationEnd($imcmsField) {
-        return getDateTime($imcmsField);
     }
 
     function getDateTime($imcmsField) {
