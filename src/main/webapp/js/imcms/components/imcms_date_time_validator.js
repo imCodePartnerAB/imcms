@@ -2,12 +2,15 @@ Imcms.define("imcms-date-time-validator", [], function () {
 
     var defaultTime = ["00", "00"];
 
-    function isPublishedDateBeforePublicationEndDate($from, preExistingValue, preExistingValueIsTime, classSelector) {
+    var dateClassSelector = ".imcms-current-date__input";
+    var timeClassSelector = ".imcms-current-time__input";
+
+    function isPublishedDateBeforePublicationEndDate($from, preExistingValue, preExistingValueIsTime) {
 
         var preExistingDate;
         var preExistingTime;
 
-        var dateOrTime = getDateOrTimeValue($from, classSelector, preExistingValueIsTime);
+        var dateOrTime = getDateOrTimeValue($from, preExistingValueIsTime);
 
         if (preExistingValueIsTime) {
             preExistingTime = preExistingValue;
@@ -87,7 +90,7 @@ Imcms.define("imcms-date-time-validator", [], function () {
         var $dateInputSelector = $imcmsField.find(".imcms-current-date__input");
 
         var date = $dateInputSelector.val().split("-");
-        var time = getDateOrTimeValue($dateInputSelector, ".imcms-current-time__input", false);
+        var time = getDateOrTimeValue($dateInputSelector, false);
 
         return {
             date: date,
@@ -95,9 +98,9 @@ Imcms.define("imcms-date-time-validator", [], function () {
         }
     }
 
-    function getDateOrTimeValue($from, classSelector, isTime) {
+    function getDateOrTimeValue($from, isTime) {
         return $from.parents(".imcms-field")
-            .find(classSelector)
+            .find(isTime ? dateClassSelector : timeClassSelector)
             .val()
             .split(isTime ? "-" : ":");
     }

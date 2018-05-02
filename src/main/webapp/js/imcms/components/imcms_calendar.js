@@ -24,9 +24,7 @@ Imcms.define("imcms-calendar", ["imcms", "jquery", "imcms-date-time-validator"],
             date = "0" + date;
         }
 
-        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate(
-                $thisDay, [year, month, date], false, ".imcms-current-time__input")
-        ) {
+        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($thisDay, [year, month, date], false)) {
 
             $thisDay.parents(".imcms-calendar__body")
                 .find(".imcms-day--today")
@@ -191,9 +189,11 @@ Imcms.define("imcms-calendar", ["imcms", "jquery", "imcms-date-time-validator"],
                 month = month < 10 ? "0" + month : month.toString();
             }
 
-            $input.val(year + "-" + month + "-" + date);
-            buildCalendar(year, month, date, $calendar);
-            selectDate(1, $calendar);
+            if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($input, [year, month, date], false)) {
+                $input.val(year + "-" + month + "-" + date);
+                buildCalendar(year, month, date, $calendar);
+                selectDate(1, $calendar);
+            }
         }
     };
 });
