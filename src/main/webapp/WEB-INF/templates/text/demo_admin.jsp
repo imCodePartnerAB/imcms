@@ -131,40 +131,40 @@ ${"-->"}
 <body>
 
 <imcms:ifAdmin>
-<div id="imcmsAdminSpecial" data-link-text="Site specific" class="imcms-collapsible imcms-collapsible-hidden">
-    <div id="imcmsAdminSpecialInner">
-        <ul id="imcmsAdminTabs">
-            <li data-for="page" class="tab-active">For this page</li>
-            <li data-for="section">For this section</li>
-            <li data-for="widgets">Widgets</li>
-            <li data-for="general">General</li>
-        </ul>
-        <div id="imcmsAdminTab_page" class="imcms-admin-tab-div tab-active">
-            <fieldset>
-                <legend>Page</legend>
-                Page admin content...
-            </fieldset>
-        </div>
-        <div id="imcmsAdminTab_section" class="imcms-admin-tab-div">
-            <fieldset>
-                <legend>Section</legend>
-                Section admin content...
-            </fieldset>
-        </div>
-        <div id="imcmsAdminTab_widgets" class="imcms-admin-tab-div">
-            <fieldset>
-                <legend>Widgets</legend>
-                Widgets admin content...
-            </fieldset>
-        </div>
-        <div id="imcmsAdminTab_general" class="imcms-admin-tab-div">
-            <fieldset>
-                <legend>General</legend>
-                General admin content...
-            </fieldset>
+    <div id="imcmsAdminSpecial" data-link-text="Site specific" class="imcms-collapsible imcms-collapsible-hidden">
+        <div id="imcmsAdminSpecialInner">
+            <ul id="imcmsAdminTabs">
+                <li data-for="page" class="tab-active">For this page</li>
+                <li data-for="section">For this section</li>
+                <li data-for="widgets">Widgets</li>
+                <li data-for="general">General</li>
+            </ul>
+            <div id="imcmsAdminTab_page" class="imcms-admin-tab-div tab-active">
+                <fieldset>
+                    <legend>Page</legend>
+                    Page admin content...
+                </fieldset>
+            </div>
+            <div id="imcmsAdminTab_section" class="imcms-admin-tab-div">
+                <fieldset>
+                    <legend>Section</legend>
+                    Section admin content...
+                </fieldset>
+            </div>
+            <div id="imcmsAdminTab_widgets" class="imcms-admin-tab-div">
+                <fieldset>
+                    <legend>Widgets</legend>
+                    Widgets admin content...
+                </fieldset>
+            </div>
+            <div id="imcmsAdminTab_general" class="imcms-admin-tab-div">
+                <fieldset>
+                    <legend>General</legend>
+                    General admin content...
+                </fieldset>
+            </div>
         </div>
     </div>
-</div>
 </imcms:ifAdmin>
 
 <imcms:admin/>
@@ -189,9 +189,11 @@ ${"-->"}
         });
     };
 
-    Imcms && Imcms.require("imcms-site-specific", function (siteSpecific) {
+    <imcms:ifAdmin>
+    Imcms.require("imcms-site-specific", function (siteSpecific) {
         siteSpecific.init(addEventsToSpecialAdmin);
     });
+    </imcms:ifAdmin>
 
 </script>
 
