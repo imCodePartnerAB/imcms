@@ -3,14 +3,6 @@ ${"<!--"}
 ${"-->"}
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
-<%--
-    TODO: Add a "pin" icon to imCMS's panel. Make it remember in/out state.
-
-    - Maybe 3 way toggle:
-        1. Normal (As now auto in/out)
-        2. Out (As now but remembered out with cookie)
-        3. Sticky (Not fixed. Scrolls with the page. Remembered with cookie)
---%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
