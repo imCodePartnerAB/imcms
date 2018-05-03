@@ -48,9 +48,10 @@ Imcms.define(
 
             if (cookies.getCookie("imcms-client-special-area") === "opened") {
                 var $imcms = $('#imcms-admin');
-                $imcms.css('top', "-10000px"); // dummy value
+                $imcms.css('top', "-10000px"); // dummy value todo: get it's max-height with "-" sign!
 
-                // holy shit code! rewrite client-special panel to behave as separated part of regular admin panel,
+                // holy shit code!
+                // todo: rewrite client-special panel to behave as separated part of regular admin panel,
                 // no hiding with height = 0, just set top = -height with next falling down when needs!
 
                 window.setTimeout(function () {
