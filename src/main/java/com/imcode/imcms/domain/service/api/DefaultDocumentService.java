@@ -17,6 +17,7 @@ import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +56,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            ImageService imageService,
                            LoopService loopService,
                            DocumentIndex documentIndex,
-                           List<VersionedContentService> versionedContentServices) {
+                           @Qualifier("versionedContentServices")
+                                   List<VersionedContentService> versionedContentServices) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;

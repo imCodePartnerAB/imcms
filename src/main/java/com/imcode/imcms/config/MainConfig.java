@@ -17,6 +17,7 @@ import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
@@ -58,6 +59,8 @@ import org.springframework.util.PathMatcher;
 
 import java.beans.PropertyDescriptor;
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 @Configuration
@@ -230,5 +233,20 @@ class MainConfig {
     @Bean
     public PathMatcher pathMatcher() {
         return new AntPathMatcher(); // The AntPathMatcher is thread safe
+    }
+
+    @Bean
+    public List<VersionedContentService> versionedContentServices(VersionedContentService menuService,
+                                                                  VersionedContentService imageService,
+                                                                  VersionedContentService loopService,
+                                                                  VersionedContentService textService,
+                                                                  VersionedContentService defaultCommonContentService,
+                                                                  VersionedContentService defaultDocumentFileService,
+                                                                  VersionedContentService defaultDocumentUrlService) {
+
+        return Arrays.asList(
+                menuService, imageService, loopService, textService,
+                defaultCommonContentService, defaultDocumentFileService, defaultDocumentUrlService
+        );
     }
 }
