@@ -2,12 +2,37 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.mapping.container.*;
+import com.imcode.imcms.mapping.container.Container;
+import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.mapping.container.LanguageContainer;
+import com.imcode.imcms.mapping.container.MenuContainer;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
+import com.imcode.imcms.mapping.container.TextDocImagesContainer;
+import com.imcode.imcms.mapping.container.TextDocLoopContainer;
+import com.imcode.imcms.mapping.container.TextDocTextContainer;
+import com.imcode.imcms.mapping.container.TextDocTextsContainer;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.persistence.repository.*;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.LoopJPA;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
+import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.persistence.repository.LoopRepository;
+import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
+import com.imcode.imcms.persistence.repository.TextHistoryRepository;
+import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -29,7 +54,6 @@ public class TextDocumentContentSaver {
     private final TextRepository textRepository;
     private final TextHistoryRepository textHistoryRepository;
     private final ImageRepository imageRepository;
-    private final MenuRepository menuRepository;
     private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final LoopRepository loopRepository;
     private final LanguageRepository languageRepository;
@@ -41,7 +65,6 @@ public class TextDocumentContentSaver {
                                     TextRepository textRepository,
                                     TextHistoryRepository textHistoryRepository,
                                     ImageRepository imageRepository,
-                                    MenuRepository menuRepository,
                                     TextDocumentTemplateRepository textDocumentTemplateRepository,
                                     LoopRepository loopRepository,
                                     LanguageRepository languageRepository,
@@ -52,7 +75,6 @@ public class TextDocumentContentSaver {
         this.textRepository = textRepository;
         this.textHistoryRepository = textHistoryRepository;
         this.imageRepository = imageRepository;
-        this.menuRepository = menuRepository;
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.loopRepository = loopRepository;
         this.languageRepository = languageRepository;
@@ -108,7 +130,7 @@ public class TextDocumentContentSaver {
         // loop items must be deleted before loops (texts and images)
         textRepository.deleteByVersionAndLanguage(version, language);
         imageRepository.deleteByVersionAndLanguage(version, language);
-        menuRepository.deleteByVersion(version);
+        menuService.deleteByVersion(version);
         // loops must be re-created before loop items (texts and images)
        /* loopRepository.findByVersion(version).forEach((a) -> a.getEntries().clear());
         loopRepository.deleteByVersion(version);
