@@ -56,7 +56,7 @@ public class DocumentLoaderCachingProxy {
         this.propertyService = propertyService;
         this.size = config.getDocumentCacheMaxSize();
 
-        metas = CacheWrapper.of(cacheConfiguration("meats"));
+        metas = CacheWrapper.of(cacheConfiguration("metas"));
         versionInfos = CacheWrapper.of(cacheConfiguration("versionInfos"));
         workingDocs = CacheWrapper.of(cacheConfiguration("workingDocs"));
         defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
