@@ -179,6 +179,7 @@ Imcms.define("imcms-admin-panel-builder",
             var panelAttributes = {
                 id: "imcms-admin-panel",
                 style: "top: -92px;"
+                // style: "display: none"
             };
             return $panel = adminPanelBEM.buildBlock("<div>", adminPanelElements$, panelAttributes, "item");
         }
@@ -202,8 +203,7 @@ Imcms.define("imcms-admin-panel-builder",
                     html: createAdminPanel(opts)
                 });
 
-                panelVisibility.setShowPanelRule($panel);
-                panelVisibility.setHidePanelRule($panel);
+                panelVisibility.setShowHidePanelRules($panel);
 
                 $("body").prepend($panelContainer);
 
