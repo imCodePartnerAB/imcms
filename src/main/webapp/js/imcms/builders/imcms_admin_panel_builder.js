@@ -179,7 +179,6 @@ Imcms.define("imcms-admin-panel-builder",
             var panelAttributes = {
                 id: "imcms-admin-panel",
                 style: "top: -92px;"
-                // style: "display: none"
             };
             return $panel = adminPanelBEM.buildBlock("<div>", adminPanelElements$, panelAttributes, "item");
         }
