@@ -5,17 +5,14 @@
 Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
-        "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-i18n-texts"
+        "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-top-panel-visibility-initiator",
+        "imcms-i18n-texts"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
-              texts) {
+              panelVisibility, texts) {
         var $panelContainer, $panel;
 
         texts = texts.panel;
-
-        var panelSensitivePixels = 15;
-
-        var isPanelEnabled = true; // by default
 
         function publishDoc() {
             events.trigger("imcms-publish-new-version-current-doc");
@@ -186,47 +183,6 @@ Imcms.define("imcms-admin-panel-builder",
             return $panel = adminPanelBEM.buildBlock("<div>", adminPanelElements$, panelAttributes, "item");
         }
 
-        function setShowPanelRule() {
-            var $body = $("body");
-            $(document).mousemove(function (event) {
-
-                var isPanelDisabledOrMouseNotInSensitiveArea = !isPanelEnabled
-                    || (event.clientY < 0)
-                    || (event.clientY > panelSensitivePixels);
-
-                if (isPanelDisabledOrMouseNotInSensitiveArea) return;
-
-                var bodyCss = ($(window).scrollTop() === 0)
-                    ? {"top": $panel.height() + "px"}
-                    : {"padding-top": "0"};
-
-                $body.css(bodyCss);
-                showPanel();
-            });
-        }
-
-        function setHidePanelRule() {
-            $(document).click(function (event) {
-
-                if ($(event.target).closest(".imcms-admin").length) return;
-
-                $("body").css({"top": "0px"});
-                hidePanel();
-            });
-        }
-
-        function hidePanel() {
-            setAdminPanelTop(-$panel.height());
-        }
-
-        function showPanel() {
-            setAdminPanelTop(0);
-        }
-
-        function setAdminPanelTop(px) {
-            $panel.css({"top": "" + px + "px"});
-        }
-
         function highlightPublishButton() {
             $panelContainer.find(".imcms-panel__item--publish-of").addClass("imcms-panel__item--has-newer-version");
         }
@@ -240,21 +196,15 @@ Imcms.define("imcms-admin-panel-builder",
                     return;
                 }
 
-                events.on("enable admin panel", function () {
-                    isPanelEnabled = true;
-                });
-                events.on("disable admin panel", function () {
-                    isPanelEnabled = false;
-                });
-
                 $panelContainer = $("<div>", {
                     "id": "imcms-admin",
                     "class": "imcms-admin",
                     html: createAdminPanel(opts)
                 });
 
-                setShowPanelRule();
-                setHidePanelRule();
+                panelVisibility.setShowPanelRule($panel);
+                panelVisibility.setHidePanelRule($panel);
+
                 $("body").prepend($panelContainer);
 
                 events.on("imcms-version-modified", highlightPublishButton);
