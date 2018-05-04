@@ -19,8 +19,8 @@ import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -218,27 +218,23 @@ public class DocumentLoaderCachingProxy {
     }
 
     public void invalidateMenuItemsCacheBy(final Menu menu) {
-        clearCache(allMenuItems.cache(), menu.getVersion().getDocId(), menu.getNo());
-        clearCache(visibleMenuItems.cache(), menu.getVersion().getDocId(), menu.getNo());
-        clearCache(publicMenuItems.cache(), menu.getVersion().getDocId(), menu.getNo());
+        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
+                .forEach(cache -> clearCache(cache, menu.getVersion().getDocId(), menu.getNo()));
     }
 
     public void invalidateMenuItemsCacheBy(final Integer docId) {
-        clearCache(allMenuItems.cache(), docId);
-        clearCache(visibleMenuItems.cache(), docId);
-        clearCache(publicMenuItems.cache(), docId);
+        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
+                .forEach(cache -> clearCache(cache, docId));
     }
 
     public void invalidateMenuItemsCacheBy(final Version version) {
-        clearCache(allMenuItems.cache(), version.getDocId());
-        clearCache(visibleMenuItems.cache(), version.getDocId());
-        clearCache(publicMenuItems.cache(), version.getDocId());
+        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
+                .forEach(cache -> clearCache(cache, version.getDocId()));
     }
 
     public void invalidateMenuItemsCacheBy(final MenuDTO menuDTO) {
-        clearCache(allMenuItems.cache(), menuDTO.getDocId(), menuDTO.getMenuIndex());
-        clearCache(visibleMenuItems.cache(), menuDTO.getDocId(), menuDTO.getMenuIndex());
-        clearCache(publicMenuItems.cache(), menuDTO.getDocId(), menuDTO.getMenuIndex());
+        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
+                .forEach(cache -> clearCache(cache, menuDTO.getDocId(), menuDTO.getMenuIndex()));
     }
 
     private void clearCache(final Ehcache cache, final int docId, final int menuIndex) {
@@ -257,47 +253,14 @@ public class DocumentLoaderCachingProxy {
                 .forEach(cache::remove);
     }
 
+    @Data
+    @AllArgsConstructor
     private static class DocCacheKey implements Serializable {
+
+        private static final long serialVersionUID = 8072998402739750407L;
+
         private final int docId;
         private final String languageCode;
-        private final int hashCode;
-
-        DocCacheKey(int docId, String languageCode) {
-            this.docId = docId;
-            this.languageCode = languageCode;
-            this.hashCode = Objects.hash(docId, languageCode);
-        }
-
-        @Override
-        public int hashCode() {
-            return hashCode;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            return this == obj || (obj instanceof DocCacheKey && equals((DocCacheKey) obj));
-        }
-
-        private boolean equals(DocCacheKey that) {
-            return docId == that.docId && Objects.equals(languageCode, that.languageCode);
-        }
-
-        @Override
-        public String toString() {
-            return com.google.common.base.Objects.toStringHelper(this)
-                    .add("docId", docId)
-                    .add("languageCode", languageCode)
-                    .toString();
-        }
-
-        public int getDocId() {
-            return docId;
-        }
-
-        @SuppressWarnings("unused")
-        public String getLanguageCode() {
-            return languageCode;
-        }
     }
 
     @Data
