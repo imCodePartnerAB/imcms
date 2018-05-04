@@ -202,8 +202,7 @@ Imcms.define("imcms-admin-panel-builder",
                     html: createAdminPanel(opts)
                 });
 
-                panelVisibility.setShowPanelRule($panel);
-                panelVisibility.setHidePanelRule($panel);
+                panelVisibility.setShowHidePanelRules($panel);
 
                 $("body").prepend($panelContainer);
 
