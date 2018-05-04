@@ -9,7 +9,7 @@ Imcms.define("imcms-admin-panel-builder",
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
               texts) {
-        var $panel;
+        var $panelContainer, $panel;
 
         texts = texts.panel;
 
@@ -178,7 +178,12 @@ Imcms.define("imcms-admin-panel-builder",
                 $flagsItem,
                 $buttonsContainer
             ];
-            return adminPanelBEM.buildBlock("<div>", adminPanelElements$, {id: "imcms-admin-panel"}, "item");
+
+            var panelAttributes = {
+                id: "imcms-admin-panel",
+                style: "top: -92px;"
+            };
+            return $panel = adminPanelBEM.buildBlock("<div>", adminPanelElements$, panelAttributes, "item");
         }
 
         function setShowPanelRule() {
@@ -223,7 +228,7 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         function highlightPublishButton() {
-            $panel.find(".imcms-panel__item--publish-of").addClass("imcms-panel__item--has-newer-version");
+            $panelContainer.find(".imcms-panel__item--publish-of").addClass("imcms-panel__item--has-newer-version");
         }
 
         var isPanelBuilt = false;
@@ -231,7 +236,7 @@ Imcms.define("imcms-admin-panel-builder",
 
         return {
             buildPanel: function (opts) {
-                if ($panel) {
+                if ($panelContainer) {
                     return;
                 }
 
@@ -242,7 +247,7 @@ Imcms.define("imcms-admin-panel-builder",
                     isPanelEnabled = false;
                 });
 
-                $panel = $("<div>", {
+                $panelContainer = $("<div>", {
                     "id": "imcms-admin",
                     "class": "imcms-admin",
                     html: createAdminPanel(opts)
@@ -250,7 +255,7 @@ Imcms.define("imcms-admin-panel-builder",
 
                 setShowPanelRule();
                 setHidePanelRule();
-                $("body").prepend($panel);
+                $("body").prepend($panelContainer);
 
                 events.on("imcms-version-modified", highlightPublishButton);
                 isPanelBuilt = true;

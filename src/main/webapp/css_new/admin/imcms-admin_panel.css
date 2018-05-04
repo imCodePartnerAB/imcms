@@ -1,6 +1,6 @@
 .imcms-admin {
     position: fixed;
-    top: -90px;
+    top: 0;
     left: 0;
     width: 100%;
     -webkit-transition: all .3s;
