@@ -26,7 +26,7 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-@Service("menuService")
+@Service
 class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository> implements MenuService {
 
     private final VersionService versionService;
@@ -92,12 +92,18 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
 
     @Override
     @Transactional
+    public void deleteByVersion(Version version) {
+        repository.deleteByVersion(version);
+    }
+
+    @Override
+    @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
     }
 
     @Override
-    protected Menu removeId(Menu jpa, Version newVersion) {
+    public Menu removeId(Menu jpa, Version newVersion) {
         final Menu menu = new Menu();
         menu.setId(null);
         menu.setNo(jpa.getNo());
