@@ -45,6 +45,8 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
     private final CacheManager cacheManager = CacheManager.create();
 
+    private final List<Ehcache> menuCaches;
+
     public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper,
                                       DocumentLoader loader,
                                       DocumentLanguages documentLanguages,
@@ -71,6 +73,12 @@ public class DocumentLoaderCachingProxy {
                 allMenuItems, visibleMenuItems, publicMenuItems
         )
                 .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
+
+        menuCaches = Arrays.asList(
+                allMenuItems.cache(),
+                visibleMenuItems.cache(),
+                publicMenuItems.cache()
+        );
     }
 
     private CacheConfiguration cacheConfiguration(String name) {
@@ -218,23 +226,19 @@ public class DocumentLoaderCachingProxy {
     }
 
     public void invalidateMenuItemsCacheBy(final Menu menu) {
-        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
-                .forEach(cache -> clearCache(cache, menu.getVersion().getDocId(), menu.getNo()));
+        menuCaches.forEach(cache -> clearCache(cache, menu.getVersion().getDocId(), menu.getNo()));
     }
 
     public void invalidateMenuItemsCacheBy(final Integer docId) {
-        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
-                .forEach(cache -> clearCache(cache, docId));
+        menuCaches.forEach(cache -> clearCache(cache, docId));
     }
 
     public void invalidateMenuItemsCacheBy(final Version version) {
-        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
-                .forEach(cache -> clearCache(cache, version.getDocId()));
+        menuCaches.forEach(cache -> clearCache(cache, version.getDocId()));
     }
 
     public void invalidateMenuItemsCacheBy(final MenuDTO menuDTO) {
-        Arrays.asList(allMenuItems.cache(), visibleMenuItems.cache(), publicMenuItems.cache())
-                .forEach(cache -> clearCache(cache, menuDTO.getDocId(), menuDTO.getMenuIndex()));
+        menuCaches.forEach(cache -> clearCache(cache, menuDTO.getDocId(), menuDTO.getMenuIndex()));
     }
 
     private void clearCache(final Ehcache cache, final int docId, final int menuIndex) {
