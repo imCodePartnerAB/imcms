@@ -17,7 +17,7 @@ Imcms.define("imcms-top-panel-visibility-initiator", ["imcms-events", "jquery"],
 
     function onPanelShown() {
         var bodyCss = ($(window).scrollTop() === 0)
-            ? {"top": $("#imcms-admin").height()}
+            ? {"top": $("#imcms-admin").height() || $("#imcms-admin-panel").height()}
             : {"padding-top": "0"};
 
         $("body").css(bodyCss);
@@ -67,6 +67,7 @@ Imcms.define("imcms-top-panel-visibility-initiator", ["imcms-events", "jquery"],
     var listenersNotSet = true;
 
     return {
+        refreshBodyTop: onPanelShown,
         setShowHidePanelRules: function ($panel) {
             panels$.push($panel);
             listenersNotSet && setEventListeners();
