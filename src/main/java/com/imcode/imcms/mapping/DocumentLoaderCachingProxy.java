@@ -3,17 +3,27 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
+import com.imcode.imcms.persistence.entity.Menu;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Config;
 import imcode.server.document.DocumentDomainObject;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.config.PersistenceConfiguration;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @SuppressWarnings("WeakerAccess")
@@ -30,6 +40,9 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<DocCacheKey, DocumentDomainObject> defaultDocs;
     private final CacheWrapper<String, Integer> aliasesToIds;
     private final CacheWrapper<Integer, String> idsToAliases;
+    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> allMenuItems;
+    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> visibleMenuItems;
+    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
     private final CacheManager cacheManager = CacheManager.create();
 
     public DocumentLoaderCachingProxy(DocumentVersionMapper versionMapper,
@@ -49,8 +62,14 @@ public class DocumentLoaderCachingProxy {
         defaultDocs = CacheWrapper.of(cacheConfiguration("defaultDocs"));
         aliasesToIds = CacheWrapper.of(cacheConfiguration("aliasesToIds"));
         idsToAliases = CacheWrapper.of(cacheConfiguration("idsToAliases"));
+        allMenuItems = CacheWrapper.of(cacheConfiguration("allMenuItems"));
+        visibleMenuItems = CacheWrapper.of(cacheConfiguration("visibleMenuItems"));
+        publicMenuItems = CacheWrapper.of(cacheConfiguration("publicMenuItems"));
 
-        Stream.of(metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases)
+        Stream.of(
+                metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases,
+                allMenuItems, visibleMenuItems, publicMenuItems
+        )
                 .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
     }
 
@@ -180,6 +199,64 @@ public class DocumentLoaderCachingProxy {
         });
     }
 
+    public List<MenuItemDTO> getMenuItems(final MenuCacheKey menuCacheKey,
+                                          final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
+
+        return allMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
+    }
+
+    public List<MenuItemDTO> getVisibleMenuItems(final MenuCacheKey menuCacheKey,
+                                                 final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
+
+        return visibleMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
+    }
+
+    public List<MenuItemDTO> getPublicMenuItems(final MenuCacheKey menuCacheKey,
+                                                final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
+
+        return publicMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
+    }
+
+    public void invalidateMenuItemsCacheBy(final Menu menu) {
+        clearCache(allMenuItems.cache(), menu.getVersion().getDocId(), menu.getNo());
+        clearCache(visibleMenuItems.cache(), menu.getVersion().getDocId(), menu.getNo());
+        clearCache(publicMenuItems.cache(), menu.getVersion().getDocId(), menu.getNo());
+    }
+
+    public void invalidateMenuItemsCacheBy(final Integer docId) {
+        clearCache(allMenuItems.cache(), docId);
+        clearCache(visibleMenuItems.cache(), docId);
+        clearCache(publicMenuItems.cache(), docId);
+    }
+
+    public void invalidateMenuItemsCacheBy(final Version version) {
+        clearCache(allMenuItems.cache(), version.getDocId());
+        clearCache(visibleMenuItems.cache(), version.getDocId());
+        clearCache(publicMenuItems.cache(), version.getDocId());
+    }
+
+    public void invalidateMenuItemsCacheBy(final MenuDTO menuDTO) {
+        clearCache(allMenuItems.cache(), menuDTO.getDocId(), menuDTO.getMenuIndex());
+        clearCache(visibleMenuItems.cache(), menuDTO.getDocId(), menuDTO.getMenuIndex());
+        clearCache(publicMenuItems.cache(), menuDTO.getDocId(), menuDTO.getMenuIndex());
+    }
+
+    private void clearCache(final Ehcache cache, final int docId, final int menuIndex) {
+        clearCache(cache, key -> key.getDocId() == docId && key.getMenuIndex() == menuIndex);
+    }
+
+    private void clearCache(final Ehcache cache, final int docId) {
+        clearCache(cache, key -> key.getDocId() == docId);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void clearCache(final Ehcache cache, final Predicate<MenuCacheKey> menuCacheKeyPredicate) {
+        ((List<MenuCacheKey>) cache.getKeys())
+                .stream()
+                .filter(menuCacheKeyPredicate)
+                .forEach(cache::remove);
+    }
+
     private static class DocCacheKey implements Serializable {
         private final int docId;
         private final String languageCode;
@@ -221,6 +298,17 @@ public class DocumentLoaderCachingProxy {
         public String getLanguageCode() {
             return languageCode;
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class MenuCacheKey implements Serializable {
+
+        private static final long serialVersionUID = 4026829752411299618L;
+
+        private int menuIndex;
+        private int docId;
+        private String language;
     }
 }
 
