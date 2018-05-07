@@ -4,8 +4,8 @@ import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.IdDeleterMenuService;
 import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -27,7 +27,8 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 @Service
-class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository> implements MenuService {
+class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
+        implements IdDeleterMenuService {
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;

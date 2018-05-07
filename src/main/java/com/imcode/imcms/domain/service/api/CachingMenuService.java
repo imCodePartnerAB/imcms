@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
-import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.IdDeleterMenuService;
 import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
@@ -13,12 +13,13 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service("menuService")
-public class CachingMenuService extends AbstractVersionedContentService<Menu, MenuRepository> implements MenuService {
+public class CachingMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
+        implements IdDeleterMenuService {
 
-    private final MenuService defaultMenuService;
+    private final IdDeleterMenuService defaultMenuService;
     private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
 
-    CachingMenuService(MenuService defaultMenuService,
+    CachingMenuService(IdDeleterMenuService defaultMenuService,
                        DocumentLoaderCachingProxy documentLoaderCachingProxy,
                        MenuRepository repository) {
         super(repository);
