@@ -25,6 +25,7 @@
     margin: 0;
     padding: 10px 15px;
     width: 25%;
+    box-sizing: border-box;
 }
 
 .imcms-space-around__input:focus {
