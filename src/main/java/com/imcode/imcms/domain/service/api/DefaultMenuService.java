@@ -12,7 +12,6 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private LanguageService languageService;
     private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
-    private TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang;
+    private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -47,7 +46,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                        LanguageService languageService,
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
-                       TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang) {
+                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang) {
 
         super(menuRepository);
         this.versionService = versionService;
@@ -149,7 +148,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
-                ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version)
+                ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
                 : menuItem -> menuItemToDTO.apply(menuItem, language);
 
         return Optional.ofNullable(menu)
