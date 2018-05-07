@@ -264,7 +264,8 @@ Imcms.define(
                             minFieldValue = 0;
 
                         if (isNaN(intFieldValue)) {
-                            inputField.val(parseInt(stringFieldValue));
+                            var val = parseInt(stringFieldValue);
+                            inputField.val(isNaN(val) ? 0 : val);
                             return;
                         }
 
