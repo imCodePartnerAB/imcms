@@ -150,6 +150,15 @@ Imcms.define("imcms-admin-panel-builder",
             });
         }
 
+        function buildPanelAppearanceSettings() {
+            return new BEM({
+                block: "admin-panel-settings",
+                elements: {
+                    button: $("<div>")
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function createAdminPanel(opts) {
             var adminPanelBEM = new BEM({
                 block: "imcms-admin-panel",
@@ -168,11 +177,13 @@ Imcms.define("imcms-admin-panel-builder",
 
             var $flagsItem = buildFlags();
             var $buttonsContainer = buildPanelButtons(opts);
+            var $panelSettings = buildPanelAppearanceSettings();
 
             var adminPanelElements$ = [
                 $logoItem,
                 $titleItem,
                 $flagsItem,
+                $panelSettings,
                 $buttonsContainer
             ];
 

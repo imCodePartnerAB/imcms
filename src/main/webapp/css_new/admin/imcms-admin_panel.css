@@ -222,6 +222,24 @@
     background-image: url("../../images_new/admin_panel/icon_public.png");
 }
 
+.imcms-admin-panel__item:last-of-type {
+    margin-right: 0;
+}
+
+.imcms-admin-panel .admin-panel-settings {
+    margin-right: 5px;
+    margin-top: 5px;
+    float: right;
+}
+
+.admin-panel-settings__button {
+    cursor: pointer;
+    width: 17px;
+    height: 17px;
+    background: url("../../images_new/admin_panel/icon_settings.png") center center no-repeat;
+    background-size: contain;
+}
+
 /**/
 
 .imcms-panel__item--admin:hover {
