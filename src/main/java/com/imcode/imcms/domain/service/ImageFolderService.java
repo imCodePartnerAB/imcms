@@ -13,7 +13,7 @@ import java.io.IOException;
  */
 public interface ImageFolderService {
 
-    ImageFolderDTO getImageFolder(ImageFolderDTO folderToGet);
+    ImageFolderDTO getImageFolder();
 
     boolean createImageFolder(ImageFolderDTO folderToCreate);
 

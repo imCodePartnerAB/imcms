@@ -1,13 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
 import imcode.util.io.FileUtility;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +15,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.io.File.separator;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -49,41 +42,12 @@ public class ImageFolderServiceTest {
     private File imagesPath;
 
     @Test
-    public void getImageFolder_WhenPathIsEmpty_Expected_RootFolderIsReturned() {
-        final ImageFolderDTO imageFolder = imageFolderService.getImageFolder(new ImageFolderDTO(null, ""));
+    public void getImageFolder_Expected_RootFolderIsReturnedWithImages() {
+        final ImageFolderDTO imageFolder = imageFolderService.getImageFolder();
 
         assertNotNull(imageFolder);
         assertThat(imageFolder.getName(), is("images"));
         assertThat(imageFolder.getPath(), is(""));
-    }
-
-    @Test
-    public void getImageFolder_When_PathHasOneFolder_Expect_SpecifiedFolderIsReturned() throws IOException {
-
-        final String name = String.valueOf(System.currentTimeMillis());
-        final String path = "/" + name;
-
-        final File rootSubFolder = createTestFolder(imagesPath, path);
-
-        testGetImageFolder(name, path, rootSubFolder);
-
-        assertTrue(FileUtility.forceDelete(rootSubFolder));
-    }
-
-    @Test
-    public void getImageFolder_When_PathHasTwoFolders_Expect_SpecifiedFolderIsReturned() throws IOException {
-
-        final String name = String.valueOf(System.currentTimeMillis());
-        final String tempPath = "/" + name;
-
-        final File rootSubFolder = createTestFolder(imagesPath, tempPath);
-        final File rootSubSubFolder = createTestFolder(rootSubFolder, tempPath); // sub sub =)
-
-        final String path = tempPath + tempPath;
-
-        testGetImageFolder(name, path, rootSubSubFolder);
-
-        assertTrue(FileUtility.forceDelete(rootSubFolder));
     }
 
     @Test
@@ -348,68 +312,6 @@ public class ImageFolderServiceTest {
 
         } finally {
             if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
-        }
-    }
-
-    private void testGetImageFolder(String name, String path, File rootSubFolder) throws IOException {
-        final List<Pair<String, String>> namePathPairFolders = new ArrayList<>();
-
-        for (int i = 0; i < SUB_FOLDERS_NUM; i++) {
-            final String folderName = String.valueOf(i);
-
-            createTestFolder(rootSubFolder, folderName);
-
-            namePathPairFolders.add(Pair.of(folderName, path + "/" + folderName));
-        }
-
-        final List<Pair<String, String>> namePathPairFiles = new ArrayList<>();
-
-        for (int i = 0; i < FILES_NUM; i++) {
-            final File testPngImage = createTestPngImage(path);
-            final String imgName = testPngImage.getName();
-
-            namePathPairFiles.add(Pair.of(imgName, path + "/" + imgName));
-        }
-
-        final ImageFolderDTO imageFolder = imageFolderService.getImageFolder(new ImageFolderDTO(null, path));
-
-        assertNotNull(imageFolder);
-
-        assertThat(imageFolder.getName(), is(name));
-        assertThat(imageFolder.getPath(), is(path));
-
-        final List<ImageFolderDTO> subFolders = imageFolder.getFolders();
-        final List<ImageFileDTO> files = imageFolder.getFiles();
-
-        assertThat(subFolders, hasSize(SUB_FOLDERS_NUM));
-        assertThat(files, hasSize(FILES_NUM));
-
-        subFolders.stream()
-                .map(imageFolderDTO -> Pair.of(imageFolderDTO.getName(), imageFolderDTO.getPath()))
-                .forEach(pair -> assertTrue(namePathPairFolders.contains(pair)));
-
-        files.stream()
-                .map(imageFileDTO -> Pair.of(imageFileDTO.getName(), imageFileDTO.getPath()))
-                .forEach(pair -> assertTrue(namePathPairFiles.contains(pair)));
-    }
-
-    private File createTestPngImage(String path) throws IOException {
-        final BufferedImage img = new BufferedImage(30, 30, BufferedImage.TYPE_INT_ARGB);
-        final File file = new File(imagesPath, path + "/" + System.currentTimeMillis() + ".png");
-
-        ImageIO.write(img, "png", file);
-
-        return file;
-    }
-
-    private File createTestFolder(File parent, String path) {
-        final File folder = new File(parent, path);
-        final boolean mkdir = folder.mkdir();
-
-        if (mkdir) {
-            return folder;
-        } else {
-            throw new RuntimeException("Error during folder creation.");
         }
     }
 }

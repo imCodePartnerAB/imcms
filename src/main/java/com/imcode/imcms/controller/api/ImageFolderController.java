@@ -33,8 +33,8 @@ public class ImageFolderController {
     }
 
     @GetMapping
-    public ImageFolderDTO getImageFolder(ImageFolderDTO folderToGet) {
-        return imageFolderService.getImageFolder(folderToGet);
+    public ImageFolderDTO getImageFolder() {
+        return imageFolderService.getImageFolder();
     }
 
     @PostMapping

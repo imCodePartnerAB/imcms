@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -458,6 +460,43 @@ class MappingConfig {
             }
 
             return imageFileDTO;
+        };
+    }
+
+    @Bean
+    public BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
+                                                                          @Value("${ImagePath}") File imagesPath) {
+        return new BiFunction<File, Boolean, ImageFolderDTO>() {
+            @Override
+            public ImageFolderDTO apply(File folderFile, Boolean isRoot) {
+                final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
+                imageFolderDTO.setName(folderFile.getName());
+                final String relativePath = folderFile.getPath().replace(imagesPath.getPath(), "");
+                imageFolderDTO.setPath(relativePath);
+
+                final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
+                final ArrayList<ImageFileDTO> folderFiles = new ArrayList<>();
+
+                final File[] files = folderFile.listFiles();
+
+                if (files == null) {
+                    return imageFolderDTO;
+                }
+
+                for (File file : files) {
+                    if ((file.isDirectory())) {
+                        subFolders.add(this.apply(file, false));
+
+                    } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
+                        folderFiles.add(fileToImageFileDTO.apply(file));
+                    }
+                }
+
+                imageFolderDTO.setFiles(folderFiles);
+                imageFolderDTO.setFolders(subFolders);
+
+                return imageFolderDTO;
+            }
         };
     }
 

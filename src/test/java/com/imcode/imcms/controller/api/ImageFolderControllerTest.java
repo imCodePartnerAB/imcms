@@ -45,10 +45,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImageFolder_Expect_Ok() throws Exception {
-        final MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get(controllerPath())
-                .param("path", ""); // image folder root
-
-        performRequestBuilderExpectedOk(builder);
+        performRequestBuilderExpectedOk(MockMvcRequestBuilders.get(controllerPath()));
     }
 
     @Test
