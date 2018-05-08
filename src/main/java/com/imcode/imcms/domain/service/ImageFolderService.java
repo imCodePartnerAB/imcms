@@ -12,7 +12,8 @@ import java.io.IOException;
  * 30.10.17.
  */
 public interface ImageFolderService {
-    ImageFolderDTO getImageFolder();
+
+    ImageFolderDTO getImageFolder(ImageFolderDTO folderToGet);
 
     boolean createImageFolder(ImageFolderDTO folderToCreate);
 
