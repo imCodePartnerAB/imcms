@@ -6,10 +6,10 @@ Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
         "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-top-panel-visibility-initiator",
-        "imcms-i18n-texts"
+        "imcms-i18n-texts", "imcms-admin-panel-settings-builder"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
-              panelVisibility, texts) {
+              panelVisibility, texts, panelSettingsBuilder) {
         var $panelContainer, $panel;
 
         texts = texts.panel;
@@ -168,11 +168,13 @@ Imcms.define("imcms-admin-panel-builder",
 
             var $flagsItem = buildFlags();
             var $buttonsContainer = buildPanelButtons(opts);
+            var $panelSettings = panelSettingsBuilder.buildButton();
 
             var adminPanelElements$ = [
                 $logoItem,
                 $titleItem,
                 $flagsItem,
+                $panelSettings,
                 $buttonsContainer
             ];
 
