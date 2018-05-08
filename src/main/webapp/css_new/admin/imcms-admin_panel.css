@@ -16,7 +16,6 @@
     -moz-box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
     box-shadow: 0 6px 14px 0 rgba(0, 0, 0, 0.25);
     display: block;
-    overflow: hidden;
     padding-left: 2%;
     width: 100%;
     min-height: 90px;
@@ -222,6 +221,30 @@
     background-image: url("../../images_new/admin_panel/icon_public.png");
 }
 
+.admin-panel-settings__list {
+    z-index: 1;
+    top: 0;
+    right: 0;
+    position: absolute;
+    background-color: #d0e9f9;
+    width: 30%;
+    margin-right: 25px;
+    border-left: 2px solid #88bece;
+    border-bottom: 2px solid #88bece;
+    border-right: 2px solid #88bece;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+    box-sizing: border-box;
+}
+
+.panel-settings-list__setting {
+    padding: 5px;
+}
+
+.panel-settings-list__setting:hover {
+    background-color: #d1d8db;
+}
+
 .imcms-admin-panel__item:last-of-type {
     margin-right: 0;
 }
@@ -233,6 +256,8 @@
 }
 
 .admin-panel-settings__button {
+    position: relative;
+    z-index: 2;
     cursor: pointer;
     width: 17px;
     height: 17px;
@@ -273,6 +298,14 @@
 @media screen and (max-width: 1600px) {
     .imcms-admin-panel {
         min-height: 72px;
+    }
+
+    .imcms-panel__item--publish-of:after,
+    .imcms-panel__item--page-info:after,
+    .imcms-panel__item--document:after,
+    .imcms-panel__item--specific:after,
+    .imcms-panel__item--admin:after {
+        max-height: 72px;
     }
 
     .imcms-admin-panel__item {
