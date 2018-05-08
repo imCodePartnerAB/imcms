@@ -319,6 +319,12 @@ Imcms.define("imcms-image-content-builder",
             }
         }
 
+        function showImagesIn(folder) {
+            folder.$images.forEach(function ($image) {
+                $image.css("display", "block");
+            });
+        }
+
         function onFolderClick(folder) {
             activeFolder = folder;
 
@@ -328,9 +334,23 @@ Imcms.define("imcms-image-content-builder",
             viewModel.$images.forEach(function ($image) {
                 $image.css("display", "none");
             });
-            folder.$images.forEach(function ($image) {
-                $image.css("display", "block");
-            });
+
+            if (!folder.imagesAreLoaded) {
+                imageFoldersREST.read({"path": folder.path}).done(
+                    function (imagesFolder) {
+                        folder.imagesAreLoaded = true;
+                        folder.files = imagesFolder.files;
+
+                        buildImages(folder);
+
+                        $imagesContainer.append(folder.$images);
+
+                        showImagesIn(folder);
+                    });
+
+            } else {
+                showImagesIn(folder);
+            }
         }
 
         function buildFolder(subfolder, level) {
@@ -460,6 +480,8 @@ Imcms.define("imcms-image-content-builder",
 
         function loadImageFoldersContent(imagesRootFolder) {
             viewModel.root = activeFolder = imagesRootFolder;
+            viewModel.root.imagesAreLoaded = true;
+
             buildImages(viewModel.root);
 
             if (!viewModel.folders) {
