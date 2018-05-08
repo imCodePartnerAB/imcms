@@ -9,6 +9,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
     var texts = {
         "sv": {
             panel: {
+                settings: 'inställningar',
+                settingsTitle: 'Inställningar för administratörspanelen',
                 public: "offentlig",
                 publicTitle: 'Visar den publicerade vyn',
                 edit: "redigera",
@@ -280,6 +282,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
         },
         "en": {
             panel: {
+                settings: 'Settings',
+                settingsTitle: 'Admin panel settings',
                 public: 'public',
                 publicTitle: 'Shows the published view',
                 edit: 'edit',
