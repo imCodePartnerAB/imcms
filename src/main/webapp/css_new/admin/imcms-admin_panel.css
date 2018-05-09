@@ -261,6 +261,73 @@
     background-image: url("../../images_new/admin_panel/icon_public_active.png");
 }
 
+/* small panel mode */
+
+.imcms-admin-panel--small .imcms-admin-panel__item:first-of-type,
+.imcms-admin-panel--small .imcms-admin-panel__item:nth-of-type(2) {
+    max-height: 30px;
+}
+
+.imcms-admin-panel--small .imcms-admin-panel__item:nth-of-type(3) {
+    padding-top: 5px;
+}
+
+.imcms-admin-panel--small .imcms-admin-panel__item:first-of-type {
+    top: -2px;
+    max-width: 50px;
+}
+
+.imcms-admin-panel--small .imcms-admin-panel__title {
+    padding-top: 5px;
+    line-height: 15px;
+}
+
+.imcms-admin-panel--small .imcms-panel__item {
+    text-indent: -15000px;
+    background-position-y: 0;
+    padding-top: 0;
+}
+
+.imcms-admin-panel--small .imcms-panel__item,
+.imcms-admin-panel--small .imcms-admin-panel__item,
+.imcms-admin-panel--small .imcms-admin-panel__item .imcms-flag {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.imcms-admin-panel--small .imcms-panel__item.imcms-panel__item--has-newer-version:before,
+.imcms-admin-panel--small .imcms-panel__item.imcms-panel__item--has-newer-version:hover:before,
+.imcms-admin-panel--small .imcms-panel__item--active:before,
+.imcms-admin-panel--small .imcms-panel__item:hover:before {
+    bottom: 0;
+}
+
+.imcms-admin-panel--small .imcms-panel__item--publish-of:after,
+.imcms-admin-panel--small .imcms-panel__item--page-info:after,
+.imcms-admin-panel--small .imcms-panel__item--document:after,
+.imcms-admin-panel--small .imcms-panel__item--specific:after,
+.imcms-admin-panel--small .imcms-panel__item--admin:after {
+    height: 47px;
+}
+
+.imcms-admin-panel--small .imcms-admin-panel__item {
+    max-height: 30px;
+}
+
+.imcms-admin-panel.imcms-admin-panel--small {
+    min-height: 30px;
+    max-height: 40px;
+    padding-top: 5px;
+}
+
+.imcms-admin-panel--small .imcms-panel__item:last-of-type button {
+    margin-top: 0;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+/* media */
+
 @media screen and (max-width: 1800px) {
     .imcms-admin-panel {
         min-height: 69px;

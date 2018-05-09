@@ -195,7 +195,7 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         var isPanelBuilt = false;
-        var onPanelBuiltCallbacks = [panelSettings.applyCurrentSettings];
+        var onPanelBuiltCallbacks = [];
 
         return {
             buildPanel: function (opts) {
@@ -212,6 +212,8 @@ Imcms.define("imcms-admin-panel-builder",
                 panelVisibility.setShowHidePanelRules($panel);
 
                 $("body").prepend($panelContainer);
+
+                panelSettings.applyCurrentSettings();
 
                 events.on("imcms-version-modified", highlightPublishButton);
                 isPanelBuilt = true;

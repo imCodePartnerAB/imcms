@@ -14,23 +14,30 @@ Imcms.define(
 
         var $settings;
 
+        function wrapWithPositionRefresh(refreshAfterMe) {
+            return function () {
+                refreshAfterMe.call();
+                setTimeout(refreshSettingsPosition, 200);
+            }
+        }
+
         var settings = {
             small: {
                 id: "small",
                 text: texts.size.small,
                 title: texts.size.smallTitle,
-                onSettingClick: function () {
+                onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").addClass("imcms-admin-panel--small")
-                }
+                })
             },
             large: {
                 id: "large",
                 isDefault: true,
                 text: texts.size.large,
                 title: texts.size.largeTitle,
-                onSettingClick: function () {
+                onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").removeClass("imcms-admin-panel--small")
-                }
+                })
             },
             auto: {
                 id: "auto",
@@ -138,6 +145,10 @@ Imcms.define(
                 .insertAfter(settingsButton);
         }
 
+        function refreshSettingsPosition() {
+            $settings && $settings.css("top", $("#imcms-admin-panel").outerHeight())
+        }
+
         return {
             applyCurrentSettings: function () {
                 allSections
@@ -154,8 +165,8 @@ Imcms.define(
             onSettingsClicked: function () {
                 $settings = ($settings || (buildSettings(this)));
 
-                $settings.css("top", $("#imcms-admin-panel").height())
-                    .slideToggle();
+                refreshSettingsPosition();
+                $settings.slideToggle();
             },
             hideSettings: function () {
                 $settings && $settings.slideUp(300);
