@@ -3,10 +3,11 @@ Imcms.define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder", "imcms-image-rotate"
+        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder", "imcms-image-rotate",
+        "imcms-image-editor-body-head-builder"
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
-              imageCropper, WindowBuilder, imageRotate) {
+              imageCropper, WindowBuilder, imageRotate, imageEditorBodyHeadBuilder) {
 
         texts = texts.editors.image;
         var $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
@@ -83,9 +84,12 @@ Imcms.define(
                 imageData = opts.imageData;
 
                 function buildSelectImageBtnContainer() {
+
                     var $selectImageBtn = components.buttons.neutralButton({
                         text: texts.selectImage,
-                        click: contentManager.build.bind(contentManager, fillData)
+                        click: contentManager.build.bind(contentManager, fillData, function () {
+                            return imageEditorBodyHeadBuilder.getImageUrl();
+                        })
                     });
                     return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
                 }

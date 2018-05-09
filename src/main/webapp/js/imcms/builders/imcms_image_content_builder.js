@@ -17,6 +17,8 @@ Imcms.define("imcms-image-content-builder",
 
         texts = texts.editors.content;
 
+        var selectedFullImagePath;
+
         var $foldersContainer, $imagesContainer, selectedImage;
 
         var viewModel = {
@@ -56,7 +58,7 @@ Imcms.define("imcms-image-content-builder",
                     $images: []
                 };
 
-                newFolder.$folder = buildSubFolder(newFolder, this.parentLevel + 1)
+                newFolder.$folder = buildSubFolder(newFolder, this.parentLevel + 1, "")
                     .addClass(SUBFOLDER_CLASS)
                     .css("display", "block");
 
@@ -335,22 +337,23 @@ Imcms.define("imcms-image-content-builder",
                 $image.css("display", "none");
             });
 
-            if (!folder.imagesAreLoaded) {
-                imageFoldersREST.read({"path": folder.path}).done(
-                    function (imagesFolder) {
-                        folder.imagesAreLoaded = true;
-                        folder.files = imagesFolder.files;
+            folder.imagesAreLoaded ? showImagesIn(folder) : loadImages(folder);
+        }
 
-                        buildImages(folder);
+        function loadImages(folder, setCurrentImage) {
+            imageFoldersREST.read({"path": folder.path}).done(
+                function (imagesFolder) {
+                    folder.imagesAreLoaded = true;
+                    folder.files = imagesFolder.files;
 
-                        $imagesContainer.append(folder.$images);
+                    buildImagesNotRecursive(folder);
 
-                        showImagesIn(folder);
-                    });
+                    $imagesContainer.append(folder.$images);
 
-            } else {
-                showImagesIn(folder);
-            }
+                    showImagesIn(folder);
+
+                    setCurrentImage ? setCurrentImage() : "nothing";
+                });
         }
 
         function buildFolder(subfolder, level) {
@@ -379,15 +382,19 @@ Imcms.define("imcms-image-content-builder",
             });
         }
 
-        function buildSubFolder(subfolder, level) {
+        function buildSubFolder(subfolder, level, folderPathToFind) {
             var isSubLevel = (level > 1);
+
+            if (subfolder.path === folderPathToFind) {
+                activeFolder = subfolder;
+            }
 
             var elements = {
                 "folder": buildFolder(subfolder, level)
             };
 
             if (subfolder.folders && subfolder.folders.length) {
-                elements.subfolder = buildSubFolders(subfolder, level + 1).map(function ($subfolder) {
+                elements.subfolder = buildSubFolders(subfolder, level + 1, folderPathToFind).map(function ($subfolder) {
                     if (isSubLevel) {
                         $subfolder.modifiers = ["close"];
                     }
@@ -405,9 +412,9 @@ Imcms.define("imcms-image-content-builder",
             });
         }
 
-        function buildSubFolders(folder, level) {
+        function buildSubFolders(folder, level, folderPathToFind) {
             return folder.folders.map(function (subfolder) {
-                return subfolder.$folder = buildSubFolder(subfolder, level);
+                return subfolder.$folder = buildSubFolder(subfolder, level, folderPathToFind);
             });
         }
 
@@ -473,13 +480,17 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function buildImages(folder) {
-            folder.$images = folder.files.map(buildImage);
-            viewModel.$images = viewModel.$images.concat(folder.$images);
+            buildImagesNotRecursive(folder);
             (folder.folders || []).forEach(buildImages);
         }
 
+        function buildImagesNotRecursive(folder) {
+            folder.$images = folder.files.map(buildImage);
+            viewModel.$images = viewModel.$images.concat(folder.$images);
+        }
+
         function loadImageFoldersContent(imagesRootFolder) {
-            viewModel.root = activeFolder = imagesRootFolder;
+            viewModel.root = imagesRootFolder;
             viewModel.root.imagesAreLoaded = true;
 
             buildImages(viewModel.root);
@@ -490,7 +501,11 @@ Imcms.define("imcms-image-content-builder",
 
             viewModel.folders.push(buildRootFolder(viewModel.root));
 
-            var $subfolders = buildSubFolders(viewModel.root, ROOT_FOLDER_LEVEL + 1).map(function ($subfolder) {
+            var slashLastIndex = selectedFullImagePath.lastIndexOf("/");
+
+            var $subfolders = buildSubFolders(
+                viewModel.root, ROOT_FOLDER_LEVEL + 1, selectedFullImagePath.substring(0, slashLastIndex)
+            ).map(function ($subfolder) {
                 return rootFolderBEM.makeBlockElement("folders", $subfolder);
             });
 
@@ -498,9 +513,50 @@ Imcms.define("imcms-image-content-builder",
 
             $foldersContainer.append(viewModel.folders);
             $imagesContainer.append(viewModel.$images);
-            viewModel.root.$images.forEach(function ($image) {
-                $image.css("display", "block");
+
+            if (slashLastIndex === 0) { // path only with image name (image from root)
+                setUpSelectedImage(imagesRootFolder, selectedFullImagePath);
+            }
+
+            if (activeFolder) {
+                openParentFolders(activeFolder);
+
+                loadImages(activeFolder, function () {
+                    setUpSelectedImage(activeFolder, selectedFullImagePath.substring(slashLastIndex))
+                });
+            } else {
+                activeFolder = imagesRootFolder;
+                showImagesIn(viewModel.root);
+            }
+        }
+
+        function openParentFolders(folder) {
+            var $folder = folder.$folder;
+            var imcmsFolderClassSelector = ".imcms-folder";
+
+            $folder.children(imcmsFolderClassSelector).addClass(ACTIVE_FOLDER_CLASS);
+
+            var parentFolders = $folder.parents("[data-folder-name]");
+
+            parentFolders.children(imcmsFolderClassSelector)
+                .find(".imcms-folder__btn").addClass(OPENED_FOLDER_BTN_CLASS);
+
+            parentFolders.children(imcmsFolderClassSelector + "s")
+                .css({"display": "block"});
+        }
+
+        function setUpSelectedImage(folder, selectedImageName) {
+            folder.$images.forEach(function ($image) {
+                var text = "/" + $image.find(".imcms-title").text();
+
+                if (text === selectedImageName) {
+                    $image.addClass("image-chosen");
+                }
             });
+        }
+
+        function setActiveFolderToNull() {
+            activeFolder = null;
         }
 
         return {
@@ -510,6 +566,7 @@ Imcms.define("imcms-image-content-builder",
             loadAndBuildContent: function (options) {
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;
+                selectedFullImagePath = options.selectedImagePath;
 
                 imageFoldersREST.read().done(loadImageFoldersContent);
             },
@@ -527,7 +584,9 @@ Imcms.define("imcms-image-content-builder",
                     viewModel.$images = viewModel.$images.concat($newImages);
                 });
             },
+            setActiveFolderToNull: setActiveFolderToNull,
             clearContent: function () {
+                setActiveFolderToNull();
                 $imagesContainer.children().detach();
                 $foldersContainer.children().not("#closeFolders").detach();
                 viewModel = {

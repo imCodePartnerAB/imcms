@@ -19,6 +19,7 @@ Imcms.define(
             var $showHideFoldersButton;
 
             function saveAndCloseWindow() {
+                imageContentBuilder.setActiveFolderToNull();
                 showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
                 contentManagerWindowBuilder.closeWindow();
             }
@@ -123,7 +124,8 @@ Imcms.define(
         function buildContent() {
             imageContentBuilder.loadAndBuildContent({
                 foldersContainer: $foldersContainer,
-                imagesContainer: $imagesContainer
+                imagesContainer: $imagesContainer,
+                selectedImagePath: selectedImagePath
             });
         }
 
@@ -139,10 +141,13 @@ Imcms.define(
         });
 
         var showImageStrategy;
+        var selectedImagePath;
 
         return {
-            build: function (imageEditorShowImageStrategy) {
+            build: function (imageEditorShowImageStrategy, getSelectedImagePath) {
                 showImageStrategy = imageEditorShowImageStrategy;
+                selectedImagePath = getSelectedImagePath();
+
                 contentManagerWindowBuilder.buildWindow.applyAsync(arguments, contentManagerWindowBuilder);
             }
         };
