@@ -4,8 +4,8 @@
  */
 Imcms.define(
     "imcms-admin-panel-settings-builder",
-    ["imcms-bem-builder", "imcms-i18n-texts", "jquery"],
-    function (BEM, texts, $) {
+    ["imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "jquery"],
+    function (BEM, cookies, texts, $) {
 
         texts = texts.panel.settingsList;
 
@@ -14,22 +14,35 @@ Imcms.define(
 
         var $settings;
 
-        function buildSection(name, settings) {
+        function activateSetting(element) {
+            var $setting = $(element);
 
-            var settingsObjects = settings.map(function (setting) {
+            if ($setting.hasClass(settingEnabledClass)) return true;
+
+            $setting.parent(".settings-section")
+                .find(settingEnabledClassSelector)
+                .removeClass(settingEnabledClass);
+
+            $setting.addClass(settingEnabledClass);
+
+            return false;
+        }
+
+        function buildSection(id, name, settings) {
+            var cookieName = "panel" + id;
+            var savedSetting = cookies.getCookie(cookieName);
+
+            var settingsElements = settings.map(function (setting) {
                 setting.click = function () {
-                    var $this = $(this);
-
-                    if ($this.hasClass(settingEnabledClass)) return;
-
-                    $this.parent(".settings-section")
-                        .find(settingEnabledClassSelector)
-                        .removeClass(settingEnabledClass);
-
-                    $this.addClass(settingEnabledClass);
-
-                    setting.onSettingClick.call();
+                    activateSetting(this) && setting.onSettingClick.call();
+                    cookies.setCookie(cookieName, setting.id);
                 };
+
+                if ((savedSetting && (savedSetting === setting.id))
+                    || (!savedSetting && setting.isDefault))
+                {
+                    setting["class"] = settingEnabledClass;
+                }
 
                 return {
                     "setting": $("<div>", setting)
@@ -40,7 +53,7 @@ Imcms.define(
                 block: "settings-section",
                 elements: [{
                     "section-name": $("<div>", {text: name})
-                }].concat(settingsObjects)
+                }].concat(settingsElements)
             }).buildBlockStructure("<div>");
         }
 
@@ -49,38 +62,43 @@ Imcms.define(
                 block: "admin-panel-settings-list",
                 elements: [
                     {
-                        "section": buildSection(texts.size.name, [
+                        "section": buildSection("size", texts.size.name, [
                             {
+                                id: "panel-size-small",
                                 text: texts.size.small,
                                 title: texts.size.smallTitle,
                                 onSettingClick: function () {
                                     console.log("Setting 00")
                                 }
                             }, {
+                                id: "panel-size-large",
+                                isDefault: true,
                                 text: texts.size.large,
                                 title: texts.size.largeTitle,
-                                "class": settingEnabledClass,
                                 onSettingClick: function () {
                                     console.log("Setting 01")
                                 }
                             }
                         ])
                     }, {
-                        "section": buildSection(texts.appearance.name, [
+                        "section": buildSection("appearance", texts.appearance.name, [
                             {
+                                id: "panel-appearance-auto",
+                                isDefault: true,
                                 text: texts.appearance.auto,
                                 title: texts.appearance.autoTitle,
-                                "class": settingEnabledClass,
                                 onSettingClick: function () {
                                     console.log("Setting 10")
                                 }
                             }, {
+                                id: "panel-appearance-hidden",
                                 text: texts.appearance.hidden,
                                 title: texts.appearance.hiddenTitle,
                                 onSettingClick: function () {
                                     console.log("Setting 11")
                                 }
                             }, {
+                                id: "panel-appearance-visible",
                                 text: texts.appearance.visible,
                                 title: texts.appearance.visibleTitle,
                                 onSettingClick: function () {
