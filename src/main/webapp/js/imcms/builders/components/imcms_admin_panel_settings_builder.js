@@ -152,7 +152,10 @@ Imcms.define(
                     });
             },
             onSettingsClicked: function () {
-                ($settings || ($settings = buildSettings(this))).slideToggle();
+                $settings = ($settings || (buildSettings(this)));
+
+                $settings.css("top", $("#imcms-admin-panel").height())
+                    .slideToggle();
             },
             hideSettings: function () {
                 $settings && $settings.slideUp(300);
