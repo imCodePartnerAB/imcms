@@ -14,17 +14,18 @@ Imcms.define(
 
         var $settings;
 
-        var settings = {
+        var sections = {
             size: {
-                small: {
+                id: "panel-size",
+                text: texts.size.name,
+                settings: [{
                     id: "panel-size-small",
                     text: texts.size.small,
                     title: texts.size.smallTitle,
                     onSettingClick: function () {
                         console.log("panel small")
                     }
-                },
-                large: {
+                }, {
                     id: "panel-size-large",
                     isDefault: true,
                     text: texts.size.large,
@@ -32,10 +33,12 @@ Imcms.define(
                     onSettingClick: function () {
                         console.log("panel large")
                     }
-                }
+                }]
             },
             appearance: {
-                auto: {
+                id: "panel-appearance",
+                text: texts.appearance.name,
+                settings: [{
                     id: "panel-appearance-auto",
                     isDefault: true,
                     text: texts.appearance.auto,
@@ -43,45 +46,33 @@ Imcms.define(
                     onSettingClick: function () {
                         console.log("panel appearance auto")
                     }
-                },
-                hidden: {
+                }, {
                     id: "panel-appearance-hidden",
                     text: texts.appearance.hidden,
                     title: texts.appearance.hiddenTitle,
                     onSettingClick: function () {
                         console.log("panel appearance hidden")
                     }
-                },
-                visible: {
+                }, {
                     id: "panel-appearance-visible",
                     text: texts.appearance.visible,
                     title: texts.appearance.visibleTitle,
                     onSettingClick: function () {
                         console.log("panel appearance visible")
                     }
-                }
+                }]
             }
         };
 
-        function activateSetting(element) {
-            var $setting = $(element);
+        var allSections = [
+            sections.size,
+            sections.appearance
+        ];
 
-            if ($setting.hasClass(settingEnabledClass)) return false;
+        function buildSection(section) {
+            var savedSetting = cookies.getCookie(section.id);
 
-            $setting.parent(".settings-section")
-                .find(settingEnabledClassSelector)
-                .removeClass(settingEnabledClass);
-
-            $setting.addClass(settingEnabledClass);
-
-            return true;
-        }
-
-        function buildSection(id, name, settings) {
-            var cookieName = "panel" + id;
-            var savedSetting = cookies.getCookie(cookieName);
-
-            var settingsElements = settings.map(function (setting) {
+            var settingsElements = section.settings.map(function (setting) {
                 var attributes = {
                     id: setting.id,
                     text: setting.text,
@@ -89,8 +80,18 @@ Imcms.define(
                 };
 
                 attributes.click = function () {
-                    activateSetting(this) && setting.onSettingClick.call();
-                    cookies.setCookie(cookieName, setting.id);
+                    var $setting = $(this);
+
+                    if ($setting.hasClass(settingEnabledClass)) return;
+
+                    $setting.parent(".settings-section")
+                        .find(settingEnabledClassSelector)
+                        .removeClass(settingEnabledClass);
+
+                    $setting.addClass(settingEnabledClass);
+
+                    setting.onSettingClick.call();
+                    cookies.setCookie(section.id, setting.id);
                 };
 
                 if ((savedSetting && (savedSetting === setting.id))
@@ -107,24 +108,18 @@ Imcms.define(
             return new BEM({
                 block: "settings-section",
                 elements: [{
-                    "section-name": $("<div>", {text: name})
+                    "section-name": $("<div>", {text: section.text})
                 }].concat(settingsElements)
             }).buildBlockStructure("<div>");
         }
 
         function buildSettings($settingsButton) {
-            var $sizeSection = buildSection("size", texts.size.name, [
-                settings.size.small, settings.size.large
-            ]);
-
-            var $appearanceSection = buildSection("appearance", texts.appearance.name, [
-                settings.appearance.auto, settings.appearance.hidden, settings.appearance.visible
-            ]);
+            var sections$ = allSections.map(buildSection);
 
             var bemOptions = {
                 block: "admin-panel-settings-list",
                 elements: {
-                    "section": [$sizeSection, $appearanceSection]
+                    "section": sections$
                 }
             };
 
