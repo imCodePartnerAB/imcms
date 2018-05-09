@@ -39,6 +39,10 @@
     background-color: #d0e9f9;
 }
 
+.settings-section__setting--enabled {
+    background-color: #f0f0f0;
+}
+
 .settings-section__setting--enabled:after {
     width: 20px;
     height: 20px;
