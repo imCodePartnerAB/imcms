@@ -271,7 +271,7 @@
     .imcms-panel__item--document:after,
     .imcms-panel__item--specific:after,
     .imcms-panel__item--admin:after {
-        max-height: 72px;
+        max-height: 69px;
     }
 
     .imcms-admin-panel__item {
