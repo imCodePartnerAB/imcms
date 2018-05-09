@@ -8,10 +8,29 @@ Imcms.define(
     function (BEM, texts, $) {
 
         texts = texts.panel.settingsList;
+
+        var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
+        var settingEnabledClassSelector = "." + settingEnabledClass;
+
         var $settings;
 
         function buildSection(name, settings) {
+
             var settingsObjects = settings.map(function (setting) {
+                setting.click = function () {
+                    var $this = $(this);
+
+                    if ($this.hasClass(settingEnabledClass)) return;
+
+                    $this.parent(".settings-section")
+                        .find(settingEnabledClassSelector)
+                        .removeClass(settingEnabledClass);
+
+                    $this.addClass(settingEnabledClass);
+
+                    setting.onSettingClick.call();
+                };
+
                 return {
                     "setting": $("<div>", setting)
                 };
@@ -34,14 +53,14 @@ Imcms.define(
                             {
                                 text: texts.size.small,
                                 title: texts.size.smallTitle,
-                                click: function () {
+                                onSettingClick: function () {
                                     console.log("Setting 00")
                                 }
                             }, {
                                 text: texts.size.large,
                                 title: texts.size.largeTitle,
-                                "class": "settings-section__setting--enabled",
-                                click: function () {
+                                "class": settingEnabledClass,
+                                onSettingClick: function () {
                                     console.log("Setting 01")
                                 }
                             }
@@ -51,20 +70,20 @@ Imcms.define(
                             {
                                 text: texts.appearance.auto,
                                 title: texts.appearance.autoTitle,
-                                "class": "settings-section__setting--enabled",
-                                click: function () {
+                                "class": settingEnabledClass,
+                                onSettingClick: function () {
                                     console.log("Setting 10")
                                 }
                             }, {
                                 text: texts.appearance.hidden,
                                 title: texts.appearance.hiddenTitle,
-                                click: function () {
+                                onSettingClick: function () {
                                     console.log("Setting 11")
                                 }
                             }, {
                                 text: texts.appearance.visible,
                                 title: texts.appearance.visibleTitle,
-                                click: function () {
+                                onSettingClick: function () {
                                     console.log("Setting 12")
                                 }
                             }
