@@ -14,10 +14,59 @@ Imcms.define(
 
         var $settings;
 
+        var settings = {
+            size: {
+                small: {
+                    id: "panel-size-small",
+                    text: texts.size.small,
+                    title: texts.size.smallTitle,
+                    onSettingClick: function () {
+                        console.log("panel small")
+                    }
+                },
+                large: {
+                    id: "panel-size-large",
+                    isDefault: true,
+                    text: texts.size.large,
+                    title: texts.size.largeTitle,
+                    onSettingClick: function () {
+                        console.log("panel large")
+                    }
+                }
+            },
+            appearance: {
+                auto: {
+                    id: "panel-appearance-auto",
+                    isDefault: true,
+                    text: texts.appearance.auto,
+                    title: texts.appearance.autoTitle,
+                    onSettingClick: function () {
+                        console.log("panel appearance auto")
+                    }
+                },
+                hidden: {
+                    id: "panel-appearance-hidden",
+                    text: texts.appearance.hidden,
+                    title: texts.appearance.hiddenTitle,
+                    onSettingClick: function () {
+                        console.log("panel appearance hidden")
+                    }
+                },
+                visible: {
+                    id: "panel-appearance-visible",
+                    text: texts.appearance.visible,
+                    title: texts.appearance.visibleTitle,
+                    onSettingClick: function () {
+                        console.log("panel appearance visible")
+                    }
+                }
+            }
+        };
+
         function activateSetting(element) {
             var $setting = $(element);
 
-            if ($setting.hasClass(settingEnabledClass)) return true;
+            if ($setting.hasClass(settingEnabledClass)) return false;
 
             $setting.parent(".settings-section")
                 .find(settingEnabledClassSelector)
@@ -25,7 +74,7 @@ Imcms.define(
 
             $setting.addClass(settingEnabledClass);
 
-            return false;
+            return true;
         }
 
         function buildSection(id, name, settings) {
@@ -33,7 +82,13 @@ Imcms.define(
             var savedSetting = cookies.getCookie(cookieName);
 
             var settingsElements = settings.map(function (setting) {
-                setting.click = function () {
+                var attributes = {
+                    id: setting.id,
+                    text: setting.text,
+                    title: setting.title
+                };
+
+                attributes.click = function () {
                     activateSetting(this) && setting.onSettingClick.call();
                     cookies.setCookie(cookieName, setting.id);
                 };
@@ -41,11 +96,11 @@ Imcms.define(
                 if ((savedSetting && (savedSetting === setting.id))
                     || (!savedSetting && setting.isDefault))
                 {
-                    setting["class"] = settingEnabledClass;
+                    attributes["class"] = settingEnabledClass;
                 }
 
                 return {
-                    "setting": $("<div>", setting)
+                    "setting": $("<div>", attributes)
                 };
             });
 
@@ -58,56 +113,19 @@ Imcms.define(
         }
 
         function buildSettings($settingsButton) {
+            var $sizeSection = buildSection("size", texts.size.name, [
+                settings.size.small, settings.size.large
+            ]);
+
+            var $appearanceSection = buildSection("appearance", texts.appearance.name, [
+                settings.appearance.auto, settings.appearance.hidden, settings.appearance.visible
+            ]);
+
             var bemOptions = {
                 block: "admin-panel-settings-list",
-                elements: [
-                    {
-                        "section": buildSection("size", texts.size.name, [
-                            {
-                                id: "panel-size-small",
-                                text: texts.size.small,
-                                title: texts.size.smallTitle,
-                                onSettingClick: function () {
-                                    console.log("Setting 00")
-                                }
-                            }, {
-                                id: "panel-size-large",
-                                isDefault: true,
-                                text: texts.size.large,
-                                title: texts.size.largeTitle,
-                                onSettingClick: function () {
-                                    console.log("Setting 01")
-                                }
-                            }
-                        ])
-                    }, {
-                        "section": buildSection("appearance", texts.appearance.name, [
-                            {
-                                id: "panel-appearance-auto",
-                                isDefault: true,
-                                text: texts.appearance.auto,
-                                title: texts.appearance.autoTitle,
-                                onSettingClick: function () {
-                                    console.log("Setting 10")
-                                }
-                            }, {
-                                id: "panel-appearance-hidden",
-                                text: texts.appearance.hidden,
-                                title: texts.appearance.hiddenTitle,
-                                onSettingClick: function () {
-                                    console.log("Setting 11")
-                                }
-                            }, {
-                                id: "panel-appearance-visible",
-                                text: texts.appearance.visible,
-                                title: texts.appearance.visibleTitle,
-                                onSettingClick: function () {
-                                    console.log("Setting 12")
-                                }
-                            }
-                        ])
-                    }
-                ]
+                elements: {
+                    "section": [$sizeSection, $appearanceSection]
+                }
             };
 
             return new BEM(bemOptions)
