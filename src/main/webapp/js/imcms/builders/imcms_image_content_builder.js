@@ -147,7 +147,7 @@ Imcms.define("imcms-image-content-builder",
 
             var onAnswer = function (answer) {
                 if (answer) {
-                    imageFoldersREST.remove(path).done(onRemoveResponse);
+                    imageFoldersREST.remove({"path": path}).done(onRemoveResponse);
                 }
             };
 
