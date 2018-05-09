@@ -9,49 +9,73 @@ Imcms.define(
 
         var $settings;
 
-        function onPanelSettingsClicked() {
-            $settings.slideToggle();
+        function buildSection(name, settings) {
+            var settingsObjects = settings.map(function (setting) {
+                return {
+                    "setting": $("<div>", setting)
+                };
+            });
+
+            return new BEM({
+                block: "settings-section",
+                elements: [{
+                    "section-name": $("<div>", {text: name})
+                }].concat(settingsObjects)
+            }).buildBlockStructure("<div>");
         }
 
-        function buildSettingsList() {
-            return new BEM({
-                block: "panel-settings-list",
+        function buildSettings($settingsButton) {
+            var bemOptions = {
+                block: "admin-panel-settings-list",
                 elements: [
                     {
-                        setting: $("<div>", {
-                            text: "Setting 0"
-                        })
+                        "section": buildSection("Section 0 name", [
+                            {
+                                text: "Setting 0",
+                                click: function () {
+                                    console.log("Setting 00")
+                                }
+                            }, {
+                                text: "Setting 1",
+                                click: function () {
+                                    console.log("Setting 01")
+                                }
+                            }
+                        ])
                     }, {
-                        setting: $("<div>", {
-                            text: "Setting 1"
-                        })
-                    }, {
-                        setting: $("<div>", {
-                            text: "Setting 2"
-                        })
-                    }, {
-                        setting: $("<div>", {
-                            text: "Setting 3"
-                        })
+                        "section": buildSection("Section 1 name", [
+                            {
+                                text: "Setting 0",
+                                click: function () {
+                                    console.log("Setting 10")
+                                }
+                            }, {
+                                text: "Setting 1",
+                                click: function () {
+                                    console.log("Setting 11")
+                                }
+                            }, {
+                                text: "Setting 2",
+                                click: function () {
+                                    console.log("Setting 12")
+                                }
+                            }
+                        ])
                     }
                 ]
-            }).buildBlockStructure("<div>", {
-                style: "display: none;"
-            });
+            };
+
+            return new BEM(bemOptions)
+                .buildBlockStructure("<div>", {style: "display: none;"})
+                .insertAfter($settingsButton);
         }
 
         return {
-            buildButton: function () {
-                return new BEM({
-                    block: "admin-panel-settings",
-                    elements: {
-                        button: $("<div>", {
-                            title: "Admin panel settings",
-                            click: onPanelSettingsClicked
-                        }),
-                        list: $settings = buildSettingsList()
-                    }
-                }).buildBlockStructure("<div>");
+            onSettingsClicked: function () {
+                ($settings || ($settings = buildSettings($(this)))).slideToggle();
+            },
+            hideSettings: function () {
+                $settings.slideUp();
             }
         }
     }

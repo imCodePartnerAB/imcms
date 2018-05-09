@@ -6,10 +6,10 @@ Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
         "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-top-panel-visibility-initiator",
-        "imcms-i18n-texts"
+        "imcms-i18n-texts", "imcms-admin-panel-settings-builder"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
-              panelVisibility, texts) {
+              panelVisibility, texts, panelSettingsBuilder) {
         var $panelContainer, $panel;
 
         texts = texts.panel;
@@ -51,10 +51,6 @@ Imcms.define("imcms-admin-panel-builder",
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
             }
 
-            function onPanelSettingsClicked() {
-                // todo: implement!
-            }
-
             var editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
             var editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
             var adminDisplayProperty = imcms.isAdmin ? "" : "display:none";
@@ -66,7 +62,7 @@ Imcms.define("imcms-admin-panel-builder",
                 {
                     name: 'settings',
                     tag: '<div>',
-                    onClick: onPanelSettingsClicked,
+                    onClick: panelSettingsBuilder.onSettingsClicked,
                     content: texts.settings,
                     title: texts.settingsTitle,
                     modifiers: ["settings"]
