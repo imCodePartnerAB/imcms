@@ -20,7 +20,7 @@ Imcms.define(
                 text: texts.size.small,
                 title: texts.size.smallTitle,
                 onSettingClick: function () {
-                    console.log("panel small")
+                    $("#imcms-admin-panel").addClass("imcms-admin-panel--small")
                 }
             },
             large: {
@@ -29,7 +29,7 @@ Imcms.define(
                 text: texts.size.large,
                 title: texts.size.largeTitle,
                 onSettingClick: function () {
-                    console.log("panel large")
+                    $("#imcms-admin-panel").removeClass("imcms-admin-panel--small")
                 }
             },
             auto: {
