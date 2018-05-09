@@ -29,33 +29,35 @@ Imcms.define(
                 block: "admin-panel-settings-list",
                 elements: [
                     {
-                        "section": buildSection("Section 0 name", [
+                        "section": buildSection("Panel size", [
                             {
-                                text: "Setting 0",
+                                text: "Small",
                                 click: function () {
                                     console.log("Setting 00")
                                 }
                             }, {
-                                text: "Setting 1",
+                                text: "Large",
+                                "class": "settings-section__setting--enabled",
                                 click: function () {
                                     console.log("Setting 01")
                                 }
                             }
                         ])
                     }, {
-                        "section": buildSection("Section 1 name", [
+                        "section": buildSection("Panel appearance", [
                             {
-                                text: "Setting 0",
+                                text: "Auto",
+                                "class": "settings-section__setting--enabled",
                                 click: function () {
                                     console.log("Setting 10")
                                 }
                             }, {
-                                text: "Setting 1",
+                                text: "Hidden",
                                 click: function () {
                                     console.log("Setting 11")
                                 }
                             }, {
-                                text: "Setting 2",
+                                text: "Visible",
                                 click: function () {
                                     console.log("Setting 12")
                                 }
