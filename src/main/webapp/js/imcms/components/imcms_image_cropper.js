@@ -365,7 +365,7 @@ Imcms.define(
             angles.bottomRight.$angle.mousedown(getAngleMouseDownEvent("bottomRight", "se-resize"));
             angles.bottomLeft.$angle.mousedown(getAngleMouseDownEvent("bottomLeft", "sw-resize"));
 
-            $imageEditor.mouseup(function () {
+            $imageEditor.mouseup(function (event) {
                 if ((event.which === 1) && isMouseDown) {
                     isMouseDown = false;
                     isResizing = false;

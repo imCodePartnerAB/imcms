@@ -19,13 +19,21 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.separator;
-import static org.junit.Assert.*;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
 public class ImageFolderServiceTest {
+
+    private static final int SUB_FOLDERS_NUM = 2;
+    private static final int FILES_NUM = 2;
 
     @Autowired
     private ImageFolderService imageFolderService;
@@ -34,10 +42,12 @@ public class ImageFolderServiceTest {
     private File imagesPath;
 
     @Test
-    public void getImageFolder() {
+    public void getImageFolder_Expected_RootFolderIsReturnedWithImages() {
         final ImageFolderDTO imageFolder = imageFolderService.getImageFolder();
 
         assertNotNull(imageFolder);
+        assertThat(imageFolder.getName(), is("images"));
+        assertThat(imageFolder.getPath(), is(""));
     }
 
     @Test
@@ -257,7 +267,7 @@ public class ImageFolderServiceTest {
             assertTrue(newFolder1.isDirectory());
             assertTrue(newFolder1.canRead());
 
-            final String folderNewName = newFolderName1;
+            final String folderNewName = newFolderName;
             final File renamedFolder = new File(imagesPath, folderNewName);
             imageFolderDTO1.setName(folderNewName);
 
@@ -304,5 +314,4 @@ public class ImageFolderServiceTest {
             if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
         }
     }
-
 }

@@ -106,6 +106,7 @@ public class TextDocumentServiceTest {
 
     @Before
     public void setUp() throws Exception {
+        commonContentDataInitializer.cleanRepositories();
         createdDoc = documentDataInitializer.createTextDocument();
 
         testSolrFolder = new File(config.getSolrHome());

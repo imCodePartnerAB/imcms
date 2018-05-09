@@ -1,7 +1,6 @@
 package com.imcode.imcms.controller.core;
 
-import com.imcode.imcms.domain.service.TypedDocumentService;
-import com.imcode.imcms.model.Document;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,10 +20,10 @@ import org.springframework.web.servlet.view.RedirectView;
 @RequestMapping("/publish-document")
 public class DocumentPublicationController {
 
-    private final TypedDocumentService documentService;
+    private final DelegatingByTypeDocumentService documentService;
     private final boolean isVersioningAllowed;
 
-    public DocumentPublicationController(TypedDocumentService<Document> documentService,
+    public DocumentPublicationController(DelegatingByTypeDocumentService documentService,
                                          @Value("${document.versioning:true}") boolean isVersioningAllowed) {
 
         this.documentService = documentService;

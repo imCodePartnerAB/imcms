@@ -1,4 +1,4 @@
-Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
+Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], function (imcms, $, dateTimeValidator) {
 
     var TIME_PICKER__CLASS = "imcms-time-picker",
         TIME_PICKER__CLASS_$ = "." + TIME_PICKER__CLASS,
@@ -197,7 +197,9 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
         time[changedPosition] = $selectedTimeUnit.text();
 
-        $timeInput.val(time.join(":"));
+        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($timeInput, time)) {
+            $timeInput.val(time.join(":"));
+        }
     }
 
     function closeTimePickerFunction(e) {
@@ -214,9 +216,28 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
             var currentTime = getCurrentTimeObj();
             var $this = $(this);
 
-            $this.val(currentTime.hours + ":" + currentTime.minutes);
+            var time = currentTime.hours + ":" + currentTime.minutes;
+
+            var publishedDateBeforePublicationEndDate = dateTimeValidator
+                .isPublishedDateBeforePublicationEndDate($this, time);
+
+            if (!publishedDateBeforePublicationEndDate) {
+                time = "";
+            }
+
+            $this.val(time);
             $this.removeClass(CURRENT_TIME__INPUT__ERROR__CLASS)
         });
+    }
+
+    function isValid(time) {
+        var isValid = time.length === 2;
+
+        time.forEach(function (value) {
+            isValid = isValid && (value.length === 1 || value.length === 2);
+        });
+
+        return isValid;
     }
 
     $(document).click(closeTimePickerFunction);
@@ -236,7 +257,18 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery"], function (imcms, $) {
 
         $inputTime.click(initTimePicker.bindArgs($timePicker, $inputTime))
             .keydown(allowNumbersAndColons)
-            .on("input", initTimePicker.bindArgs($timePicker, $inputTime));
+            .on("input", function () {
+                var $inputTime = $(this),
+                    time = $inputTime.val().split(":");
+
+                if (isValid(time)
+                    && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($inputTime, time)) {
+
+                    $inputTime.val("");
+                }
+
+                initTimePicker($timePicker, $inputTime);
+            });
 
         $timePicker.find(".imcms-time-picker__button")
             .click(arrowButtonsClick)

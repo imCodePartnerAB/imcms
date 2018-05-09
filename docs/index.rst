@@ -8,7 +8,7 @@
 ImCMS Documentation
 ===================
 
-.. include:: /common/stub-overview.txt
+.. include:: /common/stub-topic.txt
 
 .. toctree::
     :titlesonly:
@@ -16,13 +16,12 @@ ImCMS Documentation
     overview
     getting-started/index
     tutorial/index
-    tag-engine/index
-    document-engine/index
-    fundamental/index
+    design/index
     content-management/index
+    advanced-configuration/index
     image-archive/index
     bank-id/index
 
-.. include:: /common/contribute.txt
+.. include:: /common/authors.txt
 
 

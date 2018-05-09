@@ -1,6 +1,6 @@
 Imcms.define("imcms-date-picker",
-    ["imcms", "imcms-calendar", "jquery"],
-    function (imcms, imcmsCalendar, $) {
+    ["imcms", "imcms-calendar", "jquery", "imcms-date-time-validator"],
+    function (imcms, imcmsCalendar, $, dateTimeValidator) {
         var DATE_PICKER_CLASS_SELECTOR = ".imcms-date-picker";
 
         function openCalendar() {
@@ -22,7 +22,16 @@ Imcms.define("imcms-date-picker",
                     $currentDateInput = $activeDatePicker.find(".imcms-current-date__input");
 
                 if ($currentDateInput.hasClass("imcms-currrent-date__input--error")) {
-                    $currentDateInput.val(getCurrentDate())
+                    var currentDate = getCurrentDate();
+
+                    var publishedDateBeforePublicationEndDate = dateTimeValidator
+                        .isPublishedDateBeforePublicationEndDate($currentDateInput, currentDate.split("-"));
+
+                    if (!publishedDateBeforePublicationEndDate) {
+                        currentDate = "";
+                    }
+
+                    $currentDateInput.val(currentDate)
                         .removeClass("imcms-currrent-date__input--error");
                 }
 
@@ -85,8 +94,13 @@ Imcms.define("imcms-date-picker",
 
             var lastOrFirst = day <= 20 ? filteredByDay.first() : filteredByDay.last();
 
-            lastOrFirst.addClass("imcms-day--today");
+            var date = [year, month, day];
 
+            if (isValid && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($currentDateInput, date)) {
+                $currentDateInput.val("");
+            } else {
+                lastOrFirst.addClass("imcms-day--today");
+            }
         }
 
         function bindDateSetter($dateBoxContainer) {

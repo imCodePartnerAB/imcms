@@ -4,15 +4,14 @@ import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.IdDeleterMenuService;
 import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,8 +25,9 @@ import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
-@Service("menuService")
-class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository> implements MenuService {
+@Service
+class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
+        implements IdDeleterMenuService {
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
@@ -36,7 +36,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private LanguageService languageService;
     private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
-    private TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang;
+    private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -46,7 +46,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                        LanguageService languageService,
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
-                       TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang) {
+                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang) {
 
         super(menuRepository);
         this.versionService = versionService;
@@ -92,12 +92,18 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
 
     @Override
     @Transactional
+    public void deleteByVersion(Version version) {
+        repository.deleteByVersion(version);
+    }
+
+    @Override
+    @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
         repository.deleteByDocId(docIdToDelete);
     }
 
     @Override
-    protected Menu removeId(Menu jpa, Version newVersion) {
+    public Menu removeId(Menu jpa, Version newVersion) {
         final Menu menu = new Menu();
         menu.setId(null);
         menu.setNo(jpa.getNo());
@@ -142,7 +148,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
-                ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language, version)
+                ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
                 : menuItem -> menuItemToDTO.apply(menuItem, language);
 
         return Optional.ofNullable(menu)

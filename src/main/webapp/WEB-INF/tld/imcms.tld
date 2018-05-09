@@ -212,6 +212,11 @@
     </tag-file>
 
     <tag-file>
+        <name>ifAdmin</name>
+        <path>/WEB-INF/tags/imcms/admin/ifAdmin.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>image</name>
         <path>/WEB-INF/tags/imcms/admin/image.tag</path>
     </tag-file>

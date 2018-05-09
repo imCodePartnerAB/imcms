@@ -1,4 +1,4 @@
-Imcms.define("imcms-calendar", ["imcms", "jquery"], function (imcms, $) {
+Imcms.define("imcms-calendar", ["imcms", "jquery", "imcms-date-time-validator"], function (imcms, $, dateTimeValidator) {
 
     function setSelectDate() {
         var $thisDay = $(this),
@@ -24,12 +24,15 @@ Imcms.define("imcms-calendar", ["imcms", "jquery"], function (imcms, $) {
             date = "0" + date;
         }
 
-        $thisDay.parents(".imcms-calendar__body")
-            .find(".imcms-day--today")
-            .removeClass("imcms-day--today");
+        if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($thisDay, [year, month, date])) {
 
-        curDateInput.val(year + "-" + month + "-" + date);
-        $thisDay.addClass("imcms-day--today");
+            $thisDay.parents(".imcms-calendar__body")
+                .find(".imcms-day--today")
+                .removeClass("imcms-day--today");
+
+            curDateInput.val(year + "-" + month + "-" + date);
+            $thisDay.addClass("imcms-day--today");
+        }
     }
 
     function correctDayStartsFromSundayToMonday(startDay) {
@@ -186,9 +189,11 @@ Imcms.define("imcms-calendar", ["imcms", "jquery"], function (imcms, $) {
                 month = month < 10 ? "0" + month : month.toString();
             }
 
-            $input.val(year + "-" + month + "-" + date);
-            buildCalendar(year, month, date, $calendar);
-            selectDate(1, $calendar);
+            if (dateTimeValidator.isPublishedDateBeforePublicationEndDate($input, [year, month, date])) {
+                $input.val(year + "-" + month + "-" + date);
+                buildCalendar(year, month, date, $calendar);
+                selectDate(1, $calendar);
+            }
         }
     };
 });

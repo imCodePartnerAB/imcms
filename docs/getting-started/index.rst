@@ -1,8 +1,10 @@
-Getting Started
-===============
+Setup
+=====
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
 
-   setup/index
-   design/index
+    requirement
+    before
+    user
+    developer

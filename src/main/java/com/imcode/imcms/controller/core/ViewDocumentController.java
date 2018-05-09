@@ -7,19 +7,25 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -27,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
 
 /**
  * General controller for document viewing in any mode.
@@ -42,6 +49,7 @@ public class ViewDocumentController {
     private final VersionService versionService;
     private final CommonContentService commonContentService;
     private final AccessService accessService;
+    private final PathMatcher pathMatcher;
     private final String imagesPath;
     private final String version;
     private final boolean isVersioningAllowed;
@@ -50,6 +58,7 @@ public class ViewDocumentController {
                            VersionService versionService,
                            CommonContentService commonContentService,
                            AccessService accessService,
+                           PathMatcher pathMatcher,
                            @Value("${ImagePath}") String imagesPath,
                            @Value("${imcms.version}") String version,
                            @Value("${document.versioning:true}") boolean isVersioningAllowed) {
@@ -58,32 +67,44 @@ public class ViewDocumentController {
         this.versionService = versionService;
         this.commonContentService = commonContentService;
         this.accessService = accessService;
+        this.pathMatcher = pathMatcher;
         this.imagesPath = imagesPath;
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
     }
 
     @RequestMapping({"", "/"})
-    public ModelAndView goToStartPage(HttpServletRequest request, ModelAndView mav) {
+    public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
+            throws ServletException, IOException {
 
         final String docId = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
         final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
 
-        return processDocView(textDocument, request, mav);
+        return processDocView(textDocument, request, response, mav);
     }
 
-    @RequestMapping("/{docIdentifier}")
-    public ModelAndView getDocument(@PathVariable("docIdentifier") String docIdentifier,
-                                    HttpServletRequest request,
-                                    ModelAndView mav) {
+    @RequestMapping("/**")
+    public ModelAndView getDocument(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
+            throws ServletException, IOException {
+
+        final String urlPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+
+        final String docIdentifier = pathMatcher.extractPathWithinPattern(urlPattern, request.getPathInfo());
 
         final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
 
-        return processDocView(textDocument, request, mav);
+        return processDocView(textDocument, request, response, mav);
     }
 
-    private ModelAndView processDocView(TextDocumentDomainObject textDocument, HttpServletRequest request,
-                                        ModelAndView mav) {
+    private ModelAndView processDocView(TextDocumentDomainObject textDocument,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        ModelAndView mav) throws ServletException, IOException {
+
+        final UserDomainObject user = Imcms.getUser();
+        final int docId = textDocument.getId();
+
+        final RestrictedPermission userEditPermission = accessService.getEditPermission(user.getId(), docId);
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
         final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);
@@ -91,8 +112,18 @@ public class ViewDocumentController {
         final boolean isPreviewMode = isVersioningAllowed
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
 
+        if ((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userEditPermission)) {
+
+            final Object loginTarget = Optional
+                    .ofNullable(request.getAttribute(FORWARD_REQUEST_URI))
+                    .orElse(request.getRequestURL());
+
+            Utility.forwardToLogin(
+                    request, response, HttpServletResponse.SC_FORBIDDEN, new StringBuffer(loginTarget.toString())
+            );
+        }
+
         final String viewName = textDocument.getTemplateName();
-        final int docId = textDocument.getId();
         final String docLangCode = textDocument.getLanguage().getCode();
         final Version latestDocVersion = versionService.getLatestVersion(docId);
 
@@ -111,7 +142,6 @@ public class ViewDocumentController {
                 .findFirst();
 
         final String language;
-        final UserDomainObject user = Imcms.getUser();
 
         if (!optionalCommonContent.isPresent()) {
             if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
@@ -136,7 +166,7 @@ public class ViewDocumentController {
         mav.addObject("isPreviewMode", isPreviewMode);
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
-        mav.addObject("editOptions", accessService.getEditPermission(user.getId(), docId));
+        mav.addObject("editOptions", userEditPermission);
 
         return mav;
     }
@@ -148,5 +178,10 @@ public class ViewDocumentController {
 
     private String getLanguageCode() {
         return Imcms.getLanguage().getCode();
+    }
+
+    private boolean hasUserContentEditAccess(final RestrictedPermission permission) {
+        return permission.isEditImage() || permission.isEditLoop()
+                || permission.isEditMenu() || permission.isEditText();
     }
 }

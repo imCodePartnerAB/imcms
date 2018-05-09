@@ -1,8 +1,7 @@
 package imcode.server.document.index.service.impl;
 
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
-import com.imcode.imcms.domain.service.TypedDocumentService;
-import com.imcode.imcms.model.Document;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Component;
@@ -12,9 +11,9 @@ public class DocumentIndexer {
 
     private final Logger logger = Logger.getLogger(getClass());
 
-    private TypedDocumentService<Document> documentService;
+    private DelegatingByTypeDocumentService documentService;
 
-    public void setDocumentService(TypedDocumentService<Document> documentService) {
+    public void setDocumentService(DelegatingByTypeDocumentService documentService) {
         this.documentService = documentService;
     }
 

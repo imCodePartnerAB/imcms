@@ -258,13 +258,23 @@ Imcms.define(
 
                 function setValidation(onValid) {
                     return function () {
-                        var val = +$(this).val();
+                        var inputField = $(this),
+                            stringFieldValue = inputField.val(),
+                            intFieldValue = +stringFieldValue,
+                            minFieldValue = 0;
 
-                        if (isNaN(val)) {
+                        if (isNaN(intFieldValue)) {
+                            var val = parseInt(stringFieldValue);
+                            inputField.val(isNaN(val) ? 0 : val);
                             return;
                         }
 
-                        onValid.call(this, val);
+                        if (intFieldValue < minFieldValue) {
+                            inputField.val(minFieldValue);
+                            return;
+                        }
+
+                        onValid.call(this, intFieldValue);
                     }
                 }
 

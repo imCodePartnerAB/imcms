@@ -108,17 +108,17 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<MenuItem, Language, Version, MenuItemDTO> menuItemToMenuItemDtoWithLang(
+    public BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang(
             CommonContentService commonContentService,
             BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
             LanguageService languageService,
             VersionService versionService,
             DocumentMenuService documentMenuService
     ) {
-        return new TernaryFunction<MenuItem, Language, Version, MenuItemDTO>() {
+        return new BiFunction<MenuItem, Language, MenuItemDTO>() {
 
             @Override
-            public MenuItemDTO apply(final MenuItem menuItem, final Language language, final Version version) {
+            public MenuItemDTO apply(final MenuItem menuItem, final Language language) {
 
                 final Integer docId = menuItem.getDocumentId();
                 final Version latestVersion = versionService.getLatestVersion(docId);
@@ -155,7 +155,7 @@ class MappingConfig {
 
                 final List<MenuItemDTO> children = menuItem.getChildren()
                         .stream()
-                        .map(menuItem1 -> this.apply(menuItem1, language, version))
+                        .map(menuItem1 -> this.apply(menuItem1, language))
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
 
@@ -167,14 +167,14 @@ class MappingConfig {
     }
 
     @Bean
-    public BiFunction<Menu, Language, MenuDTO> menuToMenuDTO(BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDTO) {
+    public BiFunction<Menu, Language, MenuDTO> menuToMenuDTO(BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO) {
         return (menu, language) -> {
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
             menuDTO.setMenuItems(menu.getMenuItems()
                     .stream()
-                    .map(menuItem -> menuItemToMenuItemDTO.apply(menuItem, language)).collect(Collectors.toList()));
+                    .map(menuItem -> menuItemToDTO.apply(menuItem, language)).collect(Collectors.toList()));
 
             return menuDTO;
         };
@@ -464,11 +464,11 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<File, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
-                                                               @Value("${ImagePath}") File imagesPath) {
-        return new Function<File, ImageFolderDTO>() {
+    public BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
+                                                                          @Value("${ImagePath}") File imagesPath) {
+        return new BiFunction<File, Boolean, ImageFolderDTO>() {
             @Override
-            public ImageFolderDTO apply(File folderFile) {
+            public ImageFolderDTO apply(File folderFile, Boolean isRoot) {
                 final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
                 imageFolderDTO.setName(folderFile.getName());
                 final String relativePath = folderFile.getPath().replace(imagesPath.getPath(), "");
@@ -485,9 +485,9 @@ class MappingConfig {
 
                 for (File file : files) {
                     if ((file.isDirectory())) {
-                        subFolders.add(this.apply(file));
+                        subFolders.add(this.apply(file, false));
 
-                    } else if (Format.isImage(FilenameUtils.getExtension(file.getName()))) {
+                    } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
                         folderFiles.add(fileToImageFileDTO.apply(file));
                     }
                 }

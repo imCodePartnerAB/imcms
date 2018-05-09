@@ -229,6 +229,7 @@
         <filter token="index-disabled-file-extensions" value="${index-disabled-file-extensions}"/>
 
         <filter token="error-logger-url" value="${error-logger-url}"/>
+        <filter token="imcms.version" value="${version}"/>
     </target>
 
 </project>

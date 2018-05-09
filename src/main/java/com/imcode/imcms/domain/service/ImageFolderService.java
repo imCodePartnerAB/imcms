@@ -12,6 +12,7 @@ import java.io.IOException;
  * 30.10.17.
  */
 public interface ImageFolderService {
+
     ImageFolderDTO getImageFolder();
 
     boolean createImageFolder(ImageFolderDTO folderToCreate);
@@ -19,4 +20,6 @@ public interface ImageFolderService {
     boolean renameFolder(ImageFolderDTO renameMe);
 
     boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException;
+
+    ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages);
 }

@@ -1,8 +1,16 @@
 package com.imcode.imcms.servlet;
 
-import imcode.server.*;
-import imcode.server.document.*;
+import imcode.server.DocumentRequest;
+import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
+import imcode.server.ImcmsServices;
+import imcode.server.Revisits;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
+import imcode.server.document.HtmlDocumentDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.kerberos.KerberosLoginResult;
 import imcode.server.kerberos.KerberosLoginStatus;
 import imcode.server.user.UserDomainObject;
@@ -14,7 +22,11 @@ import org.apache.oro.text.perl.Perl5Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -147,7 +159,7 @@ public class GetDoc extends HttpServlet {
             try (ServletOutputStream out = res.getOutputStream()) {
                 try {
                     final int len = inputStream.available();
-                    setResponseContentAttributes(req, res, file, len);
+                    setResponseContentAttributes(res, file, len);
                     IOUtils.copy(inputStream, out);
                 } catch (SocketException ex) {
                     LOG.debug("Exception occurred", ex);
@@ -158,19 +170,10 @@ public class GetDoc extends HttpServlet {
         }
     }
 
-    private static void setResponseContentAttributes(HttpServletRequest req, HttpServletResponse res,
-                                                     FileDocumentFile file, int len) {
-        // Workaround for #11619 - Android device refuses to download a file from build-in browser.
-        // Might not help if user agent is changed manually and does not contain "android".
-        final String browserId = req.getHeader("User-Agent");
-        final boolean attachment = req.getParameter("download") != null
-                || (browserId != null && browserId.toLowerCase().contains("android"));
+    private static void setResponseContentAttributes(HttpServletResponse res, FileDocumentFile file, int len) {
 
         final String filename = file.getFilename();
-        final String contentDisposition = (attachment ? "attachment" : "inline")
-                + "; filename=\""
-                + filename
-                + "\"";
+        final String contentDisposition = "attachment; filename=\"" + filename + "\"";
         final String mimeType = file.getMimeType();
 
         res.setContentLength(len);

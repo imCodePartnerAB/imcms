@@ -25,6 +25,7 @@ public class AdminUser extends HttpServlet {
     private final static String CHANGE_EXTERNAL_USER_URL = "/jsp/changeexternaluser.jsp";
     private static final LocalizedMessage BUTTON_TEXT__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/2006");
     private static final LocalizedMessage HEADLINE__EDIT_USER = new LocalizedMessage("templates/sv/AdminChangeUser.htm/4/1");
+    private static final long serialVersionUID = -2629630588609905055L;
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
@@ -45,17 +46,12 @@ public class AdminUser extends HttpServlet {
         userFinder.setUsersAddable(true);
         userFinder.setHeadline(HEADLINE__EDIT_USER);
         userFinder.setSelectButtonText(BUTTON_TEXT__EDIT_USER);
-        userFinder.setSelectUserCommand(new UserFinder.SelectUserCommand() {
-            public void selectUser(UserDomainObject selectedUser, HttpServletRequest request,
-                                   HttpServletResponse response) throws ServletException, IOException {
-                gotoChangeUser(request, response, user, selectedUser);
-            }
-        });
-        userFinder.setCancelCommand(new DispatchCommand() {
-            public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-                request.getRequestDispatcher("AdminManager").forward(request, response);
-            }
-        });
+        userFinder.setSelectUserCommand(
+                (selectedUser, request, response) -> gotoChangeUser(request, response, user, selectedUser)
+        );
+        userFinder.setCancelCommand(
+                (request, response) -> request.getRequestDispatcher("AdminManager").forward(request, response)
+        );
         userFinder.forward(req, res);
     }
 
@@ -89,12 +85,7 @@ public class AdminUser extends HttpServlet {
             log.debug(header + "- user have no permission to edit user values");
             AdminRoles.printErrorMessage(req, res, header, msg);
         } else {
-            final DispatchCommand returnCommand = new DispatchCommand() {
-                public void dispatch(HttpServletRequest request,
-                                     HttpServletResponse response) throws IOException, ServletException {
-                    doGet(request, response);
-                }
-            };
+            final DispatchCommand returnCommand = this::doGet;
             DispatchCommand saveAndReturnCommand = new SaveUserAndReturnCommand(userToChange, returnCommand);
             UserEditorPage userEditorPage = new UserEditorPage(userToChange, saveAndReturnCommand, returnCommand);
             userEditorPage.forward(req, res);
@@ -102,6 +93,7 @@ public class AdminUser extends HttpServlet {
     }
 
     public static class SaveUserAndReturnCommand implements DispatchCommand {
+        private static final long serialVersionUID = 7199727572954498276L;
         private final UserDomainObject userToChange;
         private final DispatchCommand returnCommand;
 

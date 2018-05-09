@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 
 import static java.io.File.separator;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @Transactional

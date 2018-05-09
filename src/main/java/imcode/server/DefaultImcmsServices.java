@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     private TemplateService templateService;
 
     @Autowired
-    public DefaultImcmsServices(Database database,
+    public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
                                 Properties imcmsProperties,
                                 LocalizedMessageProvider localizedMessageProvider,
                                 CachingFileLoader fileLoader,

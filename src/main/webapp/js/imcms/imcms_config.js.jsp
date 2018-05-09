@@ -1,6 +1,8 @@
-<%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
+${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
+    <%@ page contentType="text/javascript" pageEncoding="UTF-8" %>
 
     Imcms = {
+        expiredSessionTimeInMillis: ${pageContext.session.maxInactiveInterval * 1000},
         userLanguage: "${userLanguage}",
         contextPath: "${pageContext.request.contextPath}",
         imagesPath: "${imagesPath}",
@@ -84,6 +86,9 @@
             "imcms-image-rotate": "components/imcms_image_rotate.js",
             "imcms-image-resize": "components/imcms_image_resize.js",
             "imcms-image-edit-size-controls": "components/imcms_image_edit_size_controls.js",
+            "imcms-session-timeout-management": "components/imcms_session_timeout_management.js",
+            "imcms-date-time-validator": "components/imcms_date_time_validator.js",
+            "imcms-cookies": "components/imcms_cookies.js",
             //  <text editor components>
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
@@ -118,6 +123,7 @@
             "imcms-keywords-builder": "builders/components/imcms_keywords_builder.js",
             "imcms-date-time-builder": "builders/components/imcms_date_time_builder.js",
             "imcms-controls-builder": "builders/components/imcms_controls_builder.js",
+            "imcms-top-panel-visibility-initiator": "builders/components/imcms_top_panel_visibility_initiator.js",
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",
@@ -160,6 +166,7 @@
             "imcms-bem-builder": "builders/imcms_bem_builder.js",
             "imcms-image-content-builder": "builders/imcms_image_content_builder.js",
             "imcms-admin-panel-builder": "builders/imcms_admin_panel_builder.js",
+            "imcms-site-specific": "builders/imcms_site_specific_admin_panel.js",
             // </builders>
             // rest api
             "imcms-rest-api": "rest/imcms_rest_api.js",

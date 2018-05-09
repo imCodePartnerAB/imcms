@@ -15,7 +15,12 @@ import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,10 +55,9 @@ class DocumentStoringVisitor extends DocumentVisitor {
      * Returns file for FileDocumentFile.
      */
     public static File getFileForFileDocumentFile(VersionRef versionRef, String fileId) {
-        File filePath = Imcms.getServices().getConfig().getFilePath();
-        String filename = getFilenameForFileDocumentFile(versionRef, fileId);
+        final File filePath = Imcms.getServices().getConfig().getFilePath();
 
-        return new File(filePath, filename);
+        return new File(Imcms.getPath().getAbsolutePath(), new File(filePath, fileId).getPath());
     }
 
     /**

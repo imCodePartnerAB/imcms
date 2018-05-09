@@ -1,4 +1,5 @@
-Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
+Imcms.define("imcms-rest-api",
+    ["imcms", "imcms-session-timeout-management", "jquery"], function (imcms, sessionTimeoutManagement, $) {
 
     var API_PREFIX = "/api";
 
@@ -35,6 +36,7 @@ Imcms.define("imcms-rest-api", ["imcms", "jquery"], function (imcms, $) {
             data: this.json ? JSON.stringify(data) : data,
 
             success: function (response) {
+                sessionTimeoutManagement.initOrUpdateSessionTimeout();
                 logAjaxResponse(type, url, response);
                 callback && callback(response);
             },

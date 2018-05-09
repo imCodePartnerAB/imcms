@@ -1,10 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
+import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,24 +15,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 @Service
 @Transactional
 class DefaultImageFolderService implements ImageFolderService {
 
-    private final Function<File, ImageFolderDTO> fileToImageFolderDTO;
-
-    @Value("${ImagePath}")
+    private final BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO;
+    private final Function<File, ImageFileDTO> fileToImageFileDTO;
     private File imagesPath;
 
-    DefaultImageFolderService(Function<File, ImageFolderDTO> fileToImageFolderDTO) {
+    DefaultImageFolderService(BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO,
+                              Function<File, ImageFileDTO> fileToImageFileDTO,
+                              @Value("${ImagePath}") File imagesPath) {
+
         this.fileToImageFolderDTO = fileToImageFolderDTO;
+        this.fileToImageFileDTO = fileToImageFileDTO;
+        this.imagesPath = imagesPath;
     }
 
     @Override
     public ImageFolderDTO getImageFolder() {
-        return fileToImageFolderDTO.apply(imagesPath);
+        return fileToImageFolderDTO.apply(imagesPath, true);
     }
 
     @Override
@@ -57,6 +67,10 @@ class DefaultImageFolderService implements ImageFolderService {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
         }
 
+        if (folder.getAbsolutePath().equals(newFolder.getAbsolutePath())) {
+            return true;
+        }
+
         if (newFolder.exists()) {
             throw new FolderAlreadyExistException("Folder with path " + path + File.separator + newName + " already exist!");
         }
@@ -74,5 +88,29 @@ class DefaultImageFolderService implements ImageFolderService {
         }
 
         return FileUtility.forceDelete(folderToDelete);
+    }
+
+    @Override
+    public ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages) {
+
+        final File folderFile = new File(imagesPath, folderToGetImages.getPath());
+
+        final File[] files = folderFile.listFiles();
+
+        if (files == null) {
+            return folderToGetImages;
+        }
+
+        final List<ImageFileDTO> folderFiles = new ArrayList<>();
+
+        for (File file : files) {
+            if (Format.isImage(FilenameUtils.getExtension(file.getName()))) {
+                folderFiles.add(fileToImageFileDTO.apply(file));
+            }
+        }
+
+        folderToGetImages.setFiles(folderFiles);
+
+        return folderToGetImages;
     }
 }

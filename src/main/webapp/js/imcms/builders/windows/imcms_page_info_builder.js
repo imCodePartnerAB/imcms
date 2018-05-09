@@ -16,7 +16,7 @@ Imcms.define("imcms-page-info-builder",
         var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
 
         function buildPageInfoHead() {
-            var $head = pageInfoWindowBuilder.buildHead();
+            var $head = pageInfoWindowBuilder.buildHead("", closePageInfo);
             $title = $head.find(".imcms-head__title");
 
             return $head;
@@ -72,7 +72,9 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function closePageInfo() {
-            pageInfoWindowBuilder.closeWindow();
+            buildModalWindow(texts.confirmMessageOnCancel, function () {
+                pageInfoWindowBuilder.closeWindow()
+            });
         }
 
         function saveAndClose(onDocumentSavedCallback) {
@@ -80,7 +82,7 @@ Imcms.define("imcms-page-info-builder",
                 documentDTO = tabBuilder.saveData(documentDTO);
             });
 
-            closePageInfo();
+            pageInfoWindowBuilder.closeWindow();
 
             documentsRestApi.create(documentDTO).success(function (savedDoc) {
 
@@ -114,8 +116,12 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function confirmSaving() {
-            modalWindowBuilder.buildModalWindow(texts.confirmMessage, function (isUserConfirmedSaving) {
-                isUserConfirmedSaving ? saveAndClose() : "do nothing =)";
+            buildModalWindow(texts.confirmMessage, saveAndClose);
+        }
+
+        function buildModalWindow(message, onClickYes) {
+            modalWindowBuilder.buildModalWindow(message, function (isClickedYes) {
+                isClickedYes ? onClickYes() : "do nothing =)";
             });
         }
 

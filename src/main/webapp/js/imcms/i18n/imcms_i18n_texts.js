@@ -9,6 +9,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
     var texts = {
         "sv": {
             panel: {
+                settings: 'inställningar',
+                settingsTitle: 'Inställningar för administratörspanelen',
                 public: "offentlig",
                 publicTitle: 'Visar den publicerade vyn',
                 edit: "redigera",
@@ -19,6 +21,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 publishTitle: 'Publicerar arbetsversionen direkt',
                 pageInfo: "sid-info",
                 pageInfoTitle: 'Visar alla sidinställningar och metadata',
+                special: "Särskild",
+                specialTitle: "Visar kundspecifik administration",
                 document: "dokument",
                 documentTitle: 'Visar alla dokument i dokumentredigeraren',
                 admin: "admin",
@@ -29,6 +33,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 document: "Dokument",
                 newDocument: "Nytt dokument",
                 confirmMessage: "Spara ändringar?",
+                confirmMessageOnCancel: "Vill du verkligen avsluta?",
                 title: {
                     name: "Rubrik",
                     title: "Rubrik",
@@ -271,10 +276,14 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 output: "Valideringsresultat: ",
                 errors: " Fel",
                 warnings: " Varningar"
-            }
+            },
+            sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet. Omdirigera till inloggningssidan?",
+            contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat."
         },
         "en": {
             panel: {
+                settings: 'Settings',
+                settingsTitle: 'Admin panel settings',
                 public: 'public',
                 publicTitle: 'Shows the published view',
                 edit: 'edit',
@@ -285,6 +294,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 publishTitle: 'Publishes the working version directly',
                 pageInfo: "page info",
                 pageInfoTitle: 'Shows all page settings and meta-data',
+                special: "Special",
+                specialTitle: "Shows client specific administration",
                 document: "document",
                 documentTitle: 'Shows all documents in the document editor',
                 admin: "admin",
@@ -295,6 +306,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 document: "Document",
                 newDocument: "New Document",
                 confirmMessage: "Save changes?",
+                confirmMessageOnCancel: "Do you really want to exit?",
                 title: {
                     name: "Title",
                     title: "Title",
@@ -537,7 +549,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 output: "Validation result: ",
                 errors: " Errors",
                 warnings: " Warnings"
-            }
+            },
+            sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?",
+            contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving."
         }
     };
 

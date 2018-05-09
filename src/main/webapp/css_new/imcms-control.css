@@ -18,6 +18,36 @@
     background-image: url("../images_new/controls/icon_folder_controll_reverse_edit.png");
 }
 
+.imcms-control--edit.imcms-control--menu {
+    background-image: url("../images_new/controls/icon_menu_edit.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--menu:hover {
+    background-image: url("../images_new/controls/icon_menu_edit_hover.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--loop {
+    background-image: url("../images_new/controls/icon_loop_edit.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--loop:hover {
+    background-image: url("../images_new/controls/icon_loop_edit_hover.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--image {
+    background-image: url("../images_new/controls/icon_image_edit.png");
+    background-size: contain;
+}
+
+.imcms-control--edit.imcms-control--image:hover {
+    background-image: url("../images_new/controls/icon_image_edit_hover.png");
+    background-size: contain;
+}
+
 .imcms-control--copy {
     background-image: url("../images_new/controls/icon_folder_controll_copy.png");
     background-size: cover;

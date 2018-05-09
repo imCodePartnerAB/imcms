@@ -17,12 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,6 +42,8 @@ public class ImcmsSetupFilter implements Filter {
     public static final String JSESSIONID_COOKIE_NAME = "JSESSIONID";
     public static final String USER_LOGGED_IN_COOKIE_NAME = "userLoggedIn";
     public static final String USER_LANGUAGE_IN_COOKIE_NAME = "userLanguage";
+
+    private static final String USER_REMOTE_ADDRESS = "userRemoteAddress";
 
     private final Logger logger = Logger.getLogger(getClass());
     private FilterDelegate filterDelegate;
@@ -140,8 +137,13 @@ public class ImcmsSetupFilter implements Filter {
             ImcmsServices service = Imcms.getServices();
 
             if (session.isNew()) {
+                session.setAttribute(USER_REMOTE_ADDRESS, request.getRemoteAddr());
                 service.incrementSessionCounter();
                 setDomainSessionCookie(response, session);
+
+            } else if (isRemoteAddressInvalid(request, response)) {
+                request.getRequestDispatcher("/login").forward(request, response);
+                return;
             }
 
             String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
@@ -245,6 +247,36 @@ public class ImcmsSetupFilter implements Filter {
         } finally {
             Imcms.removeUser();
         }
+    }
+
+    private boolean isRemoteAddressInvalid(final HttpServletRequest request, final HttpServletResponse response) {
+
+        boolean invalidRemoteAddress = false;
+
+        final String cookieUserRemoteAddress = (String) request.getSession().getAttribute(USER_REMOTE_ADDRESS);
+
+        if (!cookieUserRemoteAddress.equals(request.getRemoteAddr())) {
+
+            Arrays.stream(request.getCookies())
+                    .filter(cookie -> {
+                        final String cookieName = cookie.getName();
+
+                        return cookieName.equals(JSESSIONID_COOKIE_NAME)
+                                || cookieName.equals(USER_LOGGED_IN_COOKIE_NAME)
+                                || cookieName.equals(USER_LANGUAGE_IN_COOKIE_NAME);
+                    })
+                    .forEach(cookie -> {
+                        cookie.setValue("");
+                        cookie.setPath("/");
+                        cookie.setMaxAge(0);
+
+                        response.addCookie(cookie);
+                    });
+
+            invalidRemoteAddress = true;
+        }
+
+        return invalidRemoteAddress;
     }
 
     /**
