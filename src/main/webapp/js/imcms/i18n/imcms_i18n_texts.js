@@ -11,6 +11,24 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             panel: {
                 settings: 'inställningar',
                 settingsTitle: 'Inställningar för administratörspanelen',
+                settingsList: {
+                    size: {
+                        name: "Panelstorlek",
+                        small: "Små",
+                        smallTitle: "Panelen blir mindre med färre texter",
+                        large: "Stor",
+                        largeTitle: "Panelen blir större med ytterligare texter"
+                    },
+                    appearance: {
+                        name: "Panel Utseende",
+                        auto: "Bil",
+                        autoTitle: "Visas automatiskt när du flyttar musen nära sidans topp, döljer på att klicka på musen utanför",
+                        hidden: "Dold",
+                        hiddenTitle: "Panelen är dold som standard, du kan öppna den genom att klicka på den lilla ikonen längst upp på sidan",
+                        visible: "Synlig",
+                        visibleTitle: "Panelen är alltid synlig"
+                    }
+                },
                 public: "offentlig",
                 publicTitle: 'Visar den publicerade vyn',
                 edit: "redigera",
@@ -284,6 +302,24 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             panel: {
                 settings: 'Settings',
                 settingsTitle: 'Admin panel settings',
+                settingsList: {
+                    size: {
+                        name: "Panel Size",
+                        small: "Small",
+                        smallTitle: "Panel becomes smaller with fewer texts",
+                        large: "Large",
+                        largeTitle: "Panel becomes larger with additional texts"
+                    },
+                    appearance: {
+                        name: "Panel Appearance",
+                        auto: "Auto",
+                        autoTitle: "Automatically appears when moving mouse near the page top, hides on clicking mouse outside",
+                        hidden: "Hidden",
+                        hiddenTitle: "Panel is hidden by default, you can open it by clicking on small icon on the top of the page",
+                        visible: "Visible",
+                        visibleTitle: "Panel is always visible"
+                    }
+                },
                 public: 'public',
                 publicTitle: 'Shows the published view',
                 edit: 'edit',

@@ -4,9 +4,10 @@
  */
 Imcms.define(
     "imcms-admin-panel-settings-builder",
-    ["imcms-bem-builder", "jquery"],
-    function (BEM, $) {
+    ["imcms-bem-builder", "imcms-i18n-texts", "jquery"],
+    function (BEM, texts, $) {
 
+        texts = texts.panel.settingsList;
         var $settings;
 
         function buildSection(name, settings) {
@@ -29,14 +30,16 @@ Imcms.define(
                 block: "admin-panel-settings-list",
                 elements: [
                     {
-                        "section": buildSection("Panel size", [
+                        "section": buildSection(texts.size.name, [
                             {
-                                text: "Small",
+                                text: texts.size.small,
+                                title: texts.size.smallTitle,
                                 click: function () {
                                     console.log("Setting 00")
                                 }
                             }, {
-                                text: "Large",
+                                text: texts.size.large,
+                                title: texts.size.largeTitle,
                                 "class": "settings-section__setting--enabled",
                                 click: function () {
                                     console.log("Setting 01")
@@ -44,20 +47,23 @@ Imcms.define(
                             }
                         ])
                     }, {
-                        "section": buildSection("Panel appearance", [
+                        "section": buildSection(texts.appearance.name, [
                             {
-                                text: "Auto",
+                                text: texts.appearance.auto,
+                                title: texts.appearance.autoTitle,
                                 "class": "settings-section__setting--enabled",
                                 click: function () {
                                     console.log("Setting 10")
                                 }
                             }, {
-                                text: "Hidden",
+                                text: texts.appearance.hidden,
+                                title: texts.appearance.hiddenTitle,
                                 click: function () {
                                     console.log("Setting 11")
                                 }
                             }, {
-                                text: "Visible",
+                                text: texts.appearance.visible,
+                                title: texts.appearance.visibleTitle,
                                 click: function () {
                                     console.log("Setting 12")
                                 }
@@ -77,7 +83,7 @@ Imcms.define(
                 ($settings || ($settings = buildSettings($(this)))).slideToggle();
             },
             hideSettings: function () {
-                $settings.slideUp();
+                $settings.slideUp(300);
             }
         }
     }
