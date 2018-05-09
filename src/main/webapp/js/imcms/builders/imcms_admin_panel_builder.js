@@ -9,7 +9,7 @@ Imcms.define("imcms-admin-panel-builder",
         "imcms-i18n-texts", "imcms-admin-panel-settings-builder"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
-              panelVisibility, texts, panelSettingsBuilder) {
+              panelVisibility, texts, panelSettings) {
         var $panelContainer, $panel;
 
         texts = texts.panel;
@@ -62,7 +62,7 @@ Imcms.define("imcms-admin-panel-builder",
                 {
                     name: 'settings',
                     tag: '<div>',
-                    onClick: panelSettingsBuilder.onSettingsClicked,
+                    onClick: panelSettings.onSettingsClicked,
                     content: texts.settings,
                     title: texts.settingsTitle,
                     modifiers: ["settings"]
@@ -195,7 +195,7 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         var isPanelBuilt = false;
-        var onPanelBuiltCallbacks = [];
+        var onPanelBuiltCallbacks = [panelSettings.applyCurrentSettings];
 
         return {
             buildPanel: function (opts) {
@@ -219,6 +219,8 @@ Imcms.define("imcms-admin-panel-builder",
                 onPanelBuiltCallbacks.forEach(function (callMe) {
                     setTimeout(callMe);
                 });
+
+                onPanelBuiltCallbacks = [];
             },
             callOnPanelBuilt: function (callOnPanelBuilt) {
                 if (!callOnPanelBuilt || !callOnPanelBuilt.call) return;

@@ -14,67 +14,76 @@ Imcms.define(
 
         var $settings;
 
+        var settings = {
+            small: {
+                id: "small",
+                text: texts.size.small,
+                title: texts.size.smallTitle,
+                onSettingClick: function () {
+                    console.log("panel small")
+                }
+            },
+            large: {
+                id: "large",
+                isDefault: true,
+                text: texts.size.large,
+                title: texts.size.largeTitle,
+                onSettingClick: function () {
+                    console.log("panel large")
+                }
+            },
+            auto: {
+                id: "auto",
+                isDefault: true,
+                text: texts.appearance.auto,
+                title: texts.appearance.autoTitle,
+                onSettingClick: function () {
+                    console.log("panel appearance auto")
+                }
+            },
+            hidden: {
+                id: "hidden",
+                text: texts.appearance.hidden,
+                title: texts.appearance.hiddenTitle,
+                onSettingClick: function () {
+                    console.log("panel appearance hidden")
+                }
+            },
+            visible: {
+                id: "visible",
+                text: texts.appearance.visible,
+                title: texts.appearance.visibleTitle,
+                onSettingClick: function () {
+                    console.log("panel appearance visible")
+                }
+            }
+        };
+
         var sections = {
             size: {
                 id: "panel-size",
                 text: texts.size.name,
-                settings: [{
-                    id: "panel-size-small",
-                    text: texts.size.small,
-                    title: texts.size.smallTitle,
-                    onSettingClick: function () {
-                        console.log("panel small")
-                    }
-                }, {
-                    id: "panel-size-large",
-                    isDefault: true,
-                    text: texts.size.large,
-                    title: texts.size.largeTitle,
-                    onSettingClick: function () {
-                        console.log("panel large")
-                    }
-                }]
+                settings: [settings.small, settings.large]
             },
             appearance: {
                 id: "panel-appearance",
                 text: texts.appearance.name,
-                settings: [{
-                    id: "panel-appearance-auto",
-                    isDefault: true,
-                    text: texts.appearance.auto,
-                    title: texts.appearance.autoTitle,
-                    onSettingClick: function () {
-                        console.log("panel appearance auto")
-                    }
-                }, {
-                    id: "panel-appearance-hidden",
-                    text: texts.appearance.hidden,
-                    title: texts.appearance.hiddenTitle,
-                    onSettingClick: function () {
-                        console.log("panel appearance hidden")
-                    }
-                }, {
-                    id: "panel-appearance-visible",
-                    text: texts.appearance.visible,
-                    title: texts.appearance.visibleTitle,
-                    onSettingClick: function () {
-                        console.log("panel appearance visible")
-                    }
-                }]
+                settings: [settings.auto, settings.hidden, settings.visible]
             }
         };
 
-        var allSections = [
-            sections.size,
-            sections.appearance
-        ];
+        var allSections = [];
+
+        for (var key in sections) {
+            allSections.push(sections[key]);
+        }
 
         function buildSection(section) {
             var savedSetting = cookies.getCookie(section.id);
 
             var settingsElements = section.settings.map(function (setting) {
                 var attributes = {
-                    id: setting.id,
+                    id: "imcms-" + section.id + "-" + setting.id,
                     text: setting.text,
                     title: setting.title
                 };
@@ -94,7 +103,7 @@ Imcms.define(
                     cookies.setCookie(section.id, setting.id);
                 };
 
-                if ((savedSetting && (savedSetting === setting.id))
+                if ((setting.id && (savedSetting === setting.id))
                     || (!savedSetting && setting.isDefault))
                 {
                     attributes["class"] = settingEnabledClass;
@@ -105,15 +114,16 @@ Imcms.define(
                 };
             });
 
-            return new BEM({
+            var sectionName = {"section-name": $("<div>", {text: section.text})};
+            var bemOptions = {
                 block: "settings-section",
-                elements: [{
-                    "section-name": $("<div>", {text: section.text})
-                }].concat(settingsElements)
-            }).buildBlockStructure("<div>");
+                elements: [sectionName].concat(settingsElements)
+            };
+
+            return new BEM(bemOptions).buildBlockStructure("<div>");
         }
 
-        function buildSettings($settingsButton) {
+        function buildSettings(settingsButton) {
             var sections$ = allSections.map(buildSection);
 
             var bemOptions = {
@@ -125,15 +135,27 @@ Imcms.define(
 
             return new BEM(bemOptions)
                 .buildBlockStructure("<div>", {style: "display: none;"})
-                .insertAfter($settingsButton);
+                .insertAfter(settingsButton);
         }
 
         return {
+            applyCurrentSettings: function () {
+                allSections
+                    .map(function (section) {
+                        return settings[cookies.getCookie(section.id)];
+                    })
+                    .filter(function (setting) {
+                        return setting && !setting.isDefault;
+                    })
+                    .forEach(function (setting) {
+                        setting.onSettingClick.call();
+                    });
+            },
             onSettingsClicked: function () {
-                ($settings || ($settings = buildSettings($(this)))).slideToggle();
+                ($settings || ($settings = buildSettings(this))).slideToggle();
             },
             hideSettings: function () {
-                $settings.slideUp(300);
+                $settings && $settings.slideUp(300);
             }
         }
     }
