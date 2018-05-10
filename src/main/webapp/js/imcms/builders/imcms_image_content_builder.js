@@ -514,17 +514,21 @@ Imcms.define("imcms-image-content-builder",
             $foldersContainer.append(viewModel.folders);
             $imagesContainer.append(viewModel.$images);
 
-            if (slashLastIndex === 0) { // path only with image name (image from root)
-                setUpSelectedImage(imagesRootFolder, selectedFullImagePath);
-            }
+            var imageName = selectedFullImagePath.substring(slashLastIndex + 1);
 
             if (activeFolder) {
                 openParentFolders(activeFolder);
 
                 loadImages(activeFolder, function () {
-                    setUpSelectedImage(activeFolder, selectedFullImagePath.substring(slashLastIndex))
+                    setUpSelectedImage(activeFolder, imageName);
                 });
+
             } else {
+
+                if (slashLastIndex === 0) { // path only with image name (image from root)
+                    setUpSelectedImage(imagesRootFolder, imageName);
+                }
+
                 activeFolder = imagesRootFolder;
                 showImagesIn(viewModel.root);
             }
@@ -546,10 +550,19 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function setUpSelectedImage(folder, selectedImageName) {
-            folder.$images.forEach(function ($image) {
-                var text = "/" + $image.find(".imcms-title").text();
+            folder.files.forEach(function (file) {
+                if (file.name === selectedImageName) {
+                    selectedImage = file;
+                }
+            });
 
-                if (text === selectedImageName) {
+            chooseSelectedImage(folder, selectedImageName);
+        }
+
+        function chooseSelectedImage(folder, selectedImageName) {
+            folder.$images.forEach(function ($image) {
+
+                if (selectedImageName === $image.find(".imcms-title").text()) {
                     $image.addClass("image-chosen");
                 }
             });
