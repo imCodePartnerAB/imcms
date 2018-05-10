@@ -568,10 +568,6 @@ Imcms.define("imcms-image-content-builder",
             });
         }
 
-        function setActiveFolderAndSelectedImageToNull() {
-            activeFolder = selectedImage = null;
-        }
-
         return {
             getSelectedImage: function () {
                 return selectedImage;
@@ -597,9 +593,8 @@ Imcms.define("imcms-image-content-builder",
                     viewModel.$images = viewModel.$images.concat($newImages);
                 });
             },
-            setActiveFolderAndSelectedImageToNull: setActiveFolderAndSelectedImageToNull,
             clearContent: function () {
-                setActiveFolderAndSelectedImageToNull();
+                activeFolder = selectedImage = null;
                 $imagesContainer.children().detach();
                 $foldersContainer.children().not("#closeFolders").detach();
                 viewModel = {

@@ -20,7 +20,6 @@ Imcms.define(
 
             function saveAndCloseWindow() {
                 showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
-                imageContentBuilder.setActiveFolderAndSelectedImageToNull();
                 contentManagerWindowBuilder.closeWindow();
             }
 
