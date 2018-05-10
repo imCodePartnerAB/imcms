@@ -9,6 +9,8 @@ import imcode.server.user.UserDomainObject;
 import org.apache.solr.common.SolrDocument;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -17,6 +19,7 @@ import java.util.Date;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DocumentStoredFieldsDTOTest {
 
     @Before

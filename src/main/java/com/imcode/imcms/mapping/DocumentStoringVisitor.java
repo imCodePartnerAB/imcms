@@ -4,6 +4,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -53,11 +54,29 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Returns file for FileDocumentFile.
+     *
+     * @deprecated use {@link DocumentStoringVisitor#getFileForFileDocumentFile(java.lang.String)}
      */
+    @Deprecated
     public static File getFileForFileDocumentFile(VersionRef versionRef, String fileId) {
+        return getFileForFileDocumentFile(fileId);
+    }
+
+    public static File getFileForFileDocumentFile(String fileId) {
         final File filePath = Imcms.getServices().getConfig().getFilePath();
 
         return new File(Imcms.getPath().getAbsolutePath(), new File(filePath, fileId).getPath());
+    }
+
+    static File getFileForFileDocumentFile(DocumentFile documentFile) {
+        final File filePath = Imcms.getServices().getConfig().getFilePath();
+        final File fileByRelativeName = new File(filePath, documentFile.getFilename());
+        final File fileByName = new File(Imcms.getPath().getAbsolutePath(), fileByRelativeName.getPath());
+
+        if (fileByName.exists()) return fileByName;
+
+        final File fileById = new File(filePath, documentFile.getFileId());
+        return new File(Imcms.getPath().getAbsolutePath(), fileById.getPath());
     }
 
     /**
@@ -94,8 +113,21 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Saves (possibly rewrites) file if its InputStreamSource has been changed.
+     *
+     * @deprecated use {@link DocumentStoringVisitor#saveFileDocumentFile(imcode.server.document.FileDocumentDomainObject.FileDocumentFile, java.lang.String)}
      */
-    protected void saveFileDocumentFile(VersionRef versionRef, FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+    @Deprecated
+    protected void saveFileDocumentFile(VersionRef versionRef,
+                                        FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
+                                        String fileId) {
+
+        saveFileDocumentFile(fileDocumentFile, fileId);
+    }
+
+    /**
+     * Saves (possibly rewrites) file if its InputStreamSource has been changed.
+     */
+    protected void saveFileDocumentFile(FileDocumentDomainObject.FileDocumentFile fileDocumentFile,
                                         String fileId) {
         try {
             InputStreamSource inputStreamSource = fileDocumentFile.getInputStreamSource();
@@ -103,14 +135,14 @@ class DocumentStoringVisitor extends DocumentVisitor {
             try {
                 in = inputStreamSource.getInputStream();
             } catch (FileNotFoundException e) {
-                throw new UnhandledException("The file for filedocument " + versionRef
+                throw new UnhandledException("The file for filedocument " + fileId
                         + " has disappeared.", e);
             }
             if (null == in) {
                 return;
             }
 
-            File file = getFileForFileDocumentFile(versionRef, fileId);
+            File file = getFileForFileDocumentFile(fileId);
 
             FileInputStreamSource fileInputStreamSource = new FileInputStreamSource(file);
             boolean sameFileOnDisk = file.exists() && inputStreamSource.equals(fileInputStreamSource);
@@ -164,7 +196,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
             docRepository.saveFileDocFile(documentFile);
 
-            saveFileDocumentFile(fileDocument.getVersionRef(), fileDocumentFile, fileId);
+            saveFileDocumentFile(fileDocumentFile, fileId);
         }
 
         DocumentMapper.deleteOtherFileDocumentFiles(fileDocument);
