@@ -90,6 +90,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-session-timeout-management": "components/imcms_session_timeout_management.js",
             "imcms-date-time-validator": "components/imcms_date_time_validator.js",
             "imcms-cookies": "components/imcms_cookies.js",
+            'imcms-displacing-array': "components/imcms_displacing_array.js",
             //  <text editor components>
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
