@@ -59,7 +59,7 @@ Imcms.define(
 
             $(document).click(function (event) {
 
-                if ($(event.target).closest(".imcms-admin").length) return;
+                if (!isPanelAppearanceEnabled || $(event.target).closest(".imcms-admin").length) return;
 
                 panelSettings.hideSettings();
                 $body.css({"top": 0});
