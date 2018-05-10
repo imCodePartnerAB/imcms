@@ -4,10 +4,23 @@
  */
 Imcms.define(
     "imcms-site-specific",
-    ["imcms-admin-panel-builder", "imcms-i18n-texts", "imcms-cookies", "imcms-top-panel-visibility-initiator", "jquery"],
-    function (panelBuilder, texts, cookies, panelVisibility, $) {
+    [
+        "imcms-admin-panel-builder", "imcms-i18n-texts", "imcms-cookies", "imcms-top-panel-visibility-initiator",
+        "imcms-events", "imcms-streams", "jquery"
+    ],
+    function (panelBuilder, texts, cookies, panelVisibility, events, streams, $) {
 
         texts = texts.panel;
+
+        var specialPanelHidingPrevented = false;
+
+        streams.subscribeFromStart("prevent special panel hide", function (content) {
+            specialPanelHidingPrevented = content.specialPanelHidingPrevented;
+        });
+
+        events.on("enable special panel hide", function () {
+            specialPanelHidingPrevented = false;
+        });
 
         function initSiteSpecific() {
             var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
@@ -16,12 +29,15 @@ Imcms.define(
                 var $imcms = $('#imcms-admin');
 
                 var adminPanelHeight = $('#imcms-admin-panel').outerHeight();
-                $imcmsAdminSpecial.css('top', "-" + $imcmsAdminSpecial.css('max-height')) // there is no real height now
+                var specialTopInitial = specialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
+                var specialTop = specialPanelHidingPrevented ? 0 : ("-" + $imcms.outerHeight());
+
+                $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now
                     .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
                     .addClass('imcms-special-hidden')
                     .appendTo($imcms)
                     .css("padding-top", adminPanelHeight) // exactly separated css calls!
-                    .css("top", "-" + $imcms.outerHeight());
+                    .css("top", specialTop);
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
