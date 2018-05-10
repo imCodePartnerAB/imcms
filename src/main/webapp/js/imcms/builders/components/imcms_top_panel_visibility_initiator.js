@@ -9,13 +9,13 @@ Imcms.define(
 
         var panelSensitivePixels = 15;
 
-        var isPanelEnabled = true; // by default
+        var isPanelAppearanceEnabled = true;
 
         events.on("enable admin panel", function () {
-            isPanelEnabled = true;
+            isPanelAppearanceEnabled = true;
         });
         events.on("disable admin panel", function () {
-            isPanelEnabled = false;
+            isPanelAppearanceEnabled = false;
         });
 
         function onPanelShown() {
@@ -45,7 +45,7 @@ Imcms.define(
 
             $(document).mousemove(function (event) {
 
-                var isPanelDisabledOrMouseNotInSensitiveArea = !isPanelEnabled
+                var isPanelDisabledOrMouseNotInSensitiveArea = !isPanelAppearanceEnabled
                     || (event.clientY < 0)
                     || (event.clientY > panelSensitivePixels);
 
