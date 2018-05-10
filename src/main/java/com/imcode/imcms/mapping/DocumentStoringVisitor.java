@@ -4,6 +4,7 @@ import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.model.DocumentFile;
 import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -65,6 +66,17 @@ class DocumentStoringVisitor extends DocumentVisitor {
         final File filePath = Imcms.getServices().getConfig().getFilePath();
 
         return new File(Imcms.getPath().getAbsolutePath(), new File(filePath, fileId).getPath());
+    }
+
+    static File getFileForFileDocumentFile(DocumentFile documentFile) {
+        final File filePath = Imcms.getServices().getConfig().getFilePath();
+        final File fileByRelativeName = new File(filePath, documentFile.getFilename());
+        final File fileByName = new File(Imcms.getPath().getAbsolutePath(), fileByRelativeName.getPath());
+
+        if (fileByName.exists()) return fileByName;
+
+        final File fileById = new File(filePath, documentFile.getFileId());
+        return new File(Imcms.getPath().getAbsolutePath(), fileById.getPath());
     }
 
     /**
