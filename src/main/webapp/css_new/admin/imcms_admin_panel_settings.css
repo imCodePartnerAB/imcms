@@ -41,6 +41,7 @@
 
 .settings-section__setting:hover {
     background-color: #d0e9f9;
+    margin-left: 1px;
 }
 
 .settings-section__setting--enabled {
