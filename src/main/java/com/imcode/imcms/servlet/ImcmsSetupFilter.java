@@ -17,7 +17,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -305,6 +310,16 @@ public class ImcmsSetupFilter implements Filter {
 
             if (null != document) {
                 if (Utility.isTextDocument(document)) {
+
+                    final UserDomainObject user = Utility.getLoggedOnUser(request);
+
+                    if (user.isDefaultUser() && !document.isPublished()
+                            || !user.isAdmin() && document.isDisapproved()) {
+
+                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                        return;
+                    }
+
                     final String newPath = "/api/viewDoc" + request.getServletPath();
                     request.getRequestDispatcher(newPath).forward(request, response);
 
