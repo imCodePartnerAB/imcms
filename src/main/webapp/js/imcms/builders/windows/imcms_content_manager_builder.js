@@ -19,8 +19,8 @@ Imcms.define(
             var $showHideFoldersButton;
 
             function saveAndCloseWindow() {
-                imageContentBuilder.setActiveFolderToNull();
                 showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
+                imageContentBuilder.setActiveFolderAndSelectedImageToNull();
                 contentManagerWindowBuilder.closeWindow();
             }
 

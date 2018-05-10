@@ -568,8 +568,8 @@ Imcms.define("imcms-image-content-builder",
             });
         }
 
-        function setActiveFolderToNull() {
-            activeFolder = null;
+        function setActiveFolderAndSelectedImageToNull() {
+            activeFolder = selectedImage = null;
         }
 
         return {
@@ -597,9 +597,9 @@ Imcms.define("imcms-image-content-builder",
                     viewModel.$images = viewModel.$images.concat($newImages);
                 });
             },
-            setActiveFolderToNull: setActiveFolderToNull,
+            setActiveFolderAndSelectedImageToNull: setActiveFolderAndSelectedImageToNull,
             clearContent: function () {
-                setActiveFolderToNull();
+                setActiveFolderAndSelectedImageToNull();
                 $imagesContainer.children().detach();
                 $foldersContainer.children().not("#closeFolders").detach();
                 viewModel = {
