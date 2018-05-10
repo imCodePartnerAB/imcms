@@ -52,6 +52,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
 import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
@@ -801,8 +802,7 @@ public class DocumentMapper implements DocumentGetter {
 
         @Override
         public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(
-                    VersionRef.of(fileDocumentId, fileDocument.getVersionNo()), fileId));
+            boolean correctFileForFileDocumentFile = file.equals(getFileForFileDocumentFile(fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return fileDocumentId == fileDocument.getId()
                     && docVersionNo == fileDocument.getVersionNo()
