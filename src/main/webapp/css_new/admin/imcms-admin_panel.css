@@ -326,6 +326,14 @@
     padding-bottom: 6px;
 }
 
+.imcms-panel-visible {
+    position: inherit;
+}
+
+.imcms-panel-visible .imcms-admin-panel {
+    position: sticky;
+}
+
 /* media */
 
 @media screen and (max-width: 1800px) {
