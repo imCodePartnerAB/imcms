@@ -4,10 +4,12 @@
  */
 Imcms.define(
     "imcms-admin-panel-settings-builder",
-    ["imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "jquery"],
-    function (BEM, cookies, texts, $) {
+    ["imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "jquery", "imcms-events", "imcms-streams"],
+    function (BEM, cookies, texts, $, events, sreams) {
 
         texts = texts.panel.settingsList;
+
+        var specialPanelStreamPublisher = sreams.createPublisherOnTopic("prevent special panel hide");
 
         var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
         var settingEnabledClassSelector = "." + settingEnabledClass;
@@ -45,7 +47,10 @@ Imcms.define(
                 text: texts.appearance.auto,
                 title: texts.appearance.autoTitle,
                 onSettingClick: function () {
-                    console.log("panel appearance auto")
+                    events.trigger("enable admin panel");
+                    events.trigger("enable special panel hide");
+                    $("#imcms-admin").removeClass("imcms-panel-visible");
+                    console.log("panel appearance auto");
                 }
             },
             hidden: {
@@ -53,7 +58,8 @@ Imcms.define(
                 text: texts.appearance.hidden,
                 title: texts.appearance.hiddenTitle,
                 onSettingClick: function () {
-                    console.log("panel appearance hidden")
+                    events.trigger("enable special panel hide");
+                    console.log("panel appearance hidden");
                 }
             },
             visible: {
@@ -61,7 +67,16 @@ Imcms.define(
                 text: texts.appearance.visible,
                 title: texts.appearance.visibleTitle,
                 onSettingClick: function () {
-                    console.log("panel appearance visible")
+                    specialPanelStreamPublisher.publish({
+                        specialPanelHidingPrevented: true
+                    });
+                    events.trigger("disable admin panel");
+
+                    $("#imcms-admin").addClass("imcms-panel-visible");
+                    $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
+                    $("body").css("top", 0);
+
+                    console.log("panel appearance visible");
                 }
             }
         };
