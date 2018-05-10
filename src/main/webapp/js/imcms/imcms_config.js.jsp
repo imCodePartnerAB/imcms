@@ -67,7 +67,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
                 }
             },
             "imcms-tests": "imcms_tests.js",
-            "imcms-events": "events/imcms_events.js", // events
+            "imcms-events": "events/imcms_events.js",
+            "imcms-streams": "streams/imcms_streams.js",
             "imcms-i18n-texts": "i18n/imcms_i18n_texts.js", // languages support
             // <components>
             "imcms-document-types": "components/imcms_document_types.js",
