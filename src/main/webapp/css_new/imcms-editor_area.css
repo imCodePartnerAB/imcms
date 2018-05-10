@@ -46,7 +46,7 @@
 }
 
 .imcms-editor-area--image {
-    width: fit-content;
+    width: auto;
 }
 
 .imcms-editor-area__content-wrap,
