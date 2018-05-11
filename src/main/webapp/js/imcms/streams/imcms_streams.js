@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.05.18
  */
-Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingArray) {
+Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingList) {
 
     var Subscriber = function (topic) {
         (this.topic = topic).addSubscriber(this);
@@ -14,6 +14,10 @@ Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingAr
         onPublish: function (doOnPublish) {
             this.doOnPublish = doOnPublish;
             return this;
+        },
+        runFromLast: function () {
+            var lastPublication = this.topic.getLastPublication();
+            lastPublication && this.doOnPublish(lastPublication);
         },
         runFromStart: function () {
             this.topic.forEachPublication(this.reactOnPublication.bind(this))
@@ -30,8 +34,8 @@ Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingAr
 
     var Topic = function (name) {
         this.name = name;
-        this.publications = new DisplacingArray(1024);
-        this.subscribers = new DisplacingArray(1024);
+        this.publications = new DisplacingList(1024);
+        this.subscribers = new DisplacingList(1024);
     };
 
     Topic.prototype = {
@@ -41,6 +45,9 @@ Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingAr
         },
         forEachPublication: function (doOnPublication) {
             this.publications.forEach(doOnPublication);
+        },
+        getLastPublication: function () {
+            return this.publications.get(this.publications.length - 1);
         },
         addSubscriber: function (subscriber) {
             this.subscribers.push(subscriber);
@@ -80,6 +87,11 @@ Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingAr
     return {
         createSubscriberOnTopic: function (topicName) {
             return new Subscriber(getOrCreateTopic(topicName));
+        },
+        subscribeFromLast: function (topicName, doOnPublish) {
+            this.createSubscriberOnTopic(topicName)
+                .onPublish(doOnPublish)
+                .runFromLast();
         },
         subscribeFromStart: function (topicName, doOnPublish) {
             this.createSubscriberOnTopic(topicName)
