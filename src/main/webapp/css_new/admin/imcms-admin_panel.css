@@ -328,7 +328,7 @@
 }
 
 .imcms-panel-visible {
-    position: inherit;
+    position: relative;
 }
 
 .imcms-panel-visible .imcms-admin-panel {
