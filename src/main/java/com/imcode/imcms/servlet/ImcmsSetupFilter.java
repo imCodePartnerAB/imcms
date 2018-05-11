@@ -311,7 +311,7 @@ public class ImcmsSetupFilter implements Filter {
             if (null != document) {
                 if (Utility.isTextDocument(document)) {
 
-                    final UserDomainObject user = Utility.getLoggedOnUser(request);
+                    final UserDomainObject user = Imcms.getUser();
 
                     if (user.isDefaultUser() && !document.isPublished()
                             || !user.isAdmin() && document.isDisapproved()) {
