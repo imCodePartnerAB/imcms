@@ -10,7 +10,6 @@ Imcms.define(
         texts = texts.panel.settingsList;
 
         var specialPanelPreventHidePublisher = streams.createPublisherOnTopic("prevent special panel hide");
-        var specialPanelRefreshPublisher = streams.createPublisherOnTopic("refresh special panel position");
         var adminPanelVisibilityPublisher = streams.createPublisherOnTopic("admin panel visibility");
 
         var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
@@ -32,7 +31,7 @@ Imcms.define(
                 title: texts.size.smallTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").addClass("imcms-admin-panel--small");
-                    specialPanelRefreshPublisher.publish();
+                    events.trigger("refresh special panel position");
                 })
             },
             large: {
@@ -42,7 +41,7 @@ Imcms.define(
                 title: texts.size.largeTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").removeClass("imcms-admin-panel--small");
-                    specialPanelRefreshPublisher.publish();
+                    events.trigger("refresh special panel position");
                 })
             },
             auto: {
@@ -54,8 +53,7 @@ Imcms.define(
                     events.trigger("enable admin panel");
                     events.trigger("enable special panel hide");
                     $("#imcms-admin").removeClass("imcms-panel-visible");
-                    specialPanelRefreshPublisher.publish();
-                    console.log("panel appearance auto");
+                    events.trigger("refresh special panel position");
                 }
             },
             hidden: {
@@ -84,16 +82,17 @@ Imcms.define(
                 title: texts.appearance.visibleTitle,
                 onSettingClick: function () {
                     $("body").css("top", 0);
+
                     specialPanelPreventHidePublisher.publish({
                         specialPanelHidingPrevented: true
                     });
-                    events.trigger("disable admin panel");
+
+                    events.trigger("disable admin panel"); // well, yeah...
 
                     $("#imcms-admin").addClass("imcms-panel-visible");
                     $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
-                    specialPanelRefreshPublisher.publish();
 
-                    console.log("panel appearance visible");
+                    events.trigger("refresh special panel position");
                 }
             }
         };
