@@ -34,6 +34,10 @@ Imcms.define(
             panels$.forEach(hidePanel);
         }
 
+        streams.subscribeFromStart("admin panel visibility", function (content) {
+            content.hidePanel && hidePanels();
+        });
+
         function onPanelShown() {
             var bodyCss = ($(window).scrollTop() === 0)
                 ? {"top": $("#imcms-admin").height() || $("#imcms-admin-panel").height()}

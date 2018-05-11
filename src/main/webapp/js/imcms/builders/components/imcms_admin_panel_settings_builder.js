@@ -11,6 +11,7 @@ Imcms.define(
 
         var specialPanelPreventHidePublisher = streams.createPublisherOnTopic("prevent special panel hide");
         var specialPanelRefreshPublisher = streams.createPublisherOnTopic("refresh special panel position");
+        var adminPanelVisibilityPublisher = streams.createPublisherOnTopic("admin panel visibility");
 
         var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
         var settingEnabledClassSelector = "." + settingEnabledClass;
@@ -54,7 +55,6 @@ Imcms.define(
                     events.trigger("enable special panel hide");
                     $("#imcms-admin").removeClass("imcms-panel-visible");
                     specialPanelRefreshPublisher.publish();
-
                     console.log("panel appearance auto");
                 }
             },
@@ -63,9 +63,19 @@ Imcms.define(
                 text: texts.appearance.hidden,
                 title: texts.appearance.hiddenTitle,
                 onSettingClick: function () {
-                    events.trigger("enable special panel hide");
-                    specialPanelRefreshPublisher.publish();
-                    console.log("panel appearance hidden");
+                    alert("Not implemented");
+                    // hideSettings();
+                    // events.trigger("enable special panel hide");
+                    // events.trigger("disable admin panel");
+                    //
+                    // specialPanelRefreshPublisher.publish();
+                    // adminPanelVisibilityPublisher.publish({
+                    //     hidePanel: true
+                    // });
+                    //
+                    // // todo: implement button to show panel
+                    //
+                    // console.log("panel appearance hidden");
                 }
             },
             visible: {
