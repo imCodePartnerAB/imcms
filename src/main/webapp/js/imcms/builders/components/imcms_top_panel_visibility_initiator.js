@@ -11,15 +11,7 @@ Imcms.define(
         var panels$ = [];
 
         var listenersNotSet = true;
-        var isPanelAppearanceEnabled = true;
         var $body = $("body");
-
-        events.on("enable admin panel", function () {
-            isPanelAppearanceEnabled = true;
-        });
-        events.on("disable admin panel", function () {
-            isPanelAppearanceEnabled = false;
-        });
 
         function showPanels() {
             panels$
@@ -37,7 +29,7 @@ Imcms.define(
         streams.subscribeFromLast("admin panel visibility", function (content) {
             if (content.hidePanel) {
                 panelState.enableSpecialPanelHiding();
-                events.trigger("disable admin panel");
+                panelState.disablePanelAppearance();
                 panelState.refreshSpecialPanelPosition();
 
                 hidePanels();
@@ -70,7 +62,7 @@ Imcms.define(
 
             $(document).mousemove(function (event) {
 
-                var isPanelDisabledOrMouseNotInSensitiveArea = !isPanelAppearanceEnabled
+                var isPanelDisabledOrMouseNotInSensitiveArea = panelState.isPanelAppearanceDisabled
                     || (event.clientY < 0)
                     || (event.clientY > panelSensitivePixels);
 
@@ -86,7 +78,7 @@ Imcms.define(
                     panelSettings.hideSettings();
                 }
 
-                if (!isPanelAppearanceEnabled || $(event.target).closest(".imcms-admin").length) return;
+                if (panelState.isPanelAppearanceDisabled || $(event.target).closest(".imcms-admin").length) return;
 
                 hidePanels();
             });

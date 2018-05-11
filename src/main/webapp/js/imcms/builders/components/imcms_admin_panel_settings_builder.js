@@ -32,7 +32,6 @@ Imcms.define(
                 title: texts.size.smallTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").addClass("imcms-admin-panel--small");
-                    panelState.refreshSpecialPanelPosition();
                 })
             },
             large: {
@@ -42,7 +41,6 @@ Imcms.define(
                 title: texts.size.largeTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").removeClass("imcms-admin-panel--small");
-                    panelState.refreshSpecialPanelPosition();
                 })
             },
             auto: {
@@ -87,8 +85,7 @@ Imcms.define(
                     $("body").css("top", 0);
 
                     panelState.disableSpecialPanelHiding();
-
-                    events.trigger("disable admin panel"); // well, yeah...
+                    panelState.disablePanelAppearance();
 
                     $("#imcms-admin").addClass("imcms-panel-visible");
                     $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
@@ -179,7 +176,8 @@ Imcms.define(
         }
 
         function refreshSettingsPosition() {
-            $settings && $settings.css("top", $("#imcms-admin-panel").outerHeight())
+            $settings && $settings.css("top", $("#imcms-admin-panel").outerHeight());
+            panelState.refreshSpecialPanelPosition();
         }
 
         function hideSettings() {
