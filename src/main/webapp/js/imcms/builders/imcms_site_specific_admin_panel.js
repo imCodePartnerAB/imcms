@@ -27,9 +27,7 @@ Imcms.define(
             }
         }
 
-        streams.createSubscriberOnTopic("refresh special panel position")
-            .onPublish(onSpecialPanelPositionRefresh);
-
+        events.on("refresh special panel position", onSpecialPanelPositionRefresh);
         events.on("enable special panel hide", function () {
             specialPanelHidingPrevented = false;
         });
