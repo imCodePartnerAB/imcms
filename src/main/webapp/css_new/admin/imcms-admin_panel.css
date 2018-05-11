@@ -165,6 +165,7 @@
 }
 
 #imcmsAdminSpecial {
+    width: 100%;
     position: relative;
     z-index: 1501;
     overflow: hidden;
@@ -315,7 +316,7 @@
 }
 
 .imcms-admin-panel.imcms-admin-panel--small {
-    min-height: 30px;
+    min-height: 35px;
     max-height: 40px;
     padding-top: 5px;
 }
@@ -331,7 +332,7 @@
 }
 
 .imcms-panel-visible .imcms-admin-panel {
-    position: sticky;
+    position: relative;
 }
 
 /* media */
@@ -388,7 +389,7 @@
     }
 
     .imcms-admin-panel__item:last-of-type {
-        width: 50%;
+        width: 55%;
     }
 
     .imcms-panel__item:last-of-type button {
@@ -430,7 +431,7 @@
     }
 }
 
-@media screen and (max-width: 970px) {
+@media screen and (max-width: 1010px) {
     .imcms-admin-panel__item:first-of-type {
         display: none;
     }
@@ -440,20 +441,20 @@
     }
 }
 
-@media screen and (max-width: 865px) {
+@media screen and (max-width: 910px) {
     .imcms-admin-panel__item .imcms-flag {
         overflow: hidden;
         margin: 10px 0 0 0;
     }
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 850px) {
     .imcms-panel__item:last-child {
         width: unset;
     }
 }
 
-@media screen and (max-width: 790px) {
+@media screen and (max-width: 830px) {
     .imcms-panel__item {
         text-indent: -15000px;
     }
@@ -467,6 +468,12 @@
     .imcms-admin-panel__item {
         max-height: 50px;
         min-height: 50px;
+    }
+
+    .imcms-admin-panel--small .imcms-admin-panel__item {
+        min-height: 25px;
+        padding-top: 0;
+        max-height: 30px;
     }
 
     .imcms-admin-panel__item .imcms-flag {
@@ -495,7 +502,7 @@
     }
 }
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 790px) {
     .imcms-panel__item {
         min-width: 50px;
         max-width: 50px;
@@ -506,7 +513,7 @@
     }
 }
 
-@media screen and (max-width: 660px) {
+@media screen and (max-width: 700px) {
     .imcms-panel__item {
         min-width: 40px;
         max-width: 40px;
@@ -517,7 +524,7 @@
     }
 }
 
-@media screen and (max-width: 580px) {
+@media screen and (max-width: 600px) {
     .imcms-panel__item--publish-of:after,
     .imcms-panel__item--page-info:after,
     .imcms-panel__item--document:after,
@@ -540,14 +547,14 @@
     }
 }
 
-@media screen and (max-width: 470px) {
+@media screen and (max-width: 510px) {
     .imcms-panel__item {
         min-width: 25px;
         max-width: 25px;
     }
 }
 
-@media screen and (max-width: 420px) {
+@media screen and (max-width: 460px) {
     .imcms-panel__item {
         min-width: 20px;
         max-width: 20px;
