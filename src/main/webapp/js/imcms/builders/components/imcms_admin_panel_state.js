@@ -2,6 +2,7 @@ Imcms.define("imcms-admin-panel-state", ["jquery"], function ($) {
 
     var PanelState = function () {
         this.isSpecialPanelHidingPrevented = false;
+        this.isPanelAppearanceDisabled = false;
     };
 
     PanelState.prototype = {
@@ -18,6 +19,12 @@ Imcms.define("imcms-admin-panel-state", ["jquery"], function ($) {
         },
         enableSpecialPanelHiding: function () {
             this.isSpecialPanelHidingPrevented = false;
+        },
+        enablePanelAppearance: function () {
+            this.isPanelAppearanceDisabled = false;
+        },
+        disablePanelAppearance: function () {
+            this.isPanelAppearanceDisabled = true;
         }
     };
 
