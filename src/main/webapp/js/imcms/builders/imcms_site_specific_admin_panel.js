@@ -18,6 +18,18 @@ Imcms.define(
             specialPanelHidingPrevented = content.specialPanelHidingPrevented;
         });
 
+        function onSpecialPanelPositionRefresh() {
+            var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
+
+            if ($imcmsAdminSpecial.length) {
+                var adminPanelHeight = specialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
+                $imcmsAdminSpecial.css("padding-top", adminPanelHeight);
+            }
+        }
+
+        streams.createSubscriberOnTopic("refresh special panel position")
+            .onPublish(onSpecialPanelPositionRefresh);
+
         events.on("enable special panel hide", function () {
             specialPanelHidingPrevented = false;
         });
@@ -28,7 +40,7 @@ Imcms.define(
             if ($imcmsAdminSpecial.length) {
                 var $imcms = $('#imcms-admin');
 
-                var adminPanelHeight = $('#imcms-admin-panel').outerHeight();
+                var adminPanelHeight = specialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
                 var specialTopInitial = specialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
 
                 $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now

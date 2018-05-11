@@ -9,7 +9,8 @@ Imcms.define(
 
         texts = texts.panel.settingsList;
 
-        var specialPanelStreamPublisher = streams.createPublisherOnTopic("prevent special panel hide");
+        var specialPanelPreventHidePublisher = streams.createPublisherOnTopic("prevent special panel hide");
+        var specialPanelRefreshPublisher = streams.createPublisherOnTopic("refresh special panel position");
 
         var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
         var settingEnabledClassSelector = "." + settingEnabledClass;
@@ -50,6 +51,8 @@ Imcms.define(
                     events.trigger("enable admin panel");
                     events.trigger("enable special panel hide");
                     $("#imcms-admin").removeClass("imcms-panel-visible");
+                    specialPanelRefreshPublisher.publish();
+
                     console.log("panel appearance auto");
                 }
             },
@@ -59,6 +62,7 @@ Imcms.define(
                 title: texts.appearance.hiddenTitle,
                 onSettingClick: function () {
                     events.trigger("enable special panel hide");
+                    specialPanelRefreshPublisher.publish();
                     console.log("panel appearance hidden");
                 }
             },
@@ -67,14 +71,15 @@ Imcms.define(
                 text: texts.appearance.visible,
                 title: texts.appearance.visibleTitle,
                 onSettingClick: function () {
-                    specialPanelStreamPublisher.publish({
+                    $("body").css("top", 0);
+                    specialPanelPreventHidePublisher.publish({
                         specialPanelHidingPrevented: true
                     });
                     events.trigger("disable admin panel");
 
                     $("#imcms-admin").addClass("imcms-panel-visible");
                     $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
-                    $("body").css("top", 0);
+                    specialPanelRefreshPublisher.publish();
 
                     console.log("panel appearance visible");
                 }
