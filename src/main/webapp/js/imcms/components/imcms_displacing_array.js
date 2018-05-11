@@ -21,6 +21,7 @@ Imcms.define('imcms-displacing-array', [], function () {
             }
 
             this.elements.push(content);
+            this.length = this.elements.length;
         },
         forEach: function (doForEach) {
             this.elements.forEach(doForEach);
