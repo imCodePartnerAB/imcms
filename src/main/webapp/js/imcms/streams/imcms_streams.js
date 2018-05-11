@@ -35,6 +35,10 @@ Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingAr
     };
 
     Topic.prototype = {
+        _logHowManyPublicationsSavedYed: function () {
+            console.log("%c Topic \"" + this.name + "\"" + " has " + this.publications.length + " publications so far.",
+                "color: orange");
+        },
         forEachPublication: function (doOnPublication) {
             this.publications.forEach(doOnPublication);
         },
@@ -46,6 +50,7 @@ Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingAr
         },
         savePublication: function (content) {
             this.publications.push(content);
+            this._logHowManyPublicationsSavedYed();
         },
         publish: function (content) {
             this.savePublication(content);
