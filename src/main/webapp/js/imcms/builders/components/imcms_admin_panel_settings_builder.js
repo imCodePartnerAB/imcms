@@ -4,14 +4,15 @@
  */
 Imcms.define(
     "imcms-admin-panel-settings-builder",
-    ["imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "jquery", "imcms-events", "imcms-streams"],
-    function (BEM, cookies, texts, $, events, streams) {
+    [
+        "imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "imcms-admin-panel-state", "jquery", "imcms-events",
+        "imcms-streams"
+    ],
+    function (BEM, cookies, texts, panelState, $, events, streams) {
 
         texts = texts.panel.settingsList;
 
-        var specialPanelPreventHidePublisher = streams.createPublisherOnTopic("prevent special panel hide");
         var adminPanelVisibilityPublisher = streams.createPublisherOnTopic("admin panel visibility");
-
         var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
         var settingEnabledClassSelector = "." + settingEnabledClass;
 
@@ -20,7 +21,7 @@ Imcms.define(
         function wrapWithPositionRefresh(refreshAfterMe) {
             return function () {
                 refreshAfterMe.call();
-                setTimeout(refreshSettingsPosition, 200);
+                setTimeout(refreshSettingsPosition, 200); // check: it may appear setTimeout is not required
             }
         }
 
@@ -31,7 +32,7 @@ Imcms.define(
                 title: texts.size.smallTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").addClass("imcms-admin-panel--small");
-                    events.trigger("refresh special panel position");
+                    panelState.refreshSpecialPanelPosition();
                 })
             },
             large: {
@@ -41,7 +42,7 @@ Imcms.define(
                 title: texts.size.largeTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
                     $("#imcms-admin-panel").removeClass("imcms-admin-panel--small");
-                    events.trigger("refresh special panel position");
+                    panelState.refreshSpecialPanelPosition();
                 })
             },
             auto: {
@@ -51,9 +52,11 @@ Imcms.define(
                 title: texts.appearance.autoTitle,
                 onSettingClick: function () {
                     events.trigger("enable admin panel");
-                    events.trigger("enable special panel hide");
+                    panelState.enableSpecialPanelHiding();
                     $("#imcms-admin").removeClass("imcms-panel-visible");
-                    events.trigger("refresh special panel position");
+                    panelState.refreshSpecialPanelPosition();
+
+                    // $panelButtonWarehouse.append($showPanelButton);
                 }
             },
             hidden: {
@@ -83,16 +86,15 @@ Imcms.define(
                 onSettingClick: function () {
                     $("body").css("top", 0);
 
-                    specialPanelPreventHidePublisher.publish({
-                        specialPanelHidingPrevented: true
-                    });
+                    panelState.disableSpecialPanelHiding();
 
                     events.trigger("disable admin panel"); // well, yeah...
 
                     $("#imcms-admin").addClass("imcms-panel-visible");
                     $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
 
-                    events.trigger("refresh special panel position");
+                    panelState.refreshSpecialPanelPosition();
+                    //$panelButtonWarehouse.append($showPanelButton);
                 }
             }
         };

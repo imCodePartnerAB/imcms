@@ -4,8 +4,8 @@
  */
 Imcms.define(
     "imcms-top-panel-visibility-initiator",
-    ["imcms-events", "imcms-admin-panel-settings-builder", "imcms-streams", "jquery"],
-    function (events, panelSettings, streams, $) {
+    ["imcms-events", "imcms-admin-panel-settings-builder", "imcms-admin-panel-state", "imcms-streams", "jquery"],
+    function (events, panelSettings, panelState, streams, $) {
 
         var panelSensitivePixels = 15;
         var panels$ = [];
@@ -36,9 +36,9 @@ Imcms.define(
 
         streams.subscribeFromLast("admin panel visibility", function (content) {
             if (content.hidePanel) {
-                events.trigger("enable special panel hide");
+                panelState.enableSpecialPanelHiding();
                 events.trigger("disable admin panel");
-                events.trigger("refresh special panel position");
+                panelState.refreshSpecialPanelPosition();
 
                 hidePanels();
             }

@@ -6,31 +6,11 @@ Imcms.define(
     "imcms-site-specific",
     [
         "imcms-admin-panel-builder", "imcms-i18n-texts", "imcms-cookies", "imcms-top-panel-visibility-initiator",
-        "imcms-events", "imcms-streams", "jquery"
+        "imcms-admin-panel-state", "imcms-events", "imcms-streams", "jquery"
     ],
-    function (panelBuilder, texts, cookies, panelVisibility, events, streams, $) {
+    function (panelBuilder, texts, cookies, panelVisibility, panelState, events, streams, $) {
 
         texts = texts.panel;
-
-        var specialPanelHidingPrevented = false;
-
-        streams.subscribeFromLast("prevent special panel hide", function (content) {
-            specialPanelHidingPrevented = content.specialPanelHidingPrevented;
-        });
-
-        function onSpecialPanelPositionRefresh() {
-            var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
-
-            if ($imcmsAdminSpecial.length) {
-                var adminPanelHeight = specialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
-                $imcmsAdminSpecial.css("padding-top", adminPanelHeight);
-            }
-        }
-
-        events.on("refresh special panel position", onSpecialPanelPositionRefresh);
-        events.on("enable special panel hide", function () {
-            specialPanelHidingPrevented = false;
-        });
 
         function initSiteSpecific() {
             var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
@@ -38,8 +18,8 @@ Imcms.define(
             if ($imcmsAdminSpecial.length) {
                 var $imcms = $('#imcms-admin');
 
-                var adminPanelHeight = specialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
-                var specialTopInitial = specialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
+                var adminPanelHeight = panelState.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
+                var specialTopInitial = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
 
                 $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now
                     .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
@@ -47,7 +27,7 @@ Imcms.define(
                     .appendTo($imcms)
                     .css("padding-top", adminPanelHeight); // exactly separated css calls!
 
-                var specialTop = specialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
+                var specialTop = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
                 $imcmsAdminSpecial.css("top", specialTop);
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
@@ -77,7 +57,7 @@ Imcms.define(
 
                     setTimeout(function () {
                         $collapsible.removeClass('imcms-special-hidden').css('top', 0);
-                        specialPanelHidingPrevented || panelVisibility.refreshBodyTop();
+                        panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                     });
 
                     $link.addClass('imcms-panel__item--active');
@@ -85,7 +65,7 @@ Imcms.define(
 
                 } else {
                     $collapsible.slideUp(200, function () {
-                            specialPanelHidingPrevented || panelVisibility.refreshBodyTop();
+                        panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                         })
                         .addClass('imcms-special-hidden')
                         .css('top', "-" + $imcms.css('height'));
