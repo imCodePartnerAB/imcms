@@ -76,7 +76,18 @@ class DocumentStoringVisitor extends DocumentVisitor {
         if (fileByName.exists()) return fileByName;
 
         final File fileById = new File(filePath, documentFile.getFileId());
-        return new File(Imcms.getPath().getAbsolutePath(), fileById.getPath());
+        final File realFileById = new File(Imcms.getPath().getAbsolutePath(), fileById.getPath());
+
+        if (realFileById.exists()) return realFileById;
+
+        final String escapedFileId = FileUtility.escapeFilename(documentFile.getFileId());
+        final String oldWayName = String.valueOf(documentFile.getDocId()) + "." + escapedFileId;
+        final File fileByIdOldWay = new File(filePath, oldWayName);
+        final File realFileByIdOldWay = new File(Imcms.getPath().getAbsolutePath(), fileByIdOldWay.getPath());
+
+        return (realFileByIdOldWay.exists())
+                ? realFileByIdOldWay
+                : new File(realFileByIdOldWay.getParentFile(), realFileByIdOldWay.getName() + "_se");
     }
 
     /**
