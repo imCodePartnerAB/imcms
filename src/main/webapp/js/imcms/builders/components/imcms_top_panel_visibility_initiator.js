@@ -58,10 +58,14 @@ Imcms.define(
             });
 
             $(document).click(function (event) {
+                if (!$(event.target).closest(".admin-panel-settings-list").length
+                    && !$(event.target).closest(".imcms-panel__item--settings").length)
+                {
+                    panelSettings.hideSettings();
+                }
 
                 if (!isPanelAppearanceEnabled || $(event.target).closest(".imcms-admin").length) return;
 
-                panelSettings.hideSettings();
                 $body.css({"top": 0});
                 panels$.forEach(hidePanel);
             });
