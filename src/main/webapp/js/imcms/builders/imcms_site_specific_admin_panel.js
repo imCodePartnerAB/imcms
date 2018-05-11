@@ -30,14 +30,15 @@ Imcms.define(
 
                 var adminPanelHeight = $('#imcms-admin-panel').outerHeight();
                 var specialTopInitial = specialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
-                var specialTop = specialPanelHidingPrevented ? 0 : ("-" + $imcms.outerHeight());
 
                 $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now
                     .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
                     .addClass('imcms-special-hidden')
                     .appendTo($imcms)
-                    .css("padding-top", adminPanelHeight) // exactly separated css calls!
-                    .css("top", specialTop);
+                    .css("padding-top", adminPanelHeight); // exactly separated css calls!
+
+                var specialTop = specialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
+                $imcmsAdminSpecial.css("top", specialTop);
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
