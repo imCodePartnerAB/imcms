@@ -30,7 +30,8 @@ Imcms.define(
                 text: texts.size.small,
                 title: texts.size.smallTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
-                    $("#imcms-admin-panel").addClass("imcms-admin-panel--small")
+                    $("#imcms-admin-panel").addClass("imcms-admin-panel--small");
+                    specialPanelRefreshPublisher.publish();
                 })
             },
             large: {
@@ -39,7 +40,8 @@ Imcms.define(
                 text: texts.size.large,
                 title: texts.size.largeTitle,
                 onSettingClick: wrapWithPositionRefresh(function () {
-                    $("#imcms-admin-panel").removeClass("imcms-admin-panel--small")
+                    $("#imcms-admin-panel").removeClass("imcms-admin-panel--small");
+                    specialPanelRefreshPublisher.publish();
                 })
             },
             auto: {
