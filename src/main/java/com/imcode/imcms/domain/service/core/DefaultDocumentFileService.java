@@ -20,7 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -186,10 +190,11 @@ class DefaultDocumentFileService
             while (destination.exists()) {
                 final String baseName = FilenameUtils.getBaseName(originalFilename);
                 final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
-                documentFile.setFilename(newName);
                 destination = new File(filesPath, newName);
                 copiesCount++;
             }
+
+            documentFile.setFilename(destination.getName());
 
             try {
                 file.transferTo(destination);
