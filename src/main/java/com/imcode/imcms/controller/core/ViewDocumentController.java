@@ -102,6 +102,14 @@ public class ViewDocumentController {
                                         ModelAndView mav) throws ServletException, IOException {
 
         final UserDomainObject user = Imcms.getUser();
+
+        if (user.isDefaultUser() && !textDocument.isPublished()
+                || !user.isAdmin() && textDocument.hasDisapprovedStatus()) {
+
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
         final int docId = textDocument.getId();
 
         final RestrictedPermission userEditPermission = accessService.getEditPermission(user.getId(), docId);
@@ -167,6 +175,7 @@ public class ViewDocumentController {
         mav.addObject("hasNewerVersion", versionService.hasNewerVersion(docId));
         mav.addObject("version", version);
         mav.addObject("editOptions", userEditPermission);
+        mav.addObject("isDocNew", textDocument.hasNewStatus());
 
         return mav;
     }

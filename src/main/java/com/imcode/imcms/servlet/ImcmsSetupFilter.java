@@ -311,15 +311,6 @@ public class ImcmsSetupFilter implements Filter {
             if (null != document) {
                 if (Utility.isTextDocument(document)) {
 
-                    final UserDomainObject user = Imcms.getUser();
-
-                    if (user.isDefaultUser() && !document.isPublished()
-                            || !user.isAdmin() && document.isDisapproved()) {
-
-                        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-                        return;
-                    }
-
                     final String newPath = "/api/viewDoc" + request.getServletPath();
                     request.getRequestDispatcher(newPath).forward(request, response);
 
