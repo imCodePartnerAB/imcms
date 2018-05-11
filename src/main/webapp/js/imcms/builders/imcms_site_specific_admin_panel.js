@@ -77,16 +77,18 @@ Imcms.define(
                 if ($collapsible.hasClass('imcms-special-hidden')) {
                     $collapsible.css('display', 'block');
 
-                    setTimeout(function () { // check if setTimeout really needed
+                    setTimeout(function () {
                         $collapsible.removeClass('imcms-special-hidden').css('top', 0);
-                        panelVisibility.refreshBodyTop();
+                        specialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                     });
 
                     $link.addClass('imcms-panel__item--active');
                     cookies.setCookie("imcms-client-special-area", "opened", {expires: 30});
 
                 } else {
-                    $collapsible.slideUp(200, panelVisibility.refreshBodyTop)
+                    $collapsible.slideUp(200, function () {
+                            specialPanelHidingPrevented || panelVisibility.refreshBodyTop();
+                        })
                         .addClass('imcms-special-hidden')
                         .css('top', "-" + $imcms.css('height'));
 
