@@ -5,11 +5,11 @@
 Imcms.define(
     "imcms-admin-panel-settings-builder",
     ["imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "jquery", "imcms-events", "imcms-streams"],
-    function (BEM, cookies, texts, $, events, sreams) {
+    function (BEM, cookies, texts, $, events, streams) {
 
         texts = texts.panel.settingsList;
 
-        var specialPanelStreamPublisher = sreams.createPublisherOnTopic("prevent special panel hide");
+        var specialPanelStreamPublisher = streams.createPublisherOnTopic("prevent special panel hide");
 
         var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
         var settingEnabledClassSelector = "." + settingEnabledClass;
