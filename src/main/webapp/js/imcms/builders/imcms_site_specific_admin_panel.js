@@ -14,7 +14,7 @@ Imcms.define(
 
         var specialPanelHidingPrevented = false;
 
-        streams.subscribeFromStart("prevent special panel hide", function (content) {
+        streams.subscribeFromLast("prevent special panel hide", function (content) {
             specialPanelHidingPrevented = content.specialPanelHidingPrevented;
         });
 

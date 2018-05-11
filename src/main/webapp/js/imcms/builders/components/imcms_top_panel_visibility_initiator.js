@@ -34,8 +34,14 @@ Imcms.define(
             panels$.forEach(hidePanel);
         }
 
-        streams.subscribeFromStart("admin panel visibility", function (content) {
-            content.hidePanel && hidePanels();
+        streams.subscribeFromLast("admin panel visibility", function (content) {
+            if (content.hidePanel) {
+                events.trigger("enable special panel hide");
+                events.trigger("disable admin panel");
+                events.trigger("refresh special panel position");
+
+                hidePanels();
+            }
         });
 
         function onPanelShown() {
