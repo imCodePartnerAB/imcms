@@ -4,12 +4,15 @@
  */
 Imcms.define(
     "imcms-top-panel-visibility-initiator",
-    ["imcms-events", "imcms-admin-panel-settings-builder", "jquery"],
-    function (events, panelSettings, $) {
+    ["imcms-events", "imcms-admin-panel-settings-builder", "imcms-streams", "jquery"],
+    function (events, panelSettings, streams, $) {
 
         var panelSensitivePixels = 15;
+        var panels$ = [];
 
+        var listenersNotSet = true;
         var isPanelAppearanceEnabled = true;
+        var $body = $("body");
 
         events.on("enable admin panel", function () {
             isPanelAppearanceEnabled = true;
@@ -17,6 +20,19 @@ Imcms.define(
         events.on("disable admin panel", function () {
             isPanelAppearanceEnabled = false;
         });
+
+        function showPanels() {
+            panels$
+                .filter(function ($panel) {
+                    return !$panel.hasClass('imcms-special-hidden');
+                })
+                .forEach(showPanel);
+        }
+
+        function hidePanels() {
+            $body.css({"top": 0});
+            panels$.forEach(hidePanel);
+        }
 
         function onPanelShown() {
             var bodyCss = ($(window).scrollTop() === 0)
@@ -41,7 +57,6 @@ Imcms.define(
 
         function setEventListeners() {
             listenersNotSet = false;
-            var $body = $("body");
 
             $(document).mousemove(function (event) {
 
@@ -51,10 +66,7 @@ Imcms.define(
 
                 if (isPanelDisabledOrMouseNotInSensitiveArea) return;
 
-                panels$.filter(function ($panel) {
-                        return !$panel.hasClass('imcms-special-hidden');
-                    })
-                    .forEach(showPanel);
+                showPanels();
             });
 
             $(document).click(function (event) {
@@ -66,13 +78,9 @@ Imcms.define(
 
                 if (!isPanelAppearanceEnabled || $(event.target).closest(".imcms-admin").length) return;
 
-                $body.css({"top": 0});
-                panels$.forEach(hidePanel);
+                hidePanels();
             });
         }
-
-        var panels$ = [];
-        var listenersNotSet = true;
 
         return {
             refreshBodyTop: onPanelShown,
