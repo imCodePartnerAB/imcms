@@ -308,7 +308,8 @@
 .imcms-admin-panel--small .imcms-panel__item--document:after,
 .imcms-admin-panel--small .imcms-panel__item--specific:after,
 .imcms-admin-panel--small .imcms-panel__item--admin:after {
-    height: 47px;
+    height: 35px;
+    top: -5px;
 }
 
 .imcms-admin-panel--small .imcms-admin-panel__item {
