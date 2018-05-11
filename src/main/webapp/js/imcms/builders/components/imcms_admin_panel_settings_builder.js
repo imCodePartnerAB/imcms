@@ -171,6 +171,10 @@ Imcms.define(
             $settings && $settings.css("top", $("#imcms-admin-panel").outerHeight())
         }
 
+        function hideSettings() {
+            $settings && $settings.slideUp(300);
+        }
+
         return {
             applyCurrentSettings: function () {
                 allSections
@@ -190,9 +194,7 @@ Imcms.define(
                 refreshSettingsPosition();
                 $settings.slideToggle();
             },
-            hideSettings: function () {
-                $settings && $settings.slideUp(300);
-            }
+            hideSettings: hideSettings
         }
     }
 );
