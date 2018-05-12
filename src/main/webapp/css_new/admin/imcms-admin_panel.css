@@ -328,12 +328,45 @@
     padding-bottom: 6px;
 }
 
+/* panel "visible" */
+
 .imcms-panel-visible {
     position: relative;
 }
 
 .imcms-panel-visible .imcms-admin-panel {
     position: relative;
+}
+
+/* "show panel" button */
+
+#imcms-switch-panel-visibility-button {
+    position: absolute;
+    height: 15px;
+    z-index: 10000;
+    display: none;
+}
+
+#imcms-switch-panel-visibility-button.imcms-button--up {
+    top: 55px;
+    height: 40px;
+    left: 10px;
+
+}
+
+#imcms-switch-panel-visibility-button.imcms-button--locked {
+    top: -15px;
+    opacity: 0.4;
+    background-position-y: 15px;
+    background-size: 14px;
+    width: 21px;
+    height: 21px;
+}
+
+#imcms-switch-panel-visibility-button.imcms-button--locked:hover {
+    opacity: 0.7;
+    content: url("../../images_new/admin_panel/icon_unlocked.png");
+    background-color: #0b94d8;
 }
 
 /* media */
