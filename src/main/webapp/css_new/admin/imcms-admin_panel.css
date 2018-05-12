@@ -369,7 +369,9 @@
 
 #imcms-switch-panel-visibility-button.imcms-button--locked:hover {
     opacity: 0.7;
-    content: url("../../images_new/admin_panel/icon_unlocked.png");
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-image: url("../../images_new/admin_panel/icon_unlocked.png");
     background-color: #0b94d8;
 }
 
