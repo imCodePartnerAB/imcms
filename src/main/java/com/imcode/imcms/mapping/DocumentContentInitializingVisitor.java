@@ -49,7 +49,7 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
             final File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(item);
             file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
-            file.setFilename(fileForFileDocument.getName());
+            file.setFilename(item.getFilename());
 
             doc.addFile(fileId, file);
 
