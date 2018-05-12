@@ -351,7 +351,11 @@
     top: 55px;
     height: 40px;
     left: 10px;
+    opacity: 0.7;
+}
 
+#imcms-switch-panel-visibility-button.imcms-button--up:hover {
+    opacity: 1;
 }
 
 #imcms-switch-panel-visibility-button.imcms-button--locked {

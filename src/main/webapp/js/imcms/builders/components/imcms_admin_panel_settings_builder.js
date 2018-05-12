@@ -105,10 +105,11 @@ Imcms.define(
         };
 
         function switchShowHideButton(title) {
-            $switchPanelVisibilityButton.slideUp()
-                .toggleClass("imcms-button--up imcms-button--locked imcms-button--positive")
-                .attr("title", title)
-                .slideDown();
+            $switchPanelVisibilityButton.fadeToggle(70, function () {
+                $(this).toggleClass("imcms-button--up imcms-button--locked imcms-button--positive")
+                    .attr("title", title)
+                    .fadeToggle(70);
+            });
         }
 
         function showPanel() {
@@ -180,8 +181,7 @@ Imcms.define(
                 };
 
                 if ((setting.id && (savedSetting === setting.id))
-                    || (!savedSetting && setting.isDefault))
-                {
+                    || (!savedSetting && setting.isDefault)) {
                     attributes["class"] = settingEnabledClass;
                 }
 
