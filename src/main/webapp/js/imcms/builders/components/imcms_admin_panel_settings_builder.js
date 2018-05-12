@@ -82,7 +82,14 @@ Imcms.define(
                     });
 
                     prependToAdminPanel($switchPanelVisibilityButton);
-                    $switchPanelVisibilityButton.css("display", "block");
+                    switchPanelVisibility = showPanel;
+
+                    setTimeout(function () {
+                        $switchPanelVisibilityButton.removeClass("imcms-button--up")
+                            .addClass("imcms-button--locked imcms-button--positive")
+                            .attr("title", "Unlock Admin Panel") //localize
+                            .fadeIn();
+                    });
                 }
             },
             visible: {
