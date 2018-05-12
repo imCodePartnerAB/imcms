@@ -358,13 +358,22 @@
     opacity: 1;
 }
 
+.imcms-admin-panel--small #imcms-switch-panel-visibility-button.imcms-button--up {
+    top: 25px;
+}
+
+.imcms-admin-panel--small #imcms-switch-panel-visibility-button.imcms-button--locked {
+    top: 20px;
+}
+
 #imcms-switch-panel-visibility-button.imcms-button--locked {
-    top: -15px;
+    top: 54px;
     opacity: 0.4;
     background-position-y: 15px;
     background-size: 14px;
     width: 21px;
     height: 21px;
+    left: 10px;
 }
 
 #imcms-switch-panel-visibility-button.imcms-button--locked:hover {

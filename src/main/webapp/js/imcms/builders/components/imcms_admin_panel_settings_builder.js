@@ -32,7 +32,7 @@ Imcms.define(
         });
 
         function prependToAdminPanel($prependMe) {
-            $prependMe.prependTo($("#imcms-admin"));
+            $prependMe.appendTo($("#imcms-admin-panel"));
         }
 
         var settings = {
@@ -88,7 +88,8 @@ Imcms.define(
                         $switchPanelVisibilityButton.removeClass("imcms-button--up")
                             .addClass("imcms-button--locked imcms-button--positive")
                             .attr("title", "Unlock Admin Panel") //localize
-                            .fadeIn();
+                            // .fadeIn();
+                            .css("display", "block")
                     });
                 }
             },
