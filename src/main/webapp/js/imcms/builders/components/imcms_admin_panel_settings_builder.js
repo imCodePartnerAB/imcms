@@ -25,6 +25,16 @@ Imcms.define(
             }
         }
 
+        var $switchPanelVisibilityButton = $("<button>", {
+            id: "imcms-switch-panel-visibility-button",
+            "class": "imcms-button imcms-button--positive imcms-button--locked",
+            title: "Unlock Admin Panel" // localize
+        });
+
+        function prependToAdminPanel($prependMe) {
+            $prependMe.prependTo($("#imcms-admin"));
+        }
+
         var settings = {
             small: {
                 id: "small",
@@ -49,12 +59,13 @@ Imcms.define(
                 text: texts.appearance.auto,
                 title: texts.appearance.autoTitle,
                 onSettingClick: function () {
-                    events.trigger("enable admin panel");
+                    panelState.enablePanelAppearance();
                     panelState.enableSpecialPanelHiding();
                     $("#imcms-admin").removeClass("imcms-panel-visible");
+
                     panelState.refreshSpecialPanelPosition();
 
-                    // $panelButtonWarehouse.append($showPanelButton);
+                    $switchPanelVisibilityButton.css("display", "none");
                 }
             },
             hidden: {
@@ -62,19 +73,16 @@ Imcms.define(
                 text: texts.appearance.hidden,
                 title: texts.appearance.hiddenTitle,
                 onSettingClick: function () {
-                    alert("Not implemented");
-                    // hideSettings();
-                    // events.trigger("enable special panel hide");
-                    // events.trigger("disable admin panel");
-                    //
-                    // specialPanelRefreshPublisher.publish();
-                    // adminPanelVisibilityPublisher.publish({
-                    //     hidePanel: true
-                    // });
-                    //
-                    // // todo: implement button to show panel
-                    //
-                    // console.log("panel appearance hidden");
+                    hideSettings();
+
+                    $("#imcms-admin").removeClass("imcms-panel-visible");
+
+                    adminPanelVisibilityPublisher.publish({
+                        hidePanel: true
+                    });
+
+                    prependToAdminPanel($switchPanelVisibilityButton);
+                    $switchPanelVisibilityButton.css("display", "block");
                 }
             },
             visible: {
@@ -91,10 +99,41 @@ Imcms.define(
                     $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
 
                     panelState.refreshSpecialPanelPosition();
-                    //$panelButtonWarehouse.append($showPanelButton);
+                    $switchPanelVisibilityButton.css("display", "none");
                 }
             }
         };
+
+        function switchShowHideButton(title) {
+            $switchPanelVisibilityButton.slideUp()
+                .toggleClass("imcms-button--up imcms-button--locked imcms-button--positive")
+                .attr("title", title)
+                .slideDown();
+        }
+
+        function showPanel() {
+            adminPanelVisibilityPublisher.publish({
+                showPanel: true
+            });
+
+            switchShowHideButton("Hide Admin Panel"); //localize
+            switchPanelVisibility = hidePanel;
+        }
+
+        function hidePanel() {
+            adminPanelVisibilityPublisher.publish({
+                hidePanel: true
+            });
+
+            switchShowHideButton("Unlock Admin Panel"); //localize
+            switchPanelVisibility = showPanel;
+        }
+
+        var switchPanelVisibility = showPanel;
+
+        $switchPanelVisibilityButton.click(function () {
+            switchPanelVisibility();
+        });
 
         var sections = {
             size: {
