@@ -30,10 +30,14 @@ Imcms.define(
             if (content.hidePanel) {
                 panelState.enableSpecialPanelHiding();
                 panelState.disablePanelAppearance();
-                panelState.refreshSpecialPanelPosition();
-
                 hidePanels();
-            }
+
+            } else if (content.showPanel) {
+                showPanels();
+
+            } else return;
+
+            panelState.refreshSpecialPanelPosition();
         });
 
         function onPanelShown() {
