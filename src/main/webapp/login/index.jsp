@@ -18,21 +18,26 @@
         <td class="imcmsAdmTable">
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                    <td class="imcmsAdmBgHead" colspan="6"><img
-                            src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="20"></td>
+                    <td class="imcmsAdmBgHead" colspan="6">
+                        <img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="20">
+                    </td>
                 </tr>
                 <tr class="imcmsAdmBgHead">
                     <td colspan="2"><img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="1"></td>
-                    <td nowrap><span class="imcmsAdmHeadingTop"><fmt:message key="templates/login/index.html/2"/></span>
+                    <td nowrap>
+                        <span class="imcmsAdmHeadingTop"><fmt:message key="templates/login/index.html/2"/></span>
                     </td>
-                    <td align="right"><a href="http://www.imcms.net/" target="_blank"><img
-                            src="${cp}/imcms/lang/images/admin/logo_imcms_admin.gif" width="100" height="20"
-                            alt="www.imcms.net" border="0"></a></td>
+                    <td align="right">
+                        <a href="http://www.imcms.net/" target="_blank">
+                            <img src="${cp}/imcms/lang/images/admin/logo_imcms_admin.gif" width="100" height="20"
+                                 alt="www.imcms.net" border="0"></a>
+                    </td>
                     <td colspan="2"><img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="1"></td>
                 </tr>
                 <tr>
-                    <td colspan="6" class="imcmsAdmBgHead"><img
-                            src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="20"></td>
+                    <td colspan="6" class="imcmsAdmBgHead">
+                        <img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="20">
+                    </td>
                 </tr>
                 <tr class="imcmsAdmBgHead">
                     <td colspan="2"><img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="1"></td>
@@ -125,20 +130,24 @@
                                             </c:if>
 
                                             <tr>
-                                                <td><span class="imcmsAdmText"><fmt:message
-                                                        key="templates/login/index.html/5"/></span></td>
+                                                <td>
+                                                    <span class="imcmsAdmText">
+                                                        <fmt:message key="templates/login/index.html/5"/>
+                                                    </span>
+                                                </td>
                                                 <td>&nbsp;</td>
-                                                <td><input type="text"
-                                                           name="<%=VerifyUser.REQUEST_PARAMETER__USERNAME%>" size="15"
-                                                           style="width:180px"></td>
+                                                <td><input type="text" size="15" style="width:180px"
+                                                           name="<%=VerifyUser.REQUEST_PARAMETER__USERNAME%>"></td>
                                             </tr>
                                             <tr>
-                                                <td><span class="imcmsAdmText"><fmt:message
-                                                        key="templates/login/index.html/6"/></span></td>
+                                                <td>
+                                                    <span class="imcmsAdmText">
+                                                        <fmt:message key="templates/login/index.html/6"/>
+                                                    </span>
+                                                </td>
                                                 <td>&nbsp;</td>
-                                                <td><input type="password"
-                                                           name="<%=VerifyUser.REQUEST_PARAMETER__PASSWORD%>" size="15"
-                                                           style="width:180px">
+                                                <td><input type="password" size="15" style="width:180px"
+                                                           name="<%=VerifyUser.REQUEST_PARAMETER__PASSWORD%>">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -206,20 +215,22 @@
                 </tr>
             </table>
         <td align="right" valign="top" background="${cp}/imcms/lang/images/admin/imcms_admin_shadow_right.gif">
-            <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_right_top.gif"
-                 width="12" height="12" alt="" border="0"></td>
+            <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_right_top.gif" width="12" height="12" alt=""
+                 border="0">
+        </td>
     </tr>
     <tr>
         <td colspan="2">
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                     <td background="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom.gif">
-                        <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom_left.gif"
-                             width="12" height="12" alt="" border="0"></td>
-                    <td background="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom.gif"
-                        align="right">
-                        <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom_right.gif"
-                             width="12" height="12" alt="" border="0"></td>
+                        <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom_left.gif" width="12"
+                             height="12" alt="" border="0">
+                    </td>
+                    <td background="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom.gif" align="right">
+                        <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_bottom_right.gif" width="12"
+                             height="12" alt="" border="0">
+                    </td>
                 </tr>
             </table>
         </td>
