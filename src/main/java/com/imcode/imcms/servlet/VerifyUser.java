@@ -36,7 +36,7 @@ public class VerifyUser extends HttpServlet {
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
 
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
-        String loginPage = "/imcms/login/index.jsp";
+        String loginPage = "/login/index.jsp";
 
         req.getSession().invalidate();
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
@@ -73,12 +73,12 @@ public class VerifyUser extends HttpServlet {
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
-        req.getRequestDispatcher("/imcms/login/index.jsp").forward(req, res);
+        req.getRequestDispatcher("/login/index.jsp").forward(req, res);
     }
 
 
     private void goToLoginSuccessfulPage(HttpServletRequest req,
-                                         HttpServletResponse res) throws IOException, ServletException {
+                                         HttpServletResponse res) throws IOException {
 
         new GoToLoginSuccessfulPageCommand().dispatch(req, res);
     }

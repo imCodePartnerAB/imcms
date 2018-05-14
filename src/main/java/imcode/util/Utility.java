@@ -327,7 +327,7 @@ public class Utility {
 
         response.setStatus(responseStatus);
         request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION);
-        request.getRequestDispatcher("/imcms/login/index.jsp?"
+        request.getRequestDispatcher("/login/index.jsp?"
                 + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString(), Imcms.UTF_8_ENCODING))
                 .forward(request, response);
     }

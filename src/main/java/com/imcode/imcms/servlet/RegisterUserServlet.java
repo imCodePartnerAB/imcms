@@ -36,6 +36,6 @@ public class RegisterUserServlet extends HttpServlet {
         } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
-        req.getRequestDispatcher("/imcms/login/").forward(req, resp);
+        req.getRequestDispatcher("/login/").forward(req, resp);
     }
 }
