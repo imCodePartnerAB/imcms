@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
@@ -327,8 +328,11 @@ public class Utility {
 
         response.setStatus(responseStatus);
         request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION);
-        request.getRequestDispatcher("/login/index.jsp?"
-                + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString(), Imcms.UTF_8_ENCODING))
+        final String loginPathWithNextUrl = ImcmsConstants.LOGIN_URL + "/?"
+                + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "="
+                + URLEncoder.encode(loginTarget.toString(), Imcms.UTF_8_ENCODING);
+
+        request.getRequestDispatcher(loginPathWithNextUrl)
                 .forward(request, response);
     }
 

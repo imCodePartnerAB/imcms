@@ -147,7 +147,7 @@ public class ImcmsSetupFilter implements Filter {
                 setDomainSessionCookie(response, session);
 
             } else if (isRemoteAddressInvalid(request, response)) {
-                request.getRequestDispatcher("/login").forward(request, response);
+                request.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(request, response);
                 return;
             }
 

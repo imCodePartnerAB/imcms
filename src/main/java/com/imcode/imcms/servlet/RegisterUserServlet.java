@@ -1,6 +1,7 @@
 package com.imcode.imcms.servlet;
 
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserAlreadyExistsException;
 import imcode.server.user.UserDomainObject;
@@ -36,6 +37,6 @@ public class RegisterUserServlet extends HttpServlet {
         } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
-        req.getRequestDispatcher("/login/").forward(req, resp);
+        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, resp);
     }
 }

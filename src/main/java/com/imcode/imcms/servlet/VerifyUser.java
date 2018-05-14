@@ -7,6 +7,7 @@ import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -36,11 +37,9 @@ public class VerifyUser extends HttpServlet {
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
 
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
-        String loginPage = "/login/index.jsp";
-
         req.getSession().invalidate();
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
-        req.getRequestDispatcher(loginPage).forward(req, res);
+        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, res);
     }
 
     public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -73,7 +72,7 @@ public class VerifyUser extends HttpServlet {
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
-        req.getRequestDispatcher("/login/index.jsp").forward(req, res);
+        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, res);
     }
 
 
