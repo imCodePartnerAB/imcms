@@ -367,7 +367,7 @@
 }
 
 #imcms-switch-panel-visibility-button.imcms-button--locked {
-    top: 54px;
+    top: 75px;
     opacity: 0.4;
     background-position-y: 15px;
     background-size: 14px;
@@ -389,6 +389,10 @@
 @media screen and (max-width: 1800px) {
     .imcms-admin-panel {
         min-height: 69px;
+    }
+
+    #imcms-switch-panel-visibility-button.imcms-button--locked {
+        top: 54px;
     }
 
     .imcms-panel__item--publish-of:after,
@@ -506,6 +510,10 @@
 @media screen and (max-width: 830px) {
     .imcms-panel__item {
         text-indent: -15000px;
+    }
+
+    #imcms-switch-panel-visibility-button.imcms-button--locked {
+        top: 36px;
     }
 
     .imcms-panel__item:last-of-type button {
