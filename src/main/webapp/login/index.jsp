@@ -13,7 +13,7 @@
     <title><fmt:message key="templates/login/index.html/1"/></title>
 
     <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css">
-    <script src="${cp}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <script src="${cp}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <ui:imcms_gui_outer_start/>

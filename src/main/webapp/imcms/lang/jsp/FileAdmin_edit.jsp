@@ -275,7 +275,7 @@ if (isHelpWin) { %>
 <title>:: imCMS ::</title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
 <script language="JavaScript">
 <!--
