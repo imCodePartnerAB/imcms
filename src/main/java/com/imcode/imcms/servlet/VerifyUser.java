@@ -56,6 +56,11 @@ public class VerifyUser extends HttpServlet {
         String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
         String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
+        if ((name == null) || (passwd == null)) {
+            goToLoginFailedPage(req, res);
+            return;
+        }
+
         ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
 
         if (null != cms) {
