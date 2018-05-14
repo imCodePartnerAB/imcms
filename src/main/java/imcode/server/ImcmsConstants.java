@@ -149,7 +149,7 @@ ImcmsConstants {
     public static final String ENG_CODE_ISO_639_2 = "eng";
     public static final String SWE_CODE_ISO_639_2 = "swe";
 
-    public static final String LOGIN_URL = "/login";
+    public static final String LOGIN_URL = "/login/index.jsp";
     public static final String LOGOUT_URL = "/login/logged_out.jsp";
 
     private ImcmsConstants() {
