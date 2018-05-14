@@ -7,7 +7,7 @@
 <head>
     <title><fmt:message key="templates/login/logged_out.html/1"/></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
 
 </head>
 <body bgcolor="#FFFFFF">

@@ -26,7 +26,7 @@
 <html>
 <head>
 <title><? templates/sv/AdminUserResp.htm/1 ?></title>
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 <script language="javascript">
 <!--

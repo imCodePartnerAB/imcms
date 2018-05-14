@@ -19,7 +19,7 @@ String imcms_url = "http://doc.imcms.net/4.0.0/" ;
 <head>
 
 	<title><%= heading %></title>
-	<link rel="stylesheet" type="text/css" href="<%= imcms_url %>/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="<%= imcms_url %>/imcms/css/imcms_admin.css">
 
 </head>
 <body>

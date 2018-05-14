@@ -8,7 +8,7 @@
 <head>
     <title><fmt:message key="templates/sv/no_page.html/1"/></title>
 
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css">
 
 </head>
 <body bgcolor="#FFFFFF">

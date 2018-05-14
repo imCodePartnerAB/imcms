@@ -9,7 +9,7 @@
 %>
 <head>
 <title><fmt:message key="${titlekey}"/></title>
-<link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/imcms/css/imcms_admin.css">
     <link rel="stylesheet" type="text/css" media="all"
           href="<%=request.getContextPath()%>/js/jscalendar/skins/aqua/theme.css.jsp"/>
     <script type="text/javascript" src="<%=request.getContextPath()%>/js/jscalendar/calendar.js"></script>

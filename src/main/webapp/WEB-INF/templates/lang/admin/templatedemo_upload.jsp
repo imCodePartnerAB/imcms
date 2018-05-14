@@ -8,7 +8,7 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
     <script language="JavaScript">

@@ -4,7 +4,8 @@
     <html>
     <head>
         <title><fmt:message key="install/htdocs/sv/jsp/internalerrorpage.jsp/1"/></title>
-        <link rel="stylesheet" type="text/css" href="${pageContext.servletContext.contextPath}/imcms/css/imcms_admin.css.jsp">
+        <link rel="stylesheet" type="text/css"
+              href="${pageContext.servletContext.contextPath}/imcms/css/imcms_admin.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <script>
             $( document ).ready(function() {

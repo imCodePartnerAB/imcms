@@ -12,7 +12,7 @@
 <head>
     <title><fmt:message key="templates/login/index.html/1"/></title>
 
-    <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css.jsp">
+    <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css">
     <script src="${cp}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
 
 </head>
