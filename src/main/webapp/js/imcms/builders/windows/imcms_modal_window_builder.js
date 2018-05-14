@@ -2,64 +2,31 @@ Imcms.define(
     "imcms-modal-window-builder",
     ["imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts"],
     function (BEM, components, $, texts) {
-        var $modal, $shadow;
 
         texts = texts.modal;
 
-        function createModalWindow(question, callback) {
-            function closeModal() {
-                $modal.add($shadow).detach();
-            }
+        function buildYesButton(callback) {
+            return components.buttons.positiveButton({
+                text: texts.yes,
+                click: callback
+            });
+        }
 
-            function buildHead() {
-                return new BEM({
-                    block: "imcms-head",
-                    elements: {
-                        "title": components.texts.titleText("<div>", texts.title)
-                    }
-                }).buildBlockStructure("<div>");
-            }
+        function buildNoButton(callback) {
+            return components.buttons.negativeButton({
+                text: texts.no,
+                click: callback
+            });
+        }
 
-            function buildBody(question) {
-                return new BEM({
-                    block: "imcms-modal-body",
-                    elements: {
-                        "text": components.texts.infoText("<div>", question)
-                    }
-                }).buildBlockStructure("<div>");
-            }
-
-            function buildFooter(callback) {
-                var $yesButton = components.buttons.positiveButton({
-                    text: texts.yes,
-                    click: function () {
-                        callback(true);
-                        closeModal();
-                    }
-                });
-
-                var $noButton = components.buttons.negativeButton({
-                    text: texts.no,
-                    click: function () {
-                        callback(false);
-                        closeModal();
-                    }
-                });
-
-                return new BEM({
-                    block: "imcms-modal-footer",
-                    elements: {
-                        "button": [$yesButton, $noButton]
-                    }
-                }).buildBlockStructure("<div>");
-            }
+        function buildFooter(onConfirmed, onDeclined) {
+            var $yesButton = buildYesButton(onConfirmed);
+            var $noButton = buildNoButton(onDeclined);
 
             return new BEM({
-                block: "imcms-modal-window",
+                block: "imcms-modal-footer",
                 elements: {
-                    "modal-head": buildHead(),
-                    "modal-body": buildBody(question),
-                    "modal-footer": buildFooter(callback)
+                    "button": [$yesButton, $noButton]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -68,12 +35,71 @@ Imcms.define(
             return $("<div>", {"class": "imcms-modal-layout imcms-modal-layout--front"});
         }
 
+        function buildHead() {
+            return new BEM({
+                block: "imcms-head",
+                elements: {
+                    "title": components.texts.titleText("<div>", texts.title)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildBody(question) {
+            return new BEM({
+                block: "imcms-modal-body",
+                elements: {
+                    "text": components.texts.infoText("<div>", question)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function createModalWindow(question, onConfirmed, onDeclined) {
+            return new BEM({
+                block: "imcms-modal-window",
+                elements: {
+                    "modal-head": buildHead(),
+                    "modal-body": buildBody(question),
+                    "modal-footer": buildFooter(onConfirmed, onDeclined)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        var ModalWindow = function (question, callback) {
+            this.onConfirmed = this.buildOnDecide(true, callback);
+            this.onDeclined = this.buildOnDecide(false, callback);
+            this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
+        };
+
+        ModalWindow.prototype = {
+
+            buildOnDecide: function (isConfirm, callback) {
+                var context = this;
+
+                return function () {
+                    callback(isConfirm);
+                    context.closeModal();
+                }
+            },
+
+            addShadow: function () {
+                this.$shadow = createLayout();
+                return this;
+            },
+
+            closeModal: function () {
+                this.$modal.add(this.$shadow).detach();
+            },
+
+            appendTo: function ($appendToMe) {
+                $appendToMe.append(this.$shadow, this.$modal);
+            }
+        };
+
         return {
             buildModalWindow: function (question, callback) {
-                $modal = createModalWindow(question, callback);
-                $shadow = createLayout();
-
-                $("body").append($shadow, $modal);
+                new ModalWindow(question, callback)
+                    .addShadow()
+                    .appendTo($("body"));
             }
         };
     }
