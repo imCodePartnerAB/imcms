@@ -1,51 +1,6 @@
 <%@ page contentType="text/javascript" pageEncoding="UTF-8"
 %>
 
-        /* *******************************************************************************************
-         *         Browser sniffer                                                                   *
-         ******************************************************************************************* */
-
-    var platf = navigator.platform;
-    var ua = navigator.userAgent;
-
-    var hasDocumentLayers = (document.layers);
-    var hasDocumentAll = (document.all);
-    var hasGetElementById = (document.getElementById);
-
-    var isGecko = inStr(ua, "Gecko");
-    var isOpera = inStr(ua, "Opera");
-    var isSafari = inStr(ua, "Safari");
-    var isWindows = inStr(platf, "Win32");
-    var isMac = inStr(platf, "Mac");
-
-    var isIE55 = (isWindows && hasDocumentAll && hasGetElementById && /MSIE \d+/.test(ua) && !isOpera);
-
-    function inStr(str, val, cas) {
-        var ret;
-        if (cas) { /* Case sensitive */
-            ret = (str.indexOf(val) != -1);
-        } else { /* Not Case sensitive */
-            str = str.toUpperCase();
-            val = val.toUpperCase();
-            ret = (str.indexOf(val) != -1);
-        }
-        return ret;
-    }
-
-        /* *******************************************************************************************
-         *         Functions                                                                         *
-         ******************************************************************************************* */
-
-    function singleclicked() {
-        if (isMac && isSafari) return true;
-        if (!("clicked" in this)) {
-            this.clicked = 1;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     function focusField(theFormName, theElementName) {
         var f = (!isNaN(theFormName)) ? eval("document.forms[" + theFormName + "]") : eval("document.forms." + theFormName);
         if (f) {
@@ -72,10 +27,6 @@
     function onSelectChange(str) {
         document.getElementsByName("hidden")[0].checked = (str.indexOf("(Hidden)") >= 0);
     }
-
-        /* *******************************************************************************************
-         *         POPUP functions                                                                   *
-         ******************************************************************************************* */
 
     function popWinOpen(winW, winH, sUrl, sName, iResize, iScroll) {
         var winX, winY;

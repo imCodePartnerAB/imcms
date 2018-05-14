@@ -14,11 +14,7 @@
     <script language="JavaScript">
 <!--
 function setSize() {
-    if(isGecko) {
-        document.getElementById("file").size = 85;
-    } else if (hasGetElementById) {
-        document.getElementById("file").style.width = 450;
-    }
+    document.getElementById("file").size = 85;
 }
 //-->
 </script>
