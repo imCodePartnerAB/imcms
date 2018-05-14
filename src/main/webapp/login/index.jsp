@@ -1,7 +1,6 @@
 <%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -11,10 +10,7 @@
 <html>
 <head>
     <title><fmt:message key="templates/login/index.html/1"/></title>
-
     <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css">
-    <script src="${cp}/js/imcms/imcms_admin.js" type="text/javascript"></script>
-
 </head>
 <body>
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">

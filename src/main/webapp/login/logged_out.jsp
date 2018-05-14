@@ -1,6 +1,4 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
@@ -8,9 +6,7 @@
 <html>
 <head>
     <title><fmt:message key="templates/login/logged_out.html/1"/></title>
-
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-
 </head>
 <body bgcolor="#FFFFFF">
 
