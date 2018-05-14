@@ -36,7 +36,7 @@ public class VerifyUser extends HttpServlet {
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
 
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
-        String loginPage = "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2() + "/login/index.jsp";
+        String loginPage = "/imcms/login/index.jsp";
 
         req.getSession().invalidate();
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
@@ -73,8 +73,7 @@ public class VerifyUser extends HttpServlet {
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
-        req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
-                + "/login/index.jsp").forward(req, res);
+        req.getRequestDispatcher("/imcms/login/index.jsp").forward(req, res);
     }
 
 
@@ -93,7 +92,7 @@ public class VerifyUser extends HttpServlet {
 
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
         public void dispatch(HttpServletRequest request,
-                             HttpServletResponse response) throws IOException, ServletException {
+                             HttpServletResponse response) throws IOException {
             String nexturl = "StartDoc";
             HttpSession session = request.getSession(true);
             if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null) {

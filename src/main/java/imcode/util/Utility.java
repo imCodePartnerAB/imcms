@@ -320,7 +320,6 @@ public class Utility {
                                       final int responseStatus,
                                       final StringBuffer loginTarget) throws IOException, ServletException {
 
-        UserDomainObject user = getLoggedOnUser(request);
         String queryString = request.getQueryString();
         if (null != queryString) {
             loginTarget.append("?").append(queryString);
@@ -328,7 +327,7 @@ public class Utility {
 
         response.setStatus(responseStatus);
         request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION);
-        request.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/login/index.jsp?"
+        request.getRequestDispatcher("/imcms/login/index.jsp?"
                 + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "=" + URLEncoder.encode(loginTarget.toString(), Imcms.UTF_8_ENCODING))
                 .forward(request, response);
     }
