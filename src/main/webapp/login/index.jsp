@@ -17,16 +17,9 @@
 
 </head>
 <body>
-<!-- gui_outer_start -->
 <table border="0" cellspacing="0" cellpadding="0" class="imcmsAdmTable" align="center">
     <tr>
         <td class="imcmsAdmTable">
-            <!-- /gui_outer_start -->
-
-            <c:set var="heading">
-                <fmt:message key="templates/login/index.html/2"/>
-            </c:set>
-            <!-- gui_head -->
             <table border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td class="imcmsAdmBgHead" colspan="6"><img
@@ -34,7 +27,8 @@
                 </tr>
                 <tr class="imcmsAdmBgHead">
                     <td colspan="2"><img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="1"></td>
-                    <td nowrap><span class="imcmsAdmHeadingTop">${heading}</span></td>
+                    <td nowrap><span class="imcmsAdmHeadingTop"><fmt:message key="templates/login/index.html/2"/></span>
+                    </td>
                     <td align="right"><a href="http://www.imcms.net/" target="_blank"><img
                             src="${cp}/imcms/lang/images/admin/logo_imcms_admin.gif" width="100" height="20"
                             alt="www.imcms.net" border="0"></a></td>
@@ -47,8 +41,6 @@
                 <tr class="imcmsAdmBgHead">
                     <td colspan="2"><img src="${cp}/imcms/lang/images/admin/1x1.gif" width="1" height="1"></td>
                     <td colspan="2">
-                        <!-- /gui_head -->
-
                         <table border="0" cellspacing="0" cellpadding="0" width="310">
                             <form action="">
                                 <tr>
@@ -91,7 +83,6 @@
                     <td><img
                             src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
                     <td colspan="2">
-                        <!-- /gui_mid -->
                         <table border="0" cellspacing="0" cellpadding="2" width="310">
                             <tr>
                                 <td colspan="2" nowrap>
@@ -174,7 +165,6 @@
                                 </td>
                             </tr>
                         </table>
-                        <!-- gui_bottom -->
                     </td>
                     <td><img
                             src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
@@ -202,8 +192,6 @@
                             src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
                 </tr>
             </table>
-            <!-- /gui_bottom -->
-            <!-- gui_outer_end -->
         <td align="right" valign="top" background="${cp}/imcms/lang/images/admin/imcms_admin_shadow_right.gif">
             <img src="${cp}/imcms/lang/images/admin/imcms_admin_shadow_right_top.gif"
                  width="12" height="12" alt="" border="0"></td>
@@ -224,6 +212,5 @@
         </td>
     </tr>
 </table>
-<!-- /gui_outer_end -->
 </body>
 </html>
