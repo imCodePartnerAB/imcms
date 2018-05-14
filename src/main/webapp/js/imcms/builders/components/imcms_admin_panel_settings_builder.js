@@ -84,13 +84,10 @@ Imcms.define(
                     prependToAdminPanel($switchPanelVisibilityButton);
                     switchPanelVisibility = showPanel;
 
-                    setTimeout(function () {
-                        $switchPanelVisibilityButton.removeClass("imcms-button--up")
-                            .addClass("imcms-button--locked imcms-button--positive")
-                            .attr("title", "Unlock Admin Panel") //localize
-                            // .fadeIn();
-                            .css("display", "block")
-                    });
+                    $switchPanelVisibilityButton.removeClass("imcms-button--up")
+                        .addClass("imcms-button--locked imcms-button--positive")
+                        .attr("title", "Unlock Admin Panel") //localize
+                        .fadeIn();
                 }
             },
             visible: {
@@ -189,7 +186,8 @@ Imcms.define(
                 };
 
                 if ((setting.id && (savedSetting === setting.id))
-                    || (!savedSetting && setting.isDefault)) {
+                    || (!savedSetting && setting.isDefault))
+                {
                     attributes["class"] = settingEnabledClass;
                 }
 
