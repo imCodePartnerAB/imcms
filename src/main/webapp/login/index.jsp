@@ -62,26 +62,33 @@
                             </form>
                         </table>
                     </td>
-                    <td colspan="2"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
+                    <td colspan="2">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
                 </tr>
                 <tr>
-                    <td class="imcmsAdmBgHead" colspan="6"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="20"></td>
+                    <td class="imcmsAdmBgHead" colspan="6">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="20">
+                    </td>
                 </tr>
                 <tr>
-                    <td height="10" class="imcmsAdmBorder"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td class="imcmsAdmBgCont" colspan="4"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td class="imcmsAdmBorder"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
+                    <td height="10" class="imcmsAdmBorder">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td class="imcmsAdmBgCont" colspan="4">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td class="imcmsAdmBorder">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
                 </tr>
                 <tr class="imcmsAdmBgCont">
-                    <td class="imcmsAdmBorder"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
+                    <td class="imcmsAdmBorder">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td>
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
                     <td colspan="2">
                         <table border="0" cellspacing="0" cellpadding="2" width="310">
                             <tr>
@@ -166,30 +173,40 @@
                             </tr>
                         </table>
                     </td>
-                    <td><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td class="imcmsAdmBorder"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
+                    <td>
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td class="imcmsAdmBorder">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
                 </tr>
                 <tr>
-                    <td height="10" class="imcmsAdmBorder"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td colspan="4" class="imcmsAdmBgCont"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td class="imcmsAdmBorder"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
+                    <td height="10" class="imcmsAdmBorder">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td colspan="4" class="imcmsAdmBgCont">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td class="imcmsAdmBorder">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
                 </tr>
                 <tr class="imcmsAdmBgCont">
-                    <td><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td><img
-                            src="${cp}/imcms/images/1x1.gif" width="24" height="1"></td>
-                    <td colspan="2"><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
-                    <td><img
-                            src="${cp}/imcms/images/1x1.gif" width="24" height="1"></td>
-                    <td><img
-                            src="${cp}/imcms/images/1x1.gif" width="1" height="1"></td>
+                    <td>
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td>
+                        <img src="${cp}/imcms/images/1x1.gif" width="24" height="1">
+                    </td>
+                    <td colspan="2">
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
+                    <td>
+                        <img src="${cp}/imcms/images/1x1.gif" width="24" height="1">
+                    </td>
+                    <td>
+                        <img src="${cp}/imcms/images/1x1.gif" width="1" height="1">
+                    </td>
                 </tr>
             </table>
         <td align="right" valign="top" background="${cp}/imcms/lang/images/admin/imcms_admin_shadow_right.gif">
