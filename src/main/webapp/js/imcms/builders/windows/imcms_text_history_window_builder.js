@@ -202,7 +202,9 @@ Imcms.define("imcms-text-history-window-builder",
         var textHistoryWindowBuilder = new WindowBuilder({
             factory: buildTextHistory,
             loadDataStrategy: loadData,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close",
+            onEnterKeyPressed: onWriteToTextField
         });
 
         return {
