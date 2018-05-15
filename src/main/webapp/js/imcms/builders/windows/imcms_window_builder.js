@@ -28,7 +28,11 @@ Imcms.define(
             this.factory = opts.factory;
             this.loadDataStrategy = opts.loadDataStrategy;
             this.clearDataStrategy = opts.clearDataStrategy;
-            this.onEscKeyPressed = opts.onEscKeyPressed;
+
+            this.onEscKeyPressed = (opts.onEscKeyPressed === "close")
+                ? this.closeWindow.bind(this)
+                : opts.onEscKeyPressed;
+
             this.onEnterKeyPressed = opts.onEnterKeyPressed;
             this.disableKeyBindings = opts.disableKeyBindings;
             this.$editor = undefined;
