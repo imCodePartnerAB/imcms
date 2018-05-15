@@ -22,16 +22,18 @@ Imcms.define("imcms-window-keys-controller", ["mousetrap"], function (mousetrap)
         var callback = callbackReceiver(callbacks[callbacks.length - 1]);
         unbindIfNeeds();
         callback && callback.call && callback.call();
+
+        return false; // to stop bubbling
     }
 
     function handleDecline() {
-        handleCallback(function (callback) {
+        return handleCallback(function (callback) {
             return callback && callback.onEscKeyPressed;
         });
     }
 
     function handleConfirm() {
-        handleCallback(function (callback) {
+        return handleCallback(function (callback) {
             return callback.onEnterKeyPressed;
         });
     }
