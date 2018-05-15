@@ -18,11 +18,6 @@ Imcms.define(
             var $footer;
             var $showHideFoldersButton;
 
-            function saveAndCloseWindow() {
-                showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
-                contentManagerWindowBuilder.closeWindow();
-            }
-
             function buildHead() {
                 return contentManagerWindowBuilder.buildHead(texts.title);
             }
@@ -128,15 +123,30 @@ Imcms.define(
             });
         }
 
+        function saveAndCloseWindow() {
+            showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
+            closeWindow();
+        }
+
+        function closeWindow() {
+            contentManagerWindowBuilder.closeWindow();
+        }
+
         function clearData() {
             events.trigger("content manager closed");
             imageContentBuilder.clearContent();
         }
 
+        function onEnterKeyPressed() {
+            imcms.disableContentManagerSaveButton || saveAndCloseWindow();
+        }
+
         var contentManagerWindowBuilder = new WindowBuilder({
             factory: buildContentManager,
             loadDataStrategy: buildContent,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: closeWindow,
+            onEnterKeyPressed: onEnterKeyPressed
         });
 
         var showImageStrategy;
