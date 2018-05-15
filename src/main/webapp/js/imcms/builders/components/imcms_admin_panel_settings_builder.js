@@ -28,7 +28,7 @@ Imcms.define(
         var $switchPanelVisibilityButton = $("<button>", {
             id: "imcms-switch-panel-visibility-button",
             "class": "imcms-button imcms-button--positive imcms-button--locked",
-            title: "Unlock Admin Panel" // localize
+            title: texts.unlockPanel
         });
 
         function prependToAdminPanel($prependMe) {
@@ -86,7 +86,7 @@ Imcms.define(
 
                     $switchPanelVisibilityButton.removeClass("imcms-button--up")
                         .addClass("imcms-button--locked imcms-button--positive")
-                        .attr("title", "Unlock Admin Panel") //localize
+                        .attr("title", texts.unlockPanel)
                         .fadeIn();
                 }
             },
@@ -122,7 +122,7 @@ Imcms.define(
                 showPanel: true
             });
 
-            switchShowHideButton("Hide Admin Panel"); //localize
+            switchShowHideButton(texts.hidePanel);
             switchPanelVisibility = hidePanel;
         }
 
@@ -131,7 +131,7 @@ Imcms.define(
                 hidePanel: true
             });
 
-            switchShowHideButton("Unlock Admin Panel"); //localize
+            switchShowHideButton(texts.unlockPanel);
             switchPanelVisibility = showPanel;
         }
 

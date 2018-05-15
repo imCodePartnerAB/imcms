@@ -27,7 +27,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         hiddenTitle: "Panelen är dold som standard, du kan öppna den genom att klicka på den lilla ikonen längst upp på sidan",
                         visible: "Synlig",
                         visibleTitle: "Panelen är alltid synlig"
-                    }
+                    },
+                    unlockPanel: "Lås Upp Administratörspanelen",
+                    hidePanel: "Dölj Administrationspanelen"
                 },
                 public: "offentlig",
                 publicTitle: 'Visar den publicerade vyn',
@@ -317,7 +319,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         hidden: "Hidden",
                         hiddenTitle: "Panel is hidden by default, you can open it by clicking on small icon on the top of the page",
                         visible: "Visible",
-                        visibleTitle: "Panel is always visible"
+                        visibleTitle: "Panel is always visible",
+                        unlockPanel: "Unlock Admin Panel",
+                        hidePanel: "Hide Admin Panel"
                     }
                 },
                 public: 'public',
