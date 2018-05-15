@@ -92,6 +92,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-cookies": "components/imcms_cookies.js",
             'imcms-displacing-array': "components/imcms_displacing_array.js",
             "mousetrap": "components/mousetrap.js",
+            "imcms-window-keys-controller": "components/imcms_window_keys_controller.js",
             //  <text editor components>
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
