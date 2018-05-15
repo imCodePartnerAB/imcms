@@ -917,7 +917,8 @@ Imcms.define("imcms-document-editor-builder",
         var documentWindowBuilder = new WindowBuilder({
             factory: buildDocumentEditor,
             loadDataStrategy: loadData,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close"
         });
 
         return {
