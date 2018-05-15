@@ -1,7 +1,7 @@
 Imcms.define(
     "imcms-modal-window-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts"],
-    function (BEM, components, $, texts) {
+    ["imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts", "mousetrap"],
+    function (BEM, components, $, texts, mousetrap) {
 
         texts = texts.modal;
 
@@ -68,9 +68,19 @@ Imcms.define(
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
+
+            this.bindHotKeys();
         };
 
         ModalWindow.prototype = {
+            bindHotKeys: function () {
+                mousetrap.bind('esc', this.onDeclined);
+                mousetrap.bind('enter', this.onConfirmed);
+            },
+
+            unbindHotKeys: function () {
+                mousetrap.reset();
+            },
 
             buildOnDecide: function (isConfirm, callback) {
                 var context = this;
@@ -78,6 +88,7 @@ Imcms.define(
                 return function () {
                     callback(isConfirm);
                     context.closeModal();
+                    return false;
                 }
             },
 
@@ -87,7 +98,9 @@ Imcms.define(
             },
 
             closeModal: function () {
-                this.$modal.add(this.$shadow).detach();
+                this.$modal.detach();
+                this.$shadow.detach();
+                this.unbindHotKeys();
             },
 
             appendTo: function ($appendToMe) {
