@@ -83,7 +83,7 @@ Imcms.define(
                     enableBackgroundPageScrolling(this._pageOverflow, this._scrollTop);
 
                     this._scrollTop = 0;
-                    this.$editor.css("display", "none");
+                    this.$editor && this.$editor.css("display", "none");
 
                     if (this.shadowBuilder) {
                         setTimeout(this.shadowBuilder.closeWindow.bind(this.shadowBuilder));

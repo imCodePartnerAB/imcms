@@ -18,7 +18,7 @@ Imcms.define(
             return textValidationFailWindowBuilder.buildFooter([
                 components.buttons.saveButton({
                     text: texts.ok,
-                    click: textValidationFailWindowBuilder.closeWindow.bind(textValidationFailWindowBuilder)
+                    click: closeWindow()
                 })
             ]);
         }
@@ -78,10 +78,16 @@ Imcms.define(
             $validationResultContainer.empty();
         }
 
+        function closeWindow() {
+            textValidationFailWindowBuilder.closeWindow();
+        }
+
         var textValidationFailWindowBuilder = new WindowBuilder({
             factory: buildValidationFailWindow,
             loadDataStrategy: loadData,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close",
+            onEnterKeyPressed: closeWindow
         });
 
         return {
