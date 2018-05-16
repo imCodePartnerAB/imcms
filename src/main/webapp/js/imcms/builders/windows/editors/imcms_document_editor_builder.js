@@ -709,7 +709,19 @@ Imcms.define("imcms-document-editor-builder",
 
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
-            var $docItemId = components.texts.titleText("<div>", document.id);
+            var $docItemId = components.texts.titleText("<div>", "");
+
+            $docItemId.append(new BEM({
+                block: "imcms-title",
+                elements: {
+                    "link": ""
+                }
+            }).buildBlockElement("link", "<a>", {
+                href: imcms.contextPath + "/" + document.id,
+                html: document.id,
+                target: "_blank"
+            }));
+
             $docItemId.modifiers = ["col-1", "id"];
 
             var title = (document.commonContents)
