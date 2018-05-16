@@ -330,7 +330,11 @@ Imcms.define(
         var imageWindowBuilder = new WindowBuilder({
             factory: buildEditor,
             loadDataStrategy: loadData,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close",
+            onEnterKeyPressed: function () {
+                imageWindowBuilder.$editor.find(".imcms-image_editor__footer .imcms-button--save").click();
+            }
         });
 
         var $tag;
