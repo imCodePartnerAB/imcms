@@ -5,8 +5,11 @@
  * 07.08.17.
  */
 Imcms.require(
-    ["imcms-admin-panel-builder", "imcms", "imcms-tests", "imcms-events", "imcms-session-timeout-management"],
-    function (panelBuilder, imcms, tests, events, sessionTimeoutManagement) {
+    [
+        "imcms-admin-panel-builder", "imcms", "imcms-tests", "imcms-events", "imcms-session-timeout-management",
+        "date-format"
+    ],
+    function (panelBuilder, imcms, tests, events, sessionTimeoutManagement, dateFormatter) {
         Imcms.tests = tests;
         console.info("%c Tests loaded.", "color: green");
 
@@ -16,6 +19,7 @@ Imcms.require(
 
         events.on("imcms-publish-new-version-current-doc", function () {
             window.location.href = imcms.contextPath + "/api/publish-document/" + imcms.document.id;
+            alert("The version is published with status APPROVED " + dateFormatter.format(new Date(), "yyyy-mm-dd HH:MM"));
         });
 
         sessionTimeoutManagement.initOrUpdateSessionTimeout();
