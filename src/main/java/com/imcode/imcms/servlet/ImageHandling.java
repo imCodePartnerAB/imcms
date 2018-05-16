@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -389,7 +390,16 @@ public class ImageHandling extends HttpServlet {
             return;
         }
 
-        cacheFile = ImageCacheManager.storeImage(imageCache, imageFile, deleteFile);
+        final String generatedFileName = request.getParameter("generated_file_name");
+
+        if (generatedFileName != null) {
+            imageFile = new File(ImcmsImageUtils.imagesPath, "generated/" + generatedFileName);
+        }
+
+        cacheFile = ImageCacheManager.storeImage(
+                imageCache, imageFile, deleteFile, Optional.ofNullable(generatedFileName).isPresent()
+        );
+
         if (cacheFile == null) {
             sendNotFound(response);
             return;

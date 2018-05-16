@@ -41,7 +41,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -265,24 +265,9 @@ public class ImcmsImageUtils {
         return imageSource;
     }
 
-    public static boolean generateImage(File imageFile, File destFile, ImageCacheDomainObject imageCache) {
+    public static boolean generateImage(File imageFile, File destFile, ImageCacheDomainObject imageCache, boolean withoutCropOperation) {
 
         ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
-
-        final RotateDirection rotateDir = imageCache.getRotateDirection();
-
-        if (rotateDir != RotateDirection.NORTH) {
-            operation.rotate(rotateDir.getAngle());
-        }
-
-        final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(imageCache.getCropRegion());
-
-        if (cropRegion.isValid()) {
-            int cropWidth = cropRegion.getWidth();
-            int cropHeight = cropRegion.getHeight();
-
-            operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
-        }
 
         final int width = imageCache.getWidth();
         final int height = imageCache.getHeight();
@@ -295,6 +280,24 @@ public class ImcmsImageUtils {
 
             operation.filter(Filter.LANCZOS);
             operation.resize(w, h, resize);
+        }
+
+        final RotateDirection rotateDir = imageCache.getRotateDirection();
+
+        if (rotateDir != RotateDirection.NORTH) {
+            operation.rotate(rotateDir.getAngle());
+        }
+
+        if (!withoutCropOperation) {
+
+            final ImageCropRegionDTO cropRegion = new ImageCropRegionDTO(imageCache.getCropRegion());
+
+            if (cropRegion.isValid()) {
+                int cropWidth = cropRegion.getWidth();
+                int cropHeight = cropRegion.getHeight();
+
+                operation.crop(cropRegion.getCropX1(), cropRegion.getCropY1(), cropWidth, cropHeight);
+            }
         }
 
         final Format format = imageCache.getFormat();

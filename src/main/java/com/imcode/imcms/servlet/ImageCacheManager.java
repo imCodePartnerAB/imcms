@@ -44,7 +44,9 @@ public class ImageCacheManager {
         return imageFile;
     }
 
-    public static File storeImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile) {
+    public static File storeImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile,
+                                  boolean withoutCropOperation) {
+
         imageCache.setFrequency(1);
 
         // clear 10% of text images cache, if too many entries
@@ -52,7 +54,7 @@ public class ImageCacheManager {
             cacheMapper.deleteTextImageCacheLFUEntries();
         }
 
-        File cacheFile = processImage(imageCache, imageFile, deleteFile);
+        File cacheFile = processImage(imageCache, imageFile, deleteFile, withoutCropOperation);
         if (cacheFile == null) {
             return null;
         }
@@ -74,7 +76,8 @@ public class ImageCacheManager {
         }
     }
 
-    private static File processImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile) {
+    private static File processImage(ImageCacheDomainObject imageCache, File imageFile, boolean deleteFile,
+                                     boolean withoutCropOperation) {
 
         int bucket = getBucket(imageCache.getId());
         File bucketFile = new File(imageCachePath, Integer.toString(bucket));
@@ -85,7 +88,7 @@ public class ImageCacheManager {
         File cacheFile = new File(bucketFile, imageCache.getId());
 
         try {
-            boolean result = ImcmsImageUtils.generateImage(imageFile, cacheFile, imageCache);
+            boolean result = ImcmsImageUtils.generateImage(imageFile, cacheFile, imageCache, withoutCropOperation);
 
 
             if (!result && cacheFile.exists()) {
