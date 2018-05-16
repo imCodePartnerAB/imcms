@@ -616,8 +616,8 @@ Imcms.define(
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
 
-                        imageData.rotateAngle = currentAngle.degrees;
-                        imageData.rotateDirection = currentAngle.name;
+                        imageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
+                        imageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
 
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
                         imageData.alternateText = opts.imageDataContainers.$altText.$input.val();
