@@ -256,12 +256,15 @@ class MappingConfig {
 
         return (imageDTO, version, language) -> {
             final Image image = new Image();
+
+            final String path = imageDTO.getPath();
+            image.setUrl(!path.isEmpty() && path.startsWith("/") ? path.substring(1) : path);
+
             image.setIndex(imageDTO.getIndex());
             image.setVersion(version);
             image.setLanguage(new LanguageJPA(language));
             image.setHeight(imageDTO.getHeight());
             image.setWidth(imageDTO.getWidth());
-            image.setUrl(imageDTO.getPath());
             image.setName(imageDTO.getName());
             image.setGeneratedFilename(imageDTO.getGeneratedFilename());
             Optional.ofNullable(imageDTO.getLoopEntryRef()).map(LoopEntryRefJPA::new).ifPresent(image::setLoopEntryRef);
@@ -276,7 +279,7 @@ class MappingConfig {
             image.setLowResolutionUrl(imageDTO.getLowResolutionUrl());
             image.setSpaceAround(imageDTO.getSpaceAround());
             image.setTarget(imageDTO.getTarget());
-            image.setType(imageDTO.getType());
+            image.setType(imageDTO.getName().isEmpty() ? imageDTO.getType() : 0);
             image.setRotateAngle(imageDTO.getRotateDirection().toAngle());
             image.setArchiveImageId(imageDTO.getArchiveImageId());
             image.setResize(imageDTO.getResize() == null ? 0 : imageDTO.getResize().getOrdinal());
