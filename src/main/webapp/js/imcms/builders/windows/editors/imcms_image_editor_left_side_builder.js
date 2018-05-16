@@ -137,6 +137,41 @@ Imcms.define(
             widthControlInput.val(newWidth);
         }
 
+        function revertImageChanges(imageDataContainers) {
+            imageRotate.rotateImage("NORTH");
+
+            var newWidth = imageDataContainers.original.width;
+            var newHeight = imageDataContainers.original.height;
+
+            imageResize.resize({
+                    image: {
+                        width: newWidth,
+                        height: newHeight
+                    },
+                    cropArea: {
+                        height: newHeight,
+                        width: newWidth,
+                        top: croppingAngles.getBorderSize(),
+                        left: croppingAngles.getBorderSize()
+                    }
+                },
+                imageDataContainers,
+                false
+            );
+
+            imageDataContainers.$heightControlInput.getInput().val(newHeight);
+            imageDataContainers.$widthControlInput.getInput().val(newWidth);
+        }
+
+        function buildRevertButton(imageDataContainers) {
+            return components.buttons.negativeButton({
+                text: "Revert",
+                click: function () {
+                    revertImageChanges(imageDataContainers);
+                }
+            })
+        }
+
         function buildScaleAndRotateControls(imageDataContainers, $editableImageArea) {
             imageRotate.setDataContainers(imageDataContainers);
 
@@ -185,6 +220,7 @@ Imcms.define(
                 elements: {
                     "control-size": imageEditSizeControls.buildEditSizeControls(imageDataContainers),
                     "control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers, $editableImageArea),
+                    "image-revert": buildRevertButton(imageDataContainers),
                     "control-view": buildSwitchViewControls(toggleImgArea, imageDataContainers)
                 }
             }).buildBlockStructure("<div>");
