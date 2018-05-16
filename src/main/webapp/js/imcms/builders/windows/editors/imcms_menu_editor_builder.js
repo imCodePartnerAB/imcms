@@ -615,8 +615,10 @@ Imcms.define("imcms-menu-editor-builder",
             });
 
             elements.push({
-                status: components.texts.titleText("<div>", documentEditorBuilder
-                    .getDocumentStatusText(menuElementTree.documentStatus))
+                status: components.texts.titleText(
+                    "<div>",
+                    documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus)
+                )
             });
 
             elements.push({controls: buildMenuItemControls(menuElementTree)});
@@ -766,7 +768,9 @@ Imcms.define("imcms-menu-editor-builder",
         var menuWindowBuilder = new WindowBuilder({
             factory: buildMenuEditor,
             loadDataStrategy: loadMenuEditorContent,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close",
+            onEnterKeyPressed: saveAndClose
         });
 
         var $tag;
