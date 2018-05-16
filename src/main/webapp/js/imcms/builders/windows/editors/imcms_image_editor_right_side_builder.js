@@ -51,7 +51,8 @@ Imcms.define(
         var exifInfoWindowBuilder = new WindowBuilder({
             factory: buildExifInfoWindow,
             loadDataStrategy: loadExifData,
-            clearDataStrategy: clearExifData
+            clearDataStrategy: clearExifData,
+            onEscKeyPressed: "close"
         });
 
         var alignButtonSelectorToAlignName = {
