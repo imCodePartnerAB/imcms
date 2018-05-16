@@ -81,11 +81,11 @@
 }
 
 .imcms-image_editor__footer .imcms-button--negative {
-    right: 40%;
+    right: 50%;
 }
 
 .imcms-image_editor__footer .imcms-button--save {
-    right: 2%;
+    right: 10%;
 }
 
 .image-exif-window {
@@ -99,12 +99,6 @@
 
 .imcms-pop-up-modal__body .image-exif-window__row {
     padding: 6px 15px;
-}
-
-@media screen and (max-width: 1650px) {
-    .imcms-image_editor__footer .imcms-button--negative {
-        right: 45%;
-    }
 }
 
 @media screen and (max-width: 1450px) {
