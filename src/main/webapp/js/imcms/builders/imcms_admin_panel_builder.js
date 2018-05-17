@@ -10,12 +10,17 @@ Imcms.define("imcms-admin-panel-builder",
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
               panelVisibility, texts, panelSettings) {
+
         var $panelContainer, $panel;
+
+        var panelBlock = "imcms-panel";
+        var panelItemClass = BEM.buildClass(panelBlock, "item");
+        var panelItemHasNewerVersionClass = BEM.buildClass(panelBlock, "item", "has-newer-version");
 
         texts = texts.panel;
 
         function publishDoc() {
-            events.trigger("imcms-publish-new-version-current-doc");
+            $(this).hasClass(panelItemHasNewerVersionClass) && events.trigger("imcms-publish-new-version-current-doc");
         }
 
         function showPageInfo() {
@@ -28,10 +33,10 @@ Imcms.define("imcms-admin-panel-builder",
 
         function buildPanelButtons(opts) {
             var panelButtonsBEM = new BEM({
-                block: "imcms-panel",
+                block: panelBlock,
                 elements: {
                     "items": "",
-                    "item": "imcms-panel__item"
+                    "item": panelItemClass
                 }
             });
 
@@ -45,7 +50,7 @@ Imcms.define("imcms-admin-panel-builder",
                 };
 
                 if (opts && opts.active === buttonData.name) {
-                    attributes["class"] = "imcms-panel__item--active";
+                    attributes["class"] = BEM.buildClass(panelItemClass, "item", "active");
                 }
 
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
@@ -191,7 +196,9 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         function highlightPublishButton() {
-            $panelContainer.find(".imcms-panel__item--publish-of").addClass("imcms-panel__item--has-newer-version");
+            var panelItemPublishClassSelector = BEM.buildClassSelector(panelBlock, "item", "publish-of");
+
+            $panelContainer.find(panelItemPublishClassSelector).addClass(panelItemHasNewerVersionClass);
         }
 
         var isPanelBuilt = false;

@@ -152,6 +152,11 @@
     display: none;
 }
 
+.imcms-panel__item--publish-of.imcms-panel__item--has-newer-version {
+    opacity: 1;
+    cursor: pointer;
+}
+
 .imcms-panel__item.imcms-panel__item--has-newer-version:before,
 .imcms-panel__item.imcms-panel__item--has-newer-version:hover:before {
     content: "";
@@ -214,6 +219,8 @@
 }
 
 .imcms-panel__item--publish-of {
+    opacity: 0.4;
+    cursor: not-allowed;
     background-image: url("../../images_new/admin_panel/icon_publish.png");
 }
 
