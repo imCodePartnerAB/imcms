@@ -122,6 +122,15 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
         versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
 
+        final Meta publishMe = metaRepository.findOne(docId);
+        final Meta.PublicationStatus status = publishMe.getPublicationStatus();
+
+        if (Meta.PublicationStatus.NEW.equals(status)) {
+            publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);
+        }
+
+        metaRepository.save(publishMe);
+
         return true;
     }
 
