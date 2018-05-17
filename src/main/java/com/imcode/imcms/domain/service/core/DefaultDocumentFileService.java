@@ -54,16 +54,6 @@ class DefaultDocumentFileService
         filesPath.mkdirs();
     }
 
-    /**
-     * This will save list of files for specified document by id.
-     * Note that all other files that are connected to document but not
-     * mentioned in list will be deleted.
-     * All changes applied for working document version.
-     *
-     * @param saveUs list of files to save
-     * @param docId  id of document
-     * @return list of saved files
-     */
     @Override
     public <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId) {
         setDocAndFileIds(saveUs, docId);

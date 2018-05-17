@@ -115,9 +115,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public boolean publishDocument(int docId, int userId) {
-        if (!versionService.hasNewerVersion(docId)) {
-            return false;
-        }
+        if (!versionService.hasNewerVersion(docId)) return false;
 
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         final Version newVersion = versionService.create(docId, userId);
