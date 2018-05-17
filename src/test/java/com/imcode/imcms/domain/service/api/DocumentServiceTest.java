@@ -773,6 +773,22 @@ public class DocumentServiceTest {
 
     }
 
+    @Test
+    public void publishNewDocVersion_When_StatusIsNew_Expect_StatusSetToApproved() {
+        createdDoc = documentDataInitializer.createData(PublicationStatus.NEW);
+
+        assertEquals(PublicationStatus.NEW, createdDoc.getPublicationStatus());
+
+        final Integer docId = createdDoc.getId();
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        //checking
+
+        assertTrue(isPublished);
+        assertEquals(PublicationStatus.APPROVED, publishedDoc.getPublicationStatus());
+    }
+
     private void createText(int index, LanguageJPA language, Version version) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);

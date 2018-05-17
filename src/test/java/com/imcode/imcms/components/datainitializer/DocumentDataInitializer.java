@@ -37,7 +37,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
         this.commonContentDataInitializer = commonContentDataInitializer;
     }
 
-    protected DocumentDTO createData(Meta.DocumentType type) {
+    protected DocumentDTO createData(Meta.DocumentType type, Meta.PublicationStatus status) {
         final Meta metaDoc = Value.with(new Meta(), meta -> {
 
             meta.setArchiverId(1);
@@ -52,7 +52,7 @@ public class DocumentDataInitializer extends TestDataCleaner {
             meta.setKeywords(new HashSet<>());
             meta.setLinkableByOtherUsers(true);
             meta.setLinkedForUnauthorizedUsers(true);
-            meta.setPublicationStatus(Meta.PublicationStatus.APPROVED);
+            meta.setPublicationStatus(status);
             meta.setPublisherId(1);
             meta.setSearchDisabled(false);
             meta.setTarget("test");
@@ -68,8 +68,16 @@ public class DocumentDataInitializer extends TestDataCleaner {
         return metaToDocumentDTO.apply(metaDoc, version, commonContents);
     }
 
+    protected DocumentDTO createData(Meta.DocumentType type) {
+        return createData(type, Meta.PublicationStatus.APPROVED);
+    }
+
     public DocumentDTO createData() {
-        return createData(Meta.DocumentType.TEXT);
+        return createData(Meta.DocumentType.TEXT, Meta.PublicationStatus.APPROVED);
+    }
+
+    public DocumentDTO createData(Meta.PublicationStatus status) {
+        return createData(Meta.DocumentType.TEXT, status);
     }
 
     public void cleanRepositories(int createdDocId) {
