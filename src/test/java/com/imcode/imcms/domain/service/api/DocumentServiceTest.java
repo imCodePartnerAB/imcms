@@ -809,6 +809,20 @@ public class DocumentServiceTest {
         assertEquals(dateInFuture, publishedDoc.getPublished().getFormattedDate());
     }
 
+    @Test
+    public void publishNewDocVersion_When_PublishDateIsNotSet_Expect_CurrentDateSet() {
+        assertNull(createdDoc.getPublished().getFormattedDate());
+
+        final Integer docId = createdDoc.getId();
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        //checking
+
+        assertTrue(isPublished);
+        assertNotNull(publishedDoc.getPublished().getFormattedDate());
+    }
+
     private void createText(int index, LanguageJPA language, Version version) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);
