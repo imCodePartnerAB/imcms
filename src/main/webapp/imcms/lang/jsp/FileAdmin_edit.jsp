@@ -480,7 +480,8 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			<table border="0" cellspacing="0" cellpadding="0">
 			<form name="searchForm" onSubmit="findIt(document.forms[0].searchString.value); return false">
 			<tr>
-				<td><input type="text" name="searchString" size="8" value="<%= theSearchString %>" style="width:50"></td>
+                <td><input type="text" name="searchString" size="8" value="<%= theSearchString %>" style="width:50px">
+                </td>
 				<td><a id="btnSearch" href="javascript://find()" onClick="findIt(document.forms[0].searchString.value);"><img src="<%= IMG_PATH %>btn_find.gif" border="0" hspace="5" alt="<? install/htdocs/sv/jsp/FileAdmin_edit.jsp/2001 ?>"></a></td>
 			</tr>
 			</form>
@@ -545,6 +546,7 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			} %></td>
 			<td>&nbsp;&nbsp;</td>
 		</tr>
+        </form>
 		</table><%
 		} %></td>
 	</tr>
@@ -570,7 +572,9 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 			if (hasDocumentAll || (isMac && hasGetElementById)) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center">
-		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit" style="width:790; height:<% if (isTempl || (isMac && hasDocumentAll)) { %>505<% } else { %>515<% } %>; overflow:auto" onKeyUp="checkSaved(1);"<%= sReadonly %>><%
+		<textarea name="txtField" id="txtField" cols="90" rows="<%= taRows %>" class="edit"
+                  style="width:790px; height:<% if (isTempl || (isMac && hasDocumentAll)) { %>505<% } else { %>515<% } %>; overflow:auto"
+                  onKeyUp="checkSaved(1);"<%= sReadonly %>><%
 			} else if (hasGetElementById) { %>
 	<tr class="imcmsAdmBgCont">
 		<td colspan="2" align="center" valign="top">
