@@ -793,7 +793,7 @@ public class DocumentServiceTest {
     public void publishNewDocVersion_When_PublishDateIsInFuture_Expect_DateNotChanged() {
         final Integer docId = createdDoc.getId();
         final AuditDTO auditDTO = new AuditDTO();
-        auditDTO.setDateTime(new Date(new Date().getTime() + 150000000000L));
+        auditDTO.setDateTime(new Date(new Date().getTime() + 150000000000L)); // date in future
         final Date dateInFuture = auditDTO.getFormattedDate();
 
         createdDoc.getPublished().setDateTime(dateInFuture);
@@ -821,6 +821,28 @@ public class DocumentServiceTest {
 
         assertTrue(isPublished);
         assertNotNull(publishedDoc.getPublished().getFormattedDate());
+    }
+
+    @Test
+    public void publishNewDocVersion_When_PublishDateIsInPast_Expect_CurrentDateSet() {
+        assertNull(createdDoc.getPublished().getFormattedDate());
+
+        final AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setDateTime(new Date(new Date().getTime() - 150000000000L)); // date in past
+        final Date dateInPast = auditDTO.getFormattedDate();
+
+        createdDoc.getPublished().setDateTime(dateInPast);
+
+        documentService.save(createdDoc);
+
+        final Integer docId = createdDoc.getId();
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        //checking
+
+        assertTrue(isPublished);
+        assertTrue(publishedDoc.getPublished().getFormattedDate().after(dateInPast));
     }
 
     private void createText(int index, LanguageJPA language, Version version) {

@@ -129,9 +129,10 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         }
 
         final Date publicationStartDatetime = publishMe.getPublicationStartDatetime();
+        final Date currentDate = new Date();
 
-        if (publicationStartDatetime == null) {
-            publishMe.setPublicationStartDatetime(new Date());
+        if ((publicationStartDatetime == null) || publicationStartDatetime.before(currentDate)) {
+            publishMe.setPublicationStartDatetime(currentDate);
         }
 
         metaRepository.save(publishMe);
