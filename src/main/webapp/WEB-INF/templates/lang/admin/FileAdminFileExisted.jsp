@@ -43,7 +43,7 @@
     </td>
 </tr>
 <tr>
-    <td><? templates/sv/FileAdminFileExisted.html/3 ?></td>
+    <td><? templates/sv/FileAdminFileExisted.html/3 ?> "${filename}".</td>
 </tr>
 <tr>
     <td><ui:imcms_gui_hr wantedcolor="blue"/></td>
