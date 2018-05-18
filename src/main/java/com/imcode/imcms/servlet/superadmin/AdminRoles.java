@@ -5,7 +5,13 @@ import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.user.*;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.NameTooLongException;
+import imcode.server.user.RoleAlreadyExistsException;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RolePermissionDomainObject;
+import imcode.server.user.UserAndRoleRegistryException;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
@@ -17,7 +23,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class AdminRoles extends HttpServlet {
 
@@ -30,7 +41,7 @@ public class AdminRoles extends HttpServlet {
     private final static String HTML_DELETE_ROLE_2 = "AdminRoles_Delete2.jsp";
     private final static String HTML_EDIT_ROLE = "AdminRoles_Edit.jsp";
     private final static String HTML_EDIT_ROLE_TABLE = "AdminRoles_Edit_Permissions_List.jsp";
-    private final static String HTML_EDIT_ROLE_TABLE_ROW = "AdminRoles_Edit_Permission.html";
+    private final static String HTML_EDIT_ROLE_TABLE_ROW = "AdminRoles_Edit_Permission.jsp";
 
     static void printErrorMessage(HttpServletRequest req, HttpServletResponse res, String header, String msg)
             throws IOException {
