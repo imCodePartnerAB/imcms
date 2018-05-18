@@ -783,8 +783,6 @@ public class DocumentServiceTest {
         final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
         final DocumentDTO publishedDoc = documentService.get(docId);
 
-        //checking
-
         assertTrue(isPublished);
         assertEquals(PublicationStatus.APPROVED, publishedDoc.getPublicationStatus());
     }
@@ -803,8 +801,6 @@ public class DocumentServiceTest {
         final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
         final DocumentDTO publishedDoc = documentService.get(docId);
 
-        //checking
-
         assertTrue(isPublished);
         assertEquals(dateInFuture, publishedDoc.getPublished().getFormattedDate());
     }
@@ -816,8 +812,6 @@ public class DocumentServiceTest {
         final Integer docId = createdDoc.getId();
         final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
         final DocumentDTO publishedDoc = documentService.get(docId);
-
-        //checking
 
         assertTrue(isPublished);
         assertNotNull(publishedDoc.getPublished().getFormattedDate());
@@ -838,8 +832,6 @@ public class DocumentServiceTest {
         final Integer docId = createdDoc.getId();
         final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
         final DocumentDTO publishedDoc = documentService.get(docId);
-
-        //checking
 
         assertTrue(isPublished);
         assertTrue(publishedDoc.getPublished().getFormattedDate().after(dateInPast));
