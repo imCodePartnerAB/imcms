@@ -789,6 +789,26 @@ public class DocumentServiceTest {
         assertEquals(PublicationStatus.APPROVED, publishedDoc.getPublicationStatus());
     }
 
+    @Test
+    public void publishNewDocVersion_When_PublishDateIsInFuture_Expect_DateNotChanged() {
+        final Integer docId = createdDoc.getId();
+        final AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setDateTime(new Date(new Date().getTime() + 150000000000L));
+        final Date dateInFuture = auditDTO.getFormattedDate();
+
+        createdDoc.getPublished().setDateTime(dateInFuture);
+
+        documentService.save(createdDoc);
+
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        //checking
+
+        assertTrue(isPublished);
+        assertEquals(dateInFuture, publishedDoc.getPublished().getFormattedDate());
+    }
+
     private void createText(int index, LanguageJPA language, Version version) {
         final TextJPA text = new TextJPA();
         text.setIndex(index);
