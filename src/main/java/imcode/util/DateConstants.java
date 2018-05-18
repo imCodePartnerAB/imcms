@@ -12,8 +12,4 @@ public class DateConstants {
     public final static SimpleDateFormat DATETIME_DOC_FORMAT = new SimpleDateFormat(DATETIME_FORMAT_STRING);
     public final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
     public final static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(TIME_FORMAT_STRING);
-    public static final int TIME_MIN_LENGTH = 3;
-    public static final int TIME_MAX_LENGTH = 5;
-    public static final int DATE_MIN_LENGTH = 8;
-    public static final int DATE_MAX_LENGTH = 10;
 }
