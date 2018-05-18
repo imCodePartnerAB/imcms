@@ -89,11 +89,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        final Version latestVersion = versionService.getLatestVersion(docId);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, latestVersion.getNo()
+                docId, workingVersion.getNo()
         );
-        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
+        return documentMapping.apply(metaRepository.findOne(docId), workingVersion, commonContents);
     }
 
     @Override

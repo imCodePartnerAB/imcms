@@ -80,6 +80,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -835,6 +836,53 @@ public class DocumentServiceTest {
 
         assertTrue(isPublished);
         assertTrue(publishedDoc.getPublished().getFormattedDate().after(dateInPast));
+    }
+
+    @Test
+    public void publishNewDocVersion_When_SomePublishedVersionAlreadyExist_ExpectCommonContentChangesSaved() {
+        final Integer docId = createdDoc.getId();
+        boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+
+        assertTrue(isPublished);
+
+        DocumentDTO publishedDoc = documentService.get(docId);
+        AtomicBoolean isEnabledSwitcher = new AtomicBoolean(false);
+
+        for (int i = 1; i <= 2; i++) {
+            final String head = "head" + i;
+            final String url = "url" + i;
+            final String menuText = "menu text" + i;
+            final boolean isEnabled = isEnabledSwitcher.getAndSet(!isEnabledSwitcher.get());
+
+            publishedDoc.getCommonContents().forEach(commonContent -> {
+                commonContent.setHeadline(head);
+                commonContent.setEnabled(isEnabled);
+                commonContent.setMenuImageURL(url);
+                commonContent.setMenuText(menuText);
+            });
+
+            documentService.save(publishedDoc);
+            final DocumentDTO savedDoc = documentService.get(docId);
+
+            savedDoc.getCommonContents().forEach(commonContent -> {
+                assertEquals(head, commonContent.getHeadline());
+                assertEquals(isEnabled, commonContent.isEnabled());
+                assertEquals(url, commonContent.getMenuImageURL());
+                assertEquals(menuText, commonContent.getMenuText());
+            });
+
+            isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+            assertTrue(isPublished);
+
+            publishedDoc = documentService.get(docId);
+
+            publishedDoc.getCommonContents().forEach(commonContent -> {
+                assertEquals(head, commonContent.getHeadline());
+                assertEquals(isEnabled, commonContent.isEnabled());
+                assertEquals(url, commonContent.getMenuImageURL());
+                assertEquals(menuText, commonContent.getMenuText());
+            });
+        }
     }
 
     private void createText(int index, LanguageJPA language, Version version) {
