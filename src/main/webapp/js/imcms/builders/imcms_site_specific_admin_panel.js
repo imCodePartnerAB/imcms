@@ -32,8 +32,8 @@ Imcms.define(
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
-                var text = $imcmsAdminSpecial.data('link-text');
 
+                var text = $imcmsAdminSpecial.data('link-text');
                 addLinkToSpecialAdmin(text);
             }
         }
@@ -77,7 +77,11 @@ Imcms.define(
 
             if (cookies.getCookie("imcms-client-special-area") === "opened") {
                 $link.addClass('imcms-panel__item--active');
-                $collapsible.removeClass('imcms-special-hidden').css('display', 'block');
+                $collapsible.removeClass('imcms-special-hidden');
+
+                if ($imcms.hasClass("imcms-panel-visible")) {
+                    $collapsible.css('display', 'block');
+                }
             }
         }
 

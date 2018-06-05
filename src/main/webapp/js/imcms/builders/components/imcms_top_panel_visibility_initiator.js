@@ -14,16 +14,25 @@ Imcms.define(
         var $body = $("body");
 
         function showPanels() {
-            panels$
-                .filter(function ($panel) {
-                    return !$panel.hasClass('imcms-special-hidden');
-                })
-                .forEach(showPanel);
+            $("#imcmsAdminSpecial").not(".imcms-special-hidden").css("display", "block");
+
+            setTimeout(function () {
+                panels$.filter(function ($panel) {
+                        return !$panel.hasClass('imcms-special-hidden');
+                    })
+                    .forEach(showPanel);
+
+                onPanelsShown();
+            }, 100);
         }
 
         function hidePanels() {
             $body.css({"top": 0});
             panels$.forEach(hidePanel);
+
+            setTimeout(function () {
+                $("#imcmsAdminSpecial").css("display", "none");
+            }, 300);
         }
 
         streams.subscribeFromLast("admin panel visibility", function (content) {
@@ -40,7 +49,7 @@ Imcms.define(
             panelState.refreshSpecialPanelPosition();
         });
 
-        function onPanelShown() {
+        function onPanelsShown() {
             var bodyCss = ($(window).scrollTop() === 0)
                 ? {"top": $("#imcms-admin").height() || $("#imcms-admin-panel").height()}
                 : {"padding-top": "0"};
@@ -54,7 +63,6 @@ Imcms.define(
 
         function showPanel($panel) {
             setAdminPanelTop($panel, 0);
-            onPanelShown();
         }
 
         function setAdminPanelTop($panel, px) {
@@ -89,7 +97,7 @@ Imcms.define(
         }
 
         return {
-            refreshBodyTop: onPanelShown,
+            refreshBodyTop: onPanelsShown,
             setShowHidePanelRules: function ($panel) {
                 panels$.push($panel);
                 listenersNotSet && setEventListeners();
