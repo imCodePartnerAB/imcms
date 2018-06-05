@@ -25,13 +25,20 @@ Imcms.define(
                         var $body = $("body");
 
                         if ($editorBody.hasClass('imcms-mce-fullscreen-inline')) {
-                            adminPanelState.enablePanelAppearance();
+
+                            if (adminPanelState.state === "auto") {
+                                adminPanelState.enablePanelAppearance();
+                            }
+
                             $editorBody.removeClass('imcms-mce-fullscreen-inline');
                             $toolBar.removeClass("mce-fullscreen-toolbar");
                             $body.css('overflow', 'auto');
 
                         } else {
-                            adminPanelState.disablePanelAppearance();
+                            if (adminPanelState.state === "auto") {
+                                adminPanelState.disablePanelAppearance();
+                            }
+
                             $editorBody.addClass('imcms-mce-fullscreen-inline');
                             $toolBar.addClass("mce-fullscreen-toolbar");
                             $body.css('overflow', 'hidden');

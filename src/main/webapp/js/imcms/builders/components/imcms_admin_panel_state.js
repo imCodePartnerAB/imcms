@@ -6,6 +6,16 @@ Imcms.define("imcms-admin-panel-state", ["jquery"], function ($) {
     };
 
     PanelState.prototype = {
+        states: {
+            auto: function () {
+                this.enablePanelAppearance();
+                this.enableSpecialPanelHiding();
+            },
+            visible: function () {
+                this.disableSpecialPanelHiding();
+                this.disablePanelAppearance();
+            }
+        },
         refreshSpecialPanelPosition: function () {
             var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
 
@@ -25,6 +35,12 @@ Imcms.define("imcms-admin-panel-state", ["jquery"], function ($) {
         },
         disablePanelAppearance: function () {
             this.isPanelAppearanceDisabled = true;
+        },
+        setState: function (state) {
+            if (!this.states[state] && !this.states[state].call) return;
+
+            this.states[state].call(this);
+            this.state = state;
         }
     };
 

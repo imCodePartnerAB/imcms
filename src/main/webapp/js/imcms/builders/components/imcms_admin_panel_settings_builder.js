@@ -59,10 +59,8 @@ Imcms.define(
                 text: texts.appearance.auto,
                 title: texts.appearance.autoTitle,
                 onSettingClick: function () {
-                    panelState.enablePanelAppearance();
-                    panelState.enableSpecialPanelHiding();
+                    panelState.setState("auto");
                     $("#imcms-admin").removeClass("imcms-panel-visible");
-
                     panelState.refreshSpecialPanelPosition();
 
                     $switchPanelVisibilityButton.css("display", "none");
@@ -97,8 +95,7 @@ Imcms.define(
                 onSettingClick: function () {
                     $("body").css("top", 0);
 
-                    panelState.disableSpecialPanelHiding();
-                    panelState.disablePanelAppearance();
+                    panelState.setState("visible");
 
                     $("#imcms-admin").addClass("imcms-panel-visible");
                     $("#imcms-admin-panel,#imcmsAdminSpecial").css("top", 0);
