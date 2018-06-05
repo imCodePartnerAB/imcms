@@ -179,7 +179,7 @@ Imcms.define(
                     $setting.addClass(settingEnabledClass);
 
                     setting.onSettingClick.call();
-                    cookies.setCookie(section.id, setting.id);
+                    cookies.setCookie(section.id, setting.id, {path: "/"});
                 };
 
                 if ((setting.id && (savedSetting === setting.id))
