@@ -1,5 +1,7 @@
 package com.imcode.imcms.servlet.admin;
 
+import imcode.server.Imcms;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +22,12 @@ public class AdminDoc extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+        if (Imcms.getUser().isDefaultUser()) {
+            req.getRequestDispatcher("/servlet/GetDoc").forward(req, res);
+            return;
+        }
+
         req.getRequestDispatcher("/api/editDoc").forward(req, res);
     }
 }
