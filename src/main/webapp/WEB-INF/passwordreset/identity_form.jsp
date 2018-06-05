@@ -25,7 +25,7 @@
 <body>
 <div class="imcms-modal-admin">
     <div class="imcms-modal-admin-head">
-        <a href="http://www.imcms.net/" class="imcms-login__logo"></a>
+        <a href="https://imcode.com" class="imcms-login__logo"></a>
         <div class="imcms-title imcms-head__title"><fmt:message key="passwordreset.title"/></div>
     </div>
     <div class="imcms-modal-admin-body">
