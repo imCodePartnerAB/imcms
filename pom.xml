@@ -43,7 +43,7 @@
 	<groupId>com.imcode.imcms</groupId>
 	<artifactId>imcms</artifactId>
 	<packaging>war</packaging>
-    <version>4.3.2</version>
+    <version>4.3.3-SNAPSHOT</version>
 	<name>imCMS</name>
 
 	<properties>
@@ -176,6 +176,12 @@
             <groupId>org.opensaml</groupId>
             <artifactId>opensaml</artifactId>
             <version>2.6.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.0</version>
         </dependency>
 
 		<dependency>
@@ -355,7 +361,7 @@
 		<dependency>
 			<groupId>com.imcode.db</groupId>
 			<artifactId>imcode-db</artifactId>
-            <version>0.5</version>
+            <version>0.6</version>
 		</dependency>
 
 		<dependency>
