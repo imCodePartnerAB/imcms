@@ -1,12 +1,13 @@
 package com.imcode.imcms.api;
 
+import imcode.server.document.index.DocumentQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
 /**
  * Base class for Lucene based document search queries, used with {@link DocumentService#getDocuments(SearchQuery)}
  */
-public abstract class SearchQuery {
+public abstract class SearchQuery implements DocumentQuery {
 
     private Sort sort;
     private boolean logged;
@@ -16,9 +17,9 @@ public abstract class SearchQuery {
      *
      * @return query
      */
-    abstract Query getQuery();
+    public abstract Query getQuery();
 
-    Sort getSort() {
+    public Sort getSort() {
         return sort;
     }
 
@@ -36,7 +37,7 @@ public abstract class SearchQuery {
      *
      * @return true if this query is set to be logged, false otherwise
      */
-    boolean isLogged() {
+    public boolean isLogged() {
         return logged;
     }
 

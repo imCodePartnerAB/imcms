@@ -36,7 +36,7 @@ public class LuceneParsedQuery extends SearchQuery {
         return new DefaultQueryParser().parse(queryString);
     }
 
-    Query getQuery() {
+    public Query getQuery() {
         return query;
     }
 

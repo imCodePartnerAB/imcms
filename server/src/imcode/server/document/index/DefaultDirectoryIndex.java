@@ -12,6 +12,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -24,7 +25,12 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
 
@@ -56,29 +62,25 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException {
-        SearchResult<DocumentDomainObject> result = search(query, searchingUser, 0, -1);
-
-        return result.getDocuments();
+        return search(query, searchingUser, 0, -1).getResult();
     }
 
     public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
-        try {
-            IndexSearcher indexSearcher = new IndexSearcher(directory.toString());
-            try {
-                StopWatch searchStopWatch = new StopWatch();
-                searchStopWatch.start();
-                Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
-                long searchTime = searchStopWatch.getTime();
-                SearchResult<DocumentDomainObject> result = getDocumentListForHits(hits, searchingUser, startPosition, maxResults);
-                if (log.isDebugEnabled()) {
-                    log.debug("Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
-                            + searchStopWatch.getTime()
-                            + "ms.");
-                }
-                return result;
-            } finally {
-                indexSearcher.close();
+        try (ClosableIndexSearcher indexSearcher = new ClosableIndexSearcher(directory.toString())) {
+            StopWatch searchStopWatch = new StopWatch();
+            searchStopWatch.start();
+
+            Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
+            long searchTime = searchStopWatch.getTime();
+            SearchResult<DocumentDomainObject> result = getDocumentListForHits(hits, searchingUser, startPosition, maxResults);
+
+            if (log.isDebugEnabled()) {
+                log.debug("Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
+                        + searchStopWatch.getTime()
+                        + "ms.");
             }
+            return result;
+
         } catch (IOException e) {
             throw new IndexException(e);
         }
@@ -102,14 +104,11 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public void removeDocument(DocumentDomainObject document) throws IndexException {
-        try {
-            IndexReader indexReader = IndexReader.open(directory);
-            try {
-                indexReader.delete(new Term("meta_id", "" + document.getId()));
-            } finally {
-                indexReader.close();
-            }
-        } catch (IOException e) {
+        try (final IndexReaderCloseable indexReader = new IndexReaderCloseable(directory)) {
+
+            indexReader.delete(new Term("meta_id", "" + document.getId()));
+
+        } catch (Exception e) {
             throw new IndexException(e);
         }
     }
@@ -144,16 +143,13 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private void addDocument(DocumentDomainObject document) throws IOException {
-        IndexWriter indexWriter = createIndexWriter(false);
-        try {
+        try (ClosableIndexWriter indexWriter = createIndexWriter(false)) {
             addDocumentToIndex(document, indexWriter);
-        } finally {
-            indexWriter.close();
         }
     }
 
-    private IndexWriter createIndexWriter(boolean createIndex) throws IOException {
-        return new IndexWriter(directory, new AnalyzerImpl(), createIndex);
+    private ClosableIndexWriter createIndexWriter(boolean createIndex) throws IOException {
+        return new ClosableIndexWriter(directory, new AnalyzerImpl(), createIndex);
     }
 
     private void addDocumentToIndex(DocumentDomainObject document, IndexWriter indexWriter) throws IOException {
@@ -162,8 +158,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     private void indexDocuments() throws IOException {
-        IndexWriter indexWriter = createIndexWriter(true);
-        try {
+        try (ClosableIndexWriter indexWriter = createIndexWriter(true)) {
             for (Map.Entry<String, DocumentRepository> nameToRepositoryEntry : nameToCustomDocRepository.entrySet()) {
                 final String repositoryName = nameToRepositoryEntry.getKey();
                 log.info("Indexing docs from " + repositoryName + " document repository started.");
@@ -173,9 +168,6 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
 
                 log.info("Indexing docs from " + repositoryName + " document repository finished.");
             }
-
-        } finally {
-            indexWriter.close();
         }
     }
 
@@ -302,6 +294,48 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         @Override
         public int size() {
             return hits.length();
+        }
+    }
+
+    /**
+     * Wrapper used just to make it automatically closeable
+     */
+    private class ClosableIndexSearcher extends IndexSearcher implements AutoCloseable {
+        ClosableIndexSearcher(String path) throws IOException {
+            super(path);
+        }
+    }
+
+    /**
+     * Wrapper used just to make it automatically closeable
+     */
+    private class ClosableIndexWriter extends IndexWriter implements AutoCloseable {
+        ClosableIndexWriter(File file, Analyzer a, boolean create) throws IOException {
+            super(file, a, create);
+        }
+    }
+
+    /**
+     * Wrapper used just to make it automatically closeable
+     */
+    private class IndexReaderCloseable implements AutoCloseable {
+        IndexReader reader;
+
+        IndexReaderCloseable(File path) throws IOException {
+            this.reader = IndexReader.open(path);
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (reader != null) {
+                reader.close();
+            }
+        }
+
+        public void delete(Term term) throws IOException {
+            if (reader != null) {
+                reader.delete(term);
+            }
         }
     }
 }

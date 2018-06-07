@@ -14,11 +14,15 @@ import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.util.Utility;
-import org.apache.commons.collections.map.LRUMap;
+import org.apache.commons.collections4.map.LRUMap;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class CategoryMapper {
 
@@ -51,14 +55,14 @@ public class CategoryMapper {
             + "FROM categories\n"
             + "JOIN category_types ON categories.category_type_id = category_types.category_type_id\n"
             + "WHERE categories.category_id = ?";
-    private static final SingleObjectHandler SINGLE_CATEGORY_TYPE_HANDLER = new SingleObjectHandler(new CategoryTypeFromRowFactory());
-    private static final SingleObjectHandler SINGLE_CATEGORY_HANDLER = new SingleObjectHandler(new CategoryFromRowFactory());
-    private static final ObjectArrayHandler CATEGORY_TYPE_ARRAY_HANDLER = new ObjectArrayHandler(new CategoryTypeFromRowFactory());
+    private static final SingleObjectHandler<CategoryTypeDomainObject> SINGLE_CATEGORY_TYPE_HANDLER = new SingleObjectHandler<>(new CategoryTypeFromRowFactory());
+    private static final SingleObjectHandler<CategoryDomainObject> SINGLE_CATEGORY_HANDLER = new SingleObjectHandler<>(new CategoryFromRowFactory());
+    private static final ObjectArrayHandler<CategoryTypeDomainObject> CATEGORY_TYPE_ARRAY_HANDLER = new ObjectArrayHandler<>(new CategoryTypeFromRowFactory());
     private Database database;
-    private Map categoryCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
-    private Map categoryTypeCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
-    private Map categoryTypeByNameCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
-    private Map categoryByTypeAndNameCache = Collections.synchronizedMap(new LRUMap(CACHE_SIZE));
+    private Map<Integer, CategoryDomainObject> categoryCache = Collections.synchronizedMap(new LRUMap<>(CACHE_SIZE));
+    private Map<Integer, CategoryTypeDomainObject> categoryTypeCache = Collections.synchronizedMap(new LRUMap<>(CACHE_SIZE));
+    private Map<String, CategoryTypeDomainObject> categoryTypeByNameCache = Collections.synchronizedMap(new LRUMap<>(CACHE_SIZE));
+    private Map<String, CategoryDomainObject> categoryByTypeAndNameCache = Collections.synchronizedMap(new LRUMap<>(CACHE_SIZE));
 
     public CategoryMapper(Database database) {
         this.database = database;
@@ -66,10 +70,12 @@ public class CategoryMapper {
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType
     ) {
-        String sqlQuery = SQL_GET_ALL_CATEGORIES_OF_TYPE;
         String[] parameters = new String[]{"" + categoryType.getId()};
-        String[][] sqlResult = (String[][]) database.execute(new SqlQueryCommand(sqlQuery, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        String[][] sqlResult = database.execute(new SqlQueryCommand<>(
+                SQL_GET_ALL_CATEGORIES_OF_TYPE, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER
+        ));
         CategoryDomainObject[] categoryDomainObjects = new CategoryDomainObject[sqlResult.length];
+
         for (int i = 0; i < sqlResult.length; i++) {
             int categoryId = Integer.parseInt(sqlResult[i][0]);
             String categoryName = sqlResult[i][1];
@@ -83,8 +89,7 @@ public class CategoryMapper {
 
     public boolean isUniqueCategoryTypeName(String categoryTypeName) {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (int i = 0; i < categoryTypes.length; i++) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
+        for (CategoryTypeDomainObject categoryType : categoryTypes) {
             if (categoryType.getName().equalsIgnoreCase(categoryTypeName)) {
                 return false;
             }
@@ -94,7 +99,7 @@ public class CategoryMapper {
 
     public CategoryTypeDomainObject[] getAllCategoryTypes() {
         String[] parameters = new String[0];
-        return (CategoryTypeDomainObject[]) database.execute(new SqlQueryCommand(SQL__GET_ALL_CATEGORY_TYPES, parameters, CATEGORY_TYPE_ARRAY_HANDLER));
+        return database.execute(new SqlQueryCommand<>(SQL__GET_ALL_CATEGORY_TYPES, parameters, CATEGORY_TYPE_ARRAY_HANDLER));
     }
 
     private String getCacheKeyByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
@@ -103,11 +108,11 @@ public class CategoryMapper {
 
     public CategoryDomainObject getCategoryByTypeAndName(CategoryTypeDomainObject categoryType, String categoryName) {
         String cacheKey = getCacheKeyByTypeAndName(categoryType, categoryName);
-        CategoryDomainObject category = (CategoryDomainObject) categoryByTypeAndNameCache.get(cacheKey);
+        CategoryDomainObject category = categoryByTypeAndNameCache.get(cacheKey);
 
         if (category == null) {
             String[] parameters = new String[]{categoryName, "" + categoryType.getId()};
-            category = (CategoryDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID, parameters, SINGLE_CATEGORY_HANDLER));
+            category = database.execute(new SqlQueryCommand<>(SQL__GET_CATEGORY_BY_NAME_AND_CATEGORY_TYPE_ID, parameters, SINGLE_CATEGORY_HANDLER));
             categoryByTypeAndNameCache.put(cacheKey, category);
         }
 
@@ -115,10 +120,10 @@ public class CategoryMapper {
     }
 
     public CategoryDomainObject getCategoryById(int categoryId) {
-        CategoryDomainObject category = (CategoryDomainObject) categoryCache.get(categoryId);
+        CategoryDomainObject category = categoryCache.get(categoryId);
         if (category == null) {
             String[] parameters = new String[]{"" + categoryId};
-            category = (CategoryDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_BY_ID, parameters, SINGLE_CATEGORY_HANDLER));
+            category = database.execute(new SqlQueryCommand<>(SQL__GET_CATEGORY_BY_ID, parameters, SINGLE_CATEGORY_HANDLER));
             categoryCache.put(categoryId, category);
         }
 
@@ -126,10 +131,10 @@ public class CategoryMapper {
     }
 
     public CategoryTypeDomainObject getCategoryTypeByName(String categoryTypeName) {
-        CategoryTypeDomainObject categoryType = (CategoryTypeDomainObject) categoryTypeByNameCache.get(categoryTypeName);
+        CategoryTypeDomainObject categoryType = categoryTypeByNameCache.get(categoryTypeName);
         if (categoryType == null) {
             String[] parameters = new String[]{categoryTypeName};
-            categoryType = (CategoryTypeDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_TYPE_BY_NAME, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
+            categoryType = database.execute(new SqlQueryCommand<>(SQL__GET_CATEGORY_TYPE_BY_NAME, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
             categoryTypeByNameCache.put(categoryTypeName, categoryType);
         }
 
@@ -137,10 +142,10 @@ public class CategoryMapper {
     }
 
     public CategoryTypeDomainObject getCategoryTypeById(int categoryTypeId) {
-        CategoryTypeDomainObject categoryType = (CategoryTypeDomainObject) categoryTypeCache.get(categoryTypeId);
+        CategoryTypeDomainObject categoryType = categoryTypeCache.get(categoryTypeId);
         if (categoryType == null) {
             String[] parameters = new String[]{"" + categoryTypeId};
-            categoryType = (CategoryTypeDomainObject) database.execute(new SqlQueryCommand(SQL__GET_CATEGORY_TYPE_BY_ID, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
+            categoryType = database.execute(new SqlQueryCommand<>(SQL__GET_CATEGORY_TYPE_BY_ID, parameters, SINGLE_CATEGORY_TYPE_HANDLER));
             categoryTypeCache.put(categoryTypeId, categoryType);
         }
         return categoryType;
@@ -156,26 +161,35 @@ public class CategoryMapper {
 
     public CategoryTypeDomainObject addCategoryTypeToDb(final CategoryTypeDomainObject categoryType
     ) {
-        Number newId = database.execute(new InsertIntoTableDatabaseCommand("category_types", getColumnNamesAndValuesForCategoryType(categoryType)));
+        Number newId = database.execute(new InsertIntoTableDatabaseCommand(
+                "category_types", getColumnNamesAndValuesForCategoryType(categoryType)
+        ));
         return getCategoryTypeById(newId.intValue());
     }
 
     private Object[][] getColumnNamesAndValuesForCategoryType(CategoryTypeDomainObject categoryType) {
         return new Object[][]{
                 {"name", categoryType.getName()},
-                {"max_choices", new Integer(categoryType.getMaxChoices())},
-                {"inherited", new Integer(categoryType.isInherited() ? 1 : 0)},
-                {"is_image_archive", new Integer(categoryType.isImageArchive() ? 1 : 0)},
+                {"max_choices", categoryType.getMaxChoices()},
+                {"inherited", categoryType.isInherited() ? 1 : 0},
+                {"is_image_archive", categoryType.isImageArchive() ? 1 : 0},
         };
     }
 
     public void updateCategoryType(CategoryTypeDomainObject categoryType) {
-        database.execute(new UpdateTableWhereColumnEqualsDatabaseCommand("category_types", "category_type_id", new Integer(categoryType.getId()), getColumnNamesAndValuesForCategoryType(categoryType)));
+        database.execute(new UpdateTableWhereColumnEqualsDatabaseCommand(
+                "category_types",
+                "category_type_id",
+                categoryType.getId(),
+                getColumnNamesAndValuesForCategoryType(categoryType)
+        ));
         invalidateCategoryType(categoryType);
     }
 
     public CategoryDomainObject addCategory(CategoryDomainObject category) {
-        Number newId = database.execute(new InsertIntoTableDatabaseCommand("categories", getColumnNamesAndValuesForCategory(category)));
+        Number newId = database.execute(new InsertIntoTableDatabaseCommand(
+                "categories", getColumnNamesAndValuesForCategory(category)
+        ));
         int categoryId = newId.intValue();
         category.setId(categoryId);
         return getCategoryById(categoryId);
@@ -183,7 +197,7 @@ public class CategoryMapper {
 
     private Object[][] getColumnNamesAndValuesForCategory(CategoryDomainObject category) {
         return new Object[][]{
-                {"category_type_id", new Integer(category.getType().getId())},
+                {"category_type_id", category.getType().getId()},
                 {"name", category.getName()},
                 {"description", category.getDescription()},
                 {"image", category.getImageUrl()}
@@ -191,7 +205,12 @@ public class CategoryMapper {
     }
 
     public void updateCategory(CategoryDomainObject category) {
-        database.execute(new UpdateTableWhereColumnEqualsDatabaseCommand("categories", "category_id", new Integer(category.getId()), getColumnNamesAndValuesForCategory(category)));
+        database.execute(new UpdateTableWhereColumnEqualsDatabaseCommand(
+                "categories",
+                "category_id",
+                category.getId(),
+                getColumnNamesAndValuesForCategory(category)
+        ));
         invalidateCategory(category);
     }
 
@@ -203,11 +222,10 @@ public class CategoryMapper {
     }
 
     void updateDocumentCategories(DocumentDomainObject document) {
-        Set categoryIds = document.getCategoryIds();
+        Set<Integer> categoryIds = document.getCategoryIds();
         removeAllCategoriesFromDocument(document);
-        for (Iterator iterator = categoryIds.iterator(); iterator.hasNext(); ) {
-            Integer categoryId = (Integer) iterator.next();
-            addCategoryToDocument(categoryId.intValue(), document);
+        for (Integer categoryId : categoryIds) {
+            addCategoryToDocument(categoryId, document);
         }
     }
 
@@ -221,7 +239,7 @@ public class CategoryMapper {
         String sqlstr = "select meta_id from document_categories where category_id = ? ";
         String[] params = new String[]{category.getId() + ""};
 
-        return (String[]) database.execute(new SqlQueryCommand(sqlstr, params, Utility.STRING_ARRAY_HANDLER));
+        return database.execute(new SqlQueryCommand<>(sqlstr, params, Utility.STRING_ARRAY_HANDLER));
     }
 
     private void removeAllCategoriesFromDocument(DocumentDomainObject document) {
@@ -238,8 +256,7 @@ public class CategoryMapper {
     void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
             throws MaxCategoryDomainObjectsOfTypeExceededException {
         CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (int i = 0; i < categoryTypes.length; i++) {
-            CategoryTypeDomainObject categoryType = categoryTypes[i];
+        for (CategoryTypeDomainObject categoryType : categoryTypes) {
             int maxChoices = categoryType.getMaxChoices();
             Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategoryIds());
             if (UNLIMITED_MAX_CATEGORY_CHOICES != maxChoices && documentCategoriesOfType.size() > maxChoices) {
@@ -277,11 +294,10 @@ public class CategoryMapper {
         return categories;
     }
 
-    public Set getCategoriesOfType(CategoryTypeDomainObject categoryType, Set categoryIds) {
-        Set categories = getCategories(categoryIds);
-        Set categoriesOfType = new HashSet();
-        for (Iterator iterator = categories.iterator(); iterator.hasNext(); ) {
-            CategoryDomainObject category = (CategoryDomainObject) iterator.next();
+    public Set<CategoryDomainObject> getCategoriesOfType(CategoryTypeDomainObject categoryType, Set<Integer> categoryIds) {
+        Set<CategoryDomainObject> categories = getCategories(categoryIds);
+        Set<CategoryDomainObject> categoriesOfType = new HashSet<>();
+        for (CategoryDomainObject category : categories) {
             if (categoryType.equals(category.getType())) {
                 categoriesOfType.add(category);
             }
@@ -299,7 +315,7 @@ public class CategoryMapper {
         categoryTypeByNameCache.remove(categoryType.getName());
     }
 
-    private static class CategoryTypeFromRowFactory implements RowTransformer {
+    private static class CategoryTypeFromRowFactory implements RowTransformer<CategoryTypeDomainObject> {
 
         private final int offset;
 
@@ -311,7 +327,7 @@ public class CategoryMapper {
             this.offset = offset;
         }
 
-        public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+        public CategoryTypeDomainObject createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
             int id = resultSet.getInt(offset + 1);
             String name = resultSet.getString(offset + 2);
             int maxChoices = resultSet.getInt(offset + 3);
@@ -320,25 +336,25 @@ public class CategoryMapper {
             return new CategoryTypeDomainObject(id, name, maxChoices, inherited, imageArchive);
         }
 
-        public Class getClassOfCreatedObjects() {
+        public Class<CategoryTypeDomainObject> getClassOfCreatedObjects() {
             return CategoryTypeDomainObject.class;
         }
     }
 
-    private static class CategoryFromRowFactory implements RowTransformer {
+    private static class CategoryFromRowFactory implements RowTransformer<CategoryDomainObject> {
 
-        public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+        public CategoryDomainObject createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
             int categoryId = resultSet.getInt(1);
             String categoryName = resultSet.getString(2);
             String categoryDescription = resultSet.getString(3);
             String categoryImage = resultSet.getString(4);
 
-            CategoryTypeDomainObject categoryType = (CategoryTypeDomainObject) new CategoryTypeFromRowFactory(4).createObjectFromResultSetRow(resultSet);
+            CategoryTypeDomainObject categoryType = new CategoryTypeFromRowFactory(4).createObjectFromResultSetRow(resultSet);
 
             return new CategoryDomainObject(categoryId, categoryName, categoryDescription, categoryImage, categoryType);
         }
 
-        public Class getClassOfCreatedObjects() {
+        public Class<CategoryDomainObject> getClassOfCreatedObjects() {
             return CategoryDomainObject.class;
         }
     }

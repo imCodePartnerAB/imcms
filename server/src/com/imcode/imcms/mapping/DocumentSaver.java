@@ -18,7 +18,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class DocumentSaver {
 
@@ -30,16 +38,6 @@ class DocumentSaver {
 
     DocumentSaver(DocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
-    }
-
-    static int convertPublicationStatusToInt(Document.PublicationStatus publicationStatus) {
-        int publicationStatusInt = Document.STATUS_NEW;
-        if (Document.PublicationStatus.APPROVED.equals(publicationStatus)) {
-            publicationStatusInt = Document.STATUS_PUBLICATION_APPROVED;
-        } else if (Document.PublicationStatus.DISAPPROVED.equals(publicationStatus)) {
-            publicationStatusInt = Document.STATUS_PUBLICATION_DISAPPROVED;
-        }
-        return publicationStatusInt;
     }
 
     static void makeBooleanSqlUpdateClause(String columnName, boolean bool, List sqlUpdateColumns,
@@ -133,16 +131,15 @@ class DocumentSaver {
         makeBooleanSqlUpdateClause("permissions", document.isRestrictedOneMorePrivilegedThanRestrictedTwo(), sqlUpdateColumns, sqlUpdateValues);
         makeIntSqlUpdateClause("publisher_id", document.getPublisherId(), sqlUpdateColumns,
                 sqlUpdateValues);
-        makeIntSqlUpdateClause("owner_id", new Integer(document.getCreatorId()), sqlUpdateColumns,
+        makeIntSqlUpdateClause("owner_id", document.getCreatorId(), sqlUpdateColumns,
                 sqlUpdateValues);
         Document.PublicationStatus publicationStatus = document.getPublicationStatus();
-        int publicationStatusInt = convertPublicationStatusToInt(publicationStatus);
-        makeIntSqlUpdateClause("status", new Integer(publicationStatusInt), sqlUpdateColumns, sqlUpdateValues);
+        makeIntSqlUpdateClause("status", publicationStatus.hashCode(), sqlUpdateColumns, sqlUpdateValues);
 
         sqlStr.append(StringUtils.join(sqlUpdateColumns.iterator(), ","));
         sqlStr.append(" where meta_id = ?");
         sqlUpdateValues.add("" + document.getId());
-        String[] params = (String[]) sqlUpdateValues.toArray(new String[sqlUpdateValues.size()]);
+        String[] params = (String[]) sqlUpdateValues.toArray(new String[0]);
         getDatabase().execute(new SqlUpdateCommand(sqlStr.toString(), params));
     }
 
@@ -237,7 +234,7 @@ class DocumentSaver {
 
     private int sqlInsertIntoMeta(DocumentDomainObject document) {
 
-        final Number documentId = (Number) getDatabase().execute(new InsertIntoTableDatabaseCommand("meta", new String[][]{
+        final Number documentId = getDatabase().execute(new InsertIntoTableDatabaseCommand("meta", new String[][]{
                 {"doc_type", document.getDocumentTypeId() + ""},
                 {"meta_headline", document.getHeadline()},
                 {"meta_text", document.getMenuText()},
@@ -315,8 +312,8 @@ class DocumentSaver {
 
     void updateDocumentProperties(DocumentDomainObject document) {
         int meta_id = document.getId();
-        Map properties = (Map) document.getProperties();
-        deletePropertiesFromDocumnet(meta_id);
+        Map properties = document.getProperties();
+        deletePropertiesFromDocument(meta_id);
         for (Iterator iterator = properties.keySet().iterator(); iterator.hasNext(); ) {
             String key = (String) iterator.next();
             String[] params = new String[]{meta_id + "", key, (String) properties.get(key)};
@@ -324,7 +321,7 @@ class DocumentSaver {
         }
     }
 
-    private void deletePropertiesFromDocumnet(int meta_id) {
+    private void deletePropertiesFromDocument(int meta_id) {
         String[] params = new String[]{meta_id + ""};
         getDatabase().execute(new SqlUpdateCommand("DELETE FROM document_properties WHERE meta_id = ?", params));
     }
@@ -332,14 +329,14 @@ class DocumentSaver {
     void updateDocumentSections(int metaId,
                                 Set sectionIds) {
         removeAllSectionsFromDocument(metaId);
-        for (Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
-            Integer sectionId = (Integer) iterator.next();
+        for (Object sectionId1 : sectionIds) {
+            Integer sectionId = (Integer) sectionId1;
             addSectionIdToDocument(metaId, sectionId);
         }
     }
 
     private void addSectionIdToDocument(int metaId, Integer sectionId) {
-        Integer[] params = new Integer[]{new Integer(metaId), sectionId};
+        Integer[] params = new Integer[]{metaId, sectionId};
         getDatabase().execute(new SqlUpdateDatabaseCommand("INSERT INTO meta_section VALUES(?,?)", params));
     }
 
@@ -368,7 +365,7 @@ class DocumentSaver {
         String[] params1 = new String[]{
                 keyword
         };
-        int keywordId = Integer.parseInt((String) getDatabase().execute(new SqlQueryCommand("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
+        int keywordId = Integer.parseInt(getDatabase().execute(new SqlQueryCommand<>("SELECT class_id FROM classification WHERE code = ?", params1, Utility.SINGLE_STRING_HANDLER)));
         String[] params = new String[]{"" + meta_id, "" + keywordId};
         getDatabase().execute(new SqlUpdateCommand("INSERT INTO meta_classification (meta_id, class_id) VALUES(?,?)", params));
     }

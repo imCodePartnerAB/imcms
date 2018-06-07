@@ -1,9 +1,9 @@
 package com.imcode.imcms.mapping;
 
 import com.imcode.db.mock.MockDatabase;
+import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.DocumentPermissionSetTypeDomainObject;
 import imcode.server.document.TextDocumentPermissionSetDomainObject;
-import imcode.server.document.DocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import junit.framework.TestCase;
 
@@ -23,8 +23,8 @@ public class TestDocumentPermissionSetMapper extends TestCase {
         textDocumentPermissionSet = new TextDocumentPermissionSetDomainObject( DocumentPermissionSetTypeDomainObject.RESTRICTED_1 );
     }
 
-    public void testSetTextDocumentPermissionSetFromBits() throws Exception {
-        database.addExpectedSqlCall( new MockDatabase.StartsWithSqlCallPredicate( DatabaseDocumentGetter.SQL_SELECT_PERMISSON_DATA__PREFIX ), null );
+    public void testSetTextDocumentPermissionSetFromBits() {
+        database.addExpectedSqlCall(new MockDatabase.StartsWithSqlCallPredicate(DatabaseDocumentGetter.SQL_SELECT_PERMISSION_DATA__PREFIX), null);
         textDocumentPermissionSet.setEditDocumentInformation(0 != ( DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID & DocumentPermissionSetDomainObject.EDIT_DOCINFO_PERMISSION_ID ));
         textDocumentPermissionSet.setEditPermissions(0 != ( DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID & DocumentPermissionSetDomainObject.EDIT_PERMISSIONS_PERMISSION_ID ));
         textDocumentPermissionSet.setEdit(0 != ( DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID & DocumentPermissionSetDomainObject.EDIT_DOCUMENT_PERMISSION_ID ));

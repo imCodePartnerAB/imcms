@@ -4,20 +4,27 @@ import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentSaveException;
-import imcode.server.document.*;
-import imcode.server.document.index.DocumentQuery;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.CategoryTypeDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.DocumentVisitor;
+import imcode.server.document.FileDocumentDomainObject;
+import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
+import imcode.server.document.SectionDomainObject;
+import imcode.server.document.UrlDocumentDomainObject;
+import imcode.server.document.XmlDocumentBuilder;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Sort;
 
 import java.util.AbstractList;
 import java.util.List;
 
 /**
- * In charge of document, category type and category opeerations such as creation, saving, deletion and look up.
+ * In charge of document, category type and category operations such as creation, saving, deletion and look up.
  * As well as representation of imcms document in as xml document.
  */
+@SuppressWarnings({"unused", "JavaDoc"})
 public class DocumentService {
 
     private final ContentManagementSystem contentManagementSystem;
@@ -48,15 +55,12 @@ public class DocumentService {
      * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
      *                         or the document name also known as "alias".
      * @return The document The type is usually a subclass to document, if there exist one.
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
      */
     public Document getDocument(String documentIdString) throws NoPermissionException {
         DocumentDomainObject doc = getDocumentMapper().getDocument(documentIdString);
-        Document result = null;
-        if (null != doc) {
-            result = wrapDocumentDomainObject(doc, contentManagementSystem);
-        }
-        return result;
+
+        return (null == doc) ? null : wrapDocumentDomainObject(doc, contentManagementSystem);
     }
 
     /**
@@ -65,7 +69,7 @@ public class DocumentService {
      *
      * @param documentId The id number of the document requested, also sometimes known as "meta_id"
      * @return The document The type is usually a subclass to document, if there exist one.
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
      */
     public Document getDocument(int documentId) throws NoPermissionException {
         return getDocument("" + documentId);
@@ -77,7 +81,7 @@ public class DocumentService {
      * @param documentIdString The unique id or name of the document requested, can be either the int value alsp known as "meta_id"
      *                         or the document name also known as "alias".
      * @return The document with given id or null if such doesn't exist.
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
      */
     public TextDocument getTextDocument(String documentIdString) throws NoPermissionException {
         return (TextDocument) getDocument(documentIdString);
@@ -88,10 +92,10 @@ public class DocumentService {
      *
      * @param documentId The id number of the document requested, also known as "meta_id"
      * @return The document with given id or null if such doesn't exist.
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
      */
     public TextDocument getTextDocument(int documentId) throws NoPermissionException {
-        return (TextDocument) getDocument("" + documentId);
+        return getTextDocument(String.valueOf(documentId));
     }
 
     /**
@@ -100,7 +104,7 @@ public class DocumentService {
      * @param documentIdString The unique id or name of the document requested, can be either the int value also known as "meta_id"
      *                         or the document name also known as "alias".
      * @return The document with given id or null if such doesn't exist.
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
      */
     public UrlDocument getUrlDocument(String documentIdString) throws NoPermissionException {
         return (UrlDocument) getDocument(documentIdString);
@@ -111,10 +115,10 @@ public class DocumentService {
      *
      * @param documentId The id number of the document requested, also known as "meta_id"
      * @return The document with given id or null if such doesn't exist.
-     * @throws NoPermissionException If the current user dosen't have the rights to read this document.
+     * @throws NoPermissionException If the current user doesn't have the rights to read this document.
      */
     public UrlDocument getUrlDocument(int documentId) throws NoPermissionException {
-        return (UrlDocument) getDocument(documentId);
+        return getUrlDocument(String.valueOf(documentId));
     }
 
     /**
@@ -159,7 +163,12 @@ public class DocumentService {
      * @throws NoPermissionException if current user can't create new documents
      */
     private Document createNewDocument(int doctype, Document parent) throws NoPermissionException {
-        return wrapDocumentDomainObject(getDocumentMapper().createDocumentOfTypeFromParent(doctype, parent.getInternal(), contentManagementSystem.getCurrentUser().getInternal()), contentManagementSystem);
+
+        final DocumentDomainObject docFromParent = getDocumentMapper().createDocumentOfTypeFromParent(
+                doctype, parent.getInternal(), getInternalUser()
+        );
+
+        return wrapDocumentDomainObject(docFromParent, contentManagementSystem);
     }
 
     /**
@@ -172,10 +181,14 @@ public class DocumentService {
      */
     public synchronized void saveChanges(Document document) throws NoPermissionException, SaveException {
         try {
+            final DocumentDomainObject internalDoc = document.getInternal();
+            final UserDomainObject internalUser = getInternalUser();
+            final DocumentMapper documentMapper = getDocumentMapper();
+
             if (0 == document.getId()) {
-                getDocumentMapper().saveNewDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal(), false);
+                documentMapper.saveNewDocument(internalDoc, internalUser, false);
             } else {
-                getDocumentMapper().saveDocument(document.getInternal(), contentManagementSystem.getCurrentUser().getInternal());
+                documentMapper.saveDocument(internalDoc, internalUser);
             }
         } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
             throw new MaxCategoriesOfTypeExceededException(e);
@@ -194,12 +207,12 @@ public class DocumentService {
      * @return category, or null if given category type doesn't have category with given name
      */
     public Category getCategory(CategoryType categoryType, String categoryName) {
-        final CategoryDomainObject category = getCategoryMapper().getCategoryByTypeAndName(categoryType.getInternal(), categoryName);
-        if (null != category) {
-            return new Category(category);
-        } else {
-            return null;
-        }
+
+        final CategoryDomainObject category = getCategoryMapper().getCategoryByTypeAndName(
+                categoryType.getInternal(), categoryName
+        );
+
+        return (null != category) ? new Category(category) : null;
     }
 
     private CategoryMapper getCategoryMapper() {
@@ -214,11 +227,7 @@ public class DocumentService {
      */
     public Category getCategory(int categoryId) {
         final CategoryDomainObject category = getCategoryMapper().getCategoryById(categoryId);
-        if (null != category) {
-            return new Category(category);
-        } else {
-            return null;
-        }
+        return (null != category) ? new Category(category) : null;
     }
 
     /**
@@ -244,10 +253,7 @@ public class DocumentService {
     }
 
     private CategoryType returnCategoryTypeAPIObjectOrNull(final CategoryTypeDomainObject categoryType) {
-        if (null != categoryType) {
-            return new CategoryType(categoryType);
-        }
-        return null;
+        return (null != categoryType) ? new CategoryType(categoryType) : null;
     }
 
     /**
@@ -260,6 +266,7 @@ public class DocumentService {
         // Allow everyone to get a CategoryType. No security check.
         CategoryDomainObject[] categoryDomainObjects = getCategoryMapper().getAllCategoriesOfType(categoryType.getInternal());
         Category[] categories = new Category[categoryDomainObjects.length];
+
         for (int i = 0; i < categoryDomainObjects.length; i++) {
             CategoryDomainObject categoryDomainObject = categoryDomainObjects[i];
             categories[i] = new Category(categoryDomainObject);
@@ -275,6 +282,7 @@ public class DocumentService {
     public CategoryType[] getAllCategoryTypes() {
         CategoryTypeDomainObject[] categoryTypeDomainObjects = getCategoryMapper().getAllCategoryTypes();
         CategoryType[] categoryTypes = new CategoryType[categoryTypeDomainObjects.length];
+
         for (int i = 0; i < categoryTypeDomainObjects.length; i++) {
             CategoryTypeDomainObject categoryTypeDomainObject = categoryTypeDomainObjects[i];
             categoryTypes[i] = new CategoryType(categoryTypeDomainObject);
@@ -287,7 +295,7 @@ public class DocumentService {
      *
      * @param name       name of the new category type
      * @param maxChoices maximum number of category choice of this category type
-     * @return The newly craeated category type.
+     * @return The newly created category type.
      * @throws NoPermissionException
      * @throws CategoryTypeAlreadyExistsException if there's already a category type with given name
      */
@@ -309,11 +317,8 @@ public class DocumentService {
      * @return a section with give id or null if none found
      */
     public Section getSection(int sectionId) {
-        SectionDomainObject section = getDocumentMapper().getSectionById(sectionId);
-        if (null == section) {
-            return null;
-        }
-        return new Section(section);
+        final SectionDomainObject section = getDocumentMapper().getSectionById(sectionId);
+        return (null == section) ? null : new Section(section);
     }
 
     /**
@@ -324,11 +329,8 @@ public class DocumentService {
      * @since 2.0
      */
     public Section getSection(String name) {
-        SectionDomainObject section = getDocumentMapper().getSectionByName(name);
-        if (null == section) {
-            return null;
-        }
-        return new Section(section);
+        final SectionDomainObject section = getDocumentMapper().getSectionByName(name);
+        return (null == section) ? null : new Section(section);
     }
 
     /**
@@ -341,44 +343,33 @@ public class DocumentService {
      */
     public List<Document> getDocuments(final SearchQuery query) throws SearchException {
         try {
-            final List<DocumentDomainObject> documentList = getDocumentMapper().getDocumentIndex().search(new DocumentQuery() {
-                public Query getQuery() {
-                    return query.getQuery();
-                }
+            final List<DocumentDomainObject> documentList = getDocumentMapper()
+                    .getDocumentIndex()
+                    .search(query, getInternalUser());
 
-                public Sort getSort() {
-                    return query.getSort();
-                }
-
-                public boolean isLogged() {
-                    return query.isLogged();
-                }
-            }, contentManagementSystem.getCurrentUser().getInternal());
             return new ApiDocumentWrappingList(documentList, contentManagementSystem);
+
         } catch (RuntimeException e) {
             throw new SearchException(e);
         }
     }
 
+    private UserDomainObject getInternalUser() {
+        return contentManagementSystem.getCurrentUser().getInternal();
+    }
+
     public SearchResult<Document> getDocuments(final SearchQuery query, int startPosition, int maxResults) throws SearchException {
         try {
-            SearchResult<DocumentDomainObject> result = getDocumentMapper().getDocumentIndex().search(new DocumentQuery() {
-                public Query getQuery() {
-                    return query.getQuery();
-                }
+            final SearchResult<DocumentDomainObject> result = getDocumentMapper()
+                    .getDocumentIndex()
+                    .search(query, getInternalUser(), startPosition, maxResults);
 
-                public Sort getSort() {
-                    return query.getSort();
-                }
-
-                public boolean isLogged() {
-                    return query.isLogged();
-                }
-            }, contentManagementSystem.getCurrentUser().getInternal(), startPosition, maxResults);
-
-            ApiDocumentWrappingList documents = new ApiDocumentWrappingList(result.getDocuments(), contentManagementSystem);
+            final ApiDocumentWrappingList documents = new ApiDocumentWrappingList(
+                    result.getResult(), contentManagementSystem
+            );
 
             return SearchResult.of(documents, result.getTotalCount());
+
         } catch (RuntimeException e) {
             throw new SearchException(e);
         }
@@ -393,8 +384,7 @@ public class DocumentService {
      * @see com.imcode.imcms.api.LuceneParsedQuery
      */
     public Document[] search(SearchQuery query) throws SearchException {
-        List documents = getDocuments(query);
-        return (Document[]) documents.toArray(new Document[documents.size()]);
+        return getDocuments(query).toArray(new Document[0]);
     }
 
     private DocumentMapper getDocumentMapper() {
@@ -419,7 +409,7 @@ public class DocumentService {
      * @return org.w3c.dom.Document of given document
      */
     public org.w3c.dom.Document getXmlDomForDocument(Document document) {
-        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(contentManagementSystem.getCurrentUser().getInternal());
+        XmlDocumentBuilder xmlDocumentBuilder = new XmlDocumentBuilder(getInternalUser());
         xmlDocumentBuilder.addDocument(document.getInternal());
         return xmlDocumentBuilder.getXmlDocument();
     }
@@ -442,8 +432,7 @@ public class DocumentService {
      * @throws NoPermissionException
      */
     public void deleteDocument(Document document) throws NoPermissionException {
-        UserDomainObject internalUser = contentManagementSystem.getCurrentUser().getInternal();
-        getDocumentMapper().deleteDocument(document.getInternal(), internalUser);
+        getDocumentMapper().deleteDocument(document.getInternal(), getInternalUser());
     }
 
     /**

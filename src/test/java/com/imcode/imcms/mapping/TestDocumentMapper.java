@@ -4,7 +4,14 @@ import com.imcode.db.mock.MockDatabase;
 import com.imcode.db.mock.MockResultSet;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.MockImcmsServices;
-import imcode.server.document.*;
+import imcode.server.document.BrowserDocumentDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.DocumentTypeDomainObject;
+import imcode.server.document.NoPermissionToCreateDocumentException;
+import imcode.server.document.TemplateMapper;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import imcode.server.document.textdocument.NoPermissionToAddDocumentToMenuException;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
@@ -29,7 +36,7 @@ public class TestDocumentMapper extends TestCase {
     private TextDocumentDomainObject textDocument;
     private TextDocumentDomainObject oldDocument;
     private MockDocumentIndex documentIndex;
-    private static final Integer ONE = new Integer(1);
+    private static final Integer ONE = 1;
 
     protected void setUp() throws Exception {
         BasicConfigurator.configure(new NullAppender());
@@ -75,13 +82,13 @@ public class TestDocumentMapper extends TestCase {
         }
     }
 
-    public void testUpdateDocumentRolePermissionsWithNoPermissions() throws Exception {
+    public void testUpdateDocumentRolePermissionsWithNoPermissions() {
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.READ);
         documentMapper.getDocumentSaver().updateDocumentRolePermissions( textDocument, user, oldDocument );
         assertEquals( 0, database.getSqlCallCount() );
     }
 
-    public void testUpdateDocumentRolePermissionsWithRestricted1Permission() throws Exception {
+    public void testUpdateDocumentRolePermissionsWithRestricted1Permission() {
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.RESTRICTED_1);
         textDocument.setRoleIdsMappedToDocumentPermissionSetTypes(oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes());
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.READ);
@@ -105,7 +112,7 @@ public class TestDocumentMapper extends TestCase {
         database.assertCalled(new MockDatabase.EqualsSqlCallPredicate(DocumentSaver.SQL_SET_ROLE_DOCUMENT_PERMISSION_SET_ID));
     }
 
-    public void testUpdateDocumentRolePermissionsWithFullPermission() throws Exception {
+    public void testUpdateDocumentRolePermissionsWithFullPermission() {
         oldDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.FULL);
         textDocument.setDocumentPermissionSetTypeForRoleId(testRole.getId(), DocumentPermissionSetTypeDomainObject.READ);
         textDocument.setRoleIdsMappedToDocumentPermissionSetTypes(oldDocument.getRoleIdsMappedToDocumentPermissionSetTypes());
@@ -136,7 +143,7 @@ public class TestDocumentMapper extends TestCase {
         assertEquals(1, database.getSqlCallCount());
     }
 
-    public void testUpdateDocumentRolePermissionsAllowsNullOldDocument() throws Exception {
+    public void testUpdateDocumentRolePermissionsAllowsNullOldDocument() {
         documentMapper.getDocumentSaver().updateDocumentRolePermissions( textDocument, user, null );
         assertTrue(true);
     }
@@ -146,7 +153,7 @@ public class TestDocumentMapper extends TestCase {
         browserDocument.setDocumentPermissionSetTypeForRoleId(userRole, DocumentPermissionSetTypeDomainObject.FULL);
         browserDocument.setBrowserDocumentId(BrowserDocumentDomainObject.Browser.DEFAULT, 1001);
         browserDocument.setCreator(new UserDomainObject(0));
-        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableSqlCallPredicate("meta"), new Integer(1002));
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableSqlCallPredicate("meta"), 1002);
         documentMapper.saveNewDocument(browserDocument, user, false);
         database.assertExpectedSqlCalls();
         database.assertCallCount(1, new MockDatabase.InsertIntoTableSqlCallPredicate("browser_docs"));
@@ -155,10 +162,10 @@ public class TestDocumentMapper extends TestCase {
 
     public void testDeleteDocument() {
         Object[][] documentResultRows = new Object[1][19];
-        documentResultRows[0][0] = new Integer(textDocument.getId()) ;
-        documentResultRows[0][1] = new Integer(textDocument.getDocumentTypeId()) ;
-        documentResultRows[0][5] = new Integer(user.getId()) ;
-        documentResultRows[0][16] = new Integer(DocumentSaver.convertPublicationStatusToInt(textDocument.getPublicationStatus())) ;
+        documentResultRows[0][0] = textDocument.getId();
+        documentResultRows[0][1] = textDocument.getDocumentTypeId();
+        documentResultRows[0][5] = user.getId();
+        documentResultRows[0][16] = textDocument.getPublicationStatus().hashCode();
         database.addExpectedSqlCall( new MockDatabase.StartsWithSqlCallPredicate( DatabaseDocumentGetter.SQL_GET_DOCUMENTS ), new MockResultSet(documentResultRows) );
         ResultSet textDocsResultRow = new MockResultSet(new Object[][] { { ONE, ONE, ONE, ONE, ONE } } ) ;
         database.addExpectedSqlCall( new MockDatabase.MatchesRegexSqlCallPredicate( "FROM text_docs"), textDocsResultRow );
@@ -184,7 +191,7 @@ public class TestDocumentMapper extends TestCase {
         user.addRoleId( RoleId.SUPERADMIN );
         TextDocumentDomainObject document = (TextDocumentDomainObject)documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.TEXT_ID, textDocument, user );
         document.setTemplateName( "1" );
-        database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableSqlCallPredicate("meta"), 1002);
         documentMapper.saveNewDocument( document, user, false);
         database.assertExpectedSqlCalls();
     }
@@ -192,7 +199,7 @@ public class TestDocumentMapper extends TestCase {
     public void testCreateHtmlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException, DocumentSaveException {
         user.addRoleId( RoleId.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.HTML_ID, textDocument, user );
-        database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableSqlCallPredicate("meta"), 1002);
         documentMapper.saveNewDocument( document, user, false);
         database.assertExpectedSqlCalls();
     }
@@ -200,13 +207,13 @@ public class TestDocumentMapper extends TestCase {
     public void testCreateUrlDocument() throws NoPermissionToAddDocumentToMenuException, NoPermissionToCreateDocumentException, DocumentSaveException {
         user.addRoleId( RoleId.SUPERADMIN );
         DocumentDomainObject document = documentMapper.createDocumentOfTypeFromParent( DocumentTypeDomainObject.URL_ID, textDocument, user );
-        database.addExpectedSqlCall( new MockDatabase.InsertIntoTableSqlCallPredicate( "meta" ), new Integer(1002));
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableSqlCallPredicate("meta"), 1002);
         documentMapper.saveNewDocument( document, user, false);
         database.assertExpectedSqlCalls();
     }
 
 
-    public void testSetTemplateForNewTextDocument() throws Exception {
+    public void testSetTemplateForNewTextDocument() {
         String templateId1 = "1";
         String templateId2 = "2";
         String templateId3 = "3";

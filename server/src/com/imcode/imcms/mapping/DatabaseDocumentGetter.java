@@ -10,7 +10,14 @@ import imcode.server.document.DocumentDomainObject;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
@@ -35,7 +42,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             + "publication_end_datetime\n"
             + "FROM meta\n"
             + "WHERE meta_id ";
-    static final String SQL_SELECT_PERMISSON_DATA__PREFIX = "SELECT meta_id, set_id, permission_data FROM ";
+    static final String SQL_SELECT_PERMISSION_DATA__PREFIX = "SELECT meta_id, set_id, permission_data FROM ";
     private Database database;
     private ImcmsServices services;
 
@@ -66,16 +73,6 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         return new DocumentList(retMap);
     }
 
-    private Document.PublicationStatus publicationStatusFromInt(int publicationStatusInt) {
-        Document.PublicationStatus publicationStatus = Document.PublicationStatus.NEW;
-        if (Document.STATUS_PUBLICATION_APPROVED == publicationStatusInt) {
-            publicationStatus = Document.PublicationStatus.APPROVED;
-        } else if (Document.STATUS_PUBLICATION_DISAPPROVED == publicationStatusInt) {
-            publicationStatus = Document.PublicationStatus.DISAPPROVED;
-        }
-        return publicationStatus;
-    }
-
     private class DocumentMapSet extends AbstractSet {
 
         private Map map;
@@ -90,7 +87,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
 
         public boolean add(Object o) {
             DocumentDomainObject document = (DocumentDomainObject) o;
-            return null == map.put(new Integer(document.getId()), document);
+            return null == map.put(document.getId(), document);
         }
 
         public Iterator iterator() {
@@ -124,9 +121,9 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             document.setTarget(resultSet.getString(14));
             document.setArchivedDatetime(resultSet.getTimestamp(15));
             Number publisherId = (Number) resultSet.getObject(16);
-            document.setPublisherId(publisherId == null ? null : new Integer(publisherId.intValue()));
+            document.setPublisherId(publisherId == null ? null : publisherId.intValue());
             int publicationStatusInt = resultSet.getInt(17);
-            Document.PublicationStatus publicationStatus = publicationStatusFromInt(publicationStatusInt);
+            Document.PublicationStatus publicationStatus = Document.PublicationStatus.fromInt(publicationStatusInt);
             document.setPublicationStatus(publicationStatus);
             document.setPublicationStartDatetime(resultSet.getTimestamp(18));
             document.setPublicationEndDatetime(resultSet.getTimestamp(19));

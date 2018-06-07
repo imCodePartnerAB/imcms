@@ -1,41 +1,31 @@
 package com.imcode.imcms.api;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+
 import java.util.Collections;
 import java.util.List;
 
+@Getter
+@ToString
+@EqualsAndHashCode
 public class SearchResult<T> {
 
-    private List<T> documents;
-    private int totalCount;
+    private final List<T> result;
+    private final int totalCount;
 
-    public SearchResult() {
-    }
-    public SearchResult(List<T> documents, int totalCount) {
-        this.documents = documents;
+    public SearchResult(List<T> result, int totalCount) {
+        this.result = result;
         this.totalCount = totalCount;
     }
 
     public static <T> SearchResult<T> empty() {
-        return new SearchResult<T>(Collections.<T>emptyList(), 0);
+        return new SearchResult<>(Collections.emptyList(), 0);
     }
 
-    public static <T> SearchResult<T> of(List<T> documents, int totalCount) {
-        return new SearchResult<T>(documents, totalCount);
+    public static <T> SearchResult<T> of(List<T> result, int totalCount) {
+        return new SearchResult<>(result, totalCount);
     }
 
-    public List<T> getDocuments() {
-        return documents;
-    }
-
-    public void setDocuments(List<T> documents) {
-        this.documents = documents;
-    }
-
-    public int getTotalCount() {
-        return totalCount;
-    }
-
-    public void setTotalCount(int totalCount) {
-        this.totalCount = totalCount;
-    }
 }

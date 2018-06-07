@@ -18,7 +18,7 @@ public class LuceneQuery extends SearchQuery {
         this.query = query;
     }
 
-    Query getQuery() {
+    public Query getQuery() {
         return query;
     }
 

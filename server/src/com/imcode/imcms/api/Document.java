@@ -1,38 +1,38 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.util.ChainableReversibleNullComparator;
 import com.imcode.util.CountingIterator;
-import imcode.server.document.*;
+import imcode.server.document.CategoryDomainObject;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
 import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * The base class for all document types, such as {@link TextDocument}, {@link UrlDocument}, {@link FileDocument} etc.
  * In charge of document information such as headline, alias, publication status. Publication, archivation and setting as
  * unpublished dates.
  * Assignment of {@link Category}, {@link Section} and keywords.
- * Holds informations about document creationg and modification, the dates and {@link User}.
+ * Holds information about document creating and modification, the dates and {@link User}.
  */
+@SuppressWarnings("unused")
 public class Document implements Serializable {
 
-    /**
-     * @deprecated Use {@link Document.PublicationStatus#NEW} instead.
-     */
-    public static final int STATUS_NEW = 0;
-    /**
-     * @deprecated Use {@link Document.PublicationStatus#DISAPPROVED} instead.
-     */
-    public static final int STATUS_PUBLICATION_DISAPPROVED = 1;
-    /**
-     * @deprecated Use {@link Document.PublicationStatus#APPROVED} instead.
-     */
-    public static final int STATUS_PUBLICATION_APPROVED = 2;
+    private static final int STATUS_NEW = 0;
+    private static final int STATUS_PUBLICATION_DISAPPROVED = 1;
+    private static final int STATUS_PUBLICATION_APPROVED = 2;
+
     private final static Logger log = Logger.getLogger(Document.class.getName());
     private final DocumentDomainObject internalDocument;
     ContentManagementSystem contentManagementSystem;
@@ -42,16 +42,13 @@ public class Document implements Serializable {
         this.contentManagementSystem = contentManagementSystem;
     }
 
-    private static Map wrapDomainObjectsInMap(Map rolesMappedToPermissionsIds) {
-        Map result = new HashMap();
-        Set keys = rolesMappedToPermissionsIds.keySet();
-        Iterator keyIterator = keys.iterator();
-        while (keyIterator.hasNext()) {
-            RoleDomainObject role = (RoleDomainObject) keyIterator.next();
-            DocumentPermissionSetDomainObject documentPermissionSetDO = (DocumentPermissionSetDomainObject) rolesMappedToPermissionsIds.get(role);
-            DocumentPermissionSet documentPermissionSet = new DocumentPermissionSet(documentPermissionSetDO);
-            result.put(new Role(role), documentPermissionSet);
+    private static Map<Role, DocumentPermissionSet> wrapDomainObjectsInMap(Map<RoleDomainObject, DocumentPermissionSetDomainObject> rolesMappedToPermissionsIds) {
+        Map<Role, DocumentPermissionSet> result = new HashMap<>();
+
+        for (Map.Entry<RoleDomainObject, DocumentPermissionSetDomainObject> entry : rolesMappedToPermissionsIds.entrySet()) {
+            result.put(new Role(entry.getKey()), new DocumentPermissionSet(entry.getValue()));
         }
+
         return result;
     }
 
@@ -78,11 +75,10 @@ public class Document implements Serializable {
     public Map getRolesMappedToPermissions() {
         RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings = internalDocument.getRoleIdsMappedToDocumentPermissionSetTypes();
 
-        Map result = new HashMap();
+        Map<RoleDomainObject, DocumentPermissionSetDomainObject> result = new HashMap<>();
         RoleIdToDocumentPermissionSetTypeMappings.Mapping[] mappings = roleIdToDocumentPermissionSetTypeMappings.getMappings();
         RoleGetter roleGetter = contentManagementSystem.getInternal().getRoleGetter();
-        for (int i = 0; i < mappings.length; i++) {
-            RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping = mappings[i];
+        for (RoleIdToDocumentPermissionSetTypeMappings.Mapping mapping : mappings) {
             RoleId roleId = mapping.getRoleId();
             RoleDomainObject role = roleGetter.getRole(roleId);
             DocumentPermissionSetTypeDomainObject documentPermissionSetType = mapping.getDocumentPermissionSetType();
@@ -152,7 +148,7 @@ public class Document implements Serializable {
 
     /**
      * Returns the most privileged DocumentPermissionSet of this document for current user.
-     * The lowest priveled DocumentPermissionSet returned here is of type {@link DocumentPermissionSetType#NONE}
+     * The lowest DocumentPermissionSet returned here is of type {@link DocumentPermissionSetType#NONE}
      *
      * @return the most privileged DocumentPermissionSet of this document for current user or {@link DocumentPermissionSetType#NONE}
      */
@@ -380,8 +376,11 @@ public class Document implements Serializable {
      * @return An array of Categories, an empty if none assigned.
      */
     public Category[] getCategories() {
-        Set categories = contentManagementSystem.getInternal().getCategoryMapper().getCategories(internalDocument.getCategoryIds());
-        CategoryDomainObject[] categoryDomainObjects = (CategoryDomainObject[]) categories.toArray(new CategoryDomainObject[categories.size()]);
+        CategoryDomainObject[] categoryDomainObjects = contentManagementSystem.getInternal()
+                .getCategoryMapper()
+                .getCategories(internalDocument.getCategoryIds())
+                .toArray(new CategoryDomainObject[0]);
+
         return getCategoryArrayFromCategoryDomainObjectArray(categoryDomainObjects);
     }
 
@@ -442,9 +441,11 @@ public class Document implements Serializable {
      * @return an array of Categories, empty array if no one found.
      */
     public Category[] getCategoriesOfType(CategoryType categoryType) {
-        CategoryMapper categoryMapper = contentManagementSystem.getInternal().getCategoryMapper();
-        Set categoriesOfType = categoryMapper.getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds());
-        CategoryDomainObject[] categories = (CategoryDomainObject[]) categoriesOfType.toArray(new CategoryDomainObject[categoriesOfType.size()]);
+        CategoryDomainObject[] categories = contentManagementSystem.getInternal()
+                .getCategoryMapper()
+                .getCategoriesOfType(categoryType.getInternal(), internalDocument.getCategoryIds())
+                .toArray(new CategoryDomainObject[0]);
+
         return getCategoryArrayFromCategoryDomainObjectArray(categories);
     }
 
@@ -455,11 +456,7 @@ public class Document implements Serializable {
      */
     public User getPublisher() {
         Integer publisherId = internalDocument.getPublisherId();
-        if (null != publisherId) {
-            return contentManagementSystem.getUserService().getUser(publisherId.intValue());
-        } else {
-            return null;
-        }
+        return (null == publisherId) ? null : contentManagementSystem.getUserService().getUser(publisherId);
     }
 
     /**
@@ -527,7 +524,7 @@ public class Document implements Serializable {
         DocumentService documentService = contentManagementSystem.getDocumentService();
         for (CountingIterator iterator = new CountingIterator(sectionIds.iterator()); iterator.hasNext(); ) {
             Integer sectionId = (Integer) iterator.next();
-            sections[iterator.getCount() - 1] = documentService.getSection(sectionId.intValue());
+            sections[iterator.getCount() - 1] = documentService.getSection(sectionId);
         }
         return sections;
     }
@@ -539,10 +536,9 @@ public class Document implements Serializable {
      */
     public void setSections(Section[] sections) {
         Set sectionIds = new HashSet();
-        for (int i = 0; i < sections.length; i++) {
-            Section section = sections[i];
+        for (Section section : sections) {
             int sectionId = section.getId();
-            sectionIds.add(new Integer(sectionId));
+            sectionIds.add(sectionId);
         }
         internalDocument.setSectionIds(sectionIds);
     }
@@ -706,6 +702,19 @@ public class Document implements Serializable {
             this.status = status;
         }
 
+        public static PublicationStatus fromInt(int status) {
+            switch (status) {
+                case STATUS_NEW:
+                    return NEW;
+                case STATUS_PUBLICATION_APPROVED:
+                    return APPROVED;
+                case STATUS_PUBLICATION_DISAPPROVED:
+                    return DISAPPROVED;
+            }
+
+            throw new PublicationStatusNotExistException(status);
+        }
+
         /**
          * Int values of this status as a string
          *
@@ -740,6 +749,12 @@ public class Document implements Serializable {
          */
         public int hashCode() {
             return status;
+        }
+
+        private static class PublicationStatusNotExistException extends RuntimeException {
+            PublicationStatusNotExistException(int status) {
+                super("Publication status " + status + " not exist.");
+            }
         }
     }
 
