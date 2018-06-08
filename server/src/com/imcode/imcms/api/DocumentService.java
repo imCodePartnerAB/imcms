@@ -368,17 +368,12 @@ public class DocumentService {
                                                int maxResults,
                                                Predicate<Document> filterPredicate) throws SearchException {
         try {
-            final SearchResult<DocumentDomainObject> result = getDocumentMapper()
+            return getDocumentMapper()
                     .getDocumentIndex()
                     .search(query, getInternalUser(), startPosition, maxResults, new ApiDocumentWrappingPredicate(
                             filterPredicate, contentManagementSystem
-                    ));
-
-            final ApiDocumentWrappingList documents = new ApiDocumentWrappingList(
-                    result.getResult(), contentManagementSystem
-            );
-
-            return SearchResult.of(documents, result.getTotalCount());
+                    ))
+                    .mapResult(document -> wrapDocumentDomainObject(document, contentManagementSystem));
 
         } catch (RuntimeException e) {
             throw new SearchException(e);

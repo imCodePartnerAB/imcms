@@ -6,6 +6,8 @@ import lombok.ToString;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Getter
 @ToString
@@ -32,6 +34,15 @@ public class SearchResult<T> {
 
     public static <T> SearchResult<T> of(List<T> result, int totalCount) {
         return new SearchResult<>(result, totalCount);
+    }
+
+    public <T2> SearchResult<T2> mapResult(Function<T, T2> transformer) {
+
+        final List<T2> newResult = this.result.parallelStream()
+                .map(transformer)
+                .collect(Collectors.toList());
+
+        return new SearchResult<>(newResult, totalCount, nextSkip);
     }
 
 }
