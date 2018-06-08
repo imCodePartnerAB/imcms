@@ -17,7 +17,13 @@ import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.function.Predicate;
 
 public class RebuildingDirectoryIndex implements DocumentIndex {
 
@@ -209,16 +215,24 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
     }
 
-    public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+    public SearchResult<DocumentDomainObject> search(DocumentQuery query,
+                                                     UserDomainObject searchingUser,
+                                                     int startPosition,
+                                                     int maxResults) {
+
+        return search(query, searchingUser, startPosition, maxResults, documentDomainObject -> true);
+    }
+
+    @Override
+    public SearchResult<DocumentDomainObject> search(DocumentQuery query,
+                                                     UserDomainObject searchingUser,
+                                                     int startPosition,
+                                                     int maxResults,
+                                                     Predicate<DocumentDomainObject> filterPredicate) throws IndexException {
         try {
-            SearchResult<DocumentDomainObject> result = index.search(query, searchingUser, startPosition, maxResults);
-//            if ( index.isInconsistent() ) {
-//                rebuildBecauseOfError("Index is inconsistent.", null);
-//            }
-            return result;
+            return index.search(query, searchingUser, startPosition, maxResults, filterPredicate);
         } catch (IndexException ex) {
             rebuildBecauseOfError("Search failed.", ex);
-
             return SearchResult.empty();
         }
     }
@@ -266,6 +280,10 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
         }
 
         public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+            return SearchResult.empty();
+        }
+
+        public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults, Predicate<DocumentDomainObject> filterPredicate) throws IndexException {
             return SearchResult.empty();
         }
 

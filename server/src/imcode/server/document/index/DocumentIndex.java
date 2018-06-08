@@ -5,6 +5,7 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface DocumentIndex {
 
@@ -47,7 +48,18 @@ public interface DocumentIndex {
 
     List<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser) throws IndexException;
 
-    SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException;
+    SearchResult<DocumentDomainObject> search(DocumentQuery query,
+                                              UserDomainObject searchingUser,
+                                              int startPosition,
+                                              int maxResults)
+            throws IndexException;
+
+    SearchResult<DocumentDomainObject> search(DocumentQuery query,
+                                              UserDomainObject searchingUser,
+                                              int startPosition,
+                                              int maxResults,
+                                              Predicate<DocumentDomainObject> filterPredicate)
+            throws IndexException;
 
     void rebuild() throws IndexException;
 }

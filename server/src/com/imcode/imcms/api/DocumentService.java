@@ -19,6 +19,7 @@ import imcode.server.user.UserDomainObject;
 
 import java.util.AbstractList;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * In charge of document, category type and category operations such as creation, saving, deletion and look up.
@@ -359,10 +360,19 @@ public class DocumentService {
     }
 
     public SearchResult<Document> getDocuments(final SearchQuery query, int startPosition, int maxResults) throws SearchException {
+        return getDocuments(query, startPosition, maxResults, document -> true);
+    }
+
+    public SearchResult<Document> getDocuments(final SearchQuery query,
+                                               int startPosition,
+                                               int maxResults,
+                                               Predicate<Document> filterPredicate) throws SearchException {
         try {
             final SearchResult<DocumentDomainObject> result = getDocumentMapper()
                     .getDocumentIndex()
-                    .search(query, getInternalUser(), startPosition, maxResults);
+                    .search(query, getInternalUser(), startPosition, maxResults, new ApiDocumentWrappingPredicate(
+                            filterPredicate, contentManagementSystem
+                    ));
 
             final ApiDocumentWrappingList documents = new ApiDocumentWrappingList(
                     result.getResult(), contentManagementSystem
@@ -503,6 +513,22 @@ public class DocumentService {
 
         public Document getDocument() {
             return document;
+        }
+    }
+
+    private static class ApiDocumentWrappingPredicate implements Predicate<DocumentDomainObject> {
+
+        private final Predicate<Document> predicate;
+        private final ContentManagementSystem contentManagementSystem;
+
+        ApiDocumentWrappingPredicate(Predicate<Document> predicate, ContentManagementSystem contentManagementSystem) {
+            this.predicate = predicate;
+            this.contentManagementSystem = contentManagementSystem;
+        }
+
+        @Override
+        public boolean test(DocumentDomainObject document) {
+            return predicate.test(wrapDocumentDomainObject(document, contentManagementSystem));
         }
     }
 

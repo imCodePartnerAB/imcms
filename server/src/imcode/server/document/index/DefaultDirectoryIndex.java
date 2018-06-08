@@ -7,7 +7,6 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.IntervalSchedule;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -26,11 +25,15 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
 
@@ -66,20 +69,23 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
+        return search(query, searchingUser, startPosition, maxResults, documentDomainObject -> true);
+    }
+
+    @Override
+    public SearchResult<DocumentDomainObject> search(DocumentQuery query,
+                                                     UserDomainObject searchingUser,
+                                                     int startPosition,
+                                                     int maxResults,
+                                                     Predicate<DocumentDomainObject> filterPredicate)
+            throws IndexException {
+
         try (ClosableIndexSearcher indexSearcher = new ClosableIndexSearcher(directory.toString())) {
-            StopWatch searchStopWatch = new StopWatch();
-            searchStopWatch.start();
 
-            Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
-            long searchTime = searchStopWatch.getTime();
-            SearchResult<DocumentDomainObject> result = getDocumentListForHits(hits, searchingUser, startPosition, maxResults);
+            final Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
+            filterPredicate = ((Predicate<DocumentDomainObject>) searchingUser::canSearchFor).and(filterPredicate);
 
-            if (log.isDebugEnabled()) {
-                log.debug("Search for " + query.getQuery().toString() + ": " + searchTime + "ms. Total: "
-                        + searchStopWatch.getTime()
-                        + "ms.");
-            }
-            return result;
+            return getDocumentListForHits(hits, filterPredicate, startPosition, maxResults);
 
         } catch (IOException e) {
             throw new IndexException(e);
@@ -113,33 +119,50 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
     }
 
-    private SearchResult<DocumentDomainObject> getDocumentListForHits(final Hits hits, final UserDomainObject searchingUser,
-                                                                      int startPosition, int maxResults) {
+    private SearchResult<DocumentDomainObject> getDocumentListForHits(Hits hits,
+                                                                      Predicate<DocumentDomainObject> searchingPredicate,
+                                                                      int startPosition,
+                                                                      int maxResults) {
 
-        DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
+        int nextSkip = startPosition;
+        final DocumentGetter documentGetter = Imcms.getServices().getDocumentMapper().getDocumentGetter();
         List<Integer> documentIds = new DocumentIdHitsList(hits);
 
-        int totalCount = documentIds.size();
+        final int totalCount = documentIds.size();
 
-        if (maxResults >= 0) {
-            startPosition = Math.min(startPosition, totalCount);
-            int toIndex = startPosition + maxResults;
-            toIndex = Math.min(toIndex, totalCount);
-
-            documentIds = documentIds.subList(startPosition, toIndex);
+        if (totalCount < startPosition) {
+            return new SearchResult<>(Collections.emptyList(), totalCount, nextSkip);
         }
 
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        List<DocumentDomainObject> documentList = documentGetter.getDocuments(documentIds);
-        stopWatch.stop();
-        if (log.isDebugEnabled()) {
-            log.debug("Got " + documentList.size() + " documents in " + stopWatch.getTime() + "ms.");
+        documentIds = documentIds.subList(startPosition, totalCount);
+        final List<DocumentDomainObject> documentList;
+        final int cutResultSize = documentIds.size();
+
+        if ((maxResults <= 0) || (maxResults >= cutResultSize)) { // no limit
+            documentList = documentGetter.getDocuments(documentIds)
+                    .stream()
+                    .filter(searchingPredicate)
+                    .collect(Collectors.toList());
+        } else {
+            documentList = new ArrayList<>();
+
+            for (Integer documentId : documentIds) {
+
+                if (documentList.size() == maxResults) {
+                    break;
+                }
+
+                nextSkip++;
+
+                final DocumentDomainObject document = documentGetter.getDocument(documentId);
+
+                if (searchingPredicate.test(document)) {
+                    documentList.add(document);
+                }
+            }
         }
 
-        CollectionUtils.filter(documentList, searchingUser::canSearchFor);
-
-        return SearchResult.of(documentList, totalCount);
+        return new SearchResult<>(documentList, totalCount, nextSkip);
     }
 
     private void addDocument(DocumentDomainObject document) throws IOException {
