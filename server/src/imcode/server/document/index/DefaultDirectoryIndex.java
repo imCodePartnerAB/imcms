@@ -139,6 +139,8 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         final int cutResultSize = documentIds.size();
 
         if ((maxResults <= 0) || (maxResults >= cutResultSize)) { // no limit
+            nextSkip = totalCount;
+
             documentList = documentGetter.getDocuments(documentIds)
                     .stream()
                     .filter(searchingPredicate)
