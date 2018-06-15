@@ -19,11 +19,11 @@
     </div>
     <div class="imcms-info-body imcms-info-body__logout">
         <div class="imcms-field">
-            <a class="imcms-button imcms-button--neutral imcms-info-body__button" href="${contextPath}/"><fmt:message
+            <a href="${contextPath}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/login/logged_out.html/2001"/></a>
-            <button type="button" class="imcms-button imcms-button--neutral imcms-info-body__button"
-                    onClick="top.location='${contextPath}/login';"><fmt:message
-                    key="templates/login/logged_out.html/2002"/></button>
+            <a href="${contextPath}/login"
+               class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
+                    key="templates/login/logged_out.html/2002"/></a>
         </div>
         <div class="imcms-field">
             <div class="imcms-title imcms-title__logout"><fmt:message key="templates/login/logged_out.html/4"/></div>
