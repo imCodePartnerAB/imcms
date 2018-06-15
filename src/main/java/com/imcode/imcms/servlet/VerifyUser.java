@@ -87,11 +87,11 @@ public class VerifyUser extends HttpServlet {
         new GoToLoginSuccessfulPageCommand().dispatch(req, res);
     }
 
-    private void goToEditUserPage(User user, HttpServletResponse res, HttpServletRequest req) throws IOException, ServletException {
+    private void goToEditUserPage(User user, HttpServletResponse response, HttpServletRequest request) throws IOException, ServletException {
         UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId());
         DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
         UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
-        userEditorPage.forward(req, res);
+        userEditorPage.forward(request, response);
     }
 
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {

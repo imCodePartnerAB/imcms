@@ -6,7 +6,11 @@ import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.*;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.Html;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
@@ -17,7 +21,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -376,10 +384,22 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+        final UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+
         if (!uneditedUser.isNew() && !loggedOnUser.canEdit(uneditedUser)) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionInternalException("User " + loggedOnUser + " does not have the permission to edit " + editedUser));
+            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionInternalException(
+                    "User " + loggedOnUser + " does not have the permission to edit " + editedUser
+            ));
         }
+
+        if ((editedUser != null) && ((editedUser.getLanguageIso639_2() == null) || editedUser.getLanguageIso639_2().equals(""))) {
+            String defaultLanguage = Imcms.getServices().getLanguageMapper().getDefaultLanguage();
+            editedUser.setLanguageIso639_2(defaultLanguage);
+        }
+
+        request.setAttribute("userEditorPage", this);
+        request.setAttribute("loggedOnUser", loggedOnUser);
+        request.setAttribute("errorMessage", errorMessage);
 
         super.forward(request, response);
     }
