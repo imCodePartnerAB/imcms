@@ -63,14 +63,16 @@
     color: #2f4047;
 }
 
-.imcms-button--neutral {
+.imcms-button--neutral,
+a[class^="imcms"].imcms-button--neutral {
     background-color: transparent;
     border-color: transparent;
     color: #0b94d8;
     padding: 0;
 }
 
-.imcms-button--neutral:hover {
+.imcms-button--neutral:hover,
+a[class^="imcms"].imcms-button--neutral:hover {
     color: #2f4047;
 }
 
