@@ -17,7 +17,7 @@
 <body>
 <div id="imcmsLogin" class="imcms-login">
     <div class="imcms-login-head imcms-login__head">
-        <a href="http://www.imcms.net/" class="imcms-login__logo"></a>
+        <a href="https://www.imcms.net/" class="imcms-login__logo"></a>
         <div class="imcms-title imcms-head__title"><fmt:message key="templates/login/index.html/2"/></div>
     </div>
     <div class="imcms-login-body imcms-login__body">
