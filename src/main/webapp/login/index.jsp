@@ -15,16 +15,15 @@
     <link rel="stylesheet" type="text/css" href="${cp}/css_new/imcms-login-page.css">
 </head>
 <body>
-<div id="imcmsLogin" class="imcms-login">
-    <div class="imcms-login-head imcms-login__head">
-        <a href="https://www.imcms.net/" class="imcms-login__logo"></a>
+<div class="imcms-info-page">
+    <div class="imcms-info-head imcms-info-head__login">
+        <a href="https://www.imcms.net/" class="imcms-info__logo"></a>
         <div class="imcms-title imcms-head__title"><fmt:message key="templates/login/index.html/2"/></div>
     </div>
-    <div class="imcms-login-body imcms-login__body">
+    <div class="imcms-info-body imcms-info-body__login">
         <div class="imcms-field">
-            <button type="button"
-                    class="imcms-button imcms-button--neutral imcms-login-body__button"
-                    onClick="top.location='${cp}/servlet/StartDoc';">
+            <button type="button" class="imcms-button imcms-button--neutral imcms-info-body__button"
+                    onClick="top.location='${cp}/';">
                 <fmt:message key="templates/login/index.html/2001"/>
             </button>
         </div>
@@ -86,7 +85,7 @@
         </form>
         <div class="imcms-field">
             <button type="button"
-                    class="imcms-button imcms-button--neutral imcms-login-body__button"
+                    class="imcms-button imcms-button--neutral imcms-info-body__button"
                     onClick="top.location='${cp}/servlet/PasswordReset';">
                 <fmt:message key="templates/login/index.html/2002"/>
             </button>
