@@ -22,10 +22,9 @@
     </div>
     <div class="imcms-info-body imcms-info-body__login">
         <div class="imcms-field">
-            <button type="button" class="imcms-button imcms-button--neutral imcms-info-body__button"
-                    onClick="top.location='${cp}/';">
+            <a href="${cp}/" class="imcms-button imcms-button--neutral imcms-info-body__button">
                 <fmt:message key="templates/login/index.html/2001"/>
-            </button>
+            </a>
         </div>
         <c:if test="${requestScope['error'] ne null}">
             <div class="imcms-field">
@@ -84,11 +83,9 @@
             </div>
         </form>
         <div class="imcms-field">
-            <button type="button"
-                    class="imcms-button imcms-button--neutral imcms-info-body__button"
-                    onClick="top.location='${cp}/servlet/PasswordReset';">
-                <fmt:message key="templates/login/index.html/2002"/>
-            </button>
+            <a class="imcms-button imcms-button--neutral imcms-info-body__button"
+               href="${cp}/servlet/PasswordReset"><fmt:message
+                    key="templates/login/index.html/2002"/></a>
         </div>
     </div>
     <div class="imcms-login-footer imcms-login__footer">
