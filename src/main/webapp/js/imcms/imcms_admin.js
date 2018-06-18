@@ -1,5 +1,5 @@
 function focusField(theFormName, theElementName) {
-    var f = (!isNaN(theFormName)) ? eval("document.forms[" + theFormName + "]") : eval("document.forms." + theFormName);
+    var f = isNaN(theFormName) ? eval("document.forms." + theFormName) : eval("document.forms[" + theFormName + "]");
     if (f) {
         var el = eval("f." + theElementName);
         if (el) el.focus();
