@@ -256,49 +256,49 @@
             </td>
         </tr>
         <c:if test="${loggedOnUser.canEditRolesFor(userEditorPage.uneditedUser)}">
-        <tr>
-            <td colspan="2">&nbsp;<br>
-                <c:set var="heading">
-                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/>
-                </c:set>
-                <ui:imcms_gui_heading heading="${heading}"/>
-            </td>
-        </tr>
-        <tr valign="top">
-            <td class="imcmsAdmText" nowrap>
-                <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/> &nbsp;
-            </td>
-            <td>
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <tr valign="top">
-                        <td>
-                            <select name="<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>" size="5"
-                                    onchange="activateUserAdminRoles(); return true;"
-                                    multiple>${userEditorPage.createRolesHtmlOptionList(pageContext.request)}</select>
-                        </td>
-                        <c:if test="${loggedOnUser.superAdmin}">
-                            <td>&nbsp;</td>
-                            <td class="imcmsAdmText" nowrap><fmt:message
-                                    key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></td>
-                            <td>&nbsp;</td>
+            <tr>
+                <td colspan="2">&nbsp;<br>
+                    <c:set var="heading">
+                        <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/>
+                    </c:set>
+                    <ui:imcms_gui_heading heading="${heading}"/>
+                </td>
+            </tr>
+            <tr valign="top">
+                <td class="imcmsAdmText" nowrap>
+                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/> &nbsp;
+                </td>
+                <td>
+                    <table border="0" cellspacing="0" cellpadding="0">
+                        <tr valign="top">
                             <td>
-                                <select name="<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>" size="5"
-                                        multiple>${userEditorPage.createUserAdminRolesHtmlOptionList()}</select>
+                                <select name="<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>" size="5"
+                                        onchange="activateUserAdminRoles(); return true;"
+                                        multiple>${userEditorPage.createRolesHtmlOptionList(pageContext.request)}</select>
                             </td>
-                        </c:if>
-                    </tr>
-                    <tr valign="top">
-                        <td class="imcmsAdmDim"><fmt:message
-                                key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></td>
-                        <c:if test="${loggedOnUser.superAdmin}">
-                            <td colspan="3">&nbsp;</td>
+                            <c:if test="${loggedOnUser.superAdmin}">
+                                <td>&nbsp;</td>
+                                <td class="imcmsAdmText" nowrap><fmt:message
+                                        key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></td>
+                                <td>&nbsp;</td>
+                                <td>
+                                    <select name="<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>" size="5"
+                                            multiple>${userEditorPage.createUserAdminRolesHtmlOptionList()}</select>
+                                </td>
+                            </c:if>
+                        </tr>
+                        <tr valign="top">
                             <td class="imcmsAdmDim"><fmt:message
-                                    key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></td>
-                        </c:if>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+                                    key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></td>
+                            <c:if test="${loggedOnUser.superAdmin}">
+                                <td colspan="3">&nbsp;</td>
+                                <td class="imcmsAdmDim"><fmt:message
+                                        key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></td>
+                            </c:if>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
         </c:if>
         <tr>
             <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
