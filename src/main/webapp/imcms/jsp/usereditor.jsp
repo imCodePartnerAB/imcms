@@ -20,8 +20,8 @@
         <script>
             <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
         </script>
-        <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
-                data-main="${contextPath}/js/imcms/old_admin/userEditor.js"></script>
+        <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/old_admin/userEditor.js"
+                data-name="imcms"></script>
     </imcms:ifAdmin>
 
     <script language="javascript">
@@ -78,10 +78,6 @@
         <tr>
             <td><input type="submit" class="imcmsFormBtn" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>"
                        value="<fmt:message key="templates/sv/AdminUserResp.htm/2001"/>"></td>
-            <td>&nbsp;</td>
-            <td><input type="button" value="<fmt:message key="templates/sv/AdminUserResp.htm/2002"/>"
-                       title="<fmt:message key="templates/sv/AdminUserResp.htm/2003"/>" class="imcmsFormBtn"
-                       onClick="openHelpW('UserEdit')"></td>
         </tr>
     </table>
     <ui:imcms_gui_mid/>
