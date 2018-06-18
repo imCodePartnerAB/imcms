@@ -1,5 +1,8 @@
+${"<!--"}
+<%@ page trimDirectiveWhitespaces="true" %>
+${"-->"}
 <%@ page import="com.imcode.imcms.flow.OkCancelPage" %>
-<%@ page import="com.imcode.imcms.servlet.superadmin.UserEditorPage" %>
+<%@ page import="imcode.server.user.PhoneNumberType" %>
 <%@ page import="imcode.util.DateConstants" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
@@ -9,13 +12,18 @@
 <%@ taglib prefix="imcms" uri="imcms" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<%--@elvariable id="editedUser" type="imcode.server.user.UserDomainObject"--%>
+<%--@elvariable id="loggedOnUser" type="imcode.server.user.UserDomainObject"--%>
+<%--@elvariable id="userEditorPage" type="com.imcode.imcms.servlet.superadmin.UserEditorPage"--%>
+<%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
 
 <html>
 <head>
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1"/></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-edit-user-page.css">
     <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
-
     <imcms:ifAdmin>
         <script>
             <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
@@ -23,317 +31,231 @@
         <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/old_admin/userEditor.js"
                 data-name="imcms"></script>
     </imcms:ifAdmin>
-
-    <script language="javascript">
-        <!--
-        function evalPrepareAdd() {
-            // Lets check that those fields which are mandatory
-            var valFieldsOk = true;
-            if (document.forms[0].login_name.value === "") valFieldsOk = false;
-
-            if (!valFieldsOk) {
-                alert("<fmt:message key="templates/sv/AdminUserResp.htm/2/1"/>");
-                return false
-            }
-
-            if (document.forms[0].password1.value !== document.forms[0].password2.value) {
-                document.forms[0].password1.value = "";
-                document.forms[0].password2.value = "";
-                document.forms[0].password1.focus();
-                alert("<fmt:message key="templates/sv/AdminUserResp.htm/2/2"/>");
-                return false
-            }
-
-            return true
-        }
-
-        function activateUserAdminRoles() {
-            if (document.forms[0].user_admin_role_ids) {
-                var list = document.forms[0].role_ids;
-                document.forms[0].user_admin_role_ids.disabled = true;
-                for (i = 0; i < list.length; i++) {
-                    if (list.options[i].text === "Useradmin" && list.options[i].selected) {
-                        document.forms[0].user_admin_role_ids.disabled = false;
-                    }
-                }
-            }
-        }
-
-        //-->
-    </script>
-
 </head>
 <body>
+<div class="imcms-info-page imcms-info-page__edit-user">
 
+    <input type="hidden" id="must-fill-mandatory-fields-text"
+           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/1"/>"/>
+    <input type="hidden" id="pass-verification-failed-text"
+           value="<fmt:message key="templates/sv/AdminUserResp.htm/2/2"/>"/>
 
-<ui:imcms_gui_outer_start/>
-<c:set var="heading">
-    <fmt:message key="global/imcms_administration"/>
-</c:set>
-<ui:imcms_gui_head heading="${heading}"/>
+    <div class="imcms-info-head">
+        <a href="https://www.imcms.net/" class="imcms-info__logo"></a>
+        <div class="imcms-title imcms-head__title"><fmt:message key="global/imcms_administration"/></div>
+    </div>
+    <div class="imcms-info-body">
+        <div class="imcms-field">
+            <a href="${contextPath}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
+                    key="templates/sv/AdminUserResp.htm/2001"/></a>
+        </div>
 
-<form method="post" action="${contextPath}/servlet/PageDispatcher">
-    ${userEditorPage.htmlHidden(pageContext.request)}
-    <table border="0" cellspacing="0" cellpadding="0">
-        <tr>
-            <td><input type="submit" class="imcmsFormBtn" name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>"
-                       value="<fmt:message key="templates/sv/AdminUserResp.htm/2001"/>"></td>
-        </tr>
-    </table>
-    <ui:imcms_gui_mid/>
+        <form id="user-edit-form-2" method="post" action="${contextPath}/servlet/PageDispatcher">
+            ${userEditorPage.htmlHidden(pageContext.request)}
+            <div class="imcms-field">
+                <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
+            </div>
+            <div><fmt:message key="templates/sv/AdminUserResp.htm/6"/></div>
 
-    <table border="0" cellspacing="0" cellpadding="0" width="660" align="center">
-        <tr>
-            <td colspan="2">
-                <c:set var="heading">
-                    <fmt:message key="templates/sv/AdminUserResp.htm/5/1"/>
-                </c:set>
-                <ui:imcms_gui_heading heading="${heading}"/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2" class="imcmsAdmText">
-                <fmt:message key="templates/sv/AdminUserResp.htm/6"/></td>
-        </tr>
-        <tr>
-            <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/8"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>" size="25" maxlength="50"
-                       value="<c:out value='${editedUser.loginName}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText" nowrap><fmt:message key="templates/sv/AdminUserResp.htm/10"/> <span
-                    class="imcmsAdmDim"><fmt:message key="templates/sv/AdminUserResp.htm/11"/></span> &nbsp;
-            </td>
-            <td>
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td><input type="password" name="<%= UserEditorPage.REQUEST_PARAMETER__PASSWORD1 %>" size="16"
-                                   maxlength="15" value=""></td>
-                        <td class="imcmsAdmText" nowrap>&nbsp; <fmt:message key="templates/sv/AdminUserResp.htm/1001"/>
-                            &nbsp;
-                        </td>
-                        <td><input type="password" name="<%= UserEditorPage.REQUEST_PARAMETER__PASSWORD2 %>" size="16"
-                                   maxlength="15" value=""></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/14"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__FIRST_NAME %>" size="25" maxlength="25"
-                       value="<c:out value='${editedUser.firstName}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/16"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__LAST_NAME %>" size="25" maxlength="30"
-                       value="<c:out value='${editedUser.lastName}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/18"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__TITLE %>" size="25" maxlength="30"
-                       value="<c:out value='${editedUser.title}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/20"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__COMPANY %>" size="25" maxlength="30"
-                       value="<c:out value='${editedUser.company}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/22"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__ADDRESS %>" size="25" maxlength="30"
-                       value="<c:out value='${editedUser.address}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/24"/></td>
-            <td>
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__ZIP %>" size="7"
-                                   maxlength="30" value="<c:out value='${editedUser.zip}'/>"></td>
-                        <td>&nbsp;</td>
-                        <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__CITY %>" size="25"
-                                   maxlength="30" value="<c:out value='${editedUser.city}'/>">
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/27"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__DISTRICT %>" size="25" maxlength="30"
-                       value="<c:out value='${editedUser.province}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/29"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__COUNTRY %>" size="25" maxlength="30"
-                       value="<c:out value='${editedUser.country}'/>"></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/30"/></td>
-            <td><select
-                    name="<%= UserEditorPage.REQUEST_PARAMETER__LANGUAGE %>">${userEditorPage.createLanguagesHtmlOptionList(loggedOnUser, editedUser)}
-            </select></td>
-        </tr>
-        <tr>
-            <td colspan="2"><ui:imcms_gui_hr wantedcolor="cccccc"/></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/32"/></td>
-            <td>
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td>
-                            <select name="<%= UserEditorPage.REQUEST_PARAMETER__PHONE_NUMBER_TYPE_ID %>" size="1">
-                                ${userEditorPage.createPhoneTypesHtmlOptionList(loggedOnUser, userEditorPage.currentPhoneNumber.type)}
-                            </select></td>
-                        <td>&nbsp;</td>
-                        <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EDITED_PHONE_NUMBER %>"
-                                   size="16" maxlength="25" value="${userEditorPage.currentPhoneNumber}"></td>
-                        <td>&nbsp;</td>
-                        <c:if test="${empty param['addUser']}">
-                            <td><input type="submit" class="imcmsFormBtnSmall"
-                                       value="<fmt:message key="templates/sv/AdminUserResp.htm/2004"/>"
-                                       name="<%= UserEditorPage.REQUEST_PARAMETER__ADD_PHONE_NUMBER %>"></td>
-                        </c:if>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <c:if test="${empty param['addUser']}">
-            <tr>
-                <td class="imcmsAdmText">&nbsp;</td>
-                <td>
-                    <table border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                            <td>
-                                <select size="1" name="<%= UserEditorPage.REQUEST_PARAMETER__SELECTED_PHONE_NUMBER %>">
-                                        ${userEditorPage.getUserPhoneNumbersHtmlOptionList(pageContext.request)}
-                                </select></td>
-                            <td>&nbsp;</td>
-                            <td><input type="submit" class="imcmsFormBtnSmall"
-                                       name="<%= UserEditorPage.REQUEST_PARAMETER__EDIT_PHONE_NUMBER %>"
-                                       value="<fmt:message key="templates/sv/AdminUserResp.htm/2005"/>"></td>
-                            <td>&nbsp;</td>
-                            <td><input type="submit" class="imcmsFormBtnSmall"
-                                       name="<%= UserEditorPage.REQUEST_PARAMETER__REMOVE_PHONE_NUMBER %>"
-                                       value="<fmt:message key="templates/sv/AdminUserResp.htm/2006"/>"></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </c:if>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="login-name" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/8"/></label>
+                    <input id="login-name" type="text" name="login_name" class="imcms-input imcms-text-box__input"
+                           maxlength="50" value="<c:out value='${editedUser.loginName}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="password1" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/10"/></label>
+                    <input id="password1" type="password" name="password1" class="imcms-input imcms-text-box__input"
+                           maxlength="50" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="password2" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/1001"/></label>
+                    <input id="password2" type="password" name="password2" class="imcms-input imcms-text-box__input"
+                           maxlength="50">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="first-name" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/14"/></label>
+                    <input id="first-name" class="imcms-input imcms-text-box__input" type="text" name="first_name"
+                           maxlength="50" value="<c:out value='${editedUser.firstName}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="last-name" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/16"/></label>
+                    <input id="last-name" class="imcms-input imcms-text-box__input" type="text" name="last_name"
+                           maxlength="50" value="<c:out value='${editedUser.lastName}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="title" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/18"/></label>
+                    <input id="title" class="imcms-input imcms-text-box__input" type="text" name="title"
+                           maxlength="50" value="<c:out value='${editedUser.title}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="company" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/20"/></label>
+                    <input id="company" class="imcms-input imcms-text-box__input" type="text" name="company"
+                           maxlength="50" value="<c:out value='${editedUser.company}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="address" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/22"/></label>
+                    <input id="address" class="imcms-input imcms-text-box__input" type="text" name="address"
+                           maxlength="50" value="<c:out value='${editedUser.address}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="zip" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/24"/></label>
+                    <input id="zip" class="imcms-input imcms-text-box__input" type="text" name="zip"
+                           maxlength="50" value="<c:out value='${editedUser.zip}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="city" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/25"/></label>
+                    <input id="city" class="imcms-input imcms-text-box__input" type="text" name="city"
+                           maxlength="50" value="<c:out value='${editedUser.city}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="province" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/27"/></label>
+                    <input id="province" class="imcms-input imcms-text-box__input" type="text" name="county"
+                           maxlength="50" value="<c:out value='${editedUser.province}'/>">
+                </div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="country" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/29"/></label>
+                    <input id="country" class="imcms-input imcms-text-box__input" type="text" name="country"
+                           maxlength="50" value="<c:out value='${editedUser.country}'/>">
+                </div>
+            </div>
 
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp.htm/36"/></td>
-            <td><input type="text" name="<%= UserEditorPage.REQUEST_PARAMETER__EMAIL %>" size="50" maxlength="50"
-                       value="<c:out value='${editedUser.emailAddress}'/>"></td>
-        </tr>
-        <tr>
-            <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
-        </tr>
-        <tr>
-            <td class="imcmsAdmText"><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></td>
-            <td>
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td><input type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}></td>
-                        <td class="imcmsAdmText" nowrap>&nbsp;
-                            <c:if test="${editedUser.createDate ne null}">
-                                &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
-                                &nbsp; <fmt:formatDate value="${editedUser.createDate}"
-                                                       pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
-                            </c:if>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <c:if test="${loggedOnUser.canEditRolesFor(userEditorPage.uneditedUser)}">
-            <tr>
-                <td colspan="2">&nbsp;<br>
-                    <c:set var="heading">
-                        <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/>
-                    </c:set>
-                    <ui:imcms_gui_heading heading="${heading}"/>
-                </td>
-            </tr>
-            <tr valign="top">
-                <td class="imcmsAdmText" nowrap>
-                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/> &nbsp;
-                </td>
-                <td>
-                    <table border="0" cellspacing="0" cellpadding="0">
-                        <tr valign="top">
-                            <td>
-                                <select name="<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>" size="5"
-                                        onchange="activateUserAdminRoles(); return true;"
-                                        multiple>${userEditorPage.createRolesHtmlOptionList(pageContext.request)}</select>
-                            </td>
-                            <c:if test="${loggedOnUser.superAdmin}">
-                                <td>&nbsp;</td>
-                                <td class="imcmsAdmText" nowrap><fmt:message
-                                        key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></td>
-                                <td>&nbsp;</td>
-                                <td>
-                                    <select name="<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>" size="5"
-                                            multiple>${userEditorPage.createUserAdminRolesHtmlOptionList()}</select>
-                                </td>
-                            </c:if>
-                        </tr>
-                        <tr valign="top">
-                            <td class="imcmsAdmDim"><fmt:message
-                                    key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></td>
-                            <c:if test="${loggedOnUser.superAdmin}">
-                                <td colspan="3">&nbsp;</td>
-                                <td class="imcmsAdmDim"><fmt:message
-                                        key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></td>
-                            </c:if>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </c:if>
-        <tr>
-            <td colspan="2"><ui:imcms_gui_hr wantedcolor="blue"/></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <table border="0" cellspacing="0" cellpadding="0" width="656">
-                    <tr>
-                        <td class="imcmsAdmComment"><fmt:message key="templates/sv/AdminUserResp.htm/40"/></td>
-                        <td align="right">
-                            <table border="0" cellspacing="0" cellpadding="0">
-                                <tr>
-                                    <c:if test="${errorMessage ne null}">
-                                        <td><span
-                                                class="error">${errorMessage.toLocalizedString(pageContext.request)}</span>
-                                        </td>
-                                        <td>&nbsp;</td>
-                                    </c:if>
-                                    <td><input type="submit" class="imcmsFormBtn"
-                                               name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
-                                               value="<fmt:message key="templates/sv/AdminUserResp.htm/2007"/>"
-                                               onClick="if( !evalPrepareAdd() ) return false;"></td>
-                                    <td>&nbsp;</td>
-                                    <td><input type="submit" class="imcmsFormBtn"
-                                               value="<fmt:message key="templates/sv/AdminUserResp.htm/2008"/>"></td>
-                                    <td>&nbsp;</td>
-                                    <td><input type="submit" class="imcmsFormBtn"
-                                               name="<%= OkCancelPage.REQUEST_PARAMETER__CANCEL %>"
-                                               value="<fmt:message key="templates/sv/AdminUserResp.htm/2009"/>"></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
-</form>
-<ui:imcms_gui_bottom/>
-<ui:imcms_gui_outer_end/>
+            <div id="languages-select-container" data-text="<fmt:message key="templates/sv/AdminUserResp.htm/30"/>"
+                 class="imcms-field"><%-- content is set via js --%></div>
+
+            <div class="imcms-field imcms-field--phone">
+                <div class="imcms-text-box">
+                    <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/32"/></label>
+                    <div id="phone-type-select" class="imcms-select imcms-select--phone-type">
+                        <div class="imcms-drop-down-list imcms-select__drop-down-list">
+                            <div class="imcms-drop-down-list__select-item">
+                                <span class="imcms-drop-down-list__select-item-value"><%=PhoneNumberType.OTHER.getName().toLocalizedString(request)%></span>
+                                <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
+                                        type="button"></button>
+                            </div>
+                            <div class="imcms-drop-down-list__items">
+                                <c:forEach var="phoneType" items="<%=PhoneNumberType.getAllPhoneNumberTypes()%>">
+                                    <div class="imcms-drop-down-list__item"
+                                         data-value="${phoneType.id}">${phoneType.name.toLocalizedString(pageContext.request)}</div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </div>
+                    <input id="phone" class="imcms-input imcms-text-box__input imcms-input--phone" type="text"
+                           name="edited_phone_number"
+                           maxlength="50" value="<c:out value='${editedUser.country}'/>">
+                    <button class="imcms-button imcms-button--positive imcms-button--add-phone"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/2004"/></button>
+                </div>
+
+                <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
+                    <div class="imcms-text-box imcms-item__input--float-l imcms-item__input">
+                        <div>${phoneNumber.type.name.toLocalizedString(pageContext.request)}</div>
+                        <label><input readonly="readonly" type="text" class="imcms-input imcms-text-box__input"
+                                      maxlength="50" value="${phoneNumber.number}"></label>
+                        <div class="imcms-controls">
+                            <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
+                            <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
+                        </div>
+                    </div>
+                </c:forEach>
+            </div>
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="email" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp.htm/36"/></label>
+                    <input id="email" class="imcms-input imcms-text-box__input" type="text" name="email"
+                           maxlength="50" value="<c:out value='${editedUser.emailAddress}'/>">
+                </div>
+            </div>
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
+                    <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
+                    <c:if test="${editedUser.createDate ne null}">
+                        &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
+                        &nbsp; <fmt:formatDate value="${editedUser.createDate}"
+                                               pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
+                    </c:if>
+                </div>
+            </div>
+
+            <c:if test="${loggedOnUser.canEditRolesFor(userEditorPage.uneditedUser)}">
+                <div class="imcms-field">
+                    <div class="imcms-title"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
+                </div>
+                <div class="imcms-field">
+                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></label>
+                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/>
+                        <%-- select --%>
+                </div>
+                <div class="imcms-field">
+                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></label>
+                        <%-- select --%>
+                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/>
+                </div>
+            </c:if>
+            <p><fmt:message key="templates/sv/AdminUserResp.htm/40"/></p>
+            <c:if test="${errorMessage ne null}">
+                <div class="imcms-field">
+                    <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
+                </div>
+            </c:if>
+            <div class="imcms-info-footer imcms-info-footer__user-edit">
+                <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
+                        class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2007"/></button>
+                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button">
+                    <fmt:message
+                            key="templates/sv/AdminUserResp.htm/2008"/></button>
+                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button">
+                    <fmt:message
+                            key="templates/sv/AdminUserResp.htm/2009"/></button>
+            </div>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>

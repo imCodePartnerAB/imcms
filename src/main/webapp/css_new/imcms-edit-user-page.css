@@ -1,7 +1,49 @@
 @import url("imcms-info-page.css");
 
+.imcms-info-page__edit-user {
+    position: absolute;
+    margin: 0 0 2%;
+    left: 25%;
+    width: 50%;
+    top: 2%;
+}
 
+.imcms-text-box__label,
+.imcms-select__label {
+    display: inline-block;
+    width: 20%;
+}
 
+.imcms-label {
+    padding-top: 10px;
+    margin-bottom: 0;
+}
 
+.imcms-field .imcms-select {
+    width: 100%;
+}
 
+.imcms-text-box .imcms-text-box__input,
+.imcms-select .imcms-select__drop-down-list {
+    display: inline-block;
+    width: 79%;
+    float: right;
+}
+
+.imcms-info-footer__user-edit {
+    text-align: right;
+}
+
+.imcms-field--phone .imcms-select--phone-type {
+    width: 15%;
+}
+
+.imcms-field--phone .imcms-input--phone {
+    width: 50%;
+    float: none;
+}
+
+.imcms-field--phone .imcms-button--add-phone {
+    display: inline-block;
+}
 

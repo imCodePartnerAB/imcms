@@ -45,6 +45,17 @@
     margin-right: 10px;
 }
 
+.imcms-info-footer {
+    text-align: center;
+    display: block;
+    padding: 20px;
+    width: 100%;
+}
+
+.imcms-info-footer__button {
+    display: inline-block;
+    margin: 0 10px;
+}
 
 
 

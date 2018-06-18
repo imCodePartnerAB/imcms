@@ -78,7 +78,7 @@ Imcms.define("imcms-selects-builder",
                 .data("content", content)
                 .val(value);
 
-            onSelected && onSelected(value);
+            onSelected && onSelected.call && onSelected(value);
 
             return itemValue;
         }
@@ -189,6 +189,16 @@ Imcms.define("imcms-selects-builder",
             }
         }
 
+        function bindApi($select, $selectedValInput) {
+            $select.selectValue = bindSelectValue($select, $selectedValInput);
+            $select.selectFirst = bindSelectFirst($select);
+            $select.getSelectedValue = bindGetSelectedValue($selectedValInput);
+            $select.selectedText = bindSelectedText($selectedValInput);
+            $select.clearSelect = bindClearSelect($select, $selectedValInput);
+            $select.deleteOption = bindDeleteOption($select);
+            $select.hasOptions = bindHasOptions($select);
+        }
+
         return {
             imcmsSelect: function (tag, attributes, options) {
                 attributes = attributes || {};
@@ -230,15 +240,15 @@ Imcms.define("imcms-selects-builder",
                     (attributes["class"] ? {"class": attributes["class"]} : {})
                 ).append($selectElements);
 
-                $resultImcmsSelect.selectValue = bindSelectValue($resultImcmsSelect, $selectedValInput);
-                $resultImcmsSelect.selectFirst = bindSelectFirst($resultImcmsSelect);
-                $resultImcmsSelect.getSelectedValue = bindGetSelectedValue($selectedValInput);
-                $resultImcmsSelect.selectedText = bindSelectedText($selectedValInput);
-                $resultImcmsSelect.clearSelect = bindClearSelect($resultImcmsSelect, $selectedValInput);
-                $resultImcmsSelect.deleteOption = bindDeleteOption($resultImcmsSelect);
-                $resultImcmsSelect.hasOptions = bindHasOptions($resultImcmsSelect);
+                bindApi($resultImcmsSelect, $selectedValInput);
 
                 return $resultImcmsSelect;
+            },
+            makeImcmsSelect: function ($existingSelect) {
+                $existingSelect.find('.imcms-drop-down-list__select-item').click(toggleSelect);
+                bindApi($existingSelect, $existingSelect.find('input[type=hidden]'));
+
+                return $existingSelect;
             },
             addOptionsToSelect: function (options, $select, onSelected) {
                 var selectContainsDropDownList = $select.find(SELECT__DROP_DOWN_LIST__CLASS_$).length;

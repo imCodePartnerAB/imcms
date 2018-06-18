@@ -75,12 +75,12 @@
                href="${cp}/servlet/PasswordReset"><fmt:message key="templates/login/index.html/2002"/></a>
         </div>
     </div>
-    <div class="imcms-login-footer imcms-login__footer">
+    <div class="imcms-info-footer imcms-login__footer">
         <button type="submit" form="loginForm"
-                class="imcms-button imcms-button--positive imcms-login-footer__button"><fmt:message
+                class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
                 key="templates/login/index.html/2005"/></button>
         <button type="submit" form="loginForm" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
-                class="imcms-button imcms-button--save imcms-login-footer__button"><fmt:message
+                class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
                 key="templates/login/index.html/2006"/></button>
     </div>
 </div>
