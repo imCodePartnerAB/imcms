@@ -215,8 +215,7 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     public String getPath(HttpServletRequest request) {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-        return "/imcms/" + loggedOnUser.getLanguageIso639_2() + "/jsp/usereditor.jsp";
+        return "/imcms/jsp/usereditor.jsp";
     }
 
     protected void dispatchOther(HttpServletRequest request,
@@ -363,7 +362,7 @@ public class UserEditorPage extends OkCancelPage {
             RoleId roleId = ((RoleDomainObject) o).getId();
             return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
         });
-        RoleDomainObject[] allUserAdminRoles = allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
+        RoleDomainObject[] allUserAdminRoles = allRolesSet.toArray(new RoleDomainObject[0]);
         RoleDomainObject[] usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
 
         return createRolesHtmlOptionList(allUserAdminRoles, usersUserAdminRoles);
@@ -397,6 +396,8 @@ public class UserEditorPage extends OkCancelPage {
             editedUser.setLanguageIso639_2(defaultLanguage);
         }
 
+        request.setAttribute("editedUser", editedUser);
+        request.setAttribute("isAdmin", loggedOnUser.isSuperAdmin());
         request.setAttribute("userEditorPage", this);
         request.setAttribute("loggedOnUser", loggedOnUser);
         request.setAttribute("errorMessage", errorMessage);

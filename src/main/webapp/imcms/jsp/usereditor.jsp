@@ -5,7 +5,7 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
@@ -17,6 +17,9 @@
     <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
     <imcms:ifAdmin>
+        <script>
+            <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+        </script>
         <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
                 data-main="${contextPath}/js/imcms/old_admin/userEditor.js"></script>
     </imcms:ifAdmin>
@@ -44,13 +47,13 @@
             return true
         }
 
-        function activateUseradmin_roles() {
-            if (document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>) {
-                var list = document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>;
-                document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>.disabled = true;
+        function activateUserAdminRoles() {
+            if (document.forms[0].user_admin_role_ids) {
+                var list = document.forms[0].role_ids;
+                document.forms[0].user_admin_role_ids.disabled = true;
                 for (i = 0; i < list.length; i++) {
                     if (list.options[i].text === "Useradmin" && list.options[i].selected) {
-                        document.forms[0].<%= UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS %>.disabled = false;
+                        document.forms[0].user_admin_role_ids.disabled = false;
                     }
                 }
             }
@@ -60,8 +63,7 @@
     </script>
 
 </head>
-<body bgcolor="#FFFFFF"
-      onLoad="activateUseradmin_roles(); return true">
+<body>
 
 
 <ui:imcms_gui_outer_start/>
@@ -245,7 +247,7 @@
                         <td class="imcmsAdmText" nowrap>&nbsp;
                             <c:if test="${editedUser.createDate ne null}">
                                 &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
-                                &nbsp; <fmt:formatDate value="${editedUser.createdDate}"
+                                &nbsp; <fmt:formatDate value="${editedUser.createDate}"
                                                        pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
                             </c:if>
                         </td>
@@ -253,7 +255,7 @@
                 </table>
             </td>
         </tr>
-        <c:if test="${loggedOnUser.canEditRolesFor(userEditorPage.getUneditedUser())}">
+        <c:if test="${loggedOnUser.canEditRolesFor(userEditorPage.uneditedUser)}">
         <tr>
             <td colspan="2">&nbsp;<br>
                 <c:set var="heading">
@@ -271,10 +273,10 @@
                     <tr valign="top">
                         <td>
                             <select name="<%= UserEditorPage.REQUEST_PARAMETER__ROLE_IDS %>" size="5"
-                                    onchange="activateUseradmin_roles(); return true;"
+                                    onchange="activateUserAdminRoles(); return true;"
                                     multiple>${userEditorPage.createRolesHtmlOptionList(pageContext.request)}</select>
                         </td>
-                        <c:if test="${loggedOnUser.isSuperAdmin()}">
+                        <c:if test="${loggedOnUser.superAdmin}">
                             <td>&nbsp;</td>
                             <td class="imcmsAdmText" nowrap><fmt:message
                                     key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></td>
@@ -288,7 +290,7 @@
                     <tr valign="top">
                         <td class="imcmsAdmDim"><fmt:message
                                 key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></td>
-                        <c:if test="${loggedOnUser.isSuperAdmin()}">
+                        <c:if test="${loggedOnUser.superAdmin}">
                             <td colspan="3">&nbsp;</td>
                             <td class="imcmsAdmDim"><fmt:message
                                     key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></td>
