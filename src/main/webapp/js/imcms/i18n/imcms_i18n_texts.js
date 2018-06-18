@@ -595,5 +595,5 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
         }
     };
 
-    return texts[imcms.userLanguage];
+    return texts[imcms.userLanguage || 'en'];
 });
