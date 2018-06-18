@@ -6,6 +6,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="imcms" uri="imcms" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
@@ -14,6 +15,12 @@
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1"/></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+
+    <imcms:ifAdmin>
+        <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
+                data-main="${contextPath}/js/imcms/old_admin/userEditor.js"></script>
+    </imcms:ifAdmin>
+
     <script language="javascript">
         <!--
         function evalPrepareAdd() {
@@ -54,7 +61,7 @@
 
 </head>
 <body bgcolor="#FFFFFF"
-      onLoad="focusField(0,'<%= UserEditorPage.REQUEST_PARAMETER__LOGIN_NAME %>'); activateUseradmin_roles(); return true">
+      onLoad="activateUseradmin_roles(); return true">
 
 
 <ui:imcms_gui_outer_start/>
