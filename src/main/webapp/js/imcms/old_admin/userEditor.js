@@ -3,8 +3,8 @@
  * 18.06.18
  */
 Imcms.require(
-    ['jquery', 'imcms-selects-builder', 'imcms-uuid-generator', 'imcms-languages-rest-api'],
-    function ($, selects, uuid, languagesRestApi) {
+    ['jquery', 'imcms-components-builder', 'imcms-uuid-generator', 'imcms-languages-rest-api'],
+    function ($, components, uuid, languagesRestApi) {
         function activateUserAdminRoles() {
             var $form = $('#user-edit-form');
             var $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
@@ -56,7 +56,7 @@ Imcms.require(
                 name: 'lang_id'
             };
 
-            var $select = selects.imcmsSelect("<div>", selectAttributes);
+            var $select = components.selects.imcmsSelect("<div>", selectAttributes);
             $select.appendTo($langSelectContainer);
 
             languagesRestApi.read().done(function (languages) {
@@ -68,8 +68,26 @@ Imcms.require(
                     }
                 });
 
-                selects.addOptionsToSelect(languages, $select, $select.selectValue);
+                components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
             });
+        }
+
+        function bindOnEditClicked($phoneRow) {
+            return function () {
+
+            }
+        }
+
+        function bindOnDeleteClicked($phoneRow) {
+            return function () {
+
+            }
+        }
+
+        function bindOnSaveClick($phoneRow) {
+            return function () {
+
+            }
         }
 
         function addPhone(e) {
@@ -84,6 +102,15 @@ Imcms.require(
 
             var $phoneTypeContainer = $('#phone-type-select').parent();
             var $newRow = $phoneTypeContainer.clone(true, true);
+
+            var $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
+            var $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
+            var $saveButton = components.buttons.positiveButton({
+                'class': 'imcms-button--add-phone',
+                style: 'display: none;',
+                click: bindOnSaveClick($newRow),
+                text: 'Save'
+            });
 
             $newRow.find('.imcms-label')
                 .text('')
@@ -101,9 +128,12 @@ Imcms.require(
                 .removeAttr('id')
                 .end()
                 .find('#button-add-phone')
-                .detach(); // append two new buttons
+                .detach()
+                .end()
+                .find('.imcms-text-box')
+                .append();
 
-            $newRow.insertAfter($phoneTypeContainer);
+            $newRow.append($saveButton, $deletePhoneButton, $editPhoneButton).insertAfter($phoneTypeContainer);
         }
 
         function filterNonDigits(e) {
@@ -120,7 +150,7 @@ Imcms.require(
             activateUserAdminRoles();
             loadLanguages();
 
-            selects.makeImcmsSelect($('#phone-type-select'));
+            components.selects.makeImcmsSelect($('#phone-type-select'));
 
             $('#select-role-ids').change(activateUserAdminRoles);
             $('#edit-user-submit-button').click(onSubmit);

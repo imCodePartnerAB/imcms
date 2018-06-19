@@ -205,6 +205,10 @@ ${"-->"}
                         </div>
                         <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
                                name="user_phone_number" disabled="disabled" value="${phoneNumber.number}">
+
+                        <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
+                        <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
+
                         <button class="imcms-button imcms-button--positive imcms-button--add-phone"><fmt:message
                                 key="templates/sv/AdminUserResp.htm/2004"/></button>
                     </div>

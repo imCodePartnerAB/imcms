@@ -79,3 +79,8 @@
 .imcms-text-box--phone-box {
     margin-bottom: 7px;
 }
+
+.imcms-text-box--phone-box .imcms-control {
+    margin: 8px 7px 0;
+    display: inline-block;
+}
