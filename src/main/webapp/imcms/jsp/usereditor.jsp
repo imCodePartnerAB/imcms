@@ -179,23 +179,36 @@ ${"-->"}
                         </div>
                     </div>
                     <input id="phone" class="imcms-input imcms-text-box__input imcms-input--phone" type="text"
-                           name="edited_phone_number" maxlength="50" value="<c:out value='${editedUser.country}'/>">
+                           name="edited_phone_number" maxlength="50">
                     <button class="imcms-button imcms-button--positive imcms-button--add-phone"
                             id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004"/></button>
                 </div>
 
-                <div class="imcms-text-box imcms-text-box--phone-box"><c:forEach var="phoneNumber"
-                                                                                 items="${editedUser.phoneNumbers}">
-                    <div class="imcms-item__input--float-l imcms-item__input">
-                        <div>${phoneNumber.type.name.toLocalizedString(pageContext.request)}</div>
-                        <label><input readonly="readonly" type="text" class="imcms-input imcms-text-box__input"
-                                      maxlength="50" value="${phoneNumber.number}"></label>
-                        <div class="imcms-controls">
-                            <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
-                            <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
+                <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
+                    <div class="imcms-text-box imcms-text-box--phone-box">
+                        <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
+                                key="templates/sv/AdminUserResp.htm/32"/></label>
+                        <div class="imcms-select imcms-select--phone-type" disabled="disabled">
+                            <input type="hidden" name="phone_type_selected" value="${phoneNumber.type.id}">
+                            <div class="imcms-drop-down-list imcms-select__drop-down-list">
+                                <div class="imcms-drop-down-list__select-item">
+                                    <span class="imcms-drop-down-list__select-item-value">${phoneNumber.type.name.toLocalizedString(pageContext.request)}</span>
+                                    <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
+                                            type="button"></button>
+                                </div>
+                                <div class="imcms-drop-down-list__items"><c:forEach var="phoneType"
+                                                                                    items="<%=PhoneNumberType.getAllPhoneNumberTypes()%>">
+                                    <div class="imcms-drop-down-list__item"
+                                         data-value="${phoneType.id}">${phoneType.name.toLocalizedString(pageContext.request)}</div>
+                                </c:forEach></div>
+                            </div>
                         </div>
+                        <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
+                               name="user_phone_number" disabled="disabled" value="${phoneNumber.number}">
+                        <button class="imcms-button imcms-button--positive imcms-button--add-phone"><fmt:message
+                                key="templates/sv/AdminUserResp.htm/2004"/></button>
                     </div>
-                </c:forEach></div>
+                </c:forEach>
             </div>
 
             <div class="imcms-field">

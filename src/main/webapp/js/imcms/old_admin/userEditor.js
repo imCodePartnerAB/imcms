@@ -93,6 +93,8 @@ Imcms.require(
                 .attr('disabled', 'disabled')
                 .end()
                 .find('#phone')
+                .attr('disabled', 'disabled')
+                .attr('name', 'user_phone_number')
                 .val(phone)
                 .end()
                 .find('#phone-type-select,#phone,#phone-type-selected')
