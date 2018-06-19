@@ -80,7 +80,7 @@ Imcms.require(
 
         function bindOnDeleteClicked($phoneRow) {
             return function () {
-
+                $phoneRow.detach();
             }
         }
 
