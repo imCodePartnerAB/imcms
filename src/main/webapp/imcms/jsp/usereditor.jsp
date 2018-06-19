@@ -242,17 +242,35 @@ ${"-->"}
                             key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
                 </div>
                 <div class="imcms-field">
-                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></label>
-                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/>
-                        <%-- select --%>
+                    <div class="imcms-checkboxes imcms-field__checkboxes">
+                        <div class="imcms-title imcms-checkboxes__title"><fmt:message
+                                key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
+                        <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/>
+                        <c:forEach var="role" items="${userEditorPage.getUserRoles(editedUser)}">
+                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                                <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
+                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                                <label for="role-${role.id}"
+                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
+                            </div>
+                        </c:forEach>
+                    </div>
                 </div>
-                <div class="imcms-field">
-                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></label>
-                        <%-- select --%>
-                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/>
-                </div>
+                <c:if test="${loggedOnUser.superAdmin}">
+                    <div class="imcms-field">
+                        <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                                key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></label>
+                        <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/>
+                        <c:forEach var="role" items="${userEditorPage.getUserAdministratedRoles(editedUser)}">
+                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                                <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
+                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                                <label for="role-${role.id}"
+                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:if>
             </c:if>
             <p><fmt:message key="templates/sv/AdminUserResp.htm/40"/></p>
             <c:if test="${errorMessage ne null}">
@@ -264,12 +282,10 @@ ${"-->"}
                 <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
                         key="templates/sv/AdminUserResp.htm/2007"/></button>
-                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button">
-                    <fmt:message
-                            key="templates/sv/AdminUserResp.htm/2008"/></button>
-                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button">
-                    <fmt:message
-                            key="templates/sv/AdminUserResp.htm/2009"/></button>
+                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2008"/></button>
+                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2009"/></button>
             </div>
         </form>
     </div>

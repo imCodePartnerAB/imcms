@@ -5,8 +5,8 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
-import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
@@ -14,6 +14,8 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
@@ -27,8 +29,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class UserEditorPage extends OkCancelPage {
+    public static final String REQUEST_PARAMETER__PHONE_NUMBER_TYPE_ID = "phone_number_type_id";
+    public static final String REQUEST_PARAMETER__EDITED_PHONE_NUMBER = "edited_phone_number";
     private static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
     private static final String REQUEST_PARAMETER__PASSWORD1 = "password1";
     private static final String REQUEST_PARAMETER__FIRST_NAME = "first_name";
@@ -46,13 +52,9 @@ public class UserEditorPage extends OkCancelPage {
     private static final String REQUEST_PARAMETER__PASSWORD2 = "password2";
     private static final String REQUEST_PARAMETER__ROLE_IDS = "role_ids";
     private static final String REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS = "user_admin_role_ids";
-
     private static final String REQUEST_PARAMETER__ADD_PHONE_NUMBER = "add_phone_number";
     private static final String REQUEST_PARAMETER__EDIT_PHONE_NUMBER = "edit_phone_number";
     private static final String REQUEST_PARAMETER__REMOVE_PHONE_NUMBER = "delete_phone_number";
-
-    public static final String REQUEST_PARAMETER__PHONE_NUMBER_TYPE_ID = "phone_number_type_id";
-    public static final String REQUEST_PARAMETER__EDITED_PHONE_NUMBER = "edited_phone_number";
     private static final String REQUEST_PARAMETER__SELECTED_PHONE_NUMBER = "selected_phone_number";
 
     private static final LocalizedMessage ERROR__PASSWORDS_DID_NOT_MATCH = new LocalizedMessage("error/passwords_did_not_match");
@@ -140,7 +142,7 @@ public class UserEditorPage extends OkCancelPage {
         } else if (!Utility.isValidEmail(email)) {
             msg = ERROR__EMAIL_IS_INVALID;
         } else {
-            UserDomainObject user = getImcmsServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByEmail(email);
+            UserDomainObject user = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUserByEmail(email);
             if (user != null && user.getId() != uneditedUser.getId()) {
                 msg = ERROR__EMAIL_IS_TAKEN;
             }
@@ -172,10 +174,6 @@ public class UserEditorPage extends OkCancelPage {
             }
         }
         return roleIds;
-    }
-
-    private ImcmsServices getImcmsServices() {
-        return Imcms.getServices();
     }
 
     private void updateUserRolesFromRequest(HttpServletRequest request) {
@@ -211,6 +209,61 @@ public class UserEditorPage extends OkCancelPage {
                 user.setPassword(password1);
             }
         }
+    }
+
+    public Set<UserRole> getUserRoles(UserDomainObject editedUser) {
+        final List<RoleDomainObject> roles = editedUser.isUserAdminAndNotSuperAdmin()
+                ? getRoles(editedUser.getUserAdminRoleIds())
+                : getAllRolesExceptUsersRole();
+
+        final List<RoleDomainObject> usersRoles = getRoles(editedUser.getRoleIds());
+
+        return roles.stream()
+                .map(role -> new UserRole(
+                        role.getId().getRoleId(),
+                        role.getName(),
+                        usersRoles.contains(role)
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    public Set<UserRole> getUserAdministratedRoles(UserDomainObject editedUser) {
+        final List<RoleDomainObject> allRoles = getAllRolesExceptUsersRole()
+                .stream()
+                .filter(role -> {
+                    final RoleId roleId = role.getId();
+                    return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
+                })
+                .collect(Collectors.toList());
+
+        final List<RoleDomainObject> usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
+
+        return allRoles.stream()
+                .map(role -> new UserRole(
+                        role.getId().getRoleId(),
+                        role.getName(),
+                        usersUserAdminRoles.contains(role)
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    private List<RoleDomainObject> getRoles(RoleId[] roleIds) {
+        final ImcmsAuthenticatorAndUserAndRoleMapper roleMapper = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper();
+
+        return Stream.of(roleIds)
+                .map(roleMapper::getRole)
+                .collect(Collectors.toList());
+    }
+
+    private List<RoleDomainObject> getAllRolesExceptUsersRole() {
+        final RoleDomainObject[] allRoles = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper()
+                .getAllRolesExceptUsersRole();
+
+        Arrays.sort(allRoles);
+
+        return Arrays.asList(allRoles);
     }
 
     public String getPath(HttpServletRequest request) {
@@ -342,5 +395,13 @@ public class UserEditorPage extends OkCancelPage {
         public String[] apply(RoleDomainObject role) {
             return new String[]{"" + role.getId(), role.getName()};
         }
+    }
+
+    @Data
+    @AllArgsConstructor
+    public class UserRole {
+        public final int id;
+        public final String name;
+        public final boolean checked;
     }
 }
