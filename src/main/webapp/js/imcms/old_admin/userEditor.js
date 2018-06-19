@@ -56,7 +56,6 @@ Imcms.require(
                 name: 'lang_id'
             };
 
-            selects.makeImcmsSelect($('#phone-type-select'));
             var $select = selects.imcmsSelect("<div>", selectAttributes);
             $select.appendTo($langSelectContainer);
 
@@ -73,13 +72,62 @@ Imcms.require(
             });
         }
 
+        function addPhone(e) {
+            e.preventDefault();
+
+            var $phoneInput = $('#phone');
+            var phone = $phoneInput.val().trim();
+
+            if (!phone) return;
+
+            $phoneInput.val('');
+
+            var $phoneTypeContainer = $('#phone-type-select').parent();
+            var $newRow = $phoneTypeContainer.clone(true, true);
+
+            $newRow.find('.imcms-label')
+                .text('')
+                .removeAttr('for')
+                .end()
+                .find('.imcms-select')
+                .attr('disabled', 'disabled')
+                .end()
+                .find('#phone')
+                .val(phone)
+                .end()
+                .find('#phone-type-select,#phone,#phone-type-selected')
+                .removeAttr('id')
+                .end()
+                .find('#button-add-phone')
+                .detach(); // append two new buttons
+
+            $newRow.insertAfter($phoneTypeContainer);
+        }
+
+        function filterNonDigits(e) {
+            return ((e.ctrlKey || e.altKey || e.metaKey)
+                || (/^[0-9()+.,-]+$/g.test(e.key))
+                || (e.key === "Backspace")
+                || (e.key === "Shift")
+                || (e.key && e.key.indexOf && !!~e.key.indexOf("Arrow"))
+            );
+        }
+
         $(function () {
             $('input[name=login_name]').focus();
             activateUserAdminRoles();
             loadLanguages();
 
+            selects.makeImcmsSelect($('#phone-type-select'));
+
             $('#select-role-ids').change(activateUserAdminRoles);
             $('#edit-user-submit-button').click(onSubmit);
+
+            $('#phone').keydown(filterNonDigits).on('paste', function (e) {
+                e.preventDefault();
+            });
+
+            $('#button-add-phone').click(addPhone);
         });
     }
 );

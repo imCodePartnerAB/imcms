@@ -8,6 +8,27 @@
     top: 2%;
 }
 
+@media screen and (max-width: 1600px) {
+    .imcms-info-page__edit-user {
+        left: 15%;
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .imcms-info-page__edit-user {
+        left: 10%;
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .imcms-info-page__edit-user {
+        left: 1%;
+        width: 98%;
+    }
+}
+
 .imcms-text-box__label,
 .imcms-select__label {
     display: inline-block;
@@ -36,6 +57,7 @@
 
 .imcms-field--phone .imcms-select--phone-type {
     width: 15%;
+    padding-left: 5px;
 }
 
 .imcms-field--phone .imcms-input--phone {
@@ -45,5 +67,15 @@
 
 .imcms-field--phone .imcms-button--add-phone {
     display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    float: right;
 }
 
+.imcms-field--phone .imcms-select__drop-down-list {
+    float: none;
+}
+
+.imcms-text-box--phone-box {
+    margin-bottom: 7px;
+}
