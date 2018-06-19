@@ -51,8 +51,11 @@ Imcms.define("imcms-selects-builder",
 
         // fixme: toggle select also binds onClick EACH TIME
         function toggleSelect(onSelected) {
-            $(this).closest(SELECT__CLASS_$)
-                .find(DROP_DOWN_LIST__CLASS_$)
+            var $select = $(this).closest(SELECT__CLASS_$);
+
+            if ($select.is('[disabled]')) return;
+
+            $select.find(DROP_DOWN_LIST__CLASS_$)
                 .toggleClass(DROP_DOWN_LIST__ACTIVE__CLASS)
                 .children(DROP_DOWN_LIST__ITEMS__CLASS_$)
                 .find(DROP_DOWN_LIST__ITEM__CLASS_$)

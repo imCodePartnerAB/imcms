@@ -28,6 +28,10 @@
     top: 0;
 }
 
+.imcms-select[disabled] .imcms-drop-down-list__button {
+    display: none;
+}
+
 .imcms-drop-down-list__select-item {
     cursor: pointer;
     position: relative;
