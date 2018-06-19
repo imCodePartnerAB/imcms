@@ -54,7 +54,7 @@ dependencies {
     compile "org.apache.logging.log4j:log4j-core:2.10.0"
     compile "com.drewnoakes:metadata-extractor:2.11.0"
     compile "commons-beanutils:commons-beanutils:1.9.3"
-    compile("org.apache.tika:tika-parsers:1.11") {
+    compile("org.apache.tika:tika-parsers:1.18") {
         exclude(module: "commons-logging")
         exclude(module: "asm")
         exclude(module: "commons-io")
@@ -75,7 +75,7 @@ dependencies {
     compile "org.apache.commons:commons-email:1.4"
     compile "org.hibernate:hibernate-entitymanager:4.3.11.Final"
     compile "org.hibernate:hibernate-validator:5.4.2.Final"
-    compile "com.imcode.db:imcode-db:0.5"
+    compile "com.imcode.db:imcode-db:0.6"
     compile("com.imcode.util:imcode-util:2.0.4") {
         exclude(module: "servlet-api")
         exclude(module: "commons-io")
