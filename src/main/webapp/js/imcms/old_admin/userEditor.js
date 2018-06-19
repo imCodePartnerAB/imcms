@@ -74,7 +74,17 @@ Imcms.require(
 
         function bindOnEditClicked($phoneRow) {
             return function () {
-
+                $phoneRow.find('[disabled]')
+                    .removeAttr('disabled')
+                    .end()
+                    .find('.imcms-control')
+                    .hide()
+                    .end()
+                    .find('.imcms-button--add-phone')
+                    .show()
+                    .end()
+                    .find('.imcms-input--phone')
+                    .focus();
             }
         }
 
@@ -86,7 +96,13 @@ Imcms.require(
 
         function bindOnSaveClick($phoneRow) {
             return function () {
+                $(this).hide();
 
+                $phoneRow.find('.imcms-select,.imcms-input--phone')
+                    .attr('disabled', 'disabled')
+                    .end()
+                    .find('.imcms-control')
+                    .show();
             }
         }
 
@@ -105,7 +121,7 @@ Imcms.require(
 
             var $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
             var $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
-            var $saveButton = components.buttons.positiveButton({
+            var $saveButton = components.buttons.saveButton({
                 'class': 'imcms-button--add-phone',
                 style: 'display: none;',
                 click: bindOnSaveClick($newRow),
