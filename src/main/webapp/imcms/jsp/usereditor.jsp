@@ -158,10 +158,12 @@ ${"-->"}
                  class="imcms-field"><%-- content is set via js --%></div>
 
             <div class="imcms-field imcms-field--phone">
-                <div class="imcms-text-box">
+                <div class="imcms-text-box imcms-text-box--phone-box">
                     <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/32"/></label>
                     <div id="phone-type-select" class="imcms-select imcms-select--phone-type">
+                        <input id="phone-type-selected" type="hidden" name="phone_type_selected"
+                               value="<%=PhoneNumberType.OTHER.getId()%>">
                         <div class="imcms-drop-down-list imcms-select__drop-down-list">
                             <div class="imcms-drop-down-list__select-item">
                                 <span class="imcms-drop-down-list__select-item-value"><%=PhoneNumberType.OTHER.getName().toLocalizedString(request)%></span>
@@ -177,14 +179,14 @@ ${"-->"}
                         </div>
                     </div>
                     <input id="phone" class="imcms-input imcms-text-box__input imcms-input--phone" type="text"
-                           name="edited_phone_number"
-                           maxlength="50" value="<c:out value='${editedUser.country}'/>">
-                    <button class="imcms-button imcms-button--positive imcms-button--add-phone"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/2004"/></button>
+                           name="edited_phone_number" maxlength="50" value="<c:out value='${editedUser.country}'/>">
+                    <button class="imcms-button imcms-button--positive imcms-button--add-phone"
+                            id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004"/></button>
                 </div>
 
-                <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
-                    <div class="imcms-text-box imcms-item__input--float-l imcms-item__input">
+                <div class="imcms-text-box imcms-text-box--phone-box"><c:forEach var="phoneNumber"
+                                                                                 items="${editedUser.phoneNumbers}">
+                    <div class="imcms-item__input--float-l imcms-item__input">
                         <div>${phoneNumber.type.name.toLocalizedString(pageContext.request)}</div>
                         <label><input readonly="readonly" type="text" class="imcms-input imcms-text-box__input"
                                       maxlength="50" value="${phoneNumber.number}"></label>
@@ -193,7 +195,7 @@ ${"-->"}
                             <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
                         </div>
                     </div>
-                </c:forEach>
+                </c:forEach></div>
             </div>
 
             <div class="imcms-field">
