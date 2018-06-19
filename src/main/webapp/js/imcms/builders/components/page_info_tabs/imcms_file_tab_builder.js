@@ -7,9 +7,9 @@
 Imcms.define("imcms-file-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-page-info-tab-form-builder",
-        "imcms-controls-builder", "jquery", "imcms-i18n-texts"
+        "jquery", "imcms-i18n-texts"
     ],
-    function (BEM, components, docTypes, tabContentBuilder, controls, $, texts) {
+    function (BEM, components, docTypes, tabContentBuilder, $, texts) {
 
         texts = texts.pageInfo.file;
 
@@ -53,7 +53,7 @@ Imcms.define("imcms-file-tab-builder",
                     "id": components.texts.textInput({value: file.fileId}),
                     "name": $("<div>", {text: file.filename}),
                     "default": $isDefaultFileRadioBtn,
-                    "delete": controls.remove(function () {
+                    "delete": components.controls.remove(function () {
                         $row.detach();
                     })
                 }

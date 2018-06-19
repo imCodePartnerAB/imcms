@@ -5,14 +5,13 @@
 Imcms.define("imcms-menu-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
-        "imcms-window-builder", "imcms-menus-rest-api", "imcms-controls-builder", "imcms-page-info-builder", "jquery",
-        "imcms-primitives-builder", "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts",
-        "imcms-document-copy-rest-api", "imcms", "imcms-document-type-select-window-builder",
-        "imcms-document-profile-select-window-builder"
+        "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
+        "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder"
     ],
-    function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi, controls,
-              pageInfoBuilder, $, primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms,
-              docTypeSelectBuilder, docProfileSelectBuilder) {
+    function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi, pageInfoBuilder, $,
+              primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
+              docProfileSelectBuilder) {
 
         texts = texts.editors.menu;
 
@@ -542,15 +541,15 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function buildMenuItemControls(menuElementTree) {
-            var $controlRemove = controls.remove(function () {
+            var $controlRemove = components.controls.remove(function () {
                 removeMenuItem.call(this, menuElementTree.documentId);
             });
 
-            var $controlEdit = controls.edit(function () {
+            var $controlEdit = components.controls.edit(function () {
                 pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
             });
 
-            var $controlCopy = controls.copy(function () {
+            var $controlCopy = components.controls.copy(function () {
                 docCopyRestApi.copy(menuElementTree.documentId).success(function (copiedDocument) {
 
                     documentEditorBuilder.incrementDocumentNumber(1);
@@ -564,7 +563,7 @@ Imcms.define("imcms-menu-editor-builder",
                 })
             });
 
-            return controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
+            return components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
         }
 
         function showHideSubmenu() {
@@ -592,10 +591,10 @@ Imcms.define("imcms-menu-editor-builder",
         }
 
         function buildMoveControl() {
-            var $controlMove = controls.move();
+            var $controlMove = components.controls.move();
             $controlMove.on("mousedown", dragMenuItem);
 
-            return controls.buildControlsBlock("<div>", [$controlMove]);
+            return components.controls.buildControlsBlock("<div>", [$controlMove]);
         }
 
         function buildMenuItems(menuElementTree) {

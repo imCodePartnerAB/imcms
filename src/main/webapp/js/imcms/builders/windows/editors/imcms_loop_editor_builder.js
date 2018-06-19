@@ -4,10 +4,10 @@
  */
 Imcms.define("imcms-loop-editor-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder",
-        "imcms-controls-builder", "jquery", "imcms-events", "imcms-i18n-texts"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder", "jquery",
+        "imcms-events", "imcms-i18n-texts"
     ],
-    function (BEM, components, loopREST, WindowBuilder, controls, $, events, texts) {
+    function (BEM, components, loopREST, WindowBuilder, $, events, texts) {
         var $title, $body, $listItems;
 
         texts = texts.editors.loop;
@@ -138,12 +138,12 @@ Imcms.define("imcms-loop-editor-builder",
         }
 
         function buildControls() {
-            var $remove = controls.remove(function () {
+            var $remove = components.controls.remove(function () {
                 var $item = $remove.parents("." + LOOP_ITEM_CLASS);
                 $item.detach();
             });
 
-            return controls.buildControlsBlock("<div>", [$remove]);
+            return components.controls.buildControlsBlock("<div>", [$remove]);
         }
 
         function buildItem(loopEntry) {
