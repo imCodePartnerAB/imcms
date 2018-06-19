@@ -119,6 +119,8 @@ Imcms.require(
             var $phoneTypeContainer = $('#phone-type-select').parent();
             var $newRow = $phoneTypeContainer.clone(true, true);
 
+            $newRow.addClass('imcms-text-box--existing-phone-box');
+
             var $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
             var $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
             var $saveButton = components.buttons.saveButton({
@@ -170,12 +172,23 @@ Imcms.require(
 
             $('#select-role-ids').change(activateUserAdminRoles);
             $('#edit-user-submit-button').click(onSubmit);
+            $('#button-add-phone').click(addPhone);
 
-            $('#phone').keydown(filterNonDigits).on('paste', function (e) {
+            $('.imcms-input--phone').keydown(filterNonDigits).on('paste', function (e) {
                 e.preventDefault();
             });
 
-            $('#button-add-phone').click(addPhone);
+            $('.imcms-text-box--existing-phone-box').each(function () {
+                var $row = $(this);
+
+                $row.find('.imcms-select').each(function () {
+                    components.selects.makeImcmsSelect($(this));
+                });
+
+                $row.find('.imcms-button--save').click(bindOnSaveClick($row));
+                $row.find('.imcms-button--remove').click(bindOnDeleteClicked($row));
+                $row.find('.imcms-button--edit').click(bindOnEditClicked($row));
+            });
         });
     }
 );

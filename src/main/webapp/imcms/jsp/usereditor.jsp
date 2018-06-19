@@ -185,7 +185,7 @@ ${"-->"}
                 </div>
 
                 <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
-                    <div class="imcms-text-box imcms-text-box--phone-box">
+                    <div class="imcms-text-box imcms-text-box--phone-box imcms-text-box--existing-phone-box">
                         <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                                 key="templates/sv/AdminUserResp.htm/32"/></label>
                         <div class="imcms-select imcms-select--phone-type" disabled="disabled">
@@ -206,11 +206,10 @@ ${"-->"}
                         <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
                                name="user_phone_number" disabled="disabled" value="${phoneNumber.number}">
 
-                        <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
+                        <button class="imcms-button imcms-button--save" style="display: none;" type="button">
+                            <fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
                         <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
-
-                        <button class="imcms-button imcms-button--positive imcms-button--add-phone"><fmt:message
-                                key="templates/sv/AdminUserResp.htm/2004"/></button>
+                        <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
                     </div>
                 </c:forEach>
             </div>

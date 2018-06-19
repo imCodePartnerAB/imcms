@@ -65,7 +65,7 @@
     float: none;
 }
 
-.imcms-field--phone .imcms-button--add-phone {
+.imcms-field--phone .imcms-button {
     display: inline-block;
     padding-top: 10px;
     padding-bottom: 10px;
