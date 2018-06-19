@@ -103,13 +103,13 @@ Imcms.define(
         function updateHeight(newHeight, imageDataContainers) {
             var previousHeight = cropElements.$cropImg.height();
             setHeight(newHeight, imageDataContainers);
-            setCropAreaHeight(newHeight, previousHeight, imageDataContainers);
+            setCropAreaHeight(newHeight, previousHeight);
         }
 
         function updateWidth(newWidth, imageDataContainers) {
             var previousWidth = cropElements.$cropImg.width();
             setWidth(newWidth, imageDataContainers);
-            setCropAreaWidth(newWidth, previousWidth, imageDataContainers);
+            setCropAreaWidth(newWidth, previousWidth);
         }
 
         function updateWidthProportionally(newHeight, imageDataContainers) {

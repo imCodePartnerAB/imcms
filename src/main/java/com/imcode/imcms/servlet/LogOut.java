@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet;
 
+import imcode.server.ImcmsConstants;
 import imcode.util.Utility;
 
 import javax.servlet.ServletException;
@@ -20,7 +21,7 @@ public class LogOut extends HttpServlet {
         cookie.setMaxAge(0);
         cookie.setPath("/");
         res.addCookie(cookie);
-        req.getRequestDispatcher("/login/logged_out.jsp").forward(req, res);
+        req.getRequestDispatcher(ImcmsConstants.LOGOUT_URL).forward(req, res);
 
         Utility.makeUserLoggedOut(req);
     }

@@ -8,17 +8,13 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
-    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
     <script language="JavaScript">
 <!--
 function setSize() {
-    if(isGecko) {
-        document.getElementById("file").size = 85;
-    } else if (hasGetElementById) {
-        document.getElementById("file").style.width = 450;
-    }
+    document.getElementById("file").size = 85;
 }
 //-->
 </script>

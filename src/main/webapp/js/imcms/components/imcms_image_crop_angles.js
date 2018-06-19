@@ -140,7 +140,8 @@ Imcms.define(
                 return this._doubleHeight || (this._doubleHeight = this.getHeight() * 2);
             },
             getBorderSize: function () {
-                return this._borderSize || (this._borderSize = parseInt(this.topLeft.$angle.css("border-width")) || 0)
+                return this._borderSize
+                    || (this._borderSize = parseInt(this.topLeft.$angle.css("border-top-width")) || 0)
             },
             getDoubleBorderSize: function () {
                 return this._doubleBorderSize || (this._doubleBorderSize = this.getBorderSize() * 2);

@@ -89,11 +89,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        final Version latestVersion = versionService.getLatestVersion(docId);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, latestVersion.getNo()
+                docId, workingVersion.getNo()
         );
-        return documentMapping.apply(metaRepository.findOne(docId), latestVersion, commonContents);
+        return documentMapping.apply(metaRepository.findOne(docId), workingVersion, commonContents);
     }
 
     @Override
@@ -115,14 +115,27 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public boolean publishDocument(int docId, int userId) {
-        if (!versionService.hasNewerVersion(docId)) {
-            return false;
-        }
+        if (!versionService.hasNewerVersion(docId)) return false;
 
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         final Version newVersion = versionService.create(docId, userId);
 
         versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
+
+        final Meta publishMe = metaRepository.findOne(docId);
+
+        if (Meta.PublicationStatus.NEW.equals(publishMe.getPublicationStatus())) {
+            publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);
+        }
+
+        final Date publicationStartDatetime = publishMe.getPublicationStartDatetime();
+        final Date currentDate = new Date();
+
+        if ((publicationStartDatetime == null) || publicationStartDatetime.before(currentDate)) {
+            publishMe.setPublicationStartDatetime(currentDate);
+        }
+
+        metaRepository.save(publishMe);
 
         return true;
     }

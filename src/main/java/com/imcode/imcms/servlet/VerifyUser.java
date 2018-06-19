@@ -7,6 +7,7 @@ import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -36,11 +37,9 @@ public class VerifyUser extends HttpServlet {
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
 
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
-        String loginPage = "/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2() + "/login/index.jsp";
-
         req.getSession().invalidate();
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
-        req.getRequestDispatcher(loginPage).forward(req, res);
+        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, res);
     }
 
     public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -56,6 +55,11 @@ public class VerifyUser extends HttpServlet {
 
         String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
         String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+
+        if ((name == null) || (passwd == null)) {
+            goToLoginFailedPage(req, res);
+            return;
+        }
 
         ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
 
@@ -73,27 +77,26 @@ public class VerifyUser extends HttpServlet {
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
-        req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
-                + "/login/index.jsp").forward(req, res);
+        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, res);
     }
 
 
     private void goToLoginSuccessfulPage(HttpServletRequest req,
-                                         HttpServletResponse res) throws IOException, ServletException {
+                                         HttpServletResponse res) throws IOException {
 
         new GoToLoginSuccessfulPageCommand().dispatch(req, res);
     }
 
-    private void goToEditUserPage(User user, HttpServletResponse res, HttpServletRequest req) throws IOException, ServletException {
+    private void goToEditUserPage(User user, HttpServletResponse response, HttpServletRequest request) throws IOException, ServletException {
         UserDomainObject internalUser = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getUser(user.getId());
         DispatchCommand returnCommand = new GoToLoginSuccessfulPageCommand();
         UserEditorPage userEditorPage = new UserEditorPage(internalUser, new AdminUser.SaveUserAndReturnCommand(internalUser, returnCommand), returnCommand);
-        userEditorPage.forward(req, res);
+        userEditorPage.forward(request, response);
     }
 
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
         public void dispatch(HttpServletRequest request,
-                             HttpServletResponse response) throws IOException, ServletException {
+                             HttpServletResponse response) throws IOException {
             String nexturl = "StartDoc";
             HttpSession session = request.getSession(true);
             if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null) {

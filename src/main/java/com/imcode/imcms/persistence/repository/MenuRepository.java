@@ -36,8 +36,8 @@ public interface MenuRepository extends JpaRepository<Menu, Integer>, VersionedC
     @Query("DELETE FROM Menu m WHERE m.version = ?1")
     void deleteByVersion(Version version);
 
-    @Query("SELECT menu.version.docId FROM Menu menu " +
+    @Query("SELECT menu FROM Menu menu " +
             "INNER JOIN menu.menuItems item " +
             "WHERE item.documentId = ?1 AND menu.version.no = ?2")
-    List<Integer> getDocIdsByLinkedDocIdAndVersionNo(Integer linkedDocId, Integer versionNo);
+    List<Menu> getDocIdsByLinkedDocIdAndVersionNo(Integer linkedDocId, Integer versionNo);
 }

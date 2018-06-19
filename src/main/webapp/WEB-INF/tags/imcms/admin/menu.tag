@@ -19,28 +19,34 @@ ${"-->"}
 <%--@elvariable id="menuService" type="com.imcode.imcms.domain.service.MenuService"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
+<%--@elvariable id="isDocNew" type="boolean"--%>
 
-<c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
+<c:if test="${!isDocNew || editOptions.editMenu}">
+    <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-<c:set var="menuItems" value="${menuService.getPublicMenuItems(index, targetDocId, language)}" scope="request"/>
+    <c:set var="menuItems" value="${menuService.getPublicMenuItems(index, targetDocId, language)}" scope="request"/>
 
-<c:set var="menuContent">${pre}<jsp:doBody/>${post}</c:set>
-<c:remove var="menuItems"/>
+    <c:set var="menuContent">${pre}
+        <jsp:doBody/>
+        ${post}</c:set>
+    <c:remove var="menuItems"/>
 
-<c:choose>
-    <c:when test="${isEditMode && editOptions.editMenu}">
-        <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}" data-menu-index="${index}">
-            <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
-                 data-menu-index="${index}">${menuContent}</div>
-                <%-- attributes used as unique identifier while reload --%>
-            <div class="imcms-editor-area__control-wrap">
-                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
-                    <div class="imcms-editor-area__control-title">Menu Editor</div>
+    <c:choose>
+        <c:when test="${isEditMode && editOptions.editMenu}">
+            <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"
+                 data-menu-index="${index}">
+                <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
+                     data-menu-index="${index}">${menuContent}</div>
+                    <%-- attributes used as unique identifier while reload --%>
+                <div class="imcms-editor-area__control-wrap">
+                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
+                        <div class="imcms-editor-area__control-title">Menu Editor</div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </c:when>
-    <c:otherwise>
-        ${menuContent}
-    </c:otherwise>
-</c:choose>
+        </c:when>
+        <c:otherwise>
+            ${menuContent}
+        </c:otherwise>
+    </c:choose>
+</c:if>

@@ -6,11 +6,16 @@
 	        org.apache.oro.text.perl.Perl5Util,
 	        javax.imageio.ImageIO,
 	        java.awt.image.BufferedImage,
-	        java.io.*,
-	        java.text.DecimalFormat"
+	        java.io.BufferedReader,
+	        java.io.File"
         contentType="text/html; charset=UTF-8"
-	
-%><%
+
+%>
+<%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="java.io.InputStreamReader" %>
+<%@ page import="java.text.DecimalFormat" %>
+<%
 
 /* *******************************************************************
  *           SETTINGS                                                *
@@ -144,8 +149,8 @@ if (frame.equalsIgnoreCase("MAIN")) { %>
 <head>
 <title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
-    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body class="imcmsAdmBgCont" style="margin:10px">
@@ -188,8 +193,8 @@ if (isImage) {
 <head>
 <title><%= StringEscapeUtils.escapeHtml4(file) %></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
-    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
 <% /*<STYLE TYPE="text/css">
 <!--

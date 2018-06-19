@@ -51,6 +51,12 @@ Imcms.define(
             ]);
         }
 
+        function resizeImage(opts) {
+            imageResize.resize(opts, opts.imageDataContainers, false);
+            opts.imageDataContainers.$heightControlInput.getInput().val(opts.image.height);
+            opts.imageDataContainers.$widthControlInput.getInput().val(opts.image.width);
+        }
+
         function zoom(zoomCoefficient, imageDataContainers) {
             var newHeight = ~~(cropElements.$image.height() * zoomCoefficient),
                 newWidth = ~~(cropElements.$image.width() * zoomCoefficient),
@@ -70,26 +76,20 @@ Imcms.define(
                 newCropAreaTop = borderSize;
             }
 
-            imageResize.resize({
-                    image: {
-                        width: newWidth,
-                        height: newHeight
-                    },
-                    cropArea: {
-                        height: newCropAreaHeight,
-                        width: newCropAreaWeight,
-                        top: newCropAreaTop,
-                        left: newCropAreaLeft
-                    }
+            resizeImage({
+                imageDataContainers: imageDataContainers,
+                isProportionsInverted: imageRotate.isProportionsInverted(),
+                image: {
+                    width: newWidth,
+                    height: newHeight
                 },
-                imageDataContainers,
-                imageRotate.isProportionsInverted()
-            );
-            var heightControlInput = imageDataContainers.$heightControlInput.getInput();
-            var widthControlInput = imageDataContainers.$widthControlInput.getInput();
-
-            heightControlInput.val(newHeight);
-            widthControlInput.val(newWidth);
+                cropArea: {
+                    height: newCropAreaHeight,
+                    width: newCropAreaWeight,
+                    top: newCropAreaTop,
+                    left: newCropAreaLeft
+                }
+            });
         }
 
         function zoomPlus() {
@@ -115,26 +115,51 @@ Imcms.define(
                 twiceAngleBorderSize = croppingAngles.getDoubleBorderSize()
             ;
 
-            imageResize.resize({
-                    image: {
-                        width: newWidth - twiceAngleBorderSize,
-                        height: newHeight - twiceAngleBorderSize
-                    },
-                    cropArea: {
-                        height: newCropAreaHeight - twiceAngleBorderSize,
-                        width: newCropAreaWeight - twiceAngleBorderSize,
-                        top: newCropAreaTop,
-                        left: newCropAreaLeft
-                    }
+            resizeImage({
+                imageDataContainers: imageDataContainers,
+                isProportionsInverted: proportionsInverted,
+                image: {
+                    width: newWidth - twiceAngleBorderSize,
+                    height: newHeight - twiceAngleBorderSize
                 },
-                imageDataContainers,
-                proportionsInverted
-            );
-            var heightControlInput = imageDataContainers.$heightControlInput.getInput();
-            var widthControlInput = imageDataContainers.$widthControlInput.getInput();
+                cropArea: {
+                    height: newCropAreaHeight - twiceAngleBorderSize,
+                    width: newCropAreaWeight - twiceAngleBorderSize,
+                    top: newCropAreaTop,
+                    left: newCropAreaLeft
+                }
+            });
+        }
 
-            heightControlInput.val(newHeight);
-            widthControlInput.val(newWidth);
+        function revertImageChanges(imageDataContainers) {
+            imageRotate.rotateImage("NORTH");
+
+            var newWidth = imageDataContainers.original.width;
+            var newHeight = imageDataContainers.original.height;
+
+            resizeImage({
+                imageDataContainers: imageDataContainers,
+                isProportionsInverted: false,
+                image: {
+                    width: newWidth,
+                    height: newHeight
+                },
+                cropArea: {
+                    height: newHeight,
+                    width: newWidth,
+                    top: croppingAngles.getBorderSize(),
+                    left: croppingAngles.getBorderSize()
+                }
+            });
+        }
+
+        function buildRevertButton(imageDataContainers) {
+            return components.buttons.negativeButton({
+                text: "Revert",
+                click: function () {
+                    revertImageChanges(imageDataContainers);
+                }
+            })
         }
 
         function buildScaleAndRotateControls(imageDataContainers, $editableImageArea) {
@@ -185,6 +210,7 @@ Imcms.define(
                 elements: {
                     "control-size": imageEditSizeControls.buildEditSizeControls(imageDataContainers),
                     "control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers, $editableImageArea),
+                    "image-revert": buildRevertButton(imageDataContainers),
                     "control-view": buildSwitchViewControls(toggleImgArea, imageDataContainers)
                 }
             }).buildBlockStructure("<div>");

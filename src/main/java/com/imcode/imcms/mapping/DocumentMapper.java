@@ -26,6 +26,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
+import lombok.Data;
 import org.apache.commons.lang.math.IntRange;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -52,6 +53,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
 import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
 import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
 import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
@@ -395,7 +397,7 @@ public class DocumentMapper implements DocumentGetter {
         return menuRepository
                 .getDocIdsByLinkedDocIdAndVersionNo(document.getId(), document.getVersionNo())
                 .stream()
-                .map(docId -> new TextDocumentMenuIndexPair(getDocument(docId)))
+                .map(menu -> new TextDocumentMenuIndexPair(getDocument(menu.getVersion().getDocId()), menu.getNo()))
                 .toArray(TextDocumentMenuIndexPair[]::new);
     }
 
@@ -752,16 +754,15 @@ public class DocumentMapper implements DocumentGetter {
         CopyDocCommonContentIntoTextFields
     }
 
+    @Data
     public static class TextDocumentMenuIndexPair {
 
-        private TextDocumentDomainObject document;
+        private final TextDocumentDomainObject document;
+        private final int menuIndex;
 
-        public TextDocumentMenuIndexPair(TextDocumentDomainObject document) {
+        public TextDocumentMenuIndexPair(TextDocumentDomainObject document, int menuIndex) {
             this.document = document;
-        }
-
-        public TextDocumentDomainObject getDocument() {
-            return document;
+            this.menuIndex = menuIndex;
         }
     }
 
@@ -801,8 +802,7 @@ public class DocumentMapper implements DocumentGetter {
 
         @Override
         public boolean accept(File file, int fileDocumentId, int docVersionNo, String fileId) {
-            boolean correctFileForFileDocumentFile = file.equals(DocumentSavingVisitor.getFileForFileDocumentFile(
-                    VersionRef.of(fileDocumentId, fileDocument.getVersionNo()), fileId));
+            boolean correctFileForFileDocumentFile = file.equals(getFileForFileDocumentFile(fileId));
             boolean fileDocumentHasFile = null != fileDocument.getFile(fileId);
             return fileDocumentId == fileDocument.getId()
                     && docVersionNo == fileDocument.getVersionNo()

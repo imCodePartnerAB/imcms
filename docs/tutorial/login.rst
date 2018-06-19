@@ -11,7 +11,7 @@ When ImCMS is running, it's URL consist of next parts:
 The simplest variation is ``https://imcode.com``, and for local is ``http://localhost:8080/imcms``
 
 There is a URL reserved for logging in - ``/login``. Simply add it after ImCMS URL, so you can get this (using previous
-examples): ``https://imcode.com/login`` or ``http://localhost:8080/imcms/login``. You should see next page
+examples): ``https://imcode.com/login``. You should see next page
 (this is an old design):
 
     .. image:: images/imcms-login-page.png

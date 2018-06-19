@@ -2,6 +2,7 @@ package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 public class AdminCategories extends HttpServlet {
@@ -51,38 +53,41 @@ public class AdminCategories extends HttpServlet {
     private static final String PARAMETER__CATEGORY_SAVE = "category_save";
     private static final String PARAMETER__ADD_CATEGORY_BUTTON = "category_add";
 
-    public static String createHtmlOptionListOfCategoryTypes(CategoryTypeDomainObject selectedType) {
-        ImcmsServices imcref = Imcms.getServices();
-        CategoryTypeDomainObject[] categoryTypes = imcref.getCategoryMapper().getAllCategoryTypes();
-        String temps = "";
-        for (int i = 0; i < categoryTypes.length; i++) {
-            boolean selected = selectedType != null && selectedType.getId() == categoryTypes[i].getId();
-            temps += "<option value=\""
-                    + categoryTypes[i].getId()
-                    + "\""
-                    + (selected ? " selected" : "")
-                    + ">"
-                    + categoryTypes[i].getName() + "</option>";
+    public static String createHtmlOptionListOfCategoryTypes(CategoryType selectedType) {
+        final ImcmsServices imcref = Imcms.getServices();
+        final CategoryTypeDomainObject[] categoryTypes = imcref.getCategoryMapper().getAllCategoryTypes();
+        final StringBuilder temps = new StringBuilder();
+
+        for (CategoryTypeDomainObject categoryType : categoryTypes) {
+            boolean selected = (selectedType != null) && (Objects.equals(selectedType.getId(), categoryType.getId()));
+            temps.append("<option value=\"")
+                    .append(categoryType.getId())
+                    .append("\"")
+                    .append(selected ? " selected" : "")
+                    .append(">")
+                    .append(categoryType.getName())
+                    .append("</option>");
         }
-        return temps;
+        return temps.toString();
     }
 
     public static String createHtmlOptionListOfCategoriesForOneType(CategoryTypeDomainObject categoryType,
                                                                     CategoryDomainObject selectedCategory) {
-        CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
+        final CategoryMapper categoryMapper = Imcms.getServices().getCategoryMapper();
+        final CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
+        final StringBuilder temps = new StringBuilder();
 
-        CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
-        String temps = "";
-        for (int i = 0; i < categories.length; i++) {
-            boolean selected = selectedCategory != null && selectedCategory.equals(categories[i]);
-            temps += "<option value=\""
-                    + categories[i].getId()
-                    + "\""
-                    + (selected ? " selected" : "")
-                    + ">"
-                    + categories[i].getName() + "</option>";
+        for (CategoryDomainObject category : categories) {
+            final boolean selected = selectedCategory != null && selectedCategory.equals(category);
+            temps.append("<option value=\"")
+                    .append(category.getId())
+                    .append("\"")
+                    .append(selected ? " selected" : "")
+                    .append(">")
+                    .append(category.getName())
+                    .append("</option>");
         }
-        return temps;
+        return temps.toString();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

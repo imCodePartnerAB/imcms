@@ -1,0 +1,9 @@
+@import url("imcms-info-page.css");
+
+.imcms-info-body__logout {
+    padding-bottom: 40px;
+}
+
+.imcms-title__logout {
+    text-align: center;
+}

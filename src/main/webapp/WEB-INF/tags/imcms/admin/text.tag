@@ -15,56 +15,59 @@ ${"-->"}
 <%@ attribute name="post" required="false" %>
 <%@ attribute name="showlabel" required="false" %>
 
-<c:if test="${empty index}">
-    <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
-</c:if>
-
-<c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
-
-<c:set var="textField" value="${isEditMode or isPreviewMode
-     ? textService.getText(targetDocId, index, language, loopEntryRef)
-     : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
-
-<c:set var="content" value="${textField.text}"/>
-
-<c:if test="${not empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
-<c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
-
-    <c:set var="loopData">
-        <c:if test="${loopEntryRef ne null}"> data-loop-entry-ref.loop-entry-index="${loopEntryRef.loopEntryIndex}"
-            data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
-    </c:set>
-
-    <c:if test="${'html'.equalsIgnoreCase(formats)}">
-        <c:set var="format" value="HTML"/>
-        <c:set var="content">
-            <p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</p></c:set>
+<c:if test="${!isDocNew || editOptions.editText}">
+    <c:if test="${empty index}">
+        <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
     </c:if>
 
-    <c:if test="${'text'.equalsIgnoreCase(formats)}">
-        <c:set var="format" value="TEXT"/>
-        <c:if test="${not empty rows}">
-            <c:set var="rowsData" value=" data-rows=\"${rows}\""/>
-        </c:if>
-    </c:if>
+    <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-    <c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
+    <c:set var="textField" value="${isEditMode or isPreviewMode
+         ? textService.getText(targetDocId, index, language, loopEntryRef)
+         : textService.getPublicText(targetDocId, index, language, loopEntryRef)}"/>
 
-    <div class="imcms-editor-area imcms-editor-area--text">
-        <c:if test="${not empty label}">
-            <div class="imcms-editor-area__text-label">${label}</div>
+    <c:set var="content" value="${textField.text}"/>
+
+    <c:if test="${not empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
+    <c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
+
+        <c:set var="loopData">
+            <c:if test="${loopEntryRef ne null}"> data-loop-entry-ref.loop-entry-index="${loopEntryRef.loopEntryIndex}"
+                data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
+        </c:set>
+
+        <c:if test="${'html'.equalsIgnoreCase(formats)}">
+            <c:set var="format" value="HTML"/>
+            <c:set var="content">
+                <p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</p></c:set>
         </c:if>
-        <div class="imcms-editor-area__text-toolbar"></div>
-            ${pre}
-        <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}" data-doc-id="${targetDocId}"
-             data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}</div>
-            ${post}
-        <div class="imcms-editor-area__control-wrap">
-            <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                <div class="imcms-editor-area__control-title">Text Editor</div>
+
+        <c:if test="${'text'.equalsIgnoreCase(formats)}">
+            <c:set var="format" value="TEXT"/>
+            <c:if test="${not empty rows}">
+                <c:set var="rowsData" value=" data-rows=\"${rows}\""/>
+            </c:if>
+        </c:if>
+
+        <c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
+
+        <div class="imcms-editor-area imcms-editor-area--text">
+            <c:if test="${not empty label}">
+                <div class="imcms-editor-area__text-label">${label}</div>
+            </c:if>
+            <div class="imcms-editor-area__text-toolbar"></div>
+                ${pre}
+            <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
+                 data-doc-id="${targetDocId}"
+                 data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}</div>
+                ${post}
+            <div class="imcms-editor-area__control-wrap">
+                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
+                    <div class="imcms-editor-area__control-title">Text Editor</div>
+                </div>
             </div>
         </div>
-    </div>
+    </c:if>
 </c:if>
 
 <%-- do not remove - it helps Idea to understand var types --%>
@@ -76,3 +79,4 @@ ${"-->"}
 <%--@elvariable id="textField" type="com.imcode.imcms.model.Text"--%>
 <%--@elvariable id="language" type="java.lang.String"--%>
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
+<%--@elvariable id="isDocNew" type="boolean"--%>

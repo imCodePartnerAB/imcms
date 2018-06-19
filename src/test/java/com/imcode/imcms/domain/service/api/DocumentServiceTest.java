@@ -80,6 +80,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -771,6 +772,117 @@ public class DocumentServiceTest {
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(0).getVersionNo());
         assertEquals(Integer.valueOf(2), new ArrayList<>(commonContentByVersion).get(1).getVersionNo());
 
+    }
+
+    @Test
+    public void publishNewDocVersion_When_StatusIsNew_Expect_StatusSetToApproved() {
+        createdDoc = documentDataInitializer.createData(PublicationStatus.NEW);
+
+        assertEquals(PublicationStatus.NEW, createdDoc.getPublicationStatus());
+
+        final Integer docId = createdDoc.getId();
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        assertTrue(isPublished);
+        assertEquals(PublicationStatus.APPROVED, publishedDoc.getPublicationStatus());
+    }
+
+    @Test
+    public void publishNewDocVersion_When_PublishDateIsInFuture_Expect_DateNotChanged() {
+        final Integer docId = createdDoc.getId();
+        final AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setDateTime(new Date(new Date().getTime() + 150000000000L)); // date in future
+        final Date dateInFuture = auditDTO.getFormattedDate();
+
+        createdDoc.getPublished().setDateTime(dateInFuture);
+
+        documentService.save(createdDoc);
+
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        assertTrue(isPublished);
+        assertEquals(dateInFuture, publishedDoc.getPublished().getFormattedDate());
+    }
+
+    @Test
+    public void publishNewDocVersion_When_PublishDateIsNotSet_Expect_CurrentDateSet() {
+        assertNull(createdDoc.getPublished().getFormattedDate());
+
+        final Integer docId = createdDoc.getId();
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        assertTrue(isPublished);
+        assertNotNull(publishedDoc.getPublished().getFormattedDate());
+    }
+
+    @Test
+    public void publishNewDocVersion_When_PublishDateIsInPast_Expect_CurrentDateSet() {
+        assertNull(createdDoc.getPublished().getFormattedDate());
+
+        final AuditDTO auditDTO = new AuditDTO();
+        auditDTO.setDateTime(new Date(new Date().getTime() - 150000000000L)); // date in past
+        final Date dateInPast = auditDTO.getFormattedDate();
+
+        createdDoc.getPublished().setDateTime(dateInPast);
+
+        documentService.save(createdDoc);
+
+        final Integer docId = createdDoc.getId();
+        final boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+        final DocumentDTO publishedDoc = documentService.get(docId);
+
+        assertTrue(isPublished);
+        assertTrue(publishedDoc.getPublished().getFormattedDate().after(dateInPast));
+    }
+
+    @Test
+    public void publishNewDocVersion_When_SomePublishedVersionAlreadyExist_ExpectCommonContentChangesSaved() {
+        final Integer docId = createdDoc.getId();
+        boolean isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+
+        assertTrue(isPublished);
+
+        DocumentDTO publishedDoc = documentService.get(docId);
+        AtomicBoolean isEnabledSwitcher = new AtomicBoolean(false);
+
+        for (int i = 1; i <= 2; i++) {
+            final String head = "head" + i;
+            final String url = "url" + i;
+            final String menuText = "menu text" + i;
+            final boolean isEnabled = isEnabledSwitcher.getAndSet(!isEnabledSwitcher.get());
+
+            publishedDoc.getCommonContents().forEach(commonContent -> {
+                commonContent.setHeadline(head);
+                commonContent.setEnabled(isEnabled);
+                commonContent.setMenuImageURL(url);
+                commonContent.setMenuText(menuText);
+            });
+
+            documentService.save(publishedDoc);
+            final DocumentDTO savedDoc = documentService.get(docId);
+
+            savedDoc.getCommonContents().forEach(commonContent -> {
+                assertEquals(head, commonContent.getHeadline());
+                assertEquals(isEnabled, commonContent.isEnabled());
+                assertEquals(url, commonContent.getMenuImageURL());
+                assertEquals(menuText, commonContent.getMenuText());
+            });
+
+            isPublished = documentService.publishDocument(docId, Imcms.getUser().getId());
+            assertTrue(isPublished);
+
+            publishedDoc = documentService.get(docId);
+
+            publishedDoc.getCommonContents().forEach(commonContent -> {
+                assertEquals(head, commonContent.getHeadline());
+                assertEquals(isEnabled, commonContent.isEnabled());
+                assertEquals(url, commonContent.getMenuImageURL());
+                assertEquals(menuText, commonContent.getMenuText());
+            });
+        }
     }
 
     private void createText(int index, LanguageJPA language, Version version) {

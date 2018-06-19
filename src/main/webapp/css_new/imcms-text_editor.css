@@ -98,7 +98,7 @@
     left: 0 !important;
     width: 100% !important;
     height: calc(100% - 33px) !important;
-    z-index: 99 !important;
+    z-index: 999999 !important;
     padding: 2% !important;
     overflow: auto !important;
     outline: none;
@@ -110,7 +110,7 @@
     top: 0 !important;
     left: 0 !important;
     width: 100% !important;
-    z-index: 99 !important;
+    z-index: 999999 !important;
 }
 
 .mce-fullscreen-toolbar .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel {

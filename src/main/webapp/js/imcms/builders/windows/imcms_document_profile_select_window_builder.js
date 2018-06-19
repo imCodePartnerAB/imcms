@@ -129,7 +129,7 @@ Imcms.define(
                 if (selectedParentDoc) {
                     documentValidationAPI.checkIsTextDocument(selectedParentDoc).success(function (isTextDoc) {
                         if (isTextDoc) {
-                            windowBuilder.closeWindow();
+                            closeWindow();
                             onProfileOrParentSelectedCallback(selectedParentDoc);
 
                         } else {
@@ -143,14 +143,14 @@ Imcms.define(
                 var parentDocId = $profilesSelect.getSelectedValue();
 
                 if (parentDocId) {
-                    windowBuilder.closeWindow();
+                    closeWindow();
                     onProfileOrParentSelectedCallback(parentDocId);
 
                 } else {
                     $validationErrorBlock.slideDown(400);
                 }
             } else if ("currentDocId" === checkedValue) {
-                windowBuilder.closeWindow();
+                closeWindow();
                 onProfileOrParentSelectedCallback(imcms.document.id);
             }
         }
@@ -224,10 +224,16 @@ Imcms.define(
             });
         }
 
+        function closeWindow() {
+            windowBuilder.closeWindow();
+        }
+
         var windowBuilder = new WindowBuilder({
             factory: buildProfileSelectWindow,
             loadDataStrategy: loadData,
-            clearDataStrategy: clear
+            clearDataStrategy: clear,
+            onEscKeyPressed: closeWindow,
+            onEnterKeyPressed: onSubmit
         });
 
         var onProfileOrParentSelectedCallback;

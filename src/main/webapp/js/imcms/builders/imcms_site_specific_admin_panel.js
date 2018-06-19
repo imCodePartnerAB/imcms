@@ -4,8 +4,11 @@
  */
 Imcms.define(
     "imcms-site-specific",
-    ["imcms-admin-panel-builder", "imcms-i18n-texts", "imcms-cookies", "imcms-top-panel-visibility-initiator", "jquery"],
-    function (panelBuilder, texts, cookies, panelVisibility, $) {
+    [
+        "imcms-admin-panel-builder", "imcms-i18n-texts", "imcms-cookies", "imcms-top-panel-visibility-initiator",
+        "imcms-admin-panel-state", "imcms-events", "imcms-streams", "jquery"
+    ],
+    function (panelBuilder, texts, cookies, panelVisibility, panelState, events, streams, $) {
 
         texts = texts.panel;
 
@@ -15,18 +18,22 @@ Imcms.define(
             if ($imcmsAdminSpecial.length) {
                 var $imcms = $('#imcms-admin');
 
-                var adminPanelHeight = $('#imcms-admin-panel').height();
-                $imcmsAdminSpecial.css('top', "-" + $imcmsAdminSpecial.css('max-height')) // there is no real height now
+                var adminPanelHeight = panelState.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
+                var specialTopInitial = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
+
+                $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now
                     .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
                     .addClass('imcms-special-hidden')
                     .appendTo($imcms)
-                    .css("padding-top", adminPanelHeight) // exactly separated css calls!
-                    .css("top", "-" + $imcms.css('height'));
+                    .css("padding-top", adminPanelHeight); // exactly separated css calls!
+
+                var specialTop = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
+                $imcmsAdminSpecial.css("top", specialTop);
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
-                var text = $imcmsAdminSpecial.data('link-text');
 
+                var text = $imcmsAdminSpecial.data('link-text');
                 addLinkToSpecialAdmin(text);
             }
         }
@@ -48,16 +55,18 @@ Imcms.define(
                 if ($collapsible.hasClass('imcms-special-hidden')) {
                     $collapsible.css('display', 'block');
 
-                    setTimeout(function () { // check if setTimeout really needed
+                    setTimeout(function () {
                         $collapsible.removeClass('imcms-special-hidden').css('top', 0);
-                        panelVisibility.refreshBodyTop();
+                        panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                     });
 
                     $link.addClass('imcms-panel__item--active');
                     cookies.setCookie("imcms-client-special-area", "opened", {expires: 30});
 
                 } else {
-                    $collapsible.slideUp(200, panelVisibility.refreshBodyTop)
+                    $collapsible.slideUp(200, function () {
+                        panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
+                        })
                         .addClass('imcms-special-hidden')
                         .css('top', "-" + $imcms.css('height'));
 
@@ -68,7 +77,11 @@ Imcms.define(
 
             if (cookies.getCookie("imcms-client-special-area") === "opened") {
                 $link.addClass('imcms-panel__item--active');
-                $collapsible.removeClass('imcms-special-hidden').css('display', 'block');
+                $collapsible.removeClass('imcms-special-hidden');
+
+                if ($imcms.hasClass("imcms-panel-visible")) {
+                    $collapsible.css('display', 'block');
+                }
             }
         }
 

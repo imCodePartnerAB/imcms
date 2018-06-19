@@ -34,8 +34,7 @@ public class ImagesPathRelativePathImageSource extends ImageSource {
     }
 
     public File getFile() {
-        File basePath = isAbsolute() ? Imcms.getPath() : ImcmsImageUtils.imagesPath;
-        return new File(basePath, path);
+        return new File(ImcmsImageUtils.imagesPath, path);
     }
 
     public String getUrlPathRelativeToContextPath() {

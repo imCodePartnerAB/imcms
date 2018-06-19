@@ -6,16 +6,21 @@ Imcms.define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
         "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-top-panel-visibility-initiator",
-        "imcms-i18n-texts"
+        "imcms-i18n-texts", "imcms-admin-panel-settings-builder"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
-              panelVisibility, texts) {
+              panelVisibility, texts, panelSettings) {
+
         var $panelContainer, $panel;
+
+        var panelBlock = "imcms-panel";
+        var panelItemClass = BEM.buildClass(panelBlock, "item");
+        var panelItemHasNewerVersionClass = BEM.buildClass(panelBlock, "item", "has-newer-version");
 
         texts = texts.panel;
 
         function publishDoc() {
-            events.trigger("imcms-publish-new-version-current-doc");
+            $(this).hasClass(panelItemHasNewerVersionClass) && events.trigger("imcms-publish-new-version-current-doc");
         }
 
         function showPageInfo() {
@@ -28,10 +33,10 @@ Imcms.define("imcms-admin-panel-builder",
 
         function buildPanelButtons(opts) {
             var panelButtonsBEM = new BEM({
-                block: "imcms-panel",
+                block: panelBlock,
                 elements: {
                     "items": "",
-                    "item": "imcms-panel__item"
+                    "item": panelItemClass
                 }
             });
 
@@ -45,14 +50,10 @@ Imcms.define("imcms-admin-panel-builder",
                 };
 
                 if (opts && opts.active === buttonData.name) {
-                    attributes["class"] = "imcms-panel__item--active";
+                    attributes["class"] = BEM.buildClass(panelItemClass, "item", "active");
                 }
 
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
-            }
-
-            function onPanelSettingsClicked() {
-                // todo: implement!
             }
 
             var editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
@@ -66,7 +67,7 @@ Imcms.define("imcms-admin-panel-builder",
                 {
                     name: 'settings',
                     tag: '<div>',
-                    onClick: onPanelSettingsClicked,
+                    onClick: panelSettings.onSettingsClicked,
                     content: texts.settings,
                     title: texts.settingsTitle,
                     modifiers: ["settings"]
@@ -195,7 +196,9 @@ Imcms.define("imcms-admin-panel-builder",
         }
 
         function highlightPublishButton() {
-            $panelContainer.find(".imcms-panel__item--publish-of").addClass("imcms-panel__item--has-newer-version");
+            var panelItemPublishClassSelector = BEM.buildClassSelector(panelBlock, "item", "publish-of");
+
+            $panelContainer.find(panelItemPublishClassSelector).addClass(panelItemHasNewerVersionClass);
         }
 
         var isPanelBuilt = false;
@@ -217,12 +220,16 @@ Imcms.define("imcms-admin-panel-builder",
 
                 $("body").prepend($panelContainer);
 
+                panelSettings.applyCurrentSettings();
+
                 events.on("imcms-version-modified", highlightPublishButton);
                 isPanelBuilt = true;
 
                 onPanelBuiltCallbacks.forEach(function (callMe) {
                     setTimeout(callMe);
                 });
+
+                onPanelBuiltCallbacks = [];
             },
             callOnPanelBuilt: function (callOnPanelBuilt) {
                 if (!callOnPanelBuilt || !callOnPanelBuilt.call) return;

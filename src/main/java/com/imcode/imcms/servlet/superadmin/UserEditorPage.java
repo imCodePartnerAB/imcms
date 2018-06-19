@@ -6,48 +6,53 @@ import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.*;
-import imcode.util.Html;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class UserEditorPage extends OkCancelPage {
-    public static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
-    public static final String REQUEST_PARAMETER__PASSWORD1 = "password1";
-    public static final String REQUEST_PARAMETER__FIRST_NAME = "first_name";
-    public static final String REQUEST_PARAMETER__LAST_NAME = "last_name";
-    public static final String REQUEST_PARAMETER__TITLE = "title";
-    public static final String REQUEST_PARAMETER__COMPANY = "company";
-    public static final String REQUEST_PARAMETER__ADDRESS = "address";
-    public static final String REQUEST_PARAMETER__CITY = "city";
-    public static final String REQUEST_PARAMETER__ZIP = "zip";
-    public static final String REQUEST_PARAMETER__COUNTRY = "country";
-    public static final String REQUEST_PARAMETER__DISTRICT = "county";
-    public static final String REQUEST_PARAMETER__EMAIL = "email";
-    public static final String REQUEST_PARAMETER__LANGUAGE = "lang_id";
-    public static final String REQUEST_PARAMETER__ACTIVE = "active";
-    public static final String REQUEST_PARAMETER__PASSWORD2 = "password2";
-    public static final String REQUEST_PARAMETER__ROLE_IDS = "role_ids";
-    public static final String REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS = "user_admin_role_ids";
+    private static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
+    private static final String REQUEST_PARAMETER__PASSWORD1 = "password1";
+    private static final String REQUEST_PARAMETER__FIRST_NAME = "first_name";
+    private static final String REQUEST_PARAMETER__LAST_NAME = "last_name";
+    private static final String REQUEST_PARAMETER__TITLE = "title";
+    private static final String REQUEST_PARAMETER__COMPANY = "company";
+    private static final String REQUEST_PARAMETER__ADDRESS = "address";
+    private static final String REQUEST_PARAMETER__CITY = "city";
+    private static final String REQUEST_PARAMETER__ZIP = "zip";
+    private static final String REQUEST_PARAMETER__COUNTRY = "country";
+    private static final String REQUEST_PARAMETER__DISTRICT = "county";
+    private static final String REQUEST_PARAMETER__EMAIL = "email";
+    private static final String REQUEST_PARAMETER__LANGUAGE = "lang_id";
+    private static final String REQUEST_PARAMETER__ACTIVE = "active";
+    private static final String REQUEST_PARAMETER__PASSWORD2 = "password2";
+    private static final String REQUEST_PARAMETER__ROLE_IDS = "role_ids";
+    private static final String REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS = "user_admin_role_ids";
 
-    public static final String REQUEST_PARAMETER__ADD_PHONE_NUMBER = "add_phone_number";
-    public static final String REQUEST_PARAMETER__EDIT_PHONE_NUMBER = "edit_phone_number";
-    public static final String REQUEST_PARAMETER__REMOVE_PHONE_NUMBER = "delete_phone_number";
+    private static final String REQUEST_PARAMETER__ADD_PHONE_NUMBER = "add_phone_number";
+    private static final String REQUEST_PARAMETER__EDIT_PHONE_NUMBER = "edit_phone_number";
+    private static final String REQUEST_PARAMETER__REMOVE_PHONE_NUMBER = "delete_phone_number";
 
     public static final String REQUEST_PARAMETER__PHONE_NUMBER_TYPE_ID = "phone_number_type_id";
     public static final String REQUEST_PARAMETER__EDITED_PHONE_NUMBER = "edited_phone_number";
-    public static final String REQUEST_PARAMETER__SELECTED_PHONE_NUMBER = "selected_phone_number";
+    private static final String REQUEST_PARAMETER__SELECTED_PHONE_NUMBER = "selected_phone_number";
 
     private static final LocalizedMessage ERROR__PASSWORDS_DID_NOT_MATCH = new LocalizedMessage("error/passwords_did_not_match");
     private static final LocalizedMessage ERROR__PASSWORD_LENGTH = new LocalizedMessage("error/password_length");
@@ -59,6 +64,7 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
     private static final int MAXIMUM_PASSWORD_LENGTH = 128;
     private static final int MINIMUM_PASSWORD_LENGTH = 4;
+    private static final long serialVersionUID = 8794785851493625993L;
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
     private PhoneNumber currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
@@ -152,7 +158,7 @@ public class UserEditorPage extends OkCancelPage {
 
     private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
         Set<RoleId> roleIds = getRoleIdsSetFromRequestParameterValues(request, requestParameter);
-        return roleIds.toArray(new RoleId[roleIds.size()]);
+        return roleIds.toArray(new RoleId[0]);
     }
 
     private Set<RoleId> getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
@@ -183,9 +189,9 @@ public class UserEditorPage extends OkCancelPage {
                 Set<RoleId> userRoleIds = new HashSet<>(Arrays.asList(editedUser.getRoleIds()));
                 userRoleIds.removeAll(userAdminRoleIds);
                 userRoleIds.addAll(roleIdsSetFromRequest);
-                userRoleIdsArray = userRoleIds.toArray(new RoleId[userRoleIds.size()]);
+                userRoleIdsArray = userRoleIds.toArray(new RoleId[0]);
             } else {
-                userRoleIdsArray = roleIdsSetFromRequest.toArray(new RoleId[roleIdsSetFromRequest.size()]);
+                userRoleIdsArray = roleIdsSetFromRequest.toArray(new RoleId[0]);
             }
             editedUser.setRoleIds(userRoleIdsArray);
         }
@@ -207,8 +213,7 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     public String getPath(HttpServletRequest request) {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-        return "/imcms/" + loggedOnUser.getLanguageIso639_2() + "/jsp/usereditor.jsp";
+        return "/imcms/jsp/usereditor.jsp";
     }
 
     protected void dispatchOther(HttpServletRequest request,
@@ -292,79 +297,12 @@ public class UserEditorPage extends OkCancelPage {
         return selectedPhoneNumber;
     }
 
-    public UserDomainObject getEditedUser() {
-        return editedUser;
-    }
-
-    public String createLanguagesHtmlOptionList(UserDomainObject user,
-                                                UserDomainObject userToChange) {
-        return getImcmsServices().getLanguageMapper().createLanguagesOptionList(user, userToChange.getLanguageIso639_2());
-    }
-
-    public String createPhoneTypesHtmlOptionList(final UserDomainObject loggedOnUser, PhoneNumberType selectedType) {
-        return Html.createOptionList(
-                Arrays.asList(PhoneNumberType.getAllPhoneNumberTypes()),
-                Collections.singleton(selectedType),
-                phoneType -> new String[]{"" + phoneType.getId(), phoneType.getName().toLocalizedString(loggedOnUser)}
-        );
-    }
-
-    public PhoneNumber getCurrentPhoneNumber() {
-        return currentPhoneNumber;
-    }
-
-    public String getUserPhoneNumbersHtmlOptionList(final HttpServletRequest request) {
-        Set<PhoneNumber> phoneNumbers = editedUser.getPhoneNumbers();
-        return Html.createOptionList(phoneNumbers, Collections.singleton(currentPhoneNumber), phoneNumber -> new String[]{
-                phoneNumber.getType().getId() + " " + phoneNumber.getNumber(),
-                "(" + phoneNumber.getType().getName().toLocalizedString(request) + ") " + phoneNumber.getNumber()
-        });
-    }
-
-    public LocalizedMessage getErrorMessage() {
+    private LocalizedMessage getErrorMessage() {
         return errorMessage;
     }
 
     public void setErrorMessage(LocalizedMessage errorMessage) {
         this.errorMessage = errorMessage;
-    }
-
-    public String createRolesHtmlOptionList(HttpServletRequest request) {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
-        RoleDomainObject[] roles = loggedOnUser.isUserAdminAndNotSuperAdmin() ? getRoles(loggedOnUser.getUserAdminRoleIds()) : getAllRolesExceptUsersRole();
-        RoleDomainObject[] usersRoles = getRoles(editedUser.getRoleIds());
-        return createRolesHtmlOptionList(roles, usersRoles);
-    }
-
-    private RoleDomainObject[] getRoles(RoleId[] roleIds) {
-        RoleDomainObject[] roles = new RoleDomainObject[roleIds.length];
-        for (int i = 0; i < roleIds.length; i++) {
-            roles[i] = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleIds[i]);
-        }
-        return roles;
-    }
-
-    private String createRolesHtmlOptionList(RoleDomainObject[] allRoles, RoleDomainObject[] usersRoles) {
-        return Html.createOptionList(Arrays.asList(allRoles), Arrays.asList(usersRoles), role -> new String[]{"" + role.getId(), role.getName()});
-    }
-
-    public String createUserAdminRolesHtmlOptionList() {
-        RoleDomainObject[] allRoles = getAllRolesExceptUsersRole();
-        Set<RoleDomainObject> allRolesSet = new HashSet<>(Arrays.asList(allRoles));
-        CollectionUtils.filter(allRolesSet, o -> {
-            RoleId roleId = ((RoleDomainObject) o).getId();
-            return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
-        });
-        RoleDomainObject[] allUserAdminRoles = allRolesSet.toArray(new RoleDomainObject[allRolesSet.size()]);
-        RoleDomainObject[] usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
-
-        return createRolesHtmlOptionList(allUserAdminRoles, usersUserAdminRoles);
-    }
-
-    private RoleDomainObject[] getAllRolesExceptUsersRole() {
-        RoleDomainObject[] allRoles = getImcmsServices().getImcmsAuthenticatorAndUserAndRoleMapper().getAllRolesExceptUsersRole();
-        Arrays.sort(allRoles);
-        return allRoles;
     }
 
     public void setOkCommand(DispatchCommand okCommand) {
@@ -376,10 +314,25 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+        final UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+
         if (!uneditedUser.isNew() && !loggedOnUser.canEdit(uneditedUser)) {
-            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionInternalException("User " + loggedOnUser + " does not have the permission to edit " + editedUser));
+            throw new ShouldHaveCheckedPermissionsEarlierException(new NoPermissionInternalException(
+                    "User " + loggedOnUser + " does not have the permission to edit " + editedUser
+            ));
         }
+
+        if ((editedUser != null) && ((editedUser.getLanguageIso639_2() == null) || editedUser.getLanguageIso639_2().equals(""))) {
+            String defaultLanguage = Imcms.getServices().getLanguageMapper().getDefaultLanguage();
+            editedUser.setLanguageIso639_2(defaultLanguage);
+        }
+
+        request.setAttribute("editedUser", editedUser);
+        request.setAttribute("isAdmin", loggedOnUser.isSuperAdmin());
+        request.setAttribute("userEditorPage", this);
+        request.setAttribute("loggedOnUser", loggedOnUser);
+        request.setAttribute("errorMessage", errorMessage);
+        request.setAttribute("userLanguage", Imcms.getUser().getLanguage());
 
         super.forward(request, response);
     }

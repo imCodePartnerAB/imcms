@@ -44,21 +44,12 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
             String fileId = item.getFileId();
             FileDocumentDomainObject.FileDocumentFile file = new FileDocumentDomainObject.FileDocumentFile();
 
-            file.setFilename(item.getFilename());
             file.setMimeType(item.getMimeType());
             file.setCreatedAsImage(item.isCreatedAsImage());
 
-            File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(doc.getVersionRef(), fileId);
-            if (!fileForFileDocument.exists()) {
-                File oldlyNamedFileForFileDocument = new File(fileForFileDocument.getParentFile(),
-                        fileForFileDocument.getName()
-                                + "_se");
-                if (oldlyNamedFileForFileDocument.exists()) {
-                    fileForFileDocument = oldlyNamedFileForFileDocument;
-                }
-            }
-
+            final File fileForFileDocument = DocumentStoringVisitor.getFileForFileDocumentFile(item);
             file.setInputStreamSource(new FileInputStreamSource(fileForFileDocument));
+            file.setFilename(item.getFilename());
 
             doc.addFile(fileId, file);
 

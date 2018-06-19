@@ -9,7 +9,7 @@ String subHeading = inDeleteCategoryMode ? "<? install/htdocs/sv/jsp/category_ad
         <tr>
 					<td colspan="2">&nbsp;<br><br>
                         <c:set var="heading"
-                               value="<%= subHeading %> &nbsp;&quot;<%=StringEscapeUtils.escapeHtml4(ObjectUtils.defaultIfNull(categoryToEdit.getName(), ""))%>&quot;"/>
+                               value='<%= subHeading + "&nbsp;\'" + StringEscapeUtils.escapeHtml4(ObjectUtils.defaultIfNull(categoryToEdit.getName(), "")) + "\'"%>'/>
                         <ui:imcms_gui_heading heading="${heading}"/></td>
 				</tr><%
 				} %>

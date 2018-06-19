@@ -8,8 +8,8 @@
 
     <title><? templates/sv/AdminManager_adminTask_element.htm/10 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
-    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
     <SCRIPT LANGUAGE="JavaScript">
 <!--
@@ -35,19 +35,9 @@ function checkForName() {
     }
 }
 
-function regExpTest(what, pattern) {
-    var blnRetVal = (pattern.test(what)) ? true : false;
-    return blnRetVal;
-}
-
 function setSize() {
-    if(isGecko) {
-        document.getElementById("sfile").size = 85;
-        document.getElementById("sname").size = 65;
-    } else if (hasGetElementById) {
-        document.getElementById("sfile").style.width = 450;
-        document.getElementById("sname").style.width = 250;
-    }
+    document.getElementById("sfile").size = 85;
+    document.getElementById("sname").size = 65;
 }
 //-->
 </SCRIPT>
@@ -125,9 +115,7 @@ function setSize() {
                 <td nowrap>
                     <script language="JavaScript">
                         <!--
-                        if (hasGetElementById || hasDocumentLayers) {
                             document.write("<input type=\"button\" class=\"imcmsFormBtnSmall\" onClick=\"checkForName()\" value=\"&laquo;&nbsp;<? templates/sv/template_upload.html/2020 ?>\">");
-                        }
                         //-->
                     </script></td>
             </tr>

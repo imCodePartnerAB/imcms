@@ -4,7 +4,7 @@ CREATE PROCEDURE GetTemplateGroupsForUser @meta_id INT, @user_id INT AS
  for easy insertion into an html-option-list, no less!
 */
 SELECT distinct group_id,group_name
-FROM   templategroups dt
+FROM   imcms_template_group dt
 JOIN  user_roles_crossref urc
        ON urc.user_id = @user_id
 LEFT JOIN roles_rights rr

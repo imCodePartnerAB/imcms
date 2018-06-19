@@ -40,6 +40,18 @@
     color: #2f4047;
 }
 
+.imcms-button--locked {
+    background: url("../images_new/admin_panel/icon_locked.png") CENTER CENTER NO-REPEAT;
+}
+
+.imcms-button--unlocked {
+    background: url("../images_new/admin_panel/icon_unlocked.png") CENTER CENTER NO-REPEAT;
+}
+
+.imcms-button--up {
+    background: url("../images_new/admin_panel/icon_up.png") CENTER CENTER NO-REPEAT;
+}
+
 .imcms-button--positive {
     background-color: #0b94d8;
     border-color: #0b94d8;
@@ -51,14 +63,16 @@
     color: #2f4047;
 }
 
-.imcms-button--neutral {
+.imcms-button--neutral,
+a[class^="imcms"].imcms-button--neutral {
     background-color: transparent;
     border-color: transparent;
     color: #0b94d8;
     padding: 0;
 }
 
-.imcms-button--neutral:hover {
+.imcms-button--neutral:hover,
+a[class^="imcms"].imcms-button--neutral:hover {
     color: #2f4047;
 }
 

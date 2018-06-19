@@ -312,6 +312,11 @@
     </servlet>
 
     <servlet>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-class>
+    </servlet>
+
+    <servlet>
         <servlet-name>com.imcode.imcms.servlet.InternalError</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.InternalError</servlet-class>
     </servlet>
@@ -339,6 +344,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.superadmin.AdminCounter</servlet-name>
         <url-pattern>/servlet/AdminCounter</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.superadmin.DocumentReferences</servlet-name>
+        <url-pattern>/servlet/DocumentReferences</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

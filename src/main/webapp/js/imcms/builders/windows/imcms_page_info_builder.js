@@ -215,7 +215,9 @@ Imcms.define("imcms-page-info-builder",
         var pageInfoWindowBuilder = new WindowBuilder({
             factory: buildPageInfo,
             loadDataStrategy: loadData,
-            clearDataStrategy: clearPageInfoData
+            clearDataStrategy: clearPageInfoData,
+            onEscKeyPressed: closePageInfo,
+            onEnterKeyPressed: confirmSaving
         });
 
         var onDocumentSaved;

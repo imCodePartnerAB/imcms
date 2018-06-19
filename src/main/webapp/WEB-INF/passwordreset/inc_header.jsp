@@ -1,30 +1,34 @@
-<%@ page
-	
-	import="com.imcode.imcms.servlet.PasswordReset,
-	        java.util.List"
-	
-  pageEncoding="UTF-8"
-	
-%>
-<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui"
-%>
+<%@ page pageEncoding="UTF-8" %>
+<%@ page import="com.imcode.imcms.servlet.PasswordReset" %>
+<%@ page import="java.util.List" %>
+<%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%!
 
-/* Validation errors and common heading */
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
-%>
-<c:set var="heading">
-    <fmt:message key="passwordreset.title"/>
-</c:set>
-<ui:imcms_gui_start_of_page titleAndHeading="${heading}"/>
-<%
-List<String> errors = (List<String>)request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
-
-if (errors != null) { %>
-	<div style="border: 1px solid red; background-color: #ffc; padding: 5px 10px;">
-		<p><fmt:message key="passwordreset.title.validation_errors" /></p>
-		<p><%= errors.get(0) %></p>
-	</div><%
-} %>
+<html>
+<head>
+    <title><fmt:message key="passwordreset.title"/></title>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/modal_window/imcms-modal-admin.css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+</head>
+<body>
+<div class="imcms-modal-admin">
+    <div class="imcms-modal-admin-head">
+        <a href="https://imcode.com" class="imcms-login__logo"></a>
+        <div class="imcms-title imcms-head__title"><fmt:message key="passwordreset.title"/></div>
+    </div>
+    <div class="imcms-modal-admin-body">
+            <% List<String> errors = (List<String>) request.getAttribute(PasswordReset.REQUEST_ATTR_VALIDATION_ERRORS);
+                if (errors != null) { %>
+        <div class="imcms-field">
+            <div class="imcms-error-msg imcms-modal-admin__error-msg">
+                <fmt:message key="passwordreset.title.validation_errors"/>
+            </div>
+            <div class="imcms-error-msg imcms-modal-admin__error-msg"><%= errors.get(0) %>
+            </div>
+        </div>
+            <% } %>

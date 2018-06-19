@@ -6,8 +6,8 @@
 <head>
 <title><? templates/sv/FileAdminFileExisted.html/1 ?></title>
 
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css.jsp">
-    <script src="${contextPath}/js/imcms/imcms_admin.js.jsp" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body onLoad="focusField(1, 'no')">
@@ -43,7 +43,7 @@
     </td>
 </tr>
 <tr>
-    <td><? templates/sv/FileAdminFileExisted.html/3 ?></td>
+    <td><? templates/sv/FileAdminFileExisted.html/3 ?> "${filename}".</td>
 </tr>
 <tr>
     <td><ui:imcms_gui_hr wantedcolor="blue"/></td>

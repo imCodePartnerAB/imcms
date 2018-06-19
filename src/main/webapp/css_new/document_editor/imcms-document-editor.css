@@ -98,7 +98,6 @@
 }
 
 .imcms-document-item {
-    cursor: pointer;
     display: block;
     overflow: hidden;
     padding-left: 70px;
@@ -108,7 +107,6 @@
 }
 
 .imcms-document-item__info {
-    cursor: pointer;
     line-height: 45px;
     text-transform: none;
     text-align: left;

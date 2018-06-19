@@ -67,7 +67,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
                 }
             },
             "imcms-tests": "imcms_tests.js",
-            "imcms-events": "events/imcms_events.js", // events
+            "imcms-events": "events/imcms_events.js",
+            "imcms-streams": "streams/imcms_streams.js",
             "imcms-i18n-texts": "i18n/imcms_i18n_texts.js", // languages support
             // <components>
             "imcms-document-types": "components/imcms_document_types.js",
@@ -89,6 +90,10 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-session-timeout-management": "components/imcms_session_timeout_management.js",
             "imcms-date-time-validator": "components/imcms_date_time_validator.js",
             "imcms-cookies": "components/imcms_cookies.js",
+            'imcms-displacing-array': "components/imcms_displacing_array.js",
+            "mousetrap": "components/mousetrap.js",
+            "imcms-window-keys-controller": "components/imcms_window_keys_controller.js",
+            "date-format": "components/date_format.js",
             //  <text editor components>
             "imcms-image-in-text-plugin": "components/text_editor/imcms_image_in_text_plugin.js",
             "imcms-text-history-plugin": "components/text_editor/imcms_text_history_plugin.js",
@@ -124,6 +129,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-date-time-builder": "builders/components/imcms_date_time_builder.js",
             "imcms-controls-builder": "builders/components/imcms_controls_builder.js",
             "imcms-top-panel-visibility-initiator": "builders/components/imcms_top_panel_visibility_initiator.js",
+            "imcms-admin-panel-settings-builder": "builders/components/imcms_admin_panel_settings_builder.js",
+            "imcms-admin-panel-state": "builders/components/imcms_admin_panel_state.js",
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",

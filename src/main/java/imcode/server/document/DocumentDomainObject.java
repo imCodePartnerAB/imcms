@@ -403,6 +403,14 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         return isPublishedAtTime(meta, new Date());
     }
 
+    public boolean hasDisapprovedStatus() {
+        return Document.PublicationStatus.DISAPPROVED.equals(meta.getPublicationStatus());
+    }
+
+    public boolean hasNewStatus() {
+        return Document.PublicationStatus.NEW.equals(meta.getPublicationStatus());
+    }
+
     public boolean isActive() {
         return isActiveAtTime(meta, new Date());
     }

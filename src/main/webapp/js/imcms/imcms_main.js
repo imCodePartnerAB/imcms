@@ -338,6 +338,7 @@ if (!String.prototype.startsWith) {
             notSuccessRequiresBuffer.forEach(function (require) {
                 imcms.requiresQueue.push(require);
             });
+            setTimeout(runModuleLoader, 100);
         }).applyAsync();
     }
 

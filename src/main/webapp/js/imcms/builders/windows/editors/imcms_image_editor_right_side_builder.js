@@ -3,10 +3,11 @@ Imcms.define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder", "imcms-image-rotate"
+        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder", "imcms-image-rotate",
+        "imcms-image-editor-body-head-builder"
     ],
     function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
-              imageCropper, WindowBuilder, imageRotate) {
+              imageCropper, WindowBuilder, imageRotate, imageEditorBodyHeadBuilder) {
 
         texts = texts.editors.image;
         var $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
@@ -50,7 +51,8 @@ Imcms.define(
         var exifInfoWindowBuilder = new WindowBuilder({
             factory: buildExifInfoWindow,
             loadDataStrategy: loadExifData,
-            clearDataStrategy: clearExifData
+            clearDataStrategy: clearExifData,
+            onEscKeyPressed: "close"
         });
 
         var alignButtonSelectorToAlignName = {
@@ -83,9 +85,12 @@ Imcms.define(
                 imageData = opts.imageData;
 
                 function buildSelectImageBtnContainer() {
+
                     var $selectImageBtn = components.buttons.neutralButton({
                         text: texts.selectImage,
-                        click: contentManager.build.bind(contentManager, fillData)
+                        click: contentManager.build.bind(contentManager, fillData, function () {
+                            return imageEditorBodyHeadBuilder.getImageUrl();
+                        })
                     });
                     return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
                 }
@@ -248,12 +253,7 @@ Imcms.define(
 
                 function buildCropCoordinatesText(advancedModeBEM) {
                     return advancedModeBEM.buildElement("title", "<div>")
-                        .append(texts.cropCoords)
-                        /*.append(" (W:")
-                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "400"})) // todo: set actual values and refresh
-                        .append(" H:")
-                        .append(advancedModeBEM.buildBlockElement("current-crop-width", "<span>", {text: "100"})) // todo: set actual values and refresh
-                        .append(")")*/;
+                        .append(texts.cropCoords);
                 }
 
                 function setValidation(onValid) {
@@ -611,8 +611,8 @@ Imcms.define(
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
 
-                        imageData.rotateAngle = currentAngle.degrees;
-                        imageData.rotateDirection = currentAngle.name;
+                        imageData.rotateAngle = currentAngle ? currentAngle.degrees : 0;
+                        imageData.rotateDirection = currentAngle ? currentAngle.name : "NORTH";
 
                         imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
                         imageData.alternateText = opts.imageDataContainers.$altText.$input.val();

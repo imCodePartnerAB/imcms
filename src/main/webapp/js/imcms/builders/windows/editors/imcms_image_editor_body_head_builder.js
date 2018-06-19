@@ -69,6 +69,8 @@ Imcms.define(
             }).buildBlockStructure("<div>", {text: "Orig "});
         }
 
+        var $imgUrl;
+
         return {
             build: function (opts, $rightSidePanel) {
                 var bodyHeadBEM = new BEM({
@@ -99,7 +101,7 @@ Imcms.define(
                     }
                 });
 
-                var $imgUrl = bodyHeadBEM.buildElement("img-url", "<div>", {
+                $imgUrl = bodyHeadBEM.buildElement("img-url", "<div>", {
                     text: "Url: "
                 }).append(opts.imageDataContainers.$imgUrl = $("<span>"));
 
@@ -120,6 +122,9 @@ Imcms.define(
                         "img-origin-size": $heightWidthBlock
                     }
                 ]);
+            },
+            getImageUrl: function () {
+                return $imgUrl.find("span").text()
             }
         }
     }

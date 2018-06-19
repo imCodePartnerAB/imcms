@@ -18,11 +18,6 @@ Imcms.define(
             var $footer;
             var $showHideFoldersButton;
 
-            function saveAndCloseWindow() {
-                showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
-                contentManagerWindowBuilder.closeWindow();
-            }
-
             function buildHead() {
                 return contentManagerWindowBuilder.buildHead(texts.title);
             }
@@ -123,8 +118,18 @@ Imcms.define(
         function buildContent() {
             imageContentBuilder.loadAndBuildContent({
                 foldersContainer: $foldersContainer,
-                imagesContainer: $imagesContainer
+                imagesContainer: $imagesContainer,
+                selectedImagePath: selectedImagePath
             });
+        }
+
+        function saveAndCloseWindow() {
+            showImageStrategy && showImageStrategy(imageContentBuilder.getSelectedImage());
+            closeWindow();
+        }
+
+        function closeWindow() {
+            contentManagerWindowBuilder.closeWindow();
         }
 
         function clearData() {
@@ -132,17 +137,26 @@ Imcms.define(
             imageContentBuilder.clearContent();
         }
 
+        function onEnterKeyPressed() {
+            imcms.disableContentManagerSaveButton || saveAndCloseWindow();
+        }
+
         var contentManagerWindowBuilder = new WindowBuilder({
             factory: buildContentManager,
             loadDataStrategy: buildContent,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: closeWindow,
+            onEnterKeyPressed: onEnterKeyPressed
         });
 
         var showImageStrategy;
+        var selectedImagePath;
 
         return {
-            build: function (imageEditorShowImageStrategy) {
+            build: function (imageEditorShowImageStrategy, getSelectedImagePath) {
                 showImageStrategy = imageEditorShowImageStrategy;
+                selectedImagePath = getSelectedImagePath();
+
                 contentManagerWindowBuilder.buildWindow.applyAsync(arguments, contentManagerWindowBuilder);
             }
         };

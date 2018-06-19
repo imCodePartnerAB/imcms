@@ -43,7 +43,8 @@ Imcms.define("imcms-document-type-select-window-builder",
         }
 
         var documentTypeSelectWindowBuilder = new WindowBuilder({
-            factory: buildDocumentTypeSelect
+            factory: buildDocumentTypeSelect,
+            onEscKeyPressed: "close"
         });
 
         var onDocTypeSelectedCallback;

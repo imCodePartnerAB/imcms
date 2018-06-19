@@ -20,7 +20,11 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -50,16 +54,6 @@ class DefaultDocumentFileService
         filesPath.mkdirs();
     }
 
-    /**
-     * This will save list of files for specified document by id.
-     * Note that all other files that are connected to document but not
-     * mentioned in list will be deleted.
-     * All changes applied for working document version.
-     *
-     * @param saveUs list of files to save
-     * @param docId  id of document
-     * @return list of saved files
-     */
     @Override
     public <T extends DocumentFile> List<DocumentFile> saveAll(List<T> saveUs, int docId) {
         setDocAndFileIds(saveUs, docId);
@@ -186,10 +180,11 @@ class DefaultDocumentFileService
             while (destination.exists()) {
                 final String baseName = FilenameUtils.getBaseName(originalFilename);
                 final String newName = baseName + copiesCount + "." + FilenameUtils.getExtension(originalFilename);
-                documentFile.setFilename(newName);
                 destination = new File(filesPath, newName);
                 copiesCount++;
             }
+
+            documentFile.setFilename(destination.getName());
 
             try {
                 file.transferTo(destination);

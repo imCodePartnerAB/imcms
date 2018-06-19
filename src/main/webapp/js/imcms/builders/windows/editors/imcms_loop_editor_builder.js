@@ -36,6 +36,41 @@ Imcms.define("imcms-loop-editor-builder",
             }
         });
 
+        function getLoopData() {
+            currentLoop.entries = $listItems.children()
+                .toArray()
+                .map(function (listItem) {
+                    var $listItem = $(listItem);
+
+                    var loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                    var entryIndex = +($listItem.find(loopItemIdClass).text());
+
+                    var loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
+                    var isEnabled = $listItem.find(loopItemControlsClass).find("input").is(":checked");
+
+                    return {
+                        index: entryIndex,
+                        enabled: isEnabled
+                    };
+                });
+
+            return currentLoop;
+        }
+
+        function onLoopSaved() {
+            // todo: implement reloading saved loop on page
+            loopWindowBuilder.closeWindow();
+            events.trigger("imcms-version-modified");
+        }
+
+        function onSaveAndCloseClicked() {
+            var loopElement = getLoopData();
+
+            loopREST.create(loopElement)
+                .success(onLoopSaved)
+                .error(console.error.bind(console));
+        }
+
         function buildEditor() {
             function getMaxLoopItemID() {
                 return $listItems.children()
@@ -58,41 +93,6 @@ Imcms.define("imcms-loop-editor-builder",
                 };
 
                 $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
-            }
-
-            function getLoopData() {
-                currentLoop.entries = $listItems.children()
-                    .toArray()
-                    .map(function (listItem) {
-                        var $listItem = $(listItem);
-
-                        var loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
-                        var entryIndex = +($listItem.find(loopItemIdClass).text());
-
-                        var loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
-                        var isEnabled = $listItem.find(loopItemControlsClass).find("input").is(":checked");
-
-                        return {
-                            index: entryIndex,
-                            enabled: isEnabled
-                        };
-                    });
-
-                return currentLoop;
-            }
-
-            function onLoopSaved() {
-                // todo: implement reloading saved loop on page
-                loopWindowBuilder.closeWindow();
-                events.trigger("imcms-version-modified");
-            }
-
-            function onSaveAndCloseClicked() {
-                var loopElement = getLoopData();
-
-                loopREST.create(loopElement)
-                    .success(onLoopSaved)
-                    .error(console.error.bind(console));
             }
 
             var $head = loopWindowBuilder.buildHead(texts.title);
@@ -213,7 +213,9 @@ Imcms.define("imcms-loop-editor-builder",
         var loopWindowBuilder = new WindowBuilder({
             factory: buildEditor,
             loadDataStrategy: loadData,
-            clearDataStrategy: clearData
+            clearDataStrategy: clearData,
+            onEscKeyPressed: "close",
+            onEnterKeyPressed: onSaveAndCloseClicked
         });
 
         var $tag;
