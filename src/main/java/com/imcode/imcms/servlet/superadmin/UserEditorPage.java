@@ -6,6 +6,7 @@ import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
+import imcode.server.LanguageMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
@@ -112,7 +113,7 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setCountry(request.getParameter(REQUEST_PARAMETER__COUNTRY));
         editedUser.setProvince(request.getParameter(REQUEST_PARAMETER__DISTRICT));
         editedUser.setEmailAddress(StringUtils.trimToEmpty(request.getParameter(REQUEST_PARAMETER__EMAIL)));
-        editedUser.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
+        editedUser.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE)));
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
         updateUserPasswordFromRequest(editedUser, request);
