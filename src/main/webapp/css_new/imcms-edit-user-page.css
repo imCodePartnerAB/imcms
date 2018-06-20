@@ -84,3 +84,17 @@
     margin: 8px 7px 0;
     display: inline-block;
 }
+
+.imcms-checkboxes__checkbox {
+    padding: 5px;
+}
+
+.imcms-checkbox__label {
+    padding-top: 0;
+}
+
+.imcms-field__checkboxes {
+    width: 40%;
+    display: inline-block;
+    vertical-align: top;
+}

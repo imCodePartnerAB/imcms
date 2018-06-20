@@ -245,7 +245,7 @@ ${"-->"}
                     <div class="imcms-checkboxes imcms-field__checkboxes">
                         <div class="imcms-title imcms-checkboxes__title"><fmt:message
                                 key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
-                        <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/>
+                        <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
                         <c:forEach var="role" items="${userEditorPage.getUserRoles(editedUser)}">
                             <div class="imcms-checkbox imcms-checkboxes__checkbox">
                                 <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
@@ -255,22 +255,23 @@ ${"-->"}
                             </div>
                         </c:forEach>
                     </div>
+                    <c:if test="${loggedOnUser.superAdmin}">
+                        <div class="imcms-checkboxes imcms-field__checkboxes">
+                            <div class="imcms-title imcms-checkboxes__title"><fmt:message
+                                    key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
+                            <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
+                            <c:forEach var="role" items="${userEditorPage.getUserAdministratedRoles(editedUser)}">
+                                <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                                    <input type="checkbox" name="user_admin_role_ids" id="admin-role-${role.id}"
+                                           value="${role.id}"
+                                           class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                                    <label for="admin-role-${role.id}"
+                                           class="imcms-label imcms-checkbox__label">${role.name}</label>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:if>
                 </div>
-                <c:if test="${loggedOnUser.superAdmin}">
-                    <div class="imcms-field">
-                        <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                                key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></label>
-                        <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/>
-                        <c:forEach var="role" items="${userEditorPage.getUserAdministratedRoles(editedUser)}">
-                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
-                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                                <label for="role-${role.id}"
-                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
-                            </div>
-                        </c:forEach>
-                    </div>
-                </c:if>
             </c:if>
             <p><fmt:message key="templates/sv/AdminUserResp.htm/40"/></p>
             <c:if test="${errorMessage ne null}">
