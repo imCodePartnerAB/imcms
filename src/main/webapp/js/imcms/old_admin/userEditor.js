@@ -82,7 +82,7 @@ Imcms.require(
                     .find('.imcms-control')
                     .hide()
                     .end()
-                    .find('.imcms-button--add-phone')
+                    .find('.imcms-button--save')
                     .show()
                     .end()
                     .find('.imcms-input--phone')
@@ -126,7 +126,6 @@ Imcms.require(
             var $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
             var $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
             var $saveButton = components.buttons.saveButton({
-                'class': 'imcms-button--add-phone',
                 style: 'display: none;',
                 click: bindOnSaveClick($newRow),
                 text: 'Save'
@@ -188,13 +187,11 @@ Imcms.require(
             $('.imcms-text-box--existing-phone-box').each(function () {
                 var $row = $(this);
 
-                $row.find('.imcms-select').each(function () {
-                    components.selects.makeImcmsSelect($(this));
-                });
+                components.selects.makeImcmsSelect($row.find('.imcms-select'));
 
                 $row.find('.imcms-button--save').click(bindOnSaveClick($row));
-                $row.find('.imcms-button--remove').click(bindOnDeleteClicked($row));
-                $row.find('.imcms-button--edit').click(bindOnEditClicked($row));
+                $row.find('.imcms-control--remove').click(bindOnDeleteClicked($row));
+                $row.find('.imcms-control--edit').click(bindOnEditClicked($row));
             });
         });
     }

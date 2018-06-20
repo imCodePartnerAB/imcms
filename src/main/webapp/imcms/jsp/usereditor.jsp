@@ -192,7 +192,7 @@ ${"-->"}
                         <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                                 key="templates/sv/AdminUserResp.htm/32"/></label>
                         <div class="imcms-select imcms-select--phone-type" disabled="disabled">
-                            <input type="hidden" name="user_phone_number" value="${phoneNumber.type.id}">
+                            <input type="hidden" name="user_phone_number_type" value="${phoneNumber.type.id}">
                             <div class="imcms-drop-down-list imcms-select__drop-down-list">
                                 <div class="imcms-drop-down-list__select-item">
                                     <span class="imcms-drop-down-list__select-item-value">${phoneNumber.type.name.toLocalizedString(pageContext.request)}</span>
@@ -209,8 +209,8 @@ ${"-->"}
                         <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
                                name="user_phone_number" disabled="disabled" value="${phoneNumber.number}">
 
-                        <button class="imcms-button imcms-button--save" style="display: none;" type="button">
-                            <fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
+                        <button class="imcms-button imcms-button--save" style="display: none;"
+                                type="button"><fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
                         <div class="imcms-control imcms-control--remove"></div>
                         <div class="imcms-control imcms-control--edit"></div>
                     </div>
