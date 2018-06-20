@@ -49,7 +49,11 @@ ${"-->"}
             <a href="${contextPath}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/sv/AdminUserResp.htm/2001"/></a>
         </div>
-
+        <c:if test="${errorMessage ne null}">
+            <div class="imcms-field">
+                <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
+            </div>
+        </c:if>
         <form id="user-edit-form-2" method="post" action="${contextPath}/servlet/PageDispatcher">
             ${userEditorPage.htmlHidden(pageContext.request)}
             <div class="imcms-field">
@@ -273,11 +277,6 @@ ${"-->"}
                 </div>
             </c:if>
             <p><fmt:message key="templates/sv/AdminUserResp.htm/40"/></p>
-            <c:if test="${errorMessage ne null}">
-                <div class="imcms-field">
-                    <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
-                </div>
-            </c:if>
             <div class="imcms-info-footer imcms-info-footer__user-edit">
                 <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
