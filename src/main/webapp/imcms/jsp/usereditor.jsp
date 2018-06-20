@@ -162,8 +162,7 @@ ${"-->"}
                     <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/32"/></label>
                     <div id="phone-type-select" class="imcms-select imcms-select--phone-type">
-                        <input id="phone-type-selected" type="hidden" name="phone_type_selected"
-                               value="<%=PhoneNumberType.OTHER.getId()%>">
+                        <input id="phone-type-selected" type="hidden" value="<%=PhoneNumberType.OTHER.getId()%>">
                         <div class="imcms-drop-down-list imcms-select__drop-down-list">
                             <div class="imcms-drop-down-list__select-item">
                                 <span class="imcms-drop-down-list__select-item-value"><%=PhoneNumberType.OTHER.getName().toLocalizedString(request)%></span>
@@ -179,7 +178,7 @@ ${"-->"}
                         </div>
                     </div>
                     <input id="phone" class="imcms-input imcms-text-box__input imcms-input--phone" type="text"
-                           name="edited_phone_number" maxlength="50">
+                           maxlength="50">
                     <button class="imcms-button imcms-button--positive imcms-button--add-phone"
                             id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004"/></button>
                 </div>
@@ -189,7 +188,7 @@ ${"-->"}
                         <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                                 key="templates/sv/AdminUserResp.htm/32"/></label>
                         <div class="imcms-select imcms-select--phone-type" disabled="disabled">
-                            <input type="hidden" name="phone_type_selected" value="${phoneNumber.type.id}">
+                            <input type="hidden" name="user_phone_number" value="${phoneNumber.type.id}">
                             <div class="imcms-drop-down-list imcms-select__drop-down-list">
                                 <div class="imcms-drop-down-list__select-item">
                                     <span class="imcms-drop-down-list__select-item-value">${phoneNumber.type.name.toLocalizedString(pageContext.request)}</span>
