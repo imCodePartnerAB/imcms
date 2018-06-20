@@ -39,6 +39,7 @@ Imcms.require(
             var $pass2 = $form.find('input[name=password2]');
 
             if ($pass1.val() === $pass2.val()) {
+                $('[name=user_phone_number]').removeAttr('disabled');
                 return;
             }
 
@@ -138,16 +139,17 @@ Imcms.require(
                 .find('.imcms-select')
                 .attr('disabled', 'disabled')
                 .end()
-                .find('#phone-type-select')
+                .find('#phone-type-selected')
                 .removeAttr('id')
                 .attr('name', 'user_phone_number_type')
                 .end()
                 .find('#phone')
+                .removeAttr('id')
                 .attr('disabled', 'disabled')
                 .attr('name', 'user_phone_number')
                 .val(phone)
                 .end()
-                .find('#phone,#phone-type-selected')
+                .find('#phone-type-select')
                 .removeAttr('id')
                 .end()
                 .find('#button-add-phone')
