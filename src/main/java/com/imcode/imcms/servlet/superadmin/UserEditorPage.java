@@ -128,24 +128,24 @@ public class UserEditorPage extends OkCancelPage {
         final String[] userPhoneNumbers = request.getParameterValues(REQUEST_PARAMETER__USER_PHONE_NUMBER);
         final String[] userPhoneNumberTypes = request.getParameterValues(REQUEST_PARAMETER__USER_PHONE_NUMBER_TYPE);
 
-        if ((userPhoneNumbers != null)
-                && (userPhoneNumberTypes != null)
-                && (userPhoneNumbers.length > 0)
-                && (userPhoneNumberTypes.length > 0)
-                && (userPhoneNumbers.length == userPhoneNumberTypes.length))
-        {
-            editedUser.removePhoneNumbers();
+        if ((userPhoneNumbers == null)
+                || (userPhoneNumberTypes == null)
+                || (userPhoneNumbers.length <= 0)
+                || (userPhoneNumberTypes.length <= 0)
+                || (userPhoneNumbers.length != userPhoneNumberTypes.length))
+            return;
 
-            for (int i = 0; i < userPhoneNumbers.length; i++) {
-                try {
-                    final String userPhoneNumber = userPhoneNumbers[i];
-                    final int userPhoneType = Integer.parseInt(userPhoneNumberTypes[i]);
-                    final PhoneNumberType numberType = PhoneNumberType.getPhoneNumberTypeById(userPhoneType);
+        editedUser.removePhoneNumbers();
 
-                    editedUser.addPhoneNumber(new PhoneNumber(userPhoneNumber, numberType));
-                } catch (Exception e) {
-                    // TODO: 20.06.18 set errorMessage - wrong phone or phone type
-                }
+        for (int i = 0; i < userPhoneNumbers.length; i++) {
+            try {
+                final String userPhoneNumber = userPhoneNumbers[i];
+                final int userPhoneType = Integer.parseInt(userPhoneNumberTypes[i]);
+                final PhoneNumberType numberType = PhoneNumberType.getPhoneNumberTypeById(userPhoneType);
+
+                editedUser.addPhoneNumber(new PhoneNumber(userPhoneNumber, numberType));
+            } catch (Exception e) {
+                // TODO: 20.06.18 set errorMessage - wrong phone or phone type
             }
         }
     }
