@@ -53,7 +53,7 @@
 
         <br/>
         <div>Text editor, formats="html" example:</div>
-        <imcms:text no="6" label="Text format example" formats="html" post="<br/>"/>
+        <imcms:text no="6" label="HTML format example" formats="html" post="<br/>"/>
 
         <imcms:contentLoop index="1">
             <imcms:loop>
