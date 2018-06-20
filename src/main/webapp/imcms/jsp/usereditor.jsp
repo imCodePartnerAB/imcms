@@ -211,8 +211,8 @@ ${"-->"}
 
                         <button class="imcms-button imcms-button--save" style="display: none;" type="button">
                             <fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
-                        <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
-                        <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
+                        <div class="imcms-control imcms-control--remove"></div>
+                        <div class="imcms-control imcms-control--edit"></div>
                     </div>
                 </c:forEach>
             </div>
