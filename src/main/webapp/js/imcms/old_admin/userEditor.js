@@ -3,8 +3,8 @@
  * 18.06.18
  */
 Imcms.require(
-    ['jquery', 'imcms-components-builder', 'imcms-uuid-generator', 'imcms-languages-rest-api'],
-    function ($, components, uuid, languagesRestApi) {
+    ['jquery', 'imcms-components-builder', 'imcms-uuid-generator', 'imcms-languages-rest-api', 'imcms'],
+    function ($, components, uuid, languagesRestApi, imcms) {
         function activateUserAdminRoles() {
             var $form = $('#user-edit-form');
             var $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
@@ -69,6 +69,7 @@ Imcms.require(
                 });
 
                 components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
+                $select.selectValue(imcms.userLanguage);
             });
         }
 
