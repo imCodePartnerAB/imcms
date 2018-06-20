@@ -93,8 +93,11 @@
     padding-top: 0;
 }
 
-.imcms-field__checkboxes {
+.imcms-field__checkboxes:first-of-type {
     width: 35%;
+}
+
+.imcms-field__checkboxes {
     display: inline-block;
     vertical-align: top;
 }
