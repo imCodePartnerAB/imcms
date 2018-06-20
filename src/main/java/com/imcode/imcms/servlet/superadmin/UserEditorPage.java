@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -56,6 +57,8 @@ public class UserEditorPage extends OkCancelPage {
     private static final String REQUEST_PARAMETER__EDIT_PHONE_NUMBER = "edit_phone_number";
     private static final String REQUEST_PARAMETER__REMOVE_PHONE_NUMBER = "delete_phone_number";
     private static final String REQUEST_PARAMETER__SELECTED_PHONE_NUMBER = "selected_phone_number";
+    private static final String REQUEST_PARAMETER__USER_PHONE_NUMBER_TYPE = "user_phone_number_type";
+    private static final String REQUEST_PARAMETER__USER_PHONE_NUMBER = "user_phone_number";
 
     private static final LocalizedMessage ERROR__PASSWORDS_DID_NOT_MATCH = new LocalizedMessage("error/passwords_did_not_match");
     private static final LocalizedMessage ERROR__PASSWORD_LENGTH = new LocalizedMessage("error/password_length");
@@ -84,25 +87,18 @@ public class UserEditorPage extends OkCancelPage {
      * @since 4.0.7
      */
     public static LocalizedMessage validatePassword(String login, String password, String passwordCheck) {
-        return StringUtils.isBlank(password)
-                ? ERROR__PASSWORD_LENGTH
-                : !password.equals(passwordCheck)
-                ? ERROR__PASSWORDS_DID_NOT_MATCH
-                : login.equalsIgnoreCase(password)
-                ? ERROR__PASSWORD_TOO_WEAK
-                : null;
+        if (StringUtils.isBlank(password)) return ERROR__PASSWORD_LENGTH;
+        else if (Objects.equals(password, passwordCheck))
+            return login.equalsIgnoreCase(password) ? ERROR__PASSWORD_TOO_WEAK : null;
+        else return ERROR__PASSWORDS_DID_NOT_MATCH;
     }
 
     private static boolean passwordPassesLengthRequirements(String password1) {
-        return password1.length() >= MINIMUM_PASSWORD_LENGTH
-                && password1.length() <= MAXIMUM_PASSWORD_LENGTH;
+        return (password1.length() >= MINIMUM_PASSWORD_LENGTH)
+                && (password1.length() <= MAXIMUM_PASSWORD_LENGTH);
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
-        updateUserFromRequest(request);
-    }
-
-    private void updateUserFromRequest(HttpServletRequest request) {
         errorMessage = null;
         editedUser.setLoginName(request.getParameter(REQUEST_PARAMETER__LOGIN_NAME));
         editedUser.setFirstName(request.getParameter(REQUEST_PARAMETER__FIRST_NAME));
@@ -118,15 +114,39 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE)));
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
-        updateUserPasswordFromRequest(editedUser, request);
-
+        updateUserPhones(request);
         updateUserRolesFromRequest(request);
         updateUserAdminRolesFromRequest(request);
-
         updateUserPasswordFromRequest(editedUser, request);
 
         if (getErrorMessage() == null) {
             setErrorMessage(validateUserEmail());
+        }
+    }
+
+    private void updateUserPhones(HttpServletRequest request) {
+        final String[] userPhoneNumbers = request.getParameterValues(REQUEST_PARAMETER__USER_PHONE_NUMBER);
+        final String[] userPhoneNumberTypes = request.getParameterValues(REQUEST_PARAMETER__USER_PHONE_NUMBER_TYPE);
+
+        if ((userPhoneNumbers != null)
+                && (userPhoneNumberTypes != null)
+                && (userPhoneNumbers.length > 0)
+                && (userPhoneNumberTypes.length > 0)
+                && (userPhoneNumbers.length == userPhoneNumberTypes.length))
+        {
+            editedUser.removePhoneNumbers();
+
+            for (int i = 0; i < userPhoneNumbers.length; i++) {
+                try {
+                    final String userPhoneNumber = userPhoneNumbers[i];
+                    final int userPhoneType = Integer.parseInt(userPhoneNumberTypes[i]);
+                    final PhoneNumberType numberType = PhoneNumberType.getPhoneNumberTypeById(userPhoneType);
+
+                    editedUser.addPhoneNumber(new PhoneNumber(userPhoneNumber, numberType));
+                } catch (Exception e) {
+                    // TODO: 20.06.18 set errorMessage - wrong phone or phone type
+                }
+            }
         }
     }
 
@@ -153,15 +173,15 @@ public class UserEditorPage extends OkCancelPage {
 
     private void updateUserAdminRolesFromRequest(HttpServletRequest request) {
         if (Utility.getLoggedOnUser(request).isSuperAdmin() && editedUser.isUserAdmin()) {
-            editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request, REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS));
+            editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request));
             editedUser.removeUserAdminRoleId(RoleId.SUPERADMIN);
             editedUser.removeUserAdminRoleId(RoleId.USERADMIN);
         }
     }
 
-    private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
-        Set<RoleId> roleIds = getRoleIdsSetFromRequestParameterValues(request, requestParameter);
-        return roleIds.toArray(new RoleId[0]);
+    private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request) {
+        return getRoleIdsSetFromRequestParameterValues(request, UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS)
+                .toArray(new RoleId[0]);
     }
 
     private Set<RoleId> getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
