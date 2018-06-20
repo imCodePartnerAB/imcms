@@ -20,6 +20,6 @@ public class StringArrayResultSetHandler implements ResultSetHandler<String[]> {
                 results.add(s);
             }
         }
-        return results.toArray(new String[results.size()]);
+        return results.toArray(new String[0]);
     }
 }

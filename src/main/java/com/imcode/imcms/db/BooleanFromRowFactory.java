@@ -5,7 +5,7 @@ import com.imcode.db.handlers.RowTransformer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class BooleanFromRowFactory implements RowTransformer {
+public class BooleanFromRowFactory implements RowTransformer<Boolean> {
 
     private final int columnIndex;
 
@@ -17,11 +17,11 @@ public class BooleanFromRowFactory implements RowTransformer {
         this.columnIndex = columnIndex;
     }
 
-    public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+    public Boolean createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
         return resultSet.getBoolean(columnIndex);
     }
 
-    public Class getClassOfCreatedObjects() {
+    public Class<Boolean> getClassOfCreatedObjects() {
         return boolean.class;
     }
 }
