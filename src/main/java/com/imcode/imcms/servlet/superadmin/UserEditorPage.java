@@ -172,7 +172,7 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     private void updateUserAdminRolesFromRequest(HttpServletRequest request) {
-        if (Utility.getLoggedOnUser(request).isSuperAdmin() && editedUser.isUserAdmin()) {
+        if (Utility.getLoggedOnUser(request).isSuperAdmin() || editedUser.isUserAdmin()) {
             editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request));
             editedUser.removeUserAdminRoleId(RoleId.SUPERADMIN);
             editedUser.removeUserAdminRoleId(RoleId.USERADMIN);
