@@ -276,7 +276,6 @@ ${"-->"}
                     </c:if>
                 </div>
             </c:if>
-            <p><fmt:message key="templates/sv/AdminUserResp.htm/40"/></p>
             <div class="imcms-info-footer imcms-info-footer__user-edit">
                 <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
