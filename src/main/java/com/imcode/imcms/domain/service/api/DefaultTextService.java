@@ -1,7 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.TextHistoryService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -10,12 +14,15 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -65,16 +72,37 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
 
-        if (textJPA == null || !textJPA.getText().equals(text.getText())) {
-            final TextJPA newTextJPA = new TextJPA(text, version, language);
-            newTextJPA.setId(textJPA == null ? null : textJPA.getId());
+        if ((textJPA != null) && textJPA.getText().equals(text.getText())) return;
 
-            repository.save(newTextJPA);
-
-            super.updateWorkingVersion(docId);
-
-            textHistoryService.save(text);
+        if (Text.Type.HTML.equals(text.getType())) {
+            text.setText(cleanScriptContent(text.getText()));
         }
+
+        final TextJPA newTextJPA = new TextJPA(text, version, language);
+        newTextJPA.setId((textJPA == null) ? null : textJPA.getId());
+
+        repository.save(newTextJPA);
+
+        super.updateWorkingVersion(docId);
+
+        textHistoryService.save(text);
+    }
+
+    String cleanScriptContent(String text) {
+        if (!text.contains("<script") || !text.contains("<br")) return text;
+
+        final Matcher matcher = Pattern.compile("<script.*?</script>").matcher(text);
+        final StringBuffer buffer = new StringBuffer();
+
+        while (matcher.find()) {
+            final String fixed = matcher.group(0).replaceAll("<br>|<br >|<br/>|<br />", "");
+            final String fixedUnescaped = StringEscapeUtils.unescapeHtml(fixed);
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(fixedUnescaped));
+        }
+
+        matcher.appendTail(buffer);
+
+        return buffer.toString();
     }
 
     @Override
