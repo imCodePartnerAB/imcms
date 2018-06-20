@@ -119,8 +119,8 @@ public class TestUserService extends TestCase {
             return database.executeUpdate(procedureName, parameters);
         }
 
-        public <T> T executeProcedure(String procedureName, Object[] params, ResultSetHandler resultSetHandler) {
-            return (T) database.executeQuery(procedureName, params, resultSetHandler);
+        public <T> T executeProcedure(String procedureName, Object[] params, ResultSetHandler<T> resultSetHandler) {
+            return database.executeQuery(procedureName, params, resultSetHandler);
         }
     }
 }
