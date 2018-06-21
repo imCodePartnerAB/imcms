@@ -1,21 +1,14 @@
 package com.imcode.imcms.domain.component;
 
-import com.imcode.imcms.config.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@Transactional
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class})
+@RunWith(MockitoJUnitRunner.class)
 public class TextContentFilterTest {
 
     private final String[] allowedTags = {
@@ -28,7 +21,7 @@ public class TextContentFilterTest {
             "script"
     };
 
-    @Autowired
+    @InjectMocks
     private TextContentFilter textContentFilter;
 
     @Before
