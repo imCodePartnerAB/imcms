@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.model.Text.Type.CLEAN_HTML;
 import static com.imcode.imcms.model.Text.Type.HTML;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static org.junit.Assert.assertEquals;
@@ -415,6 +416,57 @@ public class TextServiceTest {
         final String illegalTextReplacement = "\n";
         final String expectedText = legalFirstPart + illegalTextReplacement + legalMiddlePart + illegalTextReplacement
                 + legalMiddlePart + illegalTextReplacement + legalTail;
+
+        for (Text textDTO : textDTOS) {
+            assertEquals(expectedText, textService.getText(textDTO).getText());
+        }
+    }
+
+    @Test
+    public void saveText_When_TypeIsCleanHtmlWithLegalContent_Expect_SavedWithoutChanges() {
+        final List<Text> textDTOS = new ArrayList<>();
+        final String legalText = "this is legal text";
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
+                textDTO.setText(legalText);
+                textDTO.setType(CLEAN_HTML);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
+            assertEquals(savedText, textDTO);
+        }
+    }
+
+    @Test
+    public void saveText_When_TypeIsCleanHtmlWithIllegalPart_Expect_SavedWithCleaningIllegalPart() {
+        final List<Text> textDTOS = new ArrayList<>();
+        final String legalFirstPart = "this is legal text<br>";
+        final String illegalText = "<script>console.log('test')<br ><br /><br><br/>console.log('test')</script>";
+        final String legalTail = "<br>text after tag";
+
+        final String originalText = legalFirstPart + illegalText + legalTail;
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
+                textDTO.setText(originalText);
+                textDTO.setType(CLEAN_HTML);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        final String expectedText = legalFirstPart + legalTail;
 
         for (Text textDTO : textDTOS) {
             assertEquals(expectedText, textService.getText(textDTO).getText());

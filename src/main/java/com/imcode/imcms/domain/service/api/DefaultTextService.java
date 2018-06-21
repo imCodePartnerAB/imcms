@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.LanguageService;
@@ -18,6 +19,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -32,16 +34,20 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     private final LanguageService languageService;
     private final VersionService versionService;
     private final TextHistoryService textHistoryService;
+    private final TextContentFilter textContentFilter;
 
     DefaultTextService(TextRepository textRepository,
                        LanguageService languageService,
                        VersionService versionService,
-                       TextHistoryService textHistoryService) {
+                       TextHistoryService textHistoryService,
+                       TextContentFilter textContentFilter) {
+
         super(textRepository);
 
         this.languageService = languageService;
         this.versionService = versionService;
         this.textHistoryService = textHistoryService;
+        this.textContentFilter = textContentFilter;
     }
 
     @Override
@@ -71,11 +77,17 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
 
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
+        final String textContent = text.getText();
 
-        if ((textJPA != null) && textJPA.getText().equals(text.getText())) return;
+        if ((textJPA != null) && Objects.equals(textJPA.getText(), textContent)) return;
 
-        if (Text.Type.HTML.equals(text.getType())) {
-            text.setText(cleanScriptContent(text.getText()));
+        final Text.Type textType = text.getType();
+
+        if (Text.Type.HTML.equals(textType)) {
+            text.setText(cleanScriptContent(textContent));
+
+        } else if (Text.Type.CLEAN_HTML.equals(textType)) {
+            text.setText(textContentFilter.cleanText(textContent));
         }
 
         final TextJPA newTextJPA = new TextJPA(text, version, language);
