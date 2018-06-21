@@ -56,7 +56,7 @@
         <imcms:text no="6" label="HTML format example" formats="html" post="<br/>"/>
 
         <br/>
-        <div>Text editor, formats="html" example:</div>
+        <div>Text editor, formats="cleanhtml" example:</div>
         <imcms:text no="7" label="Clean HTML format example" formats="cleanhtml" post="<br/>"/>
 
         <imcms:contentLoop index="1">
