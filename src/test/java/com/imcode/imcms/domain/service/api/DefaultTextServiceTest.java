@@ -50,9 +50,11 @@ public class DefaultTextServiceTest {
         final String correctHead = "<script>console.log('test')";
         final String wrongPart = "<br />";
         final String correctTail = "</script>";
+        final String wrongPartReplaced = "\n";
+        final String expected = correctHead + wrongPartReplaced + correctTail;
         final String cleaned = textService.cleanScriptContent(correctHead + wrongPart + correctTail);
 
-        assertEquals(correctHead + correctTail, cleaned);
+        assertEquals(expected, cleaned);
     }
 
     @Test
@@ -60,9 +62,11 @@ public class DefaultTextServiceTest {
         final String correctFirstPart = "some other <b>text</b> here<script>console.log('test')";
         final String wrongPart = "<br /><br ><br><br/>";
         final String correctTail = "</script>and <h1>here</h1>";
+        final String wrongPartReplaced = "\n";
+        final String expected = correctFirstPart + wrongPartReplaced + correctTail;
         final String cleaned = textService.cleanScriptContent(correctFirstPart + wrongPart + correctTail);
 
-        assertEquals(correctFirstPart + correctTail, cleaned);
+        assertEquals(expected, cleaned);
     }
 
     @Test
@@ -71,11 +75,14 @@ public class DefaultTextServiceTest {
         final String wrongPart = "<br /><br ><br><br/>";
         final String middleNoise = "console.log('pshhh');";
         final String correctTail = "</script>and <h1>here</h1>";
+        final String wrongPartReplaced = "\n";
+        final String expected = correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise
+                + wrongPartReplaced + correctTail;
+
         final String cleaned = textService.cleanScriptContent(
                 correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart + correctTail
         );
 
-        final String expected = correctFirstPart + middleNoise + middleNoise + correctTail;
         assertEquals(expected, cleaned);
     }
 
@@ -85,14 +92,19 @@ public class DefaultTextServiceTest {
         final String wrongPart = "<br /><br ><br><br/>";
         final String middleNoise = "console.log('pshhh');";
         final String correctTail = "</script>and <h1>here</h1>";
+        final String wrongPartReplaced = "\n";
+        final String expected = wrongPart
+                + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + wrongPartReplaced + correctTail
+                + wrongPart
+                + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + wrongPartReplaced + correctTail
+                + wrongPart;
+
         final String cleaned = textService.cleanScriptContent(
                 wrongPart + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart
                         + correctTail + wrongPart + correctFirstPart + wrongPart + middleNoise + wrongPart
                         + middleNoise + wrongPart + correctTail + wrongPart
         );
 
-        final String expected = wrongPart + correctFirstPart + middleNoise + middleNoise + correctTail + wrongPart
-                + correctFirstPart + middleNoise + middleNoise + correctTail + wrongPart;
         assertEquals(expected, cleaned);
     }
 
@@ -110,8 +122,9 @@ public class DefaultTextServiceTest {
                         + middleNoise + escapedText + wrongPart + correctTail + wrongPart
         );
 
-        final String expected = wrongPart + correctFirstPart + middleNoise + middleNoise + correctTail + wrongPart
-                + escapedText + correctFirstPart + middleNoise + middleNoise + unescapedText + correctTail + wrongPart;
+        final String wrongPartReplaced = "\n";
+        final String expected = wrongPart + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + wrongPartReplaced + correctTail + wrongPart
+                + escapedText + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + unescapedText + wrongPartReplaced + correctTail + wrongPart;
         assertEquals(expected, cleaned);
     }
 }
