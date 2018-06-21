@@ -15,6 +15,8 @@ public class PropertyBasedTextContentFilterTest {
             "div",
             "span",
             "p",
+            "b",
+            "h1"
     };
     private final String[] badTagsArr = {
             "iframe",
@@ -88,5 +90,17 @@ public class PropertyBasedTextContentFilterTest {
         final String emptyText = "";
         final String textAfterCleanup = textContentFilter.cleanText(emptyText);
         assertEquals(emptyText, textAfterCleanup);
+    }
+
+    @Test
+    public void cleanText_When_OkTextWithIllegalTextTogether_Expected_IllegalTextRemoved() {
+        final String correctFirstPart = "some other <b>text</b> here";
+        final String wrongPart = "<script>console.log('test');console.log('pshhh');</script>";
+        final String correctTail = "and <h1>here</h1>";
+        final String expected = correctFirstPart + correctTail;
+
+        final String cleaned = textContentFilter.cleanText(correctFirstPart + wrongPart + correctTail);
+
+        assertEquals(expected, cleaned);
     }
 }
