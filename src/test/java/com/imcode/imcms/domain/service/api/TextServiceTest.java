@@ -7,7 +7,11 @@ import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
+import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
@@ -24,11 +28,18 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.Type.TEXT;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -189,18 +200,79 @@ public class TextServiceTest {
     }
 
     @Test
+    public void saveText_When_NotInLoopAndTextValueIsTheSame_Expect_TextAndTextHistoryAreNotUpdated() {
+        testSavingTextInLoopWithoutUpdating(false);
+    }
+
+    private void testSavingTextInLoopWithoutUpdating(boolean inLoop) {
+        final int index = 1;
+        final String languageCode = languages.get(0).getCode();
+        final LoopEntryRefDTO loopEntryRefDTO = inLoop ?
+                new LoopEntryRefDTO(1, 1) :
+                null;
+
+        final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
+        textDTO.setText("test");
+        textDTO.setType(TEXT);
+
+        textService.save(textDTO);
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(1, textHistoryRepository.findAll().size());
+
+        // save with the same text
+        textService.save(textDTO);
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(1, textHistoryRepository.findAll().size());
+    }
+
+    @Test
     public void saveText_When_InLoopAndTextValueIsNew_Expect_TextAndTextHistoryAreUpdated() {
         testSavingTextInLoopWithUpdating(true);
     }
 
     @Test
-    public void saveText_When_NotInLoopAndTextValueIsTheSame_Expect_TextAndTextHistoryAreNotUpdated() {
-        testSavingTextInLoopWithoutUpdating(false);
-    }
-
-    @Test
     public void saveText_When_NotInLoopAndTextValueIsNew_Expect_TextAndTextHistoryAreUpdated() {
         testSavingTextInLoopWithUpdating(false);
+    }
+
+    private void testSavingTextInLoopWithUpdating(boolean inLoop) {
+        final int index = 1;
+        final String languageCode = languages.get(0).getCode();
+        final LoopEntryRefDTO loopEntryRefDTO = inLoop ?
+                new LoopEntryRefDTO(1, 1) :
+                null;
+
+        final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
+        textDTO.setText("test");
+        textDTO.setType(TEXT);
+
+        textService.save(textDTO);
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(1, textHistoryRepository.findAll().size());
+
+        // save with new text
+        final String newTestValue = "new test value";
+        textDTO.setText(newTestValue);
+
+        textService.save(textDTO);
+
+        final List<TextHistoryJPA> all = textHistoryRepository.findAll();
+
+        assertEquals(1, textRepository.findAll().size());
+        assertEquals(2, all.size());
+
+        final int maxTextHistoryId = all
+                .stream()
+                .mapToInt(TextHistoryJPA::getId)
+                .max()
+                .getAsInt();
+
+        final String actualText = textHistoryRepository.findOne(maxTextHistoryId).getText();
+
+        assertEquals(newTestValue, actualText);
     }
 
     @Test
@@ -220,6 +292,30 @@ public class TextServiceTest {
                 .count();
 
         assertEquals(newNumberOfTextsForDoc, 0L);
+    }
+
+    private Set<Text> createTexts() {
+        final ArrayList<TextJPA> texts = new ArrayList<>();
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                texts.add(createText(index, language, workingVersion));
+            }
+        }
+
+        return textRepository.save(texts).stream()
+                .map(TextDTO::new)
+                .collect(Collectors.toSet());
+    }
+
+    private TextJPA createText(int index, LanguageJPA language, Version version) {
+        final TextJPA text = new TextJPA();
+        text.setIndex(index);
+        text.setLanguage(language);
+        text.setText("test");
+        text.setType(TEXT);
+        text.setVersion(version);
+
+        return text;
     }
 
     @Test
@@ -268,90 +364,5 @@ public class TextServiceTest {
         }
 
         assertTrue(foundLatestVersionTexts.containsAll(latestVersionTexts));
-    }
-
-    private Set<Text> createTexts() {
-        final ArrayList<TextJPA> texts = new ArrayList<>();
-        for (LanguageJPA language : languages) {
-            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                texts.add(createText(index, language, workingVersion));
-            }
-        }
-
-        return textRepository.save(texts).stream()
-                .map(TextDTO::new)
-                .collect(Collectors.toSet());
-    }
-
-    private TextJPA createText(int index, LanguageJPA language, Version version) {
-        final TextJPA text = new TextJPA();
-        text.setIndex(index);
-        text.setLanguage(language);
-        text.setText("test");
-        text.setType(TEXT);
-        text.setVersion(version);
-
-        return text;
-    }
-
-    private void testSavingTextInLoopWithoutUpdating(boolean inLoop) {
-        final int index = 1;
-        final String languageCode = languages.get(0).getCode();
-        final LoopEntryRefDTO loopEntryRefDTO = inLoop ?
-                new LoopEntryRefDTO(1, 1) :
-                null;
-
-        final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
-        textDTO.setText("test");
-        textDTO.setType(TEXT);
-
-        textService.save(textDTO);
-
-        assertEquals(1, textRepository.findAll().size());
-        assertEquals(1, textHistoryRepository.findAll().size());
-
-        // save with the same text
-        textService.save(textDTO);
-
-        assertEquals(1, textRepository.findAll().size());
-        assertEquals(1, textHistoryRepository.findAll().size());
-    }
-
-    private void testSavingTextInLoopWithUpdating(boolean inLoop) {
-        final int index = 1;
-        final String languageCode = languages.get(0).getCode();
-        final LoopEntryRefDTO loopEntryRefDTO = inLoop ?
-                new LoopEntryRefDTO(1, 1) :
-                null;
-
-        final Text textDTO = new TextDTO(index, DOC_ID, languageCode, loopEntryRefDTO);
-        textDTO.setText("test");
-        textDTO.setType(TEXT);
-
-        textService.save(textDTO);
-
-        assertEquals(1, textRepository.findAll().size());
-        assertEquals(1, textHistoryRepository.findAll().size());
-
-        // save with new text
-        final String newTestValue = "new test value";
-        textDTO.setText(newTestValue);
-
-        textService.save(textDTO);
-
-        final List<TextHistoryJPA> all = textHistoryRepository.findAll();
-
-        assertEquals(1, textRepository.findAll().size());
-        assertEquals(2, all.size());
-
-        final int maxTextHistoryId = all
-                .stream()
-                .mapToInt(TextHistoryJPA::getId)
-                .max()
-                .getAsInt();
-
-        final String actualText = textHistoryRepository.findOne(maxTextHistoryId).getText();
-
-        assertEquals(newTestValue, actualText);
     }
 }
