@@ -100,9 +100,11 @@ public class DefaultTextServiceTest {
                 + wrongPart;
 
         final String cleaned = textService.cleanScriptContent(
-                wrongPart + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart
-                        + correctTail + wrongPart + correctFirstPart + wrongPart + middleNoise + wrongPart
-                        + middleNoise + wrongPart + correctTail + wrongPart
+                wrongPart
+                        + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart + correctTail
+                        + wrongPart
+                        + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart + correctTail
+                        + wrongPart
         );
 
         assertEquals(expected, cleaned);
@@ -117,14 +119,19 @@ public class DefaultTextServiceTest {
         final String unescapedText = "&";
         final String correctTail = "</script>and <h1>here</h1>";
         final String cleaned = textService.cleanScriptContent(
-                wrongPart + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart
-                        + correctTail + wrongPart + escapedText + correctFirstPart + wrongPart + middleNoise + wrongPart
-                        + middleNoise + escapedText + wrongPart + correctTail + wrongPart
+                wrongPart
+                        + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + wrongPart + correctTail
+                        + wrongPart + escapedText + correctFirstPart + wrongPart + middleNoise + wrongPart + middleNoise + escapedText + wrongPart + correctTail
+                        + wrongPart
         );
 
         final String wrongPartReplaced = "\n";
-        final String expected = wrongPart + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + wrongPartReplaced + correctTail + wrongPart
-                + escapedText + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + unescapedText + wrongPartReplaced + correctTail + wrongPart;
+        final String expected = wrongPart
+                + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + wrongPartReplaced + correctTail
+                + wrongPart + escapedText
+                + correctFirstPart + wrongPartReplaced + middleNoise + wrongPartReplaced + middleNoise + unescapedText + wrongPartReplaced + correctTail
+                + wrongPart;
+
         assertEquals(expected, cleaned);
     }
 }
