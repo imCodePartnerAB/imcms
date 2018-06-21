@@ -449,8 +449,8 @@ public class TextServiceTest {
     public void saveText_When_TypeIsCleanHtmlWithIllegalPart_Expect_SavedWithCleaningIllegalPart() {
         final List<Text> textDTOS = new ArrayList<>();
         final String legalFirstPart = "this is legal text<br>";
-        final String illegalText = "<script>console.log('test')<br ><br /><br><br/>console.log('test')</script>";
-        final String legalTail = "<br>text after tag";
+        final String illegalText = "<script>console.log('test')<br ><br /><br><br/>console.log('test')</script><br>";
+        final String legalTail = "text after tag";
 
         final String originalText = legalFirstPart + illegalText + legalTail;
 
