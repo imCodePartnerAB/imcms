@@ -46,6 +46,7 @@ class PropertyBasedTextContentFilter implements TextContentFilter {
         cleanMe = StringUtils.trimToEmpty(cleanMe);
         return StringEscapeUtils.unescapeXml(Jsoup.clean(cleanMe, htmlTagsWhitelist))
                 .replaceAll(">\\n ", ">")
-                .replaceAll("\\n<", "<");
+                .replaceAll("\\n<", "<")
+                .replaceAll("(<br>*){2,}", "<br>");
     }
 }

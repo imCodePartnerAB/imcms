@@ -19,7 +19,7 @@ Imcms.define("imcms-text-editor-initializer",
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            if (textDTO.type === "HTML") {
+            if (textDTO.type === "HTML" || textDTO.type === "CLEAN_HTML") {
                 if (textDTO.text.startsWith("<p>") && textDTO.text.endsWith("</p>")) {
                     textDTO.text = textDTO.text.substring(3, textDTO.text.length - 4);
                 }
@@ -133,15 +133,7 @@ Imcms.define("imcms-text-editor-initializer",
             editor.on('blur', onEditorBlur);
         }
 
-        function setMaxRows($editor) {
-            var data = $editor.data();
-            if (data.type === 'TEXT' && data.rows) {
-                // todo: implement rows limit
-            }
-        }
-
         function prepareEditor(editor) {
-            setMaxRows($(editor.$()));
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
             showEditButton($(editor.$()));
@@ -177,9 +169,19 @@ Imcms.define("imcms-text-editor-initializer",
                 .find(".imcms-editor-area__text-toolbar")
                 .attr("id", toolbarId);
 
-            var config = (type === 'TEXT')
-                ? textFormatEditorConfig
-                : (type === 'HTML') ? htmlFormatEditorConfig : inlineEditorConfig;
+            var config;
+
+            switch (type) {
+                case 'TEXT':
+                    config = textFormatEditorConfig;
+                    break;
+                case 'HTML':
+                case 'CLEAN_HTML':
+                    config = htmlFormatEditorConfig;
+                    break;
+                default:
+                    config = inlineEditorConfig;
+            }
 
             var editorConfig = $.extend({
                 selector: "#" + textAreaId,
