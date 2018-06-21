@@ -95,7 +95,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final StringBuffer buffer = new StringBuffer();
 
         while (matcher.find()) {
-            final String fixed = matcher.group(0).replaceAll("<br>|<br >|<br/>|<br />", "");
+            final String fixed = matcher.group(0).replaceAll("<br>|<br >|<br/>|<br />", "\n");
             final String fixedUnescaped = StringEscapeUtils.unescapeHtml(fixed);
             matcher.appendReplacement(buffer, Matcher.quoteReplacement(fixedUnescaped));
         }
