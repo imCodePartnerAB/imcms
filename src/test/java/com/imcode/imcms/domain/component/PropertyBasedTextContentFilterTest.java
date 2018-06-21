@@ -9,7 +9,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TextContentFilterTest {
+public class PropertyBasedTextContentFilterTest {
 
     private final String[] allowedTags = {
             "div",
@@ -22,11 +22,11 @@ public class TextContentFilterTest {
     };
 
     @InjectMocks
-    private TextContentFilter textContentFilter;
+    private PropertyBasedTextContentFilter textContentFilter;
 
     @Before
     public void setUp() throws Exception {
-        textContentFilter = textContentFilter.addHtmlTagsToWhiteList(allowedTags);
+        textContentFilter.addHtmlTagsToWhiteList(allowedTags);
     }
 
     @Test
