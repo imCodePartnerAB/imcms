@@ -19,14 +19,14 @@ import java.util.Properties;
  * 29.03.17.
  */
 @Component
-public class PropertyBasedTextContentFilter implements TextContentFilter {
+class PropertyBasedTextContentFilter implements TextContentFilter {
 
     private static final String[] WHITE_LIST_ATTRIBUTES = {"class", "data-no", "data-meta", "data-cke-saved-src", "src"};
     private final Whitelist htmlTagsWhitelist = Whitelist.none().addAttributes("img", WHITE_LIST_ATTRIBUTES);
     private final Properties imcmsProperties;
 
     @Autowired
-    public PropertyBasedTextContentFilter(Properties imcmsProperties) {
+    PropertyBasedTextContentFilter(Properties imcmsProperties) {
         this.imcmsProperties = imcmsProperties;
     }
 
