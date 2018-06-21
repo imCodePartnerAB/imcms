@@ -66,9 +66,9 @@ Imcms.define("imcms-text-editor-initializer",
         }, commonConfig);
 
         var textFormatEditorConfig = $.extend({
-            force_br_newlines: false,
-            force_p_newlines: false,
             forced_root_block: '',
+            force_p_newlines: false,
+            force_br_newlines: false,
             paste_as_text: true,
             plugins: [fullScreenPlugin.pluginName + ' save paste'],
             toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
