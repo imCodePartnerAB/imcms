@@ -44,6 +44,6 @@ public class TextDTO extends Text {
 
     @Override
     public Type getType() {
-        return Optional.ofNullable(type).orElse(Type.HTML);
+        return Optional.ofNullable(type).orElse(Type.TEXT);
     }
 }
