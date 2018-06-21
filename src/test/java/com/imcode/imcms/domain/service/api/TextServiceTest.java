@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.model.Text.Type.HTML;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -69,6 +70,9 @@ public class TextServiceTest {
 
     @Autowired
     private TextHistoryRepository textHistoryRepository;
+    private Version workingVersion;
+    private Version latestVersion;
+    private List<LanguageJPA> languages;
 
     @BeforeClass
     public static void setUser() {
@@ -76,10 +80,6 @@ public class TextServiceTest {
         user.addRoleId(RoleId.SUPERADMIN);
         Imcms.setUser(user); // means current user is admin now
     }
-
-    private Version workingVersion;
-    private Version latestVersion;
-    private List<LanguageJPA> languages;
 
     @Before
     public void setUp() throws Exception {
@@ -364,5 +364,60 @@ public class TextServiceTest {
         }
 
         assertTrue(foundLatestVersionTexts.containsAll(latestVersionTexts));
+    }
+
+    @Test
+    public void saveText_When_TypeIsHtmlWithLegalContent_Expect_SavedWithoutChanges() {
+        final List<Text> textDTOS = new ArrayList<>();
+        final String legalText = "this is legal text";
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
+                textDTO.setText(legalText);
+                textDTO.setType(HTML);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        for (Text textDTO : textDTOS) {
+            final Text savedText = textService.getText(textDTO);
+            assertEquals(savedText, textDTO);
+        }
+    }
+
+    @Test
+    public void saveText_When_TypeIsHtmlWithIllegalPart_Expect_SavedWithCleaningIllegalPart() {
+        final List<Text> textDTOS = new ArrayList<>();
+        final String legalFirstPart = "this is legal text<br><script>console.log('test')";
+        final String illegalText = "<br ><br /><br><br/>";
+        final String legalMiddlePart = "console.log('test')";
+        final String legalTail = "</script><br/>text after tag";
+
+        final String originalText = legalFirstPart + illegalText + legalMiddlePart + illegalText + legalMiddlePart
+                + illegalText + legalTail;
+
+        for (LanguageJPA language : languages) {
+            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
+                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
+                textDTO.setText(originalText);
+                textDTO.setType(HTML);
+
+                textDTOS.add(textDTO);
+
+                textService.save(textDTO);
+            }
+        }
+
+        final String illegalTextReplacement = "\n";
+        final String expectedText = legalFirstPart + illegalTextReplacement + legalMiddlePart + illegalTextReplacement
+                + legalMiddlePart + illegalTextReplacement + legalTail;
+
+        for (Text textDTO : textDTOS) {
+            assertEquals(expectedText, textService.getText(textDTO).getText());
+        }
     }
 }
