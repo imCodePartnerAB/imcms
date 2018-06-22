@@ -13,56 +13,13 @@ Imcms.define("imcms-page-info-builder",
 
         texts = texts.pageInfo;
 
-        var panels, $title, documentDTO, $saveAndPublishBtn, $tabsContainer;
+        var panels$, $title, documentDTO, $saveAndPublishBtn;
 
         function buildPageInfoHead() {
             var $head = pageInfoWindowBuilder.buildHead("", closePageInfo);
             $title = $head.find(".imcms-head__title");
 
             return $head;
-        }
-
-        function showPanel(index) {
-            panels.forEach(function ($panel, number) {
-                $panel.css({"display": (index === number) ? "block" : "none"});
-            });
-        }
-
-        function buildPageInfoTabs() {
-            function getOnTabClick(index) {
-                return function () {
-                    $tabsContainer.find(".imcms-title--active").removeClass("imcms-title--active");
-                    $(this).addClass("imcms-title--active");
-                    showPanel(index);
-                }
-            }
-
-            var $tabs = pageInfoTabs.tabBuilders.map(function (tabBuilder, index) {
-                return {
-                    tag: "<div>",
-                    "class": "imcms-title",
-                    attributes: {
-                        "data-window-id": index,
-                        text: tabBuilder.name,
-                        click: getOnTabClick(index)
-                    },
-                    modifiers: (index === 0 ? ["active"] : [])
-                };
-            });
-
-            $tabsContainer = new BEM({
-                block: "imcms-tabs",
-                elements: {
-                    "tab": $tabs
-                }
-            }).buildBlockStructure("<div>");
-
-            return new BEM({
-                block: "imcms-left-side",
-                elements: {
-                    "tabs": $tabsContainer
-                }
-            }).buildBlockStructure("<div>");
         }
 
         function buildPageInfoPanels(docId) {
@@ -153,14 +110,14 @@ Imcms.define("imcms-page-info-builder",
 
         function buildPageInfo(docId, onDocumentSavedCallback) {
             onDocumentSaved = onDocumentSavedCallback;
-            panels = buildPageInfoPanels(docId);
+            panels$ = buildPageInfoPanels(docId);
 
             return new BEM({
                 block: "imcms-pop-up-modal",
                 elements: {
                     "head": buildPageInfoHead(),
-                    "left-side": buildPageInfoTabs(),
-                    "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels),
+                    "left-side": pageInfoTabs.buildPageInfoTabs(panels$),
+                    "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels$),
                     "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons())
                 }
             }).buildBlockStructure("<div>", {"data-menu": "pageInfo"});
@@ -208,7 +165,7 @@ Imcms.define("imcms-page-info-builder",
 
         function loadData(docId, onDocumentSavedCallback, docType, parentDocId) {
             onDocumentSaved = onDocumentSavedCallback;
-            $tabsContainer.find("[data-window-id=0]").click();
+            pageInfoTabs.$tabsContainer.find("[data-window-id=0]").click();
             loadPageInfoDataFromDocumentBy(docId, docType, parentDocId);
         }
 
