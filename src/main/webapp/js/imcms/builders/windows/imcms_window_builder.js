@@ -116,6 +116,14 @@ Imcms.define(
                 return windowComponents.buildHead(title, onCloseClick);
             },
             /**
+             * Builds head with specified title
+             * @param {string} title
+             * @returns {*} head as jQuery element
+             */
+            buildNonClosableHead: function (title) {
+                return windowComponents.buildNonClosableHead(title);
+            },
+            /**
              * Builds footer with specified buttons as it's block elements
              * @param {[]} buttons - array of jQuery elements
              * @returns {*} footer as jQuery element

@@ -24,6 +24,19 @@ Imcms.define("imcms-window-components-builder",
                 }).buildBlockStructure("<div>");
             },
             /**
+             * Builds head with specified title
+             * @param {string} title
+             * @returns {*} head as jQuery element
+             */
+            buildNonClosableHead: function (title) {
+                return new BEM({
+                    block: "imcms-head",
+                    elements: {
+                        "title": components.texts.titleText("<div>", title)
+                    }
+                }).buildBlockStructure("<div>");
+            },
+            /**
              * Builds footer with specified buttons as it's block elements
              * @param {[]} buttons - array of jQuery elements
              * @returns {*} footer as jQuery element
