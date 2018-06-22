@@ -155,6 +155,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-document-profile-select-window-builder": "builders/windows/imcms_document_profile_select_window_builder.js",
             "imcms-text-history-window-builder": "builders/windows/imcms_text_history_window_builder.js",
             "imcms-text-validation-result-builder": "builders/windows/imcms_text_validation_result_builder.js",
+            "imcms-super-admin-page-builder": "builders/windows/imcms_super_admin_page_builder.js",
             //   <editors>
             "imcms-menu-editor-builder": "builders/windows/editors/imcms_menu_editor_builder.js",
             "imcms-document-editor-builder": "builders/windows/editors/imcms_document_editor_builder.js",
