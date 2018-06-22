@@ -25,7 +25,7 @@ Imcms.define('imcms-window-tabs-builder', ['imcms-bem-builder', 'jquery'], funct
                 showPanel(index);
             }
         },
-        buildPageInfoTabs: function (panels$) {
+        buildWindowTabs: function (panels$) {
             this.panels$ = panels$;
 
             var $tabs = this.tabBuilders.map(function (tabBuilder, index) {

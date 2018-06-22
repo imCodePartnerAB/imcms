@@ -116,7 +116,7 @@ Imcms.define("imcms-page-info-builder",
                 block: "imcms-pop-up-modal",
                 elements: {
                     "head": buildPageInfoHead(),
-                    "left-side": pageInfoTabs.buildPageInfoTabs(panels$),
+                    "left-side": pageInfoTabs.buildWindowTabs(panels$),
                     "right-side": $("<div>", {"class": "imcms-right-side"}).append(panels$),
                     "footer": $("<div>", {"class": "imcms-footer"}).append(buildPageInfoFooterButtons())
                 }
