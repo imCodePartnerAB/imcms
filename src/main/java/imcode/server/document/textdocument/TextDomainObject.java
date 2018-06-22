@@ -140,10 +140,6 @@ public class TextDomainObject implements Serializable, Cloneable {
         }
     }
 
-    public enum Format {
-        PLAIN_TEXT, HTML
-    }
-
     public static final class Builder {
         private TextDomainObject textDomainObject;
 
