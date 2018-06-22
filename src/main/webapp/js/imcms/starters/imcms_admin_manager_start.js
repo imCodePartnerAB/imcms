@@ -4,8 +4,6 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.06.18
  */
-Imcms.require(
-    ["jquery"],
-    function ($) {
-    }
-);
+Imcms.require(['imcms-super-admin-page-builder'], function (superAdminPageBuilder) {
+    superAdminPageBuilder.build();
+});
