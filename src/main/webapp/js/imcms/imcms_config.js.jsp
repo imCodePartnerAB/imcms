@@ -131,6 +131,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-top-panel-visibility-initiator": "builders/components/imcms_top_panel_visibility_initiator.js",
             "imcms-admin-panel-settings-builder": "builders/components/imcms_admin_panel_settings_builder.js",
             "imcms-admin-panel-state": "builders/components/imcms_admin_panel_state.js",
+            "imcms-window-tabs-builder": "builders/components/imcms_window_tabs_builder.js",
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",
