@@ -1,9 +1,9 @@
 Imcms.define("imcms-life-cycle-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms-page-info-tab-form-builder",
-        "imcms", "imcms-i18n-texts", "imcms-date-time-validator"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms", "imcms-i18n-texts",
+        "imcms-date-time-validator", "imcms-window-tab"
     ],
-    function (BEM, components, usersRestApi, tabContentBuilder, imcms, texts, dateTimeValidator) {
+    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, WindowTab) {
 
         texts = texts.pageInfo.lifeCycle;
 
@@ -198,84 +198,79 @@ Imcms.define("imcms-life-cycle-tab-builder",
             "publicationEnd"
         ];
 
-        return {
-            name: "life cycle",
-            tabIndex: null,
-            isDocumentTypeSupported: function () {
-                return true; // all supported
-            },
-            showTab: function () {
-                tabContentBuilder.showTab(this.tabIndex);
-            },
-            hideTab: function () {
-                tabContentBuilder.hideTab(this.tabIndex);
-            },
-            buildTab: function (index) {
-                this.tabIndex = index;
-                return tabContentBuilder.buildFormBlock([
-                    buildDocStatusSelect(),
-                    buildPublishedDateTimeContainer(),
-                    buildArchivedDateTimeContainer(),
-                    buildPublishEndDateTimeContainer(),
-                    buildPublisherSelectRow(),
-                    buildCurrentVersionRow(),
-                    buildDocVersionsInfoRow()
-                ], index);
-            },
-            fillTabDataFromDocument: function (document) {
-                /** @namespace document.currentVersion */
-                /** @namespace document.published */
-
-                var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
-                    && imcms.isVersioningAllowed) ? "block" : "none";
-
-                tabData.$currentVersionRowBlock.css("display", imcms.isVersioningAllowed ? "block" : "none");
-                tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
-                tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
-                tabData.$docStatusSelect.selectValue(document.publicationStatus);
-
-                statusRowsNames.forEach(function (rowName) {
-                    setStatusInfoRowDataFromDocument(rowName, document);
-                });
-
-                tabData.$publisherSelect.selectValue(document.published.id);
-
-                tabData.$currentVersionNumber.setValue(document.currentVersion.id);
-                tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date)
-                    .setTime(document.currentVersion.time);
-            },
-            saveData: function (documentDTO) {
-                documentDTO.publicationStatus = tabData.$docStatusSelect.getSelectedValue();
-
-                statusRowsNames.forEach(function (rowName) {
-                    documentDTO[rowName].by = null;
-                    documentDTO[rowName].date = tabData["$" + rowName + "Date"].getDate() || null;
-                    documentDTO[rowName].time = tabData["$" + rowName + "Time"].getTime() || null;
-
-                    if (!documentDTO[rowName].date || !documentDTO[rowName].time) {
-                        documentDTO[rowName].id = null;
-                    }
-                });
-
-                documentDTO.published.id = tabData.$publisherSelect.getSelectedValue();
-
-                return documentDTO;
-            },
-            clearTabData: function () {
-                var emptyString = '';
-
-                tabData.$docStatusSelect.selectFirst();
-
-                statusRowsNames.forEach(function (rowName) {
-                    setStatusInfoRowData(rowName, emptyString, emptyString);
-                });
-
-                tabData.$publisherSelect.selectFirst();
-
-                tabData.$currentVersionNumber.setValue(emptyString);
-                tabData.$docVersionSaveDateTime.setDate(emptyString).setTime(emptyString);
-                tabData.$hasNewerVersionInfoBlock.css("display", "none");
-            }
+        var LifeCycleTab = function (name) {
+            WindowTab.call(this, name);
         };
+
+        LifeCycleTab.prototype = Object.create(WindowTab.prototype);
+
+        LifeCycleTab.prototype.isDocumentTypeSupported = function () {
+            return true; // all supported
+        };
+        LifeCycleTab.prototype.buildTab = function (index) {
+            this.tabIndex = index;
+            return this.tabFormBuilder.buildFormBlock([
+                buildDocStatusSelect(),
+                buildPublishedDateTimeContainer(),
+                buildArchivedDateTimeContainer(),
+                buildPublishEndDateTimeContainer(),
+                buildPublisherSelectRow(),
+                buildCurrentVersionRow(),
+                buildDocVersionsInfoRow()
+            ], index);
+        };
+        LifeCycleTab.prototype.fillTabDataFromDocument = function (document) {
+            var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
+                && imcms.isVersioningAllowed) ? "block" : "none";
+
+            tabData.$currentVersionRowBlock.css("display", imcms.isVersioningAllowed ? "block" : "none");
+            tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
+            tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
+            tabData.$docStatusSelect.selectValue(document.publicationStatus);
+
+            statusRowsNames.forEach(function (rowName) {
+                setStatusInfoRowDataFromDocument(rowName, document);
+            });
+
+            tabData.$publisherSelect.selectValue(document.published.id);
+
+            tabData.$currentVersionNumber.setValue(document.currentVersion.id);
+            tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date)
+                .setTime(document.currentVersion.time);
+        };
+        LifeCycleTab.prototype.saveData = function (documentDTO) {
+            documentDTO.publicationStatus = tabData.$docStatusSelect.getSelectedValue();
+
+            statusRowsNames.forEach(function (rowName) {
+                documentDTO[rowName].by = null;
+                documentDTO[rowName].date = tabData["$" + rowName + "Date"].getDate() || null;
+                documentDTO[rowName].time = tabData["$" + rowName + "Time"].getTime() || null;
+
+                if (!documentDTO[rowName].date || !documentDTO[rowName].time) {
+                    documentDTO[rowName].id = null;
+                }
+            });
+
+            documentDTO.published.id = tabData.$publisherSelect.getSelectedValue();
+
+            return documentDTO;
+        };
+        LifeCycleTab.prototype.clearTabData = function () {
+            var emptyString = '';
+
+            tabData.$docStatusSelect.selectFirst();
+
+            statusRowsNames.forEach(function (rowName) {
+                setStatusInfoRowData(rowName, emptyString, emptyString);
+            });
+
+            tabData.$publisherSelect.selectFirst();
+
+            tabData.$currentVersionNumber.setValue(emptyString);
+            tabData.$docVersionSaveDateTime.setDate(emptyString).setTime(emptyString);
+            tabData.$hasNewerVersionInfoBlock.css("display", "none");
+        };
+
+        return new LifeCycleTab(texts.name);
     }
 );
