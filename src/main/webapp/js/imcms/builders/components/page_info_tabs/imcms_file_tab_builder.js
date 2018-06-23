@@ -105,8 +105,8 @@ Imcms.define("imcms-file-tab-builder",
 
         var tabData = {};
 
-        var FilesTab = function (name) {
-            WindowTab.call(this, name);
+        var FilesTab = function (name, docType) {
+            WindowTab.apply(this, arguments);
         };
 
         FilesTab.prototype = Object.create(WindowTab.prototype);
