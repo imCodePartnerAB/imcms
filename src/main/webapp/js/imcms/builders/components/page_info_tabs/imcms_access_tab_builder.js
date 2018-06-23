@@ -115,6 +115,43 @@ Imcms.define("imcms-access-tab-builder",
                 this.tabIndex = index;
                 var $addRoleSelect = components.selects.imcmsSelect("<div>");
 
+                if (!docId) {
+                    function mapRoles(roles) {
+                        var rolesDataMapped = roles.map(mapRoleOnSelectOption);
+                        components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
+                    }
+
+                    storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null).done(function (roles) {
+                        storeRoles(roles);
+                        mapRoles(roles);
+                    });
+                }
+
+                var $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: texts.role}),
+                    $titleView = rolesBEM.buildBlockElement("title", "<div>", {text: texts.view}),
+                    $titleEdit = rolesBEM.buildBlockElement("title", "<div>", {text: texts.edit}),
+                    $titleRestricted1 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_1}),
+                    $titleRestricted2 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_2}),
+                    $rolesHead = $("<div>", {
+                        html: [$titleRole, $titleView, $titleEdit, $titleRestricted1, $titleRestricted2]
+                    }),
+                    $rolesBody = $("<div>"),
+                    $rolesTable = rolesBEM.buildBlock("<div>", [
+                        {"head": $rolesHead},
+                        {"body": $rolesBody}
+                    ]),
+                    $rolesField = new BEM({
+                        block: "imcms-field",
+                        elements: {
+                            "access-role": $rolesTable
+                        }
+                    }).buildBlockStructure("<div>")
+                ;
+
+                tabData.$addRoleSelect = $addRoleSelect;
+                tabData.$rolesBody = $rolesBody;
+                tabData.$rolesField = $rolesField.css("display", "none");
+
                 var $addRoleButton = components.buttons.neutralButton({
                         text: texts.addRole,
                         click: function () {
@@ -156,51 +193,10 @@ Imcms.define("imcms-access-tab-builder",
                         elements: {
                             "access-role": $addRoleInnerBlock
                         }
-                    }).buildBlockStructure("<div>"),
-
-                    $accessBlock = tabContentBuilder.buildFormBlock([$addRoleContainer], index)
-                ;
-
-                if (!docId) {
-                    function mapRoles(roles) {
-                        var rolesDataMapped = roles.map(mapRoleOnSelectOption);
-                        components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
-                    }
-
-                    storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null).done(function (roles) {
-                        storeRoles(roles);
-                        mapRoles(roles);
-                    });
-                }
-
-                var $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: texts.role}),
-                    $titleView = rolesBEM.buildBlockElement("title", "<div>", {text: texts.view}),
-                    $titleEdit = rolesBEM.buildBlockElement("title", "<div>", {text: texts.edit}),
-                    $titleRestricted1 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_1}),
-                    $titleRestricted2 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_2}),
-                    $rolesHead = $("<div>", {
-                        html: [$titleRole, $titleView, $titleEdit, $titleRestricted1, $titleRestricted2]
-                    }),
-                    $rolesBody = $("<div>"),
-                    $rolesTable = rolesBEM.buildBlock("<div>", [
-                        {"head": $rolesHead},
-                        {"body": $rolesBody}
-                    ]),
-                    $rolesField = new BEM({
-                        block: "imcms-field",
-                        elements: {
-                            "access-role": $rolesTable
-                        }
                     }).buildBlockStructure("<div>")
                 ;
 
-                tabData.$addRoleSelect = $addRoleSelect;
-                tabData.$rolesBody = $rolesBody;
-                tabData.$rolesField = $rolesField.css("display", "none");
-
-                $accessBlock.prepend($rolesField);
-
-                return $accessBlock;
+                return tabContentBuilder.buildFormBlock([$rolesField, $addRoleContainer], index);
             },
 
             fillTabDataFromDocument: function (document) {
