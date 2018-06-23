@@ -16,4 +16,6 @@ ${"-->"}
 <c:set var="pathToDocument" value="${contextPath}${menuItem.link}"/>
 <c:set var="target" value="${menuItem.target}"/>
 
-<a id="${docId}"${classes} href="${pathToDocument}" target="${target}"><jsp:doBody/></a>
+<a id="${docId}"${classes} href="${pathToDocument}" target="${target}">
+    <jsp:doBody/>
+</a>

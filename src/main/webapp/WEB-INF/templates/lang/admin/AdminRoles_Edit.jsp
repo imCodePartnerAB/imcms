@@ -29,7 +29,8 @@
         </tr>
         <tr>
             <td colspan="2" align="right">
-                <input type="submit" name="UPDATE_ROLE_PERMISSIONS" class="imcmsFormBtn" value="<? global/save ?>"> &nbsp;
+                <input type="submit" name="UPDATE_ROLE_PERMISSIONS" class="imcmsFormBtn" value="<? global/save ?>">
+                &nbsp;
                 <input type="submit" name="CANCEL_ROLE" class="imcmsFormBtn" value="<? global/cancel ?>"></td>
         </tr>
     </table>

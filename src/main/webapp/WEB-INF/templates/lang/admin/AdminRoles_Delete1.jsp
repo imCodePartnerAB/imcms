@@ -11,7 +11,8 @@
 <form method="post" action="AdminRoles" name="adminRoles">
     <table width="400" border="0" cellspacing="0">
         <tr>
-            <td colspan="2" class="imcmsAdmText"><span style='color:red'><b><? templates/sv/AdminRoles_Delete1.htm/2 ?></b></span>
+            <td colspan="2" class="imcmsAdmText"><span
+                    style='color:red'><b><? templates/sv/AdminRoles_Delete1.htm/2 ?></b></span>
         </tr>
         <tr>
             <td colspan="2" class="imcmsAdmText"><font face="Verdana, Arial, Helvetica, sans-serif">
@@ -20,7 +21,8 @@
         </tr>
         <tr>
             <td colspan="2" class="imcmsAdmText">
-                <hr><br>
+                <hr>
+                <br>
                 <font face="Verdana, Arial, Helvetica, sans-serif"><? templates/sv/AdminRoles_Delete1.htm/4 ?>
                     <b> ${USER_COUNT}</b> )</font></td>
         </tr>
@@ -34,7 +36,8 @@
 
         <tr>
             <td colspan="2" class="imcmsAdmText">
-                <hr><br>
+                <hr>
+                <br>
                 <font face="Verdana, Arial, Helvetica, sans-serif">
                     <? templates/sv/AdminRoles_Delete1.htm/6 ?> <b>${ROLE_COUNT}</b> )</font></td>
         </tr>

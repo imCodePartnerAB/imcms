@@ -21,11 +21,11 @@
 <ui:imcms_gui_head heading="${heading}"/>
 
 <table border="0" cellspacing="0" cellpadding="0">
-<form action="BackDoc">
-<tr>
-    <td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/docinfo.html/2001 ?>"></td>
-</tr>
-</form>
+    <form action="BackDoc">
+        <tr>
+            <td><input type="submit" class="imcmsFormBtn" value="<? templates/sv/docinfo.html/2001 ?>"></td>
+        </tr>
+    </form>
 </table>
 <ui:imcms_gui_mid/>
 

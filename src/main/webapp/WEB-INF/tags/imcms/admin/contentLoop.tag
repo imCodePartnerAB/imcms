@@ -6,9 +6,9 @@ ${"-->"}
 
 <%@ attribute name="index" required="true" type="java.lang.Integer" %>
 <%@ attribute name="document" type="java.lang.Integer" %>
-<%@ attribute name="label"%>
-<%@ attribute name="pre"%>
-<%@ attribute name="post"%>
+<%@ attribute name="label" %>
+<%@ attribute name="pre" %>
+<%@ attribute name="post" %>
 
 <%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.model.Loop" %>
 <%@ variable name-given="loopIndex" scope="NESTED" variable-class="java.lang.Integer" %>
@@ -25,7 +25,8 @@ ${"-->"}
 <c:if test="${!isDocNew || editOptions.editLoop}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
     <c:set var="loop" value="${isEditMode || isPreviewMode
-            ? loopService.getLoop(index, targetDocId) : loopService.getLoopPublic(index, targetDocId)}" scope="request"/>
+            ? loopService.getLoop(index, targetDocId) : loopService.getLoopPublic(index, targetDocId)}"
+           scope="request"/>
     <c:set var="loopIndex" value="${index}" scope="request"/>
 
     <c:set var="loopContent" value=""/>
