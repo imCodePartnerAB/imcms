@@ -137,7 +137,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",
             "imcms-title-tab-builder": "builders/components/page_info_tabs/imcms_title_tab_builder.js",
             "imcms-life-cycle-tab-builder": "builders/components/page_info_tabs/imcms_life_cycle_tab_builder.js",
-            "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",
+            "imcms-templates-tab-builder": "builders/components/page_info_tabs/imcms_templates_tab_builder.js",
             "imcms-file-tab-builder": "builders/components/page_info_tabs/imcms_file_tab_builder.js",
             "imcms-url-tab-builder": "builders/components/page_info_tabs/imcms_url_tab_builder.js",
             "imcms-keywords-tab-builder": "builders/components/page_info_tabs/imcms_keywords_tab_builder.js",

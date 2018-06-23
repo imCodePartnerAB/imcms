@@ -2,7 +2,7 @@ Imcms.define("imcms-page-info-tabs-builder",
     [
         "imcms-title-tab-builder", "imcms-life-cycle-tab-builder", "imcms-keywords-tab-builder",
         "imcms-categories-tab-builder", "imcms-access-tab-builder", "imcms-permissions-tab-builder",
-        "imcms-appearance-tab-builder", "imcms-status-tab-builder", "imcms-file-tab-builder", "imcms-url-tab-builder",
+        "imcms-templates-tab-builder", "imcms-status-tab-builder", "imcms-file-tab-builder", "imcms-url-tab-builder",
         "imcms-window-tabs-builder"
     ],
     function (

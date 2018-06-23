@@ -1,4 +1,4 @@
-Imcms.define("imcms-appearance-tab-builder",
+Imcms.define("imcms-templates-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
         "imcms-page-info-tab-form-builder", "imcms-i18n-texts"
