@@ -1,4 +1,4 @@
-Imcms.define("imcms-title-tab-builder",
+Imcms.define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder",
         "imcms-choose-image-builder", "imcms-i18n-texts"
