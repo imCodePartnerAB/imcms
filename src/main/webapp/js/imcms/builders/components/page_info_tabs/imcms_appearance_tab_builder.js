@@ -1,9 +1,9 @@
 Imcms.define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder",
-        "imcms-choose-image-builder", "imcms-i18n-texts"
+        "imcms-choose-image-builder", "imcms-i18n-texts", "jquery"
     ],
-    function (BEM, components, tabFormBuilder, chooseImage, texts) {
+    function (BEM, components, tabFormBuilder, chooseImage, texts, $) {
 
         texts = texts.pageInfo.title;
 
@@ -74,6 +74,10 @@ Imcms.define("imcms-appearance-tab-builder",
             });
 
             return [$checkboxContainer, $pageTitleContainer, $menuTextContainer, $linkToImageContainer];
+        }
+
+        function buildCommonContentsContainer() {
+            return tabData.$commonContentsContainer = $('<div>');
         }
 
         function buildSelectTargetForDocumentLink() {
@@ -150,23 +154,17 @@ Imcms.define("imcms-appearance-tab-builder",
             buildTab: function (index) {
                 this.tabIndex = index;
                 var tabElements = [
+                    buildCommonContentsContainer(),
                     buildSelectTargetForDocumentLink(),
                     buildDocumentAliasBlock(),
                     buildBlockForMissingLangSetting()
                 ];
 
-                return tabData.$result = tabFormBuilder.buildFormBlock(tabElements, index);
+                return tabFormBuilder.buildFormBlock(tabElements, index);
             },
 
             fillTabDataFromDocument: function (document) {
-                if (tabData.commonContentElements) {
-                    tabData.commonContentElements.forEach(function ($element) {
-                        $element.detach();
-                    });
-                }
-
-                tabData.commonContentElements = buildCommonContents(document.commonContents);
-                tabData.$result.prepend(tabData.commonContentElements);
+                tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
                 tabData.$showIn.selectValue(document.target);
                 tabData.$documentAlias.setValue(document.alias);
 
@@ -209,6 +207,8 @@ Imcms.define("imcms-appearance-tab-builder",
                     commonContent.menuText.setValue(emptyString);
                     commonContent.linkToImage.setValue(emptyString);
                 });
+
+                tabData.$commonContentsContainer.empty();
 
                 tabData.$showIn.selectFirst();
                 tabData.$documentAlias.setValue(emptyString);
