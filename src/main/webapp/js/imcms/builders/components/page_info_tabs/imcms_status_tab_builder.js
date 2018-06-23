@@ -1,9 +1,8 @@
 Imcms.define("imcms-status-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts",
-        "imcms-page-info-tab-form-builder", "jquery", "imcms-window-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-window-tab"
     ],
-    function (BEM, components, texts, tabContentBuilder, $, WindowTab) {
+    function (BEM, components, texts, $, WindowTab) {
 
         texts = texts.pageInfo.status;
 
@@ -93,7 +92,7 @@ Imcms.define("imcms-status-tab-builder",
 
         StatusTab.prototype.buildTab = function (index) {
             this.tabIndex = index;
-            return tabContentBuilder.buildFormBlock(statusRows.map(buildStatusInfoRow), index);
+            return this.tabFormBuilder.buildFormBlock(statusRows.map(buildStatusInfoRow), index);
         };
 
         StatusTab.prototype.fillTabDataFromDocument = function (document) {

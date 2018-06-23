@@ -1,9 +1,9 @@
 Imcms.define("imcms-appearance-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder",
-        "imcms-choose-image-builder", "imcms-i18n-texts", "jquery", "imcms-window-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-choose-image-builder", "imcms-i18n-texts", "jquery",
+        "imcms-window-tab"
     ],
-    function (BEM, components, tabFormBuilder, chooseImage, texts, $, WindowTab) {
+    function (BEM, components, chooseImage, texts, $, WindowTab) {
 
         texts = texts.pageInfo.title;
 
@@ -151,7 +151,7 @@ Imcms.define("imcms-appearance-tab-builder",
                 buildBlockForMissingLangSetting()
             ];
 
-            return tabFormBuilder.buildFormBlock(tabElements, index);
+            return this.tabFormBuilder.buildFormBlock(tabElements, index);
         };
         AppearanceTab.prototype.fillTabDataFromDocument = function (document) {
             tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));

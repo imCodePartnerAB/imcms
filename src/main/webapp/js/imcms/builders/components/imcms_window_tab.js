@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 23.06.18
  */
-Imcms.define('imcms-window-tab', ['imcms-page-info-tab-form-builder'], function (tabContentBuilder) {
+Imcms.define('imcms-window-tab', ['imcms-page-info-tab-form-builder'], function (tabFormBuilder) {
 
     var WindowTab = function (name, supportedDocumentType) {
         this.name = name;
@@ -10,14 +10,15 @@ Imcms.define('imcms-window-tab', ['imcms-page-info-tab-form-builder'], function 
     };
 
     WindowTab.prototype = {
+        tabFormBuilder: tabFormBuilder,
         isDocumentTypeSupported: function (docType) {
             return docType === this.supportedDocumentType;
         },
         showTab: function () {
-            tabContentBuilder.showTab(this.tabIndex);
+            tabFormBuilder.showTab(this.tabIndex);
         },
         hideTab: function () {
-            tabContentBuilder.hideTab(this.tabIndex);
+            tabFormBuilder.hideTab(this.tabIndex);
         },
         buildTab: function (index) {
             this.tabIndex = index;
