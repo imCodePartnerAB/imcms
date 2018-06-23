@@ -1,9 +1,9 @@
 Imcms.define("imcms-categories-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts",
-        "imcms-page-info-tab-form-builder"
+        "imcms-page-info-tab-form-builder", "jquery"
     ],
-    function (BEM, components, categoriesRestApi, texts, tabContentBuilder) {
+    function (BEM, components, categoriesRestApi, texts, tabContentBuilder, $) {
 
         texts = texts.pageInfo.categories;
 
@@ -78,7 +78,7 @@ Imcms.define("imcms-categories-tab-builder",
                 categoriesBlockElements.push($categoryType);
             });
 
-            tabData.$categoriesBlock.append(categoriesBlockElements);
+            tabData.$categoriesContainer.append(categoriesBlockElements);
         }
 
         function extractCategoryTypes(categories) {
@@ -105,6 +105,10 @@ Imcms.define("imcms-categories-tab-builder",
             return categoryTypes;
         }
 
+        function buildCategoriesContainer() {
+            return tabData.$categoriesContainer = $('<div>');
+        }
+
         return {
             name: texts.name,
             tabIndex: null,
@@ -119,12 +123,11 @@ Imcms.define("imcms-categories-tab-builder",
             },
             buildTab: function (index, docId) {
                 this.tabIndex = index;
-                tabData.$categoriesBlock = tabContentBuilder.buildFormBlock([], index);
+                var tabElements = [buildCategoriesContainer()];
                 docId || this.fillTabDataFromDocument();
-                return tabData.$categoriesBlock;
+                return tabContentBuilder.buildFormBlock(tabElements, index);
             },
             fillTabDataFromDocument: function (document) {
-                tabData.$categoriesBlock && tabData.$categoriesBlock.empty();
                 tabData.multiSelects$ = [];
                 tabData.singleSelects$ = [];
 
@@ -159,7 +162,7 @@ Imcms.define("imcms-categories-tab-builder",
                 return documentDTO;
             },
             clearTabData: function () {
-                tabData.$categoriesBlock && tabData.$categoriesBlock.empty();
+                tabData.$categoriesContainer.empty();
             }
         };
     }
