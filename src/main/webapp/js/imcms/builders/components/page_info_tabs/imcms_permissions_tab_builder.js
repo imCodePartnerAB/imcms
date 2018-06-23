@@ -1,5 +1,3 @@
-/** @namespace document.restrictedPermissions */
-
 Imcms.define(
     "imcms-permissions-tab-builder",
     [
