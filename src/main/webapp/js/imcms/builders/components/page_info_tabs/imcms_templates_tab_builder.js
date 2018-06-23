@@ -1,81 +1,77 @@
 Imcms.define("imcms-templates-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
-        "imcms-page-info-tab-form-builder", "imcms-i18n-texts"
+        "imcms-i18n-texts", "imcms-window-tab"
     ],
-    function (BEM, components, templatesRestApi, docTypes, tabContentBuilder, texts) {
+    function (BEM, components, templatesRestApi, docTypes, texts, WindowTab) {
 
         texts = texts.pageInfo.appearance;
 
-        return {
-            name: texts.name,
-            data: {},
-            tabIndex: null,
-            isDocumentTypeSupported: function (docType) {
-                return docType === docTypes.TEXT;
-            },
-            showTab: function () {
-                tabContentBuilder.showTab(this.tabIndex);
-            },
-            hideTab: function () {
-                tabContentBuilder.hideTab(this.tabIndex);
-            },
-            buildTab: function (index) {
-                this.tabIndex = index;
-                var $templateSelectContainer = components.selects.selectContainer("<div>", {
-                        name: "template",
-                        text: texts.template
-                    }),
-                    $templateSelect = $templateSelectContainer.getSelect(),
+        var tabData = {};
 
-                    $defaultChildTemplateSelectContainer = components.selects.selectContainer("<div>", {
-                        name: "childTemplate",
-                        text: texts.defaultChildTemplate
-                    }),
-                    $defaultChildTemplateSelect = $defaultChildTemplateSelectContainer.getSelect();
+        var TemplatesTab = function (name, docType) {
+            WindowTab.apply(this, arguments);
+        };
 
-                this.data.$templateSelect = $templateSelect;
-                this.data.$defaultChildTemplateSelect = $defaultChildTemplateSelect;
+        TemplatesTab.prototype = Object.create(WindowTab.prototype);
 
-                templatesRestApi.read(null)
-                    .done(function (templates) {
-                        var templatesDataMapped = templates.map(function (template) {
-                            return {
-                                text: template.name,
-                                "data-value": template.name
-                            }
-                        });
+        TemplatesTab.prototype.buildTab = function (index) {
+            this.tabIndex = index;
+            var $templateSelectContainer = components.selects.selectContainer("<div>", {
+                    name: "template",
+                    text: texts.template
+                }),
+                $templateSelect = $templateSelectContainer.getSelect(),
 
-                        components.selects.addOptionsToSelect(templatesDataMapped, $templateSelect);
-                        components.selects.addOptionsToSelect(templatesDataMapped, $defaultChildTemplateSelect);
+                $defaultChildTemplateSelectContainer = components.selects.selectContainer("<div>", {
+                    name: "childTemplate",
+                    text: texts.defaultChildTemplate
+                }),
+                $defaultChildTemplateSelect = $defaultChildTemplateSelectContainer.getSelect();
+
+            tabData.$templateSelect = $templateSelect;
+            tabData.$defaultChildTemplateSelect = $defaultChildTemplateSelect;
+
+            templatesRestApi.read(null)
+                .done(function (templates) {
+                    var templatesDataMapped = templates.map(function (template) {
+                        return {
+                            text: template.name,
+                            "data-value": template.name
+                        }
                     });
 
-                var blockElements = [
-                    $templateSelectContainer,
-                    $defaultChildTemplateSelectContainer
-                ];
-                return tabContentBuilder.buildFormBlock(blockElements, index);
-            },
-            fillTabDataFromDocument: function (document) {
-                if (document.template) {
-                    this.data.$templateSelect.selectValue(document.template.templateName);
-                    this.data.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
-                }
-            },
-            saveData: function (documentDTO) {
-                if (!this.isDocumentTypeSupported(documentDTO.type)) {
-                    return documentDTO;
-                }
+                    components.selects.addOptionsToSelect(templatesDataMapped, $templateSelect);
+                    components.selects.addOptionsToSelect(templatesDataMapped, $defaultChildTemplateSelect);
+                });
 
-                documentDTO.template.templateName = this.data.$templateSelect.getSelectedValue();
-                documentDTO.template.childrenTemplateName = this.data.$defaultChildTemplateSelect.getSelectedValue();
-
-                return documentDTO;
-            },
-            clearTabData: function () {
-                this.data.$templateSelect.selectFirst();
-                this.data.$defaultChildTemplateSelect.selectFirst();
+            var blockElements = [
+                $templateSelectContainer,
+                $defaultChildTemplateSelectContainer
+            ];
+            return this.tabFormBuilder.buildFormBlock(blockElements, index);
+        };
+        TemplatesTab.prototype.fillTabDataFromDocument = function (document) {
+            if (document.template) {
+                tabData.$templateSelect.selectValue(document.template.templateName);
+                tabData.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
             }
         };
+        TemplatesTab.prototype.saveData = function (documentDTO) {
+            if (!this.isDocumentTypeSupported(documentDTO.type)) {
+                return documentDTO;
+            }
+
+            documentDTO.template.templateName = tabData.$templateSelect.getSelectedValue();
+            documentDTO.template.childrenTemplateName = tabData.$defaultChildTemplateSelect.getSelectedValue();
+
+            return documentDTO;
+        };
+        TemplatesTab.prototype.clearTabData = function () {
+            tabData.$templateSelect.selectFirst();
+            tabData.$defaultChildTemplateSelect.selectFirst();
+        };
+
+        return new TemplatesTab(texts.name, docTypes.TEXT);
     }
 );
