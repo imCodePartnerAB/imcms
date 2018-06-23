@@ -6,10 +6,10 @@
  */
 Imcms.define("imcms-file-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-page-info-tab-form-builder",
-        "jquery", "imcms-i18n-texts"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "jquery", "imcms-i18n-texts",
+        "imcms-window-tab"
     ],
-    function (BEM, components, docTypes, tabContentBuilder, $, texts) {
+    function (BEM, components, docTypes, $, texts, WindowTab) {
 
         texts = texts.pageInfo.file;
 
@@ -105,80 +105,76 @@ Imcms.define("imcms-file-tab-builder",
 
         var tabData = {};
 
-        return {
-            name: texts.name,
-            tabIndex: null,
-            isDocumentTypeSupported: function (docType) {
-                return docType === docTypes.FILE;
-            },
-            showTab: function () {
-                tabContentBuilder.showTab(this.tabIndex);
-            },
-            hideTab: function () {
-                tabContentBuilder.hideTab(this.tabIndex);
-            },
-            buildTab: function (index) {
-                this.tabIndex = index;
-
-                $fileInput = $("<input>", {
-                    type: "file",
-                    style: "display: none;",
-                    multiple: "",
-                    change: function () {
-                        tabData.formData = tabData.formData || new FormData();
-
-                        for (var i = 0; i < this.files.length; i++) {
-                            tabData.formData.append('files', this.files[i]);
-                        }
-
-                        console.log(this.files);
-                        console.log(tabData.formData.getAll("files"));
-                        appendFiles(transformFilesToDTO(this.files));
-                    }
-                });
-
-                var $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
-
-                var $uploadNewFilesButton = components.buttons.positiveButton({
-                    text: texts.upload,
-                    click: function () {
-                        $fileInput.click();
-                    }
-                });
-
-                $uploadButtonContainer.append($fileInput, $uploadNewFilesButton);
-
-                var $filesListContainer = new BEM({
-                    block: "files-container",
-                    elements: {
-                        "head": buildFilesContainerHead(),
-                        "body": buildFilesContainerBody()
-                    }
-                }).buildBlockStructure("<div>");
-
-                var blockElements = [
-                    $uploadButtonContainer,
-                    $filesListContainer
-                ];
-                return tabContentBuilder.buildFormBlock(blockElements, index);
-            },
-            fillTabDataFromDocument: function (document) {
-                appendFiles(document.files);
-            },
-            saveData: function (document) {
-                if (!this.isDocumentTypeSupported(document.type)) {
-                    return document;
-                }
-
-                document.files = getFileObjects(document.id);
-                document.newFiles = tabData.formData;
-                return document;
-            },
-            clearTabData: function () {
-                $filesListContainerBody.empty();
-                $fileInput.val('');
-                tabData = {};
-            }
+        var FilesTab = function (name) {
+            WindowTab.call(this, name);
         };
+
+        FilesTab.prototype = Object.create(WindowTab.prototype);
+
+        FilesTab.prototype.isDocumentTypeSupported = function (docType) {
+            return docType === docTypes.FILE;
+        };
+        FilesTab.prototype.buildTab = function (index) {
+            this.tabIndex = index;
+
+            $fileInput = $("<input>", {
+                type: "file",
+                style: "display: none;",
+                multiple: "",
+                change: function () {
+                    tabData.formData = tabData.formData || new FormData();
+
+                    for (var i = 0; i < this.files.length; i++) {
+                        tabData.formData.append('files', this.files[i]);
+                    }
+
+                    appendFiles(transformFilesToDTO(this.files));
+                }
+            });
+
+            var $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
+
+            var $uploadNewFilesButton = components.buttons.positiveButton({
+                text: texts.upload,
+                click: function () {
+                    $fileInput.click();
+                }
+            });
+
+            $uploadButtonContainer.append($fileInput, $uploadNewFilesButton);
+
+            var $filesListContainer = new BEM({
+                block: "files-container",
+                elements: {
+                    "head": buildFilesContainerHead(),
+                    "body": buildFilesContainerBody()
+                }
+            }).buildBlockStructure("<div>");
+
+            var blockElements = [
+                $uploadButtonContainer,
+                $filesListContainer
+            ];
+            return this.tabFormBuilder.buildFormBlock(blockElements, index);
+        };
+        FilesTab.prototype.fillTabDataFromDocument = function (document) {
+            appendFiles(document.files);
+        };
+        FilesTab.prototype.saveData = function (document) {
+            if (!this.isDocumentTypeSupported(document.type)) {
+                return document;
+            }
+
+            document.files = getFileObjects(document.id);
+            document.newFiles = tabData.formData;
+            return document;
+        };
+        FilesTab.prototype.clearTabData = function () {
+            $filesListContainerBody.empty();
+            $fileInput.val('');
+            tabData = {};
+        };
+
+        return new FilesTab(texts.name);
     }
 );
