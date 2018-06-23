@@ -111,9 +111,6 @@ Imcms.define("imcms-file-tab-builder",
 
         FilesTab.prototype = Object.create(WindowTab.prototype);
 
-        FilesTab.prototype.isDocumentTypeSupported = function (docType) {
-            return docType === docTypes.FILE;
-        };
         FilesTab.prototype.buildTab = function (index) {
             this.tabIndex = index;
 
@@ -175,6 +172,6 @@ Imcms.define("imcms-file-tab-builder",
             tabData = {};
         };
 
-        return new FilesTab(texts.name);
+        return new FilesTab(texts.name, docTypes.FILE);
     }
 );
