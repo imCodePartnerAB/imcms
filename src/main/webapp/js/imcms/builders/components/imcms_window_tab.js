@@ -20,9 +20,16 @@ Imcms.define('imcms-window-tab', ['imcms-page-info-tab-form-builder'], function 
         hideTab: function () {
             tabFormBuilder.hideTab(this.tabIndex);
         },
+        /**
+         * @returns {Array} array of tab $elements
+         */
+        tabElementsFactory: function () {
+            // override, return array of tab $elements
+        },
         buildTab: function (index) {
             this.tabIndex = index;
-            // override, return built $-object
+            var tabElements$ = this.tabElementsFactory.apply(this, arguments);
+            return this.tabFormBuilder.buildFormBlock(tabElements$, index);
         },
         fillTabDataFromDocument: function (document) {
             // override

@@ -111,9 +111,7 @@ Imcms.define("imcms-file-tab-builder",
 
         FilesTab.prototype = Object.create(WindowTab.prototype);
 
-        FilesTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
-
+        FilesTab.prototype.tabElementsFactory = function () {
             $fileInput = $("<input>", {
                 type: "file",
                 style: "display: none;",
@@ -148,11 +146,10 @@ Imcms.define("imcms-file-tab-builder",
                 }
             }).buildBlockStructure("<div>");
 
-            var blockElements = [
+            return [
                 $uploadButtonContainer,
                 $filesListContainer
             ];
-            return this.tabFormBuilder.buildFormBlock(blockElements, index);
         };
         FilesTab.prototype.fillTabDataFromDocument = function (document) {
             appendFiles(document.files);

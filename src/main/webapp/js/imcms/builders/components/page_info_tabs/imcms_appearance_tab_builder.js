@@ -142,16 +142,13 @@ Imcms.define("imcms-appearance-tab-builder",
         AppearanceTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported
         };
-        AppearanceTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
-            var tabElements = [
+        AppearanceTab.prototype.tabElementsFactory = function () {
+            return [
                 buildCommonContentsContainer(),
                 buildSelectTargetForDocumentLink(),
                 buildDocumentAliasBlock(),
                 buildBlockForMissingLangSetting()
             ];
-
-            return this.tabFormBuilder.buildFormBlock(tabElements, index);
         };
         AppearanceTab.prototype.fillTabDataFromDocument = function (document) {
             tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));

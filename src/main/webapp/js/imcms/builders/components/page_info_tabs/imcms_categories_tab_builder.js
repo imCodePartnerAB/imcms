@@ -118,11 +118,10 @@ Imcms.define("imcms-categories-tab-builder",
         CategoriesTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported
         };
-        CategoriesTab.prototype.buildTab = function (index, docId) {
-            this.tabIndex = index;
+        CategoriesTab.prototype.tabElementsFactory = function (index, docId) {
             var tabElements = [buildCategoriesContainer()];
-            docId || this.fillTabDataFromDocument();
-            return this.tabFormBuilder.buildFormBlock(tabElements, index);
+            docId || this.fillTabDataFromDocument(); // when creating new doc without id yet, categories still should be loaded
+            return tabElements;
         };
         CategoriesTab.prototype.fillTabDataFromDocument = function (document) {
             tabData.multiSelects$ = [];

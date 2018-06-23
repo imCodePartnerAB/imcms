@@ -15,8 +15,7 @@ Imcms.define("imcms-templates-tab-builder",
 
         TemplatesTab.prototype = Object.create(WindowTab.prototype);
 
-        TemplatesTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
+        TemplatesTab.prototype.tabElementsFactory = function () {
             var $templateSelectContainer = components.selects.selectContainer("<div>", {
                     name: "template",
                     text: texts.template
@@ -45,11 +44,10 @@ Imcms.define("imcms-templates-tab-builder",
                     components.selects.addOptionsToSelect(templatesDataMapped, $defaultChildTemplateSelect);
                 });
 
-            var blockElements = [
+            return [
                 $templateSelectContainer,
                 $defaultChildTemplateSelectContainer
             ];
-            return this.tabFormBuilder.buildFormBlock(blockElements, index);
         };
         TemplatesTab.prototype.fillTabDataFromDocument = function (document) {
             if (document.template) {

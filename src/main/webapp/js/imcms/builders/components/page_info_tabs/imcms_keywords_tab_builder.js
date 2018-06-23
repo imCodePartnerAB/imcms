@@ -17,8 +17,7 @@ Imcms.define("imcms-keywords-tab-builder",
         KeywordsTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported
         };
-        KeywordsTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
+        KeywordsTab.prototype.tabElementsFactory = function () {
             tabData.$keywordsBox = components.keywords.keywordsBox("<div>", {
                 "input-id": "keyword",
                 title: texts.title,
@@ -34,7 +33,7 @@ Imcms.define("imcms-keywords-tab-builder",
                 tabData.$searchDisableCheckbox
             ]);
 
-            return this.tabFormBuilder.buildFormBlock([tabData.$keywordsBox, $checkboxField], index);
+            return [tabData.$keywordsBox, $checkboxField];
         };
         KeywordsTab.prototype.fillTabDataFromDocument = function (document) {
             document.keywords.forEach(tabData.$keywordsBox.addKeyword);

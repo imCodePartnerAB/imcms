@@ -207,9 +207,8 @@ Imcms.define("imcms-life-cycle-tab-builder",
         LifeCycleTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported
         };
-        LifeCycleTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
-            return this.tabFormBuilder.buildFormBlock([
+        LifeCycleTab.prototype.tabElementsFactory = function () {
+            return [
                 buildDocStatusSelect(),
                 buildPublishedDateTimeContainer(),
                 buildArchivedDateTimeContainer(),
@@ -217,7 +216,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 buildPublisherSelectRow(),
                 buildCurrentVersionRow(),
                 buildDocVersionsInfoRow()
-            ], index);
+            ];
         };
         LifeCycleTab.prototype.fillTabDataFromDocument = function (document) {
             var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion

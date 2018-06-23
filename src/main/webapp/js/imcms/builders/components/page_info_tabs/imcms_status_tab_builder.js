@@ -90,9 +90,8 @@ Imcms.define("imcms-status-tab-builder",
             return true; // all supported
         };
 
-        StatusTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
-            return this.tabFormBuilder.buildFormBlock(statusRows.map(buildStatusInfoRow), index);
+        StatusTab.prototype.tabElementsFactory = function () {
+            return statusRows.map(buildStatusInfoRow);
         };
 
         StatusTab.prototype.fillTabDataFromDocument = function (document) {

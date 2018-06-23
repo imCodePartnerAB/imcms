@@ -20,15 +20,11 @@ Imcms.define("imcms-url-tab-builder",
 
         UrlTab.prototype = Object.create(WindowTab.prototype);
 
-        UrlTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
-
-            $urlInputContainer = components.texts.textField("<div>", {
+        UrlTab.prototype.tabElementsFactory = function () {
+            return [$urlInputContainer = components.texts.textField("<div>", {
                 name: "url",
                 text: texts.title
-            });
-
-            return this.tabFormBuilder.buildFormBlock([$urlInputContainer], index);
+            })];
         };
         UrlTab.prototype.fillTabDataFromDocument = function (document) {
             /** @namespace document.documentURL */

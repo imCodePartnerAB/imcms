@@ -73,10 +73,8 @@ Imcms.define(
 
         PermissionsTab.prototype = Object.create(WindowTab.prototype);
 
-        PermissionsTab.prototype.buildTab = function (index) {
-            this.tabIndex = index;
-            tabData.$permissionsWrapper = permissionsWrapperBEM.buildBlockStructure("<div>");
-            return this.tabFormBuilder.buildFormBlock([tabData.$permissionsWrapper], index);
+        PermissionsTab.prototype.tabElementsFactory = function () {
+            return [tabData.$permissionsWrapper = permissionsWrapperBEM.buildBlockStructure("<div>")];
         };
         PermissionsTab.prototype.fillTabDataFromDocument = function (document) {
             tabData.restrictedCheckboxes$ = [];

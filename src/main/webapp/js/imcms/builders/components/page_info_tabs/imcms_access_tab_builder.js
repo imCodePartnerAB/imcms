@@ -108,8 +108,7 @@ Imcms.define("imcms-access-tab-builder",
         AccessTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported
         };
-        AccessTab.prototype.buildTab = function (index, docId) {
-            this.tabIndex = index;
+        AccessTab.prototype.tabElementsFactory = function (index, docId) {
             var $addRoleSelect = components.selects.imcmsSelect("<div>");
 
             if (!docId) {
@@ -193,7 +192,7 @@ Imcms.define("imcms-access-tab-builder",
                 }).buildBlockStructure("<div>")
             ;
 
-            return this.tabFormBuilder.buildFormBlock([$rolesField, $addRoleContainer], index);
+            return [$rolesField, $addRoleContainer];
         };
         AccessTab.prototype.fillTabDataFromDocument = function (document) {
             function documentContainsRole(document, role) {
