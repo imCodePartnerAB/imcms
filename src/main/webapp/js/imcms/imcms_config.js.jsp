@@ -148,7 +148,20 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-status-tab-builder": "builders/components/page_info_tabs/imcms_status_tab_builder.js",
             //   </page_info_tabs>
             //   <super_admin_tabs>
-            "imcms-super-admin-tabs-builder": "builders/components/super_admin_tabs/imcms_super_admin_tabs_builder.js",
+            'imcms-super-admin-tabs-builder': "builders/components/super_admin_tabs/imcms_super_admin_tabs_builder.js",
+            'imcms-users-tab-builder': "builders/components/super_admin_tabs/imcms_users_tab_builder.js",
+            'imcms-roles-tab-builder': 'builders/components/super_admin_tabs/imcms_roles_tab_builder.js',
+            'imcms-ip-access-tab-builder': 'builders/components/super_admin_tabs/imcms_ip_access_tab_builder.js',
+            'imcms-ip-white-list-tab-builder': 'builders/components/super_admin_tabs/imcms_ip_white_list_tab_builder.js',
+            'imcms-delete-docs-tab-builder': 'builders/components/super_admin_tabs/imcms_delete_docs_tab_builder.js',
+            'imcms-templates-admin-tab-builder': 'builders/components/super_admin_tabs/imcms_templates_tab_builder.js',
+            'imcms-files-tab-builder': 'builders/components/super_admin_tabs/imcms_files_tab_builder.js',
+            'imcms-search-tab-builder': 'builders/components/super_admin_tabs/imcms_search_tab_builder.js',
+            'imcms-link-validator-tab-builder': 'builders/components/super_admin_tabs/imcms_link_validator_tab_builder.js',
+            'imcms-sections-tab-builder': 'builders/components/super_admin_tabs/imcms_sections_tab_builder.js',
+            'imcms-categories-admin-tab-builder': 'builders/components/super_admin_tabs/imcms_categories_tab_builder.js',
+            'imcms-profiles-tab-builder': 'builders/components/super_admin_tabs/imcms_profiles_tab_builder.js',
+            'imcms-system-properties-tab-builder': 'builders/components/super_admin_tabs/imcms_system_properties_tab_builder.js',
             //   </super_admin_tabs>
             //  </builder components>
             //  <windows>

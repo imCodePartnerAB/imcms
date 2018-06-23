@@ -300,7 +300,46 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet. Omdirigera till inloggningssidan?",
             contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat.",
             superAdmin: {
-                head: 'SuperAdmin'
+                head: 'SuperAdmin',
+                users: {
+                    name: 'Användare'
+                },
+                templates: {
+                    name: 'Mallar'
+                },
+                systemProperties: {
+                    name: 'Systemegenskaper'
+                },
+                sections: {
+                    name: 'Sektioner'
+                },
+                search: {
+                    name: 'Sök'
+                },
+                roles: {
+                    name: 'Roller'
+                },
+                profiles: {
+                    name: 'Profiler'
+                },
+                linkValidator: {
+                    name: 'Länk Validator'
+                },
+                ipWhiteList: {
+                    name: 'IP vitlista'
+                },
+                ipAccess: {
+                    name: 'IP-åtkomst'
+                },
+                files: {
+                    name: 'Filer'
+                },
+                deleteDocs: {
+                    name: 'Radera dokument'
+                },
+                categories: {
+                    name: 'Kategorier'
+                }
             }
         },
         "en": {
@@ -596,7 +635,46 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?",
             contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving.",
             superAdmin: {
-                head: 'SuperAdmin'
+                head: 'SuperAdmin',
+                users: {
+                    name: 'Users'
+                },
+                templates: {
+                    name: 'Templates'
+                },
+                systemProperties: {
+                    name: 'System Properties'
+                },
+                sections: {
+                    name: 'Sections'
+                },
+                search: {
+                    name: 'Search'
+                },
+                roles: {
+                    name: 'Roles'
+                },
+                profiles: {
+                    name: 'Profiles'
+                },
+                linkValidator: {
+                    name: 'Link Validator'
+                },
+                ipWhiteList: {
+                    name: 'IP White List'
+                },
+                ipAccess: {
+                    name: 'IP Access'
+                },
+                files: {
+                    name: 'Files'
+                },
+                deleteDocs: {
+                    name: 'Delete Documents'
+                },
+                categories: {
+                    name: 'Categories'
+                }
             }
         }
     };
