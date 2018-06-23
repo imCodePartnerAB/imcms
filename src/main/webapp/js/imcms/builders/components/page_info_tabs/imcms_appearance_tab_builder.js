@@ -1,9 +1,9 @@
 Imcms.define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder",
-        "imcms-choose-image-builder", "imcms-i18n-texts", "jquery"
+        "imcms-choose-image-builder", "imcms-i18n-texts", "jquery", "imcms-window-tab"
     ],
-    function (BEM, components, tabFormBuilder, chooseImage, texts, $) {
+    function (BEM, components, tabFormBuilder, chooseImage, texts, $, WindowTab) {
 
         texts = texts.pageInfo.title;
 
@@ -133,87 +133,76 @@ Imcms.define("imcms-appearance-tab-builder",
             ]);
         }
 
-        return {
-
-            name: texts.name,
-
-            tabIndex: null,
-
-            isDocumentTypeSupported: function () {
-                return true; // all supported
-            },
-
-            showTab: function () {
-                tabFormBuilder.showTab(this.tabIndex);
-            },
-
-            hideTab: function () {
-                tabFormBuilder.hideTab(this.tabIndex);
-            },
-
-            buildTab: function (index) {
-                this.tabIndex = index;
-                var tabElements = [
-                    buildCommonContentsContainer(),
-                    buildSelectTargetForDocumentLink(),
-                    buildDocumentAliasBlock(),
-                    buildBlockForMissingLangSetting()
-                ];
-
-                return tabFormBuilder.buildFormBlock(tabElements, index);
-            },
-
-            fillTabDataFromDocument: function (document) {
-                tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
-                tabData.$showIn.selectValue(document.target);
-                tabData.$documentAlias.setValue(document.alias);
-
-                components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
-                    .setCheckedValue(document.disabledLanguageShowMode);
-            },
-
-            saveData: function (documentDTO) {
-                documentDTO.commonContents.forEach(function (docCommonContent) {
-                    tabData.commonContents.forEach(function (commonContent) {
-
-                        if (docCommonContent.language.name !== commonContent.name) {
-                            // I can't come up with better solution than double forEach
-                            return;
-                        }
-
-                        docCommonContent.enabled = commonContent.checkbox.isChecked();
-                        docCommonContent.headline = commonContent.pageTitle.getValue();
-                        docCommonContent.menuText = commonContent.menuText.getValue();
-                        docCommonContent.menuImageURL = commonContent.linkToImage.getValue();
-                    });
-                });
-
-                documentDTO.alias = tabData.$documentAlias.getValue();
-                documentDTO.target = tabData.$showIn.getSelectedValue();
-
-                documentDTO.disabledLanguageShowMode = components.radios
-                    .group(tabData.$showDefaultLang, tabData.$doNotShow)
-                    .getCheckedValue();
-
-                return documentDTO;
-            },
-
-            clearTabData: function () {
-                var emptyString = '';
-
-                tabData.commonContents.forEach(function (commonContent, index) {
-                    commonContent.checkbox.setChecked(index === 0);//check only first
-                    commonContent.pageTitle.setValue(emptyString);
-                    commonContent.menuText.setValue(emptyString);
-                    commonContent.linkToImage.setValue(emptyString);
-                });
-
-                tabData.$commonContentsContainer.empty();
-
-                tabData.$showIn.selectFirst();
-                tabData.$documentAlias.setValue(emptyString);
-                tabData.$showDefaultLang.setChecked(true); //default value
-            }
+        var AppearanceTab = function (name) {
+            WindowTab.call(this, name);
         };
+
+        AppearanceTab.prototype = Object.create(WindowTab.prototype);
+
+        AppearanceTab.prototype.isDocumentTypeSupported = function () {
+            return true; // all supported
+        };
+        AppearanceTab.prototype.buildTab = function (index) {
+            this.tabIndex = index;
+            var tabElements = [
+                buildCommonContentsContainer(),
+                buildSelectTargetForDocumentLink(),
+                buildDocumentAliasBlock(),
+                buildBlockForMissingLangSetting()
+            ];
+
+            return tabFormBuilder.buildFormBlock(tabElements, index);
+        };
+        AppearanceTab.prototype.fillTabDataFromDocument = function (document) {
+            tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
+            tabData.$showIn.selectValue(document.target);
+            tabData.$documentAlias.setValue(document.alias);
+
+            components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
+                .setCheckedValue(document.disabledLanguageShowMode);
+        };
+        AppearanceTab.prototype.saveData = function (documentDTO) {
+            documentDTO.commonContents.forEach(function (docCommonContent) {
+                tabData.commonContents.forEach(function (commonContent) {
+
+                    if (docCommonContent.language.name !== commonContent.name) {
+                        // I can't come up with better solution than double forEach
+                        return;
+                    }
+
+                    docCommonContent.enabled = commonContent.checkbox.isChecked();
+                    docCommonContent.headline = commonContent.pageTitle.getValue();
+                    docCommonContent.menuText = commonContent.menuText.getValue();
+                    docCommonContent.menuImageURL = commonContent.linkToImage.getValue();
+                });
+            });
+
+            documentDTO.alias = tabData.$documentAlias.getValue();
+            documentDTO.target = tabData.$showIn.getSelectedValue();
+
+            documentDTO.disabledLanguageShowMode = components.radios
+                .group(tabData.$showDefaultLang, tabData.$doNotShow)
+                .getCheckedValue();
+
+            return documentDTO;
+        };
+        AppearanceTab.prototype.clearTabData = function () {
+            var emptyString = '';
+
+            tabData.commonContents.forEach(function (commonContent, index) {
+                commonContent.checkbox.setChecked(index === 0);//check only first
+                commonContent.pageTitle.setValue(emptyString);
+                commonContent.menuText.setValue(emptyString);
+                commonContent.linkToImage.setValue(emptyString);
+            });
+
+            tabData.$commonContentsContainer.empty();
+
+            tabData.$showIn.selectFirst();
+            tabData.$documentAlias.setValue(emptyString);
+            tabData.$showDefaultLang.setChecked(true); //default value
+        };
+
+        return new AppearanceTab(texts.name);
     }
 );
