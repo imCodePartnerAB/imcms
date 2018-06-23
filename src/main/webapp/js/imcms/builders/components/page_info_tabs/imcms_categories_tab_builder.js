@@ -1,9 +1,9 @@
 Imcms.define("imcms-categories-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts",
-        "imcms-page-info-tab-form-builder", "jquery"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts", "jquery",
+        "imcms-window-tab"
     ],
-    function (BEM, components, categoriesRestApi, texts, tabContentBuilder, $) {
+    function (BEM, components, categoriesRestApi, texts, $, WindowTab) {
 
         texts = texts.pageInfo.categories;
 
@@ -109,61 +109,59 @@ Imcms.define("imcms-categories-tab-builder",
             return tabData.$categoriesContainer = $('<div>');
         }
 
-        return {
-            name: texts.name,
-            tabIndex: null,
-            isDocumentTypeSupported: function () {
-                return true; // all supported
-            },
-            showTab: function () {
-                tabContentBuilder.showTab(this.tabIndex);
-            },
-            hideTab: function () {
-                tabContentBuilder.hideTab(this.tabIndex);
-            },
-            buildTab: function (index, docId) {
-                this.tabIndex = index;
-                var tabElements = [buildCategoriesContainer()];
-                docId || this.fillTabDataFromDocument();
-                return tabContentBuilder.buildFormBlock(tabElements, index);
-            },
-            fillTabDataFromDocument: function (document) {
-                tabData.multiSelects$ = [];
-                tabData.singleSelects$ = [];
-
-                categoriesRestApi.read(null).done(function (categories) {
-                    var categoryTypes = extractCategoryTypes(categories);
-                    buildCategoryTypes(categoryTypes, document);
-                });
-            },
-            saveData: function (documentDTO) {
-                var multiSelectCategories = tabData.multiSelects$
-                    .filter(function ($categoryCheckbox) {
-                        return $categoryCheckbox.isChecked();
-                    })
-                    .map(function ($categoryCheckbox) {
-                        return {
-                            id: $categoryCheckbox.getValue()
-                        };
-                    });
-
-                var singleSelectCategories = tabData.singleSelects$
-                    .map(function ($categorySelect) {
-                        return {
-                            id: $categorySelect.getSelectedValue()
-                        };
-                    })
-                    .filter(function (category) {
-                        return category.id;
-                    });
-
-                documentDTO.categories = multiSelectCategories.concat(singleSelectCategories);
-
-                return documentDTO;
-            },
-            clearTabData: function () {
-                tabData.$categoriesContainer.empty();
-            }
+        var CategoriesTab = function (name) {
+            WindowTab.call(this, name);
         };
+
+        CategoriesTab.prototype = Object.create(WindowTab.prototype);
+
+        CategoriesTab.prototype.isDocumentTypeSupported = function () {
+            return true; // all supported
+        };
+        CategoriesTab.prototype.buildTab = function (index, docId) {
+            this.tabIndex = index;
+            var tabElements = [buildCategoriesContainer()];
+            docId || this.fillTabDataFromDocument();
+            return this.tabFormBuilder.buildFormBlock(tabElements, index);
+        };
+        CategoriesTab.prototype.fillTabDataFromDocument = function (document) {
+            tabData.multiSelects$ = [];
+            tabData.singleSelects$ = [];
+
+            categoriesRestApi.read(null).done(function (categories) {
+                var categoryTypes = extractCategoryTypes(categories);
+                buildCategoryTypes(categoryTypes, document);
+            });
+        };
+        CategoriesTab.prototype.saveData = function (documentDTO) {
+            var multiSelectCategories = tabData.multiSelects$
+                .filter(function ($categoryCheckbox) {
+                    return $categoryCheckbox.isChecked();
+                })
+                .map(function ($categoryCheckbox) {
+                    return {
+                        id: $categoryCheckbox.getValue()
+                    };
+                });
+
+            var singleSelectCategories = tabData.singleSelects$
+                .map(function ($categorySelect) {
+                    return {
+                        id: $categorySelect.getSelectedValue()
+                    };
+                })
+                .filter(function (category) {
+                    return category.id;
+                });
+
+            documentDTO.categories = multiSelectCategories.concat(singleSelectCategories);
+
+            return documentDTO;
+        };
+        CategoriesTab.prototype.clearTabData = function () {
+            tabData.$categoriesContainer.empty();
+        };
+
+        return new CategoriesTab(texts.name);
     }
 );
