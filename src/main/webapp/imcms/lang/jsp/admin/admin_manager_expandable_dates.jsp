@@ -3,7 +3,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="expandableDatesBean" class="com.imcode.imcms.servlet.beans.AdminManagerExpandableDatesBean" scope="request"/>
 <%
-    String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    String imagesPath = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguage() + "/images/admin/";
     DocumentDomainObject document = expandableDatesBean.getDocument();
 %>
       <% if ( expandableDatesBean.isExpanded() ) { %>

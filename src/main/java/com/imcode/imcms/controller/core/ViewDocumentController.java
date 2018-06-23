@@ -11,7 +11,6 @@ import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
-import imcode.server.LanguageMapper;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -153,7 +152,7 @@ public class ViewDocumentController {
 
         if (!optionalCommonContent.isPresent()) {
             if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-                language = LanguageMapper.convert639_2to639_1(user.getLanguageIso639_2());
+                language = user.getLanguage();
             } else {
                 throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
             }

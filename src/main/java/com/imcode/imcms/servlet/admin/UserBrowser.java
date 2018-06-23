@@ -226,7 +226,7 @@ public class UserBrowser extends HttpServlet {
         public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
             request.setAttribute(REQUEST_ATTRIBUTE__FORM_DATA, this);
             UserDomainObject user = Utility.getLoggedOnUser(request);
-            String userLanguage = user.getLanguageIso639_2();
+            String userLanguage = user.getLanguage();
             request.getRequestDispatcher("/imcms/" + userLanguage + JSP__USER_BROWSER).forward(request, response);
         }
     }

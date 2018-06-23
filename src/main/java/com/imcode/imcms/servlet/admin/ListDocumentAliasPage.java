@@ -42,7 +42,7 @@ public class ListDocumentAliasPage extends OkCancelPage {
     protected void dispatchOther(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
-        List alphaRange = Arrays.asList(new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Å", "Ä", "Ö"});
+        List alphaRange = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Å", "Ä", "Ö");
         if (!alphaRange.contains(startString.toUpperCase())) {
             startString = alphaRange.get(0).toString();
         }
@@ -63,8 +63,7 @@ public class ListDocumentAliasPage extends OkCancelPage {
 
     public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser(request);
-        return "/imcms/" + user.getLanguageIso639_2()
-                + "/jsp/document_alias_list.jsp";
+        return "/imcms/" + user.getLanguage() + "/jsp/document_alias_list.jsp";
     }
 
 }

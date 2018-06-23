@@ -38,7 +38,12 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 public class LinkCheck extends HttpServlet {
@@ -202,7 +207,7 @@ public class LinkCheck extends HttpServlet {
 
         public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
             putInRequest(request);
-            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/linkcheck/linkcheck.jsp";
+            String forwardPath = "/imcms/" + user.getLanguage() + "/jsp/linkcheck/linkcheck.jsp";
             request.getRequestDispatcher(forwardPath).forward(request, response);
         }
 

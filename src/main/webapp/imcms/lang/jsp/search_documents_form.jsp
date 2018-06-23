@@ -20,7 +20,7 @@
 	String[] phases = searchDocumentsPage.getPhases();
 	int[] documentTypeIds = searchDocumentsPage.getDocumentTypeIds();
 	UserDomainObject user = Utility.getLoggedOnUser(request);
-	String IMG_PATH = request.getContextPath() + "/imcms/" + user.getLanguageIso639_2() + "/images/admin/";
+    String IMG_PATH = request.getContextPath() + "/imcms/" + user.getLanguage() + "/images/admin/";
 	JSCalendar jsCalendar = searchDocumentsPage.getJSCalender(request);
 	String calendarButtonTitle = "<? webapp/imcms/lang/jscalendar/show_calendar_button ?>";
 

@@ -239,7 +239,7 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     // todo: move to TemplateService!
     public String getAdminTemplatePath(String adminTemplateName) {
-        return "/" + config.getTemplatePath().getPath() + "/" + Imcms.getUser().getLanguageIso639_2() + "/admin/"
+        return "/" + config.getTemplatePath().getPath() + "/" + Imcms.getUser().getLanguage() + "/admin/"
                 + adminTemplateName;
     }
 
@@ -259,7 +259,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         if (null == user) {
             throw new NullArgumentException("user");
         }
-        String langPrefix = user.getLanguageIso639_2();
+        String langPrefix = user.getLanguage();
         return getTemplate(langPrefix + "/" + directory + "/" + adminTemplateName, variables);
     }
 

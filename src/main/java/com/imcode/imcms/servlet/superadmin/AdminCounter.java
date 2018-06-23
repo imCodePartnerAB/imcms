@@ -127,7 +127,7 @@ public class AdminCounter extends HttpServlet {
 
         public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
             putInRequest(request);
-            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE;
+            String forwardPath = "/imcms/" + user.getLanguage() + "/jsp/" + JSP_TEMPLATE;
             request.getRequestDispatcher(forwardPath).forward(request, response);
         }
 

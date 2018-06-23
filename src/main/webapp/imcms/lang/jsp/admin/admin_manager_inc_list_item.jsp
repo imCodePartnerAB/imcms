@@ -7,7 +7,7 @@
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request"/>
 <%
-    String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    String imagesPath = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguage() + "/images/admin/";
     DocumentDomainObject document = listItemBean.getDocument() ;
     UserDomainObject user = Utility.getLoggedOnUser( request ) ;
 

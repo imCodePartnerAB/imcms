@@ -145,7 +145,7 @@ public class AdminCategories extends HttpServlet {
     private void forward(AdminCategoriesPage formBean, UserDomainObject user, HttpServletRequest req,
                          HttpServletResponse res) throws ServletException, IOException {
         req.setAttribute(ATTRIBUTE__FORM_DATA, formBean);
-        req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/" + JSP_TEMPLATE).forward(req, res);
+        req.getRequestDispatcher("/imcms/" + user.getLanguage() + "/jsp/" + JSP_TEMPLATE).forward(req, res);
     }
 
     private AdminCategoriesPage editCategory(HttpServletRequest req, HttpServletResponse res, AdminCategoriesPage formBean,

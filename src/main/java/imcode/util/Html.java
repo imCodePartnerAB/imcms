@@ -69,7 +69,7 @@ public class Html {
     public static String getStatusIconTemplatePath(LifeCyclePhase lifeCyclePhase) {
         for (Map.Entry<LifeCyclePhase, String> statusTemplatePair : LIFE_CYCLE_PHASE_TO_TEMPLATE_PAIRS.entrySet()) {
             if (lifeCyclePhase.equals(statusTemplatePair.getKey())) {
-                return "/WEB-INF/templates/" + Imcms.getUser().getLanguageIso639_2() + "/admin/" + statusTemplatePair.getValue();
+                return "/WEB-INF/templates/" + Imcms.getUser().getLanguage() + "/admin/" + statusTemplatePair.getValue();
             }
         }
         return "";

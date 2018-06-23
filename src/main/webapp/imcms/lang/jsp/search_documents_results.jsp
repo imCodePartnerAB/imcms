@@ -17,7 +17,7 @@
     DocumentFinder documentFinder = searchDocumentsPage.getDocumentFinder() ;
     int firstDocumentIndex = searchDocumentsPage.getFirstDocumentIndex() ;
     int documentsPerPage = searchDocumentsPage.getDocumentsPerPage() ;
-    String IMG_PATH  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    String IMG_PATH = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguage() + "/images/admin/";
 %>
 <% if (null != documentsFound) { %>
     <table border="0" cellspacing="0" cellpadding="2" width="656">
