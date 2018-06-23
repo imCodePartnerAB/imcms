@@ -1,9 +1,9 @@
 Imcms.define(
     "imcms-permissions-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-window-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (BEM, components, docTypes, texts, WindowTab) {
+    function (BEM, components, docTypes, texts, PageInfoTab) {
 
         texts = texts.pageInfo.permissions;
 
@@ -68,10 +68,10 @@ Imcms.define(
         });
 
         var PermissionsTab = function (name, docType) {
-            WindowTab.apply(this, arguments);
+            PageInfoTab.apply(this, arguments);
         };
 
-        PermissionsTab.prototype = Object.create(WindowTab.prototype);
+        PermissionsTab.prototype = Object.create(PageInfoTab.prototype);
 
         PermissionsTab.prototype.tabElementsFactory = function () {
             return [tabData.$permissionsWrapper = permissionsWrapperBEM.buildBlockStructure("<div>")];

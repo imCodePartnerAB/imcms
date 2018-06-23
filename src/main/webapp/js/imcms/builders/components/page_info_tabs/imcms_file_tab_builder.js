@@ -7,9 +7,9 @@
 Imcms.define("imcms-file-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "jquery", "imcms-i18n-texts",
-        "imcms-window-tab"
+        "imcms-page-info-tab"
     ],
-    function (BEM, components, docTypes, $, texts, WindowTab) {
+    function (BEM, components, docTypes, $, texts, PageInfoTab) {
 
         texts = texts.pageInfo.file;
 
@@ -106,10 +106,10 @@ Imcms.define("imcms-file-tab-builder",
         var tabData = {};
 
         var FilesTab = function (name, docType) {
-            WindowTab.apply(this, arguments);
+            PageInfoTab.apply(this, arguments);
         };
 
-        FilesTab.prototype = Object.create(WindowTab.prototype);
+        FilesTab.prototype = Object.create(PageInfoTab.prototype);
 
         FilesTab.prototype.tabElementsFactory = function () {
             $fileInput = $("<input>", {

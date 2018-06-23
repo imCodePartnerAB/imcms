@@ -2,14 +2,14 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 23.06.18
  */
-Imcms.define('imcms-window-tab', ['imcms-page-info-tab-form-builder'], function (tabFormBuilder) {
+Imcms.define('imcms-page-info-tab', ['imcms-page-info-tab-form-builder'], function (tabFormBuilder) {
 
-    var WindowTab = function (name, supportedDocumentType) {
+    var PageInfoTab = function (name, supportedDocumentType) {
         this.name = name;
         this.supportedDocumentType = supportedDocumentType;
     };
 
-    WindowTab.prototype = {
+    PageInfoTab.prototype = {
         tabFormBuilder: tabFormBuilder,
         isDocumentTypeSupported: function (docType) {
             return docType === this.supportedDocumentType;
@@ -42,5 +42,5 @@ Imcms.define('imcms-window-tab', ['imcms-page-info-tab-form-builder'], function 
         }
     };
 
-    return WindowTab;
+    return PageInfoTab;
 });

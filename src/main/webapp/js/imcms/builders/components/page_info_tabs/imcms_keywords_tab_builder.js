@@ -1,18 +1,18 @@
 Imcms.define("imcms-keywords-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "imcms-window-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (BEM, components, texts, WindowTab) {
+    function (BEM, components, texts, PageInfoTab) {
 
         texts = texts.pageInfo.keywords;
 
         var tabData = {};
 
         var KeywordsTab = function (name) {
-            WindowTab.call(this, name);
+            PageInfoTab.call(this, name);
         };
 
-        KeywordsTab.prototype = Object.create(WindowTab.prototype);
+        KeywordsTab.prototype = Object.create(PageInfoTab.prototype);
 
         KeywordsTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported

@@ -1,9 +1,9 @@
 Imcms.define("imcms-categories-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts", "jquery",
-        "imcms-window-tab"
+        "imcms-page-info-tab"
     ],
-    function (BEM, components, categoriesRestApi, texts, $, WindowTab) {
+    function (BEM, components, categoriesRestApi, texts, $, PageInfoTab) {
 
         texts = texts.pageInfo.categories;
 
@@ -110,10 +110,10 @@ Imcms.define("imcms-categories-tab-builder",
         }
 
         var CategoriesTab = function (name) {
-            WindowTab.call(this, name);
+            PageInfoTab.call(this, name);
         };
 
-        CategoriesTab.prototype = Object.create(WindowTab.prototype);
+        CategoriesTab.prototype = Object.create(PageInfoTab.prototype);
 
         CategoriesTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported

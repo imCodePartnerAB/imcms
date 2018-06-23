@@ -1,9 +1,9 @@
 Imcms.define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-choose-image-builder", "imcms-i18n-texts", "jquery",
-        "imcms-window-tab"
+        "imcms-page-info-tab"
     ],
-    function (BEM, components, chooseImage, texts, $, WindowTab) {
+    function (BEM, components, chooseImage, texts, $, PageInfoTab) {
 
         texts = texts.pageInfo.title;
 
@@ -134,10 +134,10 @@ Imcms.define("imcms-appearance-tab-builder",
         }
 
         var AppearanceTab = function (name) {
-            WindowTab.call(this, name);
+            PageInfoTab.call(this, name);
         };
 
-        AppearanceTab.prototype = Object.create(WindowTab.prototype);
+        AppearanceTab.prototype = Object.create(PageInfoTab.prototype);
 
         AppearanceTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported

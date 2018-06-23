@@ -6,19 +6,19 @@
  */
 Imcms.define("imcms-url-tab-builder",
     [
-        "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-window-tab"
+        "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (components, docTypes, texts, WindowTab) {
+    function (components, docTypes, texts, PageInfoTab) {
 
         texts = texts.pageInfo.url;
 
         var tabData = {}, $urlInputContainer;
 
         var UrlTab = function (name, docType) {
-            WindowTab.apply(this, arguments);
+            PageInfoTab.apply(this, arguments);
         };
 
-        UrlTab.prototype = Object.create(WindowTab.prototype);
+        UrlTab.prototype = Object.create(PageInfoTab.prototype);
 
         UrlTab.prototype.tabElementsFactory = function () {
             return [$urlInputContainer = components.texts.textField("<div>", {

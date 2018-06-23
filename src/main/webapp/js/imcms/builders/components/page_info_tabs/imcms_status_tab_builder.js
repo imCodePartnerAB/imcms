@@ -1,8 +1,8 @@
 Imcms.define("imcms-status-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-window-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-page-info-tab"
     ],
-    function (BEM, components, texts, $, WindowTab) {
+    function (BEM, components, texts, $, PageInfoTab) {
 
         texts = texts.pageInfo.status;
 
@@ -81,10 +81,10 @@ Imcms.define("imcms-status-tab-builder",
         ];
 
         var StatusTab = function (name) {
-            WindowTab.call(this, name);
+            PageInfoTab.call(this, name);
         };
 
-        StatusTab.prototype = Object.create(WindowTab.prototype);
+        StatusTab.prototype = Object.create(PageInfoTab.prototype);
 
         StatusTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported

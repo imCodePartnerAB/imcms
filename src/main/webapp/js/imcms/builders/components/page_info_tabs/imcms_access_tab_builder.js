@@ -1,9 +1,9 @@
 Imcms.define("imcms-access-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator", "jquery",
-        "imcms-i18n-texts", "imcms-window-tab"
+        "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (BEM, components, rolesRestApi, uuidGenerator, $, texts, WindowTab) {
+    function (BEM, components, rolesRestApi, uuidGenerator, $, texts, PageInfoTab) {
 
         texts = texts.pageInfo.access;
 
@@ -100,10 +100,10 @@ Imcms.define("imcms-access-tab-builder",
         var tabData = {};
 
         var AccessTab = function (name) {
-            WindowTab.call(this, name);
+            PageInfoTab.call(this, name);
         };
 
-        AccessTab.prototype = Object.create(WindowTab.prototype);
+        AccessTab.prototype = Object.create(PageInfoTab.prototype);
 
         AccessTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported

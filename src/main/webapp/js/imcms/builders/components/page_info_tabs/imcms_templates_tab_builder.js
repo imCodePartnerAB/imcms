@@ -1,19 +1,19 @@
 Imcms.define("imcms-templates-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-templates-rest-api", "imcms-document-types",
-        "imcms-i18n-texts", "imcms-window-tab"
+        "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (BEM, components, templatesRestApi, docTypes, texts, WindowTab) {
+    function (BEM, components, templatesRestApi, docTypes, texts, PageInfoTab) {
 
         texts = texts.pageInfo.appearance;
 
         var tabData = {};
 
         var TemplatesTab = function (name, docType) {
-            WindowTab.apply(this, arguments);
+            PageInfoTab.apply(this, arguments);
         };
 
-        TemplatesTab.prototype = Object.create(WindowTab.prototype);
+        TemplatesTab.prototype = Object.create(PageInfoTab.prototype);
 
         TemplatesTab.prototype.tabElementsFactory = function () {
             var $templateSelectContainer = components.selects.selectContainer("<div>", {

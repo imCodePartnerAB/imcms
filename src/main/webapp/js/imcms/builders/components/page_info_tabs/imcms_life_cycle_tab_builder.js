@@ -1,9 +1,9 @@
 Imcms.define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms", "imcms-i18n-texts",
-        "imcms-date-time-validator", "imcms-window-tab"
+        "imcms-date-time-validator", "imcms-page-info-tab"
     ],
-    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, WindowTab) {
+    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, PageInfoTab) {
 
         texts = texts.pageInfo.lifeCycle;
 
@@ -199,10 +199,10 @@ Imcms.define("imcms-life-cycle-tab-builder",
         ];
 
         var LifeCycleTab = function (name) {
-            WindowTab.call(this, name);
+            PageInfoTab.call(this, name);
         };
 
-        LifeCycleTab.prototype = Object.create(WindowTab.prototype);
+        LifeCycleTab.prototype = Object.create(PageInfoTab.prototype);
 
         LifeCycleTab.prototype.isDocumentTypeSupported = function () {
             return true; // all supported
