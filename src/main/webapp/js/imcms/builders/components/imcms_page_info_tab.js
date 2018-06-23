@@ -10,7 +10,6 @@ Imcms.define('imcms-page-info-tab', ['imcms-page-info-tab-form-builder'], functi
     };
 
     PageInfoTab.prototype = {
-        tabFormBuilder: tabFormBuilder,
         isDocumentTypeSupported: function (docType) {
             return docType === this.supportedDocumentType;
         },
@@ -29,7 +28,7 @@ Imcms.define('imcms-page-info-tab', ['imcms-page-info-tab-form-builder'], functi
         buildTab: function (index) {
             this.tabIndex = index;
             var tabElements$ = this.tabElementsFactory.apply(this, arguments);
-            return this.tabFormBuilder.buildFormBlock(tabElements$, index);
+            return tabFormBuilder.buildFormBlock(tabElements$, index);
         },
         fillTabDataFromDocument: function (document) {
             // override
