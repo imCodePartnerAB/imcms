@@ -136,7 +136,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-tab-window-builder": "builders/components/imcms_tab_window_builder.js",
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
-            "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",
             "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",
             "imcms-life-cycle-tab-builder": "builders/components/page_info_tabs/imcms_life_cycle_tab_builder.js",
             "imcms-templates-tab-builder": "builders/components/page_info_tabs/imcms_templates_tab_builder.js",
