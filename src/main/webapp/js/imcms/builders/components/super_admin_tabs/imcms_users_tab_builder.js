@@ -96,6 +96,12 @@ Imcms.define(
             }));
         }
 
+        function buildSearchResultContainer() {
+            return $('<div>', {
+                'class': 'imcms-users-search-result'
+            });
+        }
+
         var UsersTab = function (name) {
             TabBuilder.apply(this, arguments);
         };
@@ -106,7 +112,8 @@ Imcms.define(
             return [
                 buildTitle(),
                 buildSearchRow(),
-                buildSearchResultTitle()
+                buildSearchResultTitle(),
+                buildSearchResultContainer()
             ];
         };
 
