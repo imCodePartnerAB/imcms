@@ -13,13 +13,14 @@
     border-color: #ebedef;
 }
 
-.imcms-tabs__tab:hover:after {
+.imcms-tabs__tab:hover:after,
+.imcms-title--active:after {
     content: "";
     background-color: #389ecf;
     display: block;
     position: absolute;
     top: -1px;
-    right: -1px;
+    right: 0;
     width: 3px;
     height: -webkit-calc(100% + 2px);
     height: -moz-calc(100% + 2px);
@@ -30,21 +31,6 @@
 
 .imcms-title--active {
     border-color: #ebedef;
-}
-
-.imcms-title--active:after {
-    content: "";
-    background-color: #389ecf;
-    display: block;
-    position: absolute;
-    top: -1px;
-    right: -1px;
-    width: 3px;
-    height: -webkit-calc(100% + 2px);
-    height: -moz-calc(100% + 2px);
-    height: -ms-calc(100% + 2px);
-    height: -o-calc(100% + 2px);
-    height: calc(100% + 2px);
 }
 
 .imcms-title--col-3 {
