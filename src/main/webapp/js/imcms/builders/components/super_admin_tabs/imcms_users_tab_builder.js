@@ -4,10 +4,17 @@
  */
 Imcms.define(
     'imcms-users-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-window-tab-builder', 'imcms-i18n-texts', 'jquery'],
+    function (TabBuilder, texts, $) {
 
         texts = texts.superAdmin.users;
+
+        function buildTitle() {
+            return $('<div>', {
+                'class': 'imcms-title',
+                text: texts.title
+            });
+        }
 
         var UsersTab = function (name) {
             TabBuilder.apply(this, arguments);
@@ -16,7 +23,9 @@ Imcms.define(
         UsersTab.prototype = Object.create(TabBuilder.prototype);
 
         UsersTab.prototype.tabElementsFactory = function () {
-            return [];
+            return [
+                buildTitle()
+            ];
         };
 
         return new UsersTab(texts.name);

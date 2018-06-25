@@ -637,7 +637,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             superAdmin: {
                 head: 'SuperAdmin',
                 users: {
-                    name: 'Users'
+                    name: 'Users',
+                    title: 'Edit user properties'
                 },
                 templates: {
                     name: 'Templates'
