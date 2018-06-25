@@ -6,11 +6,13 @@ Imcms.define(
     'imcms-users-tab-builder',
     [
         'imcms-window-tab-builder', 'imcms-i18n-texts', 'jquery', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-roles-rest-api'
+        'imcms-roles-rest-api', 'imcms-users-rest-api'
     ],
-    function (TabBuilder, texts, $, BEM, components, rolesRestApi) {
+    function (TabBuilder, texts, $, BEM, components, rolesRestApi, usersRestApi) {
 
         texts = texts.superAdmin.users;
+
+        var $searchResultContainer;
 
         function buildTitle() {
             return components.texts.titleText('<div>', texts.title, {
@@ -64,6 +66,44 @@ Imcms.define(
             }
 
             function listUsers() {
+
+                function onEditUser() {
+                    // window.open(url, '_blank').focus(); // todo: implement with correct url
+                }
+
+                function onArchiveUser() {
+                    // todo: implement
+                }
+
+                function userToRow(user) {
+                    return new BEM({
+                        block: 'imcms-user-info-row',
+                        elements: {
+                            'last-name': $('<div>', {
+                                text: user.lastName
+                            }),
+                            'first-name': $('<div>', {
+                                text: user.firstName
+                            }),
+                            'user-name': $('<div>', {
+                                text: '[' + user.username + ']'
+                            }),
+                            'email': $('<div>', {
+                                text: user.email
+                            }),
+                            'edit': components.controls.edit(onEditUser),
+                            'archive': components.controls.archive(onArchiveUser)
+                        }
+                    }).buildBlockStructure('<div>');
+                }
+
+                $searchResultContainer.empty();
+
+                usersRestApi.read().done(function (users) {
+                    var userRows$ = users.map(userToRow);
+
+                    $searchResultContainer.append(userRows$);
+                });
             }
 
             function buildListUsersButton() {
@@ -113,7 +153,7 @@ Imcms.define(
                 buildTitle(),
                 buildSearchRow(),
                 buildSearchResultTitle(),
-                buildSearchResultContainer()
+                $searchResultContainer = buildSearchResultContainer()
             ];
         };
 

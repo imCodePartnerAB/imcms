@@ -49,9 +49,50 @@
 }
 
 .imcms-pop-up-modal__right-side {
-    width: 81%;
+    width: 75%;
 }
 
 .imcms-search-row__users-list-button .imcms-button {
     float: none;
+}
+
+.imcms-user-info-row {
+    padding: 2px;
+    border-bottom: solid 1px #dad5d5;
+}
+
+.imcms-user-info-row .imcms-user-info-row__last-name,
+.imcms-user-info-row .imcms-user-info-row__first-name,
+.imcms-user-info-row .imcms-user-info-row__user-name,
+.imcms-user-info-row .imcms-user-info-row__email {
+    padding: 5px;
+}
+
+.imcms-user-info-row .imcms-control {
+    margin: 5px;
+}
+
+.imcms-user-info-row .imcms-user-info-row__last-name,
+.imcms-user-info-row .imcms-user-info-row__first-name {
+    width: 18%;
+}
+
+.imcms-user-info-row .imcms-user-info-row__user-name,
+.imcms-user-info-row .imcms-user-info-row__email {
+    width: 27%;
+}
+
+.imcms-user-info-row > * {
+    display: inline-block;
+}
+
+.imcms-user-info-row__archive {
+    background-size: contain;
+    width: 26px;
+    height: 26px;
+}
+
+.imcms-users-search-result {
+    height: 600px;
+    background-color: #ececec;
 }
