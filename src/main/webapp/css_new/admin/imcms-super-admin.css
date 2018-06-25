@@ -51,3 +51,7 @@
 .imcms-pop-up-modal__right-side {
     width: 81%;
 }
+
+.imcms-search-row__users-list-button .imcms-button {
+    float: none;
+}
