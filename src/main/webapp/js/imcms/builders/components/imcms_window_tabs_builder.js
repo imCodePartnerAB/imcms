@@ -6,7 +6,6 @@ Imcms.define('imcms-window-tabs-builder', ['imcms-bem-builder', 'jquery'], funct
 
     var WindowTabsBuilder = function (opts) {
         this.tabBuilders = opts.tabBuilders;
-        this.panels$ = opts.panels$;
     };
 
     WindowTabsBuilder.prototype = {
