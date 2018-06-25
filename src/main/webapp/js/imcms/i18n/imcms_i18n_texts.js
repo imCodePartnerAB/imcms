@@ -649,6 +649,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         },
                         inactiveUsers: 'Include inactive users',
                         listUsers: 'List users'
+                    },
+                    searchResult: {
+                        title: ' users found'
                     }
                 },
                 templates: {

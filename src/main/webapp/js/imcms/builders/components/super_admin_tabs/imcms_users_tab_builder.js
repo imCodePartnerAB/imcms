@@ -88,6 +88,14 @@ Imcms.define(
             });
         }
 
+        function buildSearchResultTitle() {
+            return components.texts.titleText('<div>', texts.searchResult.title, {
+                'class': 'imcms-field'
+            }).prepend($('<span>', {
+                text: '0'
+            }));
+        }
+
         var UsersTab = function (name) {
             TabBuilder.apply(this, arguments);
         };
@@ -97,7 +105,8 @@ Imcms.define(
         UsersTab.prototype.tabElementsFactory = function () {
             return [
                 buildTitle(),
-                buildSearchRow()
+                buildSearchRow(),
+                buildSearchResultTitle()
             ];
         };
 
