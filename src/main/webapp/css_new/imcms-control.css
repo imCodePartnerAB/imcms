@@ -18,6 +18,10 @@
     background-image: url("../images_new/controls/icon_folder_controll_reverse_edit.png");
 }
 
+.imcms-control--archive {
+    background-image: url("../images_new/controls/icon_control_save_archive.png");
+}
+
 .imcms-control--edit.imcms-control--menu {
     background-image: url("../images_new/controls/icon_menu_edit.png");
     background-size: contain;
@@ -93,3 +97,8 @@
 .imcms-control--remove:hover {
     background-image: url("../images_new/controls/icon_folder_controll_remove_hover.png");
 }
+
+.imcms-control--archive:hover {
+    background-image: url("../images_new/controls/icon_control_save_archive_hover.png");
+}
+

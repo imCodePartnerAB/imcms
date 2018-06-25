@@ -18,9 +18,14 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/admins")
+    public List<UserDTO> getAllAdmins() {
+        return userService.getAdminUsers();
+    }
+
     @GetMapping
     public List<UserDTO> getAll() {
-        return userService.getAdminUsers();
+        return userService.getAllActiveUsers();
     }
 
 }

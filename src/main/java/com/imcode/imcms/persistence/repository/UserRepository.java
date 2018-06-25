@@ -45,6 +45,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Transactional
     @Query("SELECT u.sessionId FROM User u WHERE u.id = ?1")
     String findSessionId(int userId);
+
+    List<User> findByActiveIsTrue();
 }
 
 

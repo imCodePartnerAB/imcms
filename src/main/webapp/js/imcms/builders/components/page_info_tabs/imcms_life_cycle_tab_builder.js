@@ -133,7 +133,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
                 name: "publisher"
             });
 
-            usersRestApi.read(null).done(function (users) {
+            usersRestApi.getAllAdmins().done(function (users) {
                 var usersDataMapped = users.map(function (user) {
                     return {
                         text: user.username,

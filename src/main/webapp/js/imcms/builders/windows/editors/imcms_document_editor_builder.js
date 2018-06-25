@@ -157,7 +157,7 @@ Imcms.define("imcms-document-editor-builder",
                     onSelected: onSelected
                 });
 
-                usersRestApi.read(null).done(function (users) {
+                usersRestApi.getAllAdmins().done(function (users) {
                     var usersDataMapped = users.map(function (user) {
                         return {
                             text: user.username,

@@ -13,6 +13,8 @@ public interface UserService {
 
     List<UserDTO> getAdminUsers();
 
+    List<UserDTO> getAllActiveUsers();
+
     List<User> findAll(boolean includeExternal, boolean includeInactive);
 
     List<User> findByNamePrefix(String prefix, boolean includeInactive);
