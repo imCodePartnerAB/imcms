@@ -27,6 +27,7 @@
 .imcms-pop-up-modal__left-side {
     background-color: #fff;
     max-width: 250px;
+    position: relative;
 }
 
 .imcms-pop-up-modal__right-side {
