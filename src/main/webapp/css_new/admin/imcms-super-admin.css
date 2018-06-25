@@ -1,0 +1,40 @@
+@import url("../imcms-info-page.css");
+
+.imcms-info-page {
+    position: absolute;
+    margin: 0 0 2%;
+    left: 25%;
+    width: 50%;
+    top: 2%;
+}
+
+@media screen and (max-width: 1600px) {
+    .imcms-info-page {
+        left: 15%;
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .imcms-info-page {
+        left: 10%;
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .imcms-info-page {
+        left: 1%;
+        width: 98%;
+    }
+}
+
+.imcms-pop-up-modal {
+    height: auto;
+}
+
+.imcms-info-page {
+    left: 15%;
+    width: 70%;
+}
+

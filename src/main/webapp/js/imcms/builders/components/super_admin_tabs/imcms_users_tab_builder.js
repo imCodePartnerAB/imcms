@@ -15,6 +15,10 @@ Imcms.define(
 
         UsersTab.prototype = Object.create(TabBuilder.prototype);
 
+        UsersTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new UsersTab(texts.name);
     }
 );
