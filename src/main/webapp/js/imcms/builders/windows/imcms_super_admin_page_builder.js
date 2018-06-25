@@ -15,7 +15,11 @@ Imcms.define(
 
         function buildSuperAdminPanels() {
             return superAdminTabs.tabBuilders.map(function (tabBuilder, index) {
-                return tabBuilder.buildTab(index);
+                var $tab = tabBuilder.buildTab(index);
+
+                (index === 0) ? $tab.slideDown() : $tab.slideUp();
+
+                return $tab;
             });
         }
 
