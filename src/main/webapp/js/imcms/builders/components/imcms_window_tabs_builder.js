@@ -14,13 +14,17 @@ Imcms.define('imcms-window-tabs-builder', ['imcms-bem-builder', 'jquery'], funct
 
             function showPanel(index) {
                 context.panels$.forEach(function ($panel, number) {
-                    $panel.css({'display': (index === number) ? 'block' : 'none'});
+                    (index === number) ? $panel.slideDown() : $panel.slideUp();
                 });
             }
 
             return function () {
+                var $clickedTab = $(this);
+
+                if ($clickedTab.hasClass('imcms-title--active')) return;
+
                 context.$tabsContainer.find('.imcms-title--active').removeClass('imcms-title--active');
-                $(this).addClass('imcms-title--active');
+                $clickedTab.addClass('imcms-title--active');
                 showPanel(index);
             }
         },
