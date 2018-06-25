@@ -42,7 +42,7 @@ Imcms.define(
             return new BEM({
                 block: 'imcms-pop-up-modal',
                 elements: {
-                    'head': buildHead(),//superAdminWindowBuilder.buildNonClosableHead(texts.head),
+                    'head': buildHead(),
                     'left-side': superAdminTabs.buildWindowTabs(panels$),
                     'right-side': $('<div>', {'class': 'imcms-right-side'}).append(panels$)
                 }
