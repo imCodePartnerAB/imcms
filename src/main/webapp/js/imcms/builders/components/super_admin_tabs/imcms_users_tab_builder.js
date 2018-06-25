@@ -10,7 +10,9 @@ Imcms.define(
         texts = texts.superAdmin.users;
 
         function buildTitle() {
-            return components.texts.titleText('<div>', texts.title);
+            return components.texts.titleText('<div>', texts.title, {
+                'class': 'imcms-field'
+            });
         }
 
         var UsersTab = function (name) {
