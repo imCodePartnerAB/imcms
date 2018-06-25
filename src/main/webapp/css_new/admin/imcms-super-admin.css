@@ -41,9 +41,13 @@
 .imcms-search-row > * {
     width: 25%;
     display: inline-block;
-    margin: 0 10px 0;
+    padding: 0 10px 0;
 }
 
 .imcms-search-row > :first-child {
-    margin-left: 0;
+    padding-left: 0;
+}
+
+.imcms-pop-up-modal__right-side {
+    width: 81%;
 }

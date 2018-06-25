@@ -646,7 +646,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         },
                         byRole: {
                             title: 'User with role'
-                        }
+                        },
+                        inactiveUsers: 'Include inactive users',
+                        listUsers: 'List users'
                     }
                 },
                 templates: {

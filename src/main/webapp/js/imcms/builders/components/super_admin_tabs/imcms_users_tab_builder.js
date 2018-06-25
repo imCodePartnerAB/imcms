@@ -58,9 +58,21 @@ Imcms.define(
 
             function buildUsersActivityFilter() {
                 return components.checkboxes.imcmsCheckbox('<div>', {
-                    text: 'Include inactive users',
+                    text: texts.searchFilter.inactiveUsers,
                     click: includeInactiveUsers
                 });
+            }
+
+            function listUsers() {
+            }
+
+            function buildListUsersButton() {
+                var $button = components.buttons.positiveButton({
+                    text: texts.searchFilter.listUsers,
+                    click: listUsers
+                });
+
+                return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
             return new BEM({
@@ -68,7 +80,8 @@ Imcms.define(
                 elements: {
                     'users-name-filter': buildUsersNameFilter(),
                     'users-role-filter': buildUsersRoleFilter(),
-                    'users-activity-filter': buildUsersActivityFilter()
+                    'users-activity-filter': buildUsersActivityFilter(),
+                    'users-list-button': buildListUsersButton()
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-field'
