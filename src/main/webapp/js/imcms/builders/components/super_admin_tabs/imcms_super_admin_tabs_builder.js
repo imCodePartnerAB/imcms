@@ -19,6 +19,7 @@ Imcms.define(
                 users,
                 roles,
                 ipAccess,
+                ipWhiteList,
                 deleteDocs,
                 templates,
                 files,
