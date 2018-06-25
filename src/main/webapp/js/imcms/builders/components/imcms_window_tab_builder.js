@@ -28,7 +28,7 @@ Imcms.define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], functi
          * @returns {Array} array of tab $elements
          */
         tabElementsFactory: function () {
-            // override, return array of tab $elements
+            return [];// override, return array of tab $elements
         },
         buildTab: function (index) {
             this.tabIndex = index;
