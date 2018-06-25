@@ -53,11 +53,22 @@ Imcms.define(
                 return $usersFilterSelectContainer;
             }
 
+            function includeInactiveUsers() {
+            }
+
+            function buildUsersActivityFilter() {
+                return components.checkboxes.imcmsCheckbox('<div>', {
+                    text: 'Include inactive users',
+                    click: includeInactiveUsers
+                });
+            }
+
             return new BEM({
                 block: 'imcms-search-row',
                 elements: {
                     'users-name-filter': buildUsersNameFilter(),
-                    'users-role-filter': buildUsersRoleFilter()
+                    'users-role-filter': buildUsersRoleFilter(),
+                    'users-activity-filter': buildUsersActivityFilter()
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-field'
