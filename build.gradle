@@ -2,28 +2,21 @@ import com.eriwen.gradle.css.tasks.MinifyCssTask
 import com.eriwen.gradle.js.tasks.MinifyJsTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
-buildscript {
-    repositories { jcenter() }
-    dependencies {
-        classpath 'com.netflix.nebula:gradle-lint-plugin:latest.release'
-    }
-}
-
 plugins {
+    id 'java'
+    id 'maven'
+    id 'maven-publish'
+    id 'idea'
+    id 'war'
+
     id 'io.franzbecker.gradle-lombok' version '1.12'
     id "com.eriwen.gradle.js" version "2.14.1"
     id "com.eriwen.gradle.css" version "2.14.0"
+//    id 'nebula.maven-publish' version '8.0.0'
 }
 
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'idea'
-apply plugin: 'war'
-apply plugin: 'css'
-apply plugin: "com.eriwen.gradle.js"
-apply plugin: 'checkstyle'
-apply plugin: 'nebula.lint'
+//apply plugin: 'nebula.lint'
+//apply plugin: 'nebula.maven-publish'
 //apply plugin: 'pmd'
 
 group = "com.imcode.imcms"
@@ -51,9 +44,50 @@ ext {
 }
 
 dependencies {
-    compile "org.projectlombok:lombok:1.16.20"
+    compile("org.springframework:spring-core:${springframeworkVersion}")
+    compile "org.springframework:spring-webmvc:${springframeworkVersion}"
+    compile "org.springframework:spring-orm:${springframeworkVersion}"
+    compile "org.springframework:spring-aop:${springframeworkVersion}"
+    compile("org.springframework.data:spring-data-jpa:1.11.7.RELEASE")
+
+    compile "org.aspectj:aspectjrt:1.8.13"
+    compile "org.aspectj:aspectjweaver:1.8.13"
+
+    compile "net.sf.ehcache:ehcache:2.7.0"
+    compile "net.sf.ehcache:ehcache-web:2.0.4"
+
+    compile "org.hibernate:hibernate-entitymanager:4.3.11.Final"
+    compile "org.hibernate:hibernate-validator:5.4.2.Final"
+    compile("org.hibernate:hibernate-ehcache:4.3.11.Final") {
+        exclude(module: "ehcache-core")
+    }
+
+    compile "javax.servlet:javax.servlet-api:3.1.0"
+    compile "javax.servlet:jstl:1.2"
+    compile "javax.inject:javax.inject:1"
+    compile "javax.validation:validation-api:1.1.0.Final"
+
+    compile "org.apache.tomcat:tomcat-jsp-api:7.0.57"
+    compile "org.apache.tomcat:tomcat-el-api:7.0.57"
+    compile "org.apache.tomcat:tomcat-jasper-el:7.0.57"
+
+    compile "com.imcode.db:imcode-db:0.7"
+    compile "com.imcode.ldap:imcode-ldap:0.1"
+    compile("com.imcode.util:imcode-util:2.0.4") {
+        exclude(module: "servlet-api")
+        exclude(module: "commons-io")
+    }
+
     compile "org.slf4j:slf4j-api:${slf4jVersion}"
     compile "org.apache.logging.log4j:log4j-core:2.10.0"
+
+    compile "org.apache.commons:commons-collections4:4.1"
+    compile "org.apache.commons:commons-lang3:3.6"
+    compile "org.apache.commons:commons-text:1.1"
+    compile "org.apache.commons:commons-email:1.4"
+    compile "org.apache.commons:commons-dbcp2:2.1.1"
+
+    compile "org.projectlombok:lombok:1.16.20"
     compile "com.drewnoakes:metadata-extractor:2.11.0"
     compile "commons-beanutils:commons-beanutils:1.9.3"
     compile("org.apache.tika:tika-parsers:1.18") {
@@ -61,55 +95,28 @@ dependencies {
         exclude(module: "asm")
         exclude(module: "commons-io")
     }
+
+    compile "commons-dbutils:commons-dbutils:1.6"
+    compile "commons-lang:commons-lang:2.6"
     compile("commons-validator:commons-validator:1.6") {
         exclude(module: "commons-logging")
     }
-    compile "org.apache.commons:commons-collections4:4.1"
-    compile "net.sf.ehcache:ehcache:2.7.0"
-    compile "net.sf.ehcache:ehcache-web:2.0.4"
-    compile("org.hibernate:hibernate-ehcache:4.3.11.Final") {
-        exclude(module: "ehcache-core")
-    }
-    compile "commons-dbutils:commons-dbutils:1.6"
-    compile "commons-lang:commons-lang:2.6"
-    compile "org.apache.commons:commons-lang3:3.6"
-    compile "org.apache.commons:commons-text:1.1"
-    compile "org.apache.commons:commons-email:1.4"
-    compile "org.hibernate:hibernate-entitymanager:4.3.11.Final"
-    compile "org.hibernate:hibernate-validator:5.4.2.Final"
-    compile "com.imcode.db:imcode-db:0.7"
-    compile("com.imcode.util:imcode-util:2.0.4") {
-        exclude(module: "servlet-api")
-        exclude(module: "commons-io")
-    }
-    compile "com.imcode.ldap:imcode-ldap:0.1"
-    compile "org.apache.commons:commons-dbcp2:2.1.1"
-    compile("org.springframework:spring-core:${springframeworkVersion}")
-    compile "org.springframework:spring-webmvc:${springframeworkVersion}"
-    compile "org.springframework:spring-orm:${springframeworkVersion}"
-    compile "org.springframework:spring-aop:${springframeworkVersion}"
-    compile "org.aspectj:aspectjrt:1.8.13"
-    compile "org.aspectj:aspectjweaver:1.8.13"
-    compile("org.springframework.data:spring-data-jpa:1.11.7.RELEASE")
-    compile "javax.servlet:javax.servlet-api:3.1.0"
+
     compile("org.apache.solr:solr-core:${solrVersion}")
     compile("org.apache.httpcomponents:httpclient:4.5.2") {
         exclude(module: "commons-logging")
     }
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.4"
-    compile "javax.servlet:jstl:1.2"
-    compile "org.apache.tomcat:tomcat-jsp-api:7.0.57"
-    compile "org.apache.tomcat:tomcat-el-api:7.0.57"
-    compile "org.apache.tomcat:tomcat-jasper-el:7.0.57"
-    compile "javax.validation:validation-api:1.1.0.Final"
-    compile "javax.inject:javax.inject:1"
+
     compile "org.jsoup:jsoup:1.10.2"
     compile("com.jcabi:jcabi-w3c:1.3") {
         exclude(module: "commons-io")
     }
+
     runtime "com.fasterxml:classmate:1.3.3"
     runtime "mysql:mysql-connector-java:5.1.38"
     runtime "org.slf4j:slf4j-log4j12:${slf4jVersion}"
+
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-all:1.10.19"
     testCompile "org.powermock:powermock-api-mockito:1.6.2"
@@ -212,7 +219,7 @@ idea {
 
 jar.classifier = "classes"
 
-gradleLint.rules = ['all-dependency']
+//gradleLint.rules = ['all-dependency']
 
 javascript.source {
     custom {
