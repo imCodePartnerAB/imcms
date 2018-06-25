@@ -24,7 +24,11 @@ Imcms.define("imcms-page-info-builder",
 
         function buildPageInfoPanels(docId) {
             return pageInfoTabs.tabBuilders.map(function (tabBuilder, index) {
-                return tabBuilder.buildTab(index, docId).css("display", (index === 0 ? "block" : "none"));
+                var $tab = tabBuilder.buildTab(index, docId);
+
+                (index === 0) ? $tab.slideDown() : $tab.slideUp();
+
+                return $tab;
             });
         }
 

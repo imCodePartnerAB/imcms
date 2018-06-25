@@ -33,7 +33,11 @@ Imcms.define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], functi
         buildTab: function (index) {
             this.tabIndex = index;
             var tabElements$ = this.tabElementsFactory.apply(this, arguments);
-            return formsBEM.buildBlock("<div>", tabElements$, {'data-window-id': index}, 'field');
+            var attributes = {
+                'data-window-id': index,
+                style: 'display: none;'
+            };
+            return formsBEM.buildBlock("<div>", tabElements$, attributes, 'field');
         }
     };
 
