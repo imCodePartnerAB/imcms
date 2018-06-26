@@ -651,7 +651,11 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         listUsers: 'List users'
                     },
                     searchResult: {
-                        title: ' users found'
+                        title: ' users found',
+                        firstName: 'First Name',
+                        lastName: 'Last Name',
+                        userName: 'Username',
+                        email: 'Email'
                     }
                 },
                 templates: {

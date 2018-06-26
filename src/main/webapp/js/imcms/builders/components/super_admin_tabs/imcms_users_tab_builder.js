@@ -88,11 +88,11 @@ Imcms.define(
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
-                            'last-name': $('<div>', {
-                                text: user.lastName
-                            }),
                             'first-name': $('<div>', {
                                 text: user.firstName
+                            }),
+                            'last-name': $('<div>', {
+                                text: user.lastName
                             }),
                             'user-name': $('<div>', {
                                 text: user.username
@@ -110,6 +110,19 @@ Imcms.define(
                     return this;
                 },
                 prepareTitleRow: function () {
+                    var $titleRow = new BEM({
+                        block: 'imcms-user-title-row',
+                        elements: {
+                            'first-name': $('<div>', {text: texts.searchResult.firstName}),
+                            'last-name': $('<div>', {text: texts.searchResult.lastName}),
+                            'user-name': $('<div>', {text: texts.searchResult.userName}),
+                            'email': $('<div>', {text: texts.searchResult.email})
+                        }
+                    }).buildBlockStructure('<div>', {
+                        'class': 'imcms-title'
+                    });
+
+                    $searchResultContainer.append($titleRow);
                     return this;
                 },
                 addRowsToList: function (userRows$) {

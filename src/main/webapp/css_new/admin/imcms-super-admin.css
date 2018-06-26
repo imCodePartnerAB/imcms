@@ -52,15 +52,24 @@
     float: none;
 }
 
-.imcms-user-info-row {
+.imcms-form__field .imcms-user-title-row.imcms-title {
+    margin-bottom: 0;
+}
+
+.imcms-user-info-row,
+.imcms-user-title-row {
     padding: 2px;
     border-bottom: solid 1px #dad5d5;
 }
 
-.imcms-user-info-row .imcms-user-info-row__last-name,
-.imcms-user-info-row .imcms-user-info-row__first-name,
-.imcms-user-info-row .imcms-user-info-row__user-name,
-.imcms-user-info-row .imcms-user-info-row__email {
+.imcms-user-info-row__last-name,
+.imcms-user-info-row__first-name,
+.imcms-user-info-row__user-name,
+.imcms-user-info-row__email,
+.imcms-user-title-row__last-name,
+.imcms-user-title-row__first-name,
+.imcms-user-title-row__user-name,
+.imcms-user-title-row__email {
     padding: 5px;
 }
 
@@ -68,17 +77,22 @@
     margin: 5px;
 }
 
-.imcms-user-info-row .imcms-user-info-row__last-name,
-.imcms-user-info-row .imcms-user-info-row__first-name {
+.imcms-user-info-row__last-name,
+.imcms-user-info-row__first-name,
+.imcms-user-title-row__last-name,
+.imcms-user-title-row__first-name {
     width: 18%;
 }
 
-.imcms-user-info-row .imcms-user-info-row__user-name,
-.imcms-user-info-row .imcms-user-info-row__email {
+.imcms-user-info-row__user-name,
+.imcms-user-info-row__email,
+.imcms-user-title-row__user-name,
+.imcms-user-title-row__email {
     width: 27%;
 }
 
-.imcms-user-info-row > * {
+.imcms-user-info-row > *,
+.imcms-user-title-row > * {
     display: inline-block;
 }
 
