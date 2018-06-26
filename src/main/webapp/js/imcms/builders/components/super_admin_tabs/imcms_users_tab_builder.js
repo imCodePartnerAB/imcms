@@ -106,6 +106,7 @@ Imcms.define(
                     }).buildBlockStructure('<div>');
                 },
                 updateUsersFound: function (numberOfUsers) {
+                    $usersCountContainer.text(numberOfUsers);
                     return this;
                 },
                 prepareTitleRow: function () {
@@ -152,10 +153,12 @@ Imcms.define(
             });
         }
 
+        var $usersCountContainer;
+
         function buildSearchResultTitle() {
             return components.texts.titleText('<div>', texts.searchResult.title, {
                 'class': 'imcms-field'
-            }).prepend($('<span>', {
+            }).prepend($usersCountContainer = $('<span>', {
                 text: '0'
             }));
         }
