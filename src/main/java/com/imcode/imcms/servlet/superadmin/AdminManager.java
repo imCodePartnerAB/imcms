@@ -36,7 +36,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class AdminManager extends HttpServlet {
 
@@ -521,7 +525,7 @@ public class AdminManager extends HttpServlet {
             expandableDatesBean.setExpanded(true);
             expandableDatesBean.setDocument(document);
             request.setAttribute("expandableDatesBean", expandableDatesBean);
-            return Utility.getContents("/imcms/" + user.getLanguageIso639_2()
+            return Utility.getContents("/imcms/" + user.getLanguage()
                     + "/jsp/admin/admin_manager_expandable_dates.jsp", request, response);
         }
 
@@ -573,7 +577,7 @@ public class AdminManager extends HttpServlet {
 
         public void forward(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) throws IOException, ServletException {
             putInRequest(request);
-            String forwardPath = "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/admin_manager.jsp";
+            String forwardPath = "/imcms/" + user.getLanguage() + "/jsp/admin/admin_manager.jsp";
             request.getRequestDispatcher(forwardPath).forward(request, response);
         }
 

@@ -18,6 +18,11 @@ public class TextDomainObject implements Serializable, Cloneable {
      * HTML-code.
      */
     public final static int TEXT_TYPE_HTML = 1;
+    /**
+     * Clean HTML-code, illegal tags removed.
+     */
+    public final static int TEXT_TYPE_CLEAN_HTML = 2;
+
     private volatile String text;
     private volatile int type;
 
@@ -80,6 +85,7 @@ public class TextDomainObject implements Serializable, Cloneable {
         switch (type) {
             case TEXT_TYPE_PLAIN:
             case TEXT_TYPE_HTML:
+            case TEXT_TYPE_CLEAN_HTML:
                 this.type = type;
                 break;
             default:
@@ -132,10 +138,6 @@ public class TextDomainObject implements Serializable, Cloneable {
         } catch (CloneNotSupportedException e) {
             throw new AssertionError(e);
         }
-    }
-
-    public enum Format {
-        PLAIN_TEXT, HTML
     }
 
     public static final class Builder {

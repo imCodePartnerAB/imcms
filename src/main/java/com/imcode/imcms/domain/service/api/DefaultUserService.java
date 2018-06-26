@@ -45,7 +45,16 @@ class DefaultUserService implements UserService {
 
     @Override
     public List<UserDTO> getAdminUsers() {
-        return userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID).stream()
+        return userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID)
+                .stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> getAllActiveUsers() {
+        return userRepository.findByActiveIsTrue()
+                .stream()
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
     }

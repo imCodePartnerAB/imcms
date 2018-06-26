@@ -95,11 +95,11 @@
         </copy>
 
         <antcall target="web-lang">
-            <param name="buildlanguage" value="swe"/>
+            <param name="buildlanguage" value="sv"/>
         </antcall>
 
         <antcall target="web-lang">
-            <param name="buildlanguage" value="eng"/>
+            <param name="buildlanguage" value="en"/>
         </antcall>
 
         <mkdir dir="${demotemplates}"/>

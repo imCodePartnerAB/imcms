@@ -43,7 +43,7 @@ public class RoleIds implements Cloneable, Serializable {
     }
 
     public RoleId[] toArray() {
-        return set.toArray(new RoleId[set.size()]);
+        return set.toArray(new RoleId[0]);
     }
 
     public Set asSet() {

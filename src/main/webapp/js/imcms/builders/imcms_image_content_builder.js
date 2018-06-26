@@ -5,9 +5,9 @@
 Imcms.define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-primitives-builder", "imcms-controls-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts"
+        "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts"
     ],
-    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, controlsBuilder, modalWindow, $, texts) {
+    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, modalWindow, $, texts) {
         var OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         var SUBFOLDER_CLASS = "imcms-folders__subfolder";
         var ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -79,16 +79,16 @@ Imcms.define("imcms-image-content-builder",
 
         var folderControlsBuilder = {
             move: function (folder) {
-                return controlsBuilder.move(moveFolder.bind(folder));
+                return components.controls.move(moveFolder.bind(folder));
             },
             remove: function (folder) {
-                return controlsBuilder.remove(removeFolder.bind(folder));
+                return components.controls.remove(removeFolder.bind(folder));
             },
             edit: function (folder, level) {
-                return controlsBuilder.edit(setRenameFolder(folder, level));
+                return components.controls.edit(setRenameFolder(folder, level));
             },
             create: function (folder, level) {
-                return controlsBuilder.create(setCreateFolder(folder, level));
+                return components.controls.create(setCreateFolder(folder, level));
             }
         };
 
@@ -304,7 +304,7 @@ Imcms.define("imcms-image-content-builder",
                 folderControlsBuilder.create(subfolder, level)
             ];
 
-            return controlsBuilder.buildControlsBlock("<div>", controlsElements);
+            return components.controls.buildControlsBlock("<div>", controlsElements);
         }
 
         function openSubFolders() {

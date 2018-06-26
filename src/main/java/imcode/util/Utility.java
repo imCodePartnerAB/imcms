@@ -72,10 +72,10 @@ import java.util.regex.Pattern;
 @Component
 public class Utility {
 
-    public static final ResultSetHandler SINGLE_STRING_HANDLER = new SingleObjectHandler(new StringFromRowFactory());
-    public static final ResultSetHandler SINGLE_BOOLEAN_HANDLER = new SingleObjectHandler(new BooleanFromRowFactory());
-    public static final ResultSetHandler STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
-    public static final ResultSetHandler STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
+    public static final ResultSetHandler<String> SINGLE_STRING_HANDLER = new SingleObjectHandler<>(new StringFromRowFactory());
+    public static final ResultSetHandler<Boolean> SINGLE_BOOLEAN_HANDLER = new SingleObjectHandler<>(new BooleanFromRowFactory());
+    public static final ResultSetHandler<String[]> STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
+    public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
     private final static Logger log = Logger.getLogger(Utility.class.getName());
     private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
     private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");

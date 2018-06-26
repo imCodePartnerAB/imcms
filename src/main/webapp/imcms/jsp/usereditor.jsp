@@ -49,7 +49,11 @@ ${"-->"}
             <a href="${contextPath}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/sv/AdminUserResp.htm/2001"/></a>
         </div>
-
+        <c:if test="${errorMessage ne null}">
+            <div class="imcms-field">
+                <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
+            </div>
+        </c:if>
         <form id="user-edit-form-2" method="post" action="${contextPath}/servlet/PageDispatcher">
             ${userEditorPage.htmlHidden(pageContext.request)}
             <div class="imcms-field">
@@ -158,10 +162,11 @@ ${"-->"}
                  class="imcms-field"><%-- content is set via js --%></div>
 
             <div class="imcms-field imcms-field--phone">
-                <div class="imcms-text-box">
+                <div class="imcms-text-box imcms-text-box--phone-box">
                     <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/32"/></label>
                     <div id="phone-type-select" class="imcms-select imcms-select--phone-type">
+                        <input id="phone-type-selected" type="hidden" value="<%=PhoneNumberType.OTHER.getId()%>">
                         <div class="imcms-drop-down-list imcms-select__drop-down-list">
                             <div class="imcms-drop-down-list__select-item">
                                 <span class="imcms-drop-down-list__select-item-value"><%=PhoneNumberType.OTHER.getName().toLocalizedString(request)%></span>
@@ -177,21 +182,37 @@ ${"-->"}
                         </div>
                     </div>
                     <input id="phone" class="imcms-input imcms-text-box__input imcms-input--phone" type="text"
-                           name="edited_phone_number"
-                           maxlength="50" value="<c:out value='${editedUser.country}'/>">
-                    <button class="imcms-button imcms-button--positive imcms-button--add-phone"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/2004"/></button>
+                           maxlength="50">
+                    <button class="imcms-button imcms-button--positive imcms-button--add-phone"
+                            id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004"/></button>
                 </div>
 
                 <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
-                    <div class="imcms-text-box imcms-item__input--float-l imcms-item__input">
-                        <div>${phoneNumber.type.name.toLocalizedString(pageContext.request)}</div>
-                        <label><input readonly="readonly" type="text" class="imcms-input imcms-text-box__input"
-                                      maxlength="50" value="${phoneNumber.number}"></label>
-                        <div class="imcms-controls">
-                            <div class="imcms-control imcms-control--edit imcms-controls__control"></div>
-                            <div class="imcms-control imcms-control--remove imcms-controls__control"></div>
+                    <div class="imcms-text-box imcms-text-box--phone-box imcms-text-box--existing-phone-box">
+                        <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
+                                key="templates/sv/AdminUserResp.htm/32"/></label>
+                        <div class="imcms-select imcms-select--phone-type" disabled="disabled">
+                            <input type="hidden" name="user_phone_number_type" value="${phoneNumber.type.id}">
+                            <div class="imcms-drop-down-list imcms-select__drop-down-list">
+                                <div class="imcms-drop-down-list__select-item">
+                                    <span class="imcms-drop-down-list__select-item-value">${phoneNumber.type.name.toLocalizedString(pageContext.request)}</span>
+                                    <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
+                                            type="button"></button>
+                                </div>
+                                <div class="imcms-drop-down-list__items"><c:forEach var="phoneType"
+                                                                                    items="<%=PhoneNumberType.getAllPhoneNumberTypes()%>">
+                                    <div class="imcms-drop-down-list__item"
+                                         data-value="${phoneType.id}">${phoneType.name.toLocalizedString(pageContext.request)}</div>
+                                </c:forEach></div>
+                            </div>
                         </div>
+                        <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
+                               name="user_phone_number" disabled="disabled" value="${phoneNumber.number}">
+
+                        <button class="imcms-button imcms-button--save" style="display: none;"
+                                type="button"><fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
+                        <div class="imcms-control imcms-control--remove"></div>
+                        <div class="imcms-control imcms-control--edit"></div>
                     </div>
                 </c:forEach>
             </div>
@@ -224,34 +245,45 @@ ${"-->"}
                             key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
                 </div>
                 <div class="imcms-field">
-                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></label>
-                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/>
-                        <%-- select --%>
-                </div>
-                <div class="imcms-field">
-                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></label>
-                        <%-- select --%>
-                    <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/>
-                </div>
-            </c:if>
-            <p><fmt:message key="templates/sv/AdminUserResp.htm/40"/></p>
-            <c:if test="${errorMessage ne null}">
-                <div class="imcms-field">
-                    <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
+                    <div class="imcms-checkboxes imcms-field__checkboxes">
+                        <div class="imcms-title imcms-checkboxes__title"><fmt:message
+                                key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
+                        <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
+                        <c:forEach var="role" items="${userEditorPage.getUserRoles(editedUser)}">
+                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                                <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
+                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                                <label for="role-${role.id}"
+                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
+                            </div>
+                        </c:forEach>
+                    </div>
+                    <c:if test="${loggedOnUser.superAdmin}">
+                        <div class="imcms-checkboxes imcms-field__checkboxes">
+                            <div class="imcms-title imcms-checkboxes__title"><fmt:message
+                                    key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
+                            <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
+                            <c:forEach var="role" items="${userEditorPage.getUserAdministratedRoles(editedUser)}">
+                                <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                                    <input type="checkbox" name="user_admin_role_ids" id="admin-role-${role.id}"
+                                           value="${role.id}"
+                                           class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                                    <label for="admin-role-${role.id}"
+                                           class="imcms-label imcms-checkbox__label">${role.name}</label>
+                                </div>
+                            </c:forEach>
+                        </div>
+                    </c:if>
                 </div>
             </c:if>
             <div class="imcms-info-footer imcms-info-footer__user-edit">
                 <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
                         key="templates/sv/AdminUserResp.htm/2007"/></button>
-                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button">
-                    <fmt:message
-                            key="templates/sv/AdminUserResp.htm/2008"/></button>
-                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button">
-                    <fmt:message
-                            key="templates/sv/AdminUserResp.htm/2009"/></button>
+                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2008"/></button>
+                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2009"/></button>
             </div>
         </form>
     </div>

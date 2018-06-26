@@ -3,7 +3,12 @@ package imcode.server.user;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.*;
+import com.imcode.db.commands.CompositeDatabaseCommand;
+import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
@@ -21,9 +26,17 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegistry, Authenticator, RoleGetter {
 
     public static final String SQL_ROLES_COLUMNS = "roles.role_id, roles.role_name, roles.admin_role, roles.permissions";
@@ -206,7 +219,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                     + " WHERE user_roles_crossref.role_id = roles.role_id"
                     + " AND user_roles_crossref.user_id = ?";
             final Object[] parameters = new String[]{"" + user.getId()};
-            String[][] sqlResult = (String[][]) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+            String[][] sqlResult = services.getDatabase().execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
             RoleId[] roleReferences = new RoleId[sqlResult.length];
             for (int i = 0; i < sqlResult.length; i++) {
                 String[] sqlRow = sqlResult[i];
@@ -368,7 +381,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             }
             modifyPasswordIfNecessary(user);
 
-            Number newUserId = (Number) services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][]{
+            Number newUserId = services.getDatabase().execute(new InsertIntoTableDatabaseCommand("users", new String[][]{
                     {"login_name", getSafeTrimmedString(user.getLoginName())},
                     {"login_password", getSafeTrimmedString(user.getPassword())},
                     {"first_name", user.getFirstName()},
@@ -449,7 +462,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
             roleNamesSet.add(getRole(RoleId.USERS).getName());
 
-            String[] roleNames = roleNamesSet.toArray(new String[roleNamesSet.size()]);
+            String[] roleNames = roleNamesSet.toArray(new String[0]);
             Arrays.sort(roleNames);
 
             return roleNames;
@@ -514,15 +527,15 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     void addRole(final RoleDomainObject role) throws RoleAlreadyExistsException, NameTooLongException {
         try {
             final int unionOfPermissionSetIds = getUnionOfRolePermissionIds(role);
-            final int newRoleId = ((Number) services.getDatabase().execute(new TransactionDatabaseCommand() {
-                public Object executeInTransaction(DatabaseConnection connection) throws DatabaseException {
-                    return connection.executeUpdateAndGetGeneratedKey(SQL_INSERT_INTO_ROLES, new String[]{
-                            role.getName(),
-                            ""
-                                    + unionOfPermissionSetIds});
+            final int newRoleId = services.getDatabase().execute(new TransactionDatabaseCommand<Number>() {
+                public Number executeInTransaction(DatabaseConnection connection) throws DatabaseException {
+                    return connection.executeUpdateAndGetGeneratedKey(
+                            SQL_INSERT_INTO_ROLES, new String[]{role.getName(), "" + unionOfPermissionSetIds}
+                    );
                 }
-            })).intValue();
+            }).intValue();
             role.setId(new RoleId(newRoleId));
+
         } catch (IntegrityConstraintViolationException icvse) {
             throw new RoleAlreadyExistsException("A role with the name \"" + role.getName()
                     + "\" already exists.");
@@ -547,7 +560,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             return;
         }
         try {
-            DatabaseCommand databaseCommand = new CompositeDatabaseCommand(new DatabaseCommand[]{
+            DatabaseCommand<Object> databaseCommand = new CompositeDatabaseCommand(new DatabaseCommand[]{
                     new DeleteWhereColumnsEqualDatabaseCommand("roles_rights", "role_id", "" + role.getId()),
                     new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "role_id", "" + role.getId()),
                     new DeleteWhereColumnsEqualDatabaseCommand("roles", "role_id", "" + role.getId()),
@@ -569,7 +582,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private RoleDomainObject[] getRoles(String rolesSql) {
         try {
             final Object[] parameters = new String[0];
-            String[][] sqlRows = (String[][]) services.getDatabase().execute(new SqlQueryCommand(rolesSql, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
+            String[][] sqlRows = services.getDatabase().execute(new SqlQueryCommand<>(rolesSql, parameters, Utility.STRING_ARRAY_ARRAY_HANDLER));
             RoleDomainObject[] roles = new RoleDomainObject[sqlRows.length];
             for (int i = 0; i < sqlRows.length; i++) {
                 roles[i] = getRoleFromSqlResult(sqlRows[i]);
@@ -583,7 +596,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public RoleDomainObject getRoleById(int roleId) {
         try {
             final Object[] parameters = new String[]{"" + roleId};
-            String[] sqlResult = (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_ROLE_BY_ID, parameters, Utility.STRING_ARRAY_HANDLER));
+            String[] sqlResult = services.getDatabase().execute(new SqlQueryCommand<>(SQL_SELECT_ROLE_BY_ID, parameters, Utility.STRING_ARRAY_HANDLER));
             return getRoleFromSqlResult(sqlResult);
         } catch (DatabaseException e) {
             throw new UnhandledException(e);
@@ -593,7 +606,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     public RoleDomainObject getRoleByName(String wantedRoleName) {
         try {
             final Object[] parameters = new String[]{wantedRoleName};
-            String[] sqlResult = (String[]) services.getDatabase().execute(new SqlQueryCommand(SQL_SELECT_ROLE_BY_NAME, parameters, Utility.STRING_ARRAY_HANDLER));
+            String[] sqlResult = services.getDatabase().execute(new SqlQueryCommand<>(SQL_SELECT_ROLE_BY_NAME, parameters, Utility.STRING_ARRAY_HANDLER));
             return getRoleFromSqlResult(sqlResult);
         } catch (DatabaseException e) {
             throw new UnhandledException(e);
@@ -666,7 +679,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         try {
             final Object[] parameters = new String[]{
                     "" + userToChangeId};
-            String[][] phoneNumberData = (String[][]) services.getDatabase().execute(new SqlQueryCommand(
+            String[][] phoneNumberData = services.getDatabase().execute(new SqlQueryCommand<>(
                     "SELECT   phones.number, phones.phonetype_id\n"
                             + "FROM   phones\n"
                             + "WHERE  phones.user_id = ?", parameters, Utility.STRING_ARRAY_ARRAY_HANDLER
@@ -679,7 +692,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
                 PhoneNumber phoneNumber = new PhoneNumber(phoneNumberString, phoneNumberType);
                 phoneNumbers.add(phoneNumber);
             }
-            return phoneNumbers.toArray(new PhoneNumber[phoneNumbers.size()]);
+            return phoneNumbers.toArray(new PhoneNumber[0]);
         } catch (DatabaseException e) {
             throw new UnhandledException(e);
         }
@@ -689,7 +702,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         try {
             final Object[] parameters = new String[]{"" + loggedOnUser.getId()};
 
-            String[] roleIds = (String[]) services.getDatabase().execute(new SqlQueryCommand("SELECT role_id\n"
+            String[] roleIds = services.getDatabase().execute(new SqlQueryCommand<>("SELECT role_id\n"
                     + "FROM useradmin_role_crossref\n"
                     + "WHERE user_id = ?", parameters, Utility.STRING_ARRAY_HANDLER));
 
@@ -697,7 +710,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
             for (String roleId : roleIds) {
                 useradminPermissibleRolesList.add(new RoleId(Integer.parseInt(roleId)));
             }
-            return useradminPermissibleRolesList.toArray(new RoleId[useradminPermissibleRolesList.size()]);
+            return useradminPermissibleRolesList.toArray(new RoleId[0]);
         } catch (DatabaseException e) {
             throw new UnhandledException(e);
         }
@@ -727,7 +740,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
         final Object[] parameters = new String[]{"" + ip,
                 "" + ip};
-        String userIdString = (String) services.getDatabase().execute(new SqlQueryCommand(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
+        String userIdString = services.getDatabase().execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.SINGLE_STRING_HANDLER));
 
         if (null != userIdString) {
             UserDomainObject user = getUser(Integer.parseInt(userIdString));

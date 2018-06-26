@@ -1,59 +1,57 @@
 Imcms.define("imcms-keywords-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-tab-form-builder", "imcms-i18n-texts"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "imcms-page-info-tab"
     ],
-    function (BEM, components, tabContentBuilder, texts) {
+    function (BEM, components, texts, PageInfoTab) {
 
         texts = texts.pageInfo.keywords;
 
-        return {
-            name: texts.name,
-            data: {},
-            tabIndex: null,
-            isDocumentTypeSupported: function () {
-                return true; // all supported
-            },
-            showTab: function () {
-                tabContentBuilder.showTab(this.tabIndex);
-            },
-            hideTab: function () {
-                tabContentBuilder.hideTab(this.tabIndex);
-            },
-            buildTab: function (index) {
-                this.tabIndex = index;
-                this.data.$keywordsBox = components.keywords.keywordsBox("<div>", {
-                    "input-id": "keyword",
-                    title: texts.title,
-                    placeholder: texts.placeholder,
-                    "button-text": texts.add
-                });
-                this.data.$searchDisableCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
-                    id: "isSearchDisabled",
-                    name: "isSearchDisabled",
-                    text: texts.disableSearch
-                });
-                var $checkboxField = components.checkboxes.checkboxContainerField("<div>", [
-                    this.data.$searchDisableCheckbox
-                ]);
+        var tabData = {};
 
-                return tabContentBuilder.buildFormBlock([this.data.$keywordsBox, $checkboxField], index);
-            },
-            fillTabDataFromDocument: function (document) {
-                document.keywords.forEach(this.data.$keywordsBox.addKeyword);
-                this.data.$searchDisableCheckbox.setChecked(document.searchDisabled);
-            },
-            saveData: function (documentDTO) {
-                documentDTO.keywords = this.data.$keywordsBox.getKeywords();
-                documentDTO.searchDisabled = this.data.$searchDisableCheckbox.isChecked();
-                return documentDTO;
-            },
-            clearTabData: function () {
-                this.data.$keywordsBox.find('.imcms-keyword__keywords')
-                    .find('.imcms-button--close')
-                    .click();
-
-                this.data.$searchDisableCheckbox.setChecked(false);
-            }
+        var KeywordsTab = function (name) {
+            PageInfoTab.call(this, name);
         };
+
+        KeywordsTab.prototype = Object.create(PageInfoTab.prototype);
+
+        KeywordsTab.prototype.isDocumentTypeSupported = function () {
+            return true; // all supported
+        };
+        KeywordsTab.prototype.tabElementsFactory = function () {
+            tabData.$keywordsBox = components.keywords.keywordsBox("<div>", {
+                "input-id": "keyword",
+                title: texts.title,
+                placeholder: texts.placeholder,
+                "button-text": texts.add
+            });
+            tabData.$searchDisableCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
+                id: "isSearchDisabled",
+                name: "isSearchDisabled",
+                text: texts.disableSearch
+            });
+            var $checkboxField = components.checkboxes.checkboxContainerField("<div>", [
+                tabData.$searchDisableCheckbox
+            ]);
+
+            return [tabData.$keywordsBox, $checkboxField];
+        };
+        KeywordsTab.prototype.fillTabDataFromDocument = function (document) {
+            document.keywords.forEach(tabData.$keywordsBox.addKeyword);
+            tabData.$searchDisableCheckbox.setChecked(document.searchDisabled);
+        };
+        KeywordsTab.prototype.saveData = function (documentDTO) {
+            documentDTO.keywords = tabData.$keywordsBox.getKeywords();
+            documentDTO.searchDisabled = tabData.$searchDisableCheckbox.isChecked();
+            return documentDTO;
+        };
+        KeywordsTab.prototype.clearTabData = function () {
+            tabData.$keywordsBox.find('.imcms-keyword__keywords')
+                .find('.imcms-button--close')
+                .click();
+
+            tabData.$searchDisableCheckbox.setChecked(false);
+        };
+
+        return new KeywordsTab(texts.name);
     }
 );

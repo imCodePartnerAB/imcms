@@ -35,7 +35,7 @@ String acceptedExtPatternReadonly = "/" +
 	"|(\\.LOG+)" +
 	"/i" ;
 
-    String IMG_PATH   = request.getContextPath()+"/imcms/"+user.getLanguageIso639_2()+"/images/admin/" ; // path to buttons (with trailing /)
+    String IMG_PATH = request.getContextPath() + "/imcms/" + user.getLanguage() + "/images/admin/"; // path to buttons (with trailing /)
 
 /* *******************************************************************
  *           INIT                                                    *

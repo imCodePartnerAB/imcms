@@ -50,7 +50,7 @@ Imcms.define("imcms-admin-panel-builder",
                 };
 
                 if (opts && opts.active === buttonData.name) {
-                    attributes["class"] = BEM.buildClass(panelItemClass, "item", "active");
+                    attributes["class"] = BEM.buildClass(panelBlock, "item", "active");
                 }
 
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);

@@ -1,0 +1,109 @@
+@import url("../imcms-info-page.css");
+
+.imcms-info-page {
+    position: absolute;
+    margin: 0 0 2%;
+    left: 15%;
+    width: 70%;
+    top: 2%;
+}
+
+@media screen and (max-width: 1600px) {
+    .imcms-info-page {
+        left: 12%;
+        width: 76%;
+    }
+}
+
+@media screen and (max-width: 1400px) {
+    .imcms-info-page {
+        left: 7%;
+        width: 86%;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .imcms-info-page {
+        left: 1%;
+        width: 98%;
+    }
+}
+
+.imcms-pop-up-modal {
+    height: auto;
+}
+
+.imcms-search-row > * {
+    width: 25%;
+    display: inline-block;
+    padding: 0 10px 0;
+}
+
+.imcms-search-row > :first-child {
+    padding-left: 0;
+}
+
+.imcms-pop-up-modal__right-side {
+    width: 75%;
+    padding-right: 5px;
+}
+
+.imcms-search-row__users-list-button .imcms-button {
+    float: none;
+}
+
+.imcms-form__field .imcms-user-title-row.imcms-title {
+    margin-bottom: 0;
+}
+
+.imcms-user-info-row,
+.imcms-user-title-row {
+    padding: 2px;
+    border-bottom: solid 1px #dad5d5;
+}
+
+.imcms-user-info-row__last-name,
+.imcms-user-info-row__first-name,
+.imcms-user-info-row__user-name,
+.imcms-user-info-row__email,
+.imcms-user-title-row__last-name,
+.imcms-user-title-row__first-name,
+.imcms-user-title-row__user-name,
+.imcms-user-title-row__email {
+    padding: 5px;
+}
+
+.imcms-user-info-row .imcms-control {
+    margin: 5px;
+}
+
+.imcms-user-info-row__last-name,
+.imcms-user-info-row__first-name,
+.imcms-user-title-row__last-name,
+.imcms-user-title-row__first-name {
+    width: 18%;
+}
+
+.imcms-user-info-row__user-name,
+.imcms-user-info-row__email,
+.imcms-user-title-row__user-name,
+.imcms-user-title-row__email {
+    width: 27%;
+}
+
+.imcms-user-info-row > *,
+.imcms-user-title-row > * {
+    display: inline-block;
+}
+
+.imcms-user-info-row__archive {
+    background-size: contain;
+    width: 26px;
+    height: 26px;
+}
+
+.imcms-users-search-result {
+    height: 600px;
+    background-color: #ececec;
+    border: solid 1px #d1d2c6;
+}

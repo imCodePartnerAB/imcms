@@ -6,7 +6,7 @@
 <%@page contentType="text/html; charset=UTF-8" %>
 <jsp:useBean id="subreport" scope="request" class="com.imcode.imcms.servlet.beans.AdminManagerSubreport"/>
 <%
-	String imagesPath = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguageIso639_2() + "/images/admin/";
+    String imagesPath = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguage() + "/images/admin/";
 	LocalizedMessage subreportHeading = subreport.getHeading();
 	List documents = subreport.getDocuments();
 	String subreportName = subreport.getName();

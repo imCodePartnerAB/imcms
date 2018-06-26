@@ -166,13 +166,13 @@ class MainConfig {
     }
 
     @Bean
-    public ResolvingQueryIndex documentIndex(Database database, DocumentMapper documentMapper,
+    public ResolvingQueryIndex documentIndex(Database databaseWithAutoCommit, DocumentMapper documentMapper,
                                              DocumentSearchQueryConverter documentSearchQueryConverter,
                                              DocumentIndexFactory documentIndexFactory) {
 
         final DocumentIndex index = documentIndexFactory.create();
         final LoggingDocumentIndex documentIndex = new LoggingDocumentIndex(
-                database,
+                databaseWithAutoCommit,
                 new PhaseQueryFixingDocumentIndex(index)
         );
 

@@ -48,7 +48,7 @@ private String getTabs( String[][] tabTextsLinks, int actTabIdx, HttpServletRequ
 
 private String createNavBar( String text, String url, String pos, boolean thisAct, boolean nextAct, int width,
                              HttpServletRequest request ) {
-    String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    String imagesPath = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguage() + "/images/admin/";
 	String sRet, topImg, midRightImg, sClass, sEvent ;
 	int btnH, totH, row1height, row2height, midRightImgW, itype ;
 	pos = pos.toUpperCase() ;

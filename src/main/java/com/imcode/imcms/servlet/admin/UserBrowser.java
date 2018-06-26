@@ -8,7 +8,13 @@ import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
-import imcode.server.user.*;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserAlreadyExistsException;
+import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
@@ -125,21 +131,21 @@ public class UserBrowser extends HttpServlet {
             selectedRoles[i] = userMapperAndRole.getRoleById(Integer.parseInt(selectedRoleIds[i]));
         }
         if (selectedRoles.length > 0) {
-            List usersList = new ArrayList();
-            for (int i = 0; i < users.length; i++) {
+            List<UserDomainObject> usersList = new ArrayList<>();
+            for (UserDomainObject user : users) {
                 boolean hasRole = false;
-                for (int k = 0; k < selectedRoles.length; k++) {
-                    hasRole = users[i].hasRoleId(selectedRoles[k].getId());
+                for (RoleDomainObject selectedRole : selectedRoles) {
+                    hasRole = user.hasRoleId(selectedRole.getId());
                     if (hasRole) {
                         break;
                     }
                 }
                 if (hasRole) {
-                    usersList.add(users[i]);
+                    usersList.add(user);
                 }
             }
 
-            users = (UserDomainObject[]) usersList.toArray(new UserDomainObject[usersList.size()]);
+            users = usersList.toArray(new UserDomainObject[0]);
         }
 
         if (loggedOnUser.isUserAdminAndCanEditAtLeastOneRole()) {
@@ -155,17 +161,17 @@ public class UserBrowser extends HttpServlet {
     }
 
     private UserDomainObject[] getUsersWithUseradminPermissibleRoles(UserDomainObject loggedOnUser, UserDomainObject[] users) {
-        List userList = new ArrayList();
+        List<UserDomainObject> userList = new ArrayList<>();
         RoleId[] useradminPermissibleRoles = loggedOnUser.getUserAdminRoleIds();
-        for (int i = 0; i < users.length; i++) {
-            for (int k = 0; k < useradminPermissibleRoles.length; k++) {
-                if (users[i].hasRoleId(useradminPermissibleRoles[k])) {
-                    userList.add(users[i]);
+        for (UserDomainObject user : users) {
+            for (RoleId useradminPermissibleRole : useradminPermissibleRoles) {
+                if (user.hasRoleId(useradminPermissibleRole)) {
+                    userList.add(user);
                     break;
                 }
             }
         }
-        return (UserDomainObject[]) userList.toArray(new UserDomainObject[userList.size()]);
+        return userList.toArray(new UserDomainObject[0]);
     }
 
     private UserDomainObject getSelectedUserFromRequest(HttpServletRequest request) {
@@ -220,7 +226,7 @@ public class UserBrowser extends HttpServlet {
         public void forward(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
             request.setAttribute(REQUEST_ATTRIBUTE__FORM_DATA, this);
             UserDomainObject user = Utility.getLoggedOnUser(request);
-            String userLanguage = user.getLanguageIso639_2();
+            String userLanguage = user.getLanguage();
             request.getRequestDispatcher("/imcms/" + userLanguage + JSP__USER_BROWSER).forward(request, response);
         }
     }

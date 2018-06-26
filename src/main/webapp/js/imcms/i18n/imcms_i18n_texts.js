@@ -298,7 +298,49 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 warnings: " Varningar"
             },
             sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet. Omdirigera till inloggningssidan?",
-            contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat."
+            contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat.",
+            superAdmin: {
+                head: 'SuperAdmin',
+                users: {
+                    name: 'Användare'
+                },
+                templates: {
+                    name: 'Mallar'
+                },
+                systemProperties: {
+                    name: 'Systemegenskaper'
+                },
+                sections: {
+                    name: 'Sektioner'
+                },
+                search: {
+                    name: 'Sök'
+                },
+                roles: {
+                    name: 'Roller'
+                },
+                profiles: {
+                    name: 'Profiler'
+                },
+                linkValidator: {
+                    name: 'Länk Validator'
+                },
+                ipWhiteList: {
+                    name: 'IP vitlista'
+                },
+                ipAccess: {
+                    name: 'IP-åtkomst'
+                },
+                files: {
+                    name: 'Filer'
+                },
+                deleteDocs: {
+                    name: 'Radera dokument'
+                },
+                categories: {
+                    name: 'Kategorier'
+                }
+            }
         },
         "en": {
             panel: {
@@ -591,7 +633,68 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 warnings: " Warnings"
             },
             sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?",
-            contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving."
+            contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving.",
+            superAdmin: {
+                head: 'SuperAdmin',
+                users: {
+                    name: 'Users',
+                    title: 'Edit user properties',
+                    searchFilter: {
+                        byName: {
+                            text: 'Search users',
+                            placeholder: 'Empty field shows all'
+                        },
+                        byRole: {
+                            title: 'User with role'
+                        },
+                        inactiveUsers: 'Include inactive users',
+                        listUsers: 'List users'
+                    },
+                    searchResult: {
+                        title: ' users found',
+                        firstName: 'First Name',
+                        lastName: 'Last Name',
+                        userName: 'Username',
+                        email: 'Email'
+                    }
+                },
+                templates: {
+                    name: 'Templates'
+                },
+                systemProperties: {
+                    name: 'System Properties'
+                },
+                sections: {
+                    name: 'Sections'
+                },
+                search: {
+                    name: 'Search'
+                },
+                roles: {
+                    name: 'Roles'
+                },
+                profiles: {
+                    name: 'Profiles'
+                },
+                linkValidator: {
+                    name: 'Link Validator'
+                },
+                ipWhiteList: {
+                    name: 'IP White List'
+                },
+                ipAccess: {
+                    name: 'IP Access'
+                },
+                files: {
+                    name: 'Files'
+                },
+                deleteDocs: {
+                    name: 'Delete Documents'
+                },
+                categories: {
+                    name: 'Categories'
+                }
+            }
         }
     };
 

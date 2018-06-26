@@ -122,7 +122,8 @@
                                          value="<? templates/sv/template_assign.html/2015 ?>">&nbsp;<br>
                             <img src="${contextPath}/imcms/${language}/images/admin/1x1.gif" width="1" height="2"><br>
                             &nbsp;<input type="submit" class="imcmsFormBtnSmall" style="width:60px" name="deassign"
-                                         value="<? templates/sv/template_assign.html/2016 ?>">&nbsp;</td>
+                                         value="<? templates/sv/template_assign.html/2016 ?>">&nbsp;
+                        </td>
                         <td>
                             <select name="assigned" size="7" style="width:100%" multiple>
                                 ${assigned}

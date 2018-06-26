@@ -1,7 +1,12 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.TextContentFilter;
 import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.TextHistoryService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
@@ -10,12 +15,16 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -25,16 +34,20 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
     private final LanguageService languageService;
     private final VersionService versionService;
     private final TextHistoryService textHistoryService;
+    private final TextContentFilter textContentFilter;
 
     DefaultTextService(TextRepository textRepository,
                        LanguageService languageService,
                        VersionService versionService,
-                       TextHistoryService textHistoryService) {
+                       TextHistoryService textHistoryService,
+                       TextContentFilter textContentFilter) {
+
         super(textRepository);
 
         this.languageService = languageService;
         this.versionService = versionService;
         this.textHistoryService = textHistoryService;
+        this.textContentFilter = textContentFilter;
     }
 
     @Override
@@ -64,17 +77,45 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         final LanguageJPA language = new LanguageJPA(languageService.findByCode(text.getLangCode()));
 
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
+        final String textContent = text.getText();
 
-        if (textJPA == null || !textJPA.getText().equals(text.getText())) {
-            final TextJPA newTextJPA = new TextJPA(text, version, language);
-            newTextJPA.setId(textJPA == null ? null : textJPA.getId());
+        if ((textJPA != null) && Objects.equals(textJPA.getText(), textContent)) return;
 
-            repository.save(newTextJPA);
+        final Text.Type textType = text.getType();
 
-            super.updateWorkingVersion(docId);
+        if (Text.Type.HTML.equals(textType)) {
+            text.setText(cleanScriptContent(textContent));
 
-            textHistoryService.save(text);
+        } else if (Text.Type.CLEAN_HTML.equals(textType)) {
+            text.setText(textContentFilter.cleanText(textContent));
         }
+
+        final TextJPA newTextJPA = new TextJPA(text, version, language);
+        newTextJPA.setId((textJPA == null) ? null : textJPA.getId());
+
+        repository.save(newTextJPA);
+
+        super.updateWorkingVersion(docId);
+
+        textHistoryService.save(text);
+    }
+
+    String cleanScriptContent(String text) {
+        if (!text.contains("<script") || !text.contains("<br")) return text;
+
+        final Matcher matcher = Pattern.compile("<script.*?</script>").matcher(text);
+        final StringBuffer buffer = new StringBuffer();
+
+        while (matcher.find()) {
+            String fixed = matcher.group(0).replaceAll("<br>|<br >|<br/>|<br />", "\n");
+            fixed = fixed.replaceAll("\n+", "\n");
+            fixed = StringEscapeUtils.unescapeHtml(fixed);
+            matcher.appendReplacement(buffer, Matcher.quoteReplacement(fixed));
+        }
+
+        matcher.appendTail(buffer);
+
+        return buffer.toString();
     }
 
     @Override

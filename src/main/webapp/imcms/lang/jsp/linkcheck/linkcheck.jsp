@@ -15,7 +15,7 @@
 
 LinkCheck.LinkCheckPage linkCheckPage = (LinkCheck.LinkCheckPage) request.getAttribute(LinkCheck.LinkCheckPage.REQUEST_ATTRIBUTE__PAGE) ;
 boolean doCheckLinks = linkCheckPage.isDoCheckLinks();
-String language = Utility.getLoggedOnUser( request ).getLanguageIso639_2() ;
+    String language = Utility.getLoggedOnUser(request).getLanguage();
 
 %>
 

@@ -279,7 +279,7 @@ public class SearchDocumentsPage extends OkCancelPage implements DocumentFinderP
 
     public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser(request);
-        return "/imcms/" + user.getLanguageIso639_2() + "/jsp/search_documents.jsp";
+        return "/imcms/" + user.getLanguage() + "/jsp/search_documents.jsp";
     }
 
     public List getDocumentsFound() {

@@ -68,7 +68,7 @@ public class AdminUser extends HttpServlet {
                     + URLEncoder.encode(USER_LOGIN_NAME_PARAMETER_NAME, "UTF-8")
                     + "="
                     + URLEncoder.encode(userToChange.getLoginName(), "UTF-8");
-            RequestDispatcher rd = req.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2()
+            RequestDispatcher rd = req.getRequestDispatcher("/imcms/" + user.getLanguage()
                     + CHANGE_EXTERNAL_USER_URL
                     + queryString);
             rd.forward(req, res);

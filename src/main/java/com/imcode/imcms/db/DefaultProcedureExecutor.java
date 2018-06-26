@@ -32,11 +32,11 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     private final Map<String, Procedure> procedureCache = CachingFileLoader.createSynchronizedMapDefaultInitialSize();
     private final Resource sqlResource;
 
-    public DefaultProcedureExecutor(Database database,
+    public DefaultProcedureExecutor(Database databaseWithAutoCommit,
                                     CachingFileLoader fileLoader,
                                     @Value("classpath:sql") Resource sqlResource) {
 
-        this.database = database;
+        this.database = databaseWithAutoCommit;
         this.fileLoader = fileLoader;
         this.sqlResource = sqlResource;
     }
@@ -47,7 +47,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure(procedure, parameters);
         String body = procedure.getBody();
         logProcedureCall(procedureName, body, parametersAtCorrectIndices);
-        return (Integer) database.execute(new SqlUpdateCommand(body, parametersAtCorrectIndices));
+        return database.execute(new SqlUpdateCommand(body, parametersAtCorrectIndices));
     }
 
     private void logProcedureCall(String procedureName, String body, Object[] parametersAtCorrectIndices) {
@@ -56,12 +56,12 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
     }
 
     @Override
-    public <T> T executeProcedure(String procedureName, Object[] params, ResultSetHandler resultSetHandler) {
+    public <T> T executeProcedure(String procedureName, Object[] params, ResultSetHandler<T> resultSetHandler) {
         Procedure procedure = getProcedure(procedureName);
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure(procedure, params);
         String body = procedure.getBody();
         logProcedureCall(procedureName, body, parametersAtCorrectIndices);
-        return (T) database.execute(new SqlQueryCommand(body, parametersAtCorrectIndices, resultSetHandler));
+        return database.execute(new SqlQueryCommand<>(body, parametersAtCorrectIndices, resultSetHandler));
     }
 
     private Object[] getParametersAtCorrectIndicesForProcedure(Procedure procedure, Object[] parameters) {
@@ -114,7 +114,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Map<String, Integer> parameterNameToIndexMap = getParameterNameToIndexMapParsedFromHeader(parameterPattern, headerParameters);
         List<Integer> parameterIndices = new ArrayList<>();
         String bodyWithParametersReplaced = replaceVariablesInBodyAndAddIndicesToList(parameterPattern, body, parameterNameToIndexMap, parameterIndices, procedureName);
-        int[] parameterIndicesArray = ArrayUtils.toPrimitive(parameterIndices.toArray(new Integer[parameterIndices.size()]));
+        int[] parameterIndicesArray = ArrayUtils.toPrimitive(parameterIndices.toArray(new Integer[0]));
         return new Procedure(bodyWithParametersReplaced, parameterIndicesArray);
     }
 

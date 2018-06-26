@@ -8,6 +8,27 @@
     top: 2%;
 }
 
+@media screen and (max-width: 1600px) {
+    .imcms-info-page__edit-user {
+        left: 15%;
+        width: 70%;
+    }
+}
+
+@media screen and (max-width: 900px) {
+    .imcms-info-page__edit-user {
+        left: 10%;
+        width: 80%;
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .imcms-info-page__edit-user {
+        left: 1%;
+        width: 98%;
+    }
+}
+
 .imcms-text-box__label,
 .imcms-select__label {
     display: inline-block;
@@ -36,14 +57,47 @@
 
 .imcms-field--phone .imcms-select--phone-type {
     width: 15%;
+    padding-left: 5px;
 }
 
 .imcms-field--phone .imcms-input--phone {
-    width: 50%;
+    width: 47%;
     float: none;
 }
 
-.imcms-field--phone .imcms-button--add-phone {
+.imcms-field--phone .imcms-button {
+    display: inline-block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    float: right;
+}
+
+.imcms-field--phone .imcms-select__drop-down-list {
+    float: none;
+}
+
+.imcms-text-box--phone-box {
+    margin-bottom: 7px;
+}
+
+.imcms-text-box--phone-box .imcms-control {
+    margin: 8px 7px 0;
     display: inline-block;
 }
 
+.imcms-checkboxes__checkbox {
+    padding: 5px;
+}
+
+.imcms-checkbox__label {
+    padding-top: 0;
+}
+
+.imcms-field__checkboxes:first-of-type {
+    width: 35%;
+}
+
+.imcms-field__checkboxes {
+    display: inline-block;
+    vertical-align: top;
+}

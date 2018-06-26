@@ -11,12 +11,20 @@ import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.GetterDocumentReference;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
+import imcode.server.document.textdocument.TreeSortKeyDomainObject;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -98,7 +106,7 @@ public class TextDocument extends Document {
 
     public void setCleanHtmlTextField(int textFieldIndexInDocument, String newText) {
         newText = Utility.getTextContentFilter().cleanText(newText);
-        setTextField(textFieldIndexInDocument, newText, TextField.Format.HTML);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.CLEAN_HTML);
     }
 
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
@@ -207,6 +215,11 @@ public class TextDocument extends Document {
         return new Image(image);
     }
 
+    @Deprecated
+    public Menu getMenu(int no) {
+        return new Menu(this, no);
+    }
+
     public static class TextField {
         private final TextDomainObject imcmsText;
 
@@ -215,7 +228,7 @@ public class TextDocument extends Document {
         }
 
         public Format getFormat() {
-            return imcmsText.getType() == TextDomainObject.TEXT_TYPE_PLAIN ? Format.PLAIN : Format.HTML;
+            return Format.fromType(imcmsText.getType());
         }
 
         public void setFormat(Format format) {
@@ -243,22 +256,30 @@ public class TextDocument extends Document {
 
         public enum Format {
             PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
-            HTML(TextDomainObject.TEXT_TYPE_HTML);
+            HTML(TextDomainObject.TEXT_TYPE_HTML),
+            CLEAN_HTML(TextDomainObject.TEXT_TYPE_CLEAN_HTML),;
+
             private final int type;
 
             Format(int type) {
                 this.type = type;
             }
 
+            public static Format fromType(int type) {
+                switch (type) {
+                    case TextDomainObject.TEXT_TYPE_HTML:
+                        return Format.HTML;
+                    case TextDomainObject.TEXT_TYPE_CLEAN_HTML:
+                        return Format.CLEAN_HTML;
+                    default:
+                        return Format.PLAIN;
+                }
+            }
+
             public int getType() {
                 return type;
             }
         }
-    }
-
-    @Deprecated
-    public Menu getMenu(int no) {
-        return new Menu(this, no);
     }
 
     @Deprecated

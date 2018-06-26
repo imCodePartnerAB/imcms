@@ -26,8 +26,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+@SuppressWarnings("unused")
 public class TemplateMapper {
 
     private static final String SPROC_GET_TEMPLATES_IN_GROUP = "GetTemplatesInGroup";
@@ -124,7 +133,9 @@ public class TemplateMapper {
 
     public TemplateGroupDomainObject[] getAllTemplateGroups() {
         final Object[] parameters = new String[]{};
-        String[][] sprocResult = services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS, parameters, new StringArrayArrayResultSetHandler());
+        String[][] sprocResult = services.getProcedureExecutor().executeProcedure(
+                SPROC_GET_TEMPLATE_GROUPS, parameters, new StringArrayArrayResultSetHandler()
+        );
         return createTemplateGroupsFromSqlResult(sprocResult);
     }
 
@@ -134,9 +145,12 @@ public class TemplateMapper {
         return createTemplateGroupsFromSqlResult(sprocResult);
     }
 
-    //todo: rewrite this, make it beauty
     public Set<Integer> getAllTemplateGroupIds() {
-        return (Set<Integer>) database.execute(new SqlQueryCommand("SELECT group_id FROM templategroups", null, new CollectionHandler(new HashSet(), newRowTransformer2())));
+        return database.execute(new SqlQueryCommand<>(
+                "SELECT group_id FROM templategroups",
+                null,
+                new CollectionHandler<>(new HashSet<>(), new IntRowTransformer())
+        ));
     }
 
     public List<TemplateDomainObject> getAllTemplates() {
@@ -144,13 +158,25 @@ public class TemplateMapper {
             String fileName = pathname.getName().toLowerCase();
             return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".jspx") || fileName.endsWith(".html"));
         });
+
+        if (templateFiles == null) return Collections.emptyList();
+
         UserDomainObject udo = Imcms.getUser();
         SortedSet<TemplateDomainObject> templates = new TreeSet<>();
+
         for (File templateFile : templateFiles) {
             String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
-            Boolean isHidden = (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER));
+            Boolean isHidden = database.execute(new SqlQueryCommand<>(
+                    "select is_hidden from template where template_name = ?",
+                    new String[]{nameWithoutExtension},
+                    Utility.SINGLE_BOOLEAN_HANDLER
+            ));
+
             if (isHidden == null) {
-                database.execute(new SqlUpdateCommand("INSERT INTO template (template_name,is_hidden) VALUES(?,?)", new Object[]{nameWithoutExtension, false}));
+                database.execute(new SqlUpdateCommand(
+                        "INSERT INTO template (template_name,is_hidden) VALUES(?,?)",
+                        new Object[]{nameWithoutExtension, false}
+                ));
                 isHidden = false;
             }
             TemplateDomainObject tdo = new TemplateDomainObject(nameWithoutExtension, templateFile.getName(), isHidden);
@@ -162,16 +188,21 @@ public class TemplateMapper {
     }
 
     public int getCountOfDocumentsUsingTemplate(TemplateDomainObject template) {
-        String queryResult = (String) database.execute(new SqlQueryCommand("SELECT COUNT(meta_id)" + " FROM text_docs"
+        String queryResult = database.execute(new SqlQueryCommand<>("SELECT COUNT(meta_id)" + " FROM text_docs"
                 + " WHERE template_name = ?", new String[]{"" + template.getName()}, Utility.SINGLE_STRING_HANDLER));
         return Integer.parseInt(queryResult);
     }
 
     // todo: fix meta headline
     public DocumentDomainObject[] getDocumentsUsingTemplate(TemplateDomainObject template) {
-        String[][] temp = (String[][]) database.execute(new SqlQueryCommand("select td.meta_id, td.meta_id as meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_name = ? order by td.meta_id", new String[]{template.getName()}, Utility.STRING_ARRAY_ARRAY_HANDLER));
+        String[][] temp = database.execute(new SqlQueryCommand<>(
+                "select td.meta_id, td.meta_id as meta_headline from text_docs td join meta m on td.meta_id = m.meta_id where template_name = ? order by td.meta_id",
+                new String[]{template.getName()},
+                Utility.STRING_ARRAY_ARRAY_HANDLER
+        ));
         DocumentMapper documentMapper = services.getDocumentMapper();
         DocumentDomainObject[] documents = new DocumentDomainObject[temp.length];
+
         for (int i = 0; i < documents.length; i++) {
             int documentId = Integer.parseInt(temp[i][0]);
             documents[i] = documentMapper.getDefaultDocument(documentId);
@@ -182,14 +213,24 @@ public class TemplateMapper {
 
     public TemplateDomainObject getTemplateByName(String templateName) {
         String[] extensions = new String[]{"jsp", "jspx", "html"};
+
         for (String extension : extensions) {
             String templateFileName = templateName + "." + extension;
             File templateFile = new File(getTemplateDirectory(), templateFileName);
+
             if (templateFile.exists()) {
                 String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
-                Boolean isHidden = (Boolean) database.execute(new SqlQueryCommand("select is_hidden from template where template_name = ?", new String[]{nameWithoutExtension}, Utility.SINGLE_BOOLEAN_HANDLER));
+                Boolean isHidden = database.execute(new SqlQueryCommand<>(
+                        "select is_hidden from template where template_name = ?",
+                        new String[]{nameWithoutExtension},
+                        Utility.SINGLE_BOOLEAN_HANDLER
+                ));
+
                 if (isHidden == null) {
-                    database.execute(new SqlUpdateCommand("INSERT INTO template (template_name,is_hidden) VALUES(?,?)", new Object[]{nameWithoutExtension, false}));
+                    database.execute(new SqlUpdateCommand(
+                            "INSERT INTO template (template_name,is_hidden) VALUES(?,?)",
+                            new Object[]{nameWithoutExtension, false}
+                    ));
                     isHidden = false;
                 }
                 return new TemplateDomainObject(templateName, templateFileName, isHidden);
@@ -201,52 +242,64 @@ public class TemplateMapper {
     public TemplateGroupDomainObject getTemplateGroupById(int templateGroupId) {
         String sqlStr = "SELECT group_id,group_name FROM templategroups WHERE group_id = ?";
         final Object[] parameters = new String[]{"" + templateGroupId};
-        String[] queryResult = (String[]) database.execute(new SqlQueryCommand(sqlStr, parameters, Utility.STRING_ARRAY_HANDLER));
+        String[] queryResult = database.execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_HANDLER));
 
         return createTemplateGroupFromSqlResultRow(queryResult);
     }
 
     public TemplateGroupDomainObject getTemplateGroupByName(String name) {
         final Object[] parameters = new String[]{name};
-        String[] sqlResultRow = (String[]) database.execute(new SqlQueryCommand("select group_id, group_name from templategroups where group_name = ?", parameters, Utility.STRING_ARRAY_HANDLER));
+        String[] sqlResultRow = database.execute(new SqlQueryCommand<>(
+                "select group_id, group_name from templategroups where group_name = ?",
+                parameters,
+                Utility.STRING_ARRAY_HANDLER
+        ));
         return createTemplateGroupFromSqlResultRow(sqlResultRow);
     }
 
     //TODO check this for getting templates depending by its availability for userGroup
     public Collection<TemplateDomainObject> getTemplatesInGroup(TemplateGroupDomainObject templateGroup) {
-        String[] params = new String[]{String.valueOf(templateGroup.getId())};
-        return CollectionUtils
-                .select(services.getProcedureExecutor()
-                                .executeProcedure(SPROC_GET_TEMPLATES_IN_GROUP, params, newArrayListHandler()),
-                        NotPredicate.notPredicate(NullPredicate.INSTANCE));
+        final String[] params = new String[]{String.valueOf(templateGroup.getId())};
+        final List<TemplateDomainObject> groupTemplates = services.getProcedureExecutor().executeProcedure(
+                SPROC_GET_TEMPLATES_IN_GROUP, params, newArrayListHandler()
+        );
+        return CollectionUtils.select(groupTemplates, NotPredicate.notPredicate(NullPredicate.nullPredicate()));
     }
 
-    private CollectionHandler newArrayListHandler() {
-        return new CollectionHandler(new ArrayList(), newRowTransformer());
+    private CollectionHandler<TemplateDomainObject, List<TemplateDomainObject>> newArrayListHandler() {
+        return new CollectionHandler<>(new ArrayList<>(), newRowTransformer());
     }
 
-    private RowTransformer newRowTransformer() {
-        return new RowTransformer() {
-            public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+    private RowTransformer<TemplateDomainObject> newRowTransformer() {
+        return new RowTransformer<TemplateDomainObject>() {
+            public TemplateDomainObject createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
                 return getTemplateByName(resultSet.getString(1));
             }
 
-            public Class getClassOfCreatedObjects() {
+            public Class<TemplateDomainObject> getClassOfCreatedObjects() {
                 return TemplateDomainObject.class;
             }
         };
     }
 
-    private RowTransformer newRowTransformer2() {
-        return new RowTransformer() {
-            public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-                return resultSet.getInt(1);
-            }
+    public boolean renameTemplate(String templateName, String newNameForTemplate) {
+        if (null != getTemplateByName(newNameForTemplate)) {
+            return false;
+        }
+        for (TemplateDomainObject template = getTemplateByName(templateName);
+             null != template;
+             template = getTemplateByName(templateName)) {
+            File templateFile = getTemplateFile(template);
+            String extension = StringUtils.substringAfterLast(template.getFileName(), ".");
+            String newFilename = newNameForTemplate + "." + extension;
 
-            public Class getClassOfCreatedObjects() {
-                return Integer.class;
+            if (templateFile.renameTo(new File(getTemplateDirectory(), newFilename))) {
+                replaceAllUsagesOfTemplate(template, new TemplateDomainObject(
+                        newNameForTemplate, newFilename, template.isHidden()
+                ));
             }
-        };
+        }
+        return true;
     }
 
     public List<TemplateDomainObject> getTemplatesNotInGroup(TemplateGroupDomainObject templateGroup) {
@@ -263,26 +316,12 @@ public class TemplateMapper {
                 new String[]{"" + templateGroup.getId(), template.getName()}));
     }
 
-    public boolean renameTemplate(String templateName, String newNameForTemplate) {
-        if (null != getTemplateByName(newNameForTemplate)) {
-            return false;
-        }
-        for (TemplateDomainObject template = getTemplateByName(templateName); null != template; template = getTemplateByName(templateName))
-        {
-            File templateFile = getTemplateFile(template);
-            String extension = StringUtils.substringAfterLast(template.getFileName(), ".");
-            String newFilename = newNameForTemplate + "." + extension;
-
-            if (templateFile.renameTo(new File(getTemplateDirectory(), newFilename))) {
-                replaceAllUsagesOfTemplate(template, new TemplateDomainObject(newNameForTemplate, newFilename, template.isHidden()));
-            }
-        }
-        return true;
-    }
-
-    public boolean updateAvaliability(String templateName, boolean isAvaliable) {
+    public boolean updateAvailability(String templateName, boolean isAvailable) {
         try {
-            database.execute(new SqlUpdateCommand("UPDATE template SET is_hidden = ? WHERE template_name = ?", new Object[]{isAvaliable, templateName}));
+            database.execute(new SqlUpdateCommand(
+                    "UPDATE template SET is_hidden = ? WHERE template_name = ?",
+                    new Object[]{isAvailable, templateName}
+            ));
             return true;
         } catch (DatabaseException e) {
             return false;
@@ -290,8 +329,9 @@ public class TemplateMapper {
     }
 
     public String createHtmlOptionListOfTemplatesWithDocumentCount(UserDomainObject user) {
-        String htmlStr = "";
+        StringBuilder htmlStr = new StringBuilder();
         List<TemplateDomainObject> templates = getAllTemplates();
+
         for (TemplateDomainObject template : templates) {
             List<String> tags = new ArrayList<>();
             tags.add("#template_name#");
@@ -300,9 +340,17 @@ public class TemplateMapper {
             tags.add("" + getCountOfDocumentsUsingTemplate(template));
             tags.add("#template_id#");
             tags.add(StringEscapeUtils.escapeHtml4(template.getNameAdmin()));
-            htmlStr += services.getAdminTemplate("template_list_row.html", user, tags);
+            htmlStr.append(services.getAdminTemplate("template_list_row.html", user, tags));
         }
-        return htmlStr;
+        return htmlStr.toString();
+    }
+
+    private String[][] sprocGetTemplateGroupsForUser(UserDomainObject user,
+                                                     int meta_id) {
+        final Object[] parameters = new String[]{String.valueOf(meta_id), String.valueOf(user.getId())};
+        return services.getProcedureExecutor().executeProcedure(
+                SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters, new StringArrayArrayResultSetHandler()
+        );
     }
 
     public void renameTemplateGroup(TemplateGroupDomainObject templateGroup, String newName) {
@@ -327,10 +375,15 @@ public class TemplateMapper {
         }
     }
 
-    private String[][] sprocGetTemplateGroupsForUser(UserDomainObject user,
-                                                     int meta_id) {
-        final Object[] parameters = new String[]{String.valueOf(meta_id), String.valueOf(user.getId())};
-        return services.getProcedureExecutor().executeProcedure(SPROC_GET_TEMPLATE_GROUPS_FOR_USER, parameters, new StringArrayArrayResultSetHandler());
+    private class IntRowTransformer implements RowTransformer<Integer> {
+
+        public Integer createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+            return resultSet.getInt(1);
+        }
+
+        public Class<Integer> getClassOfCreatedObjects() {
+            return Integer.class;
+        }
     }
 
     private TemplateGroupDomainObject createTemplateGroupFromSqlResultRow(String[] sqlResultRow) {

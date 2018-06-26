@@ -12,7 +12,7 @@
 <jsp:useBean id="listItemBean" class="com.imcode.imcms.servlet.beans.AdminManagerSubReportListItemBean" scope="request" />
 <%
     AdminManager.AdminManagerPage adminManagerPage = (AdminManager.AdminManagerPage) request.getAttribute(AdminManager.AdminManagerPage.REQUEST_ATTRIBUTE__PAGE) ;
-    String imagesPath  = request.getContextPath()+"/imcms/"+Utility.getLoggedOnUser( request ).getLanguageIso639_2()+"/images/admin/" ;
+    String imagesPath = request.getContextPath() + "/imcms/" + Utility.getLoggedOnUser(request).getLanguage() + "/images/admin/";
     JSCalendar jsCalendar = adminManagerPage.getJSCalendar(request);
 %>
 

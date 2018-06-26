@@ -5,12 +5,12 @@
 Imcms.define("imcms-document-editor-builder",
     [
         "imcms-bem-builder", "imcms-page-info-builder", "imcms-components-builder", "imcms-primitives-builder",
-        "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-controls-builder", "imcms-users-rest-api",
+        "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-users-rest-api",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
         "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events",
         "imcms-document-profile-select-window-builder", "imcms-document-copy-rest-api"
     ],
-    function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, controlsBuilder, usersRestApi,
+    function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
               docProfileSelectBuilder, docCopyRestApi) {
 
@@ -157,7 +157,7 @@ Imcms.define("imcms-document-editor-builder",
                     onSelected: onSelected
                 });
 
-                usersRestApi.read(null).done(function (users) {
+                usersRestApi.getAllAdmins().done(function (users) {
                     var usersDataMapped = users.map(function (user) {
                         return {
                             text: user.username,
@@ -436,14 +436,14 @@ Imcms.define("imcms-document-editor-builder",
             opts = opts || {};
 
             if (opts.removeEnable) {
-                var $controlRemove = controlsBuilder.remove(function () {
+                var $controlRemove = components.controls.remove(function () {
                     removeDocument.call(this, document);
                 });
                 controls.push($controlRemove);
             }
 
             if (opts.copyEnable) {
-                var $controlCopy = controlsBuilder.copy(function () {
+                var $controlCopy = components.controls.copy(function () {
                     docCopyRestApi.copy(document.id).success(function (copiedDocument) {
                         addDocumentToList(copiedDocument);
                     })
@@ -452,13 +452,13 @@ Imcms.define("imcms-document-editor-builder",
             }
 
             if (opts.editEnable) {
-                var $controlEdit = controlsBuilder.edit(function () {
+                var $controlEdit = components.controls.edit(function () {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
                 controls.push($controlEdit);
             }
 
-            return controlsBuilder.buildControlsBlock("<div>", controls);
+            return components.controls.buildControlsBlock("<div>", controls);
         }
 
         function moveFrame(event) {
@@ -764,8 +764,8 @@ Imcms.define("imcms-document-editor-builder",
             ];
 
             if (opts && opts.moveEnable) {
-                var $moveControl = controlsBuilder.move().on("mousedown", createFrame);
-                var $controlsBlock = controlsBuilder.buildControlsBlock("<div>", [$moveControl]);
+                var $moveControl = components.controls.move().on("mousedown", createFrame);
+                var $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
                 elements.unshift({controls: $controlsBlock});
             }
 

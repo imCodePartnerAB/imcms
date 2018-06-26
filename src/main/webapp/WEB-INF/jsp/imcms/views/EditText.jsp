@@ -27,7 +27,7 @@
         <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
     </script>
     <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
-            data-main="${contextPath}/js/imcms/edit_starters/imcms_text_edit_start.js"></script>
+            data-main="${contextPath}/js/imcms/starters/imcms_text_edit_start.js"></script>
 </head>
 <body>
 

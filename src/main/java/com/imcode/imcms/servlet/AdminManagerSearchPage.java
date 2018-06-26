@@ -19,7 +19,7 @@ public class AdminManagerSearchPage extends SearchDocumentsPage {
 
     public String getPath(HttpServletRequest request) {
         UserDomainObject user = Utility.getLoggedOnUser(request);
-        return "/imcms/" + user.getLanguageIso639_2() + "/jsp/admin/admin_manager.jsp";
+        return "/imcms/" + user.getLanguage() + "/jsp/admin/admin_manager.jsp";
     }
 
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

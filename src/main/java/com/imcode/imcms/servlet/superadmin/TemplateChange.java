@@ -278,7 +278,7 @@ public class TemplateChange extends HttpServlet {
         TemplateDomainObject template = templateMapper.getTemplateByName(template_id);
         boolean isHidden = req.getParameter("hidden") != null;
         LocalizedMessage error = null;
-        if (!templateMapper.updateAvaliability(template.getName(), isHidden)) {
+        if (!templateMapper.updateAvailability(template.getName(), isHidden)) {
             error = ERROR_AVAILABILITY_NOT_CHANGED;
         }
         htmlStr = TemplateAdmin.createChangeAvailabilityTemplateDialog(lang, templateMapper, req, res, user, error);

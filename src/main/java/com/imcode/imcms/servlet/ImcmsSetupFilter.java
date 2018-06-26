@@ -306,7 +306,7 @@ public class ImcmsSetupFilter implements Filter {
                     .getVersionedDocument(documentIdString, langCode, request);
 
             request.setAttribute("contextPath", request.getContextPath());
-            request.setAttribute("language", LanguageMapper.convert639_1to639_2(langCode));
+            request.setAttribute("language", langCode);
 
             if (null != document) {
                 if (Utility.isTextDocument(document)) {

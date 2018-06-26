@@ -1,39 +1,34 @@
 package com.imcode.imcms.domain.component;
 
-import com.imcode.imcms.config.TestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.InjectMocks;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
 
-@Transactional
-@RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ContextConfiguration(classes = {TestConfig.class})
-public class TextContentFilterTest {
+@RunWith(MockitoJUnitRunner.class)
+public class PropertyBasedTextContentFilterTest {
 
     private final String[] allowedTags = {
             "div",
             "span",
             "p",
+            "b",
+            "h1"
     };
     private final String[] badTagsArr = {
             "iframe",
             "script"
     };
 
-    @Autowired
-    private TextContentFilter textContentFilter;
+    @InjectMocks
+    private PropertyBasedTextContentFilter textContentFilter;
 
     @Before
     public void setUp() throws Exception {
-        textContentFilter = textContentFilter.addHtmlTagsToWhiteList(allowedTags);
+        textContentFilter.addHtmlTagsToWhiteList(allowedTags);
     }
 
     @Test
@@ -95,5 +90,17 @@ public class TextContentFilterTest {
         final String emptyText = "";
         final String textAfterCleanup = textContentFilter.cleanText(emptyText);
         assertEquals(emptyText, textAfterCleanup);
+    }
+
+    @Test
+    public void cleanText_When_OkTextWithIllegalTextTogether_Expected_IllegalTextRemoved() {
+        final String correctFirstPart = "some other <b>text</b> here";
+        final String wrongPart = "<script>console.log('test');console.log('pshhh');</script>";
+        final String correctTail = "and <h1>here</h1>";
+        final String expected = correctFirstPart + correctTail;
+
+        final String cleaned = textContentFilter.cleanText(correctFirstPart + wrongPart + correctTail);
+
+        assertEquals(expected, cleaned);
     }
 }

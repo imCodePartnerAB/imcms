@@ -36,8 +36,13 @@ ${"-->"}
                 data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
         </c:set>
 
-        <c:if test="${'html'.equalsIgnoreCase(formats)}">
-            <c:set var="format" value="HTML"/>
+        <c:if test="${'html'.equalsIgnoreCase(formats) or 'cleanhtml'.equalsIgnoreCase(formats)}">
+            <c:if test="${'html'.equalsIgnoreCase(formats)}">
+                <c:set var="format" value="HTML"/>
+            </c:if>
+            <c:if test="${'cleanhtml'.equalsIgnoreCase(formats)}">
+                <c:set var="format" value="CLEAN_HTML"/>
+            </c:if>
             <c:set var="content">
                 <p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</p></c:set>
         </c:if>

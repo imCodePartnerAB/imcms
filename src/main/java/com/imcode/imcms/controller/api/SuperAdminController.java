@@ -15,22 +15,33 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Provides possibility to go to any editor or manager window directly.
- * Created by Serhii from Ubrainians for Imcode
- * on 26.08.16.
+ * Controller for super-admin functionality. Provides possibility to go to any
+ * editor or manager window directly as independent page.
+ *
+ * @author Serhii Maksymchuk from Ubrainians for imCode
+ * 22.06.18.
  */
 @Controller
 @RequestMapping("/admin")
-public class DirectEditorsController {
+class SuperAdminController {
 
     private final String imagesPath;
     private final TextService textService;
 
-    public DirectEditorsController(@Value("${ImagePath}") String imagesPath,
-                                   TextService textService) {
+    SuperAdminController(@Value("${ImagePath}") String imagesPath,
+                         TextService textService) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
+    }
+
+    @CheckAccess
+    @RequestMapping("/manager")
+    public ModelAndView goToSuperAdminPage(HttpServletRequest request, ModelAndView mav) {
+
+        mav.setViewName("AdminManager");
+        addMinimumModelData(request, mav);
+        return mav;
     }
 
     @RequestMapping("/text")
@@ -167,9 +178,13 @@ public class DirectEditorsController {
     }
 
     private void addCommonModelData(String returnUrl, HttpServletRequest request, ModelAndView mav) {
+        mav.addObject("returnUrl", returnUrl);
+        addMinimumModelData(request, mav);
+    }
+
+    private void addMinimumModelData(HttpServletRequest request, ModelAndView mav) {
         mav.addObject("userLanguage", Imcms.getUser().getLanguage());
         mav.addObject("contextPath", request.getContextPath());
-        mav.addObject("returnUrl", returnUrl);
     }
 
 }

@@ -13,7 +13,7 @@ import java.io.IOException;
 public class LogOut extends HttpServlet {
 
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String language = Utility.getLoggedOnUser(req).getLanguageIso639_2();
+        String language = Utility.getLoggedOnUser(req).getLanguage();
 
         Utility.removeRememberCdCookie(req, res);
         req.setAttribute("language", language);

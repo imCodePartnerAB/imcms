@@ -75,7 +75,7 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator
     function bindSetTime($timePickerContainer) {
         return function (time) {
             return $timePickerContainer.find(CURRENT_TIME__INPUT__CLASS_$)
-                .val(time)
+                .val((time ? time.split(':', 2).join(':') : ''))
                 .end();
         }
     }

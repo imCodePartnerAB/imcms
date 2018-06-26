@@ -19,7 +19,7 @@ Imcms.define("imcms-text-editor-initializer",
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            if (textDTO.type === "HTML") {
+            if (textDTO.type === "HTML" || textDTO.type === "CLEAN_HTML") {
                 if (textDTO.text.startsWith("<p>") && textDTO.text.endsWith("</p>")) {
                     textDTO.text = textDTO.text.substring(3, textDTO.text.length - 4);
                 }
@@ -58,6 +58,7 @@ Imcms.define("imcms-text-editor-initializer",
         };
 
         var inlineEditorConfig = $.extend({
+            valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |'
             + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
@@ -66,9 +67,9 @@ Imcms.define("imcms-text-editor-initializer",
         }, commonConfig);
 
         var textFormatEditorConfig = $.extend({
-            force_br_newlines: false,
-            force_p_newlines: false,
             forced_root_block: '',
+            force_p_newlines: false,
+            force_br_newlines: false,
             paste_as_text: true,
             plugins: [fullScreenPlugin.pluginName + ' save paste'],
             toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
@@ -133,15 +134,7 @@ Imcms.define("imcms-text-editor-initializer",
             editor.on('blur', onEditorBlur);
         }
 
-        function setMaxRows($editor) {
-            var data = $editor.data();
-            if (data.type === 'TEXT' && data.rows) {
-                // todo: implement rows limit
-            }
-        }
-
         function prepareEditor(editor) {
-            setMaxRows($(editor.$()));
             clearSaveBtnText(editor);
             setEditorFocusOnEditControlClick(editor);
             showEditButton($(editor.$()));
@@ -177,9 +170,19 @@ Imcms.define("imcms-text-editor-initializer",
                 .find(".imcms-editor-area__text-toolbar")
                 .attr("id", toolbarId);
 
-            var config = (type === 'TEXT')
-                ? textFormatEditorConfig
-                : (type === 'HTML') ? htmlFormatEditorConfig : inlineEditorConfig;
+            var config;
+
+            switch (type) {
+                case 'TEXT':
+                    config = textFormatEditorConfig;
+                    break;
+                case 'HTML':
+                case 'CLEAN_HTML':
+                    config = htmlFormatEditorConfig;
+                    break;
+                default:
+                    config = inlineEditorConfig;
+            }
 
             var editorConfig = $.extend({
                 selector: "#" + textAreaId,

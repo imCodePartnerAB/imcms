@@ -15,7 +15,14 @@ import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 public class UserDomainObject implements Cloneable, Serializable {
 
@@ -543,6 +550,10 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public void removePhoneNumber(PhoneNumber number) {
         phoneNumbers.remove(number);
+    }
+
+    public void removePhoneNumbers() {
+        phoneNumbers.clear();
     }
 
     public boolean isSuperAdminOrHasAtLeastPermissionSetIdOn(Permission documentPermissionSetType, DocumentDomainObject document) {

@@ -22,10 +22,13 @@
             <td><? templates/sv/AdminSystemMessage.htm/7 ?></td>
             <td>${STARTDOCUMENT}</td>
             <td><input type="text" name="STARTDOCUMENT" value="${STARTDOCUMENT}" maxlength="10" size="5"></td>
-            <td><input type="submit"  class="imcmsFormBtnSmall"  name="SetStartDoc" value="<? templates/sv/AdminSystemMessage.htm/2001 ?>"></td>
+            <td><input type="submit" class="imcmsFormBtnSmall" name="SetStartDoc"
+                       value="<? templates/sv/AdminSystemMessage.htm/2001 ?>"></td>
         </form>
     </tr>
-    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
     <tr>
         <td colspan="4">
             <c:set var="heading">
@@ -39,11 +42,14 @@
             <td valign="top"><? templates/sv/AdminSystemMessage.htm/12 ?></td>
             <td valign="top">${SYSTEM_MESSAGE} </td>
             <td><textarea name="SYSTEM_MESSAGE" cols="40" rows="4">${SYSTEM_MESSAGE}</textarea></td>
-            <td><input type="submit"  class="imcmsFormBtnSmall" name="SetSystemMsg" value="<? templates/sv/AdminSystemMessage.htm/2001 ?>">
+            <td><input type="submit" class="imcmsFormBtnSmall" name="SetSystemMsg"
+                       value="<? templates/sv/AdminSystemMessage.htm/2001 ?>">
             </td>
         </form>
     </tr>
-    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
     <tr>
         <td colspan="4">
             <c:set var="heading">
@@ -65,10 +71,13 @@
                 <td>${SERVER_MASTER_EMAIL}</td>
                 <td><input type="text" name="SERVER_MASTER_EMAIL" value="${SERVER_MASTER_EMAIL}" maxlength="80"
                            size="40"></td>
-                <td><input type="submit"  class="imcmsFormBtnSmall" name="SetServerMasterInfo" value="<? templates/sv/AdminSystemMessage.htm/2001 ?>"></td>
+                <td><input type="submit" class="imcmsFormBtnSmall" name="SetServerMasterInfo"
+                           value="<? templates/sv/AdminSystemMessage.htm/2001 ?>"></td>
             </tr>
     </form>
-    <tr><td>&nbsp;</td></tr>
+    <tr>
+        <td>&nbsp;</td>
+    </tr>
     <tr>
         <td colspan="4">
             <c:set var="heading">
@@ -88,7 +97,8 @@
             <td><? templates/sv/AdminSystemMessage.htm/21 ?></td>
             <td>${WEB_MASTER_EMAIL}</td>
             <td><input type="text" name="WEB_MASTER_EMAIL" value="${WEB_MASTER_EMAIL}" maxlength="80" size="40"></td>
-            <td><input type="submit" class="imcmsFormBtnSmall" name="SetWebMasterInfo" value="<? templates/sv/AdminSystemMessage.htm/2001 ?>"></td>
+            <td><input type="submit" class="imcmsFormBtnSmall" name="SetWebMasterInfo"
+                       value="<? templates/sv/AdminSystemMessage.htm/2001 ?>"></td>
         </tr>
     </form>
 </table>

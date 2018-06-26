@@ -131,12 +131,14 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-top-panel-visibility-initiator": "builders/components/imcms_top_panel_visibility_initiator.js",
             "imcms-admin-panel-settings-builder": "builders/components/imcms_admin_panel_settings_builder.js",
             "imcms-admin-panel-state": "builders/components/imcms_admin_panel_state.js",
+            "imcms-window-tabs-builder": "builders/components/imcms_window_tabs_builder.js",
+            "imcms-page-info-tab": "builders/components/imcms_page_info_tab.js",
+            "imcms-window-tab-builder": "builders/components/imcms_window_tab_builder.js",
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
-            "imcms-page-info-tab-form-builder": "builders/components/page_info_tabs/imcms_page_info_tab_form_builder.js",
-            "imcms-title-tab-builder": "builders/components/page_info_tabs/imcms_title_tab_builder.js",
-            "imcms-life-cycle-tab-builder": "builders/components/page_info_tabs/imcms_life_cycle_tab_builder.js",
             "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",
+            "imcms-life-cycle-tab-builder": "builders/components/page_info_tabs/imcms_life_cycle_tab_builder.js",
+            "imcms-templates-tab-builder": "builders/components/page_info_tabs/imcms_templates_tab_builder.js",
             "imcms-file-tab-builder": "builders/components/page_info_tabs/imcms_file_tab_builder.js",
             "imcms-url-tab-builder": "builders/components/page_info_tabs/imcms_url_tab_builder.js",
             "imcms-keywords-tab-builder": "builders/components/page_info_tabs/imcms_keywords_tab_builder.js",
@@ -145,6 +147,22 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-permissions-tab-builder": "builders/components/page_info_tabs/imcms_permissions_tab_builder.js",
             "imcms-status-tab-builder": "builders/components/page_info_tabs/imcms_status_tab_builder.js",
             //   </page_info_tabs>
+            //   <super_admin_tabs>
+            'imcms-super-admin-tabs-builder': "builders/components/super_admin_tabs/imcms_super_admin_tabs_builder.js",
+            'imcms-users-tab-builder': "builders/components/super_admin_tabs/imcms_users_tab_builder.js",
+            'imcms-roles-tab-builder': 'builders/components/super_admin_tabs/imcms_roles_tab_builder.js',
+            'imcms-ip-access-tab-builder': 'builders/components/super_admin_tabs/imcms_ip_access_tab_builder.js',
+            'imcms-ip-white-list-tab-builder': 'builders/components/super_admin_tabs/imcms_ip_white_list_tab_builder.js',
+            'imcms-delete-docs-tab-builder': 'builders/components/super_admin_tabs/imcms_delete_docs_tab_builder.js',
+            'imcms-templates-admin-tab-builder': 'builders/components/super_admin_tabs/imcms_templates_tab_builder.js',
+            'imcms-files-tab-builder': 'builders/components/super_admin_tabs/imcms_files_tab_builder.js',
+            'imcms-search-tab-builder': 'builders/components/super_admin_tabs/imcms_search_tab_builder.js',
+            'imcms-link-validator-tab-builder': 'builders/components/super_admin_tabs/imcms_link_validator_tab_builder.js',
+            'imcms-sections-tab-builder': 'builders/components/super_admin_tabs/imcms_sections_tab_builder.js',
+            'imcms-categories-admin-tab-builder': 'builders/components/super_admin_tabs/imcms_categories_tab_builder.js',
+            'imcms-profiles-tab-builder': 'builders/components/super_admin_tabs/imcms_profiles_tab_builder.js',
+            'imcms-system-properties-tab-builder': 'builders/components/super_admin_tabs/imcms_system_properties_tab_builder.js',
+            //   </super_admin_tabs>
             //  </builder components>
             //  <windows>
             "imcms-window-builder": "builders/windows/imcms_window_builder.js",
@@ -155,6 +173,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-document-profile-select-window-builder": "builders/windows/imcms_document_profile_select_window_builder.js",
             "imcms-text-history-window-builder": "builders/windows/imcms_text_history_window_builder.js",
             "imcms-text-validation-result-builder": "builders/windows/imcms_text_validation_result_builder.js",
+            "imcms-super-admin-page-builder": "builders/windows/imcms_super_admin_page_builder.js",
             //   <editors>
             "imcms-menu-editor-builder": "builders/windows/editors/imcms_menu_editor_builder.js",
             "imcms-document-editor-builder": "builders/windows/editors/imcms_document_editor_builder.js",

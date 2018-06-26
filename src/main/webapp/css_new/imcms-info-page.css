@@ -22,7 +22,7 @@
     height: 42px;
 }
 
-.imcms-info__logo {
+.imcms-info__logo, .imcms-head__logo {
     background: url(../images_new/icon_logo_main.png) no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;

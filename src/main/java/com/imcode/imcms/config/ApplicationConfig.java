@@ -1,5 +1,6 @@
 package com.imcode.imcms.config;
 
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
@@ -8,10 +9,9 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 class ApplicationConfig {
 
     @Bean
-    public ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource() {
+    public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-        //TODO: Move that values to properties
-        source.setBasenames("/WEB-INF/locale/imcms", "/WEB-INF/locale/image_archive");
+        source.setBasename("/WEB-INF/conf/imcms");
         source.setFallbackToSystemLocale(false);
         source.setUseCodeAsDefaultMessage(true);
         return source;

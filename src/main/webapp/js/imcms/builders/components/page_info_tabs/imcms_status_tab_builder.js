@@ -1,9 +1,8 @@
 Imcms.define("imcms-status-tab-builder",
     [
-        "imcms-date-picker", "imcms-time-picker", "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts",
-        "imcms-page-info-tab-form-builder", "jquery"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-page-info-tab"
     ],
-    function (DatePicker, TimePicker, BEM, components, texts, tabContentBuilder, $) {
+    function (BEM, components, texts, $, PageInfoTab) {
 
         texts = texts.pageInfo.status;
 
@@ -73,7 +72,7 @@ Imcms.define("imcms-status-tab-builder",
             tabData["$" + rowName + "By"].setValue(by);
         }
 
-        var statusTabs = [
+        var statusRows = [
             {title: texts.created, dataTitle: "created"},
             {title: texts.modified, dataTitle: "modified"},
             {title: texts.archived, dataTitle: "archived"},
@@ -81,36 +80,33 @@ Imcms.define("imcms-status-tab-builder",
             {title: texts.publicationEnd, dataTitle: "publicationEnd"}
         ];
 
-        return {
-            name: texts.name,
-            tabIndex: null,
-            isDocumentTypeSupported: function () {
-                return true; // all supported
-            },
-            showTab: function () {
-                tabContentBuilder.showTab(this.tabIndex);
-            },
-            hideTab: function () {
-                tabContentBuilder.hideTab(this.tabIndex);
-            },
-            buildTab: function (index) {
-                this.tabIndex = index;
-                return tabContentBuilder.buildFormBlock(statusTabs.map(buildStatusInfoRow), index);
-            },
-            fillTabDataFromDocument: function (document) {
-                statusTabs.forEach(function (statusTab) {
-                    setStatusInfoRowDataFromDocument(statusTab.dataTitle, document);
-                });
-            },
-            saveData: function (documentDTO) {
-                return documentDTO; // this tab have read-only data, at least yet
-            },
-            clearTabData: function () {
-                var emptyString = '';
-                statusTabs.forEach(function (statusTab) {
-                    setStatusInfoRowData(statusTab.dataTitle, emptyString, emptyString, emptyString);
-                });
-            }
+        var StatusTab = function (name) {
+            PageInfoTab.call(this, name);
         };
+
+        StatusTab.prototype = Object.create(PageInfoTab.prototype);
+
+        StatusTab.prototype.isDocumentTypeSupported = function () {
+            return true; // all supported
+        };
+
+        StatusTab.prototype.tabElementsFactory = function () {
+            return statusRows.map(buildStatusInfoRow);
+        };
+
+        StatusTab.prototype.fillTabDataFromDocument = function (document) {
+            statusRows.forEach(function (statusTab) {
+                setStatusInfoRowDataFromDocument(statusTab.dataTitle, document);
+            });
+        };
+
+        StatusTab.prototype.clearTabData = function () {
+            var emptyString = '';
+            statusRows.forEach(function (statusTab) {
+                setStatusInfoRowData(statusTab.dataTitle, emptyString, emptyString, emptyString);
+            });
+        };
+
+        return new StatusTab(texts.name);
     }
 );

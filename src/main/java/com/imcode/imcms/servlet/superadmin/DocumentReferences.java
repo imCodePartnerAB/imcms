@@ -46,7 +46,7 @@ public class DocumentReferences extends HttpServlet {
         DocumentDomainObject document = documentMapper.getDocument(documentId);
         DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = documentMapper.getDocumentMenuPairsContainingDocument(document);
         request.setAttribute(REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS, documentMenuPairs);
-        request.getRequestDispatcher("/imcms/" + user.getLanguageIso639_2() + "/jsp/document_references.jsp").forward(request, response);
+        request.getRequestDispatcher("/imcms/" + user.getLanguage() + "/jsp/document_references.jsp").forward(request, response);
     }
 
 }
