@@ -75,11 +75,14 @@ Imcms.define(
 
             var UserListBuilder = function ($searchResultContainer) {
                 this.$searchResultContainer = $searchResultContainer;
+                this.userAppender = this.appendUsers.bind(this);
             };
 
             UserListBuilder.prototype = {
+                isEmpty: true,
                 clearList: function () {
                     this.$searchResultContainer.empty();
+                    this.isEmpty = true;
                 },
                 userToRow: function (user) {
                     return new BEM({
@@ -102,9 +105,20 @@ Imcms.define(
                         }
                     }).buildBlockStructure('<div>');
                 },
-                appendUsers: function (users) {
-                    var userRows$ = users.map(this.userToRow);
+                updateUsersFound: function (numberOfUsers) {
+                    return this;
+                },
+                prepareTitleRow: function () {
+                    return this;
+                },
+                addRowsToList: function (userRows$) {
                     $searchResultContainer.append(userRows$);
+                    return this;
+                },
+                appendUsers: function (users) {
+                    this.updateUsersFound(users.length)
+                        .prepareTitleRow()
+                        .addRowsToList(users.map(this.userToRow));
                 }
             };
 
@@ -113,9 +127,7 @@ Imcms.define(
 
                 tableBuilder.clearList();
 
-                usersRestApi.read().done(function (users) {
-                    tableBuilder.appendUsers(users);
-                });
+                usersRestApi.read().done(tableBuilder.userAppender);
             }
 
             function buildListUsersButton() {
