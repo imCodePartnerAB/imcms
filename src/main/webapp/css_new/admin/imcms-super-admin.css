@@ -10,15 +10,15 @@
 
 @media screen and (max-width: 1600px) {
     .imcms-info-page {
-        left: 15%;
-        width: 70%;
+        left: 12%;
+        width: 76%;
     }
 }
 
 @media screen and (max-width: 1400px) {
     .imcms-info-page {
-        left: 10%;
-        width: 80%;
+        left: 7%;
+        width: 86%;
     }
 }
 
@@ -45,6 +45,7 @@
 
 .imcms-pop-up-modal__right-side {
     width: 75%;
+    padding-right: 5px;
 }
 
 .imcms-search-row__users-list-button .imcms-button {
