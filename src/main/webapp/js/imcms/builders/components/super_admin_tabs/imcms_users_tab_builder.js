@@ -83,6 +83,8 @@ Imcms.define(
                 clearList: function () {
                     this.$searchResultContainer.empty();
                     this.isEmpty = true;
+
+                    return this;
                 },
                 userToRow: function (user) {
                     return new BEM({
@@ -122,11 +124,11 @@ Imcms.define(
                         'class': 'imcms-title'
                     });
 
-                    $searchResultContainer.append($titleRow);
+                    this.$searchResultContainer.append($titleRow);
                     return this;
                 },
                 addRowsToList: function (userRows$) {
-                    $searchResultContainer.append(userRows$);
+                    this.$searchResultContainer.css('display', 'block').append(userRows$);
                     return this;
                 },
                 appendUsers: function (users) {
@@ -137,10 +139,7 @@ Imcms.define(
             };
 
             function listUsers() {
-                var tableBuilder = new UserListBuilder($searchResultContainer);
-
-                tableBuilder.clearList();
-
+                var tableBuilder = new UserListBuilder($searchResultContainer).clearList();
                 usersRestApi.read().done(tableBuilder.userAppender);
             }
 
@@ -178,7 +177,8 @@ Imcms.define(
 
         function buildSearchResultContainer() {
             return $('<div>', {
-                'class': 'imcms-users-search-result'
+                'class': 'imcms-users-search-result',
+                style: 'display: none;'
             });
         }
 
