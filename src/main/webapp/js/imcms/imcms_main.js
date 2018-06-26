@@ -318,7 +318,7 @@ if (!String.prototype.startsWith) {
                     undefinedRequires.forEach(loadDependencyById);
                     notSuccessRequiresBuffer.push(require);
 
-                } else if (failsCount < 1000) {// dummy fail limit
+                } else if (failsCount < 5000) {// dummy fail limit
                     // means dependency is still loading script, we should add it to queue after the while cycle
                     failsCount++;
                     notSuccessRequiresBuffer.push(require);
@@ -338,7 +338,7 @@ if (!String.prototype.startsWith) {
             notSuccessRequiresBuffer.forEach(function (require) {
                 imcms.requiresQueue.push(require);
             });
-            setTimeout(runModuleLoader, 100);
+            setTimeout(runModuleLoader, 200);
         }).applyAsync();
     }
 
