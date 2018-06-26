@@ -91,4 +91,5 @@
 .imcms-users-search-result {
     height: 600px;
     background-color: #ececec;
+    border: solid 1px #d1d2c6;
 }
