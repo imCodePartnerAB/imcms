@@ -65,17 +65,23 @@ Imcms.define(
                 });
             }
 
-            function listUsers() {
+            function onEditUser() {
+                // window.open(url, '_blank').focus(); // todo: implement with correct url
+            }
 
-                function onEditUser() {
-                    // window.open(url, '_blank').focus(); // todo: implement with correct url
-                }
+            function onArchiveUser() {
+                // todo: implement
+            }
 
-                function onArchiveUser() {
-                    // todo: implement
-                }
+            var UserListBuilder = function ($searchResultContainer) {
+                this.$searchResultContainer = $searchResultContainer;
+            };
 
-                function userToRow(user) {
+            UserListBuilder.prototype = {
+                clearList: function () {
+                    this.$searchResultContainer.empty();
+                },
+                userToRow: function (user) {
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
@@ -95,14 +101,20 @@ Imcms.define(
                             'archive': components.controls.archive(onArchiveUser)
                         }
                     }).buildBlockStructure('<div>');
+                },
+                appendUsers: function (users) {
+                    var userRows$ = users.map(this.userToRow);
+                    $searchResultContainer.append(userRows$);
                 }
+            };
 
-                $searchResultContainer.empty();
+            function listUsers() {
+                var tableBuilder = new UserListBuilder($searchResultContainer);
+
+                tableBuilder.clearList();
 
                 usersRestApi.read().done(function (users) {
-                    var userRows$ = users.map(userToRow);
-
-                    $searchResultContainer.append(userRows$);
+                    tableBuilder.appendUsers(users);
                 });
             }
 
