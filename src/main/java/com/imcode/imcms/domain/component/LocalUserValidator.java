@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,9 +12,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocalUserValidator implements UserValidator {
 
+    private final UserService userService;
+
+    @Autowired
+    public LocalUserValidator(UserService userService) {
+        this.userService = userService;
+    }
+
     @Override
     public UserValidationResult validate(UserData userData) {
-        return new UserValidationResult();
+        return new UserValidationResult(userData, userService);
     }
 
 }
