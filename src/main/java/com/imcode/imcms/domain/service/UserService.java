@@ -19,4 +19,5 @@ public interface UserService {
 
     List<User> findByNamePrefix(String prefix, boolean includeInactive);
 
+    List<UserDTO> getUsersByEmail(String email);
 }

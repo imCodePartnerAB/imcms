@@ -14,10 +14,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.util.Optional.ofNullable;
 
 @Service
 class DefaultUserService implements UserService {
@@ -33,30 +33,33 @@ class DefaultUserService implements UserService {
 
     @Override
     public User getUser(int id) {
-        return ofNullable(userRepository.findById(id))
+        return Optional.ofNullable(userRepository.findById(id))
                 .orElseThrow(() -> new UserNotExistsException(id));
     }
 
     @Override
     public User getUser(String login) {
-        return ofNullable(userRepository.findByLogin(login))
+        return Optional.ofNullable(userRepository.findByLogin(login))
                 .orElseThrow(() -> new UserNotExistsException(login));
     }
 
     @Override
     public List<UserDTO> getAdminUsers() {
-        return userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID)
-                .stream()
-                .map(UserDTO::new)
-                .collect(Collectors.toList());
+        return toDTO(userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID));
     }
 
     @Override
     public List<UserDTO> getAllActiveUsers() {
-        return userRepository.findByActiveIsTrue()
-                .stream()
-                .map(UserDTO::new)
-                .collect(Collectors.toList());
+        return toDTO(userRepository.findByActiveIsTrue());
+    }
+
+    @Override
+    public List<UserDTO> getUsersByEmail(String email) {
+        return toDTO(userRepository.findByEmail(email));
+    }
+
+    private List<UserDTO> toDTO(Collection<User> users) {
+        return users.stream().map(UserDTO::new).collect(Collectors.toList());
     }
 
     // TODO: 13.10.17 Was moved. Rewrite to human code.
