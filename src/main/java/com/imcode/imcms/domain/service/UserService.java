@@ -1,15 +1,17 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.persistence.entity.User;
 
 import java.util.List;
 
 public interface UserService {
 
-    User getUser(int id);
+    User getUser(int id) throws UserNotExistsException;
 
-    User getUser(String login);
+    User getUser(String login) throws UserNotExistsException;
 
     List<UserDTO> getAdminUsers();
 
@@ -20,4 +22,6 @@ public interface UserService {
     List<User> findByNamePrefix(String prefix, boolean includeInactive);
 
     List<UserDTO> getUsersByEmail(String email);
+
+    void createUser(UserData userData);
 }

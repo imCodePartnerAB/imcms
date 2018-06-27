@@ -2,7 +2,9 @@ package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.persistence.entity.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,7 +28,7 @@ public class LocalUserValidatorTest {
     private LocalUserValidator userValidator;
 
     @Test
-    public void validate_With_NullUserName_Expect_EmptyLoginNameIsTrue() {
+    public void validate_With_NullLoginName_Expect_EmptyLoginNameIsTrue() {
         final UserData userData = new UserData();
         final UserValidationResult validationResult = userValidator.validate(userData);
 
@@ -34,7 +36,7 @@ public class LocalUserValidatorTest {
     }
 
     @Test
-    public void validate_With_EmptyUserName_Expect_EmptyLoginNameIsTrue() {
+    public void validate_With_EmptyLoginName_Expect_EmptyLoginNameIsTrue() {
         final UserData userData = new UserData();
         userData.setLoginName("");
         final UserValidationResult validationResult = userValidator.validate(userData);
@@ -43,12 +45,38 @@ public class LocalUserValidatorTest {
     }
 
     @Test
-    public void validate_With_NotEmptyUserName_Expect_EmptyLoginNameIsFalse() {
+    public void validate_With_NotEmptyLoginName_Expect_EmptyLoginNameIsFalse() {
         final UserData userData = new UserData();
         userData.setLoginName("loginName");
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         assertFalse(validationResult.isEmptyLoginName());
+    }
+
+    @Test
+    public void validate_With_ExistingLoginName_Expect_LoginNameTakenIsTrue() {
+        final UserData userData = new UserData();
+        final String existingLoginName = "existingLoginName";
+        userData.setLoginName(existingLoginName);
+
+        when(userService.getUser(eq(existingLoginName))).thenReturn(new User());
+
+        final UserValidationResult validationResult = userValidator.validate(userData);
+
+        assertTrue(validationResult.isLoginAlreadyTaken());
+    }
+
+    @Test
+    public void validate_With_UniqueLoginName_Expect_LoginNameTakenIsFalse() {
+        final UserData userData = new UserData();
+        final String existingLoginName = "existingLoginName";
+        userData.setLoginName(existingLoginName);
+
+        when(userService.getUser(eq(existingLoginName))).thenThrow(new UserNotExistsException(existingLoginName));
+
+        final UserValidationResult validationResult = userValidator.validate(userData);
+
+        assertFalse(validationResult.isLoginAlreadyTaken());
     }
 
     @Test

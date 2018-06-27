@@ -1,11 +1,18 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.dto.UserData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
+import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
+import imcode.server.LanguageMapper;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleId;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -14,7 +21,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,13 +32,17 @@ import java.util.stream.Collectors;
 @Service
 class DefaultUserService implements UserService {
 
+    private final static Logger log = Logger.getLogger(DefaultUserService.class.getName());
+
     private final UserRepository userRepository;
+    private final RoleService roleService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    DefaultUserService(UserRepository userRepository) {
+    DefaultUserService(UserRepository userRepository, RoleService roleService) {
         this.userRepository = userRepository;
+        this.roleService = roleService;
     }
 
     @Override
@@ -56,6 +70,63 @@ class DefaultUserService implements UserService {
     @Override
     public List<UserDTO> getUsersByEmail(String email) {
         return toDTO(userRepository.findByEmail(email));
+    }
+
+    @Override
+    public void createUser(UserData userData) {
+        final User user = new User(userData.getLoginName(), userData.getPassword1(), userData.getEmail());
+        user.setFirstName(userData.getFirstName());
+        user.setLastName(userData.getLastName());
+        user.setTitle(userData.getTitle());
+        user.setCompany(userData.getCompany());
+        user.setAddress(userData.getAddress());
+        user.setZip(userData.getZip());
+        user.setCity(userData.getCity());
+        user.setProvince(userData.getProvince());
+        user.setCountry(userData.getCountry());
+        user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
+
+        final List<PhoneNumber> phoneNumbers = collectPhoneNumbers(userData);
+        final List<Role> userRoles = collectRoles(userData.getRoleIds());
+        final List<Role> administrateRoles = collectRoles(userData.getUserAdminRoleIds());
+    }
+
+    private List<Role> collectRoles(int[] roleIdsInt) {
+        if (roleIdsInt == null) return Collections.emptyList();
+
+        return Arrays.stream(roleIdsInt)
+                .mapToObj(roleService::getById)
+                .collect(Collectors.toList());
+    }
+
+    private List<PhoneNumber> collectPhoneNumbers(UserData userData) {
+
+        final String[] userPhoneNumbers = userData.getUserPhoneNumber();
+        final Integer[] userPhoneNumberTypes = userData.getUserPhoneNumberType();
+
+        if ((userPhoneNumbers == null)
+                || (userPhoneNumberTypes == null)
+                || (userPhoneNumbers.length <= 0)
+                || (userPhoneNumberTypes.length <= 0)
+                || (userPhoneNumbers.length != userPhoneNumberTypes.length))
+        {
+            return Collections.emptyList();
+        }
+
+        List<PhoneNumber> numbers = new ArrayList<>();
+
+        for (int i = 0; i < userPhoneNumbers.length; i++) {
+            try {
+                final String userPhoneNumber = userPhoneNumbers[i];
+                final PhoneNumberType numberType = PhoneNumberType.getPhoneNumberTypeById(userPhoneNumberTypes[i]);
+                numbers.add(new PhoneNumber(userPhoneNumber, numberType));
+
+            } catch (Exception e) {
+                log.error("Something wrong with phone numbers.", e);
+            }
+        }
+
+        return numbers;
     }
 
     private List<UserDTO> toDTO(Collection<User> users) {

@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.ImcmsConstants;
 import imcode.util.Utility;
@@ -15,6 +16,7 @@ import java.util.function.Consumer;
 public class UserValidationResult {
 
     private boolean emptyLoginName;
+    private boolean loginAlreadyTaken;
     private boolean emptyPassword1;
     private boolean password1TooShort;
     private boolean password1TooLong;
@@ -30,7 +32,7 @@ public class UserValidationResult {
     private boolean validUserData;
 
     UserValidationResult(UserData userData, UserService userService) {
-        validateLoginName(userData.getLoginName());
+        validateLoginName(userData.getLoginName(), userService);
         validatePasswords(userData);
         validateEmail(userData.getEmail(), userService);
         validateUserRoles(userData.getRoleIds());
@@ -39,6 +41,7 @@ public class UserValidationResult {
 
     private void sumUpValidation() {
         this.validUserData = !emptyLoginName
+                && !loginAlreadyTaken
                 && !emptyPassword1
                 && !password1TooShort
                 && !password1TooLong
@@ -58,6 +61,8 @@ public class UserValidationResult {
     }
 
     private void validateEmail(String email, UserService userService) {
+        email = StringUtils.defaultString(email);
+
         this.emptyEmail = StringUtils.isBlank(email);
         this.emailValid = Utility.isValidEmail(email);
         this.emailAlreadyTaken = !userService.getUsersByEmail(email).isEmpty();
@@ -86,13 +91,24 @@ public class UserValidationResult {
                                   Consumer<Boolean> passTooShort) {
 
         password = StringUtils.defaultString(password);
+
         emptyPass.accept(StringUtils.isBlank(password));
         passTooLong.accept(password.length() > ImcmsConstants.MAXIMUM_PASSWORD_LENGTH);
         passTooShort.accept(password.length() < ImcmsConstants.MINIMUM_PASSWORD_LENGTH);
     }
 
-    private void validateLoginName(String loginName) {
+    private void validateLoginName(String loginName, UserService userService) {
+        loginName = StringUtils.defaultString(loginName);
+
         this.emptyLoginName = StringUtils.isBlank(loginName);
+
+        try {
+            userService.getUser(loginName);
+            this.loginAlreadyTaken = true;
+
+        } catch (UserNotExistsException e) {
+            this.loginAlreadyTaken = false;
+        }
     }
 
 }

@@ -27,7 +27,13 @@ public class LocalUserCreationService implements UserCreationService {
 
     @Override
     public void createUser(UserData userData) throws UserValidationException {
-        final UserValidationResult validate = userValidator.validate(userData);
-//        userService.
+        final UserValidationResult validationResult = userValidator.validate(userData);
+
+        if (validationResult.isValidUserData()) {
+            userService.createUser(userData);
+            return;
+        }
+
+        throw new UserValidationException(validationResult);
     }
 }
