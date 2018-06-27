@@ -3,7 +3,12 @@ package imcode.util;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.LifeCyclePhase;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.commons.text.StringEscapeUtils;
 
 import java.util.Arrays;
@@ -13,7 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Html {
 
@@ -101,6 +109,84 @@ public class Html {
     public static String createUsersOptionList(ImcmsServices imcref) {
         UserDomainObject[] users = imcref.getImcmsAuthenticatorAndUserAndRoleMapper().getUsers(true, false);
         return createOptionList(Arrays.asList(users), user -> new String[]{"" + user.getId(), user.getLastName() + ", " + user.getFirstName()});
+    }
+
+    public static Set<UserRole> getUserRoles(UserDomainObject editedUser) {
+        if (editedUser == null) return getNewUserRoles();
+
+        final List<RoleDomainObject> roles = editedUser.isUserAdminAndNotSuperAdmin()
+                ? getRoles(editedUser.getUserAdminRoleIds())
+                : getAllRolesExceptUsersRole();
+
+        final List<RoleDomainObject> usersRoles = getRoles(editedUser.getRoleIds());
+
+        return roles.stream()
+                .map(role -> new UserRole(
+                        role.getId().getRoleId(),
+                        role.getName(),
+                        usersRoles.contains(role)
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    private static Set<UserRole> getNewUserRoles() {
+        return getAllRolesExceptUsersRole()
+                .stream()
+                .map(role -> new UserRole(
+                        role.getId().getRoleId(),
+                        role.getName(),
+                        false
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    public static Set<UserRole> getUserAdministratedRoles(UserDomainObject editedUser) {
+        final List<RoleDomainObject> allRoles = getAllRolesExceptUsersRole()
+                .stream()
+                .filter(role -> {
+                    final RoleId roleId = role.getId();
+                    return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
+                })
+                .collect(Collectors.toList());
+
+        final List<RoleDomainObject> usersUserAdminRoles = (editedUser == null)
+                ? Collections.emptyList()
+                : getRoles(editedUser.getUserAdminRoleIds());
+
+        return allRoles.stream()
+                .map(role -> new UserRole(
+                        role.getId().getRoleId(),
+                        role.getName(),
+                        usersUserAdminRoles.contains(role)
+                ))
+                .collect(Collectors.toSet());
+    }
+
+    private static List<RoleDomainObject> getRoles(RoleId[] roleIds) {
+        final ImcmsAuthenticatorAndUserAndRoleMapper roleMapper = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper();
+
+        return Stream.of(roleIds)
+                .map(roleMapper::getRole)
+                .collect(Collectors.toList());
+    }
+
+    private static List<RoleDomainObject> getAllRolesExceptUsersRole() {
+        final RoleDomainObject[] allRoles = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper()
+                .getAllRolesExceptUsersRole();
+
+        Arrays.sort(allRoles);
+
+        return Arrays.asList(allRoles);
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class UserRole {
+        public final int id;
+        public final String name;
+        public final boolean checked;
     }
 
 }

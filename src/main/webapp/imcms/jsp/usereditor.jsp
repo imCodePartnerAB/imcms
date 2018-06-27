@@ -13,6 +13,7 @@ ${"-->"}
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <%--@elvariable id="editedUser" type="imcode.server.user.UserDomainObject"--%>
+<%--@elvariable id="uneditedUser" type="imcode.server.user.UserDomainObject"--%>
 <%--@elvariable id="loggedOnUser" type="imcode.server.user.UserDomainObject"--%>
 <%--@elvariable id="userEditorPage" type="com.imcode.imcms.servlet.superadmin.UserEditorPage"--%>
 <%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
@@ -54,7 +55,7 @@ ${"-->"}
                 <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
             </div>
         </c:if>
-        <form id="user-edit-form-2" method="post" action="${contextPath}/servlet/PageDispatcher">
+        <form id="user-edit-form" method="post" action="${contextPath}/servlet/PageDispatcher">
             ${userEditorPage.htmlHidden(pageContext.request)}
             <div class="imcms-field">
                 <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
@@ -239,7 +240,7 @@ ${"-->"}
                 </div>
             </div>
 
-            <c:if test="${loggedOnUser.canEditRolesFor(userEditorPage.uneditedUser)}">
+            <c:if test="${loggedOnUser.canEditRolesFor(uneditedUser)}">
                 <div class="imcms-field">
                     <div class="imcms-title"><fmt:message
                             key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
@@ -249,7 +250,7 @@ ${"-->"}
                         <div class="imcms-title imcms-checkboxes__title"><fmt:message
                                 key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
                         <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
-                        <c:forEach var="role" items="${userEditorPage.getUserRoles(editedUser)}">
+                        <c:forEach var="role" items="${imcms:getUserRoles(editedUser)}">
                             <div class="imcms-checkbox imcms-checkboxes__checkbox">
                                 <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
                                        class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
@@ -263,7 +264,7 @@ ${"-->"}
                             <div class="imcms-title imcms-checkboxes__title"><fmt:message
                                     key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
                             <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
-                            <c:forEach var="role" items="${userEditorPage.getUserAdministratedRoles(editedUser)}">
+                            <c:forEach var="role" items="${imcms:getUserAdministratedRoles(editedUser)}">
                                 <div class="imcms-checkbox imcms-checkboxes__checkbox">
                                     <input type="checkbox" name="user_admin_role_ids" id="admin-role-${role.id}"
                                            value="${role.id}"
