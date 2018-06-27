@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.api.UserAlreadyExistsException;
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.component.UserValidator;
 import com.imcode.imcms.domain.dto.UserData;
@@ -27,7 +26,7 @@ public class LocalUserCreationService implements UserCreationService {
     }
 
     @Override
-    public void createUser(UserData userData) throws UserValidationException, UserAlreadyExistsException {
+    public void createUser(UserData userData) throws UserValidationException {
         final UserValidationResult validate = userValidator.validate(userData);
 //        userService.
     }

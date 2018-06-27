@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.api.UserAlreadyExistsException;
 import com.imcode.imcms.domain.dto.UserData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 
@@ -12,6 +11,6 @@ import com.imcode.imcms.domain.exception.UserValidationException;
  */
 public interface UserCreationService {
 
-    void createUser(final UserData userData) throws UserValidationException, UserAlreadyExistsException;
+    void createUser(final UserData userData) throws UserValidationException;
 
 }
