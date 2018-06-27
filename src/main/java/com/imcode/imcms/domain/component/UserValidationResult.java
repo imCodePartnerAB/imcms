@@ -27,11 +27,30 @@ public class UserValidationResult {
     private boolean emailAlreadyTaken;
     private boolean emptyUserRoles;
 
+    private boolean validUserData;
+
     UserValidationResult(UserData userData, UserService userService) {
         validateLoginName(userData.getLoginName());
         validatePasswords(userData);
         validateEmail(userData.getEmail(), userService);
         validateUserRoles(userData.getRoleIds());
+        sumUpValidation();
+    }
+
+    private void sumUpValidation() {
+        this.validUserData = !emptyLoginName
+                && !emptyPassword1
+                && !password1TooShort
+                && !password1TooLong
+                && !emptyPassword2
+                && !password2TooShort
+                && !password2TooLong
+                && passwordsEqual
+                && !emptyEmail
+                && emailValid
+                && !emailAlreadyTaken
+                && !emptyUserRoles
+        ;
     }
 
     private void validateUserRoles(int[] roleIds) {
