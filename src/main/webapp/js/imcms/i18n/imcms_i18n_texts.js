@@ -656,7 +656,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         lastName: 'Last Name',
                         userName: 'Username',
                         email: 'Email'
-                    }
+                    },
+                    createNewUser: 'Create new user'
                 },
                 templates: {
                     name: 'Templates'
