@@ -336,7 +336,10 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private void updateUserRoles(UserDomainObject newUser) {
         Set<RoleId> newUserRoleIds = new HashSet<>(Arrays.asList(newUser.getRoleIds()));
         newUserRoleIds.add(RoleId.USERS);
-        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", newUser.getId()));
+
+        CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand(
+                "user_roles_crossref", "user_id", newUser.getId()
+        ));
         for (RoleId roleId : newUserRoleIds) {
             updateUserRolesCommand.add(new InsertIntoTableDatabaseCommand("user_roles_crossref", new String[][]{
                     {"user_id", "" + newUser.getId()},
@@ -348,9 +351,8 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private void sqlUpdateUserUserAdminRoles(UserDomainObject user) {
-        DeleteWhereColumnsEqualDatabaseCommand deleteAllUserAdminRolesForUserCommand = new DeleteWhereColumnsEqualDatabaseCommand(TABLE__USERADMIN_ROLE_CROSSREF, "user_id",
-                ""
-                        + user.getId()
+        DeleteWhereColumnsEqualDatabaseCommand deleteAllUserAdminRolesForUserCommand = new DeleteWhereColumnsEqualDatabaseCommand(
+                TABLE__USERADMIN_ROLE_CROSSREF, "user_id", "" + user.getId()
         );
         CompositeDatabaseCommand updateUserAdminRolesCommand = new CompositeDatabaseCommand(deleteAllUserAdminRolesForUserCommand);
         RoleId[] userAdminRolesReferences = user.getUserAdminRoleIds();
