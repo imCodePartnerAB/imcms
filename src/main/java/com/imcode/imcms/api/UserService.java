@@ -151,21 +151,19 @@ public class UserService {
     }
 
     public void saveUser(User user) throws NoPermissionException, SaveException {
+
         if (null == user) {
             return;
         }
-        try {
-            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
-            if (0 == user.getId()) {
-                imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal());
-            } else {
-                imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal());
-            }
-        } catch (imcode.server.user.UserAlreadyExistsException uaee) {
-            throw new UserAlreadyExistsException("A user with the login name \"" + user.getLoginName() + "\" already exists.", uaee);
+
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
+
+        if (0 == user.getId()) {
+            imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal());
+        } else {
+            imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal());
         }
     }
-
 
     public void updateUserSession(User user) {
         getMapper().updateUserSessionId(user.getInternal());

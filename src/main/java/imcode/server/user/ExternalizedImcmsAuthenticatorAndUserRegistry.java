@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.api.UserAlreadyExistsException;
 import imcode.server.ImcmsConstants;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
