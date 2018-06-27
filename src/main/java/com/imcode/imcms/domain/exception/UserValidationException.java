@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.exception;
 
+import com.imcode.imcms.domain.component.UserValidationResult;
+
 /**
  * When something wrong with user fields while create/edit user
  *
@@ -8,4 +10,8 @@ package com.imcode.imcms.domain.exception;
  */
 public class UserValidationException extends RuntimeException {
     private static final long serialVersionUID = 7799856979816003123L;
+
+    public UserValidationException(UserValidationResult validationResult) {
+
+    }
 }
