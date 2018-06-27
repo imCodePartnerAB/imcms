@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @Transactional
 @WebAppConfiguration
@@ -111,4 +112,18 @@ public class UserRepositoryTest {
         }
     }
 
+    @Test
+    public void findByEmailUnique_When_NoUserWithSuchEmail_Expect_Null() {
+        assertNull(repository.findByEmailUnique("uniquEmailololo"));
+    }
+
+    @Test
+    public void findByEmailUnique_When_UserWithSuchEmailExists_Expect_ThatUser() {
+        final String email = "email@test.com";
+        final User user = repository.save(new User("login", "pass", email));
+
+        final User byEmailUnique = repository.findByEmailUnique(email);
+
+        assertEquals(user, byEmailUnique);
+    }
 }
