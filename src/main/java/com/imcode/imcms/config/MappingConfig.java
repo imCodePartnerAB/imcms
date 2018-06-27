@@ -40,10 +40,12 @@ import imcode.util.DateConstants;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.image.Resize;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -418,63 +420,68 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<File, ImageFileDTO> fileToImageFileDTO(@Value("${ImagePath}") File imagesPath) {
-        return imageFile -> {
-            final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            final String fileName = imageFile.getName();
+    public Function<File, ImageFileDTO> fileToImageFileDTO(@Value("${ImagePath}") Resource imagesPath) {
+        return new Function<File, ImageFileDTO>() {
+            @Override
+            @SneakyThrows
+            public ImageFileDTO apply(File imageFile) {
+                final ImageFileDTO imageFileDTO = new ImageFileDTO();
+                final String fileName = imageFile.getName();
 
-            imageFileDTO.setName(fileName);
-            imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
+                imageFileDTO.setName(fileName);
+                imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
 
-            final String relativePath = imageFile.getPath()
-                    .replace(imagesPath.getPath(), "")
-                    .replace("\\", "/");
+                final String relativePath = imageFile.getPath()
+                        .replace(imagesPath.getFile().getPath(), "")
+                        .replace("\\", "/");
 
-            imageFileDTO.setPath(relativePath);
+                imageFileDTO.setPath(relativePath);
 
-            final Date lastModifiedDate = new Date(imageFile.lastModified());
-            final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+                final Date lastModifiedDate = new Date(imageFile.lastModified());
+                final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
 
-            imageFileDTO.setUploaded(formattedDate);
+                imageFileDTO.setUploaded(formattedDate);
 
-            long fileSize = imageFile.length();
-            String suffix;
+                long fileSize = imageFile.length();
+                String suffix;
 
-            if (fileSize >= (1024L * 1024L)) {
-                suffix = "MB";
-                fileSize /= 1024L * 1024L;
+                if (fileSize >= (1024L * 1024L)) {
+                    suffix = "MB";
+                    fileSize /= 1024L * 1024L;
 
-            } else if (fileSize >= 1024L) {
-                suffix = "kB";
-                fileSize /= 1024L;
+                } else if (fileSize >= 1024L) {
+                    suffix = "kB";
+                    fileSize /= 1024L;
 
-            } else {
-                suffix = "B";
+                } else {
+                    suffix = "B";
+                }
+
+                imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
+
+                final java.awt.Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
+
+                if (imageDimension != null) {
+                    imageFileDTO.setWidth(imageDimension.width);
+                    imageFileDTO.setHeight(imageDimension.height);
+                    imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
+                }
+
+                return imageFileDTO;
             }
-
-            imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
-
-            final java.awt.Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
-
-            if (imageDimension != null) {
-                imageFileDTO.setWidth(imageDimension.width);
-                imageFileDTO.setHeight(imageDimension.height);
-                imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
-            }
-
-            return imageFileDTO;
         };
     }
 
     @Bean
     public BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
-                                                                          @Value("${ImagePath}") File imagesPath) {
+                                                                          @Value("${ImagePath}") Resource imagesPath) {
         return new BiFunction<File, Boolean, ImageFolderDTO>() {
             @Override
+            @SneakyThrows
             public ImageFolderDTO apply(File folderFile, Boolean isRoot) {
                 final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
                 imageFolderDTO.setName(folderFile.getName());
-                final String relativePath = folderFile.getPath().replace(imagesPath.getPath(), "");
+                final String relativePath = folderFile.getPath().replace(imagesPath.getFile().getPath(), "");
                 imageFolderDTO.setPath(relativePath);
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();

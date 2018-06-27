@@ -7,9 +7,11 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +30,14 @@ class DefaultImageFolderService implements ImageFolderService {
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
     private File imagesPath;
 
+    @SneakyThrows
     DefaultImageFolderService(BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO,
                               Function<File, ImageFileDTO> fileToImageFileDTO,
-                              @Value("${ImagePath}") File imagesPath) {
+                              @Value("${ImagePath}") Resource imagesPath) {
 
         this.fileToImageFolderDTO = fileToImageFolderDTO;
         this.fileToImageFileDTO = fileToImageFileDTO;
-        this.imagesPath = imagesPath;
+        this.imagesPath = imagesPath.getFile();
     }
 
     @Override
