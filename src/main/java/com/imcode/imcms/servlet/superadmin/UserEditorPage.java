@@ -5,6 +5,7 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
@@ -63,8 +64,6 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
     private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
-    private static final int MAXIMUM_PASSWORD_LENGTH = 128;
-    private static final int MINIMUM_PASSWORD_LENGTH = 4;
     private static final long serialVersionUID = 8794785851493625993L;
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
@@ -89,8 +88,8 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     private static boolean passwordPassesLengthRequirements(String password1) {
-        return (password1.length() >= MINIMUM_PASSWORD_LENGTH)
-                && (password1.length() <= MAXIMUM_PASSWORD_LENGTH);
+        return (password1.length() >= ImcmsConstants.MINIMUM_PASSWORD_LENGTH)
+                && (password1.length() <= ImcmsConstants.MAXIMUM_PASSWORD_LENGTH);
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
