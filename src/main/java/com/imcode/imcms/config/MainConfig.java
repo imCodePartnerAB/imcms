@@ -40,6 +40,7 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentIndexFactory;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.util.io.FileUtility;
+import lombok.SneakyThrows;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.ConvertUtils;
 import org.apache.commons.beanutils.Converter;
@@ -54,6 +55,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.Resource;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 
@@ -206,12 +208,13 @@ class MainConfig {
     }
 
     @Bean
+    @SneakyThrows
     public DocumentService<FileDocumentDTO> fileDocumentService(DocumentService<DocumentDTO> documentService,
                                                                 DocumentFileService documentFileService,
                                                                 Config config,
-                                                                @Value("${FilePath}") File filesRoot) {
+                                                                @Value("${FilePath}") Resource filesRoot) {
 
-        return new FileDocumentService(documentService, documentFileService, filesRoot, config);
+        return new FileDocumentService(documentService, documentFileService, filesRoot.getFile(), config);
     }
 
     @Bean

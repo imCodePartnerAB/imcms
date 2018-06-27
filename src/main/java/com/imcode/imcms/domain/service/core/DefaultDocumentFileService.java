@@ -9,10 +9,12 @@ import com.imcode.imcms.persistence.entity.DocumentFileJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentFileRepository;
 import imcode.util.Utility;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -39,14 +41,15 @@ class DefaultDocumentFileService
     private final VersionService versionService;
     private final File filesPath;
 
+    @SneakyThrows
     DefaultDocumentFileService(DocumentFileRepository documentFileRepository,
                                VersionService versionService,
-                               @Value("${FilePath}") File filesPath) {
+                               @Value("${FilePath}") Resource filesPath) {
 
         super(documentFileRepository);
         this.documentFileRepository = documentFileRepository;
         this.versionService = versionService;
-        this.filesPath = filesPath;
+        this.filesPath = filesPath.getFile();
     }
 
     @PostConstruct
