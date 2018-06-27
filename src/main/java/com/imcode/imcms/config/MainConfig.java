@@ -71,7 +71,8 @@ import java.util.Properties;
 @Import({
         DBConfig.class,
         ApplicationConfig.class,
-        MappingConfig.class
+        MappingConfig.class,
+        WebConfig.class
 })
 @ComponentScan({
         "com.imcode.imcms.domain",

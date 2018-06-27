@@ -22,8 +22,6 @@ import java.util.Properties;
 @EnableAspectJAutoProxy
 @ComponentScan({
         "com.imcode.imcms.controller",
-        "imcode.util",
-        "imcode.server",
         "com.imcode.imcms.aspects"
 })
 class WebConfig {

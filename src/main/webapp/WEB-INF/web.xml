@@ -121,10 +121,6 @@
             <param-name>contextClass</param-name>
             <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
         </init-param>
-        <init-param>
-            <param-name>contextConfigLocation</param-name>
-            <param-value>com.imcode.imcms.config.WebConfig</param-value>
-        </init-param>
     </servlet>
 
     <servlet>
