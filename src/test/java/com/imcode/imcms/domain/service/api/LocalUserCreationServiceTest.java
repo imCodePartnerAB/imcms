@@ -1,0 +1,58 @@
+package com.imcode.imcms.domain.service.api;
+
+import com.imcode.imcms.domain.component.UserValidationResult;
+import com.imcode.imcms.domain.component.UserValidator;
+import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.exception.UserValidationException;
+import com.imcode.imcms.domain.service.UserService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.never;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.times;
+
+@ExtendWith(MockitoExtension.class)
+class LocalUserCreationServiceTest {
+
+    @Mock
+    private UserService userService;
+    @Mock
+    private UserValidator userValidator;
+
+    @InjectMocks
+    private LocalUserCreationService localUserCreationService;
+
+    @Test
+    void createUser_When_ValidationResultIsFine_Expect_UserServiceCreateUserCalled() {
+        final UserData userData = new UserData();
+        final UserValidationResult validationResult = mock(UserValidationResult.class);
+
+        given(validationResult.isValidUserData()).willReturn(true);
+        given(userValidator.validate(userData)).willReturn(validationResult);
+
+        localUserCreationService.createUser(userData);
+
+        then(userService).should(times(1)).createUser(userData);
+    }
+
+    @Test
+    void createUser_When_ValidationResultIsNotFine_Expect_UserValidationExceptionThrown() {
+        final UserData userData = new UserData();
+        final UserValidationResult validationResult = mock(UserValidationResult.class);
+
+        given(validationResult.isValidUserData()).willReturn(false);
+        given(userValidator.validate(userData)).willReturn(validationResult);
+
+        assertThrows(UserValidationException.class, () -> localUserCreationService.createUser(userData));
+
+        then(userService).should(never()).createUser(userData);
+    }
+
+}
