@@ -2,9 +2,7 @@ package com.imcode.imcms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -17,7 +15,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
 public abstract class MockingControllerTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -28,7 +25,7 @@ public abstract class MockingControllerTest {
 
     protected abstract Object controllerToMock();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         mockMvc = MockMvcBuilders.standaloneSetup(controllerToMock()).build();
     }
