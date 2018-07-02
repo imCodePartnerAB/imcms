@@ -1,9 +1,9 @@
 package com.imcode.imcms.servlet;
 
+import com.imcode.imcms.api.UserAlreadyExistsException;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
-import imcode.server.user.UserAlreadyExistsException;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;

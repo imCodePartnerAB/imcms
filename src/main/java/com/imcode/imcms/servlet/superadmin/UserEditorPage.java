@@ -5,8 +5,8 @@ import com.imcode.imcms.flow.OkCancelPage;
 import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.LanguageMapper;
-import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
@@ -14,8 +14,6 @@ import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletException;
@@ -30,8 +28,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__PHONE_NUMBER_TYPE_ID = "phone_number_type_id";
@@ -68,8 +64,6 @@ public class UserEditorPage extends OkCancelPage {
     private static final LocalizedMessage ERROR__EMAIL_IS_EMPTY = new LocalizedMessage("error/email_is_missing");
     private static final LocalizedMessage ERROR__EMAIL_IS_INVALID = new LocalizedMessage("error/email_is_invalid");
     private static final LocalizedMessage ERROR__EMAIL_IS_TAKEN = new LocalizedMessage("error/email_is_taken");
-    private static final int MAXIMUM_PASSWORD_LENGTH = 128;
-    private static final int MINIMUM_PASSWORD_LENGTH = 4;
     private static final long serialVersionUID = 8794785851493625993L;
     private UserDomainObject editedUser;
     private UserDomainObject uneditedUser;
@@ -94,8 +88,8 @@ public class UserEditorPage extends OkCancelPage {
     }
 
     private static boolean passwordPassesLengthRequirements(String password1) {
-        return (password1.length() >= MINIMUM_PASSWORD_LENGTH)
-                && (password1.length() <= MAXIMUM_PASSWORD_LENGTH);
+        return (password1.length() >= ImcmsConstants.MINIMUM_PASSWORD_LENGTH)
+                && (password1.length() <= ImcmsConstants.MAXIMUM_PASSWORD_LENGTH);
     }
 
     protected void updateFromRequest(HttpServletRequest request) {
@@ -231,61 +225,6 @@ public class UserEditorPage extends OkCancelPage {
         }
     }
 
-    public Set<UserRole> getUserRoles(UserDomainObject editedUser) {
-        final List<RoleDomainObject> roles = editedUser.isUserAdminAndNotSuperAdmin()
-                ? getRoles(editedUser.getUserAdminRoleIds())
-                : getAllRolesExceptUsersRole();
-
-        final List<RoleDomainObject> usersRoles = getRoles(editedUser.getRoleIds());
-
-        return roles.stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        usersRoles.contains(role)
-                ))
-                .collect(Collectors.toSet());
-    }
-
-    public Set<UserRole> getUserAdministratedRoles(UserDomainObject editedUser) {
-        final List<RoleDomainObject> allRoles = getAllRolesExceptUsersRole()
-                .stream()
-                .filter(role -> {
-                    final RoleId roleId = role.getId();
-                    return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
-                })
-                .collect(Collectors.toList());
-
-        final List<RoleDomainObject> usersUserAdminRoles = getRoles(editedUser.getUserAdminRoleIds());
-
-        return allRoles.stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        usersUserAdminRoles.contains(role)
-                ))
-                .collect(Collectors.toSet());
-    }
-
-    private List<RoleDomainObject> getRoles(RoleId[] roleIds) {
-        final ImcmsAuthenticatorAndUserAndRoleMapper roleMapper = Imcms.getServices()
-                .getImcmsAuthenticatorAndUserAndRoleMapper();
-
-        return Stream.of(roleIds)
-                .map(roleMapper::getRole)
-                .collect(Collectors.toList());
-    }
-
-    private List<RoleDomainObject> getAllRolesExceptUsersRole() {
-        final RoleDomainObject[] allRoles = Imcms.getServices()
-                .getImcmsAuthenticatorAndUserAndRoleMapper()
-                .getAllRolesExceptUsersRole();
-
-        Arrays.sort(allRoles);
-
-        return Arrays.asList(allRoles);
-    }
-
     public String getPath(HttpServletRequest request) {
         return "/imcms/jsp/usereditor.jsp";
     }
@@ -383,10 +322,6 @@ public class UserEditorPage extends OkCancelPage {
         this.okCommand = okCommand;
     }
 
-    public UserDomainObject getUneditedUser() {
-        return uneditedUser;
-    }
-
     public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         final UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
 
@@ -402,6 +337,7 @@ public class UserEditorPage extends OkCancelPage {
         }
 
         request.setAttribute("editedUser", editedUser);
+        request.setAttribute("uneditedUser", uneditedUser);
         request.setAttribute("isAdmin", loggedOnUser.isSuperAdmin());
         request.setAttribute("userEditorPage", this);
         request.setAttribute("loggedOnUser", loggedOnUser);
@@ -415,13 +351,5 @@ public class UserEditorPage extends OkCancelPage {
         public String[] apply(RoleDomainObject role) {
             return new String[]{"" + role.getId(), role.getName()};
         }
-    }
-
-    @Data
-    @AllArgsConstructor
-    public class UserRole {
-        public final int id;
-        public final String name;
-        public final boolean checked;
     }
 }

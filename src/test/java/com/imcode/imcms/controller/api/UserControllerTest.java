@@ -28,7 +28,7 @@ public class UserControllerTest extends AbstractControllerTest {
 
     @Override
     public String controllerPath() {
-        return "/users";
+        return "/users/admins";
     }
 
     @Before

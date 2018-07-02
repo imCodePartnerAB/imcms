@@ -92,8 +92,6 @@ ImcmsConstants {
 
     public final static String MAIN_LOG = "com.imcode.imcms.log.main";
 
-    public final static int PASSWORD_MINIMUM_LENGTH = 4;
-
     public final static int DISPATCH_FLAG__DOCINFO_PAGE = PERM_EDIT_HEADLINE;
     public final static int DISPATCH_FLAG__EDIT_HTML_DOCUMENT = PERM_EDIT_HTML_DOCUMENT;
     public final static int DISPATCH_FLAG__EDIT_URL_DOCUMENT = PERM_EDIT_URL_DOCUMENT;
@@ -151,6 +149,9 @@ ImcmsConstants {
 
     public static final String LOGIN_URL = "/login/index.jsp";
     public static final String LOGOUT_URL = "/login/logged_out.jsp";
+
+    public static final int MAXIMUM_PASSWORD_LENGTH = 128;
+    public static final int MINIMUM_PASSWORD_LENGTH = 4;
 
     private ImcmsConstants() {
         throw new AssertionError();

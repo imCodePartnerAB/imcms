@@ -257,4 +257,17 @@
         <function-signature>java.lang.String getStatusIconTemplatePath(imcode.server.document.LifeCyclePhase)
         </function-signature>
     </function>
+
+    <function>
+        <name>getUserRoles</name>
+        <function-class>imcode.util.Html</function-class>
+        <function-signature>java.util.Set getUserRoles(imcode.server.user.UserDomainObject)</function-signature>
+    </function>
+
+    <function>
+        <name>getUserAdministratedRoles</name>
+        <function-class>imcode.util.Html</function-class>
+        <function-signature>java.util.Set getUserAdministratedRoles(imcode.server.user.UserDomainObject)
+        </function-signature>
+    </function>
 </taglib>

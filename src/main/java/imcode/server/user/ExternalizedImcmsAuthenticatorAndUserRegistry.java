@@ -1,5 +1,6 @@
 package imcode.server.user;
 
+import com.imcode.imcms.api.UserAlreadyExistsException;
 import imcode.server.ImcmsConstants;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
@@ -41,7 +42,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     public boolean authenticate(String loginName, String password) {
         NDC.push("authenticate");
         boolean userAuthenticatesInImcms = false;
-        if (password.length() >= ImcmsConstants.PASSWORD_MINIMUM_LENGTH) {
+        if (password.length() >= ImcmsConstants.MINIMUM_PASSWORD_LENGTH) {
             userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapperAndRole.authenticate(loginName, password);
         }
         boolean userAuthenticatesInExternal = false;

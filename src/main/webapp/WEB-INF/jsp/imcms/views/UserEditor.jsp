@@ -1,7 +1,6 @@
 ${"<!--"}
 <%@ page trimDirectiveWhitespaces="true" %>
 ${"-->"}
-<%@ page import="com.imcode.imcms.flow.OkCancelPage" %>
 <%@ page import="imcode.server.user.PhoneNumberType" %>
 <%@ page import="imcode.util.DateConstants" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
@@ -13,9 +12,7 @@ ${"-->"}
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 <%--@elvariable id="editedUser" type="imcode.server.user.UserDomainObject"--%>
-<%--@elvariable id="uneditedUser" type="imcode.server.user.UserDomainObject"--%>
 <%--@elvariable id="loggedOnUser" type="imcode.server.user.UserDomainObject"--%>
-<%--@elvariable id="userEditorPage" type="com.imcode.imcms.servlet.superadmin.UserEditorPage"--%>
 <%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
 
 <html>
@@ -24,12 +21,11 @@ ${"-->"}
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-imports_files.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-edit-user-page.css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
     <imcms:ifAdmin>
         <script>
             <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
         </script>
-        <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/old_admin/userEditor.js"
+        <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/new_admin/userEditor.js"
                 data-name="imcms"></script>
     </imcms:ifAdmin>
 </head>
@@ -55,8 +51,7 @@ ${"-->"}
                 <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
             </div>
         </c:if>
-        <form id="user-edit-form" method="post" action="${contextPath}/servlet/PageDispatcher">
-            ${userEditorPage.htmlHidden(pageContext.request)}
+        <form id="user-edit-form" method="post" action="${contextPath}/api/user/${editedUser eq null?'create':'edit'}">
             <div class="imcms-field">
                 <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
             </div>
@@ -66,7 +61,7 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="login-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/8"/></label>
-                    <input id="login-name" type="text" name="login_name" class="imcms-input imcms-text-box__input"
+                    <input id="login-name" type="text" name="loginName" class="imcms-input imcms-text-box__input"
                            maxlength="50" value="<c:out value='${editedUser.loginName}'/>">
                 </div>
             </div>
@@ -90,7 +85,7 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="first-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/14"/></label>
-                    <input id="first-name" class="imcms-input imcms-text-box__input" type="text" name="first_name"
+                    <input id="first-name" class="imcms-input imcms-text-box__input" type="text" name="firstName"
                            maxlength="50" value="<c:out value='${editedUser.firstName}'/>">
                 </div>
             </div>
@@ -98,7 +93,7 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="last-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/16"/></label>
-                    <input id="last-name" class="imcms-input imcms-text-box__input" type="text" name="last_name"
+                    <input id="last-name" class="imcms-input imcms-text-box__input" type="text" name="lastName"
                            maxlength="50" value="<c:out value='${editedUser.lastName}'/>">
                 </div>
             </div>
@@ -146,7 +141,7 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="province" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/27"/></label>
-                    <input id="province" class="imcms-input imcms-text-box__input" type="text" name="county"
+                    <input id="province" class="imcms-input imcms-text-box__input" type="text" name="province"
                            maxlength="50" value="<c:out value='${editedUser.province}'/>">
                 </div>
             </div>
@@ -193,7 +188,7 @@ ${"-->"}
                         <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                                 key="templates/sv/AdminUserResp.htm/32"/></label>
                         <div class="imcms-select imcms-select--phone-type" disabled="disabled">
-                            <input type="hidden" name="user_phone_number_type" value="${phoneNumber.type.id}">
+                            <input type="hidden" name="userPhoneNumberType" value="${phoneNumber.type.id}">
                             <div class="imcms-drop-down-list imcms-select__drop-down-list">
                                 <div class="imcms-drop-down-list__select-item">
                                     <span class="imcms-drop-down-list__select-item-value">${phoneNumber.type.name.toLocalizedString(pageContext.request)}</span>
@@ -208,7 +203,7 @@ ${"-->"}
                             </div>
                         </div>
                         <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
-                               name="user_phone_number" disabled="disabled" value="${phoneNumber.number}">
+                               name="userPhoneNumber" disabled="disabled" value="${phoneNumber.number}">
 
                         <button class="imcms-button imcms-button--save" style="display: none;"
                                 type="button"><fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
@@ -231,7 +226,8 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
-                    <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
+                    <input id="activated" type="checkbox" name="active"
+                           value="1"${empty editedUser or editedUser.active ? 'checked' : ''}>
                     <c:if test="${editedUser.createDate ne null}">
                         &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
                         &nbsp; <fmt:formatDate value="${editedUser.createDate}"
@@ -240,7 +236,7 @@ ${"-->"}
                 </div>
             </div>
 
-            <c:if test="${loggedOnUser.canEditRolesFor(uneditedUser)}">
+            <c:if test="${editedUser eq null or loggedOnUser.canEditRolesFor(editedUser)}">
                 <div class="imcms-field">
                     <div class="imcms-title"><fmt:message
                             key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
@@ -252,21 +248,21 @@ ${"-->"}
                         <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
                         <c:forEach var="role" items="${imcms:getUserRoles(editedUser)}">
                             <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                <input type="checkbox" name="role_ids" id="role-${role.id}" value="${role.id}"
+                                <input type="checkbox" name="roleIds" id="role-${role.id}" value="${role.id}"
                                        class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
                                 <label for="role-${role.id}"
                                        class="imcms-label imcms-checkbox__label">${role.name}</label>
                             </div>
                         </c:forEach>
                     </div>
-                    <c:if test="${loggedOnUser.superAdmin}">
+                    <c:if test="${loggedOnUser.superAdmin and editedUser.superAdmin}">
                         <div class="imcms-checkboxes imcms-field__checkboxes">
                             <div class="imcms-title imcms-checkboxes__title"><fmt:message
                                     key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
                             <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
                             <c:forEach var="role" items="${imcms:getUserAdministratedRoles(editedUser)}">
                                 <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                    <input type="checkbox" name="user_admin_role_ids" id="admin-role-${role.id}"
+                                    <input type="checkbox" name="userAdminRoleIds" id="admin-role-${role.id}"
                                            value="${role.id}"
                                            class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
                                     <label for="admin-role-${role.id}"
@@ -278,7 +274,7 @@ ${"-->"}
                 </div>
             </c:if>
             <div class="imcms-info-footer imcms-info-footer__user-edit">
-                <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
+                <button id="edit-user-submit-button" type="submit"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
                         key="templates/sv/AdminUserResp.htm/2007"/></button>
                 <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message

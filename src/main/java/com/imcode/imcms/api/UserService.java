@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class UserService {
 
     private ContentManagementSystem contentManagementSystem;
@@ -34,7 +35,7 @@ public class UserService {
 
     public List<User> getUsersWithRole(Role role) {
         User[] allUsersWithRole = getAllUsersWithRole(role);
-        return new ArrayList<User>(Arrays.asList(allUsersWithRole));
+        return new ArrayList<>(Arrays.asList(allUsersWithRole));
     }
 
     /**
@@ -46,10 +47,7 @@ public class UserService {
     }
 
     private User wrapUser(UserDomainObject internalUser) {
-        if (null == internalUser) {
-            return null;
-        }
-        return new User(internalUser);
+        return (null == internalUser) ? null : new User(internalUser);
     }
 
     /**
@@ -77,7 +75,7 @@ public class UserService {
      */
     public Role getRole(int roleId) {
         RoleDomainObject roleDO = getMapper().getRoleById(roleId);
-        return null == roleDO ? null : new Role(roleDO);
+        return (null == roleDO) ? null : new Role(roleDO);
     }
 
     /**
@@ -85,7 +83,7 @@ public class UserService {
      */
     public Role getRole(String roleName) {
         RoleDomainObject roleDO = getMapper().getRoleByName(roleName);
-        return null == roleDO ? null : new Role(roleDO);
+        return (null == roleDO) ? null : new Role(roleDO);
     }
 
     /**
@@ -153,21 +151,19 @@ public class UserService {
     }
 
     public void saveUser(User user) throws NoPermissionException, SaveException {
+
         if (null == user) {
             return;
         }
-        try {
-            ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
-            if (0 == user.getId()) {
-                imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal());
-            } else {
-                imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal());
-            }
-        } catch (imcode.server.user.UserAlreadyExistsException uaee) {
-            throw new UserAlreadyExistsException("A user with the login name \"" + user.getLoginName() + "\" already exists.", uaee);
+
+        ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = getMapper();
+
+        if (0 == user.getId()) {
+            imcmsAuthenticatorAndUserAndRoleMapper.addUser(user.getInternal());
+        } else {
+            imcmsAuthenticatorAndUserAndRoleMapper.saveUser(user.getInternal());
         }
     }
-
 
     public void updateUserSession(User user) {
         getMapper().updateUserSessionId(user.getInternal());

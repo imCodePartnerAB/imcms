@@ -6,9 +6,9 @@ Imcms.define(
     'imcms-users-tab-builder',
     [
         'imcms-window-tab-builder', 'imcms-i18n-texts', 'jquery', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-roles-rest-api', 'imcms-users-rest-api'
+        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms'
     ],
-    function (TabBuilder, texts, $, BEM, components, rolesRestApi, usersRestApi) {
+    function (TabBuilder, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms) {
 
         texts = texts.superAdmin.users;
 
@@ -182,6 +182,19 @@ Imcms.define(
             });
         }
 
+        function onCreateNewUserClicked() {
+            window.open(imcms.contextPath + '/api/user/create', '_blank').focus();
+        }
+
+        function buildCreateNewUserButton() {
+            var $button = components.buttons.positiveButton({
+                text: texts.createNewUser,
+                click: onCreateNewUserClicked
+            });
+
+            return components.buttons.buttonsContainer('<div>', [$button]);
+        }
+
         var UsersTab = function (name) {
             TabBuilder.apply(this, arguments);
         };
@@ -193,7 +206,8 @@ Imcms.define(
                 buildTitle(),
                 buildSearchRow(),
                 buildSearchResultTitle(),
-                $searchResultContainer = buildSearchResultContainer()
+                $searchResultContainer = buildSearchResultContainer(),
+                buildCreateNewUserButton()
             ];
         };
 

@@ -28,7 +28,7 @@ import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 @Configuration
-@Import({MainConfig.class, WebConfig.class})
+@Import(MainConfig.class)
 @ComponentScan({
         "com.imcode.imcms.components.datainitializer"
 })
