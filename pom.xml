@@ -111,6 +111,9 @@
         <log4j.threshold>info</log4j.threshold>
         <log4j.hibernate.level>error</log4j.hibernate.level>
         <log4j.console-appender.threshold>off</log4j.console-appender.threshold>
+
+        <junit5.version>5.2.0</junit5.version>
+        <mockito.version>2.19.0</mockito.version>
     </properties>
 
     <profiles>
@@ -218,14 +221,14 @@
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.2.0</version>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.1.0</version>
+            <version>${junit5.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -239,14 +242,14 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.19.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>2.18.0</version>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
 
