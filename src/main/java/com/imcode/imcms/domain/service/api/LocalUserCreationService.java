@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
  * 27.06.18.
  */
 @Service
-public class LocalUserCreationService implements UserCreationService {
+class LocalUserCreationService implements UserCreationService {
 
     private final UserService userService;
     private final UserValidator userValidator;
 
     @Autowired
-    public LocalUserCreationService(UserService userService, UserValidator userValidator) {
+    LocalUserCreationService(UserService userService, UserValidator userValidator) {
         this.userService = userService;
         this.userValidator = userValidator;
     }

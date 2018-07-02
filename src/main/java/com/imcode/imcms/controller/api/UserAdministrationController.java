@@ -1,6 +1,5 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.UserAlreadyExistsException;
 import com.imcode.imcms.domain.dto.UserData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
@@ -45,8 +44,6 @@ class UserAdministrationController {
         try {
             userCreationService.createUser(userData);
         } catch (UserValidationException e) {
-            e.printStackTrace();
-        } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
 
