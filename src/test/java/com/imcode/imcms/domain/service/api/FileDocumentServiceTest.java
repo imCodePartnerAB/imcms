@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -39,11 +40,22 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -63,7 +75,7 @@ public class FileDocumentServiceTest {
     private File testFile;
 
     @Value("${FilePath}")
-    private File filesPath;
+    private Resource filesPath;
 
     @Autowired
     private FileDocumentDataInitializer documentDataInitializer;
@@ -116,13 +128,13 @@ public class FileDocumentServiceTest {
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createFileDocument();
         createdDocId = createdDoc.getId();
-        filesPath.mkdirs();
+        filesPath.getFile().mkdirs();
     }
 
     @PostConstruct
     private void setUpSolrFiles() throws IOException {
         testSolrFolder = new File(config.getSolrHome());
-        testFilesFolder = filesPath;
+        testFilesFolder = filesPath.getFile();
 
         if (testSolrFolder.mkdirs()) {
             FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
@@ -299,7 +311,7 @@ public class FileDocumentServiceTest {
 
         for (DocumentFileDTO documentFileDTO : newFiles) {
             assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
-            final File savedFile = new File(filesPath, documentFileDTO.getFilename());
+            final File savedFile = new File(filesPath.getFile(), documentFileDTO.getFilename());
             assertTrue(savedFile.exists());
 
             try {
