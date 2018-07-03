@@ -16,7 +16,7 @@ public class UserDTO implements Serializable {
 
     private int id;
 
-    private String username;
+    private String loginName;
 
     private String firstName;
 
@@ -26,7 +26,7 @@ public class UserDTO implements Serializable {
 
     public UserDTO(User from) {
         id = from.getId();
-        username = from.getLogin();
+        loginName = from.getLogin();
         firstName = from.getFirstName();
         lastName = from.getLastName();
         email = from.getEmail();

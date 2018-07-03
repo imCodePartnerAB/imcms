@@ -147,11 +147,11 @@ Imcms.define("imcms-text-history-window-builder",
         }
 
         function buildTextHistoriesForDate(textHistoriesForDate) {
-            /** @namespace textHistory.modifiedBy.username */
+            /** @namespace textHistory.modifiedBy.loginName */
             return textHistoriesForDate.map(function (textHistory) {
                 var $textHistoryUnit = $("<div>", {
                     "class": "text-history-unit",
-                    text: textHistory.modified.time + " | " + textHistory.modifiedBy.username,
+                    text: textHistory.modified.time + " | " + textHistory.modifiedBy.loginName,
                     click: function () {
                         onTextHistoryUnitClicked(this);
                         showTextHistoryUnit(textHistory.text);

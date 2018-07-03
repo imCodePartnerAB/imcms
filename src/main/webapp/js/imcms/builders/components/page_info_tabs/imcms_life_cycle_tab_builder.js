@@ -136,7 +136,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
             usersRestApi.getAllAdmins().done(function (users) {
                 var usersDataMapped = users.map(function (user) {
                     return {
-                        text: user.username,
+                        text: user.loginName,
                         "data-value": user.id
                     }
                 });
