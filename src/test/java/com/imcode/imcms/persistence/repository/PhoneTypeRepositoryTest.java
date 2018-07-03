@@ -1,24 +1,15 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
 import com.imcode.imcms.persistence.entity.PhoneTypeJPA;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class PhoneTypeRepositoryTest {
+public class PhoneTypeRepositoryTest extends TransactionalWebAppSpringTestConfig {
 
     @Autowired
     private PhoneTypeRepository phoneTypeRepository;
