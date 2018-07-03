@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.component.UserValidator;
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserService;
@@ -26,7 +26,7 @@ class LocalUserCreationService implements UserCreationService {
     }
 
     @Override
-    public void createUser(UserData userData) throws UserValidationException {
+    public void createUser(UserFormData userData) throws UserValidationException {
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         if (validationResult.isValidUserData()) {

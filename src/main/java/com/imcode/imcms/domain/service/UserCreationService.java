@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service;
 
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 
 /**
@@ -11,6 +11,6 @@ import com.imcode.imcms.domain.exception.UserValidationException;
  */
 public interface UserCreationService {
 
-    void createUser(final UserData userData) throws UserValidationException;
+    void createUser(final UserFormData userData) throws UserValidationException;
 
 }

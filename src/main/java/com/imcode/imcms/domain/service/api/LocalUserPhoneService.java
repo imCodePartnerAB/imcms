@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LocalUserPhoneService implements PhoneService {
+class LocalUserPhoneService implements PhoneService {
 
     private final PhoneRepository phoneRepository;
 
     @Autowired
-    public LocalUserPhoneService(PhoneRepository phoneRepository) {
+    LocalUserPhoneService(PhoneRepository phoneRepository) {
         this.phoneRepository = phoneRepository;
     }
 

@@ -1,16 +1,19 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.model.UserData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode
-@ToString(exclude = {"password1", "password2"})
-public class UserData {
+@EqualsAndHashCode(callSuper = true)
+@ToString(exclude = {"password", "password2"}, callSuper = true)
+public class UserFormData extends UserData {
 
-    private String loginName;
-    private String password1;
+    private static final long serialVersionUID = 4260651400624470608L;
+
+    private String login;
+    private String password;
     private String password2;
     private String firstName;
     private String lastName;
@@ -22,10 +25,10 @@ public class UserData {
     private String province;
     private String country;
     private String langCode;
-    private Integer[] userPhoneNumberType;
-    private String[] userPhoneNumber;
     private String email;
     private boolean active;
+    private Integer[] userPhoneNumberType;
+    private String[] userPhoneNumber;
     private int[] roleIds;
     private int[] userAdminRoleIds;
 

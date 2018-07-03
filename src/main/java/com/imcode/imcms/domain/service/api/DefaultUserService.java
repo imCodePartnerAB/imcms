@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserService;
@@ -73,17 +73,8 @@ class DefaultUserService implements UserService {
     }
 
     @Override
-    public void createUser(UserData userData) {
-        final User user = new User(userData.getLoginName(), userData.getPassword1(), userData.getEmail());
-        user.setFirstName(userData.getFirstName());
-        user.setLastName(userData.getLastName());
-        user.setTitle(userData.getTitle());
-        user.setCompany(userData.getCompany());
-        user.setAddress(userData.getAddress());
-        user.setZip(userData.getZip());
-        user.setCity(userData.getCity());
-        user.setProvince(userData.getProvince());
-        user.setCountry(userData.getCountry());
+    public void createUser(UserFormData userData) {
+        final User user = new User(userData);
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
 
         final List<PhoneNumber> phoneNumbers = collectPhoneNumbers(userData);
@@ -99,7 +90,7 @@ class DefaultUserService implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private List<PhoneNumber> collectPhoneNumbers(UserData userData) {
+    private List<PhoneNumber> collectPhoneNumbers(UserFormData userData) {
 
         final String[] userPhoneNumbers = userData.getUserPhoneNumber();
         final Integer[] userPhoneNumberTypes = userData.getUserPhoneNumberType();

@@ -61,7 +61,7 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="login-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/8"/></label>
-                    <input id="login-name" type="text" name="loginName" class="imcms-input imcms-text-box__input"
+                    <input id="login-name" type="text" name="login" class="imcms-input imcms-text-box__input"
                            maxlength="50" value="<c:out value='${editedUser.loginName}'/>">
                 </div>
             </div>
@@ -69,7 +69,7 @@ ${"-->"}
                 <div class="imcms-text-box">
                     <label for="password1" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/10"/></label>
-                    <input id="password1" type="password" name="password1" class="imcms-input imcms-text-box__input"
+                    <input id="password1" type="password" name="password" class="imcms-input imcms-text-box__input"
                            maxlength="50" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>">
                 </div>
             </div>
