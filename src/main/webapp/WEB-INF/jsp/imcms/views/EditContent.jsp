@@ -17,7 +17,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Direct Content Manager</title>
-    <link rel="stylesheet" href="${contextPath}/css_new/imcms-imports_files.css">
+    <link rel="stylesheet" href="${contextPath}/css/imcms-imports_files.css">
     <script>
         <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
     </script>

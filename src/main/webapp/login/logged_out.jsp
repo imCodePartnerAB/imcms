@@ -8,8 +8,8 @@
 <head>
     <title><fmt:message key="templates/login/logged_out.html/1"/></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-logout.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-logout.css">
 </head>
 <body>
 <div class="imcms-info-page">

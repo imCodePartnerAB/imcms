@@ -11,8 +11,8 @@
 <head>
     <title><fmt:message key="templates/login/index.html/1"/></title>
     <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${cp}/css_new/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${cp}/css_new/imcms-login-page.css">
+    <link rel="stylesheet" type="text/css" href="${cp}/css/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${cp}/css/imcms-login-page.css">
 </head>
 <body>
 <div class="imcms-info-page">

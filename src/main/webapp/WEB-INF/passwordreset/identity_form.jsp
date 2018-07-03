@@ -18,8 +18,8 @@
 <head>
     <title><fmt:message key="passwordreset.title"/></title>
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/modal_window/imcms-modal-admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/modal_window/imcms-modal-admin.css">
     <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
 </head>
 <body>

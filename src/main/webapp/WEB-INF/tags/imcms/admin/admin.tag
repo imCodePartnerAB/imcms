@@ -7,7 +7,7 @@ ${"-->"}
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 
-<link rel="stylesheet" href="${contextPath}/css_new/imcms-imports_files.css">
+<link rel="stylesheet" href="${contextPath}/css/imcms-imports_files.css">
 
 <script>
     <jsp:include page="/js/imcms/imcms_config.js.jsp"/>

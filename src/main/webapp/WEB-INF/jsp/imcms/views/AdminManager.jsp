@@ -18,9 +18,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><fmt:message key="webapp/imcms/lang/jsp/admin/admin_manager.jsp/6"/></title>
-    <link rel="stylesheet" href="${contextPath}/css_new/imcms-imports_files.css">
+    <link rel="stylesheet" href="${contextPath}/css/imcms-imports_files.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css_new/admin/imcms-super-admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/admin/imcms-super-admin.css">
     <script>
         <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
     </script>
