@@ -80,9 +80,8 @@ dependencies {
     compile "javax.inject:javax.inject:1"
     compile "javax.validation:validation-api:1.1.0.Final"
 
-    compile "org.apache.tomcat:tomcat-jsp-api:7.0.57"
-    compile "org.apache.tomcat:tomcat-el-api:7.0.57"
-    compile "org.apache.tomcat:tomcat-jasper-el:7.0.57"
+    compile "javax.servlet.jsp:javax.servlet.jsp-api:2.3.1"
+    compile "javax.el:javax.el-api:3.0.0"
 
     compile("com.imcode.db:imcode-db:0.7") {
         exclude(module: 'junit')
