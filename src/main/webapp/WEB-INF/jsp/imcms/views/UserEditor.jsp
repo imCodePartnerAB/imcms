@@ -227,7 +227,7 @@ ${"-->"}
                     <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
                     <input id="activated" type="checkbox" name="active"
-                           value="1"${empty editedUser or editedUser.active ? 'checked' : ''}>
+                           value="1"${empty editedUser or editedUser.active ? ' checked="checked"' : ''}>
                     <c:if test="${editedUser.createDate ne null}">
                         &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
                         &nbsp; <fmt:formatDate value="${editedUser.createDate}"
