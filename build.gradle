@@ -2,6 +2,11 @@ import com.eriwen.gradle.css.tasks.MinifyCssTask
 import com.eriwen.gradle.js.tasks.MinifyJsTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
+buildscript {
+    repositories { mavenCentral() }
+    dependencies { classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0' }
+}
+
 plugins {
     id 'java'
     id 'maven'
@@ -15,6 +20,7 @@ plugins {
 //    id 'nebula.maven-publish' version '8.0.0'
 }
 
+apply plugin: 'org.junit.platform.gradle.plugin'
 //apply plugin: 'nebula.lint'
 //apply plugin: 'nebula.maven-publish'
 //apply plugin: 'pmd'
@@ -71,7 +77,9 @@ dependencies {
     compile "org.apache.tomcat:tomcat-el-api:7.0.57"
     compile "org.apache.tomcat:tomcat-jasper-el:7.0.57"
 
-    compile "com.imcode.db:imcode-db:0.7"
+    compile("com.imcode.db:imcode-db:0.7") {
+        exclude(module: 'junit')
+    }
     compile "com.imcode.ldap:imcode-ldap:0.1"
     compile("com.imcode.util:imcode-util:2.0.4") {
         exclude(module: "servlet-api")
@@ -117,13 +125,16 @@ dependencies {
     runtime "mysql:mysql-connector-java:5.1.38"
     runtime "org.slf4j:slf4j-log4j12:${slf4jVersion}"
 
-    testCompile "junit:junit:4.12"
-    testCompile "org.mockito:mockito-all:1.10.19"
-    testCompile "org.powermock:powermock-api-mockito:1.6.2"
+    testCompile 'org.junit.vintage:junit-vintage-engine:5.2.0'
+    testCompile 'org.junit.jupiter:junit-jupiter-engine:5.2.0'
+    testCompile 'org.dbunit:dbunit:2.5.1'
+    testCompile 'org.mockito:mockito-core:2.19.0'
+    testCompile 'org.mockito:mockito-junit-jupiter:2.19.0'
     testCompile "org.springframework:spring-test:${springframeworkVersion}"
     testCompile "com.jcabi:jcabi-matchers:1.4"
     testCompile "com.jayway.jsonpath:json-path-assert:2.2.0"
     testCompile "org.skyscreamer:jsonassert:1.5.0"
+
 }
 
 //Migrated maven properties
