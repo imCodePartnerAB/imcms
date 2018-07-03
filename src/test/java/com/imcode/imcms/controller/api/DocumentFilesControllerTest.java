@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -29,7 +30,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 public class DocumentFilesControllerTest extends AbstractControllerTest {
@@ -43,7 +46,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     private File testFile;
 
     @Value("${FilePath}")
-    private File filesPath;
+    private Resource filesPath;
 
     @Autowired
     private FileDocumentDataInitializer documentDataInitializer;
@@ -52,7 +55,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     private Config config;
 
     @Value("WEB-INF/solr")
-    private File defaultSolrFolder;
+    private Resource defaultSolrFolder;
 
     @Autowired
     private DocumentService<FileDocumentDTO> fileDocumentService;
@@ -78,16 +81,16 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     @Before
     public void setUp() throws Exception {
         createdDocId = documentDataInitializer.createFileDocument().getId();
-        filesPath.mkdirs();
+        filesPath.getFile().mkdirs();
     }
 
     @PostConstruct
     private void setUpSolrFiles() throws IOException {
         testSolrFolder = new File(config.getSolrHome());
-        testFilesFolder = filesPath;
+        testFilesFolder = filesPath.getFile();
 
         if (testSolrFolder.mkdirs()) {
-            FileUtils.copyDirectory(defaultSolrFolder, testSolrFolder);
+            FileUtils.copyDirectory(defaultSolrFolder.getFile(), testSolrFolder);
         }
     }
 
@@ -131,7 +134,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
 
         for (DocumentFileDTO documentFileDTO : newFiles) {
             assertEquals(documentFileDTO.getDocId().intValue(), createdDocId);
-            final File savedFile = new File(filesPath, documentFileDTO.getFilename());
+            final File savedFile = new File(filesPath.getFile(), documentFileDTO.getFilename());
             assertTrue(savedFile.exists());
 
             try {
