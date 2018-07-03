@@ -111,10 +111,10 @@ dependencies {
     }
 
     compile("org.apache.solr:solr-core:${solrVersion}")
-    compile("org.apache.httpcomponents:httpclient:4.5.2") {
+    compile("org.apache.httpcomponents:httpclient:4.5.4") {
         exclude(module: "commons-logging")
     }
-    compile "com.fasterxml.jackson.core:jackson-databind:2.9.4"
+    compile "com.fasterxml.jackson.core:jackson-databind:2.9.5"
 
     compile "org.jsoup:jsoup:1.10.2"
     compile("com.jcabi:jcabi-w3c:1.3") {
