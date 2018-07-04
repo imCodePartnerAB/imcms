@@ -1,6 +1,7 @@
 package com.imcode.imcms;
 
 import com.imcode.imcms.config.TestConfig;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -15,10 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
-public class TransactionalWebAppSpringTestConfig {
+public abstract class TransactionalWebAppSpringTestConfig {
 
     @Test
-    public void empty() {
+    @Ignore
+    public void ignored() {
         // to prevent "no runnable tests" error
     }
 }

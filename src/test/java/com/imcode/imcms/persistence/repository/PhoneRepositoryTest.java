@@ -9,9 +9,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -31,20 +31,21 @@ public class PhoneRepositoryTest extends TransactionalWebAppSpringTestConfig {
     @Before
     public void setUp() throws Exception {
         phoneRepository.deleteAll();
+        assertTrue(phoneRepository.findAll().isEmpty());
         user = userDataInitializer.createData("test-login");
     }
 
     @Test
     public void testSave() {
+        final PhoneTypeJPA phoneType1 = phoneTypeRepository.save(new PhoneTypeJPA(13, "test-type1"));
+        final PhoneTypeJPA phoneType2 = phoneTypeRepository.save(new PhoneTypeJPA(14, "test-type2"));
 
-        assertTrue(phoneRepository.findAll().isEmpty());
-
-        final PhoneTypeJPA phoneType = phoneTypeRepository.save(new PhoneTypeJPA(13, "test-type"));
-        final PhoneJPA phone = phoneRepository.save(new PhoneJPA("85241254", user, phoneType));
+        final PhoneJPA phone1 = phoneRepository.save(new PhoneJPA("852412541", user, phoneType1));
+        final PhoneJPA phone2 = phoneRepository.save(new PhoneJPA("852412542", user, phoneType2));
 
         final List<PhoneJPA> all = phoneRepository.findAll();
 
         assertFalse(all.isEmpty());
-        assertEquals(phone, all.get(0));
+        assertTrue(Arrays.asList(phone1, phone2).containsAll(all));
     }
 }
