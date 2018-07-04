@@ -17,6 +17,10 @@ plugins {
     id 'io.franzbecker.gradle-lombok' version '1.12'
     id "com.eriwen.gradle.js" version "2.14.1"
     id "com.eriwen.gradle.css" version "2.14.0"
+    id 'nebula.lint' version '9.3.2'
+
+//    id 'org.junit.platform:junit-platform-gradle-plugin' version '1.0.0'
+//    id 'org.junit.platform.gradle.plugin'
 //    id 'nebula.maven-publish' version '8.0.0'
 }
 
@@ -203,9 +207,9 @@ task explodedWar(type: Sync, dependsOn: war) {
     with war
 }
 
-task sourceJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
+task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
+    classifier = 'sources'
 }
 
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
@@ -223,7 +227,6 @@ tasks.war.dependsOn individualJsMinify
 tasks.war.dependsOn individualCssMinify
 tasks.build.finalizedBy(cleanTemporaryDir)
 
-
 //Plugins setting up
 lombok {
     version = "1.16.20"
@@ -235,8 +238,6 @@ idea {
         inheritOutputDirs = false
     }
 }
-
-jar.classifier = "classes"
 
 //gradleLint.rules = ['all-dependency']
 
@@ -412,36 +413,18 @@ war {
         into "/WEB-INF/"
     }
 }
-//
-//war {
-//    from { project(':imcms').webAppDir }
-//}
-//artifacts {
-////    archives components.java
-//    archives sourceJar
-////    archives file: 'A.jar', name: 'A', type: 'jar'
-////    archives file: 'A-sources.jar', name: 'A', type: 'jar', classifier: 'sources'
-////    archives file: 'B.jar', name: 'B', type: 'jar'
-////    archives file: 'B-sources.jar', name: 'B', type: 'jar', classifier: 'sources'
-//}
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            from components.java
-
-            artifact sourceJar {
-                classifier 'sources'
-            }
-
-//            artifact classesJar {
-//                classifier 'classes'
-//            }
-        }
         mavenWeb(MavenPublication) {
             from components.web
         }
+        mavenJava(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+        }
     }
+}
 
 //    repositories {
 //        maven {
@@ -457,4 +440,3 @@ publishing {
 //            }
 //        }
 //    }
-}
