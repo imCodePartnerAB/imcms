@@ -352,7 +352,7 @@ Imcms.define("imcms-image-content-builder",
 
                     showImagesIn(folder);
 
-                    setCurrentImage ? setCurrentImage() : "nothing";
+                    setCurrentImage && setCurrentImage();
                 });
         }
 
