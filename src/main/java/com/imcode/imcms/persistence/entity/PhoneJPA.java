@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Phone;
+import com.imcode.imcms.model.PhoneType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,9 +46,16 @@ public class PhoneJPA extends Phone {
     @JoinColumn(name = "phonetype_id", nullable = false)
     private PhoneTypeJPA phoneType;
 
-    public PhoneJPA(String number, User user, PhoneTypeJPA phoneType) {
-        this.number = number;
-        this.user = user;
-        this.phoneType = phoneType;
+    public PhoneJPA(Phone from) {
+        super(from);
+    }
+
+    public PhoneJPA(String number, User user, PhoneType phoneType) {
+        super(number, user, phoneType);
+    }
+
+    @Override
+    public void setPhoneType(PhoneType phoneType) {
+        this.phoneType = new PhoneTypeJPA(phoneType);
     }
 }

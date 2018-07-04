@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.PhoneType;
+import com.imcode.imcms.model.PhoneTypeBase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,9 +19,9 @@ import javax.persistence.Table;
 @Table(name = "phonetypes")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class PhoneTypeJPA extends PhoneType {
+public class PhoneTypeJPA extends PhoneTypeBase {
 
     private static final long serialVersionUID = 3083078584948444016L;
 
@@ -31,4 +32,7 @@ public class PhoneTypeJPA extends PhoneType {
     @Column(name = "typename", length = 12, nullable = false)
     private String name;
 
+    public PhoneTypeJPA(PhoneType from) {
+        super(from);
+    }
 }
