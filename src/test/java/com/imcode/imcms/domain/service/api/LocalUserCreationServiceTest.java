@@ -55,4 +55,7 @@ class LocalUserCreationServiceTest {
         then(userService).should(never()).createUser(userData);
     }
 
+    @Test
+    void name() {
+    }
 }
