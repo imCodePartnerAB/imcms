@@ -211,12 +211,18 @@ task sourceJar(type: Jar, dependsOn: classes) {
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
 task individualCssMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyCss") })
 
+task cleanTemporaryDir(type: Delete){
+    delete tmpDir
+}
+
 //Task dependency settings
 copyProperties.finalizedBy importProperties
 tasks.war.dependsOn importProperties
 tasks.war.dependsOn test
 tasks.war.dependsOn individualJsMinify
 tasks.war.dependsOn individualCssMinify
+tasks.build.finalizedBy(cleanTemporaryDir)
+
 
 //Plugins setting up
 lombok {
