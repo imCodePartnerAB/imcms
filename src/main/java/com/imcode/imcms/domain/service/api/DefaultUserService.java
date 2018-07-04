@@ -95,8 +95,8 @@ class DefaultUserService implements UserService {
         return userRepository.save(user);
     }
 
-    private List<Role> collectRoles(int[] roleIdsInt) {
-        if (roleIdsInt == null) return Collections.emptyList();
+    List<Role> collectRoles(int[] roleIdsInt) {
+        if (roleIdsInt == null || roleIdsInt.length == 0) return Collections.emptyList();
 
         return Arrays.stream(roleIdsInt)
                 .mapToObj(roleService::getById)
