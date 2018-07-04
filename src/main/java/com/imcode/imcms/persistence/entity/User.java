@@ -1,6 +1,8 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.UserData;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.Cache;
@@ -20,16 +22,14 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
-/**
- * {@see ImcmsAuthenticatorAndUserAndRoleMapper}
- */
 @Data
 @Entity
 @NoArgsConstructor
 @Table(name = "users")
 @ToString(exclude = "password")
+@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class User implements Serializable {
+public class User extends UserData implements Serializable {
 
     private static final long serialVersionUID = 5707282362269284484L;
 
@@ -100,6 +100,10 @@ public class User implements Serializable {
         this.login = login;
         this.password = password;
         this.email = email;
+    }
+
+    public User(UserData from) {
+        super(from);
     }
 
     public void setLogin(String login) {

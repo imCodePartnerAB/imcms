@@ -1,16 +1,19 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
+import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Phone;
+import com.imcode.imcms.model.PhoneType;
+import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
-import imcode.server.user.PhoneNumber;
-import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -36,13 +39,15 @@ class DefaultUserService implements UserService {
 
     private final UserRepository userRepository;
     private final RoleService roleService;
+    private final PhoneService phoneService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    DefaultUserService(UserRepository userRepository, RoleService roleService) {
+    DefaultUserService(UserRepository userRepository, RoleService roleService, PhoneService phoneService) {
         this.userRepository = userRepository;
         this.roleService = roleService;
+        this.phoneService = phoneService;
     }
 
     @Override
@@ -73,22 +78,21 @@ class DefaultUserService implements UserService {
     }
 
     @Override
-    public void createUser(UserData userData) {
-        final User user = new User(userData.getLoginName(), userData.getPassword1(), userData.getEmail());
-        user.setFirstName(userData.getFirstName());
-        user.setLastName(userData.getLastName());
-        user.setTitle(userData.getTitle());
-        user.setCompany(userData.getCompany());
-        user.setAddress(userData.getAddress());
-        user.setZip(userData.getZip());
-        user.setCity(userData.getCity());
-        user.setProvince(userData.getProvince());
-        user.setCountry(userData.getCountry());
+    public void createUser(UserFormData userData) {
+        final User user = saveUser(userData);
+        updateUserPhones(userData, user);
+    }
+
+    void updateUserPhones(UserFormData userData, User user) {
+        final List<Phone> phoneNumbers = collectPhoneNumbers(userData, user);
+        phoneService.updateUserPhones(phoneNumbers, user.getId());
+    }
+
+    private User saveUser(UserFormData userData) {
+        final User user = new User(userData);
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
 
-        final List<PhoneNumber> phoneNumbers = collectPhoneNumbers(userData);
-        final List<Role> userRoles = collectRoles(userData.getRoleIds());
-        final List<Role> administrateRoles = collectRoles(userData.getUserAdminRoleIds());
+        return userRepository.save(user);
     }
 
     private List<Role> collectRoles(int[] roleIdsInt) {
@@ -99,7 +103,7 @@ class DefaultUserService implements UserService {
                 .collect(Collectors.toList());
     }
 
-    private List<PhoneNumber> collectPhoneNumbers(UserData userData) {
+    List<Phone> collectPhoneNumbers(UserFormData userData, User user) {
 
         final String[] userPhoneNumbers = userData.getUserPhoneNumber();
         final Integer[] userPhoneNumberTypes = userData.getUserPhoneNumberType();
@@ -109,17 +113,17 @@ class DefaultUserService implements UserService {
                 || (userPhoneNumbers.length <= 0)
                 || (userPhoneNumberTypes.length <= 0)
                 || (userPhoneNumbers.length != userPhoneNumberTypes.length))
-        {
+        { // actually I don't know what to do if arrays have different length, however null and zero-length is fine
             return Collections.emptyList();
         }
 
-        List<PhoneNumber> numbers = new ArrayList<>();
+        List<Phone> numbers = new ArrayList<>();
 
         for (int i = 0; i < userPhoneNumbers.length; i++) {
             try {
                 final String userPhoneNumber = userPhoneNumbers[i];
-                final PhoneNumberType numberType = PhoneNumberType.getPhoneNumberTypeById(userPhoneNumberTypes[i]);
-                numbers.add(new PhoneNumber(userPhoneNumber, numberType));
+                final PhoneType numberType = PhoneTypes.getPhoneTypeById(userPhoneNumberTypes[i]);
+                numbers.add(new PhoneDTO(userPhoneNumber, user, numberType));
 
             } catch (Exception e) {
                 log.error("Something wrong with phone numbers.", e);

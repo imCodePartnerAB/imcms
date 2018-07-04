@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.component;
 
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.ImcmsConstants;
@@ -31,8 +31,8 @@ public class UserValidationResult {
 
     private boolean validUserData;
 
-    UserValidationResult(UserData userData, UserService userService) {
-        validateLoginName(userData.getLoginName(), userService);
+    UserValidationResult(UserFormData userData, UserService userService) {
+        validateLoginName(userData.getLogin(), userService);
         validatePasswords(userData);
         validateEmail(userData.getEmail(), userService);
         validateUserRoles(userData.getRoleIds());
@@ -68,8 +68,8 @@ public class UserValidationResult {
         this.emailAlreadyTaken = !userService.getUsersByEmail(email).isEmpty();
     }
 
-    private void validatePasswords(UserData userData) {
-        final String password1 = userData.getPassword1();
+    private void validatePasswords(UserFormData userData) {
+        final String password1 = userData.getPassword();
         final String password2 = userData.getPassword2();
 
         validatePassword1(password1);

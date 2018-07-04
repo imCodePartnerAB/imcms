@@ -513,7 +513,7 @@ Imcms.define(
 
                 function removeAlign() {
                     this.css({
-                        float: "none",
+                        "float": "none",
                         margin: 0
                     });
                     copyStyleToTinymceSpecificAttribute(this);
@@ -521,7 +521,7 @@ Imcms.define(
 
                 function doCenterAlign() {
                     this.css({
-                        float: "none",
+                        "float": "none",
                         margin: "0 auto"
                     });
                     copyStyleToTinymceSpecificAttribute(this);
@@ -529,7 +529,7 @@ Imcms.define(
 
                 function doLeftAlign() {
                     this.css({
-                        float: "left",
+                        "float": "left",
                         margin: 0
                     });
                     copyStyleToTinymceSpecificAttribute(this);
@@ -537,7 +537,7 @@ Imcms.define(
 
                 function doRightAlign() {
                     this.css({
-                        float: "right",
+                        "float": "right",
                         margin: "0 auto"
                     });
                     copyStyleToTinymceSpecificAttribute(this);

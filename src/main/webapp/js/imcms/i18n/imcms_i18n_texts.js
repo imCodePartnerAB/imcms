@@ -31,7 +31,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     unlockPanel: "Lås Upp Administratörspanelen",
                     hidePanel: "Dölj Administrationspanelen"
                 },
-                public: "offentlig",
+                "public": "offentlig",
                 publicTitle: 'Visar den publicerade vyn',
                 edit: "redigera",
                 editTitle: 'Visar den redigerbara arbetsversionen',
@@ -366,7 +366,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         hidePanel: "Hide Admin Panel"
                     }
                 },
-                public: 'public',
+                'public': 'public',
                 publicTitle: 'Shows the published view',
                 edit: 'edit',
                 editTitle: 'Shows the editable working version',

@@ -2,7 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.component.UserValidator;
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -31,7 +31,7 @@ class LocalUserCreationServiceTest {
 
     @Test
     void createUser_When_ValidationResultIsFine_Expect_UserServiceCreateUserCalled() {
-        final UserData userData = new UserData();
+        final UserFormData userData = new UserFormData();
         final UserValidationResult validationResult = mock(UserValidationResult.class);
 
         given(validationResult.isValidUserData()).willReturn(true);
@@ -44,7 +44,7 @@ class LocalUserCreationServiceTest {
 
     @Test
     void createUser_When_ValidationResultIsNotFine_Expect_UserValidationExceptionThrown() {
-        final UserData userData = new UserData();
+        final UserFormData userData = new UserFormData();
         final UserValidationResult validationResult = mock(UserValidationResult.class);
 
         given(validationResult.isValidUserData()).willReturn(false);
@@ -55,4 +55,7 @@ class LocalUserCreationServiceTest {
         then(userService).should(never()).createUser(userData);
     }
 
+    @Test
+    void name() {
+    }
 }

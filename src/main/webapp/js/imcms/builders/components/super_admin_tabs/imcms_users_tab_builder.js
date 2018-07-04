@@ -97,7 +97,7 @@ Imcms.define(
                                 text: user.lastName
                             }),
                             'user-name': $('<div>', {
-                                text: user.username
+                                text: user.login
                             }),
                             'email': $('<div>', {
                                 text: user.email

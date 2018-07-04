@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.component;
 
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -8,6 +8,6 @@ import com.imcode.imcms.domain.dto.UserData;
  */
 public interface UserValidator {
 
-    UserValidationResult validate(UserData userData);
+    UserValidationResult validate(UserFormData userData);
 
 }

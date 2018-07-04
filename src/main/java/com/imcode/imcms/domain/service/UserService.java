@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.persistence.entity.User;
 
@@ -23,5 +23,5 @@ public interface UserService {
 
     List<UserDTO> getUsersByEmail(String email);
 
-    void createUser(UserData userData);
+    void createUser(UserFormData userData);
 }

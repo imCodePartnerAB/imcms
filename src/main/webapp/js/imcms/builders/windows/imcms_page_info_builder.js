@@ -82,7 +82,7 @@ Imcms.define("imcms-page-info-builder",
 
         function buildModalWindow(message, onClickYes) {
             modalWindowBuilder.buildModalWindow(message, function (isClickedYes) {
-                isClickedYes ? onClickYes() : "do nothing =)";
+                isClickedYes && onClickYes();
             });
         }
 

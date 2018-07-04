@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.domain.dto.UserData;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.security.CheckAccess;
@@ -39,7 +39,7 @@ class UserAdministrationController {
 
     @CheckAccess
     @PostMapping("/create")
-    public ModelAndView createUser(@ModelAttribute UserData userData, ModelAndView modelAndView) {
+    public ModelAndView createUser(@ModelAttribute UserFormData userData, ModelAndView modelAndView) {
 
         try {
             userCreationService.createUser(userData);

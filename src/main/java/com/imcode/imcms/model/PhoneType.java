@@ -1,10 +1,15 @@
 package com.imcode.imcms.model;
 
-import lombok.Data;
-
 import java.io.Serializable;
 
-@Data
-public abstract class PhoneType implements Serializable {
-    private static final long serialVersionUID = 3310155463831389285L;
+public interface PhoneType extends Serializable {
+
+    Integer getId();
+
+    void setId(Integer id);
+
+    String getName();
+
+    void setName(String name);
+
 }

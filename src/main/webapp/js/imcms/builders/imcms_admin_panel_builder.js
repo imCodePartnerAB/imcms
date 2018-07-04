@@ -75,7 +75,7 @@ Imcms.define("imcms-admin-panel-builder",
                     name: 'public',
                     tag: '<a>',
                     href: imcms.contextPath + '/' + imcms.document.id,
-                    content: texts.public,
+                    content: texts["public"],
                     title: texts.publicTitle,
                     modifiers: ["public"],
                     style: editContentDisplayProperty
