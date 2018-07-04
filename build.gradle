@@ -259,6 +259,8 @@ javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
         def tmpFile = new File("${projectDir}/src/main/webapp")
         def fileLocation = tmpFile.toPath().relativize(jsFile.toPath()).toFile()
 
+        closure.compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+
         source = jsFile
         dest = "${tmpDir}/jsMin/${fileLocation}"
     }
