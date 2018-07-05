@@ -51,7 +51,4 @@ class LocalUserCreationServiceTest {
         then(userService).shouldHaveZeroInteractions();
     }
 
-    @Test
-    void name() {
-    }
 }
