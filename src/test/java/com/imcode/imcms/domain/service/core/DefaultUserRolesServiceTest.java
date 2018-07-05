@@ -5,22 +5,25 @@ import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.UserRoles;
 import com.imcode.imcms.persistence.repository.UserRolesRepository;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.verify;
+import static org.mockito.BDDMockito.when;
 
-public class DefaultUserRolesServiceTest {
+@ExtendWith(MockitoExtension.class)
+class DefaultUserRolesServiceTest {
 
     @Mock
     private UserRolesRepository userRolesRepository;
@@ -28,13 +31,8 @@ public class DefaultUserRolesServiceTest {
     @InjectMocks
     private DefaultUserRolesService defaultUserRolesService;
 
-    @Before
-    public void initMocks() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
-    public void getRoles_When_UserExists_Expect_Returned() {
+    void getRoles_When_UserExists_Expect_Returned() {
 
         final int userRolesSize = 3;
 
@@ -64,7 +62,7 @@ public class DefaultUserRolesServiceTest {
     }
 
     @Test
-    public void getUsers_When_RoleExists_Expect_Returned() {
+    void getUsers_When_RoleExists_Expect_Returned() {
         final int userRolesSize = 3;
 
         final RoleJPA role = new RoleJPA();
