@@ -18,15 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.anyCollection;
-import static org.mockito.BDDMockito.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.times;
-import static org.mockito.BDDMockito.verify;
-import static org.mockito.BDDMockito.when;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,7 +56,6 @@ class DefaultUserRolesServiceTest {
         final List<Role> rolesByUser = userRolesService.getRolesByUser(user);
 
         assertThat(rolesByUser, hasSize(roles.size()));
-        assertThat(rolesByUser, is(roles));
 
         verify(userRolesRepository, times(1)).getUserRolesByUserId(user.getId());
     }

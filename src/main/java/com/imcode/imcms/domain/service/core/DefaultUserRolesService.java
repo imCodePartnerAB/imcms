@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.RoleJPA;
@@ -34,7 +35,7 @@ public class DefaultUserRolesService implements UserRolesService {
     public List<Role> getRolesByUser(User user) {
         return userRolesRepository.getUserRolesByUserId(user.getId())
                 .stream()
-                .map(UserRoles::getRole)
+                .map(userRoles -> new RoleDTO(userRoles.getRole()))
                 .collect(Collectors.toList());
     }
 
