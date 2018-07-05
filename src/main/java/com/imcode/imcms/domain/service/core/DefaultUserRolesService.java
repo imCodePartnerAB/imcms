@@ -25,7 +25,7 @@ public class DefaultUserRolesService implements UserRolesService {
 
     @Override
     public List<User> getUsersByRole(Role role) {
-        return userRolesRepository.getUserRolesByRoleId(role.getId())
+        return userRolesRepository.findUserRolesByRoleId(role.getId())
                 .stream()
                 .map(UserRoles::getUser)
                 .collect(Collectors.toList());
@@ -33,7 +33,7 @@ public class DefaultUserRolesService implements UserRolesService {
 
     @Override
     public List<Role> getRolesByUser(User user) {
-        return userRolesRepository.getUserRolesByUserId(user.getId())
+        return userRolesRepository.findUserRolesByUserId(user.getId())
                 .stream()
                 .map(userRoles -> new RoleDTO(userRoles.getRole()))
                 .collect(Collectors.toList());

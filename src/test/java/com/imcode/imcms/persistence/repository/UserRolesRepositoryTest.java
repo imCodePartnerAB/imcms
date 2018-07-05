@@ -108,7 +108,7 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
 
         roles.forEach(roleJPA -> userRolesRepository.save(new UserRoles(user, roleJPA)));
 
-        final List<UserRoles> userRolesByUserId = userRolesRepository.getUserRolesByUserId(user.getId());
+        final List<UserRoles> userRolesByUserId = userRolesRepository.findUserRolesByUserId(user.getId());
 
         final List<RoleJPA> actualRoles = userRolesByUserId.stream()
                 .map(UserRoles::getRole)
@@ -130,7 +130,7 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
 
         final List<User> users = userDataInitializer.createData(userListSize, newRole.getId());
 
-        final List<UserRoles> userRolesByRoleId = userRolesRepository.getUserRolesByRoleId(newRole.getId());
+        final List<UserRoles> userRolesByRoleId = userRolesRepository.findUserRolesByRoleId(newRole.getId());
 
         final List<User> actualUsers = userRolesByRoleId.stream()
                 .map(UserRoles::getUser)
@@ -161,14 +161,14 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
         final List<UserRoles> userRoles = Arrays.asList(userRole1, userRole2);
         userRolesRepository.save(userRoles);
 
-        final List<UserRoles> userRolesByUserId = userRolesRepository.getUserRolesByUserId(user.getId());
+        final List<UserRoles> userRolesByUserId = userRolesRepository.findUserRolesByUserId(user.getId());
 
         Assertions.assertTrue(userRolesByUserId.containsAll(userRoles));
         Assertions.assertTrue(userRoles.containsAll(userRolesByUserId));
 
         userRolesRepository.deleteUserRolesByUserId(user.getId());
 
-        final List<UserRoles> shouldBeEmpty = userRolesRepository.getUserRolesByUserId(user.getId());
+        final List<UserRoles> shouldBeEmpty = userRolesRepository.findUserRolesByUserId(user.getId());
 
         assertTrue(shouldBeEmpty.isEmpty());
     }

@@ -51,13 +51,13 @@ class DefaultUserRolesServiceTest {
                 .mapToObj(i -> new UserRoles(user, roles.get(i)))
                 .collect(Collectors.toList());
 
-        when(userRolesRepository.getUserRolesByUserId(user.getId())).thenReturn(userRoles);
+        when(userRolesRepository.findUserRolesByUserId(user.getId())).thenReturn(userRoles);
 
         final List<Role> rolesByUser = userRolesService.getRolesByUser(user);
 
         assertThat(rolesByUser, hasSize(roles.size()));
 
-        verify(userRolesRepository, times(1)).getUserRolesByUserId(user.getId());
+        verify(userRolesRepository, times(1)).findUserRolesByUserId(user.getId());
     }
 
     @Test
@@ -75,14 +75,14 @@ class DefaultUserRolesServiceTest {
                 .mapToObj(i -> new UserRoles(users.get(i), role))
                 .collect(Collectors.toList());
 
-        when(userRolesRepository.getUserRolesByRoleId(role.getId())).thenReturn(userRoles);
+        when(userRolesRepository.findUserRolesByRoleId(role.getId())).thenReturn(userRoles);
 
         final List<User> usersByRole = userRolesService.getUsersByRole(role);
 
         assertThat(usersByRole, hasSize(users.size()));
         assertThat(usersByRole, is(users));
 
-        verify(userRolesRepository, times(1)).getUserRolesByRoleId(role.getId());
+        verify(userRolesRepository, times(1)).findUserRolesByRoleId(role.getId());
     }
 
     @Test
