@@ -17,6 +17,9 @@ public final class SuperAdminRole extends Role {
 
     private final int adminRole = 1;
 
+    SuperAdminRole() {
+    }
+
     @Override
     public void setId(Integer id) {
         throwException();

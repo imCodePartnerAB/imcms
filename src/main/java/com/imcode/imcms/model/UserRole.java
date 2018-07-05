@@ -17,6 +17,9 @@ public final class UserRole extends Role {
 
     private final int adminRole = 0;
 
+    UserRole() {
+    }
+
     @Override
     public void setId(Integer id) {
         throwException();
