@@ -7,6 +7,7 @@ import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.UserRoleId;
 import com.imcode.imcms.persistence.entity.UserRoles;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,13 +15,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @Transactional
 @WebAppConfiguration
@@ -145,5 +150,38 @@ public class UserRolesRepositoryTest {
 
         assertThat(actualUsers, hasSize(userListSize));
         assertThat(actualUsers, is(users));
+    }
+
+    @Test
+    public void deleteUserRolesByUserId_When_SomeRolesExist_Expect_Deleted() {
+        final User user = userDataInitializer.createData("test-user");
+
+        RoleJPA role1 = new RoleJPA();
+        role1.setName("test-role-1");
+
+        role1 = roleRepository.save(role1);
+
+        final UserRoles userRole1 = new UserRoles(user, role1);
+
+        RoleJPA role2 = new RoleJPA();
+        role2.setName("test-role-2");
+
+        role2 = roleRepository.save(role2);
+
+        final UserRoles userRole2 = new UserRoles(user, role2);
+
+        final List<UserRoles> userRoles = Arrays.asList(userRole1, userRole2);
+        userRolesRepository.save(userRoles);
+
+        final List<UserRoles> userRolesByUserId = userRolesRepository.getUserRolesByUserId(user.getId());
+
+        Assertions.assertTrue(userRolesByUserId.containsAll(userRoles));
+        Assertions.assertTrue(userRoles.containsAll(userRolesByUserId));
+
+        userRolesRepository.deleteUserRolesByUserId(user.getId());
+
+        final List<UserRoles> shouldBeEmpty = userRolesRepository.getUserRolesByUserId(user.getId());
+
+        assertTrue(shouldBeEmpty.isEmpty());
     }
 }
