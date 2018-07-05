@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.model.Role;
@@ -21,13 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.anyList;
-import static org.mockito.BDDMockito.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.spy;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultUserServiceTest {
@@ -38,6 +33,8 @@ class DefaultUserServiceTest {
     private RoleService roleService;
     @Mock
     private PhoneService phoneService;
+    @Mock
+    private UserRolesService userRolesService;
 
     @InjectMocks
     private DefaultUserService userService;
@@ -130,6 +127,7 @@ class DefaultUserServiceTest {
 
         then(userRepository).should().save(any(User.class));
         then(phoneService).should().updateUserPhones(anyList(), eq(userId));
+        then(userRolesService).should().updateUserRoles(anyList(), eq(user));
     }
 
     @Test
