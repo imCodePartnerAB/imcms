@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/user")
 class UserAdministrationController {
@@ -41,11 +43,13 @@ class UserAdministrationController {
 
     @CheckAccess
     @PostMapping("/create")
-    public ModelAndView createUser(@ModelAttribute UserFormData userData, ModelAndView modelAndView) {
+    public ModelAndView createUser(@ModelAttribute UserFormData userData,
+                                   ModelAndView modelAndView,
+                                   HttpServletRequest request) {
 
         try {
             userCreationService.createUser(userData);
-            modelAndView.setView(new RedirectView("/"));
+            modelAndView.setView(new RedirectView("/" + request.getContextPath()));
 
         } catch (UserValidationException e) {
             setModelStuff(e.validationResult, modelAndView);
