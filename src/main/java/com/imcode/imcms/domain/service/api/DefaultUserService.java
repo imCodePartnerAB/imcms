@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.domain.service.UserAdminRolesService;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Phone;
@@ -44,6 +45,7 @@ class DefaultUserService implements UserService {
     private final RoleService roleService;
     private final PhoneService phoneService;
     private final UserRolesService userRolesService;
+    private final UserAdminRolesService userAdminRolesService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -51,12 +53,14 @@ class DefaultUserService implements UserService {
     DefaultUserService(UserRepository userRepository,
                        RoleService roleService,
                        PhoneService phoneService,
-                       UserRolesService userRolesService) {
+                       UserRolesService userRolesService,
+                       UserAdminRolesService userAdminRolesService) {
 
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.phoneService = phoneService;
         this.userRolesService = userRolesService;
+        this.userAdminRolesService = userAdminRolesService;
     }
 
     @Override
@@ -92,6 +96,12 @@ class DefaultUserService implements UserService {
 
         updateUserPhones(userData, user);
         updateUserRoles(userData, user);
+        updateUserAdminRoles(userData, user);
+    }
+
+    private void updateUserAdminRoles(UserFormData userData, User user) {
+        final List<Role> administrateRoles = collectRoles(userData.getUserAdminRoleIds());
+        userAdminRolesService.updateUserAdminRoles(administrateRoles, user);
     }
 
     private void updateUserRoles(UserFormData userData, User user) {
