@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.UserRoles;
 import com.imcode.imcms.persistence.repository.UserRolesRepository;
@@ -35,5 +36,16 @@ public class DefaultUserRolesService implements UserRolesService {
                 .stream()
                 .map(UserRoles::getRole)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateUserRoles(List<? extends Role> roles, User user) {
+        userRolesRepository.deleteUserRolesByUserId(user.getId());
+
+        final List<UserRoles> saveUs = roles.stream()
+                .map(role -> new UserRoles(user, new RoleJPA(role)))
+                .collect(Collectors.toList());
+
+        userRolesRepository.save(saveUs);
     }
 }

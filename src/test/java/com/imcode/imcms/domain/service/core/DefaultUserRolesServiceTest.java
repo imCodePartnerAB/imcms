@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
@@ -11,6 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -18,9 +20,14 @@ import java.util.stream.IntStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.BDDMockito.anyCollection;
+import static org.mockito.BDDMockito.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.times;
 import static org.mockito.BDDMockito.verify;
 import static org.mockito.BDDMockito.when;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultUserRolesServiceTest {
@@ -29,7 +36,7 @@ class DefaultUserRolesServiceTest {
     private UserRolesRepository userRolesRepository;
 
     @InjectMocks
-    private DefaultUserRolesService defaultUserRolesService;
+    private DefaultUserRolesService userRolesService;
 
     @Test
     void getRoles_When_UserExists_Expect_Returned() {
@@ -53,7 +60,7 @@ class DefaultUserRolesServiceTest {
 
         when(userRolesRepository.getUserRolesByUserId(user.getId())).thenReturn(userRoles);
 
-        final List<Role> rolesByUser = defaultUserRolesService.getRolesByUser(user);
+        final List<Role> rolesByUser = userRolesService.getRolesByUser(user);
 
         assertThat(rolesByUser, hasSize(roles.size()));
         assertThat(rolesByUser, is(roles));
@@ -78,11 +85,30 @@ class DefaultUserRolesServiceTest {
 
         when(userRolesRepository.getUserRolesByRoleId(role.getId())).thenReturn(userRoles);
 
-        final List<User> usersByRole = defaultUserRolesService.getUsersByRole(role);
+        final List<User> usersByRole = userRolesService.getUsersByRole(role);
 
         assertThat(usersByRole, hasSize(users.size()));
         assertThat(usersByRole, is(users));
 
         verify(userRolesRepository, times(1)).getUserRolesByRoleId(role.getId());
+    }
+
+    @Test
+    void updateUserRoles_When_UserDoesNotHaveAnyRolesYet_Expect_RolesSaved() {
+        final List<RoleDTO> roles = Arrays.asList(
+                new RoleDTO(1, "role-1"),
+                new RoleDTO(2, "role-2"),
+                new RoleDTO(3, "role-3"),
+                new RoleDTO(4, "role-4")
+        );
+
+        final int userId = 42;
+        final User user = mock(User.class);
+        given(user.getId()).willReturn(userId);
+
+        userRolesService.updateUserRoles(roles, user);
+
+        then(userRolesRepository).should().deleteUserRolesByUserId(eq(userId));
+        then(userRolesRepository).should().save(anyCollection());
     }
 }
