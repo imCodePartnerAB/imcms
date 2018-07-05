@@ -17,7 +17,7 @@ import javax.validation.constraints.NotNull;
 
 /**
  * Who knows what are the fields {@link #permissions} and {@link #adminRole}. If you don't know what are them,
- * so do not use. They're exist to be compatible with database, they're not null, so leave default value.
+ * so do not use. They exist to be compatible with database, they're not null, so leave default value.
  */
 @Entity
 @Table(name = "roles")
@@ -41,7 +41,7 @@ public class RoleJPA extends Role {
     private Integer permissions = 0;
 
     @Column(name = "admin_role", nullable = false)
-    private Integer adminRole = 1;
+    private Integer adminRole = 0;
 
     public RoleJPA(Role from) {
         super(from);

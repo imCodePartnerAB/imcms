@@ -2,9 +2,16 @@ package imcode.server.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.imcode.imcms.model.SuperAdminRole;
+import com.imcode.imcms.model.UserAdminRole;
+import com.imcode.imcms.model.UserRole;
 
 import java.io.Serializable;
 
+/**
+ * @deprecated use {@link SuperAdminRole} or {@link UserAdminRole} or {@link UserRole}
+ */
+@Deprecated
 public class RoleId implements Serializable {
 
     public static final int SUPERADMIN_ID = 0;
