@@ -1,19 +1,14 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.UserRoleId;
 import com.imcode.imcms.persistence.entity.UserRoles;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,17 +16,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
-@Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = TestConfig.class)
-public class UserRolesRepositoryTest {
+public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig {
 
     @Autowired
     private UserRolesRepository userRolesRepository;
