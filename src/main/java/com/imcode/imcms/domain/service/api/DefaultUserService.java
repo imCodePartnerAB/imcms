@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneType;
@@ -17,6 +18,8 @@ import imcode.server.LanguageMapper;
 import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,14 +43,20 @@ class DefaultUserService implements UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
     private final PhoneService phoneService;
+    private final UserRolesService userRolesService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    DefaultUserService(UserRepository userRepository, RoleService roleService, PhoneService phoneService) {
+    DefaultUserService(UserRepository userRepository,
+                       RoleService roleService,
+                       PhoneService phoneService,
+                       UserRolesService userRolesService) {
+
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.phoneService = phoneService;
+        this.userRolesService = userRolesService;
     }
 
     @Override
@@ -80,7 +89,14 @@ class DefaultUserService implements UserService {
     @Override
     public void createUser(UserFormData userData) {
         final User user = saveUser(userData);
+
         updateUserPhones(userData, user);
+        updateUserRoles(userData, user);
+    }
+
+    private void updateUserRoles(UserFormData userData, User user) {
+        final List<Role> userRoles = collectRoles(userData.getRoleIds());
+        userRolesService.updateUserRoles(userRoles, user);
     }
 
     void updateUserPhones(UserFormData userData, User user) {
@@ -88,7 +104,8 @@ class DefaultUserService implements UserService {
         phoneService.updateUserPhones(phoneNumbers, user.getId());
     }
 
-    private User saveUser(UserFormData userData) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected User saveUser(UserFormData userData) {
         final User user = new User(userData);
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
 
