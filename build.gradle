@@ -17,10 +17,6 @@ plugins {
     id 'io.franzbecker.gradle-lombok' version '1.12'
     id "com.eriwen.gradle.js" version "2.14.1"
     id "com.eriwen.gradle.css" version "2.14.0"
-    id 'nebula.lint' version '9.3.2'
-
-//    id 'org.junit.platform:junit-platform-gradle-plugin' version '1.0.0'
-//    id 'org.junit.platform.gradle.plugin'
 //    id 'nebula.maven-publish' version '8.0.0'
 }
 
@@ -215,7 +211,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
 task individualCssMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyCss") })
 
-task cleanTemporaryDir(type: Delete) {
+task cleanTemporaryDir(type: Delete, dependsOn:war) {
     delete tmpDir
 }
 
@@ -398,15 +394,6 @@ war {
     }
 
     webInf {
-        def versionFile = new File("${tmpDir}/version.txt")
-        doFirst {
-            versionFile.text = version
-        }
-        from versionFile
-        into "/WEB-INF/"
-    }
-
-    webInf {
         from "${tmpDir}/jsMin/"
         into "/"
     }
@@ -415,6 +402,16 @@ war {
         from "${tmpDir}/cssMin/"
         into "/"
     }
+
+    webInf {
+        def versionFile = new File("${tmpDir}/version.txt")
+        doFirst {
+            versionFile.text = version
+        }
+        from versionFile
+        into "/WEB-INF/"
+    }
+
 }
 
 publishing {
