@@ -35,7 +35,7 @@ Imcms.require(
                 return;
             }
 
-            var $pass1 = $form.find('input[name=password1]');
+            var $pass1 = $form.find('input[name=password]');
             var $pass2 = $form.find('input[name=password2]');
 
             if ($pass1.val() === $pass2.val()) {

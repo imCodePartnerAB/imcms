@@ -10,4 +10,6 @@ public interface UserRolesService {
     List<User> getUsersByRole(Role role);
 
     List<Role> getRolesByUser(User user);
+
+    void updateUserRoles(List<? extends Role> roles, User user);
 }

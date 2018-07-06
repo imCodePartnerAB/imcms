@@ -11,7 +11,9 @@ import com.imcode.imcms.domain.component.UserValidationResult;
 public class UserValidationException extends RuntimeException {
     private static final long serialVersionUID = 7799856979816003123L;
 
-    public UserValidationException(UserValidationResult validationResult) {
+    public final UserValidationResult validationResult;
 
+    public UserValidationException(UserValidationResult validationResult) {
+        this.validationResult = validationResult;
     }
 }

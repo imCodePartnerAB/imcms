@@ -12,11 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.never;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.times;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class LocalUserCreationServiceTest {
@@ -39,7 +35,7 @@ class LocalUserCreationServiceTest {
 
         localUserCreationService.createUser(userData);
 
-        then(userService).should(times(1)).createUser(userData);
+        then(userService).should().createUser(userData);
     }
 
     @Test
@@ -52,10 +48,7 @@ class LocalUserCreationServiceTest {
 
         assertThrows(UserValidationException.class, () -> localUserCreationService.createUser(userData));
 
-        then(userService).should(never()).createUser(userData);
+        then(userService).shouldHaveZeroInteractions();
     }
 
-    @Test
-    void name() {
-    }
 }

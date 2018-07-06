@@ -4,8 +4,8 @@ import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.UserRoles;
-import com.imcode.imcms.persistence.repository.UserRolesRepository;
+import com.imcode.imcms.persistence.entity.UserAdminRole;
+import com.imcode.imcms.persistence.repository.UserAdminRolesRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,17 +19,18 @@ import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.ArgumentMatchers.anyCollection;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
-class DefaultUserRolesServiceTest {
+class LocalUserAdminRolesServiceTest {
 
     @Mock
-    private UserRolesRepository userRolesRepository;
+    private UserAdminRolesRepository userRolesRepository;
 
     @InjectMocks
-    private DefaultUserRolesService userRolesService;
+    private LocalUserAdminRolesService userRolesService;
 
     @Test
     void getRoles_When_UserExists_Expect_Returned() {
@@ -47,17 +48,17 @@ class DefaultUserRolesServiceTest {
                 })
                 .collect(Collectors.toList());
 
-        final List<UserRoles> userRoles = IntStream.range(0, userRolesSize)
-                .mapToObj(i -> new UserRoles(user, roles.get(i)))
+        final List<UserAdminRole> userRoles = IntStream.range(0, userRolesSize)
+                .mapToObj(i -> new UserAdminRole(user, roles.get(i)))
                 .collect(Collectors.toList());
 
-        when(userRolesRepository.findUserRolesByUserId(user.getId())).thenReturn(userRoles);
+        given(userRolesRepository.findUserAdminRoleByUserId(user.getId())).willReturn(userRoles);
 
-        final List<Role> rolesByUser = userRolesService.getRolesByUser(user);
+        final List<Role> rolesByUser = userRolesService.getAdminRolesByUser(user);
 
         assertThat(rolesByUser, hasSize(roles.size()));
 
-        verify(userRolesRepository, times(1)).findUserRolesByUserId(user.getId());
+        then(userRolesRepository).should().findUserAdminRoleByUserId(user.getId());
     }
 
     @Test
@@ -71,18 +72,18 @@ class DefaultUserRolesServiceTest {
                 .mapToObj(i -> new User(i, "test", "test", "test@imcode.com"))
                 .collect(Collectors.toList());
 
-        final List<UserRoles> userRoles = IntStream.range(0, userRolesSize)
-                .mapToObj(i -> new UserRoles(users.get(i), role))
+        final List<UserAdminRole> userRoles = IntStream.range(0, userRolesSize)
+                .mapToObj(i -> new UserAdminRole(users.get(i), role))
                 .collect(Collectors.toList());
 
-        when(userRolesRepository.findUserRolesByRoleId(role.getId())).thenReturn(userRoles);
+        given(userRolesRepository.findUserAdminRoleByRoleId(role.getId())).willReturn(userRoles);
 
-        final List<User> usersByRole = userRolesService.getUsersByRole(role);
+        final List<User> usersByRole = userRolesService.getUsersByAdminRole(role);
 
         assertThat(usersByRole, hasSize(users.size()));
         assertThat(usersByRole, is(users));
 
-        verify(userRolesRepository, times(1)).findUserRolesByRoleId(role.getId());
+        then(userRolesRepository).should().findUserAdminRoleByRoleId(role.getId());
     }
 
     @Test
@@ -98,9 +99,9 @@ class DefaultUserRolesServiceTest {
         final User user = mock(User.class);
         given(user.getId()).willReturn(userId);
 
-        userRolesService.updateUserRoles(roles, user);
+        userRolesService.updateUserAdminRoles(roles, user);
 
-        then(userRolesRepository).should().deleteUserRolesByUserId(eq(userId));
+        then(userRolesRepository).should().deleteUserAdminRoleByUserId(eq(userId));
         then(userRolesRepository).should().save(anyCollection());
     }
 }

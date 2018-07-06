@@ -17,9 +17,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.util.NestedServletException;
 
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 class DocumentControllerTest extends MockingControllerTest {
 

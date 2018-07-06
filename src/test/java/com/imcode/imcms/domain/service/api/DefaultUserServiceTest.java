@@ -1,11 +1,15 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.PhoneDTO;
+import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
+import com.imcode.imcms.domain.service.UserAdminRolesService;
+import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneTypes;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -19,13 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
-import static org.mockito.BDDMockito.any;
-import static org.mockito.BDDMockito.anyList;
-import static org.mockito.BDDMockito.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
-import static org.mockito.BDDMockito.spy;
-import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DefaultUserServiceTest {
@@ -36,6 +34,10 @@ class DefaultUserServiceTest {
     private RoleService roleService;
     @Mock
     private PhoneService phoneService;
+    @Mock
+    private UserRolesService userRolesService;
+    @Mock
+    private UserAdminRolesService userAdminRolesService;
 
     @InjectMocks
     private DefaultUserService userService;
@@ -99,7 +101,7 @@ class DefaultUserServiceTest {
         final String userNumber = "123";
         final PhoneTypes phoneType = PhoneTypes.OTHER;
 
-        final int userId = 13;
+        final int userId = 42;
         final User user = mock(User.class);
         given(user.getId()).willReturn(userId);
 
@@ -119,7 +121,7 @@ class DefaultUserServiceTest {
         final DefaultUserService userService1 = spy(userService);
         final UserFormData mock = mock(UserFormData.class);
         final User user = mock(User.class);
-        final int userId = 13;
+        final int userId = 42;
         given(user.getId()).willReturn(userId);
         given(mock.getLangCode()).willReturn(ENG_CODE);
         given(userRepository.save(any(User.class))).willReturn(user);
@@ -128,5 +130,33 @@ class DefaultUserServiceTest {
 
         then(userRepository).should().save(any(User.class));
         then(phoneService).should().updateUserPhones(anyList(), eq(userId));
+        then(userRolesService).should().updateUserRoles(anyList(), eq(user));
+        then(userAdminRolesService).should().updateUserAdminRoles(anyList(), eq(user));
+    }
+
+    @Test
+    void collectRoles_When_EmptyArray_Expect_EmptyList() {
+        final List<Role> roles = userService.collectRoles(new int[]{});
+        Assertions.assertTrue(roles.isEmpty());
+    }
+
+    @Test
+    void collectRoles_When_Null_Expect_EmptyList() {
+        final List<Role> roles = userService.collectRoles(null);
+        Assertions.assertTrue(roles.isEmpty());
+    }
+
+    @Test
+    void collectRoles_When_ValuesPresent_Expect_EmptyList() {
+        final Integer roleId = 42;
+        final String roleName = "name";
+        final Role role = new RoleDTO(roleId, roleName);
+
+        given(roleService.getById(roleId)).willReturn(role);
+
+        final List<Role> roles = userService.collectRoles(new int[]{roleId});
+
+        Assertions.assertEquals(roles.size(), 1);
+        Assertions.assertEquals(roles.get(0), role);
     }
 }
