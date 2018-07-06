@@ -215,17 +215,20 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
 task individualCssMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyCss") })
 
-task cleanTemporaryDir(type: Delete){
+task cleanTemporaryDir(type: Delete) {
     delete tmpDir
 }
 
 //Task dependency settings
 copyProperties.finalizedBy importProperties
-tasks.war.dependsOn importProperties
-tasks.war.dependsOn test
-tasks.war.dependsOn individualJsMinify
-tasks.war.dependsOn individualCssMinify
-tasks.build.finalizedBy(cleanTemporaryDir)
+
+tasks.war {
+    it.dependsOn importProperties
+    it.dependsOn test
+    it.dependsOn individualJsMinify
+    it.dependsOn individualCssMinify
+    it.finalizedBy cleanTemporaryDir
+}
 
 //Plugins setting up
 lombok {
@@ -238,6 +241,8 @@ idea {
         inheritOutputDirs = false
     }
 }
+
+jar.classifier = "classes"
 
 //gradleLint.rules = ['all-dependency']
 
@@ -310,7 +315,9 @@ csslint {
 
 war {
     classpath = jar.outputs.files + configurations.runtime - configurations.providedRuntime
-//    duplicatesStrategy "include"
+
+    exclude "**/js/imcms/**/*.js"
+    exclude "**/css/**/*.css"
 
     manifest {
         def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
@@ -391,26 +398,22 @@ war {
     }
 
     webInf {
-        doLast {
-            from "${tmpDir}/jsMin/"
-            into "/"
-        }
-    }
-
-    webInf {
-        doLast {
-            from "${tmpDir}/cssMin/"
-            into "/"
-        }
-    }
-
-    webInf {
         def versionFile = new File("${tmpDir}/version.txt")
         doFirst {
             versionFile.text = version
         }
         from versionFile
         into "/WEB-INF/"
+    }
+
+    webInf {
+        from "${tmpDir}/jsMin/"
+        into "/"
+    }
+
+    webInf {
+        from "${tmpDir}/cssMin/"
+        into "/"
     }
 }
 
@@ -419,12 +422,12 @@ publishing {
         mavenWeb(MavenPublication) {
             from components.web
         }
+
         mavenJava(MavenPublication) {
             from components.java
             artifact sourcesJar
         }
     }
-}
 
 //    repositories {
 //        maven {
@@ -440,3 +443,4 @@ publishing {
 //            }
 //        }
 //    }
+}
