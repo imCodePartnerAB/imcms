@@ -2,8 +2,14 @@ package com.imcode.imcms.mapping;
 
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
+import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.mapping.container.*;
+import com.imcode.imcms.mapping.container.MenuContainer;
+import com.imcode.imcms.mapping.container.TextDocImageContainer;
+import com.imcode.imcms.mapping.container.TextDocImagesContainer;
+import com.imcode.imcms.mapping.container.TextDocTextContainer;
+import com.imcode.imcms.mapping.container.TextDocTextsContainer;
+import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -26,7 +32,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
