@@ -3,14 +3,15 @@
 
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
 
 <html>
 <head>
     <title><fmt:message key="templates/sv/no_page.html/1"/></title>
 
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="<%= request.getContextPath() %>/css/404/imcms-page-error.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/css/404/imcms-page-error.css">
 
 </head>
 <body bgcolor="#FFFFFF">
@@ -22,15 +23,15 @@
     <div class="imcms-page-error-body">
         <div class="imcms-field">
             <form class="imcms-page-error-body__form"
-                  action="<%= request.getContextPath() %>/servlet/StartDoc">
+                  action="${contextPath}/servlet/StartDoc">
                 <button type="Submit"
                         class="imcms-button imcms-button--neutral imcms-page-error-body__button"
-                        onClick="top.location='${cp}/servlet/StartDoc';">
+                        onClick="top.location='${contextPath}/servlet/StartDoc';">
                     <fmt:message key="templates/Startpage"/>
                 </button>
             </form>
             <form class="imcms-page-error-body__form"
-                  action="<%= request.getContextPath() %>/servlet/BackDoc">
+                  action="${contextPath}/servlet/BackDoc">
                 <button type="Submit"
                         class="imcms-button imcms-button--neutral imcms-page-error-body__button">
                     <fmt:message key="templates/Back"/>
