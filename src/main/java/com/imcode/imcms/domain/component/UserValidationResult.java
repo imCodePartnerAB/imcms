@@ -26,7 +26,7 @@ public class UserValidationResult {
     private boolean passwordsEqual;
     private boolean passwordTooWeak;
     private boolean emptyEmail;
-    private boolean emailValid;
+    private boolean emailValid = true;
     private boolean emailAlreadyTaken;
     private boolean emptyUserRoles;
 
@@ -65,9 +65,12 @@ public class UserValidationResult {
     private void validateEmail(String email, UserService userService) {
         email = StringUtils.defaultString(email);
 
-        this.emptyEmail = StringUtils.isBlank(email);
-        this.emailValid = Utility.isValidEmail(email);
-        this.emailAlreadyTaken = !userService.getUsersByEmail(email).isEmpty();
+        emptyEmail = StringUtils.isBlank(email);
+
+        if (emptyEmail) return;
+
+        emailValid = Utility.isValidEmail(email);
+        emailAlreadyTaken = !userService.getUsersByEmail(email).isEmpty();
     }
 
     private void validatePasswords(UserFormData userData) {

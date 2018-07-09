@@ -9,34 +9,38 @@ Imcms.require(
             var $form = $('#user-edit-form');
             var $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
 
-            if (!$userAdminRoleIds.length) return;
+            var onUserAdminRoleClicked = function () {
+                var $checkbox = $(this);
 
-            $userAdminRoleIds.attr('disabled', 'disabled');
+                if ($checkbox.is(':checked')) {
+                    $userAdminRoleIds.removeAttr('disabled');
 
-            var isUserAdminSelected = $form.find('input[name=roleIds]')
-                .find("option")
-                .filter(function () {
-                    var $option = $(this);
-                    return ($option.text() === 'Useradmin' && $option.is(':selected'));
-                })
-                .length;
+                } else {
+                    $userAdminRoleIds.removeAttr('checked');
+                    $userAdminRoleIds.attr('disabled', 'disabled');
+                }
+            };
 
-            if (isUserAdminSelected) {
-                $userAdminRoleIds.removeAttr('disabled');
-            }
+            var $userAdminRole = $form.find('#role-1');
+            $userAdminRole.click(onUserAdminRoleClicked);
+
+            onUserAdminRoleClicked.call($userAdminRole);
         }
 
         function onSubmit(e) {
             var $form = $('#user-edit-form');
+            var $pass1 = $form.find('input[name=password]');
+            var $pass2 = $form.find('input[name=password2]');
 
-            if ($form.find('input[name=loginName]').val() === "") {
+            if (!$form.find('input[name=login]').val()
+                || !$pass1.val()
+                || !$pass2.val()
+                || !$form.find('#email').val())
+            {
                 e.preventDefault();
                 alert($('#must-fill-mandatory-fields-text').val());
                 return;
             }
-
-            var $pass1 = $form.find('input[name=password]');
-            var $pass2 = $form.find('input[name=password2]');
 
             if ($pass1.val() === $pass2.val()) {
                 $('[name=userPhoneNumber]').removeAttr('disabled');
@@ -170,19 +174,19 @@ Imcms.require(
         }
 
         $(function () {
-            $('input[name=loginName]').focus();
+            $('input[name=login]').focus();
             activateUserAdminRoles();
             loadLanguages();
 
             components.selects.makeImcmsSelect($('#phone-type-select'));
 
-            $('#select-role-ids').change(activateUserAdminRoles);
             $('#edit-user-submit-button').click(onSubmit);
             $('#button-add-phone').click(addPhone);
 
             $('.imcms-input--phone').keydown(filterNonDigits).on('paste', function (e) {
                 e.preventDefault();
             });
+
 
             $('.imcms-text-box--existing-phone-box').each(function () {
                 var $row = $(this);

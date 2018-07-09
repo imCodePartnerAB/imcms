@@ -1,17 +1,17 @@
 ${"<!--"}
 <%@ page trimDirectiveWhitespaces="true" %>
 ${"-->"}
-<%@ page import="imcode.server.user.PhoneNumberType" %>
-<%@ page import="imcode.util.DateConstants" %>
+<%@ page import="com.imcode.imcms.model.PhoneTypes" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="imcms" uri="imcms" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <c:set var="contextPath" value="${pageContext.request.contextPath}"/>
-<%--@elvariable id="editedUser" type="imcode.server.user.UserDomainObject"--%>
+<%--@elvariable id="editedUser" type="com.imcode.imcms.domain.dto.UserFormData"--%>
 <%--@elvariable id="loggedOnUser" type="imcode.server.user.UserDomainObject"--%>
 <%--@elvariable id="errorMessage" type="com.imcode.imcms.util.l10n.LocalizedMessage"--%>
 
@@ -46,12 +46,13 @@ ${"-->"}
             <a href="${contextPath}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/sv/AdminUserResp.htm/2001"/></a>
         </div>
-        <c:if test="${errorMessage ne null}">
+        <%--@elvariable id="errorMessages" type="java.util.List"--%>
+        <c:forEach var="errorMessageKey" items="${errorMessages}">
             <div class="imcms-field">
-                <div class="imcms-error-msg imcms-login__error-msg">${errorMessage.toLocalizedString(pageContext.request)}</div>
+                <div class="imcms-error-msg imcms-login__error-msg"><fmt:message key="${errorMessageKey}"/></div>
             </div>
-        </c:if>
-        <form id="user-edit-form" method="post" action="${contextPath}/api/user/${editedUser eq null?'create':'edit'}">
+        </c:forEach>
+        <form id="user-edit-form" method="post" action="${contextPath}/api/user/create">
             <div class="imcms-field">
                 <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
             </div>
@@ -62,7 +63,7 @@ ${"-->"}
                     <label for="login-name" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/8"/></label>
                     <input id="login-name" type="text" name="login" class="imcms-input imcms-text-box__input"
-                           maxlength="50" value="<c:out value='${editedUser.loginName}'/>">
+                           maxlength="50" value="<c:out value='${editedUser.login}'/>">
                 </div>
             </div>
             <div class="imcms-field">
@@ -162,17 +163,17 @@ ${"-->"}
                     <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/32"/></label>
                     <div id="phone-type-select" class="imcms-select imcms-select--phone-type">
-                        <input id="phone-type-selected" type="hidden" value="<%=PhoneNumberType.OTHER.getId()%>">
+                        <input id="phone-type-selected" type="hidden" value="<%=PhoneTypes.OTHER.getId()%>">
                         <div class="imcms-drop-down-list imcms-select__drop-down-list">
                             <div class="imcms-drop-down-list__select-item">
-                                <span class="imcms-drop-down-list__select-item-value"><%=PhoneNumberType.OTHER.getName().toLocalizedString(request)%></span>
+                                <span class="imcms-drop-down-list__select-item-value"><%=PhoneTypes.OTHER.getName()%></span>
                                 <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
                                         type="button"></button>
                             </div>
                             <div class="imcms-drop-down-list__items">
-                                <c:forEach var="phoneType" items="<%=PhoneNumberType.getAllPhoneNumberTypes()%>">
+                                <c:forEach var="phoneType" items="<%=PhoneTypes.values()%>">
                                     <div class="imcms-drop-down-list__item"
-                                         data-value="${phoneType.id}">${phoneType.name.toLocalizedString(pageContext.request)}</div>
+                                         data-value="${phoneType.id}">${phoneType.name}</div>
                                 </c:forEach>
                             </div>
                         </div>
@@ -183,27 +184,30 @@ ${"-->"}
                             id="button-add-phone"><fmt:message key="templates/sv/AdminUserResp.htm/2004"/></button>
                 </div>
 
-                <c:forEach var="phoneNumber" items="${editedUser.phoneNumbers}">
+                <c:forEach var="phoneNumber" items="${editedUser.userPhoneNumber}" varStatus="i">
                     <div class="imcms-text-box imcms-text-box--phone-box imcms-text-box--existing-phone-box">
                         <label for="phone" class="imcms-label imcms-text-box__label"><fmt:message
                                 key="templates/sv/AdminUserResp.htm/32"/></label>
                         <div class="imcms-select imcms-select--phone-type" disabled="disabled">
-                            <input type="hidden" name="userPhoneNumberType" value="${phoneNumber.type.id}">
+                            <input type="hidden" name="userPhoneNumberType"
+                                   value="${editedUser.userPhoneNumberType[i.index]}">
                             <div class="imcms-drop-down-list imcms-select__drop-down-list">
                                 <div class="imcms-drop-down-list__select-item">
-                                    <span class="imcms-drop-down-list__select-item-value">${phoneNumber.type.name.toLocalizedString(pageContext.request)}</span>
+                                    <spring:eval var="userPhoneType"
+                                                 expression="T(com.imcode.imcms.model.PhoneTypes).getPhoneTypeById(editedUser.userPhoneNumberType[i.index])"/>
+                                    <span class="imcms-drop-down-list__select-item-value">${userPhoneType.name}</span>
                                     <button class="imcms-button imcms-button--drop-down imcms-drop-down-list__button"
                                             type="button"></button>
                                 </div>
                                 <div class="imcms-drop-down-list__items"><c:forEach var="phoneType"
-                                                                                    items="<%=PhoneNumberType.getAllPhoneNumberTypes()%>">
+                                                                                    items="<%=PhoneTypes.values()%>">
                                     <div class="imcms-drop-down-list__item"
-                                         data-value="${phoneType.id}">${phoneType.name.toLocalizedString(pageContext.request)}</div>
+                                         data-value="${phoneType.id}">${phoneType.name}</div>
                                 </c:forEach></div>
                             </div>
                         </div>
                         <input class="imcms-input imcms-text-box__input imcms-input--phone" type="text" maxlength="50"
-                               name="userPhoneNumber" disabled="disabled" value="${phoneNumber.number}">
+                               name="userPhoneNumber" disabled="disabled" value="${phoneNumber}">
 
                         <button class="imcms-button imcms-button--save" style="display: none;"
                                 type="button"><fmt:message key="templates/sv/AdminUserResp.htm/2007"/></button>
@@ -218,61 +222,43 @@ ${"-->"}
                     <label for="email" class="imcms-label imcms-text-box__label"><fmt:message
                             key="templates/sv/AdminUserResp.htm/36"/></label>
                     <input id="email" class="imcms-input imcms-text-box__input" type="text" name="email"
-                           maxlength="50" value="<c:out value='${editedUser.emailAddress}'/>">
+                           maxlength="50" value="<c:out value='${editedUser.email}'/>">
                 </div>
             </div>
 
             <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
-                    <input id="activated" type="checkbox" name="active"
-                           value="1"${empty editedUser or editedUser.active ? ' checked="checked"' : ''}>
-                    <c:if test="${editedUser.createDate ne null}">
-                        &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
-                        &nbsp; <fmt:formatDate value="${editedUser.createDate}"
-                                               pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
-                    </c:if>
+                <div class="imcms-title"><fmt:message
+                        key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
+            </div>
+            <div class="imcms-field">
+                <div class="imcms-checkboxes imcms-field__checkboxes">
+                    <div class="imcms-title imcms-checkboxes__title"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
+                    <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
+                    <c:forEach var="role" items="${imcms:getNewUserRoles(editedUser)}">
+                        <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                            <input type="checkbox" name="roleIds" id="role-${role.id}" value="${role.id}"
+                                   class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                            <label for="role-${role.id}"
+                                   class="imcms-label imcms-checkbox__label">${role.name}</label>
+                        </div>
+                    </c:forEach>
+                </div>
+                <div class="imcms-checkboxes imcms-field__checkboxes">
+                    <div class="imcms-title imcms-checkboxes__title"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
+                    <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
+                    <c:forEach var="role" items="${imcms:getNewUserAdministratedRoles(editedUser)}">
+                        <div class="imcms-checkbox imcms-checkboxes__checkbox">
+                            <input type="checkbox" name="userAdminRoleIds" id="admin-role-${role.id}"
+                                   value="${role.id}"
+                                   class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
+                            <label for="admin-role-${role.id}"
+                                   class="imcms-label imcms-checkbox__label">${role.name}</label>
+                        </div>
+                    </c:forEach>
                 </div>
             </div>
-
-            <c:if test="${editedUser eq null or loggedOnUser.canEditRolesFor(editedUser)}">
-                <div class="imcms-field">
-                    <div class="imcms-title"><fmt:message
-                            key="templates/sv/AdminUserResp_superadmin_part.htm/3/1"/></div>
-                </div>
-                <div class="imcms-field">
-                    <div class="imcms-checkboxes imcms-field__checkboxes">
-                        <div class="imcms-title imcms-checkboxes__title"><fmt:message
-                                key="templates/sv/AdminUserResp_superadmin_part.htm/1001"/></div>
-                        <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/10"/></span>
-                        <c:forEach var="role" items="${imcms:getUserRoles(editedUser)}">
-                            <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                <input type="checkbox" name="roleIds" id="role-${role.id}" value="${role.id}"
-                                       class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                                <label for="role-${role.id}"
-                                       class="imcms-label imcms-checkbox__label">${role.name}</label>
-                            </div>
-                        </c:forEach>
-                    </div>
-                    <c:if test="${loggedOnUser.superAdmin and editedUser.superAdmin}">
-                        <div class="imcms-checkboxes imcms-field__checkboxes">
-                            <div class="imcms-title imcms-checkboxes__title"><fmt:message
-                                    key="templates/sv/AdminUserResp_superadmin_part.htm/8"/></div>
-                            <span><fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/11"/></span>
-                            <c:forEach var="role" items="${imcms:getUserAdministratedRoles(editedUser)}">
-                                <div class="imcms-checkbox imcms-checkboxes__checkbox">
-                                    <input type="checkbox" name="userAdminRoleIds" id="admin-role-${role.id}"
-                                           value="${role.id}"
-                                           class="imcms-checkbox__checkbox"${role.checked ? ' checked="checked"':''}>
-                                    <label for="admin-role-${role.id}"
-                                           class="imcms-label imcms-checkbox__label">${role.name}</label>
-                                </div>
-                            </c:forEach>
-                        </div>
-                    </c:if>
-                </div>
-            </c:if>
             <div class="imcms-info-footer imcms-info-footer__user-edit">
                 <button id="edit-user-submit-button" type="submit"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message

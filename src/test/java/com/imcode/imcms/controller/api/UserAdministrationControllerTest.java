@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -47,7 +48,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
         final RequestBuilder requestBuilder = post(controllerPath() + "/create");
 
-        perform(requestBuilder).andExpect(model().attribute("validationResult", result));
+        perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
     @Test
