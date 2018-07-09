@@ -24,6 +24,7 @@ public class UserValidationResult {
     private boolean password2TooShort;
     private boolean password2TooLong;
     private boolean passwordsEqual;
+    private boolean passwordTooWeak;
     private boolean emptyEmail;
     private boolean emailValid;
     private boolean emailAlreadyTaken;
@@ -53,6 +54,7 @@ public class UserValidationResult {
                 && emailValid
                 && !emailAlreadyTaken
                 && !emptyUserRoles
+                && !passwordTooWeak
         ;
     }
 
@@ -69,12 +71,14 @@ public class UserValidationResult {
     }
 
     private void validatePasswords(UserFormData userData) {
-        final String password1 = userData.getPassword();
-        final String password2 = userData.getPassword2();
+        final String password1 = StringUtils.defaultString(userData.getPassword());
+        final String password2 = StringUtils.defaultString(userData.getPassword2());
 
         validatePassword1(password1);
         validatePassword2(password2);
+
         this.passwordsEqual = Objects.equals(password1, password2);
+        this.passwordTooWeak = password1.equalsIgnoreCase(userData.getLogin());
     }
 
     private void validatePassword1(String password) {
@@ -89,8 +93,6 @@ public class UserValidationResult {
                                   Consumer<Boolean> emptyPass,
                                   Consumer<Boolean> passTooLong,
                                   Consumer<Boolean> passTooShort) {
-
-        password = StringUtils.defaultString(password);
 
         emptyPass.accept(StringUtils.isBlank(password));
         passTooLong.accept(password.length() > ImcmsConstants.MAXIMUM_PASSWORD_LENGTH);
