@@ -31,7 +31,7 @@ class UserAdministrationController {
         this.userCreationService = userCreationService;
     }
 
-    @GetMapping("/create")
+    @GetMapping("/creation")
     public ModelAndView goToCreateUser() {
 
         final UserDomainObject loggedOnUser = Imcms.getUser();

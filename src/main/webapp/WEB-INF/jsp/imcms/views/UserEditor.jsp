@@ -259,16 +259,16 @@ ${"-->"}
                     </c:forEach>
                 </div>
             </div>
-            <div class="imcms-info-footer imcms-info-footer__user-edit">
-                <button id="edit-user-submit-button" type="submit"
-                        class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2007"/></button>
-                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2008"/></button>
-                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2009"/></button>
-            </div>
         </form>
+        <div class="imcms-info-footer imcms-info-footer__user-edit">
+            <button id="edit-user-submit-button" type="submit" form="user-edit-form"
+                    class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
+                    key="templates/sv/AdminUserResp.htm/2007"/></button>
+            <button id="edit-user-reset" class="imcms-button imcms-button--positive imcms-info-footer__button">
+                <fmt:message key="templates/sv/AdminUserResp.htm/2008"/></button>
+            <button id="edit-user-cancel" class="imcms-button imcms-button--negative imcms-info-footer__button">
+                <fmt:message key="templates/sv/AdminUserResp.htm/2009"/></button>
+        </div>
     </div>
 </div>
 

@@ -53,6 +53,14 @@ Imcms.require(
             alert($('#pass-verification-failed-text').val());
         }
 
+        function onReset() {
+            window.location.reload(true);
+        }
+
+        function onCancel() {
+            window.location.href = imcms.contextPath;
+        }
+
         function loadLanguages() {
             var $langSelectContainer = $('#languages-select-container');
 
@@ -181,6 +189,8 @@ Imcms.require(
             components.selects.makeImcmsSelect($('#phone-type-select'));
 
             $('#edit-user-submit-button').click(onSubmit);
+            $('#edit-user-reset').click(onReset);
+            $('#edit-user-cancel').click(onCancel);
             $('#button-add-phone').click(addPhone);
 
             $('.imcms-input--phone').keydown(filterNonDigits).on('paste', function (e) {
