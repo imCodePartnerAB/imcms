@@ -104,6 +104,7 @@
 
 .imcms-users-search-result {
     height: 600px;
+    overflow-y: auto;
     background-color: #ececec;
     border: solid 1px #d1d2c6;
 }
