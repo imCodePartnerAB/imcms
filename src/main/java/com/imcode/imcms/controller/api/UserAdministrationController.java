@@ -43,7 +43,6 @@ class UserAdministrationController {
         return modelAndView;
     }
 
-    //imcmsawlekmwfe
     @CheckAccess
     @PostMapping("/create")
     public ModelAndView createUser(@ModelAttribute UserFormData userData,
