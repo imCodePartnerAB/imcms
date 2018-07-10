@@ -65,8 +65,10 @@ Imcms.define(
                 });
             }
 
-            function onEditUser() {
-                // window.open(url, '_blank').focus(); // todo: implement with correct url
+            function getOnEditUser(user) {
+                return function () {
+                    window.open(imcms.contextPath + '/api/user/edition/' + user.id, '_blank').focus();
+                }
             }
 
             function onArchiveUser() {
@@ -102,7 +104,7 @@ Imcms.define(
                             'email': $('<div>', {
                                 text: user.email
                             }),
-                            'edit': components.controls.edit(onEditUser),
+                            'edit': components.controls.edit(getOnEditUser(user)),
                             'archive': components.controls.archive(onArchiveUser)
                         }
                     }).buildBlockStructure('<div>');
