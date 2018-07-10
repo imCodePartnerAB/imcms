@@ -58,7 +58,7 @@ Imcms.require(
         }
 
         function onCancel() {
-            window.location.href = imcms.contextPath;
+            window.location.href = imcms.contextPath || "/";
         }
 
         function loadLanguages() {

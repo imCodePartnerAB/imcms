@@ -43,6 +43,7 @@ class UserAdministrationController {
         return modelAndView;
     }
 
+    //imcmsawlekmwfe
     @CheckAccess
     @PostMapping("/create")
     public ModelAndView createUser(@ModelAttribute UserFormData userData,
@@ -50,7 +51,8 @@ class UserAdministrationController {
                                    HttpServletRequest request) {
         try {
             userCreationService.createUser(userData);
-            modelAndView.setView(new RedirectView(request.getContextPath()));
+            final String contextPath = request.getContextPath();
+            modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/" : contextPath));
 
         } catch (UserValidationException e) {
             setModelStuff(e.validationResult, userData, modelAndView);
