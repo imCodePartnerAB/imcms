@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
+import com.imcode.imcms.domain.service.UserEditorService;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -25,10 +26,43 @@ import java.util.List;
 class UserAdministrationController {
 
     private final UserCreationService userCreationService;
+    private final UserEditorService userEditorService;
 
     @Autowired
-    public UserAdministrationController(UserCreationService userCreationService) {
+    public UserAdministrationController(UserCreationService userCreationService,
+                                        UserEditorService userEditorService) {
+
         this.userCreationService = userCreationService;
+        this.userEditorService = userEditorService;
+    }
+
+    @GetMapping("/edition")
+    public ModelAndView goToEditUser() {
+        final UserDomainObject loggedOnUser = Imcms.getUser();
+        final ModelAndView modelAndView = new ModelAndView("UserEdit");
+
+        modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
+        modelAndView.addObject("loggedOnUser", loggedOnUser);
+        modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());
+        return modelAndView;
+    }
+
+    @CheckAccess
+    @PostMapping("/edit")
+    public ModelAndView editUser(@ModelAttribute UserFormData userData,
+                                 ModelAndView modelAndView,
+                                 HttpServletRequest request) {
+        try {
+            userEditorService.editUser(userData);
+            final String contextPath = request.getContextPath();
+            modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/" : contextPath));
+
+        } catch (UserValidationException e) {
+            modelAndView.setViewName("UserEdit");
+            setModelStuff(e.validationResult, userData, modelAndView);
+        }
+
+        return modelAndView;
     }
 
     @GetMapping("/creation")
@@ -54,6 +88,7 @@ class UserAdministrationController {
             modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/" : contextPath));
 
         } catch (UserValidationException e) {
+            modelAndView.setViewName("UserCreate");
             setModelStuff(e.validationResult, userData, modelAndView);
         }
 
@@ -63,7 +98,6 @@ class UserAdministrationController {
     private void setModelStuff(UserValidationResult validationResult, UserFormData userData, ModelAndView modelAndView) {
         final UserDomainObject loggedOnUser = Imcms.getUser();
 
-        modelAndView.setViewName("UserCreate");
         modelAndView.addObject("editedUser", userData);
         modelAndView.addObject("errorMessages", extractErrorMessageKeys(validationResult));
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
