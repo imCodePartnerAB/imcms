@@ -199,7 +199,7 @@ task importProperties(dependsOn: copyProperties) {
 }
 
 task explodedWar(type: Sync, dependsOn: war) {
-    into "${buildDir}/libs/exploded"
+    into "${buildDir}/libs/exploded/${project.name}-${project.version}.war/"
     with war
 }
 
