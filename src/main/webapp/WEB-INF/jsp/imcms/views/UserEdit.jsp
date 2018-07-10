@@ -2,6 +2,7 @@ ${"<!--"}
 <%@ page trimDirectiveWhitespaces="true" %>
 ${"-->"}
 <%@ page import="com.imcode.imcms.model.PhoneTypes" %>
+<%@ page import="imcode.util.DateConstants" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -208,6 +209,19 @@ ${"-->"}
                             key="templates/sv/AdminUserResp.htm/36"/></label>
                     <input id="email" class="imcms-input imcms-text-box__input" type="text" name="email"
                            maxlength="50" value="<c:out value='${editedUser.email}'/>">
+                </div>
+            </div>
+
+            <div class="imcms-field">
+                <div class="imcms-text-box">
+                    <label for="activated" class="imcms-label imcms-text-box__label"><fmt:message
+                            key="templates/sv/AdminUserResp_superadmin_part.htm/2"/></label>
+                    <input id="activated" type="checkbox" name="active" value="1"${editedUser.active ? 'checked' : ''}>
+                    <c:if test="${editedUser.createDate ne null}">
+                        &nbsp; <fmt:message key="templates/sv/AdminUserResp_superadmin_part.htm/12"/>
+                        &nbsp; <fmt:formatDate value="${editedUser.createDate}"
+                                               pattern="<%=DateConstants.DATETIME_FORMAT_STRING%>"/>
+                    </c:if>
                 </div>
             </div>
 
