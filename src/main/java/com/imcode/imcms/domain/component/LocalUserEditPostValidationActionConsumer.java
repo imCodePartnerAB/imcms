@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LocalUserEditPostValidationActionConsumer extends UserPostValidationActionConsumer {
 
-    LocalUserEditPostValidationActionConsumer(LocalUserCreationValidator userValidator) {
+    LocalUserEditPostValidationActionConsumer(LocalUserEditValidator userValidator) {
         super(userValidator);
     }
 }
