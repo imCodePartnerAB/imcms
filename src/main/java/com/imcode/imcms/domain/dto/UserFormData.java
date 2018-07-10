@@ -3,9 +3,11 @@ package com.imcode.imcms.domain.dto;
 import com.imcode.imcms.model.UserData;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"password", "password2"}, callSuper = true)
 public class UserFormData extends UserData {
@@ -33,4 +35,7 @@ public class UserFormData extends UserData {
     private int[] roleIds;
     private int[] userAdminRoleIds;
 
+    public UserFormData(UserData from) {
+        super(from);
+    }
 }

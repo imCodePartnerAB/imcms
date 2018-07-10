@@ -53,6 +53,7 @@ ${"-->"}
             </div>
         </c:forEach>
         <form id="user-edit-form" method="post" action="${contextPath}/api/user/edit">
+            <input type="hidden" name="id" value="${editedUser.id}">
             <div class="imcms-field">
                 <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
             </div>
@@ -64,22 +65,6 @@ ${"-->"}
                             key="templates/sv/AdminUserResp.htm/8"/></label>
                     <input id="login-name" type="text" name="login" class="imcms-input imcms-text-box__input"
                            maxlength="50" value="<c:out value='${editedUser.login}'/>">
-                </div>
-            </div>
-            <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="password1" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/10"/></label>
-                    <input id="password1" type="password" name="password" class="imcms-input imcms-text-box__input"
-                           maxlength="50" placeholder="<fmt:message key="templates/sv/AdminUserResp.htm/11"/>">
-                </div>
-            </div>
-            <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="password2" class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/sv/AdminUserResp.htm/1001"/></label>
-                    <input id="password2" type="password" name="password2" class="imcms-input imcms-text-box__input"
-                           maxlength="50">
                 </div>
             </div>
             <div class="imcms-field">

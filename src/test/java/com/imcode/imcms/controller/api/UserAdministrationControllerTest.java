@@ -5,6 +5,8 @@ import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.persistence.entity.User;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.hamcrest.Matchers;
@@ -14,7 +16,7 @@ import org.mockito.Mock;
 import org.springframework.test.web.servlet.RequestBuilder;
 
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class UserAdministrationControllerTest extends MockingControllerTest {
@@ -24,6 +26,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
     @Mock
     private UserEditorService userEditorService;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private UserAdministrationController controller;
@@ -62,6 +67,21 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 
         then(userCreationService).should().createUser(any());
+    }
+
+    @Test
+    void editUser_When_GoingToEditPageWithExistingUserId_Expect_ThatUserIsInModel() throws Exception {
+        final UserDomainObject user = mock(UserDomainObject.class);
+        Imcms.setUser(user);
+
+        final int userId = 42;
+        final User mockUser = mock(User.class);
+        mockUser.setId(userId);
+
+        given(userService.getUser(userId)).willReturn(mockUser);
+
+        final RequestBuilder requestBuilder = get(controllerPath() + "/edition/" + userId);
+        perform(requestBuilder).andExpect(model().attribute("editedUser", Matchers.is(mockUser)));
     }
 
     @Test
