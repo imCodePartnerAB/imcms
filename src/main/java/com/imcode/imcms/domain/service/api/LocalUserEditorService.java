@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.LocalUserEditPostValidationActionConsumer;
-import com.imcode.imcms.domain.component.UserPostValidationActionConsumer;
+import com.imcode.imcms.domain.component.LocalUserValidationAndSaving;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserEditorService;
@@ -13,18 +13,14 @@ import org.springframework.stereotype.Service;
  * 10.07.18.
  */
 @Service
-class LocalUserEditorService implements UserEditorService {
-
-    private final UserService userService;
-    private final UserPostValidationActionConsumer userPostValidation;
+class LocalUserEditorService extends LocalUserValidationAndSaving implements UserEditorService {
 
     LocalUserEditorService(UserService userService, LocalUserEditPostValidationActionConsumer userPostValidation) {
-        this.userService = userService;
-        this.userPostValidation = userPostValidation;
+        super(userService, userPostValidation);
     }
 
     @Override
     public void editUser(UserFormData userData) throws UserValidationException {
-        userPostValidation.doIfValid(userData, userService::saveUser);
+        super.saveIfValid(userData);
     }
 }
