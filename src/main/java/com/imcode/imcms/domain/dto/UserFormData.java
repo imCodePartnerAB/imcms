@@ -1,10 +1,14 @@
 package com.imcode.imcms.domain.dto;
 
 import com.imcode.imcms.model.UserData;
+import com.imcode.imcms.persistence.entity.User;
+import imcode.server.LanguageMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -30,6 +34,7 @@ public class UserFormData extends UserData {
     private String langCode;
     private String email;
     private boolean active;
+    private Date createDate;
     private Integer[] userPhoneNumberType;
     private String[] userPhoneNumber;
     private int[] roleIds;
@@ -37,5 +42,12 @@ public class UserFormData extends UserData {
 
     public UserFormData(UserData from) {
         super(from);
+    }
+
+    public UserFormData(User from) {
+        super(from);
+        this.setCreateDate(from.getCreateDate());
+        this.setActive(from.isActive());
+        this.setLangCode(LanguageMapper.convert639_2to639_1(from.getLanguageIso639_2()));
     }
 }
