@@ -13,10 +13,10 @@ import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneType;
 import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
-import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -77,7 +77,7 @@ class DefaultUserService implements UserService {
 
     @Override
     public List<UserDTO> getAdminUsers() {
-        return toDTO(userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID));
+        return toDTO(userRepository.findUsersWithRoleIds(Roles.USER_ADMIN.getId(), Roles.SUPER_ADMIN.getId()));
     }
 
     @Override
@@ -91,9 +91,12 @@ class DefaultUserService implements UserService {
     }
 
     @Override
-    public void createUser(UserFormData userData) {
-        final User user = saveUser(userData);
+    public void saveUser(UserFormData userData) {
+        final User user = saveAndGetUser(userData);
+        updateUserData(userData, user);
+    }
 
+    private void updateUserData(UserFormData userData, User user) {
         updateUserPhones(userData, user);
         updateUserRoles(userData, user);
         updateUserAdminRoles(userData, user);
@@ -115,11 +118,15 @@ class DefaultUserService implements UserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected User saveUser(UserFormData userData) {
+    protected User saveAndGetUser(UserFormData userData) {
+        final User user = toUserJPA(userData);
+        return userRepository.save(user);
+    }
+
+    private User toUserJPA(UserFormData userData) {
         final User user = new User(userData);
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
-
-        return userRepository.save(user);
+        return user;
     }
 
     List<Role> collectRoles(int[] roleIdsInt) {

@@ -23,5 +23,5 @@ public interface UserService {
 
     List<UserDTO> getUsersByEmail(String email);
 
-    void createUser(UserFormData userData);
+    void saveUser(UserFormData userData);
 }

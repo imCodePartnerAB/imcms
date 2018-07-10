@@ -4,8 +4,10 @@ import com.imcode.imcms.controller.MockingControllerTest;
 import com.imcode.imcms.domain.component.UserValidationResult;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
+import com.imcode.imcms.domain.service.UserEditorService;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,6 +21,9 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
     @Mock
     private UserCreationService userCreationService;
+
+    @Mock
+    private UserEditorService userEditorService;
 
     @InjectMocks
     private UserAdministrationController controller;
@@ -47,7 +52,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
         final RequestBuilder requestBuilder = post(controllerPath() + "/create");
 
-        perform(requestBuilder).andExpect(model().attribute("validationResult", result));
+        perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
     @Test
@@ -57,5 +62,31 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 
         then(userCreationService).should().createUser(any());
+    }
+
+    @Test
+    void editUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() throws Exception {
+
+        final UserDomainObject user = mock(UserDomainObject.class);
+        Imcms.setUser(user);
+
+        final UserValidationResult result = mock(UserValidationResult.class);
+
+        @SuppressWarnings("ThrowableNotThrown") final UserValidationException exception = new UserValidationException(result);
+
+        doThrow(exception).when(userEditorService).editUser(any());
+
+        final RequestBuilder requestBuilder = post(controllerPath() + "/edit");
+
+        perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
+    }
+
+    @Test
+    void editUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() throws Exception {
+        final RequestBuilder requestBuilder = post(controllerPath() + "/edit");
+
+        perform(requestBuilder).andExpect(status().is3xxRedirection());
+
+        then(userEditorService).should().editUser(any());
     }
 }

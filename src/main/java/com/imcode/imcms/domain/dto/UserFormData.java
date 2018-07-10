@@ -12,6 +12,7 @@ public class UserFormData extends UserData {
 
     private static final long serialVersionUID = 4260651400624470608L;
 
+    private Integer id;
     private String login;
     private String password;
     private String password2;

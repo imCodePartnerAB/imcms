@@ -1,19 +1,16 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.UserFormData;
-import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
 import imcode.server.ImcmsConstants;
-import imcode.util.Utility;
 import lombok.Data;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Objects;
 import java.util.function.Consumer;
 
 @Data
-public class UserValidationResult {
+public abstract class UserValidationResult {
 
     private boolean emptyLoginName;
     private boolean loginAlreadyTaken;
@@ -24,17 +21,18 @@ public class UserValidationResult {
     private boolean password2TooShort;
     private boolean password2TooLong;
     private boolean passwordsEqual;
+    private boolean passwordTooWeak;
     private boolean emptyEmail;
-    private boolean emailValid;
+    private boolean emailValid = true;
     private boolean emailAlreadyTaken;
     private boolean emptyUserRoles;
 
     private boolean validUserData;
 
-    UserValidationResult(UserFormData userData, UserService userService) {
-        validateLoginName(userData.getLogin(), userService);
+    protected UserValidationResult(UserFormData userData, UserService userService) {
+        validateLoginName(userData, userService);
         validatePasswords(userData);
-        validateEmail(userData.getEmail(), userService);
+        validateEmail(userData, userService);
         validateUserRoles(userData.getRoleIds());
         sumUpValidation();
     }
@@ -53,6 +51,7 @@ public class UserValidationResult {
                 && emailValid
                 && !emailAlreadyTaken
                 && !emptyUserRoles
+                && !passwordTooWeak
         ;
     }
 
@@ -60,28 +59,15 @@ public class UserValidationResult {
         this.emptyUserRoles = ArrayUtils.isEmpty(roleIds);
     }
 
-    private void validateEmail(String email, UserService userService) {
-        email = StringUtils.defaultString(email);
+    protected abstract void validateEmail(UserFormData userData, UserService userService);
 
-        this.emptyEmail = StringUtils.isBlank(email);
-        this.emailValid = Utility.isValidEmail(email);
-        this.emailAlreadyTaken = !userService.getUsersByEmail(email).isEmpty();
-    }
+    protected abstract void validatePasswords(UserFormData userData);
 
-    private void validatePasswords(UserFormData userData) {
-        final String password1 = userData.getPassword();
-        final String password2 = userData.getPassword2();
-
-        validatePassword1(password1);
-        validatePassword2(password2);
-        this.passwordsEqual = Objects.equals(password1, password2);
-    }
-
-    private void validatePassword1(String password) {
+    void validatePassword1(String password) {
         validatePassword(password, this::setEmptyPassword1, this::setPassword1TooLong, this::setPassword1TooShort);
     }
 
-    private void validatePassword2(String password) {
+    void validatePassword2(String password) {
         validatePassword(password, this::setEmptyPassword2, this::setPassword2TooLong, this::setPassword2TooShort);
     }
 
@@ -90,25 +76,11 @@ public class UserValidationResult {
                                   Consumer<Boolean> passTooLong,
                                   Consumer<Boolean> passTooShort) {
 
-        password = StringUtils.defaultString(password);
-
         emptyPass.accept(StringUtils.isBlank(password));
         passTooLong.accept(password.length() > ImcmsConstants.MAXIMUM_PASSWORD_LENGTH);
         passTooShort.accept(password.length() < ImcmsConstants.MINIMUM_PASSWORD_LENGTH);
     }
 
-    private void validateLoginName(String loginName, UserService userService) {
-        loginName = StringUtils.defaultString(loginName);
-
-        this.emptyLoginName = StringUtils.isBlank(loginName);
-
-        try {
-            userService.getUser(loginName);
-            this.loginAlreadyTaken = true;
-
-        } catch (UserNotExistsException e) {
-            this.loginAlreadyTaken = false;
-        }
-    }
+    protected abstract void validateLoginName(UserFormData userData, UserService userService);
 
 }

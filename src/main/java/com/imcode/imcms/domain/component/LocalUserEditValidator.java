@@ -7,21 +7,22 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
- * 27.06.18.
+ * 10.07.18.
  */
 @Component
-public class LocalUserValidator implements UserValidator {
+public class LocalUserEditValidator implements UserValidator {
 
     private final UserService userService;
 
     @Autowired
-    public LocalUserValidator(UserService userService) {
+    public LocalUserEditValidator(UserService userService) {
         this.userService = userService;
     }
 
     @Override
     public UserValidationResult validate(UserFormData userData) {
-        return new UserValidationResult(userData, userService);
+        return new UserEditValidationResult(userData, userService);
     }
 
 }
+

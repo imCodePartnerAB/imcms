@@ -13,19 +13,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LocalUserValidatorTest {
+class LocalUserCreationValidatorTest {
 
     @Mock
     private UserService userService;
 
     @InjectMocks
-    private LocalUserValidator userValidator;
+    private LocalUserCreationValidator userValidator;
 
     @Test
     void validate_With_NullLoginName_Expect_EmptyLoginNameIsTrue() {
@@ -311,4 +309,29 @@ class LocalUserValidatorTest {
         assertFalse(validationResult.isEmptyUserRoles());
     }
 
+    @Test
+    void validate_With_SameLoginAndPasswordButDifferentCases_Expect_PasswordTooWeakIsTrue() {
+        final UserFormData userData = new UserFormData();
+        final String login = "TEst";
+        final String pass = "teST";
+        userData.setLogin(login);
+        userData.setPassword(pass);
+
+        final UserValidationResult validationResult = userValidator.validate(userData);
+
+        assertTrue(validationResult.isPasswordTooWeak());
+    }
+
+    @Test
+    void validate_With_DifferentLoginAndPassword_Expect_PasswordTooWeakIsFalse() {
+        final UserFormData userData = new UserFormData();
+        final String login = "test-login";
+        final String pass = "test-pass";
+        userData.setLogin(login);
+        userData.setPassword(pass);
+
+        final UserValidationResult validationResult = userValidator.validate(userData);
+
+        assertFalse(validationResult.isPasswordTooWeak());
+    }
 }

@@ -6,6 +6,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
+import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
@@ -54,9 +55,7 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
-import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
-import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
-import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
+import static imcode.server.ImcmsConstants.*;
 
 @Component
 @SuppressWarnings("WeakerAccess")

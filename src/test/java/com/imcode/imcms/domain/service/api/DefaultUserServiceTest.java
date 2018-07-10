@@ -126,7 +126,7 @@ class DefaultUserServiceTest {
         given(mock.getLangCode()).willReturn(ENG_CODE);
         given(userRepository.save(any(User.class))).willReturn(user);
 
-        userService1.createUser(mock);
+        userService1.saveUser(mock);
 
         then(userRepository).should().save(any(User.class));
         then(phoneService).should().updateUserPhones(anyList(), eq(userId));

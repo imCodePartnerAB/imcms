@@ -1,6 +1,6 @@
 package imcode.util;
 
-import com.imcode.imcms.mapping.NoPermissionInternalException;
+import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 
 public class ShouldHaveCheckedPermissionsEarlierException extends ShouldNotBeThrownException {
     public ShouldHaveCheckedPermissionsEarlierException(NoPermissionInternalException e) {

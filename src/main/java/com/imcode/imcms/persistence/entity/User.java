@@ -45,28 +45,28 @@ public class User extends UserData implements Serializable {
     private String password;
     @NotNull
     @Column(name = "first_name")
-    private String firstName = "";
+    private String firstName;
     @NotNull
     @Column(name = "last_name")
-    private String lastName = "";
+    private String lastName;
     @NotNull
-    private String title = "";
+    private String title;
     @NotNull
-    private String company = "";
+    private String company;
     @NotNull
-    private String address = "";
+    private String address;
     @NotNull
-    private String city = "";
+    private String city;
     @NotNull
-    private String zip = "";
+    private String zip;
     @NotNull
-    private String country = "";
+    private String country;
     @Column(name = "county_council")
-    private String province = "";
+    private String province;
     @Email
     @NotNull
     @Column(name = "email")
-    private String email = "";
+    private String email;
     @Column(columnDefinition = "int")
     private boolean active = true;
     @NotNull
@@ -100,6 +100,15 @@ public class User extends UserData implements Serializable {
         this.login = login;
         this.password = password;
         this.email = email;
+        this.firstName = "";
+        this.lastName = "";
+        this.title = "";
+        this.company = "";
+        this.address = "";
+        this.city = "";
+        this.zip = "";
+        this.country = "";
+        this.province = "";
     }
 
     public User(UserData from) {

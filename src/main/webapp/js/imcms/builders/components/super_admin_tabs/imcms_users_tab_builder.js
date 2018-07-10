@@ -183,7 +183,7 @@ Imcms.define(
         }
 
         function onCreateNewUserClicked() {
-            window.open(imcms.contextPath + '/api/user/create', '_blank').focus();
+            window.open(imcms.contextPath + '/api/user/creation', '_blank').focus();
         }
 
         function buildCreateNewUserButton() {
