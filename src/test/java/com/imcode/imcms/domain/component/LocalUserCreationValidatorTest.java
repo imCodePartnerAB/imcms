@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LocalUserValidatorTest {
+class LocalUserCreationValidatorTest {
 
     @Mock
     private UserService userService;
 
     @InjectMocks
-    private LocalUserValidator userValidator;
+    private LocalUserCreationValidator userValidator;
 
     @Test
     void validate_With_NullLoginName_Expect_EmptyLoginNameIsTrue() {

@@ -91,9 +91,12 @@ class DefaultUserService implements UserService {
     }
 
     @Override
-    public void createUser(UserFormData userData) {
-        final User user = saveUser(userData);
+    public void saveUser(UserFormData userData) {
+        final User user = saveAndGetUser(userData);
+        updateUserData(userData, user);
+    }
 
+    private void updateUserData(UserFormData userData, User user) {
         updateUserPhones(userData, user);
         updateUserRoles(userData, user);
         updateUserAdminRoles(userData, user);
@@ -115,11 +118,15 @@ class DefaultUserService implements UserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    protected User saveUser(UserFormData userData) {
+    protected User saveAndGetUser(UserFormData userData) {
+        final User user = toUserJPA(userData);
+        return userRepository.save(user);
+    }
+
+    private User toUserJPA(UserFormData userData) {
         final User user = new User(userData);
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
-
-        return userRepository.save(user);
+        return user;
     }
 
     List<Role> collectRoles(int[] roleIdsInt) {
