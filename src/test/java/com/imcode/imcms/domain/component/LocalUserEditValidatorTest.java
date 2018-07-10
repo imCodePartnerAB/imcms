@@ -122,7 +122,7 @@ class LocalUserEditValidatorTest {
                 () -> assertFalse(validationResult.isEmptyPassword2()),
                 () -> assertFalse(validationResult.isPassword2TooShort()),
                 () -> assertFalse(validationResult.isPassword2TooLong()),
-                () -> assertFalse(validationResult.isPasswordsEqual())
+                () -> assertTrue(validationResult.isPasswordsEqual())
         );
     }
 

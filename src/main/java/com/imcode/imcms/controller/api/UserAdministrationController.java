@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -47,7 +46,7 @@ class UserAdministrationController {
         final UserDomainObject loggedOnUser = Imcms.getUser();
         final ModelAndView modelAndView = new ModelAndView("UserEdit");
 
-        final User user = userService.getUser(userId);
+        final UserFormData user = userService.getUserData(userId);
         modelAndView.addObject("editedUser", user);
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);

@@ -40,7 +40,7 @@ class UserEditValidationResult extends UserValidationResult {
 
     @Override
     protected void validatePasswords(UserFormData userData) {
-        // no passwords in this case
+        setPasswordsEqual(true);
     }
 
     @Override
