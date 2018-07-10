@@ -35,7 +35,7 @@ class UserAdministrationController {
     public ModelAndView goToCreateUser() {
 
         final UserDomainObject loggedOnUser = Imcms.getUser();
-        final ModelAndView modelAndView = new ModelAndView("UserEdit");
+        final ModelAndView modelAndView = new ModelAndView("UserCreate");
 
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
@@ -63,7 +63,7 @@ class UserAdministrationController {
     private void setModelStuff(UserValidationResult validationResult, UserFormData userData, ModelAndView modelAndView) {
         final UserDomainObject loggedOnUser = Imcms.getUser();
 
-        modelAndView.setViewName("UserEdit");
+        modelAndView.setViewName("UserCreate");
         modelAndView.addObject("editedUser", userData);
         modelAndView.addObject("errorMessages", extractErrorMessageKeys(validationResult));
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
