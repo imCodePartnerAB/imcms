@@ -106,3 +106,19 @@
 .imcms-document-list__items::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }
+
+.imcms-pop-up-modal::-webkit-scrollbar-track,
+.imcms-info-page::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.imcms-pop-up-modal::-webkit-scrollbar,
+.imcms-info-page::-webkit-scrollbar {
+    background-color: transparent;
+    width: 6px;
+}
+
+.imcms-pop-up-modal::-webkit-scrollbar-thumb,
+.imcms-info-page::-webkit-scrollbar-thumb {
+    background-color: #abacad;
+}
