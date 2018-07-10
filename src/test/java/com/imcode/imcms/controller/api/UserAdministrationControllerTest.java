@@ -2,11 +2,11 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.controller.MockingControllerTest;
 import com.imcode.imcms.domain.component.UserValidationResult;
+import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.persistence.entity.User;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.hamcrest.Matchers;
@@ -75,10 +75,10 @@ class UserAdministrationControllerTest extends MockingControllerTest {
         Imcms.setUser(user);
 
         final int userId = 42;
-        final User mockUser = mock(User.class);
+        final UserFormData mockUser = mock(UserFormData.class);
         mockUser.setId(userId);
 
-        given(userService.getUser(userId)).willReturn(mockUser);
+        given(userService.getUserData(userId)).willReturn(mockUser);
 
         final RequestBuilder requestBuilder = get(controllerPath() + "/edition/" + userId);
         perform(requestBuilder).andExpect(model().attribute("editedUser", Matchers.is(mockUser)));
