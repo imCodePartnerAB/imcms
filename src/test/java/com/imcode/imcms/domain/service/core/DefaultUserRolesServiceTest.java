@@ -53,7 +53,7 @@ class DefaultUserRolesServiceTest {
 
         when(userRolesRepository.findUserRolesByUserId(user.getId())).thenReturn(userRoles);
 
-        final List<Role> rolesByUser = userRolesService.getRolesByUser(user);
+        final List<Role> rolesByUser = userRolesService.getRolesByUser(user.getId());
 
         assertThat(rolesByUser, hasSize(roles.size()));
 

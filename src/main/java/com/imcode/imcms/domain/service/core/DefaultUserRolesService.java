@@ -33,8 +33,8 @@ public class DefaultUserRolesService implements UserRolesService {
     }
 
     @Override
-    public List<Role> getRolesByUser(User user) {
-        return userRolesRepository.findUserRolesByUserId(user.getId())
+    public List<Role> getRolesByUser(int userId) {
+        return userRolesRepository.findUserRolesByUserId(userId)
                 .stream()
                 .map(userRoles -> new RoleDTO(userRoles.getRole()))
                 .collect(Collectors.toList());
