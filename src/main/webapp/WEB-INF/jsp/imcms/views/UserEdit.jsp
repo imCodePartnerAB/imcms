@@ -25,7 +25,7 @@ ${"-->"}
         <script>
             <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
         </script>
-        <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/new_admin/userCreate.js"
+        <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/new_admin/userEditor.js"
                 data-name="imcms"></script>
     </imcms:ifAdmin>
 </head>
@@ -52,7 +52,7 @@ ${"-->"}
                 <div class="imcms-error-msg imcms-login__error-msg"><fmt:message key="${errorMessageKey}"/></div>
             </div>
         </c:forEach>
-        <form id="user-edit-form" method="post" action="${contextPath}/api/user/create">
+        <form id="user-edit-form" method="post" action="${contextPath}/api/user/edit">
             <div class="imcms-field">
                 <div class="imcms-title"><fmt:message key="templates/sv/AdminUserResp.htm/5/1"/></div>
             </div>
