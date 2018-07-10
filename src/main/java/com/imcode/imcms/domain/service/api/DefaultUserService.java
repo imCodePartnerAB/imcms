@@ -13,10 +13,10 @@ import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneType;
 import com.imcode.imcms.model.PhoneTypes;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
-import imcode.server.user.RoleId;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -77,7 +77,7 @@ class DefaultUserService implements UserService {
 
     @Override
     public List<UserDTO> getAdminUsers() {
-        return toDTO(userRepository.findUsersWithRoleIds(RoleId.USERADMIN_ID, RoleId.SUPERADMIN_ID));
+        return toDTO(userRepository.findUsersWithRoleIds(Roles.USER_ADMIN.getId(), Roles.SUPER_ADMIN.getId()));
     }
 
     @Override
