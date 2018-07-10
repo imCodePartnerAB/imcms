@@ -18,7 +18,7 @@ public abstract class LocalUserValidationAndSaving {
         this.userPostValidation = userPostValidation;
     }
 
-    public void saveIfValid(UserFormData userData) throws UserValidationException {
+    protected void saveIfValid(UserFormData userData) throws UserValidationException {
         userPostValidation.doIfValid(userData, userService::saveUser);
     }
 

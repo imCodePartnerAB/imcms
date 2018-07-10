@@ -17,7 +17,7 @@ public abstract class UserPostValidationActionConsumer {
         this.userValidator = userValidator;
     }
 
-    public void doIfValid(UserFormData userData, Consumer<UserFormData> doIfValid) throws UserValidationException {
+    void doIfValid(UserFormData userData, Consumer<UserFormData> doIfValid) throws UserValidationException {
         final UserValidationResult validationResult = userValidator.validate(userData);
 
         if (validationResult.isValidUserData()) {
