@@ -32,8 +32,8 @@ public class LocalUserAdminRolesService implements UserAdminRolesService {
     }
 
     @Override
-    public List<Role> getAdminRolesByUser(User user) {
-        return userAdminRolesRepository.findUserAdminRoleByUserId(user.getId())
+    public List<Role> getAdminRolesByUser(int userId) {
+        return userAdminRolesRepository.findUserAdminRoleByUserId(userId)
                 .stream()
                 .map(userAdminRole -> new RoleDTO(userAdminRole.getRole()))
                 .collect(Collectors.toList());
