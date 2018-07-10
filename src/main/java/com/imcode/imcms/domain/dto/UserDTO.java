@@ -15,7 +15,7 @@ public class UserDTO extends BasicUserData {
 
     private static final long serialVersionUID = -1878691076340113546L;
 
-    private int id;
+    private Integer id;
 
     private String login;
 

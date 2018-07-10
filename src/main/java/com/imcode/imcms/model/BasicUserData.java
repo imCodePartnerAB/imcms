@@ -10,11 +10,16 @@ public abstract class BasicUserData implements Serializable {
     private static final long serialVersionUID = -1000623692760863774L;
 
     public BasicUserData(BasicUserData from) {
+        setId(from.getId());
         setLogin(from.getLogin());
         setFirstName(from.getFirstName());
         setLastName(from.getLastName());
         setEmail(from.getEmail());
     }
+
+    public abstract Integer getId();
+
+    public abstract void setId(Integer id);
 
     public abstract String getLogin();
 
