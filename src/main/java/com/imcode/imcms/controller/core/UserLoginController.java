@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping({"/login**", "/login/**"})
-public class UserLoginController {
+class UserLoginController {
 
     @GetMapping
     public ModelAndView goToLoginPage(ModelAndView modelAndView) {
