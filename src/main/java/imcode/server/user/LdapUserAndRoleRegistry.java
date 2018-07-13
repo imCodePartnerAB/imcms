@@ -15,7 +15,15 @@ import javax.naming.CommunicationException;
 import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 /**
  * The documentMapper maps LDAP attributes to Imcms internal user object.
@@ -168,6 +176,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         Set<String> badUserAttributes = new TreeSet(userPropertyNameToLdapAttributeNameMap.keySet());
         String[] capitalizedSettableUserPropertyNames = getCapitalizedSettableBeanPropertyNames(UserDomainObject.class);
         badUserAttributes.removeAll(Arrays.asList(capitalizedSettableUserPropertyNames));
+
         if (!badUserAttributes.isEmpty()) {
             throw new LdapClientException("Unrecognized LdapUserAttributes: "
                     + StringUtils.join(badUserAttributes.iterator(), ", "));

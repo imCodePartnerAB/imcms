@@ -379,17 +379,10 @@ public class DefaultImcmsServices implements ImcmsServices {
         return accessService;
     }
 
-    private Object chooseInstance(String strToCompare, String mapperName, Properties propertiesSubset) {
+    @SuppressWarnings("unchecked")
+    private <T> T instantiate(String mapperName) {
         try {
-            if (null == mapperName) {
-                return null;
-            } else if (strToCompare.equalsIgnoreCase(mapperName)) {
-                return new LdapUserAndRoleRegistry(propertiesSubset);
-            } else {
-                return Class.forName(mapperName).newInstance();
-            }
-        } catch (LdapClientException e) {
-            log.error("LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.", e);
+            return (null == mapperName) ? null : (T) Class.forName(mapperName).newInstance();
         } catch (ClassNotFoundException e) {
             log.error("Could not create instance of class '" + mapperName + "'.", e);
         } catch (Exception e) {
@@ -628,17 +621,31 @@ public class DefaultImcmsServices implements ImcmsServices {
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
                                                               Properties userAndRoleMapperPropertiesSubset) {
 
-        return (UserAndRoleRegistry) chooseInstance(
-                EXTERNAL_USER_AND_ROLE_MAPPER_LDAP, externalUserAndRoleMapperName, userAndRoleMapperPropertiesSubset
-        );
+        if (EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase(externalUserAndRoleMapperName)) {
+            return initLdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
+        }
+
+        return instantiate(externalUserAndRoleMapperName);
     }
 
     private Authenticator initExternalAuthenticator(String externalAuthenticatorName,
                                                     Properties authenticatorPropertiesSubset) {
 
-        return (Authenticator) chooseInstance(
-                EXTERNAL_AUTHENTICATOR_LDAP, externalAuthenticatorName, authenticatorPropertiesSubset
-        );
+        if (EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase(externalAuthenticatorName)) {
+            return initLdapUserAndRoleRegistry(authenticatorPropertiesSubset);
+        }
+
+        return instantiate(externalAuthenticatorName);
+    }
+
+    private LdapUserAndRoleRegistry initLdapUserAndRoleRegistry(Properties userAndRoleMapperPropertiesSubset) {
+        try {
+            return new LdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
+
+        } catch (LdapClientException e) {
+            log.error("LdapUserAndRoleRegistry could not be created, using default user and role documentMapper.", e);
+            return null;
+        }
     }
 
     private String getTemplate(String path, List<String> variables) {
