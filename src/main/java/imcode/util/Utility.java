@@ -328,7 +328,7 @@ public class Utility {
 
         response.setStatus(responseStatus);
         request.setAttribute(VerifyUser.REQUEST_ATTRIBUTE__ERROR, ERROR__NO_PERMISSION);
-        final String loginPathWithNextUrl = ImcmsConstants.LOGIN_URL + "/?"
+        final String loginPathWithNextUrl = ImcmsConstants.LOGIN_URL + "?"
                 + VerifyUser.REQUEST_PARAMETER__NEXT_URL + "="
                 + URLEncoder.encode(loginTarget.toString(), Imcms.UTF_8_ENCODING);
 

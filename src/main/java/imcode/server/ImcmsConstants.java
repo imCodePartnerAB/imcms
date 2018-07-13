@@ -147,7 +147,8 @@ ImcmsConstants {
     public static final String ENG_CODE_ISO_639_2 = "eng";
     public static final String SWE_CODE_ISO_639_2 = "swe";
 
-    public static final String LOGIN_URL = "/login/index.jsp";
+    public static final String API_PREFIX = "/api";
+    public static final String LOGIN_URL = "/login";
     public static final String LOGOUT_URL = "/login/logged_out.jsp";
 
     public static final int MAXIMUM_PASSWORD_LENGTH = 128;

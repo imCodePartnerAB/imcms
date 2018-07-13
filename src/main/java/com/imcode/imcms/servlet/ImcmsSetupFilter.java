@@ -15,7 +15,6 @@ import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,6 +34,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+
+import static imcode.server.ImcmsConstants.*;
 
 /**
  * Front filter.
@@ -138,6 +139,14 @@ public class ImcmsSetupFilter implements Filter {
         try {
             HttpServletRequest request = (HttpServletRequest) req;
             HttpServletResponse response = (HttpServletResponse) res;
+
+            final String contextPath = request.getContextPath();
+
+            if (request.getRequestURI().matches(contextPath.concat(LOGIN_URL) + "/?+")) {
+                request.getRequestDispatcher(API_PREFIX.concat(LOGIN_URL)).forward(request, response);
+                return;
+            }
+
             HttpSession session = request.getSession();
             ImcmsServices service = Imcms.getServices();
 
@@ -147,7 +156,7 @@ public class ImcmsSetupFilter implements Filter {
                 setDomainSessionCookie(response, session);
 
             } else if (isRemoteAddressInvalid(request, response)) {
-                request.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(request, response);
+                request.getRequestDispatcher(LOGIN_URL).forward(request, response);
                 return;
             }
 
@@ -240,15 +249,7 @@ public class ImcmsSetupFilter implements Filter {
 
             Utility.initRequestWithApi(request, user);
 
-            NDC.setMaxDepth(0);
-            String contextPath = request.getContextPath();
-            if (!"".equals(contextPath)) {
-                NDC.push(contextPath);
-            }
-            NDC.push(StringUtils.substringAfterLast(request.getRequestURI(), "/"));
-
             handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
-            NDC.setMaxDepth(0);
         } finally {
             Imcms.removeUser();
         }
@@ -292,8 +293,7 @@ public class ImcmsSetupFilter implements Filter {
                                    HttpServletRequest request,
                                    HttpServletResponse response,
                                    ImcmsServices service,
-                                   FallbackDecoder fallbackDecoder)
-            throws ServletException, IOException {
+                                   FallbackDecoder fallbackDecoder) throws ServletException, IOException {
 
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
         path = StringUtils.substringAfter(path, request.getContextPath());
