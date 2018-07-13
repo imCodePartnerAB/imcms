@@ -71,6 +71,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-streams": "streams/imcms_streams.js",
             "imcms-i18n-texts": "i18n/imcms_i18n_texts.js", // languages support
             // <components>
+            'imcms-authentication': 'components/imcms_authentication.js',
             "imcms-document-types": "components/imcms_document_types.js",
             "imcms-calendar": "components/imcms_calendar.js",
             "imcms-date-picker": "components/imcms_date_picker.js",
