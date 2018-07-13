@@ -92,12 +92,14 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     private String ldapPassword;
 
     public LdapUserAndRoleRegistry(Properties ldapConfig) throws LdapClientException {
-        this(ldapConfig.getProperty("LdapUrl", "ldap://localhost/"),
+        this(
+                ldapConfig.getProperty("LdapUrl", "ldap://localhost/"),
                 ldapConfig.getProperty("LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT),
                 ldapConfig.getProperty("LdapBindDn", ""),
                 ldapConfig.getProperty("LdapPassword", ""),
                 buildAttributesMappedToRoles(ldapConfig),
-                buildUserAttributes(ldapConfig));
+                buildUserAttributes(ldapConfig)
+        );
     }
 
     /**
@@ -110,7 +112,9 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                                    String ldapUserObjectClass,
                                    String ldapUserName,
                                    String ldapPassword,
-                                   String[] ldapAttributesMappedToRoles, Properties ldapUserAttributes) throws LdapClientException {
+                                   String[] ldapAttributesMappedToRoles,
+                                   Properties ldapUserAttributes) throws LdapClientException {
+
         ldapAttributesAutoMappedToRoles = ldapAttributesMappedToRoles;
         initLdapUserAttributesMap(ldapUserAttributes);
 

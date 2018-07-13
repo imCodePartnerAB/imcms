@@ -61,8 +61,10 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
     private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
-    private static final String EXTERNAL_AUTHENTICATOR_LDAP = "LDAP";
-    private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "LDAP";
+    private static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
+    private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
+    private static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
+    private static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
 
     static {
         mainLog.info("Main log started.");
@@ -497,11 +499,12 @@ public class DefaultImcmsServices implements ImcmsServices {
                 externalAuthenticator = null;
                 externalUserAndRoleRegistry = null;
             }
-        } else if (!externalAuthenticatorIsSet && !externalUserAndRoleRegistryIsSet) {
+        } else if (externalAuthenticatorIsSet || externalUserAndRoleRegistryIsSet) {
+            log.error("External authenticator and external user mapper should both be either set or not set. Using default implementation.");
+
+        } else {
             log.info("ExternalAuthenticator not set.");
             log.info("ExternalUserAndRoleMapper not set.");
-        } else {
-            log.error("External authenticator and external user mapper should both be either set or not set. Using default implementation.");
         }
 
         // TODO: problem if primary LDAP classes are not instantiated,
@@ -535,7 +538,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     /**
-     * Inits and adds secondary LdapUserAndRoleRegistry to the ChainedLdapUserAndRoleRegistry.
+     * Init and adds secondary LdapUserAndRoleRegistry to the ChainedLdapUserAndRoleRegistry.
      *
      * @param chainedLdapUserAndRoleRegistry instance of ChainedLdapUserAndRoleRegistry
      * @param props                          configuration properties
@@ -579,31 +582,32 @@ public class DefaultImcmsServices implements ImcmsServices {
             Authenticator externalAuthenticator;
             UserAndRoleRegistry externalUserAndRoleRegistry;
 
-            boolean externalAuthenticatorIsSet = StringUtils.isNotBlank(externalAuthenticatorName);
-            boolean externalUserAndRoleRegistryIsSet = StringUtils.isNotBlank(externalUserAndRoleMapperName);
+            boolean externalAuthenticatorIsNotSet = StringUtils.isBlank(externalAuthenticatorName);
+            boolean externalUserAndRoleRegistryIsNotSet = StringUtils.isBlank(externalUserAndRoleMapperName);
 
-            if (!externalAuthenticatorIsSet || !externalUserAndRoleRegistryIsSet) {
+            if (externalAuthenticatorIsNotSet || externalUserAndRoleRegistryIsNotSet) {
                 log.error("Secondary LDAP configuration ignored. External authenticator and external usermapper should both be either set or not set.");
+                return;
+            }
+
+            log.info("SecondaryExternalAuthenticator: " + externalAuthenticatorName);
+            log.info("SecondaryExternalUserAndRoleMapper: " + externalUserAndRoleMapperName);
+
+            externalAuthenticator = initExternalAuthenticator(externalAuthenticatorName, secondaryLdapProperties);
+            externalUserAndRoleRegistry = initExternalUserAndRoleMapper(
+                    externalUserAndRoleMapperName, secondaryLdapProperties
+            );
+
+            if (null == externalAuthenticator || null == externalUserAndRoleRegistry) {
+                log.error("Secondary LDAP configuration ignored. Failed to initialize both authenticator and user-and-role-documentMapper.");
+
+            } else if (externalAuthenticator instanceof LdapUserAndRoleRegistry
+                    && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)
+            {
+                chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);
 
             } else {
-                log.info("SecondaryExternalAuthenticator: " + externalAuthenticatorName);
-                log.info("SecondaryExternalUserAndRoleMapper: " + externalUserAndRoleMapperName);
-
-                externalAuthenticator = initExternalAuthenticator(externalAuthenticatorName, secondaryLdapProperties);
-                externalUserAndRoleRegistry = initExternalUserAndRoleMapper(
-                        externalUserAndRoleMapperName, secondaryLdapProperties
-                );
-
-                if (null == externalAuthenticator || null == externalUserAndRoleRegistry) {
-                    log.error("Secondary LDAP configuration ignored. Failed to initialize both authenticator and user-and-role-documentMapper.");
-
-                } else if (!(externalAuthenticator instanceof LdapUserAndRoleRegistry)
-                        || !(externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry))
-                {
-                    log.error("Secondary LDAP configuration ignored. Both SecondaryExternalAuthenticator and SecondaryExternalUserAndRoleMapper properties should be set to LDAP.");
-                } else {
-                    chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);
-                }
+                log.error("Secondary LDAP configuration ignored. Both SecondaryExternalAuthenticator and SecondaryExternalUserAndRoleMapper properties should be set to LDAP.");
             }
         }
     }
@@ -620,22 +624,38 @@ public class DefaultImcmsServices implements ImcmsServices {
 
     private UserAndRoleRegistry initExternalUserAndRoleMapper(String externalUserAndRoleMapperName,
                                                               Properties userAndRoleMapperPropertiesSubset) {
+        switch (externalUserAndRoleMapperName.toLowerCase()) {
+            case EXTERNAL_USER_AND_ROLE_MAPPER_LDAP:
+                return initLdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
 
-        if (EXTERNAL_USER_AND_ROLE_MAPPER_LDAP.equalsIgnoreCase(externalUserAndRoleMapperName)) {
-            return initLdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
+            case EXTERNAL_USER_AND_ROLE_AZURE_AD:
+                return initAzureActiveDirectoryUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
+
+            default:
+                return instantiate(externalUserAndRoleMapperName);
         }
+    }
 
-        return instantiate(externalUserAndRoleMapperName);
+    private UserAndRoleRegistry initAzureActiveDirectoryUserAndRoleRegistry(Properties userAndRoleMapperPropertiesSubset) {
+        return null;
     }
 
     private Authenticator initExternalAuthenticator(String externalAuthenticatorName,
                                                     Properties authenticatorPropertiesSubset) {
+        switch (externalAuthenticatorName.toLowerCase()) {
+            case EXTERNAL_AUTHENTICATOR_LDAP:
+                return initLdapUserAndRoleRegistry(authenticatorPropertiesSubset);
 
-        if (EXTERNAL_AUTHENTICATOR_LDAP.equalsIgnoreCase(externalAuthenticatorName)) {
-            return initLdapUserAndRoleRegistry(authenticatorPropertiesSubset);
+            case EXTERNAL_USER_AND_ROLE_AZURE_AD:
+                return initAzureActiveDirectoryAuthenticator(authenticatorPropertiesSubset);
+
+            default:
+                return instantiate(externalAuthenticatorName);
         }
+    }
 
-        return instantiate(externalAuthenticatorName);
+    private Authenticator initAzureActiveDirectoryAuthenticator(Properties authenticatorPropertiesSubset) {
+        return null;
     }
 
     private LdapUserAndRoleRegistry initLdapUserAndRoleRegistry(Properties userAndRoleMapperPropertiesSubset) {
