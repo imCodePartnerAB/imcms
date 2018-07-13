@@ -14,6 +14,7 @@ import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.api.UserAlreadyExistsException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import com.imcode.imcms.servlet.LoginPasswordManager;
@@ -50,7 +51,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     private static final String SQL_SELECT_ALL_ROLES = "SELECT " + SQL_ROLES_COLUMNS + " FROM roles";
     public static final String SQL_SELECT_ROLE_BY_NAME = SQL_SELECT_ALL_ROLES + " WHERE role_name = ?";
     private static final String SQL_SELECT_ALL_ROLES_EXCEPT_USERS_ROLE = SQL_SELECT_ALL_ROLES
-            + " WHERE roles.role_id != " + RoleId.USERS_ID;
+            + " WHERE roles.role_id != " + Roles.USER.getId();
     private static final String SQL_SELECT_ROLE_BY_ID = SQL_SELECT_ALL_ROLES + " WHERE role_id = ?";
     private static final String TABLE__USERADMIN_ROLE_CROSSREF = "useradmin_role_crossref";
 
