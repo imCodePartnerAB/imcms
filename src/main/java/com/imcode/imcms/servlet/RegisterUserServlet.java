@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.UserAlreadyExistsException;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
@@ -11,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static imcode.server.ImcmsConstants.*;
 
 /**
  * Created by Shadowgun on 19.02.2015.
@@ -37,6 +38,6 @@ public class RegisterUserServlet extends HttpServlet {
         } catch (UserAlreadyExistsException e) {
             e.printStackTrace();
         }
-        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, resp);
+        req.getRequestDispatcher(API_PREFIX.concat(LOGIN_URL)).forward(req, resp);
     }
 }

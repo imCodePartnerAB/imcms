@@ -156,7 +156,7 @@ public class ImcmsSetupFilter implements Filter {
                 setDomainSessionCookie(response, session);
 
             } else if (isRemoteAddressInvalid(request, response)) {
-                request.getRequestDispatcher(LOGIN_URL).forward(request, response);
+                request.getRequestDispatcher(API_PREFIX.concat(LOGIN_URL)).forward(request, response);
                 return;
             }
 
@@ -261,7 +261,7 @@ public class ImcmsSetupFilter implements Filter {
 
         final String cookieUserRemoteAddress = (String) request.getSession().getAttribute(USER_REMOTE_ADDRESS);
 
-        if (!cookieUserRemoteAddress.equals(request.getRemoteAddr())) {
+        if (!request.getRemoteAddr().equals(cookieUserRemoteAddress)) {
 
             Arrays.stream(request.getCookies())
                     .filter(cookie -> {
