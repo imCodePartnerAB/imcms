@@ -4,10 +4,10 @@ import com.imcode.imcms.api.UserAlreadyExistsException;
 import imcode.server.ImcmsConstants;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.log4j.Logger;
-import org.apache.log4j.NDC;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
 
 public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRoleRegistry, Authenticator {
 
@@ -22,6 +22,7 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
                                                          Authenticator externalAuthenticator,
                                                          UserAndRoleRegistry externalUserRegistry,
                                                          String defaultLanguage) throws IllegalArgumentException {
+
         if ((null == externalAuthenticator) != (null == externalUserRegistry)) {
             throw new IllegalArgumentException("External authenticator and external usermapper should both be either set or not set.");
         }
@@ -40,33 +41,26 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     }
 
     public boolean authenticate(String loginName, String password) {
-        NDC.push("authenticate");
         boolean userAuthenticatesInImcms = false;
+
         if (password.length() >= ImcmsConstants.MINIMUM_PASSWORD_LENGTH) {
             userAuthenticatesInImcms = imcmsAuthenticatorAndUserMapperAndRole.authenticate(loginName, password);
         }
+
         boolean userAuthenticatesInExternal = false;
-        if (!userAuthenticatesInImcms && null != externalAuthenticator && password.length() > 0) {
+
+        if (!userAuthenticatesInImcms && (null != externalAuthenticator) && (password.length() > 0)) {
             userAuthenticatesInExternal = externalAuthenticator.authenticate(loginName, password);
         }
-        NDC.pop();
         return userAuthenticatesInImcms || userAuthenticatesInExternal;
     }
 
     public UserDomainObject getUser(String loginName) {
-        NDC.push("getUser");
         UserDomainObject imcmsUser = imcmsAuthenticatorAndUserMapperAndRole.getUser(loginName);
-        boolean imcmsUserExists = null != imcmsUser;
-        boolean imcmsUserIsInternal = imcmsUserExists && !imcmsUser.isImcmsExternal();
-        UserDomainObject result;
+        boolean imcmsUserExists = (null != imcmsUser);
+        boolean imcmsUserIsInternal = (imcmsUserExists && !imcmsUser.isImcmsExternal());
 
-        if (imcmsUserIsInternal) {
-            result = imcmsUser;
-        } else {
-            result = getExternalUser(loginName, imcmsUser);
-        }
-        NDC.pop();
-        return result;
+        return imcmsUserIsInternal ? imcmsUser : getExternalUser(loginName, imcmsUser);
     }
 
     private UserDomainObject getExternalUser(String loginName, UserDomainObject imcmsUser) {
@@ -117,9 +111,10 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
 
     private void addExternalRolesToUser(UserDomainObject user) {
         String[] externalRoleNames = externalUserRegistry.getRoleNames(user);
-        for (int i = 0; i < externalRoleNames.length; i++) {
-            String externalRoleName = externalRoleNames[i];
+
+        for (String externalRoleName : externalRoleNames) {
             RoleDomainObject externalRole = imcmsAuthenticatorAndUserMapperAndRole.getRoleByName(externalRoleName);
+
             if (null == externalRole) {
                 externalRole = imcmsAuthenticatorAndUserMapperAndRole.addRole(externalRoleName);
             }
@@ -144,9 +139,9 @@ public class ExternalizedImcmsAuthenticatorAndUserRegistry implements UserAndRol
     }
 
     private String[] mergeAndDeleteDuplicates(String[] imcmsRoleNames, String[] externalRoleNames) {
-        HashSet roleNames = new HashSet(Arrays.asList(imcmsRoleNames));
+        Set<String> roleNames = new HashSet<>(Arrays.asList(imcmsRoleNames));
         roleNames.addAll(Arrays.asList(externalRoleNames));
-        return (String[]) roleNames.toArray(new String[roleNames.size()]);
+        return roleNames.toArray(new String[0]);
     }
 
     public String[] getAllRoleNames() {
