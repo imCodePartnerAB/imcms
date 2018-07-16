@@ -224,12 +224,12 @@ if (!String.prototype.startsWith) {
     /**
      * AMD interface function to catch only imcms-configured modules
      */
-    function define() {
+    this["define"] = function () {
         var resolvedArgs = resolveDefineArgs.apply(null, arguments);
         defineModule.applyAsync(resolvedArgs);
-    }
+    };
 
-    define.amd = {};
+    this["define"].amd = {};
 
     /**
      * AMD define function.
