@@ -11,7 +11,7 @@ Imcms.require(
         function getIdentifierLink(authProvider) {
             var tail = (nextUrl ? '?next_url=' + nextUrl : '');
 
-            return imcms.contextPath + '/api/external-identifiers/' + authProvider.providerId + tail;
+            return imcms.contextPath + '/api/external-identifiers/login/' + authProvider.providerId + tail;
         }
 
         function authProviderToLoginButton(authProvider) {

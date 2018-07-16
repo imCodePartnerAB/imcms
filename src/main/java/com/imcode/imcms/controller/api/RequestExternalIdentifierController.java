@@ -32,7 +32,7 @@ class RequestExternalIdentifierController {
         this.authenticationProvidersService = authenticationProvidersService;
     }
 
-    @RequestMapping("{identifierId}")
+    @RequestMapping("login/{identifierId}")
     public ModelAndView goToExternalIdentifierLoginPage(@PathVariable("identifierId") String identifierId,
                                                         @RequestParam(value = REQUEST_PARAMETER__NEXT_URL, required = false) String nextUrl,
                                                         HttpServletRequest request,
