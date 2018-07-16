@@ -31,7 +31,11 @@ Imcms.require(['imcms', 'jquery', 'imcms-authentication', 'imcms-components-buil
         return $('<div>', {
             'class': 'login-provider',
             id: authProvider.providerId,
-            style: 'display: none;'
+            style: 'display: none;',
+            html: $('<iframe>', {
+                'class': 'login-provider__window',
+                src: authProvider.authenticationURL
+            })
         });
     }
 
