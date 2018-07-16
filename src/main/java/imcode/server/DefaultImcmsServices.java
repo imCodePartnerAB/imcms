@@ -63,8 +63,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
-    private static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
     private static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
+    public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
 
     static {
         mainLog.info("Main log started.");
