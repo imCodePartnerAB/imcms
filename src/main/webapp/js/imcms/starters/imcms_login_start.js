@@ -15,7 +15,7 @@ Imcms.require(
                     })
                 }
             }).buildBlockStructure('<a>', {
-                href: authProvider.authenticationURL,
+                href: imcms.contextPath + '/api/external-identifiers/' + authProvider.providerId,
                 title: authProvider.providerName
             });
         }
