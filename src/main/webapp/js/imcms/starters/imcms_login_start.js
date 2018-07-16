@@ -6,6 +6,14 @@ Imcms.require(
     ['imcms', 'jquery', 'imcms-authentication', 'imcms-components-builder', 'imcms-bem-builder'],
     function (imcms, $, auth, components, BEM) {
 
+        var nextUrl = $('input[name=next_url]').val();
+
+        function getIdentifierLink(authProvider) {
+            var tail = (nextUrl ? '?next_url=' + nextUrl : '');
+
+            return imcms.contextPath + '/api/external-identifiers/' + authProvider.providerId + tail;
+        }
+
         function authProviderToLoginButton(authProvider) {
             return new BEM({
                 block: 'auth-provider-button',
@@ -15,7 +23,7 @@ Imcms.require(
                     })
                 }
             }).buildBlockStructure('<a>', {
-                href: imcms.contextPath + '/api/external-identifiers/' + authProvider.providerId,
+                href: getIdentifierLink(authProvider),
                 title: authProvider.providerName
             });
         }

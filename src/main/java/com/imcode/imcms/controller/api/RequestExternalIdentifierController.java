@@ -6,11 +6,14 @@ import com.imcode.imcms.model.AuthenticationProvider;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_URL;
 
 /**
  * Handles requests from users for external identifiers.
@@ -31,6 +34,7 @@ class RequestExternalIdentifierController {
 
     @RequestMapping("{identifierId}")
     public ModelAndView goToExternalIdentifierLoginPage(@PathVariable("identifierId") String identifierId,
+                                                        @RequestParam(value = REQUEST_PARAMETER__NEXT_URL, required = false) String nextUrl,
                                                         HttpServletRequest request,
                                                         HttpSession session) {
 

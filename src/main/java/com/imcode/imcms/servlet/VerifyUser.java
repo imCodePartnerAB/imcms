@@ -33,7 +33,7 @@ public class VerifyUser extends HttpServlet {
             = new LocalizedMessage("templates/login/TooManySessions");
     private static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
     public static final String REQUEST_PARAMETER__NEXT_URL = SESSION_ATTRIBUTE__NEXT_URL;
-    private static final String SESSION_ATTRIBUTE__NEXT_META = "next_meta";
+    private static final String SESSION_ATTRIBUTE__NEXT_META = REQUEST_PARAMETER__NEXT_META;
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
 
