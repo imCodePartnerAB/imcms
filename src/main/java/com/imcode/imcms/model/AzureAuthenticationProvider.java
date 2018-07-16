@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import java.util.Objects;
 import java.util.Properties;
 
+import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD;
+
 /**
  * Authentication provider for Azure Active Directory
  */
@@ -20,7 +22,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider {
 
     {
         providerName = "Azure Active Directory";
-        providerId = "azure-ad";
+        providerId = EXTERNAL_AUTHENTICATOR_AZURE_AD;
         iconPath = "/images_new/external_identifiers/azure-active-directory.svg";
     }
 
