@@ -29,7 +29,7 @@ Imcms.require(['imcms', 'jquery', 'imcms-authentication', 'imcms-components-buil
 
     function buildLoginProviderArea(authProvider) {
         return $('<div>', {
-            'class': 'auth-provider',
+            'class': 'login-provider',
             id: authProvider.providerId,
             style: 'display: none;'
         });

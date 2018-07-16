@@ -37,7 +37,7 @@ ${"-->"}
             </button>
         </div>
         <div id="login-providers" class="imcms-info-body__providers">
-            <div id="default-login-provider" class="login-provider--active">
+            <div id="default-login-provider" class="login-provider login-provider--active">
                 <c:if test="${requestScope['error'] ne null}">
                     <div class="imcms-field">
                         <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)}</div>
