@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserCreationService;
 import com.imcode.imcms.domain.service.UserEditorService;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,20 +29,25 @@ class UserAdministrationController {
 
     private final UserCreationService userCreationService;
     private final UserEditorService userEditorService;
+    private final UserService userService;
 
     @Autowired
     public UserAdministrationController(UserCreationService userCreationService,
-                                        UserEditorService userEditorService) {
+                                        UserEditorService userEditorService,
+                                        UserService userService) {
 
         this.userCreationService = userCreationService;
         this.userEditorService = userEditorService;
+        this.userService = userService;
     }
 
-    @GetMapping("/edition")
-    public ModelAndView goToEditUser() {
+    @GetMapping("/edition/{userId}")
+    public ModelAndView goToEditUser(@PathVariable("userId") Integer userId) {
         final UserDomainObject loggedOnUser = Imcms.getUser();
         final ModelAndView modelAndView = new ModelAndView("UserEdit");
 
+        final UserFormData user = userService.getUserData(userId);
+        modelAndView.addObject("editedUser", user);
         modelAndView.addObject("isAdmin", loggedOnUser.isSuperAdmin());
         modelAndView.addObject("loggedOnUser", loggedOnUser);
         modelAndView.addObject("userLanguage", loggedOnUser.getLanguage());

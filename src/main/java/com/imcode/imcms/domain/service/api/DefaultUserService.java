@@ -26,7 +26,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -90,36 +90,73 @@ class DefaultUserService implements UserService {
         return toDTO(userRepository.findByEmail(email));
     }
 
+    private List<UserDTO> toDTO(Collection<User> users) {
+        return users.stream().map(UserDTO::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public UserFormData getUserData(int userId) throws UserNotExistsException {
+        final User userJPA = getUser(userId);
+        final UserFormData userFormData = new UserFormData(userJPA);
+
+        setUserPhones(userFormData, userId);
+        setUserRoles(userFormData, userId);
+        setUserAdminRoles(userFormData, userId);
+
+        return userFormData;
+    }
+
+    private void setUserPhones(UserFormData userFormData, int userId) {
+        final List<Phone> userPhones = phoneService.getUserPhones(userId);
+        final List<String> userPhoneNumbers = new ArrayList<>();
+        final List<Integer> userPhoneNumberTypes = new ArrayList<>();
+
+        for (Phone userPhone : userPhones) {
+            userPhoneNumbers.add(userPhone.getNumber());
+            userPhoneNumberTypes.add(userPhone.getPhoneType().getId());
+        }
+
+        userFormData.setUserPhoneNumber(userPhoneNumbers.toArray(new String[0]));
+        userFormData.setUserPhoneNumberType(userPhoneNumberTypes.toArray(new Integer[0]));
+    }
+
+    private void setUserRoles(UserFormData userFormData, int userId) {
+        final int[] userRoleIds = toRoleIds(userRolesService.getRolesByUser(userId));
+        userFormData.setRoleIds(userRoleIds);
+    }
+
+    private void setUserAdminRoles(UserFormData userFormData, int userId) {
+        final int[] userRoleIds = toRoleIds(userAdminRolesService.getAdminRolesByUser(userId));
+        userFormData.setUserAdminRoleIds(userRoleIds);
+    }
+
+    private int[] toRoleIds(Collection<Role> roles) {
+        return roles.stream()
+                .filter(Predicate.isEqual(Roles.USER).negate())
+                .mapToInt(Role::getId)
+                .toArray();
+    }
+
     @Override
     public void saveUser(UserFormData userData) {
         final User user = saveAndGetUser(userData);
         updateUserData(userData, user);
     }
 
-    private void updateUserData(UserFormData userData, User user) {
-        updateUserPhones(userData, user);
-        updateUserRoles(userData, user);
-        updateUserAdminRoles(userData, user);
-    }
-
-    private void updateUserAdminRoles(UserFormData userData, User user) {
-        final List<Role> administrateRoles = collectRoles(userData.getUserAdminRoleIds());
-        userAdminRolesService.updateUserAdminRoles(administrateRoles, user);
-    }
-
-    private void updateUserRoles(UserFormData userData, User user) {
-        final List<Role> userRoles = collectRoles(userData.getRoleIds());
-        userRolesService.updateUserRoles(userRoles, user);
-    }
-
-    void updateUserPhones(UserFormData userData, User user) {
-        final List<Phone> phoneNumbers = collectPhoneNumbers(userData, user);
-        phoneService.updateUserPhones(phoneNumbers, user.getId());
-    }
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected User saveAndGetUser(UserFormData userData) {
         final User user = toUserJPA(userData);
+
+        if (userData.getId() != null) {
+            final User existingUser = userRepository.findById(userData.getId());
+            user.setPassword(existingUser.getPassword());
+            user.setPasswordReset(existingUser.getPasswordReset());
+            user.setSessionId(existingUser.getSessionId());
+            user.setRememberCd(existingUser.getRememberCd());
+            user.setPasswordType(existingUser.getPasswordType());
+            user.setExternal(existingUser.isExternal());
+        }
+
         return userRepository.save(user);
     }
 
@@ -129,12 +166,15 @@ class DefaultUserService implements UserService {
         return user;
     }
 
-    List<Role> collectRoles(int[] roleIdsInt) {
-        if (roleIdsInt == null || roleIdsInt.length == 0) return Collections.emptyList();
+    private void updateUserData(UserFormData userData, User user) {
+        updateUserPhones(userData, user);
+        updateUserRoles(userData, user);
+        updateUserAdminRoles(userData, user);
+    }
 
-        return Arrays.stream(roleIdsInt)
-                .mapToObj(roleService::getById)
-                .collect(Collectors.toList());
+    void updateUserPhones(UserFormData userData, User user) {
+        final List<Phone> phoneNumbers = collectPhoneNumbers(userData, user);
+        phoneService.updateUserPhones(phoneNumbers, user.getId());
     }
 
     List<Phone> collectPhoneNumbers(UserFormData userData, User user) {
@@ -167,8 +207,22 @@ class DefaultUserService implements UserService {
         return numbers;
     }
 
-    private List<UserDTO> toDTO(Collection<User> users) {
-        return users.stream().map(UserDTO::new).collect(Collectors.toList());
+    private void updateUserRoles(UserFormData userData, User user) {
+        final List<Role> userRoles = collectRoles(userData.getRoleIds());
+        userRolesService.updateUserRoles(userRoles, user);
+    }
+
+    private void updateUserAdminRoles(UserFormData userData, User user) {
+        final List<Role> administrateRoles = collectRoles(userData.getUserAdminRoleIds());
+        userAdminRolesService.updateUserAdminRoles(administrateRoles, user);
+    }
+
+    List<Role> collectRoles(int[] roleIdsInt) {
+        if (roleIdsInt == null || roleIdsInt.length == 0) return Collections.emptyList();
+
+        return Arrays.stream(roleIdsInt)
+                .mapToObj(roleService::getById)
+                .collect(Collectors.toList());
     }
 
     // TODO: 13.10.17 Was moved. Rewrite to human code.
@@ -178,7 +232,7 @@ class DefaultUserService implements UserService {
         CriteriaQuery<User> c = cb.createQuery(User.class);
         Root<User> user = c.from(User.class);
 
-        Predicate criteria = cb.conjunction();
+        javax.persistence.criteria.Predicate criteria = cb.conjunction();
 
         if (!includeExternal) {
             criteria = cb.and(criteria, cb.notEqual(user.get("external"), 2));
@@ -200,7 +254,7 @@ class DefaultUserService implements UserService {
         CriteriaQuery<User> c = cb.createQuery(User.class);
         Root<User> user = c.from(User.class);
 
-        Predicate criteria = cb.notEqual(user.get("external"), 2);
+        javax.persistence.criteria.Predicate criteria = cb.notEqual(user.get("external"), 2);
 
         if (!includeInactive) {
             criteria = cb.and(criteria, cb.isTrue(user.get("active")));

@@ -7,7 +7,6 @@ import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -17,6 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static imcode.server.ImcmsConstants.*;
 
 public class VerifyUser extends HttpServlet {
 
@@ -39,7 +40,7 @@ public class VerifyUser extends HttpServlet {
     public static void forwardToLogin(HttpServletRequest req, HttpServletResponse res, LocalizedMessage errorMsg) throws IOException, ServletException {
         req.getSession().invalidate();
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, errorMsg);
-        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, res);
+        req.getRequestDispatcher(API_PREFIX.concat(LOGIN_URL)).forward(req, res);
     }
 
     public static void forwardToLoginPageTooManySessions(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
@@ -77,7 +78,7 @@ public class VerifyUser extends HttpServlet {
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
         req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
-        req.getRequestDispatcher(ImcmsConstants.LOGIN_URL).forward(req, res);
+        req.getRequestDispatcher(API_PREFIX.concat(LOGIN_URL)).forward(req, res);
     }
 
 

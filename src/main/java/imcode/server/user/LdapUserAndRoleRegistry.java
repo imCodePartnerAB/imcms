@@ -15,7 +15,15 @@ import javax.naming.CommunicationException;
 import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 /**
  * The documentMapper maps LDAP attributes to Imcms internal user object.
@@ -84,12 +92,14 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     private String ldapPassword;
 
     public LdapUserAndRoleRegistry(Properties ldapConfig) throws LdapClientException {
-        this(ldapConfig.getProperty("LdapUrl", "ldap://localhost/"),
+        this(
+                ldapConfig.getProperty("LdapUrl", "ldap://localhost/"),
                 ldapConfig.getProperty("LdapUserObjectClass", LDAP_USER_OBJECTCLASS_DEFAULT),
                 ldapConfig.getProperty("LdapBindDn", ""),
                 ldapConfig.getProperty("LdapPassword", ""),
                 buildAttributesMappedToRoles(ldapConfig),
-                buildUserAttributes(ldapConfig));
+                buildUserAttributes(ldapConfig)
+        );
     }
 
     /**
@@ -102,7 +112,9 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
                                    String ldapUserObjectClass,
                                    String ldapUserName,
                                    String ldapPassword,
-                                   String[] ldapAttributesMappedToRoles, Properties ldapUserAttributes) throws LdapClientException {
+                                   String[] ldapAttributesMappedToRoles,
+                                   Properties ldapUserAttributes) throws LdapClientException {
+
         ldapAttributesAutoMappedToRoles = ldapAttributesMappedToRoles;
         initLdapUserAttributesMap(ldapUserAttributes);
 
@@ -168,6 +180,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
         Set<String> badUserAttributes = new TreeSet(userPropertyNameToLdapAttributeNameMap.keySet());
         String[] capitalizedSettableUserPropertyNames = getCapitalizedSettableBeanPropertyNames(UserDomainObject.class);
         badUserAttributes.removeAll(Arrays.asList(capitalizedSettableUserPropertyNames));
+
         if (!badUserAttributes.isEmpty()) {
             throw new LdapClientException("Unrecognized LdapUserAttributes: "
                     + StringUtils.join(badUserAttributes.iterator(), ", "));

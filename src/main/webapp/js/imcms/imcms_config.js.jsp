@@ -71,6 +71,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-streams": "streams/imcms_streams.js",
             "imcms-i18n-texts": "i18n/imcms_i18n_texts.js", // languages support
             // <components>
+            'imcms-authentication': 'components/imcms_authentication.js',
             "imcms-document-types": "components/imcms_document_types.js",
             "imcms-calendar": "components/imcms_calendar.js",
             "imcms-date-picker": "components/imcms_date_picker.js",
@@ -215,7 +216,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-file-doc-files-rest-api": "rest/imcms_file_doc_files_rest_api.js",
             "imcms-profiles-rest-api": "rest/imcms_profiles_rest_api.js",
             "imcms-document-validation-rest-api": "rest/imcms_document_validation_rest_api.js",
-            "imcms-document-copy-rest-api": "rest/imcms_document_copy_rest_api.js"
+            "imcms-document-copy-rest-api": "rest/imcms_document_copy_rest_api.js",
+            'imcms-auth-providers-rest-api': 'rest/imcms_auth_providers_rest_api.js'
         }
     };
 

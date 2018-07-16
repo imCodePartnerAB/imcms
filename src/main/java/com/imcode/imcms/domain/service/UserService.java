@@ -24,4 +24,6 @@ public interface UserService {
     List<UserDTO> getUsersByEmail(String email);
 
     void saveUser(UserFormData userData);
+
+    UserFormData getUserData(int id) throws UserNotExistsException;
 }

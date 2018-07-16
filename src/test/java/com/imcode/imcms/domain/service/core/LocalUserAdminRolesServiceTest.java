@@ -54,7 +54,7 @@ class LocalUserAdminRolesServiceTest {
 
         given(userRolesRepository.findUserAdminRoleByUserId(user.getId())).willReturn(userRoles);
 
-        final List<Role> rolesByUser = userRolesService.getAdminRolesByUser(user);
+        final List<Role> rolesByUser = userRolesService.getAdminRolesByUser(user.getId());
 
         assertThat(rolesByUser, hasSize(roles.size()));
 

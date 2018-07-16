@@ -122,6 +122,7 @@ class DefaultUserServiceTest {
         final UserFormData mock = mock(UserFormData.class);
         final User user = mock(User.class);
         final int userId = 42;
+        given(mock.getId()).willReturn(null);
         given(user.getId()).willReturn(userId);
         given(mock.getLangCode()).willReturn(ENG_CODE);
         given(userRepository.save(any(User.class))).willReturn(user);

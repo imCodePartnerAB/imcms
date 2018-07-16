@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.persistence.entity.PhoneJPA;
@@ -35,5 +36,10 @@ class LocalUserPhoneService implements PhoneService {
         final List<PhoneJPA> saveUs = toJPA.apply(phones);
 
         phoneRepository.save(saveUs);
+    }
+
+    @Override
+    public List<Phone> getUserPhones(int userId) {
+        return phoneRepository.findByUserId(userId).stream().map(PhoneDTO::new).collect(Collectors.toList());
     }
 }

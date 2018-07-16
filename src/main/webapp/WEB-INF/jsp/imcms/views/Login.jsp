@@ -13,6 +13,11 @@
     <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css">
     <link rel="stylesheet" type="text/css" href="${cp}/css/imcms-imports_files.css">
     <link rel="stylesheet" type="text/css" href="${cp}/css/imcms-login-page.css">
+    <script>
+        <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+    </script>
+    <script src="${cp}/js/imcms/imcms_main.js" data-name="imcms"
+            data-main="${cp}/js/imcms/starters/imcms_login_start.js"></script>
 </head>
 <body>
 <div class="imcms-info-page">
@@ -21,7 +26,7 @@
         <div class="imcms-title imcms-head__title"><fmt:message key="templates/login/index.html/2"/></div>
     </div>
     <div class="imcms-info-body imcms-info-body__login">
-        <div class="imcms-field">
+        <div id="login-page-buttons" class="imcms-field">
             <a href="${cp}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/login/index.html/2001"/></a>
         </div>

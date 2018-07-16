@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PhoneRepositoryTest extends TransactionalWebAppSpringTestConfig {
 
@@ -85,5 +84,35 @@ public class PhoneRepositoryTest extends TransactionalWebAppSpringTestConfig {
         final List<PhoneJPA> all3 = phoneRepository.findAll();
 
         assertTrue(all3.isEmpty());
+    }
+
+    @Test
+    public void findByUserId() {
+        final User user1 = userDataInitializer.createData("test-login-1");
+        final User user2 = userDataInitializer.createData("test-login-2");
+
+        final PhoneTypeJPA phoneType1 = phoneTypeRepository.save(new PhoneTypeJPA(13, "test-type-1"));
+        final PhoneTypeJPA phoneType2 = phoneTypeRepository.save(new PhoneTypeJPA(14, "test-type-2"));
+
+        final PhoneJPA phone11 = phoneRepository.save(new PhoneJPA("852412541", user1, phoneType1));
+        final PhoneJPA phone12 = phoneRepository.save(new PhoneJPA("852412542", user1, phoneType2));
+
+        final PhoneJPA phone21 = phoneRepository.save(new PhoneJPA("852412541", user2, phoneType1));
+        final PhoneJPA phone22 = phoneRepository.save(new PhoneJPA("852412542", user2, phoneType2));
+
+        final List<PhoneJPA> all1 = phoneRepository.findAll();
+
+        assertFalse(all1.isEmpty());
+        assertTrue(Arrays.asList(phone11, phone12, phone21, phone22).containsAll(all1));
+
+        final List<PhoneJPA> phones1 = phoneRepository.findByUserId(user1.getId());
+
+        assertFalse(phones1.isEmpty());
+        assertTrue(Arrays.asList(phone11, phone12).containsAll(phones1));
+
+        final List<PhoneJPA> phones2 = phoneRepository.findByUserId(user2.getId());
+
+        assertFalse(phones2.isEmpty());
+        assertTrue(Arrays.asList(phone21, phone22).containsAll(phones2));
     }
 }
