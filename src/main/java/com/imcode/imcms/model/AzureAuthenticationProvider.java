@@ -15,7 +15,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider {
     }
 
     public AzureAuthenticationProvider(Properties properties) {
-        authenticationURL = "http://localhost:8080/dummy";
+        authenticationURL = "https://imcode.com/";
     }
 
 }
