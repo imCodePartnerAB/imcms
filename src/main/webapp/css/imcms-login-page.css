@@ -31,6 +31,8 @@
 
 .imcms-info-footer__message {
     display: inline-block;
+    line-height: 30px;
+    vertical-align: top;
 }
 
 .auth-provider-button__icon {
