@@ -9,7 +9,7 @@ Imcms.require(['imcms', 'jquery', 'imcms-authentication'], function (imcms, $, a
     }
 
     auth.getAuthProviders().done(function (authProviders) {
-        if (authProviders.length === 1) {
+        if (!authProviders.length) {
             return;
         }
 
