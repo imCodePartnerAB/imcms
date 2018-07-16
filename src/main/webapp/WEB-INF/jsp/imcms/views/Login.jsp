@@ -29,11 +29,11 @@ ${"-->"}
         <div class="imcms-title imcms-head__title"><fmt:message key="templates/login/index.html/2"/></div>
     </div>
     <div class="imcms-info-body imcms-info-body__login">
-        <div id="login-page-buttons" class="imcms-field">
+        <div id="login-page-buttons" class="imcms-field imcms-info-body__login-buttons">
             <a href="${cp}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/login/index.html/2001"/></a>
         </div>
-        <div id="login-providers">
+        <div id="login-providers" class="imcms-info-body__providers">
             <div id="default-login-provider">
                 <c:if test="${requestScope['error'] ne null}">
                     <div class="imcms-field">
