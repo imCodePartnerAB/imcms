@@ -10,7 +10,8 @@ import java.util.Properties;
 public class AzureAuthenticationProvider extends AuthenticationProvider {
 
     {
-        authenticatorName = "Azure Active Directory";
+        providerName = "Azure Active Directory";
+        providerId = "azure-ad";
     }
 
     public AzureAuthenticationProvider(Properties properties) {

@@ -7,6 +7,8 @@ public abstract class AuthenticationProvider {
     @Getter
     protected String authenticationURL;
     @Getter
-    protected String authenticatorName;
+    protected String providerId;
+    @Getter
+    protected String providerName;
 
 }
