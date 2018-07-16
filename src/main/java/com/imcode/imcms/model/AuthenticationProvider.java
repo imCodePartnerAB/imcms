@@ -10,5 +10,7 @@ public abstract class AuthenticationProvider {
     protected String providerId;
     @Getter
     protected String providerName;
+    @Getter
+    protected String iconPath;
 
 }

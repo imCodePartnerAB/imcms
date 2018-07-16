@@ -21,10 +21,11 @@ public class AzureAuthenticationProvider extends AuthenticationProvider {
     {
         providerName = "Azure Active Directory";
         providerId = "azure-ad";
+        iconPath = "/images_new/external_identifiers/azure-active-directory.svg";
     }
 
     public AzureAuthenticationProvider(Properties properties) {
-        authenticationURL = "https://imcode.com/";
+        authenticationURL = "https://login.microsoftonline.com/";
 
         tenant = properties.getProperty("aad.tenant.name");
         clientId = properties.getProperty("aad.client.id");

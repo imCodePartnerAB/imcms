@@ -32,9 +32,6 @@ ${"-->"}
         <div id="login-page-buttons" class="imcms-field imcms-info-body__login-buttons">
             <a href="${cp}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/login/index.html/2001"/></a>
-            <button class="imcms-button imcms-button--neutral imcms-info-body__button auth-provider-button"
-                    id="default-login-button">Imcms Login
-            </button>
         </div>
         <div id="login-providers" class="imcms-info-body__providers">
             <div id="default-login-provider" class="login-provider login-provider--active">
