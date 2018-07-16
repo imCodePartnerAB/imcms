@@ -34,5 +34,11 @@
     padding-bottom: 1px;
 }
 
+.imcms-info-body__providers {
+    min-height: 450px;
+}
 
-
+.info-block {
+    padding-bottom: 15px;
+    padding-top: 15px;
+}

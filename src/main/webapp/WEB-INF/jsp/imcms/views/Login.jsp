@@ -43,7 +43,7 @@ ${"-->"}
                         <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)}</div>
                     </div>
                 </c:if>
-                <div class="imcms-field">
+                <div class="imcms-field info-block">
                     <div class="imcms-title">
                         <fmt:message key="templates/login/index.html/4"/>
                         <fmt:message key="templates/login/index.html/1001"/>

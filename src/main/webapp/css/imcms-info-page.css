@@ -4,10 +4,10 @@
     -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
     box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
     display: block;
-    margin-left: -320px;
+    margin-left: -370px;
     overflow: hidden;
     position: fixed;
-    width: 640px;
+    width: 740px;
     top: 100px;
     left: 50%;
     z-index: 10005;
