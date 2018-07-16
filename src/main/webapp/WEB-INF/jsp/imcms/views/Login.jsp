@@ -33,63 +33,69 @@ ${"-->"}
             <a href="${cp}/" class="imcms-button imcms-button--neutral imcms-info-body__button"><fmt:message
                     key="templates/login/index.html/2001"/></a>
         </div>
-        <c:if test="${requestScope['error'] ne null}">
-            <div class="imcms-field">
-                <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)}</div>
-            </div>
-        </c:if>
-        <div class="imcms-field">
-            <div class="imcms-title">
-                <fmt:message key="templates/login/index.html/4"/>
-                <fmt:message key="templates/login/index.html/1001"/>
-            </div>
-        </div>
-        <form action="${cp}/servlet/VerifyUser" id="loginForm" method="post">
-            <c:set var="nextMetaParamName" value="<%=VerifyUser.REQUEST_PARAMETER__NEXT_META%>"/>
-            <c:set var="nextMetaParamValue" value="${requestScope[nextMetaParamName]}"/>
+        <div id="login-providers">
+            <div id="default-login-provider">
+                <c:if test="${requestScope['error'] ne null}">
+                    <div class="imcms-field">
+                        <div class="imcms-error-msg imcms-login__error-msg">${requestScope['error'].toLocalizedString(pageContext.request)}</div>
+                    </div>
+                </c:if>
+                <div class="imcms-field">
+                    <div class="imcms-title">
+                        <fmt:message key="templates/login/index.html/4"/>
+                        <fmt:message key="templates/login/index.html/1001"/>
+                    </div>
+                </div>
+                <form action="${cp}/servlet/VerifyUser" id="loginForm" method="post">
+                    <c:set var="nextMetaParamName" value="<%=VerifyUser.REQUEST_PARAMETER__NEXT_META%>"/>
+                    <c:set var="nextMetaParamValue" value="${requestScope[nextMetaParamName]}"/>
 
-            <c:set var="nextUrlParamName" value="<%=VerifyUser.REQUEST_PARAMETER__NEXT_URL%>"/>
-            <c:set var="nextUrlParamValue" value="${requestScope[nextUrlParamName]}"/>
+                    <c:set var="nextUrlParamName" value="<%=VerifyUser.REQUEST_PARAMETER__NEXT_URL%>"/>
+                    <c:set var="nextUrlParamValue" value="${requestScope[nextUrlParamName]}"/>
 
-            <c:if test="${nextMetaParamValue ne null}">
-                <input type="hidden" name="${nextMetaParamName}" value="${fn:escapeXml(nextMetaParamValue)}">
-            </c:if>
+                    <c:if test="${nextMetaParamValue ne null}">
+                        <input type="hidden" name="${nextMetaParamName}" value="${fn:escapeXml(nextMetaParamValue)}">
+                    </c:if>
 
-            <c:if test="${nextMetaParamValue eq null and nextUrlParamValue ne null}">
-                <input type="hidden" name="${nextUrlParamName}" value="${fn:escapeXml(nextUrlParamValue)}">
-            </c:if>
-            <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="<fmt:message key="templates/login/index.html/5"/>"
-                           class="imcms-label imcms-text-box__label"><fmt:message
-                            key="templates/login/index.html/5"/></label>
-                    <input id="<fmt:message key="templates/login/index.html/5"/>" type="text"
-                           name="<%=VerifyUser.REQUEST_PARAMETER__USERNAME%>" class="imcms-input imcms-text-box__input">
+                    <c:if test="${nextMetaParamValue eq null and nextUrlParamValue ne null}">
+                        <input type="hidden" name="${nextUrlParamName}" value="${fn:escapeXml(nextUrlParamValue)}">
+                    </c:if>
+                    <div class="imcms-field">
+                        <div class="imcms-text-box">
+                            <label for="<fmt:message key="templates/login/index.html/5"/>"
+                                   class="imcms-label imcms-text-box__label"><fmt:message
+                                    key="templates/login/index.html/5"/></label>
+                            <input id="<fmt:message key="templates/login/index.html/5"/>" type="text"
+                                   name="<%=VerifyUser.REQUEST_PARAMETER__USERNAME%>"
+                                   class="imcms-input imcms-text-box__input">
+                        </div>
+                    </div>
+                    <div class="imcms-field">
+                        <div class="imcms-text-box">
+                            <label for="<fmt:message key="templates/login/index.html/6"/>"
+                                   class="imcms-label imcms-text-box__label">
+                                <fmt:message key="templates/login/index.html/6"/>
+                            </label>
+                            <input id="<fmt:message key="templates/login/index.html/6"/>" type="password"
+                                   name="<%=VerifyUser.REQUEST_PARAMETER__PASSWORD%>"
+                                   class="imcms-input imcms-text-box__input">
+                        </div>
+                    </div>
+                </form>
+                <div class="imcms-field">
+                    <a class="imcms-button imcms-button--neutral imcms-info-body__button"
+                       href="${cp}/servlet/PasswordReset"><fmt:message key="templates/login/index.html/2002"/></a>
+                </div>
+                <div class="imcms-info-footer imcms-login__footer">
+                    <button type="submit" form="loginForm"
+                            class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
+                            key="templates/login/index.html/2005"/></button>
+                    <button type="submit" form="loginForm" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
+                            class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
+                            key="templates/login/index.html/2006"/></button>
                 </div>
             </div>
-            <div class="imcms-field">
-                <div class="imcms-text-box">
-                    <label for="<fmt:message key="templates/login/index.html/6"/>"
-                           class="imcms-label imcms-text-box__label">
-                        <fmt:message key="templates/login/index.html/6"/>
-                    </label>
-                    <input id="<fmt:message key="templates/login/index.html/6"/>" type="password"
-                           name="<%=VerifyUser.REQUEST_PARAMETER__PASSWORD%>" class="imcms-input imcms-text-box__input">
-                </div>
-            </div>
-        </form>
-        <div class="imcms-field">
-            <a class="imcms-button imcms-button--neutral imcms-info-body__button"
-               href="${cp}/servlet/PasswordReset"><fmt:message key="templates/login/index.html/2002"/></a>
         </div>
-    </div>
-    <div class="imcms-info-footer imcms-login__footer">
-        <button type="submit" form="loginForm"
-                class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
-                key="templates/login/index.html/2005"/></button>
-        <button type="submit" form="loginForm" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
-                class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
-                key="templates/login/index.html/2006"/></button>
     </div>
 </div>
 
