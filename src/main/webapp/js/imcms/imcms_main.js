@@ -74,12 +74,11 @@ if (!String.prototype.startsWith) {
         var dependency = getDependency(id);
 
         if (!dependency) {
-            console.error("No dependency found with id " + id);
-            return;
+            throw "No dependency found with id " + id;
         }
 
         if (imcms.loadedDependencies[id]) {
-            console.error("Dependency is already loaded!!!! " + id);
+            console.error("Dependency is already loaded!!!!1 " + id);
             return;
         }
 
