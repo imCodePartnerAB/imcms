@@ -34,6 +34,12 @@ hibernate-dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 external-authenticator =
 external-user-and-role-registry =
 
+# Azure Active Directory auth parameters
+
+aad.tenant.name=
+aad.client.id=
+aad.secret.key=
+
 # LDAP-authentication-parameters
 
 ldap-url = ldap://localhost:389/CN=Users,DC=example,DC=com
