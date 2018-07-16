@@ -18,7 +18,7 @@ Imcms.define("imcms-choose-image-builder",
                         block: "imcms-choose-image",
                         elements: {
                             "text-box": $textField,
-                            "button": buttons.neutral("<button>", {
+                            "button": buttons.neutralButton({
                                 text: attributes["button-text"],
                                 click: attributes.click && contentManager.build.bind(
                                     contentManager, attributes.click, function () {
