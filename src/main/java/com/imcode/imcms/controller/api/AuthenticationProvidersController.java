@@ -1,28 +1,26 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.service.AuthenticationProvidersService;
+import com.imcode.imcms.model.AuthenticationProvider;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Properties;
 
 @RestController
 @RequestMapping("/auth-providers")
 class AuthenticationProvidersController {
 
-    private final Properties properties;
+    private final AuthenticationProvidersService authenticationProvidersService;
 
-    AuthenticationProvidersController(Properties imcmsProperties) {
-        this.properties = imcmsProperties;
+    AuthenticationProvidersController(AuthenticationProvidersService authenticationProvidersService) {
+        this.authenticationProvidersService = authenticationProvidersService;
     }
 
     @GetMapping
-    public List<Object> getAll() {
-//        modelAndView.addObject("externalAuthenticator", properties.getProperty("ExternalAuthenticator"));
-//        modelAndView.addObject("externalUserAndRoleMapper", properties.getProperty("ExternalUserAndRoleMapper"));
-        return Collections.emptyList();
+    public List<AuthenticationProvider> getAll() {
+        return authenticationProvidersService.getAuthenticationProviders();
     }
 
 }

@@ -15,12 +15,35 @@
 .imcms-login__footer {
 }
 
+.imcms-info-body__providers {
+    border-top: solid 1px #c9d3d8;
+}
 
+.auth-provider-button:first-of-type {
+    margin-left: 15px;
+}
 
+.auth-provider-button {
+    border: solid 1px #a8caf3;
+    border-bottom: none;
+    border-radius: 1px;
+    padding: 5px;
+}
 
+.imcms-info-body__login-buttons {
+    padding-bottom: 1px;
+}
 
+.imcms-info-body__providers {
+    min-height: 450px;
+}
 
+.info-block {
+    padding-bottom: 15px;
+    padding-top: 15px;
+}
 
-
-
-
+.login-provider__window {
+    height: 450px;
+    width: 700px;
+}

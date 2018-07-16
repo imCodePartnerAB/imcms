@@ -261,6 +261,8 @@ public class ImcmsSetupFilter implements Filter {
 
         final String cookieUserRemoteAddress = (String) request.getSession().getAttribute(USER_REMOTE_ADDRESS);
 
+        if (null == cookieUserRemoteAddress) return false;
+
         if (!request.getRemoteAddr().equals(cookieUserRemoteAddress)) {
 
             Arrays.stream(request.getCookies())
