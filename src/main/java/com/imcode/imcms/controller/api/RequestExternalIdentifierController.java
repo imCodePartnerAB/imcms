@@ -18,6 +18,7 @@ import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_URL;
 /**
  * Handles requests from users for external identifiers.
  * Builds required URL and redirects to specified identifier.
+ * Handles external identifier redirect with success/fail authentication data.
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 16.07.18.
