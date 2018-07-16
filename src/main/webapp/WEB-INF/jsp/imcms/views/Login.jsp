@@ -1,3 +1,6 @@
+${"<!--"}
+<%@ page trimDirectiveWhitespaces="true" %>
+${"-->"}
 <%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 
