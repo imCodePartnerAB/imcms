@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD;
@@ -24,12 +25,17 @@ public class AuthenticationProvidersFactory {
 
         final String externalAuthenticator = properties.getProperty("ExternalAuthenticator", "");
 
-        switch (externalAuthenticator.toLowerCase()) {
-            case EXTERNAL_AUTHENTICATOR_AZURE_AD:
-                providers.add(new AzureAuthenticationProvider(properties));
-        }
+        getProvider(externalAuthenticator).ifPresent(providers::add);
 
         return providers;
     }
 
+    public Optional<AuthenticationProvider> getProvider(String identifierId) {
+        switch (identifierId.toLowerCase()) {
+            case EXTERNAL_AUTHENTICATOR_AZURE_AD:
+                return Optional.of(new AzureAuthenticationProvider(properties));
+        }
+
+        return Optional.empty();
+    }
 }
