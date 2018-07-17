@@ -453,6 +453,21 @@
             <version>0.1</version>
         </dependency>
 
+        <!-- Azure Active Directory stuff -->
+
+        <dependency>
+            <groupId>com.microsoft.azure</groupId>
+            <artifactId>adal4j</artifactId>
+            <version>1.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>oauth2-oidc-sdk</artifactId>
+            <version>5.24.1</version>
+        </dependency>
+
+        <!-- /Azure Active Directory stuff -->
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>

@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.factory;
 
 import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
+import com.imcode.imcms.domain.exception.ExternalIdentifierNotEnabledException;
 import com.imcode.imcms.model.AuthenticationProvider;
 import org.springframework.stereotype.Component;
 
@@ -25,17 +26,18 @@ public class AuthenticationProvidersFactory {
 
         final String externalAuthenticator = properties.getProperty("ExternalAuthenticator", "");
 
-        getProvider(externalAuthenticator).ifPresent(providers::add);
+        Optional.ofNullable(getProvider(externalAuthenticator)).ifPresent(providers::add);
 
         return providers;
     }
 
-    public Optional<AuthenticationProvider> getProvider(String identifierId) {
+    @SuppressWarnings("unchecked")
+    public AuthenticationProvider getProvider(String identifierId) {
         switch (identifierId.toLowerCase()) {
             case EXTERNAL_AUTHENTICATOR_AZURE_AD:
-                return Optional.of(new AzureAuthenticationProvider(properties));
+                return new AzureAuthenticationProvider(properties);
         }
 
-        return Optional.empty();
+        throw new ExternalIdentifierNotEnabledException(identifierId);
     }
 }
