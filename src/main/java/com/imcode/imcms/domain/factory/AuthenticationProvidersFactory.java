@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.factory;
 
+import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.model.AuthenticationProvider;
-import com.imcode.imcms.model.AzureAuthenticationProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
