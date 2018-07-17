@@ -214,7 +214,8 @@ task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.start
 task individualCssMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyCss") })
 
 task cleanTemporaryDir(type: Delete, dependsOn:war) {
-    delete tmpDir
+//    Disabled due to worn file merging. Should be possible enabled in future. But clean task remove it as well
+//    delete tmpDir
 }
 
 //Task dependency settings
