@@ -2,6 +2,10 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.model.AuthenticationProvider;
+import imcode.server.user.UserDomainObject;
+import imcode.util.Utility;
+import lombok.SneakyThrows;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +15,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import static com.imcode.imcms.controller.api.RequestExternalIdentifierController.EXTERNAL_IDENTIFIERS_PATH;
@@ -43,7 +46,7 @@ class RequestExternalIdentifierController {
     public ModelAndView goToExternalIdentifierLoginPage(@PathVariable("identifierId") String identifierId,
                                                         @RequestParam(value = REQUEST_PARAMETER__NEXT_URL, required = false) String nextUrl,
                                                         HttpServletRequest request,
-                                                        HttpSession session) throws MalformedURLException {
+                                                        HttpSession session) {
 
         final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(identifierId);
 
@@ -52,7 +55,8 @@ class RequestExternalIdentifierController {
         )));
     }
 
-    String getRedirectURL(String identifierId, HttpServletRequest request) throws MalformedURLException {
+    @SneakyThrows
+    String getRedirectURL(String identifierId, HttpServletRequest request) {
         final URL url = new URL(request.getRequestURL().toString());
         final String protocol = url.getProtocol();
         final String host = url.getHost();
@@ -68,19 +72,19 @@ class RequestExternalIdentifierController {
 
     @RequestMapping(EXTERNAL_IDENTIFIER_REDIRECT_URI + "/{identifierId}")
     public ModelAndView processExternalAuthResponse(@PathVariable("identifierId") String identifierId,
-                                                    HttpServletRequest request) throws Exception {
+                                                    HttpServletRequest request) {
 
         final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(
                 identifierId
         );
 
-        final String nextURL = provider.processAuthentication(request);
+        String nextURL = provider.processAuthentication(request);
+        nextURL = (StringUtils.isBlank(nextURL) ? (request.getContextPath() + "/") : nextURL);
 
-        // set current user: Utility.makeUserLoggedIn(request, user);
+        final UserDomainObject user = provider.getUser(request);
+        Utility.makeUserLoggedIn(request, user);
 
         return new ModelAndView(new RedirectView(nextURL));
     }
-
-
 
 }
