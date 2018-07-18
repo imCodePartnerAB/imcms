@@ -1,0 +1,49 @@
+package com.imcode.imcms.domain.dto;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import imcode.server.ImcmsConstants;
+import imcode.server.user.UserDomainObject;
+import lombok.Data;
+
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AzureActiveDirectoryUserDTO {
+
+    /**
+     * In UUID form
+     */
+    private String id;
+    /**
+     * Full name
+     */
+    private String displayName;
+    /**
+     * First name
+     */
+    private String givenName;
+    /**
+     * Second name
+     */
+    private String surname;
+    private String jobTitle;
+    private String mail;
+    private String mobilePhone;
+    private String officeLocation;
+    private String preferredLanguage;
+    private String userPrincipalName;
+    private String[] businessPhones;
+
+    public UserDomainObject toDomainObject() {
+        final UserDomainObject user = new UserDomainObject();
+
+        user.setLoginName(id);
+        user.setImcmsExternal(true);
+        user.setFirstName(givenName);
+        user.setLastName(surname);
+        user.setEmailAddress(mail);
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+
+        return user;
+    }
+
+}
