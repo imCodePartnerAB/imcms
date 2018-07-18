@@ -1,5 +1,6 @@
 package com.imcode.imcms.model;
 
+import imcode.server.user.UserDomainObject;
 import lombok.Getter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ public abstract class AuthenticationProvider {
     /**
      * Returns URI user should be redirected to
      */
-    public abstract String processAuthentication(HttpServletRequest request) throws Exception;
+    public abstract String processAuthentication(HttpServletRequest request);
+
+    public abstract UserDomainObject getUser(HttpServletRequest request);
 
 }
