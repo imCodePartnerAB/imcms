@@ -1,30 +1,24 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.controller.MockingControllerTest;
 import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.domain.service.SearchDocumentService;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@RunWith(MockitoJUnitRunner.class)
-public class SearchDocumentControllerTest {
+@ExtendWith(MockitoExtension.class)
+class SearchDocumentControllerTest extends MockingControllerTest {
 
     private static final String CONTROLLER_PATH = "/documents/search";
 
@@ -34,15 +28,13 @@ public class SearchDocumentControllerTest {
     @InjectMocks
     private SearchDocumentController searchDocumentController;
 
-    private MockMvc mockMvc;
-
-    @Before
-    public void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(searchDocumentController).build();
+    @Override
+    protected Object controllerToMock() {
+        return searchDocumentController;
     }
 
     @Test
-    public void getTextDocument_When_DefaultSearchQuery_Expect_JsonIsReturned() throws Exception {
+    void getTextDocument_When_DefaultSearchQuery_Expect_JsonIsReturned() throws Exception {
 
         final SearchQueryDTO searchQuery = new SearchQueryDTO();
 
@@ -53,18 +45,10 @@ public class SearchDocumentControllerTest {
         expected.setDocumentStatus(DocumentStatus.PUBLISHED);
         expected.setAlias("test_alias");
 
-        when(searchDocumentService.searchDocuments(searchQuery))
-                .thenReturn(Collections.singletonList(expected));
+        given(searchDocumentService.searchDocuments(searchQuery)).willReturn(Collections.singletonList(expected));
 
-        mockMvc.perform(get(CONTROLLER_PATH))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(expected.getId())))
-                .andExpect(jsonPath("$[0].title", is(expected.getTitle())))
-                .andExpect(jsonPath("$[0].documentStatus", is(expected.getDocumentStatus().toString())))
-                .andExpect(jsonPath("$[0].type", is(expected.getType().toString())))
-                .andExpect(jsonPath("$[0].alias", is(expected.getAlias())));
+        perform(get(CONTROLLER_PATH)).andExpectAsJson(new DocumentStoredFieldsDTO[]{expected});
 
-        verify(searchDocumentService, times(1)).searchDocuments(searchQuery);
+        then(searchDocumentService).should().searchDocuments(searchQuery);
     }
 }

@@ -10,8 +10,10 @@ import com.imcode.imcms.persistence.entity.Meta;
 import org.apache.commons.lang3.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.web.util.NestedServletException;
@@ -19,18 +21,16 @@ import org.springframework.web.util.NestedServletException;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+@ExtendWith(MockitoExtension.class)
 class DocumentControllerTest extends MockingControllerTest {
+
+    private static final String CONTROLLER_PATH = "/documents";
 
     @Mock
     private DelegatingByTypeDocumentService documentService;
 
     @InjectMocks
     private DocumentController documentController;
-
-    @Override
-    protected String controllerPath() {
-        return "/documents";
-    }
 
     @Override
     protected Object controllerToMock() {
@@ -45,7 +45,7 @@ class DocumentControllerTest extends MockingControllerTest {
 
         given(documentService.createNewDocument(documentType, parentDocId)).willReturn(newDoc);
 
-        final RequestBuilder requestBuilder = get(controllerPath())
+        final RequestBuilder requestBuilder = get(CONTROLLER_PATH)
                 .param("type", documentType.toString())
                 .param("parentDocId", "" + parentDocId);
 
@@ -59,7 +59,7 @@ class DocumentControllerTest extends MockingControllerTest {
 
         given(documentService.get(docId)).willReturn(existingDoc);
 
-        final RequestBuilder requestBuilder = get(controllerPath())
+        final RequestBuilder requestBuilder = get(CONTROLLER_PATH)
                 .param("docId", "" + docId);
 
         perform(requestBuilder).andExpectAsJson(existingDoc);
@@ -72,7 +72,7 @@ class DocumentControllerTest extends MockingControllerTest {
 
         given(documentService.copy(docId)).willReturn(copy);
 
-        final RequestBuilder requestBuilder = post(controllerPath().concat("/copy/" + docId))
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH.concat("/copy/" + docId))
                 .param("docId", "" + docId);
 
         perform(requestBuilder).andExpectAsJson(copy);
@@ -84,7 +84,7 @@ class DocumentControllerTest extends MockingControllerTest {
 
         given(documentService.save(saveMe)).willReturn(saveMe);
 
-        final RequestBuilder requestBuilder = post(controllerPath())
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(saveMe));
 
@@ -95,7 +95,7 @@ class DocumentControllerTest extends MockingControllerTest {
     void delete_When_DeletingDisabled_Expect_NotImplementedException() throws Throwable {
         final UberDocumentDTO deleteMe = new UberDocumentDTO();
 
-        final RequestBuilder requestBuilder = delete(controllerPath())
+        final RequestBuilder requestBuilder = delete(CONTROLLER_PATH)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(deleteMe));
 
