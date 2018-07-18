@@ -187,6 +187,7 @@ task importProperties(dependsOn: copyProperties) {
     }
 }
 
+//task explodedWar(type: Copy, dependsOn: war) {
 task explodedWar(type: Sync, dependsOn: war) {
     into "${buildDir}/libs/exploded/${project.name}-${project.version}.war/"
     with war
@@ -200,8 +201,8 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
 task individualCssMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyCss") })
 
-task cleanTemporaryDir(type: Delete, dependsOn:war) {
-//    Disabled due to worn file merging. Should be possible enabled in future. But clean task remove it as well
+task cleanTemporaryDir(type: Delete, dependsOn: war) {
+//    Disabled due to wrong file merging. Should be possible enabled in future. But clean task remove it as well
 //    delete tmpDir
 }
 
@@ -430,18 +431,20 @@ publishing {
         }
     }
 
-//    repositories {
-//        maven {
-//            credentials {
-//                username ""
-//                password ""
-//            }
-//
+    repositories {
+        maven {
+            credentials {
+                username ""
+                password ""
+            }
+            url "sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2"
+
+// Configure it to make publish to appropriate folder depending on version
 //            if(project.version.endsWith('-SNAPSHOT')) {
 //                url "http://.../snapshots/"
 //            } else {
 //                url "http:/.../internal/"
 //            }
-//        }
-//    }
+        }
+    }
 }
