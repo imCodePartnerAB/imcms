@@ -26,7 +26,9 @@ public class AuthenticationProvidersFactory {
 
         final String externalAuthenticator = properties.getProperty("ExternalAuthenticator", "");
 
-        Optional.ofNullable(getProvider(externalAuthenticator)).ifPresent(providers::add);
+        if (!externalAuthenticator.isEmpty()) {
+            Optional.ofNullable(getProvider(externalAuthenticator)).ifPresent(providers::add);
+        }
 
         return providers;
     }
