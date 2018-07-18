@@ -12,4 +12,5 @@ public interface AuthenticationProvidersService {
 
     List<AuthenticationProvider> getAuthenticationProviders();
 
+    AuthenticationProvider getAuthenticationProvider(String identifierId);
 }

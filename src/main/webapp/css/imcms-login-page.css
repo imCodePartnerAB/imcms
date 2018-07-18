@@ -13,6 +13,7 @@
 }
 
 .imcms-login__footer {
+    padding-top: 0;
 }
 
 .imcms-info-body__providers {
@@ -23,27 +24,22 @@
     margin-left: 15px;
 }
 
-.auth-provider-button {
-    border: solid 1px #a8caf3;
-    border-bottom: none;
-    border-radius: 1px;
-    padding: 5px;
-}
-
-.imcms-info-body__login-buttons {
-    padding-bottom: 1px;
-}
-
-.imcms-info-body__providers {
-    min-height: 450px;
-}
-
 .info-block {
     padding-bottom: 15px;
     padding-top: 15px;
 }
 
-.login-provider__window {
-    height: 450px;
-    width: 700px;
+.imcms-info-footer__message {
+    display: inline-block;
+    line-height: 30px;
+    vertical-align: top;
+}
+
+.auth-provider-button__icon {
+    opacity: .7;
+    width: 30px;
+}
+
+.auth-provider-button__icon:hover {
+    opacity: 1;
 }

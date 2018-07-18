@@ -2,54 +2,52 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 13.07.18
  */
-Imcms.require(['imcms', 'jquery', 'imcms-authentication', 'imcms-components-builder'], function (imcms, $, auth, components) {
+Imcms.require(
+    ['imcms', 'jquery', 'imcms-authentication', 'imcms-components-builder', 'imcms-bem-builder'],
+    function (imcms, $, auth, components, BEM) {
 
-    function getOnLoginProviderButtonClick(providerId) {
-        return function () {
-            var $thisLoginProvider = $('#' + providerId);
-            if ($thisLoginProvider.hasClass('login-provider--active')) return;
+        var nextUrl = $('input[name=next_url]').val();
 
-            $('.login-provider--active').removeClass('login-provider--active').slideUp();
-            $thisLoginProvider.addClass('login-provider--active').slideDown();
-        }
-    }
+        function getIdentifierLink(authProvider) {
+            var tail = (nextUrl ? '?next_url=' + nextUrl : '');
 
-    $('#default-login-button').click(getOnLoginProviderButtonClick('default-login-provider'));
-
-    var $loginPageButtonsContainer = $('#login-page-buttons');
-    var $loginProvidersContainer = $('#login-providers');
-
-    function buildLoginPageButton(authProvider) {
-        return components.buttons.neutralButton({
-            'class': 'imcms-info-body__button auth-provider-button',
-            text: authProvider.providerName,
-            click: getOnLoginProviderButtonClick(authProvider.providerId)
-        });
-    }
-
-    function buildLoginProviderArea(authProvider) {
-        return $('<div>', {
-            'class': 'login-provider',
-            id: authProvider.providerId,
-            style: 'display: none;',
-            html: $('<iframe>', {
-                'class': 'login-provider__window',
-                src: authProvider.authenticationURL
-            })
-        });
-    }
-
-    function buildAuthProviderGUI(authProvider) {
-        $loginPageButtonsContainer.append(buildLoginPageButton(authProvider));
-        $loginProvidersContainer.append(buildLoginProviderArea(authProvider));
-    }
-
-    auth.getAuthProviders().done(function (authProviders) {
-        if (!authProviders.length) {
-            return;
+            return imcms.contextPath + '/api/external-identifiers/login/' + authProvider.providerId + tail;
         }
 
-        authProviders.forEach(buildAuthProviderGUI);
-    });
+        function authProviderToLoginButton(authProvider) {
+            return new BEM({
+                block: 'auth-provider-button',
+                elements: {
+                    icon: $('<img>', {
+                        src: imcms.contextPath + authProvider.iconPath
+                    })
+                }
+            }).buildBlockStructure('<a>', {
+                href: getIdentifierLink(authProvider),
+                title: authProvider.providerName
+            });
+        }
 
-});
+        function onAuthProvidersLoaded(authProviders) {
+            if (!authProviders.length) {
+                return;
+            }
+
+            var $alternateLoginButtons = authProviders.map(authProviderToLoginButton);
+
+            var $alternateLoginFooter = new BEM({
+                block: 'imcms-info-footer',
+                elements: {
+                    message: components.texts.infoText('<div>', 'Alternative login:'), //todo: support localization!
+                    button: $alternateLoginButtons
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'imcms-login__footer'
+            });
+
+            $('.imcms-info-body__login').append($alternateLoginFooter);
+        }
+
+        auth.getAuthProviders().done(onAuthProvidersLoaded);
+    }
+);

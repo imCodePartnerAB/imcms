@@ -21,4 +21,8 @@ class ImcmsAuthenticationProvidersService implements AuthenticationProvidersServ
         return authenticationProvidersFactory.getProviders();
     }
 
+    @Override
+    public AuthenticationProvider getAuthenticationProvider(String identifierId) {
+        return authenticationProvidersFactory.getProvider(identifierId);
+    }
 }
