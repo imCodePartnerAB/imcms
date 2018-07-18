@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imcode.imcms.domain.dto.AzureActiveDirectoryUserDTO;
 import com.imcode.imcms.model.AuthenticationProvider;
 import com.imcode.imcms.util.AuthHelper;
 import com.microsoft.aad.adal4j.AuthenticationContext;
@@ -12,15 +14,19 @@ import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
+import imcode.server.user.UserDomainObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.naming.ServiceUnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URI;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
@@ -110,7 +116,32 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
     }
 
     @Override
-    public String processAuthentication(HttpServletRequest request) throws Exception {
+    public UserDomainObject getUser(HttpServletRequest request) {
+        final AuthenticationResult result = (AuthenticationResult) request.getSession()
+                .getAttribute(AuthHelper.PRINCIPAL_SESSION_NAME);
+
+        if (result == null) {
+            throw new RuntimeException("AuthenticationResult not found in session.");
+        }
+
+        return getUserFromGraph(result.getAccessToken()).toDomainObject();
+    }
+
+    @SneakyThrows
+    private AzureActiveDirectoryUserDTO getUserFromGraph(String accessToken) {
+        final URL url = new URL("https://graph.microsoft.com/v1.0/me");
+        final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+        conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+        conn.setRequestProperty("Accept", "application/json");
+
+        return new ObjectMapper().readValue(conn.getInputStream(), AzureActiveDirectoryUserDTO.class);
+    }
+
+    @Override
+    @SneakyThrows
+    public String processAuthentication(HttpServletRequest request) {
         final String currentUri = request.getRequestURL().toString();
         final String queryStr = request.getQueryString();
         final String fullUrl = currentUri + (queryStr != null ? "?" + queryStr : "");
@@ -139,7 +170,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         final AuthenticationErrorResponse oidcResponse = (AuthenticationErrorResponse) authResponse;
         final ErrorObject oidcError = oidcResponse.getErrorObject();
 
-        throw new Exception(String.format(
+        throw new RuntimeException(String.format(
                 "Request for auth code failed: %s - %s",
                 oidcError.getCode(),
                 oidcError.getDescription()
@@ -160,9 +191,9 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         return params;
     }
 
-    private void validateNonce(StateHolder stateData, String nonce) throws Exception {
+    private void validateNonce(StateHolder stateData, String nonce) {
         if (StringUtils.isEmpty(nonce) || !nonce.equals(stateData.getNonce())) {
-            throw new Exception(FAILED_TO_VALIDATE_MESSAGE + "could not validate nonce");
+            throw new RuntimeException(FAILED_TO_VALIDATE_MESSAGE + "could not validate nonce");
         }
     }
 
@@ -170,9 +201,9 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         return (String) JWTParser.parse(idToken).getJWTClaimsSet().getClaim(claimKey);
     }
 
-    private StateHolder validateState(String sessionId, String state) throws Exception {
+    private StateHolder validateState(String sessionId, String state) {
         return extractState(sessionId, state).orElseThrow(
-                () -> new Exception(FAILED_TO_VALIDATE_MESSAGE + "could not validate state")
+                () -> new RuntimeException(FAILED_TO_VALIDATE_MESSAGE + "could not validate state")
         );
     }
 
@@ -202,12 +233,12 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         }
     }
 
-    private void validateAuthRespMatchesCodeFlow(AuthenticationSuccessResponse oidcResponse) throws Exception {
+    private void validateAuthRespMatchesCodeFlow(AuthenticationSuccessResponse oidcResponse) {
         if ((oidcResponse.getIDToken() != null)
                 || (oidcResponse.getAccessToken() != null)
                 || (oidcResponse.getAuthorizationCode() == null))
         {
-            throw new Exception(FAILED_TO_VALIDATE_MESSAGE + "unexpected set of artifacts received");
+            throw new RuntimeException(FAILED_TO_VALIDATE_MESSAGE + "unexpected set of artifacts received");
         }
     }
 
