@@ -6,6 +6,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -101,4 +102,6 @@ public interface ImcmsServices {
     MenuService getMenuService();
 
     AccessService getAccessService();
+
+    AuthenticationProvidersService getAuthenticationProvidersService();
 }
