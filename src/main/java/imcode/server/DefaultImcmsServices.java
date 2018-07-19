@@ -8,6 +8,7 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.mapping.CategoryMapper;
@@ -30,6 +31,7 @@ import imcode.util.DateConstants;
 import imcode.util.Parser;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
+import lombok.Getter;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.UnhandledException;
@@ -70,28 +72,46 @@ public class DefaultImcmsServices implements ImcmsServices {
         mainLog.info("Main log started.");
     }
 
-    private final Database database;
-    private final LocalizedMessageProvider localizedMessageProvider;
     private final Properties properties;
+    @Getter
+    private final DocumentMapper documentMapper;
+    @Getter
+    private final Database database;
+    @Getter
+    private final LocalizedMessageProvider localizedMessageProvider;
+    @Getter
     private final AccessService accessService;
+    @Getter
     private final MenuService menuService;
-    private Config config;
-    private SystemData sysData;
-    private CachingFileLoader fileLoader;
+    @Getter
+    private final AuthenticationProvidersService authenticationProvidersService;
+    @Getter
+    private final Config config;
+    @Getter
+    private final CachingFileLoader fileLoader;
+    @Getter
+    private final KerberosLoginService kerberosLoginService;
+    @Getter
+    private final LanguageMapper languageMapper;
+    @Getter
+    private final ProcedureExecutor procedureExecutor;
+    @Getter
+    private final DocumentLanguages documentLanguages;
+    @Getter
+    private final DatabaseService databaseService;
+    @Getter
+    private final MailService mailService;
+    @Getter
+    private final TemplateService templateService;
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
-    private DocumentMapper documentMapper;
-    private TemplateMapper templateMapper;
-    private KeyStore keyStore;
-    private KerberosLoginService kerberosLoginService;
-    private LanguageMapper languageMapper;
-    private ProcedureExecutor procedureExecutor;
-    private DocumentLanguages documentLanguages;
     private ApplicationContext applicationContext;
-
-    private DatabaseService databaseService;
-    private MailService mailService;
-    private TemplateService templateService;
+    @Getter
+    private TemplateMapper templateMapper;
+    @Getter
+    private KeyStore keyStore;
+    @Getter
+    private SystemData systemData;
 
     @Autowired
     public DefaultImcmsServices(@Qualifier("databaseWithAutoCommit") Database database,
@@ -108,7 +128,8 @@ public class DefaultImcmsServices implements ImcmsServices {
                                 ProcedureExecutor procedureExecutor,
                                 LanguageMapper languageMapper,
                                 AccessService accessService,
-                                MenuService menuService) {
+                                MenuService menuService,
+                                AuthenticationProvidersService authenticationProvidersService) {
 
         this.database = database;
         this.localizedMessageProvider = localizedMessageProvider;
@@ -127,6 +148,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         this.kerberosLoginService = new KerberosLoginService(config);
         this.accessService = accessService;
         this.menuService = menuService;
+        this.authenticationProvidersService = authenticationProvidersService;
     }
 
     @PostConstruct
@@ -137,6 +159,14 @@ public class DefaultImcmsServices implements ImcmsServices {
         initSessionCounter();
         initAuthenticatorsAndUserAndRoleMappers(properties);
         initTemplateMapper();
+    }
+
+    public CachingFileLoader getFileCache() {
+        return fileLoader;
+    }
+
+    public RoleGetter getRoleGetter() {
+        return imcmsAuthenticatorAndUserAndRoleMapper;
     }
 
     public synchronized int getSessionCounter() {
@@ -166,10 +196,6 @@ public class DefaultImcmsServices implements ImcmsServices {
             logUserLoggedIn(user);
         }
         return result;
-    }
-
-    public LocalizedMessageProvider getLocalizedMessageProvider() {
-        return localizedMessageProvider;
     }
 
     public UserDomainObject verifyUser(String login, String password) {
@@ -223,18 +249,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         mainLog.info(event);
     }
 
-    public DocumentMapper getDocumentMapper() {
-        return documentMapper;
-    }
-
-    public void setDocumentMapper(DocumentMapper documentMapper) {
-        this.documentMapper = documentMapper;
-    }
-
-    public TemplateMapper getTemplateMapper() {
-        return templateMapper;
-    }
-
     public ImcmsAuthenticatorAndUserAndRoleMapper getImcmsAuthenticatorAndUserAndRoleMapper() {
         return imcmsAuthenticatorAndUserAndRoleMapper;
     }
@@ -264,16 +278,8 @@ public class DefaultImcmsServices implements ImcmsServices {
         return getTemplate(langPrefix + "/" + directory + "/" + adminTemplateName, variables);
     }
 
-    public Config getConfig() {
-        return config;
-    }
-
     private File getRealContextPath() {
         return Imcms.getPath();
-    }
-
-    public KeyStore getKeyStore() {
-        return keyStore;
     }
 
     /**
@@ -288,10 +294,6 @@ public class DefaultImcmsServices implements ImcmsServices {
      */
     public void setSessionCounterDate(Date date) {
         setSessionCounterDateInDb(date);
-    }
-
-    public SystemData getSystemData() {
-        return sysData;
     }
 
     public void setSystemData(SystemData sd) {
@@ -318,67 +320,15 @@ public class DefaultImcmsServices implements ImcmsServices {
         getProcedureExecutor().executeUpdateProcedure("SystemMessageSet", sqlParams);
 
         /* Update the local copy last, so we stay aware of any database errors */
-        this.sysData = sd;
-    }
-
-    public Database getDatabase() {
-        return database;
+        this.systemData = sd;
     }
 
     public CategoryMapper getCategoryMapper() {
         return documentMapper.getCategoryMapper();
     }
 
-    public LanguageMapper getLanguageMapper() {
-        return this.languageMapper;
-    }
-
-    public CachingFileLoader getFileCache() {
-        return fileLoader;
-    }
-
-    public RoleGetter getRoleGetter() {
-        return imcmsAuthenticatorAndUserAndRoleMapper;
-    }
-
-    public ProcedureExecutor getProcedureExecutor() {
-        return procedureExecutor;
-    }
-
-    public KerberosLoginService getKerberosLoginService() {
-        return kerberosLoginService;
-    }
-
-    public DocumentLanguages getDocumentLanguages() {
-        return documentLanguages;
-    }
-
     public <T> T getManagedBean(Class<T> requiredType) {
         return applicationContext.getBean(requiredType);
-    }
-
-    public DatabaseService getDatabaseService() {
-        return databaseService;
-    }
-
-    @Override
-    public MailService getMailService() {
-        return mailService;
-    }
-
-    @Override
-    public TemplateService getTemplateService() {
-        return templateService;
-    }
-
-    @Override
-    public MenuService getMenuService() {
-        return menuService;
-    }
-
-    @Override
-    public AccessService getAccessService() {
-        return accessService;
     }
 
     @SuppressWarnings("unchecked")
@@ -438,7 +388,7 @@ public class DefaultImcmsServices implements ImcmsServices {
     }
 
     private void initSysData() {
-        sysData = getSystemDataFromDb();
+        systemData = getSystemDataFromDb();
     }
 
     private void initSessionCounter() {
