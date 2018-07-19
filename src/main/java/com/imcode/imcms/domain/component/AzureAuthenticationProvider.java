@@ -117,8 +117,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
 
     @Override
     public UserDomainObject getUser(HttpServletRequest request) {
-        final AuthenticationResult result = (AuthenticationResult) request.getSession()
-                .getAttribute(AuthHelper.PRINCIPAL_SESSION_NAME);
+        final AuthenticationResult result = AuthHelper.getAuthenticationResult(request);
 
         if (result == null) {
             throw new RuntimeException("AuthenticationResult not found in session.");
@@ -162,7 +161,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
             final AuthenticationResult authData = getAccessToken(oidcResponse.getAuthorizationCode(), currentUri);
             // validate nonce to prevent reply attacks (code maybe substituted to one with broader access)
             validateNonce(stateData, getClaimValueFromIdToken(authData.getIdToken(), "nonce"));
-            setSessionPrincipal(request, authData);
+            AuthHelper.setAuthenticationResult(request, authData);
 
             return stateData.nextUrl;
         }
@@ -175,10 +174,6 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
                 oidcError.getCode(),
                 oidcError.getDescription()
         ));
-    }
-
-    private void setSessionPrincipal(HttpServletRequest httpRequest, AuthenticationResult result) {
-        httpRequest.getSession().setAttribute(AuthHelper.PRINCIPAL_SESSION_NAME, result);
     }
 
     private Map<String, String> extractRequestParams(Map<String, String[]> parameterMap) {
