@@ -214,8 +214,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
     }
 
     private void eliminateExpiredStates() {
-        Iterator<Map.Entry<String, StateHolder>> it = STATES.entrySet().iterator();
-
+        final Iterator<Map.Entry<String, StateHolder>> it = STATES.entrySet().iterator();
         final Date currTime = new Date();
 
         while (it.hasNext()) {
