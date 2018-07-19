@@ -1,9 +1,14 @@
 package com.imcode.imcms.api;
 
 import imcode.server.Imcms;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
+import java.util.Set;
+
+@SuppressWarnings("unused")
 public class User {
     private UserDomainObject internalUser;
 
@@ -121,36 +126,68 @@ public class User {
         internalUser.setEmailAddress(emailAddress);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
     public String getOtherPhone() {
-        return internalUser.getOtherPhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.OTHER);
     }
 
-    public void setOtherPhone(String otherphone) {
-        internalUser.setOtherPhone(otherphone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    public void setOtherPhone(String otherPhone) {
+        internalUser.replacePhoneNumbersOfType(otherPhone, PhoneNumberType.OTHER);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
     public String getWorkPhone() {
-        return internalUser.getWorkPhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.WORK);
     }
 
-    public void setWorkPhone(String workphone) {
-        internalUser.setWorkPhone(workphone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    public void setWorkPhone(String workPhone) {
+        internalUser.replacePhoneNumbersOfType(workPhone, PhoneNumberType.WORK);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
     public String getMobilePhone() {
-        return internalUser.getMobilePhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.MOBILE);
     }
 
-    public void setMobilePhone(String mobilephone) {
-        internalUser.setMobilePhone(mobilephone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    public void setMobilePhone(String mobilePhone) {
+        internalUser.replacePhoneNumbersOfType(mobilePhone, PhoneNumberType.MOBILE);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
     public String getHomePhone() {
-        return internalUser.getHomePhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.HOME);
     }
 
-    public void setHomePhone(String homephone) {
-        internalUser.setHomePhone(homephone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    public void setHomePhone(String homePhone) {
+        internalUser.replacePhoneNumbersOfType(homePhone, PhoneNumberType.HOME);
+    }
+
+    public void addPhoneNumber(PhoneNumber phoneNumber) {
+        internalUser.addPhoneNumber(phoneNumber);
+    }
+
+    public Set<PhoneNumber> getPhoneNumbersOfType(PhoneNumberType phoneNumberType) {
+        return internalUser.getPhoneNumbersOfType(phoneNumberType);
     }
 
     public boolean isActive() {
@@ -244,11 +281,11 @@ public class User {
     }
 
     public String getFaxPhone() {
-        return internalUser.getFaxPhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.FAX);
     }
 
-    public void setFaxPhone(String faxphone) {
-        internalUser.setFaxPhone(faxphone);
+    public void setFaxPhone(String faxPhone) {
+        internalUser.replacePhoneNumbersOfType(faxPhone, PhoneNumberType.FAX);
     }
 
     public void setPassword(String password) {

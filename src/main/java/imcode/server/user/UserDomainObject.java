@@ -135,11 +135,11 @@ public class UserDomainObject implements Cloneable, Serializable {
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setWorkPhone(String workphone) {
-        replacePhoneNumbersOfType(workphone, PhoneNumberType.WORK);
+    public void setWorkPhone(String workPhone) {
+        replacePhoneNumbersOfType(workPhone, PhoneNumberType.WORK);
     }
 
-    private String getFirstPhoneNumberOfTypeAsString(PhoneNumberType phoneNumberType) {
+    public String getFirstPhoneNumberOfTypeAsString(PhoneNumberType phoneNumberType) {
         PhoneNumber firstPhoneNumberOfType = getFirstPhoneNumberOfType(phoneNumberType);
         String number = null;
         if (null != firstPhoneNumberOfType) {
