@@ -5,6 +5,8 @@ import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import lombok.Data;
 
+import java.util.Set;
+
 import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
 
 @Data
@@ -34,6 +36,8 @@ public class AzureActiveDirectoryUserDTO {
     private String preferredLanguage;
     private String userPrincipalName;
     private String[] businessPhones;
+
+    private Set<AzureActiveDirectoryGroupDTO> userGroups;
 
     public UserDomainObject toDomainObject() {
         final UserDomainObject user = new UserDomainObject();
