@@ -2,9 +2,9 @@ package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.common.params.CommonParams;
@@ -151,7 +151,7 @@ public class DocumentSearchQueryConverterTest {
 
     @Test
     public void convert_When_UserIsSuperAdmin_Expect_FiltersForSearchEnabledAndRolesIdNotAdded() {
-        final RoleId superAdminRoleId = new RoleId(0);
+        final Integer superAdminRoleId = Roles.SUPER_ADMIN.getId();
 
         Imcms.getUser().addRoleId(superAdminRoleId);
 

@@ -6,6 +6,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -14,7 +15,6 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Before;
@@ -66,7 +66,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
     }
 

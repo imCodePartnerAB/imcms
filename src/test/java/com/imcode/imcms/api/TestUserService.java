@@ -3,12 +3,12 @@ package com.imcode.imcms.api;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.mock.MockDatabase;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.servlet.LoginPasswordManager;
 import imcode.server.LanguageMapper;
 import imcode.server.MockImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.MockRoleGetter;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import junit.framework.TestCase;
 import org.apache.commons.dbutils.ResultSetHandler;
@@ -42,23 +42,6 @@ public class TestUserService extends TestCase {
         userService = new UserService(contentManagementSystem);
     }
 
-//	public void testGetUser() throws NoPermissionException {
-//		assertNull(userService.getUser("noone"));
-//	}
-
-//	public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
-//
-//		internalUser.addRoleId(RoleId.USERADMIN);
-//		database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), HIGHEST_USER_ID + 1);
-//
-//		User user = userService.createNewUser("test", "test");
-//		user.addRole(new RoleJPA(mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN)));
-//		userService.saveUser(user);
-//
-//		database.assertExpectedSqlCalls();
-//		database.assertCalled(new MockDatabase.MatchesRegexSqlCallPredicate("role"));
-//	}
-
     public void testUserCanEditSelf() throws SaveException, NoPermissionException {
         String loginName = "loginName";
         String firstName = "firstName";
@@ -84,13 +67,13 @@ public class TestUserService extends TestCase {
         database.assertCalled("New first name not set.", new MockDatabase.UpdateTableSqlCallPredicate("users", newFirstName));
         database.assertCalled("User can change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate("role"));
 
-        internalUser.addRoleId(RoleId.SUPERADMIN);
+        internalUser.addRoleId(Roles.SUPER_ADMIN.getId());
         userService.saveUser(user);
         database.assertCalled("Superadmin can change own roles.", new MockDatabase.MatchesRegexSqlCallPredicate("role"));
     }
 
     public void testCreateNewRole() throws SaveException, NoPermissionException {
-        internalUser.addRoleId(RoleId.SUPERADMIN);
+        internalUser.addRoleId(Roles.SUPER_ADMIN.getId());
         database.addExpectedSqlCall(new MockDatabase.EqualsSqlCallPredicate(ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES), 3);
         String roleName = "test role";
         Role newRole = userService.createNewRole(roleName);

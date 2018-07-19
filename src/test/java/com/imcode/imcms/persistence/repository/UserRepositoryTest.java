@@ -1,11 +1,10 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.api.Role;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.PasswordReset;
 import com.imcode.imcms.persistence.entity.User;
-import imcode.server.user.RoleId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,10 +20,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -43,9 +39,9 @@ public class UserRepositoryTest {
     @Before
     public void createUsers() {
         users = new ArrayList<>(12);
-        final List<User> superAdmins = userDataInitializer.createData(5, RoleId.SUPERADMIN_ID);
-        final List<User> admins = userDataInitializer.createData(4, RoleId.USERADMIN_ID);
-        final List<User> defaultUsers = userDataInitializer.createData(3, RoleId.USERS_ID);
+        final List<User> superAdmins = userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId());
+        final List<User> admins = userDataInitializer.createData(4, Roles.USER_ADMIN.getId());
+        final List<User> defaultUsers = userDataInitializer.createData(3, Roles.USER.getId());
 
         users.addAll(superAdmins);
         users.addAll(admins);
@@ -88,7 +84,7 @@ public class UserRepositoryTest {
      */
     @Test
     public void findUsersWithRoleIdsTest() {
-        final List<User> admins = repository.findUsersWithRoleIds(Role.SUPERADMIN_ID, RoleId.USERADMIN_ID);
+        final List<User> admins = repository.findUsersWithRoleIds(Roles.SUPER_ADMIN.getId(), Roles.USER_ADMIN.getId());
         assertEquals(9 + 1, admins.size());
     }
 

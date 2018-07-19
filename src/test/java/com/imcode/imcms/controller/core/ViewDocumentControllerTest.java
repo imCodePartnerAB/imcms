@@ -8,11 +8,11 @@ import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,8 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 @WebAppConfiguration
@@ -58,7 +57,7 @@ public class ViewDocumentControllerTest {
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
 
         this.languages = languageDataInitializer.createData();

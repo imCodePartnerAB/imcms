@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -25,8 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @Transactional
 public class ImageFileControllerTest extends AbstractControllerTest {
@@ -45,7 +44,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     @Before
     public void setAdminAsCurrentUser() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
     }
 
@@ -86,7 +85,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     @Test
     public void uploadImageFile_When_UserIsNotAdmin_Expect_CorrectException() throws Exception {
         final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(RoleId.USERS);
+        user.addRoleId(Roles.USER.getId());
         Imcms.setUser(user); // means current user is not admin now
 
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
@@ -204,7 +203,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         assertTrue(imageFile.exists());
 
         final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(RoleId.USERS);
+        user.addRoleId(Roles.USER.getId());
         Imcms.setUser(user); // means current user is not admin now
 
         final ImageFileDTO imageFileDTO = new ImageFileDTO();

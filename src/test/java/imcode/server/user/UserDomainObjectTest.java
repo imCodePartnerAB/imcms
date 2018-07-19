@@ -1,15 +1,16 @@
 package imcode.server.user;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 public class UserDomainObjectTest {
@@ -24,9 +25,9 @@ public class UserDomainObjectTest {
 
         final HashMap<Integer, Meta.Permission> roleRights = new HashMap<>();
 
-        roleRights.put(RoleId.USERS_ID, Meta.Permission.NONE);
-        roleRights.put(RoleId.USERADMIN_ID, Meta.Permission.EDIT);
-        roleRights.put(RoleId.SUPERADMIN_ID, Meta.Permission.EDIT);
+        roleRights.put(Roles.USER.getId(), Meta.Permission.NONE);
+        roleRights.put(Roles.USER_ADMIN.getId(), Meta.Permission.EDIT);
+        roleRights.put(Roles.SUPER_ADMIN.getId(), Meta.Permission.EDIT);
 
         meta.setRoleIdToPermission(roleRights);
 
@@ -35,14 +36,19 @@ public class UserDomainObjectTest {
 
     @Test
     public void testUserAlwaysHasUsersRole() {
-        assertTrue(user.hasRoleId(RoleId.USERS));
-        assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
-        user.removeRoleId(RoleId.USERS);
-        assertTrue(user.hasRoleId(RoleId.USERS));
-        assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
-        user.setRoleIds(new RoleId[0]);
-        assertTrue(user.hasRoleId(RoleId.USERS));
-        assertTrue(ArrayUtils.contains(user.getRoleIds(), RoleId.USERS));
+        assertTrue(user.hasRoleId(Roles.USER.getId()));
+        assertTrue(user.getRoleIds().contains(Roles.USER.getId()));
+
+        user.removeRoleId(Roles.USER.getId());
+        assertTrue(user.hasRoleId(Roles.USER.getId()));
+        assertTrue(user.getRoleIds().contains(Roles.USER.getId()));
+
+        final Set<Integer> roleIds = new HashSet<>(1);
+        roleIds.add(0);
+
+        user.setRoleIds(roleIds);
+        assertTrue(user.hasRoleId(Roles.USER.getId()));
+        assertTrue(user.getRoleIds().contains(Roles.USER.getId()));
     }
 
     @Test
@@ -56,8 +62,8 @@ public class UserDomainObjectTest {
     public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserHasRights_Expect_True() {
         meta.setLinkedForUnauthorizedUsers(false);
 
-        user.addRoleId(RoleId.USERS);
-        user.addRoleId(RoleId.USERADMIN);
+        user.addRoleId(Roles.USER.getId());
+        user.addRoleId(Roles.USER_ADMIN.getId());
 
         assertTrue(user.hasUserAccessToDoc(meta));
     }

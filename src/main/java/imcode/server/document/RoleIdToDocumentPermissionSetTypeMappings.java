@@ -1,14 +1,11 @@
 package imcode.server.document;
 
 import com.imcode.imcms.persistence.entity.Meta.Permission;
-import imcode.server.user.RoleId;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Represents mapping between roles and permissions sets for a document.
@@ -18,13 +15,15 @@ import java.util.Map;
  */
 public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, Cloneable {
 
-    volatile HashMap<RoleId, Permission> map = new HashMap<>();
+    private static final long serialVersionUID = 7473179681005654198L;
+
+    volatile HashMap<Integer, Permission> roleIdToPermission = new HashMap<>();
 
     @Override
     public RoleIdToDocumentPermissionSetTypeMappings clone() {
         try {
             RoleIdToDocumentPermissionSetTypeMappings clone = (RoleIdToDocumentPermissionSetTypeMappings) super.clone();
-            clone.map = new HashMap<>(map);
+            clone.roleIdToPermission = new HashMap<>(roleIdToPermission);
 
             return clone;
         } catch (CloneNotSupportedException e) {
@@ -38,11 +37,11 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
      * @param roleId                    a mapping key.
      * @param documentPermissionSetType mapping value. If null then entry is removed from this mapping.
      */
-    public void setPermissionSetTypeForRole(RoleId roleId, Permission documentPermissionSetType) {
+    public void setPermissionSetTypeForRole(Integer roleId, Permission documentPermissionSetType) {
         if (null == documentPermissionSetType) {
-            map.remove(roleId);
+            roleIdToPermission.remove(roleId);
         } else {
-            map.put(roleId, documentPermissionSetType);
+            roleIdToPermission.put(roleId, documentPermissionSetType);
         }
     }
 
@@ -51,8 +50,8 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
      * @param roleId mapping key.
      * @return permission set type for given role.
      */
-    public Permission getPermissionSetTypeForRole(RoleId roleId) {
-        Permission documentPermissionSetType = map.get(roleId);
+    public Permission getPermissionSetTypeForRole(Integer roleId) {
+        Permission documentPermissionSetType = roleIdToPermission.get(roleId);
         if (null == documentPermissionSetType) {
             documentPermissionSetType = Permission.NONE;
         }
@@ -63,24 +62,22 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
      * @return mapping entries as an array.
      */
     public Mapping[] getMappings() {
-        Collection pairs = CollectionUtils.collect(map.entrySet(), new Transformer() {
-            public Object transform(Object object) {
-                Map.Entry entry = (Map.Entry) object;
-                return new Mapping((RoleId) entry.getKey(), (Permission) entry.getValue());
-            }
-        });
-        return (Mapping[]) pairs.toArray(new Mapping[pairs.size()]);
+        Collection<Mapping> pairs = CollectionUtils.collect(
+                roleIdToPermission.entrySet(),
+                entry -> new Mapping(entry.getKey(), entry.getValue())
+        );
+        return pairs.toArray(new Mapping[0]);
     }
 
     /**
-     * Map entry (2-tuple): RoleId -> PermissionSetType
+     * Map entry (2-tuple): roleId -> PermissionSetType
      */
     public static class Mapping {
 
-        private final RoleId roleId;
+        private final Integer roleId;
         private final Permission documentPermissionSetType;
 
-        public Mapping(RoleId roleId, Permission documentPermissionSetType) {
+        public Mapping(Integer roleId, Permission documentPermissionSetType) {
             this.roleId = roleId;
             this.documentPermissionSetType = documentPermissionSetType;
         }
@@ -89,7 +86,7 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
             return documentPermissionSetType;
         }
 
-        public RoleId getRoleId() {
+        public Integer getRoleId() {
             return roleId;
         }
 

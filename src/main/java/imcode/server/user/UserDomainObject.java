@@ -2,6 +2,7 @@ package imcode.server.user;
 
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import imcode.server.Imcms;
@@ -19,7 +20,6 @@ import org.apache.commons.collections4.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -36,7 +36,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     private static final long serialVersionUID = -9176465092502055012L;
     private final DocGetterCallback docGetterCallback = new DocGetterCallback(this);
     protected volatile int id;
-    protected volatile RoleIds userAdminRoleIds = new RoleIds();
+    protected volatile Set<Integer> userAdminRoleIds = new HashSet<>();
     private volatile String loginName = "";
 
     @Getter
@@ -70,7 +70,8 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     private volatile HashSet<PhoneNumber> phoneNumbers = new HashSet<>();
 
-    private volatile RoleIds roleIds = UserDomainObject.createRolesSetWithUserRole();
+    private Set<Integer> roleIds = createRolesSetWithUserRole();
+
     /**
      * Http session id.
      */
@@ -94,9 +95,9 @@ public class UserDomainObject implements Cloneable, Serializable {
         this.id = id;
     }
 
-    private static RoleIds createRolesSetWithUserRole() {
-        RoleIds newRoleIds = new RoleIds();
-        newRoleIds.add(RoleId.USERS);
+    private static Set<Integer> createRolesSetWithUserRole() {
+        Set<Integer> newRoleIds = new HashSet<>();
+        newRoleIds.add(Roles.USER.getId());
 
         return newRoleIds;
     }
@@ -105,11 +106,12 @@ public class UserDomainObject implements Cloneable, Serializable {
     public UserDomainObject clone() {
         try {
             UserDomainObject clone = (UserDomainObject) super.clone();
-            clone.roleIds = (RoleIds) roleIds.clone();
-            clone.userAdminRoleIds = (RoleIds) userAdminRoleIds.clone();
-            clone.phoneNumbers = (HashSet) phoneNumbers.clone();
+            clone.roleIds = new HashSet<>(roleIds);
+            clone.userAdminRoleIds = new HashSet<>(userAdminRoleIds);
+            clone.phoneNumbers = (HashSet<PhoneNumber>) phoneNumbers.clone();
 
             return clone;
+
         } catch (CloneNotSupportedException e) {
             throw new UnhandledException(e);
         }
@@ -238,27 +240,27 @@ public class UserDomainObject implements Cloneable, Serializable {
         return LanguageMapper.convert639_2to639_1(languageIso639_2);
     }
 
-    public void addRoleId(RoleId role) {
-        roleIds.add(role);
+    public void addRoleId(Integer roleId) {
+        roleIds.add(roleId);
     }
 
-    public void removeRoleId(RoleId roleId) {
-        if (!RoleId.USERS.equals(roleId)) {
+    public void removeRoleId(Integer roleId) {
+        if (!Roles.USER.getId().equals(roleId)) {
             roleIds.remove(roleId);
         }
     }
 
-    public boolean hasRoleId(RoleId roleId) {
+    public boolean hasRoleId(Integer roleId) {
         return roleIds.contains(roleId);
     }
 
-    public RoleId[] getRoleIds() {
-        return roleIds.toArray();
+    public Set<Integer> getRoleIds() {
+        return new HashSet<>(roleIds);
     }
 
-    public void setRoleIds(RoleId[] roleIds) {
-        this.roleIds = new RoleIds(roleIds);
-        this.roleIds.add(RoleId.USERS);
+    public void setRoleIds(Set<Integer> roleIds) {
+        this.roleIds = new HashSet<>(roleIds);
+        this.roleIds.add(Roles.USER.getId());
     }
 
     public boolean equals(Object o) {
@@ -284,7 +286,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isSuperAdmin() {
-        return hasRoleId(RoleId.SUPERADMIN);
+        return hasRoleId(Roles.SUPER_ADMIN.getId());
     }
 
     public boolean isUserAdminAndCanEditAtLeastOneRole() {
@@ -345,7 +347,7 @@ public class UserDomainObject implements Cloneable, Serializable {
         Permission mostPrivilegedPermissionSetIdFoundYet =
                 Permission.NONE;
 
-        for (RoleId roleId : getRoleIds()) {
+        for (Integer roleId : getRoleIds()) {
             Permission documentPermissionSetType =
                     roleIdsMappedToDocumentPermissionSetTypes.getPermissionSetTypeForRole(roleId);
 
@@ -374,8 +376,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean hasRoleWithPermission(RolePermissionDomainObject rolePermission) {
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        RoleId[] roleReferencesArray = roleIds.toArray();
-        for (RoleId roleId : roleReferencesArray) {
+        for (Integer roleId : roleIds) {
             if (imcmsAuthenticatorAndUserAndRoleMapper.getRole(roleId).hasPermission(rolePermission)) {
                 return true;
             }
@@ -394,15 +395,15 @@ public class UserDomainObject implements Cloneable, Serializable {
     /**
      * @return roles this user can administrate if he is Useradmin.
      */
-    public RoleId[] getUserAdminRoleIds() {
-        return userAdminRoleIds.toArray();
+    public Set<Integer> getUserAdminRoleIds() {
+        return new HashSet<>(userAdminRoleIds);
     }
 
     /**
      * @param userAdminRoleReferences roles this user can administrate if he is Useradmin.
      */
-    public void setUserAdminRolesIds(RoleId[] userAdminRoleReferences) {
-        userAdminRoleIds = new RoleIds(userAdminRoleReferences);
+    public void setUserAdminRolesIds(Set<Integer> userAdminRoleReferences) {
+        userAdminRoleIds = userAdminRoleReferences;
     }
 
     public boolean isUserAdminAndNotSuperAdmin() {
@@ -413,8 +414,8 @@ public class UserDomainObject implements Cloneable, Serializable {
         return isSuperAdmin() || canEditAsUserAdmin(editedUser) && !equals(editedUser);
     }
 
-    public void removeUserAdminRoleId(RoleId role) {
-        userAdminRoleIds.remove(role);
+    public void removeUserAdminRoleId(Integer roleId) {
+        userAdminRoleIds.remove(roleId);
     }
 
     public boolean canEdit(UserDomainObject editedUser) {
@@ -426,11 +427,11 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public boolean canEditRolesAccordingToUserAdminRoles(UserDomainObject editedUser) {
-        return CollectionUtils.containsAny(editedUser.roleIds.asSet(), userAdminRoleIds.asSet());
+        return CollectionUtils.containsAny(editedUser.roleIds, userAdminRoleIds);
     }
 
     public boolean isUserAdmin() {
-        return hasRoleId(RoleId.USERADMIN);
+        return hasRoleId(Roles.USER_ADMIN.getId());
     }
 
     public boolean isNew() {
@@ -450,8 +451,7 @@ public class UserDomainObject implements Cloneable, Serializable {
 
         final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
 
-        return Arrays.stream(getRoleIds())
-                .map(RoleId::getRoleId)
+        return getRoleIds().stream()
                 .map(docPermissions::get)
                 .filter(Objects::nonNull)
                 .anyMatch(documentPermissionSetTypeDomainObject

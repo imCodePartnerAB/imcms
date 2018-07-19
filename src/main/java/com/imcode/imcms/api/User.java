@@ -1,12 +1,14 @@
 package com.imcode.imcms.api;
 
 import imcode.server.Imcms;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
+import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("unused")
 public class User {
@@ -257,22 +259,20 @@ public class User {
      * @since 2.0
      */
     public Role[] getRoles() {
-        RoleId[] roleDOs = internalUser.getRoleIds();
-        Role[] roles = new Role[roleDOs.length];
-        for (int i = 0; i < roleDOs.length; i++) {
-            roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
-        }
-        return roles;
+        final ImcmsAuthenticatorAndUserAndRoleMapper mapper = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper();
+
+        return internalUser.getRoleIds()
+                .stream()
+                .map(integer -> new Role(mapper.getRole(integer)))
+                .toArray(Role[]::new);
     }
 
     /**
      * @since 2.0
      */
     public void setRoles(Role[] roles) {
-        RoleId[] roleIds = new RoleId[roles.length];
-        for (int i = 0; i < roles.length; i++) {
-            roleIds[i] = roles[i].getInternal().getId();
-        }
+        final Set<Integer> roleIds = Arrays.stream(roles).map(Role::getId).collect(Collectors.toSet());
         internalUser.setRoleIds(roleIds);
     }
 

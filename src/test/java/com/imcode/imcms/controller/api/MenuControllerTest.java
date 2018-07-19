@@ -6,8 +6,8 @@ import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Before;
@@ -98,7 +98,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
 
         performPostWithContentExpectOkAndJsonContentEquals(menuDTO, menuDTO);
@@ -113,7 +113,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
 
         performPostWithContentExpectOkAndJsonContentEquals(menuDTO, menuDTO);
