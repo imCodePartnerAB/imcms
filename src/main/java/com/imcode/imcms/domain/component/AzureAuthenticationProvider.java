@@ -83,6 +83,46 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
     }
 
     @Override
+    public void updateAuthData(HttpServletRequest request) {
+        if (isAuthDataExpired(request)) {
+            updateAuthDataUsingRefreshToken(request);
+        }
+    }
+
+    private boolean isAuthDataExpired(HttpServletRequest request) {
+        return AuthHelper.getAuthenticationResult(request)
+                .getExpiresOnDate()
+                .before(new Date());
+    }
+
+    private void updateAuthDataUsingRefreshToken(HttpServletRequest request) {
+        final AuthenticationResult authData = getAccessTokenFromRefreshToken(
+                AuthHelper.getAuthenticationResult(request).getRefreshToken()
+        );
+        AuthHelper.setAuthenticationResult(request, authData);
+    }
+
+    @SneakyThrows
+    private AuthenticationResult getAccessTokenFromRefreshToken(String refreshToken) {
+
+        final ExecutorService service = Executors.newSingleThreadExecutor();
+
+        try {
+            final AuthenticationContext context = new AuthenticationContext(
+                    authority + tenant + "/", true, service
+            );
+            final Future<AuthenticationResult> future = context.acquireTokenByRefreshToken(
+                    refreshToken, new ClientCredential(clientId, secretKey), null, null
+            );
+
+            return Optional.ofNullable(future.get())
+                    .orElseThrow(() -> new ServiceUnavailableException("authentication result was null"));
+        } finally {
+            service.shutdown();
+        }
+    }
+
+    @Override
     public void storeAuthenticationData(String sessionId, String nextUrl) {
         // use state parameter to validate response from Authorization server
         final String state = UUID.randomUUID().toString();
