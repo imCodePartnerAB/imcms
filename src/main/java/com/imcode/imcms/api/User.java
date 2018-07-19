@@ -99,6 +99,7 @@ public class User {
     /**
      * @deprecated Use {@link #getProvince()}. Will be removed in 4.0.
      */
+    @Deprecated
     public String getCountyCouncil() {
         return internalUser.getProvince();
     }
@@ -106,6 +107,7 @@ public class User {
     /**
      * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
      */
+    @Deprecated
     public void setCountyCouncil(String countyCouncil) {
         internalUser.setProvince(countyCouncil);
     }
@@ -129,6 +131,7 @@ public class User {
     /**
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getOtherPhone() {
         return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.OTHER);
     }
@@ -136,6 +139,7 @@ public class User {
     /**
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setOtherPhone(String otherPhone) {
         internalUser.replacePhoneNumbersOfType(otherPhone, PhoneNumberType.OTHER);
     }
@@ -143,6 +147,7 @@ public class User {
     /**
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getWorkPhone() {
         return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.WORK);
     }
@@ -150,6 +155,7 @@ public class User {
     /**
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setWorkPhone(String workPhone) {
         internalUser.replacePhoneNumbersOfType(workPhone, PhoneNumberType.WORK);
     }
@@ -157,6 +163,7 @@ public class User {
     /**
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getMobilePhone() {
         return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.MOBILE);
     }
@@ -164,6 +171,7 @@ public class User {
     /**
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setMobilePhone(String mobilePhone) {
         internalUser.replacePhoneNumbersOfType(mobilePhone, PhoneNumberType.MOBILE);
     }
@@ -171,6 +179,7 @@ public class User {
     /**
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getHomePhone() {
         return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.HOME);
     }
@@ -178,6 +187,7 @@ public class User {
     /**
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setHomePhone(String homePhone) {
         internalUser.replacePhoneNumbersOfType(homePhone, PhoneNumberType.HOME);
     }

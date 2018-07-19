@@ -115,15 +115,12 @@ public class UserDomainObject implements Cloneable, Serializable {
         }
     }
 
-    /**
-     * get full name
-     */
     public String getFullName() {
         return getFirstName() + " " + getLastName();
     }
 
     /**
-     * Get the users work phone
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
     @Deprecated
     public String getWorkPhone() {
@@ -131,10 +128,9 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Set the users work phone
-     *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setWorkPhone(String workPhone) {
         replacePhoneNumbersOfType(workPhone, PhoneNumberType.WORK);
     }
@@ -167,87 +163,73 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Get the users mobile phone
-     *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getMobilePhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.MOBILE);
     }
 
     /**
-     * Set the users mobile phone
-     *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setMobilePhone(String mobilePhone) {
         replacePhoneNumbersOfType(mobilePhone, PhoneNumberType.MOBILE);
     }
 
     /**
-     * Get the users home phone
-     *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getHomePhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.HOME);
     }
 
     /**
-     * Set the users home phone
-     *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setHomePhone(String homePhone) {
         replacePhoneNumbersOfType(homePhone, PhoneNumberType.HOME);
     }
 
     /**
-     * Get the users fax phone
-     *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getFaxPhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.FAX);
     }
 
     /**
-     * Set the users fax phone
-     *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setFaxPhone(String faxPhone) {
         replacePhoneNumbersOfType(faxPhone, PhoneNumberType.FAX);
     }
 
     /**
-     * Get the users other phone
-     *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
+    @Deprecated
     public String getOtherPhone() {
         return getFirstPhoneNumberOfTypeAsString(PhoneNumberType.OTHER);
     }
 
     /**
-     * Set the users other phone
-     *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
+    @Deprecated
     public void setOtherPhone(String otherPhone) {
         replacePhoneNumbersOfType(otherPhone, PhoneNumberType.OTHER);
     }
 
-    /**
-     * get create_date
-     */
     public Date getCreateDate() {
         return (Date) (null == createDate ? null : createDate.clone());
     }
 
-    /**
-     * set create_date
-     */
     public void setCreateDate(Date createDate) {
         this.createDate = (Date) createDate.clone();
     }
