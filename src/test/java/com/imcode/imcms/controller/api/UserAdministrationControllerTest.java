@@ -11,15 +11,20 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.web.servlet.RequestBuilder;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@ExtendWith(MockitoExtension.class)
 class UserAdministrationControllerTest extends MockingControllerTest {
+
+    private static final String CONTROLLER_PATH = "/user";
 
     @Mock
     private UserCreationService userCreationService;
@@ -32,11 +37,6 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
     @InjectMocks
     private UserAdministrationController controller;
-
-    @Override
-    protected String controllerPath() {
-        return "/user";
-    }
 
     @Override
     protected Object controllerToMock() {
@@ -55,14 +55,14 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
         doThrow(exception).when(userCreationService).createUser(any());
 
-        final RequestBuilder requestBuilder = post(controllerPath() + "/create");
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create");
 
         perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
     @Test
     void createUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() throws Exception {
-        final RequestBuilder requestBuilder = post(controllerPath() + "/create");
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 
@@ -80,7 +80,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
         given(userService.getUserData(userId)).willReturn(mockUser);
 
-        final RequestBuilder requestBuilder = get(controllerPath() + "/edition/" + userId);
+        final RequestBuilder requestBuilder = get(CONTROLLER_PATH + "/edition/" + userId);
         perform(requestBuilder).andExpect(model().attribute("editedUser", Matchers.is(mockUser)));
     }
 
@@ -96,14 +96,14 @@ class UserAdministrationControllerTest extends MockingControllerTest {
 
         doThrow(exception).when(userEditorService).editUser(any());
 
-        final RequestBuilder requestBuilder = post(controllerPath() + "/edit");
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit");
 
         perform(requestBuilder).andExpect(model().attribute("errorMessages", Matchers.hasSize(Matchers.greaterThan(0))));
     }
 
     @Test
     void editUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() throws Exception {
-        final RequestBuilder requestBuilder = post(controllerPath() + "/edit");
+        final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
 

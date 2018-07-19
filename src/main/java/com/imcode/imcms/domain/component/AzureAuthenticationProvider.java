@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
+import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupsHolderDTO;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryUserDTO;
 import com.imcode.imcms.model.AuthenticationProvider;
 import com.imcode.imcms.util.AuthHelper;
@@ -31,7 +33,9 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -42,8 +46,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD;
-
 /**
  * Authentication provider for Azure Active Directory
  */
@@ -51,6 +53,8 @@ import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD
 @EqualsAndHashCode(callSuper = false)
 public class AzureAuthenticationProvider extends AuthenticationProvider implements AuthenticationDataStorage {
 
+    public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
+    public static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
     /**
      * Session id to state data
      */
@@ -80,6 +84,46 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         Objects.requireNonNull(tenant, "Azure Active Directory tenant is null!");
         Objects.requireNonNull(clientId, "Azure Active Directory client id is null!");
         Objects.requireNonNull(secretKey, "Azure Active Directory secret directory is null!");
+    }
+
+    @Override
+    public void updateAuthData(HttpServletRequest request) {
+        if (isAuthDataExpired(request)) {
+            updateAuthDataUsingRefreshToken(request);
+        }
+    }
+
+    private boolean isAuthDataExpired(HttpServletRequest request) {
+        return AuthHelper.getAuthenticationResult(request)
+                .getExpiresOnDate()
+                .before(new Date());
+    }
+
+    private void updateAuthDataUsingRefreshToken(HttpServletRequest request) {
+        final AuthenticationResult authData = getAccessTokenFromRefreshToken(
+                AuthHelper.getAuthenticationResult(request).getRefreshToken()
+        );
+        AuthHelper.setAuthenticationResult(request, authData);
+    }
+
+    @SneakyThrows
+    private AuthenticationResult getAccessTokenFromRefreshToken(String refreshToken) {
+
+        final ExecutorService service = Executors.newSingleThreadExecutor();
+
+        try {
+            final AuthenticationContext context = new AuthenticationContext(
+                    authority + tenant + "/", true, service
+            );
+            final Future<AuthenticationResult> future = context.acquireTokenByRefreshToken(
+                    refreshToken, new ClientCredential(clientId, secretKey), null, null
+            );
+
+            return Optional.ofNullable(future.get())
+                    .orElseThrow(() -> new ServiceUnavailableException("authentication result was null"));
+        } finally {
+            service.shutdown();
+        }
     }
 
     @Override
@@ -117,8 +161,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
 
     @Override
     public UserDomainObject getUser(HttpServletRequest request) {
-        final AuthenticationResult result = (AuthenticationResult) request.getSession()
-                .getAttribute(AuthHelper.PRINCIPAL_SESSION_NAME);
+        final AuthenticationResult result = AuthHelper.getAuthenticationResult(request);
 
         if (result == null) {
             throw new RuntimeException("AuthenticationResult not found in session.");
@@ -127,16 +170,30 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         return getUserFromGraph(result.getAccessToken()).toDomainObject();
     }
 
-    @SneakyThrows
     private AzureActiveDirectoryUserDTO getUserFromGraph(String accessToken) {
-        final URL url = new URL("https://graph.microsoft.com/v1.0/me");
+        final AzureActiveDirectoryUserDTO userDTO = getObjectFromGraph(
+                "me", accessToken, AzureActiveDirectoryUserDTO.class
+        );
+
+        final List<AzureActiveDirectoryGroupDTO> userGroups = getObjectFromGraph(
+                "me/memberOf", accessToken, AzureActiveDirectoryGroupsHolderDTO.class
+        ).getGroups();
+
+        userDTO.setUserGroups(new HashSet<>(userGroups));
+
+        return userDTO;
+    }
+
+    @SneakyThrows
+    private <T> T getObjectFromGraph(String resourceName, String accessToken, Class<T> result) {
+        final URL url = new URL("https://graph.microsoft.com/v1.0/" + resourceName);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Authorization", "Bearer " + accessToken);
         conn.setRequestProperty("Accept", "application/json");
 
-        return new ObjectMapper().readValue(conn.getInputStream(), AzureActiveDirectoryUserDTO.class);
+        return new ObjectMapper().readValue(conn.getInputStream(), result);
     }
 
     @Override
@@ -162,7 +219,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
             final AuthenticationResult authData = getAccessToken(oidcResponse.getAuthorizationCode(), currentUri);
             // validate nonce to prevent reply attacks (code maybe substituted to one with broader access)
             validateNonce(stateData, getClaimValueFromIdToken(authData.getIdToken(), "nonce"));
-            setSessionPrincipal(request, authData);
+            AuthHelper.setAuthenticationResult(request, authData);
 
             return stateData.nextUrl;
         }
@@ -175,10 +232,6 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
                 oidcError.getCode(),
                 oidcError.getDescription()
         ));
-    }
-
-    private void setSessionPrincipal(HttpServletRequest httpRequest, AuthenticationResult result) {
-        httpRequest.getSession().setAttribute(AuthHelper.PRINCIPAL_SESSION_NAME, result);
     }
 
     private Map<String, String> extractRequestParams(Map<String, String[]> parameterMap) {
@@ -219,8 +272,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
     }
 
     private void eliminateExpiredStates() {
-        Iterator<Map.Entry<String, StateHolder>> it = STATES.entrySet().iterator();
-
+        final Iterator<Map.Entry<String, StateHolder>> it = STATES.entrySet().iterator();
         final Date currTime = new Date();
 
         while (it.hasNext()) {

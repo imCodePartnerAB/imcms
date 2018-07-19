@@ -160,9 +160,12 @@ public class ImcmsSetupFilter implements Filter {
                 return;
             }
 
-            String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
-            FallbackDecoder fallbackDecoder = new FallbackDecoder(Charset.forName(Imcms.DEFAULT_ENCODING),
-                    null != workaroundUriEncoding ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset());
+            final String workaroundUriEncoding = service.getConfig().getWorkaroundUriEncoding();
+            final FallbackDecoder fallbackDecoder = new FallbackDecoder(
+                    Charset.forName(Imcms.DEFAULT_ENCODING),
+                    (null != workaroundUriEncoding) ? Charset.forName(workaroundUriEncoding) : Charset.defaultCharset()
+            );
+
             if (null != workaroundUriEncoding) {
                 request = new UriEncodingWorkaroundWrapper(request, fallbackDecoder);
             }
@@ -189,6 +192,13 @@ public class ImcmsSetupFilter implements Filter {
                         return;
                     }
                 }
+
+                if (user.isImcmsExternal()) {
+                    service.getAuthenticationProvidersService()
+                            .getAuthenticationProvider(user.getExternalProviderId())
+                            .updateAuthData(request);
+                }
+
                 //Adding cookie to find out is user logged in
                 if (!user.isDefaultUser()) {
                     Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));

@@ -23,8 +23,6 @@ public abstract class MockingControllerTest {
 
     private MockMvc mockMvc;
 
-    protected abstract String controllerPath();
-
     protected abstract Object controllerToMock();
 
     @BeforeEach
@@ -50,12 +48,12 @@ public abstract class MockingControllerTest {
 
         @Override
         public ResultActions andExpect(ResultMatcher matcher) throws Exception {
-            return resultActions.andExpect(matcher);
+            return new MvcResultActions(resultActions.andExpect(matcher));
         }
 
         @Override
         public ResultActions andDo(ResultHandler handler) throws Exception {
-            return resultActions.andDo(handler);
+            return new MvcResultActions(resultActions.andDo(handler));
         }
 
         @Override
@@ -67,6 +65,13 @@ public abstract class MockingControllerTest {
             resultActions.andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(content().json(asJson(expected)));
+        }
+
+        public String getResponse() throws Exception {
+            return resultActions.andExpect(status().isOk())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
         }
     }
 }

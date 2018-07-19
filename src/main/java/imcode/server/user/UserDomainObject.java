@@ -9,9 +9,13 @@ import imcode.server.LanguageMapper;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import imcode.server.document.TemplateGroupDomainObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.functors.NotPredicate;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
+import org.apache.commons.collections4.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
@@ -24,14 +28,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+@Data
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class UserDomainObject implements Cloneable, Serializable {
 
     public static final int DEFAULT_USER_ID = 2;
+    private static final long serialVersionUID = -9176465092502055012L;
     private final DocGetterCallback docGetterCallback = new DocGetterCallback(this);
     protected volatile int id;
     protected volatile RoleIds userAdminRoleIds = new RoleIds();
     private volatile String loginName = "";
 
+    @Getter
     private volatile String password;
 
     private volatile String firstName = "";
@@ -58,6 +66,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     private volatile TemplateGroupDomainObject templateGroup;
 
     private volatile boolean imcmsExternal;
+    private String externalProviderId = "";
 
     private volatile HashSet<PhoneNumber> phoneNumbers = new HashSet<>();
 
@@ -75,6 +84,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     /**
      * @since 4.0.7
      */
+    @Getter
     private volatile PasswordReset passwordReset = null;
 
     public UserDomainObject() {
@@ -106,34 +116,6 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * get user-id
-     */
-    public int getId() {
-        return id;
-    }
-
-    /**
-     * set user-id
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
-     * get login name (username)
-     */
-    public String getLoginName() {
-        return loginName;
-    }
-
-    /**
-     * set login name (username)
-     */
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
-    }
-
-    /**
      * get full name
      */
     public String getFullName() {
@@ -141,148 +123,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * get first name
-     */
-    public String getFirstName() {
-        return firstName;
-    }
-
-    /**
-     * set first name
-     */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    /**
-     * get last name
-     */
-    public String getLastName() {
-        return lastName;
-    }
-
-    /**
-     * set last name
-     */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    /**
-     * get title
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
-     * set title
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * get company
-     */
-    public String getCompany() {
-        return company;
-    }
-
-    /**
-     * set company
-     */
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    /**
-     * get address
-     */
-    public String getAddress() {
-        return address;
-    }
-
-    /**
-     * set address
-     */
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    /**
-     * get city
-     */
-    public String getCity() {
-        return city;
-    }
-
-    /**
-     * set city
-     */
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    /**
-     * get zip
-     */
-    public String getZip() {
-        return zip;
-    }
-
-    /**
-     * set zip
-     */
-    public void setZip(String zip) {
-        this.zip = zip;
-    }
-
-    /**
-     * get country
-     */
-    public String getCountry() {
-        return country;
-    }
-
-    /**
-     * set country
-     */
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    /**
-     * Return the users e-mail address
-     */
-    public String getEmailAddress() {
-        return emailAddress;
-    }
-
-    /**
-     * Set the users e-mail address
-     */
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
-    }
-
-    /**
-     * @return document getter callback associated with this user.
-     */
-    public DocGetterCallback getDocGetterCallback() {
-        return docGetterCallback;
-    }
-
-    /**
-     * Get the users workphone
+     * Get the users work phone
      */
     @Deprecated
     public String getWorkPhone() {
@@ -290,7 +131,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Set the users workphone
+     * Set the users work phone
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
@@ -313,7 +154,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     public Set<PhoneNumber> getPhoneNumbersOfType(final PhoneNumberType phoneNumberType) {
-        return new HashSet<PhoneNumber>(CollectionUtils.select(phoneNumbers, new PhoneNumberOfTypePredicate(phoneNumberType)));
+        return new HashSet<>(CollectionUtils.select(phoneNumbers, new PhoneNumberOfTypePredicate(phoneNumberType)));
     }
 
     public void replacePhoneNumbersOfType(String number, PhoneNumberType type) {
@@ -322,11 +163,11 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     private void removePhoneNumbersOfType(PhoneNumberType phoneNumberType) {
-        CollectionUtils.filter(phoneNumbers, new NotPredicate(new PhoneNumberOfTypePredicate(phoneNumberType)));
+        CollectionUtils.filter(phoneNumbers, new NotPredicate<>(new PhoneNumberOfTypePredicate(phoneNumberType)));
     }
 
     /**
-     * Get the users mobilephone
+     * Get the users mobile phone
      *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
@@ -335,16 +176,16 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Set the users mobilephone
+     * Set the users mobile phone
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setMobilePhone(String mobilephone) {
-        replacePhoneNumbersOfType(mobilephone, PhoneNumberType.MOBILE);
+    public void setMobilePhone(String mobilePhone) {
+        replacePhoneNumbersOfType(mobilePhone, PhoneNumberType.MOBILE);
     }
 
     /**
-     * Get the users homephone
+     * Get the users home phone
      *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
@@ -353,16 +194,16 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Set the users homephone
+     * Set the users home phone
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setHomePhone(String homephone) {
-        replacePhoneNumbersOfType(homephone, PhoneNumberType.HOME);
+    public void setHomePhone(String homePhone) {
+        replacePhoneNumbersOfType(homePhone, PhoneNumberType.HOME);
     }
 
     /**
-     * Get the users faxphone
+     * Get the users fax phone
      *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
@@ -371,16 +212,16 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Set the users faxpohne
+     * Set the users fax phone
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setFaxPhone(String faxphone) {
-        replacePhoneNumbersOfType(faxphone, PhoneNumberType.FAX);
+    public void setFaxPhone(String faxPhone) {
+        replacePhoneNumbersOfType(faxPhone, PhoneNumberType.FAX);
     }
 
     /**
-     * Get the users otherphone
+     * Get the users other phone
      *
      * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
      */
@@ -389,26 +230,12 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * Set the users otherpohne
+     * Set the users other phone
      *
      * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
      */
-    public void setOtherPhone(String otherphone) {
-        replacePhoneNumbersOfType(otherphone, PhoneNumberType.OTHER);
-    }
-
-    /**
-     * Check whether the user is allowed to log in
-     */
-    public boolean isActive() {
-        return active;
-    }
-
-    /**
-     * Set whether the user is allowed to log in
-     */
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setOtherPhone(String otherPhone) {
+        replacePhoneNumbersOfType(otherPhone, PhoneNumberType.OTHER);
     }
 
     /**
@@ -420,59 +247,13 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     /**
      * set create_date
-     *
-     * @param createDate
      */
     public void setCreateDate(Date createDate) {
         this.createDate = (Date) createDate.clone();
     }
 
-    /**
-     * get template group
-     */
-    public TemplateGroupDomainObject getTemplateGroup() {
-        return templateGroup;
-    }
-
-    /**
-     * set template group
-     */
-    public void setTemplateGroup(TemplateGroupDomainObject templateGroup) {
-        this.templateGroup = templateGroup;
-    }
-
     public String getLanguage() {
         return LanguageMapper.convert639_2to639_1(languageIso639_2);
-    }
-
-    /**
-     * Return the users language
-     */
-    public String getLanguageIso639_2() {
-        return languageIso639_2;
-    }
-
-    /**
-     * Set the users language
-     */
-    public void setLanguageIso639_2(String languageIso639_2) {
-        this.languageIso639_2 = languageIso639_2;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-    }
-
-    public boolean isImcmsExternal() {
-        return imcmsExternal;
-    }
-
-    public void setImcmsExternal(boolean imcmsExternal) {
-        this.imcmsExternal = imcmsExternal;
     }
 
     public void addRoleId(RoleId role) {
@@ -567,7 +348,6 @@ public class UserDomainObject implements Cloneable, Serializable {
      * If user is in a SUPER_ADMIN role returns {@link Permission#EDIT}
      * Otherwise searches for most privileged perm set in the intersection of user roles and doc's roles.
      *
-     * @param document
      * @return most privileged permission set for the provided doc.
      */
     public Permission getDocumentPermissionSetTypeFor(DocumentDomainObject document) {
@@ -613,8 +393,7 @@ public class UserDomainObject implements Cloneable, Serializable {
     public boolean hasRoleWithPermission(RolePermissionDomainObject rolePermission) {
         ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
         RoleId[] roleReferencesArray = roleIds.toArray();
-        for (int i = 0; i < roleReferencesArray.length; i++) {
-            RoleId roleId = roleReferencesArray[i];
+        for (RoleId roleId : roleReferencesArray) {
             if (imcmsAuthenticatorAndUserAndRoleMapper.getRole(roleId).hasPermission(rolePermission)) {
                 return true;
             }
@@ -698,19 +477,6 @@ public class UserDomainObject implements Cloneable, Serializable {
     }
 
     /**
-     * @return if this user was authenticated by IP.
-     * @see imcode.server.Config#isDenyMultipleUserLogin()
-     * @see com.imcode.imcms.servlet.ImcmsSetupFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)
-     */
-    public boolean isAuthenticatedByIp() {
-        return authenticatedByIp;
-    }
-
-    public void setAuthenticatedByIp(boolean authenticatedByIp) {
-        this.authenticatedByIp = authenticatedByIp;
-    }
-
-    /**
      * @since 4.0.7
      */
     public boolean isPasswordEncrypted() {
@@ -720,26 +486,8 @@ public class UserDomainObject implements Cloneable, Serializable {
     /**
      * @since 4.0.7
      */
-    public PasswordReset getPasswordReset() {
-        return passwordReset;
-    }
-
-    /**
-     * @since 4.0.7
-     */
     public boolean hasPasswordReset() {
         return passwordReset != null;
-    }
-
-    /**
-     * Returns password.
-     * The password might be a plain text or encrypted.
-     * Use {@link #isPasswordEncrypted()} to test if password is encrypted.
-     *
-     * @since 4.0.7
-     */
-    public String getPassword() {
-        return password;
     }
 
     /**
@@ -780,45 +528,24 @@ public class UserDomainObject implements Cloneable, Serializable {
         UNENCRYPTED, ENCRYPTED
     }
 
-    //------------------------------------------------------------------------------------------------------------------
-    // The following package private methods are used internally by ImcmsAuthenticatorAndUserAndRoleMapper
-    //------------------------------------------------------------------------------------------------------------------
-
     /**
      * @since 4.0.7
      */
+    @Data
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static final class PasswordReset {
         private final String id;
         private final long time;
-
-        private PasswordReset(String id, long time) {
-            this.id = id;
-            this.time = time;
-        }
-
-        public String getId() {
-            return id;
-        }
-
-        public long getTime() {
-            return time;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("User.PasswordReset(id=%s, time=%s)", id, time);
-        }
     }
 
-    private static class PhoneNumberOfTypePredicate implements Predicate {
+    private static class PhoneNumberOfTypePredicate implements Predicate<PhoneNumber> {
         private final PhoneNumberType phoneNumberType;
 
         PhoneNumberOfTypePredicate(PhoneNumberType phoneNumberType) {
             this.phoneNumberType = phoneNumberType;
         }
 
-        public boolean evaluate(Object object) {
-            PhoneNumber phoneNumber = (PhoneNumber) object;
+        public boolean evaluate(PhoneNumber phoneNumber) {
             return phoneNumber.getType().equals(phoneNumberType);
         }
     }

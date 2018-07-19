@@ -25,4 +25,5 @@ public abstract class AuthenticationProvider {
 
     public abstract UserDomainObject getUser(HttpServletRequest request);
 
+    public abstract void updateAuthData(HttpServletRequest request);
 }

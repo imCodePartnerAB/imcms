@@ -43,8 +43,12 @@ public final class AuthHelper {
         return request.getSession().getAttribute(PRINCIPAL_SESSION_NAME) != null;
     }
 
-    public static AuthenticationResult getAuthSessionObject(HttpServletRequest request) {
+    public static AuthenticationResult getAuthenticationResult(HttpServletRequest request) {
         return (AuthenticationResult) request.getSession().getAttribute(PRINCIPAL_SESSION_NAME);
+    }
+
+    public static void setAuthenticationResult(HttpServletRequest httpRequest, AuthenticationResult result) {
+        httpRequest.getSession().setAttribute(AuthHelper.PRINCIPAL_SESSION_NAME, result);
     }
 
     public static boolean containsAuthenticationData(HttpServletRequest httpRequest) {
