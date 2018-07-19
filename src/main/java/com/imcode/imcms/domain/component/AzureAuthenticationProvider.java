@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
+import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupsHolderDTO;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryUserDTO;
 import com.imcode.imcms.model.AuthenticationProvider;
 import com.imcode.imcms.util.AuthHelper;
@@ -31,7 +33,9 @@ import java.net.URLEncoder;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -166,16 +170,30 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         return getUserFromGraph(result.getAccessToken()).toDomainObject();
     }
 
-    @SneakyThrows
     private AzureActiveDirectoryUserDTO getUserFromGraph(String accessToken) {
-        final URL url = new URL("https://graph.microsoft.com/v1.0/me");
+        final AzureActiveDirectoryUserDTO userDTO = getObjectFromGraph(
+                "me", accessToken, AzureActiveDirectoryUserDTO.class
+        );
+
+        final List<AzureActiveDirectoryGroupDTO> userGroups = getObjectFromGraph(
+                "me/memberOf", accessToken, AzureActiveDirectoryGroupsHolderDTO.class
+        ).getGroups();
+
+        userDTO.setUserGroups(new HashSet<>(userGroups));
+
+        return userDTO;
+    }
+
+    @SneakyThrows
+    private <T> T getObjectFromGraph(String resourceName, String accessToken, Class<T> result) {
+        final URL url = new URL("https://graph.microsoft.com/v1.0/" + resourceName);
         final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Authorization", "Bearer " + accessToken);
         conn.setRequestProperty("Accept", "application/json");
 
-        return new ObjectMapper().readValue(conn.getInputStream(), AzureActiveDirectoryUserDTO.class);
+        return new ObjectMapper().readValue(conn.getInputStream(), result);
     }
 
     @Override
