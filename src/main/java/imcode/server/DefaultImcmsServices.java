@@ -61,18 +61,17 @@ import java.util.Properties;
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
 
+    public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
     private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
     private static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
-    public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
 
     static {
         mainLog.info("Main log started.");
     }
 
-    private final Properties properties;
     @Getter
     private final DocumentMapper documentMapper;
     @Getter
@@ -103,6 +102,8 @@ public class DefaultImcmsServices implements ImcmsServices {
     private final MailService mailService;
     @Getter
     private final TemplateService templateService;
+    private final Properties properties;
+
     private ImcmsAuthenticatorAndUserAndRoleMapper imcmsAuthenticatorAndUserAndRoleMapper;
     private ExternalizedImcmsAuthenticatorAndUserRegistry externalizedImcmsAuthAndMapper;
     private ApplicationContext applicationContext;
