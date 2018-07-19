@@ -84,7 +84,7 @@ import java.util.Properties;
         "com.imcode.imcms.components",
         "com.imcode.imcms.db",
 })
-class MainConfig {
+public class MainConfig {
 
     private static final Logger LOG = Logger.getLogger(MainConfig.class);
 
