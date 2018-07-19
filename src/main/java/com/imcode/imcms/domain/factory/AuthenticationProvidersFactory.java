@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD;
+import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
 
 @Component
 public class AuthenticationProvidersFactory {

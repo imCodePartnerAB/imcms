@@ -42,8 +42,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD;
-
 /**
  * Authentication provider for Azure Active Directory
  */
@@ -51,6 +49,8 @@ import static imcode.server.DefaultImcmsServices.EXTERNAL_AUTHENTICATOR_AZURE_AD
 @EqualsAndHashCode(callSuper = false)
 public class AzureAuthenticationProvider extends AuthenticationProvider implements AuthenticationDataStorage {
 
+    public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
+    public static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
     /**
      * Session id to state data
      */

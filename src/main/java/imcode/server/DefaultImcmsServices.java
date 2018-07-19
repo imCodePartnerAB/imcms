@@ -7,6 +7,7 @@ import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.db.ProcedureExecutor;
+import com.imcode.imcms.domain.component.AzureAuthenticationProvider;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.domain.service.MenuService;
@@ -61,12 +62,10 @@ import java.util.Properties;
 @Service
 public class DefaultImcmsServices implements ImcmsServices {
 
-    public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
     private final static Logger mainLog = Logger.getLogger(ImcmsConstants.MAIN_LOG);
     private final static Logger log = Logger.getLogger(DefaultImcmsServices.class.getName());
     private static final String EXTERNAL_AUTHENTICATOR_LDAP = "ldap";
     private static final String EXTERNAL_USER_AND_ROLE_MAPPER_LDAP = "ldap";
-    private static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
 
     static {
         mainLog.info("Main log started.");
@@ -579,7 +578,7 @@ public class DefaultImcmsServices implements ImcmsServices {
             case EXTERNAL_USER_AND_ROLE_MAPPER_LDAP:
                 return initLdapUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
 
-            case EXTERNAL_USER_AND_ROLE_AZURE_AD:
+            case AzureAuthenticationProvider.EXTERNAL_USER_AND_ROLE_AZURE_AD:
                 return initAzureActiveDirectoryUserAndRoleRegistry(userAndRoleMapperPropertiesSubset);
 
             default:
@@ -597,7 +596,7 @@ public class DefaultImcmsServices implements ImcmsServices {
             case EXTERNAL_AUTHENTICATOR_LDAP:
                 return initLdapUserAndRoleRegistry(authenticatorPropertiesSubset);
 
-            case EXTERNAL_USER_AND_ROLE_AZURE_AD:
+            case AzureAuthenticationProvider.EXTERNAL_USER_AND_ROLE_AZURE_AD:
                 return initAzureActiveDirectoryAuthenticator(authenticatorPropertiesSubset);
 
             default:
