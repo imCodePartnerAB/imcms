@@ -11,7 +11,7 @@ public interface UserService {
 
     User getUser(int id) throws UserNotExistsException;
 
-    User getUser(String login) throws UserNotExistsException;
+    UserDTO getUser(String login) throws UserNotExistsException;
 
     void updateUser(UserDTO updateMe);
 

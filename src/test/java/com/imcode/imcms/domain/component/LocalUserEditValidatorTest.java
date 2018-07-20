@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.persistence.entity.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -66,7 +65,7 @@ class LocalUserEditValidatorTest {
         final String existingLoginName = "existingLoginName";
         userData.setLogin(existingLoginName);
 
-        final User user = new User();
+        final UserDTO user = new UserDTO();
         user.setId(42);
 
         when(userService.getUser(eq(existingLoginName))).thenReturn(user);
@@ -84,7 +83,7 @@ class LocalUserEditValidatorTest {
         userData.setId(userId);
         userData.setLogin(existingLoginName);
 
-        final User user = new User();
+        final UserDTO user = new UserDTO();
         user.setId(userId);
 
         when(userService.getUser(eq(existingLoginName))).thenReturn(user);
