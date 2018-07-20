@@ -25,8 +25,11 @@ public class UserDTO extends BasicUserData {
 
     private String email;
 
+    private Boolean active;
+
     public UserDTO(User from) {
         super(from);
         id = from.getId();
+        active = from.isActive();
     }
 }
