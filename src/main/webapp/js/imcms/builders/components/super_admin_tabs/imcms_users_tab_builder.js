@@ -92,6 +92,9 @@ Imcms.define(
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
+                            'user-id': $('<div>', {
+                                text: user.id
+                            }),
                             'first-name': $('<div>', {
                                 text: user.firstName
                             }),
@@ -117,6 +120,7 @@ Imcms.define(
                     var $titleRow = new BEM({
                         block: 'imcms-user-title-row',
                         elements: {
+                            'user-id': $('<div>', {text: texts.searchResult.id}),
                             'first-name': $('<div>', {text: texts.searchResult.firstName}),
                             'last-name': $('<div>', {text: texts.searchResult.lastName}),
                             'user-name': $('<div>', {text: texts.searchResult.userName}),

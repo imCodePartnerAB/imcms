@@ -652,6 +652,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     },
                     searchResult: {
                         title: ' users found',
+                        id: 'ID',
                         firstName: 'First Name',
                         lastName: 'Last Name',
                         userName: 'Username',
