@@ -166,7 +166,7 @@ Imcms.define("imcms-image-content-builder",
                     level: level,
                     previousFolderName: currentFolderName
                 },
-                imageFoldersREST.update,
+                imageFoldersREST.replace,
                 onFolderRenamed
             ).css({
                 position: "absolute",

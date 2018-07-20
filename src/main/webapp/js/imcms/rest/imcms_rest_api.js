@@ -72,7 +72,7 @@ Imcms.define(
         var API = function (url) {
             this.create = post(url);
             this.read = get(url);
-            this.update = put(url);
+            this.replace = put(url);
             this.remove = remove(url);
             this.postFiles = postFiles(url);
         };
