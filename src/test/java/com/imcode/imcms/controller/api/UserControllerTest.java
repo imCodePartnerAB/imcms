@@ -1,57 +1,70 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.controller.MockingControllerTest;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.User;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-@Transactional
-public class UserControllerTest extends AbstractControllerTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.BDDMockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
-    @Autowired
+@ExtendWith(MockitoExtension.class)
+public class UserControllerTest extends MockingControllerTest {
+
+    static final String CONTROLLER_PATH = "/users";
+
+    @Mock
     private UserService userService;
 
-    @Autowired
-    private UserDataInitializer userDataInitializer;
-
-    private List<UserDTO> expectedUsers;
-
-    @Override
-    public String controllerPath() {
-        return "/users/admins";
-    }
-
-    @Before
-    public void createUsers() {
-        List<User> adminUsers = new ArrayList<>(9);
-
-        final List<User> superAdmins = userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId());
-        final List<User> admins = userDataInitializer.createData(4, Roles.USER_ADMIN.getId());
-        userDataInitializer.createData(3, Roles.USER.getId()); // some other users
-
-        adminUsers.add(userService.getUser("admin"));
-        adminUsers.addAll(superAdmins);
-        adminUsers.addAll(admins);
-
-        expectedUsers = adminUsers.stream()
-                .map(UserDTO::new)
-                .collect(Collectors.toList());
-    }
+    @InjectMocks
+    private UserController userController;
 
     @Test
     public void getAdminUsersTest() throws Exception {
-        final String usersJson = asJson(expectedUsers);
-        getAllExpectedOkAndJsonContentEquals(usersJson);
+        final UserDTO user1 = new UserDTO();
+        final UserDTO user2 = new UserDTO();
+        final List<UserDTO> users = Arrays.asList(user1, user2);
+
+        given(userService.getAdminUsers()).willReturn(users);
+        perform(get(CONTROLLER_PATH + "/admins")).andExpectAsJson(users);
     }
 
+    @Test
+    void getAll() throws Exception {
+        final UserDTO user1 = new UserDTO();
+        final UserDTO user2 = new UserDTO();
+        final List<UserDTO> users = Arrays.asList(user1, user2);
+
+        given(userService.getAllActiveUsers()).willReturn(users);
+        perform(get(CONTROLLER_PATH)).andExpectAsJson(users);
+    }
+
+    @Test
+    void updateUser() {
+        final int userId = 13;
+        final UserDTO user = new UserDTO();
+        user.setId(userId);
+        user.setActive(false);
+
+        perform(patch(CONTROLLER_PATH), user);
+
+        final ArgumentCaptor<UserDTO> captor = ArgumentCaptor.forClass(UserDTO.class);
+        then(userService).should().updateUser(captor.capture());
+
+        assertEquals(user, captor.getValue());
+    }
+
+    @Override
+    protected Object controllerToMock() {
+        return userController;
+    }
 }
