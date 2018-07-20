@@ -13,6 +13,8 @@ public interface UserService {
 
     User getUser(String login) throws UserNotExistsException;
 
+    void updateUser(UserDTO updateMe);
+
     List<UserDTO> getAdminUsers();
 
     List<UserDTO> getAllActiveUsers();

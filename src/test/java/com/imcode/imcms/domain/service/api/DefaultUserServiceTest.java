@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.RoleDTO;
+import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
@@ -159,5 +160,22 @@ class DefaultUserServiceTest {
 
         Assertions.assertEquals(roles.size(), 1);
         Assertions.assertEquals(roles.get(0), role);
+    }
+
+    @Test
+    void updateUser_When_CorrectDataReceivedAndUserExist_Expect_UserSaved() {
+        final int userId = 42;
+        final User existingUser = mock(User.class);
+        final UserDTO updateData = mock(UserDTO.class);
+
+        given(updateData.getId()).willReturn(userId);
+        given(updateData.getActive()).willReturn(false);
+        given(userRepository.findById(userId)).willReturn(existingUser);
+
+        userService.updateUser(updateData);
+
+        then(updateData).should().getActive();
+        then(existingUser).should().setActive(false);
+        then(userRepository).should().save(any(User.class));
     }
 }

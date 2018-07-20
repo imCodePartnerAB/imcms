@@ -33,7 +33,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,6 +75,32 @@ class DefaultUserService implements UserService {
     public User getUser(String login) {
         return Optional.ofNullable(userRepository.findByLogin(login))
                 .orElseThrow(() -> new UserNotExistsException(login));
+    }
+
+    @Override
+    public void updateUser(UserDTO updateData) {
+        final Integer id = updateData.getId();
+
+        if (id == null) return;
+
+        final User user = getUser(id);
+
+        updatePresentUserFields(user, updateData);
+
+        userRepository.save(user);
+    }
+
+    private void updatePresentUserFields(User user, UserDTO updateData) {
+        updateFieldIfPresent(updateData::getId, user::setId);
+        updateFieldIfPresent(updateData::getEmail, user::setEmail);
+        updateFieldIfPresent(updateData::getFirstName, user::setFirstName);
+        updateFieldIfPresent(updateData::getLastName, user::setLastName);
+        updateFieldIfPresent(updateData::getLogin, user::setLogin);
+        updateFieldIfPresent(updateData::getActive, user::setActive);
+    }
+
+    private <T> void updateFieldIfPresent(Supplier<T> fieldGetter, Consumer<T> fieldSetter) {
+        Optional.ofNullable(fieldGetter.get()).ifPresent(fieldSetter);
     }
 
     @Override
