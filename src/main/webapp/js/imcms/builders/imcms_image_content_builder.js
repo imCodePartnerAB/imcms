@@ -43,7 +43,7 @@ Imcms.define("imcms-image-content-builder",
                     .find(".imcms-folder__name")
                     .text(this.name);
 
-                this.$block.detach();
+                this.$block.remove();
 
             } else {
                 console.error("Folder " + this.path + "/" + this.name + " not renamed!")
@@ -117,12 +117,12 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function removeFolderFromEditor($folder) {
-            $folder.detach();
+            $folder.remove();
         }
 
         function removeParentBtnIfNoSubfolders($folder) {
             if (!$folder.find("." + SUBFOLDER_CLASS).length) {
-                $folder.find(".imcms-folder__btn").detach();
+                $folder.find(".imcms-folder__btn").remove();
             }
         }
 
@@ -213,7 +213,7 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function buildFolderManageBlock(opts, onConfirm, onSuccess) {
-            $("#" + FOLDER_CREATION_BLOCK_ID).detach();
+            $("#" + FOLDER_CREATION_BLOCK_ID).remove();
 
             var $folderNameInput = primitives.imcmsInput({
                 "class": "imcms-input",
@@ -422,7 +422,7 @@ Imcms.define("imcms-image-content-builder",
             imageFile.path = getFolderPath(activeFolder.$folder) + "/" + imageFile.name;
 
             imageFilesREST.remove(imageFile).done(function (response) {
-                response && $(element).parent().parent().detach();
+                response && $(element).parent().parent().remove();
             });
         }
 
@@ -595,8 +595,8 @@ Imcms.define("imcms-image-content-builder",
             },
             clearContent: function () {
                 activeFolder = selectedImage = null;
-                $imagesContainer.children().detach();
-                $foldersContainer.children().not("#closeFolders").detach();
+                $imagesContainer.children().remove();
+                $foldersContainer.children().not("#closeFolders").remove();
                 viewModel = {
                     root: {},
                     $folder: [],

@@ -54,7 +54,7 @@ Imcms.define("imcms-file-tab-builder",
                     "name": $("<div>", {text: file.filename}),
                     "default": $isDefaultFileRadioBtn,
                     "delete": components.controls.remove(function () {
-                        $row.detach();
+                        $row.remove();
                     })
                 }
             }).buildBlockStructure("<div>", {

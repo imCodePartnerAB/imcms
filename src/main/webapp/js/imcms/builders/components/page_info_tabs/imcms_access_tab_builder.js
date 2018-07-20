@@ -75,7 +75,7 @@ Imcms.define("imcms-access-tab-builder",
 
                     var $rolesBody = $row.parent();
 
-                    $row.detach();
+                    $row.remove();
 
                     var tableContainsRows = $rolesBody.find("[data-role-id]").length;
                     if (!tableContainsRows) {

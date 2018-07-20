@@ -72,7 +72,7 @@ Imcms.define(
                     console.error(e);
                     alert("Error in window builder! Stacktrace in console.");
 
-                    this.$editor && this.$editor.detach();
+                    this.$editor && this.$editor.remove();
                     this.shadowBuilder && this.shadowBuilder.closeWindow();
                     this.disableKeyBindings || windowKeysController.unRegister();
                 }
@@ -101,7 +101,7 @@ Imcms.define(
                     console.error(e);
                     alert("Error in window builder! Stacktrace in console.");
 
-                    this.$editor && this.$editor.detach();
+                    this.$editor && this.$editor.remove();
                     this.shadowBuilder && this.shadowBuilder.closeWindow();
                 }
             },

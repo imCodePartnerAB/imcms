@@ -177,13 +177,13 @@ Imcms.define("imcms-selects-builder",
             return function () {
                 $input.val("");
                 $input.removeProp("data-content");
-                return $resultImcmsSelect.find(DROP_DOWN_LIST__CLASS_$).detach();
+                return $resultImcmsSelect.find(DROP_DOWN_LIST__CLASS_$).remove();
             }
         }
 
         function bindDeleteOption($resultImcmsSelect) {
             return function (optionValue) {
-                return $resultImcmsSelect.find("[data-value='" + optionValue + "']").detach();
+                return $resultImcmsSelect.find("[data-value='" + optionValue + "']").remove();
 
             }
         }

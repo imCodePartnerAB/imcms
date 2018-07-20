@@ -92,7 +92,7 @@ Imcms.require(
 
         function bindOnDeleteClicked($phoneRow) {
             return function () {
-                $phoneRow.detach();
+                $phoneRow.remove();
             }
         }
 
@@ -152,7 +152,7 @@ Imcms.require(
                 .removeAttr('id')
                 .end()
                 .find('#button-add-phone')
-                .detach()
+                .remove()
                 .end()
                 .find('.imcms-text-box')
                 .append();

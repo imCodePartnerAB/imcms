@@ -88,8 +88,8 @@ Imcms.define(
 
             closeModal: function () {
                 windowKeysController.unRegister();
-                this.$modal.detach();
-                this.$shadow && this.$shadow.detach();
+                this.$modal.remove();
+                this.$shadow && this.$shadow.remove();
             },
 
             appendTo: function ($appendToMe) {

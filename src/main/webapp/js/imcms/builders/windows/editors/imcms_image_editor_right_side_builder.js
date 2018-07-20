@@ -571,7 +571,7 @@ Imcms.define(
                     if ($image.length) {
 
                         if (!filePath && $tag.hasClass("imcms-image-in-text")) {
-                            $tag.detach();
+                            $tag.remove();
                             imcms.require("tinyMCE", function (tinyMCE) {
                                 tinyMCE.activeEditor.setDirty(true);
                             });

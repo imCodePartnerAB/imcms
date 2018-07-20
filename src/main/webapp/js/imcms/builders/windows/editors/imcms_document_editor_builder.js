@@ -919,7 +919,7 @@ Imcms.define("imcms-document-editor-builder",
                 $(selectItemValue).text("None");
             });
 
-            $editorBody.detach();
+            $editorBody.remove();
         }
 
         function incrementDocumentNumber(delta) {
