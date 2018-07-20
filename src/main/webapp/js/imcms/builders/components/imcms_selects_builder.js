@@ -100,23 +100,25 @@ Imcms.define("imcms-selects-builder",
         }
 
         function buildSelectOptions(options, dropDownListBEM, onSelected) {
-            var $itemsContainer = dropDownListBEM.buildElement("items", "<div>")
-                    .append(mapOptionsToItemsArr(options, dropDownListBEM)),
+            var $itemsContainer = dropDownListBEM.buildElement("items", "<div>").append(
+                mapOptionsToItemsArr(options, dropDownListBEM)
+            );
 
-                $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton()),
-                $selectedValue = dropDownListBEM.buildBlockElement("select-item-value", "<span>", {
-                    text: (options[0] && options[0].text) || "None"
-                }),
-                $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {
-                    click: function () {
-                        toggleSelect.call(this, onSelected);
-                    }
-                }).append($selectedValue, $button),
+            var $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton());
 
-                $dropDownList = dropDownListBEM.buildBlock("<div>", [
-                    {"select-item": $selectItem},
-                    {"items": $itemsContainer}
-                ]);
+            var $selectedValue = dropDownListBEM.buildBlockElement("select-item-value", "<span>", {
+                text: (options[0] && options[0].text) || "None"
+            });
+            var $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {
+                click: function () {
+                    toggleSelect.call(this, onSelected);
+                }
+            }).append($selectedValue, $button);
+
+            var $dropDownList = dropDownListBEM.buildBlock("<div>", [
+                {"select-item": $selectItem},
+                {"items": $itemsContainer}
+            ]);
 
             return selectBEM.makeBlockElement("drop-down-list", $dropDownList);
         }

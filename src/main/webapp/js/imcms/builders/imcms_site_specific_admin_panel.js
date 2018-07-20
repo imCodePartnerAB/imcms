@@ -65,7 +65,7 @@ Imcms.define(
 
                 } else {
                     $collapsible.slideUp(200, function () {
-                        panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
+                            panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                         })
                         .addClass('imcms-special-hidden')
                         .css('top', "-" + $imcms.css('height'));
