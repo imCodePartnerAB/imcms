@@ -198,6 +198,17 @@ task explodedWar(type: Sync, dependsOn: war) {
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
     classifier = 'sources'
+    manifest {
+        def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
+        if (new File(manifestFile).exists())
+            from(manifestFile)
+
+        attributes "Build-Date": new Date()
+        attributes "Application-Version": project.version
+        attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
+        attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
+        attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
+    }
 }
 
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
@@ -232,8 +243,6 @@ idea {
         testOutputDir = compileTestJava.destinationDir
     }
 }
-
-jar.classifier = "classes"
 
 //gradleLint.rules = ['all-dependency']
 
@@ -417,19 +426,7 @@ publishing {
 
         mavenJava(MavenPublication) {
             from components.java
-            artifact sourcesJar {
-                manifest {
-                    def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
-                    if (new File(manifestFile).exists())
-                        from(manifestFile)
-
-                    attributes "Build-Date": new Date()
-                    attributes "Application-Version": project.version
-                    attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
-                    attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
-                    attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
-                }
-            }
+            artifact sourcesJar
         }
     }
 
