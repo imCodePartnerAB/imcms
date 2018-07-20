@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 class DefaultUserService implements UserService {
 
     private final static Logger log = Logger.getLogger(DefaultUserService.class.getName());
