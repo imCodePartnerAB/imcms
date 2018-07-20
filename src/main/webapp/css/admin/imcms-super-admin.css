@@ -108,8 +108,9 @@
 
 .imcms-user-info-row__archive {
     background-size: contain;
-    width: 26px;
-    height: 26px;
+    width: 21px;
+    height: 21px;
+    font-size: 14px;
 }
 
 .imcms-users-search-result {
@@ -122,4 +123,8 @@
 .imcms-pop-up-modal__left-side {
     max-width: none;
     width: 20%;
+}
+
+.imcms-user-info-row--archived {
+    background-color: lightgray;
 }
