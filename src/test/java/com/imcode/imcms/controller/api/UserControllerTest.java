@@ -11,7 +11,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.*;
@@ -61,6 +63,19 @@ public class UserControllerTest extends MockingControllerTest {
         then(userService).should().updateUser(captor.capture());
 
         assertEquals(user, captor.getValue());
+    }
+
+    @Test
+    void searchUsers() {
+        final String term = "term";
+        final boolean includeInactive = true;
+        final Set<Integer> roleIds = new HashSet<>();
+        roleIds.add(2);
+        roleIds.add(42);
+
+        perform(get(CONTROLLER_PATH + "/search"), new UserController.Query(term, includeInactive, roleIds));
+
+        then(userService).should().searchUsers(term, roleIds, includeInactive);
     }
 
     @Override

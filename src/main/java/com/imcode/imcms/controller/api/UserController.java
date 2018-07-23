@@ -2,6 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.UserService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -33,6 +36,19 @@ class UserController {
     @PatchMapping
     public void updateUser(@RequestBody UserDTO updateMe) {
         userService.updateUser(updateMe);
+    }
+
+    @GetMapping("/search")
+    public List<UserDTO> searchUsers(@RequestBody Query query) {
+        return userService.searchUsers(query.term, query.roleIds, query.includeInactive);
+    }
+
+    @Data
+    @AllArgsConstructor
+    static class Query {
+        private final String term;
+        private final boolean includeInactive;
+        private final Set<Integer> roleIds;
     }
 
 }

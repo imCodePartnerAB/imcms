@@ -21,7 +21,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
 import static org.mockito.BDDMockito.*;
@@ -177,5 +179,53 @@ class DefaultUserServiceTest {
         then(updateData).should().getActive();
         then(existingUser).should().setActive(false);
         then(userRepository).should().save(any(User.class));
+    }
+
+    @Test
+    void searchUsers_When_NullRolesAndActiveUsersOnly_Expect_CorrespondingMethodCalled() {
+        final String searchTerm = "";
+        userService.searchUsers(searchTerm, null, false);
+        then(userRepository).should().searchActiveUsers(searchTerm);
+    }
+
+    @Test
+    void searchUsers_When_EmptyRolesAndActiveUsersOnly_Expect_CorrespondingMethodCalled() {
+        final String searchTerm = "";
+        userService.searchUsers(searchTerm, new HashSet<>(), false);
+        then(userRepository).should().searchActiveUsers(searchTerm);
+    }
+
+    @Test
+    void searchUsers_When_NotEmptyRolesAndActiveUsersOnly_Expect_CorrespondingMethodCalled() {
+        final String searchTerm = "";
+        final Set<Integer> roles = new HashSet<>();
+        roles.add(42);
+
+        userService.searchUsers(searchTerm, roles, false);
+        then(userRepository).should().searchActiveUsers(searchTerm, roles);
+    }
+
+    @Test
+    void searchUsers_When_NullRolesAndAllUsers_Expect_CorrespondingMethodCalled() {
+        final String searchTerm = "";
+        userService.searchUsers(searchTerm, null, true);
+        then(userRepository).should().searchUsers(searchTerm);
+    }
+
+    @Test
+    void searchUsers_When_EmptyRolesAndAllUsers_Expect_CorrespondingMethodCalled() {
+        final String searchTerm = "";
+        userService.searchUsers(searchTerm, new HashSet<>(), true);
+        then(userRepository).should().searchUsers(searchTerm);
+    }
+
+    @Test
+    void searchUsers_When_NotEmptyRolesAndAllUsers_Expect_CorrespondingMethodCalled() {
+        final String searchTerm = "";
+        final Set<Integer> roles = new HashSet<>();
+        roles.add(42);
+
+        userService.searchUsers(searchTerm, roles, true);
+        then(userRepository).should().searchUsers(searchTerm, roles);
     }
 }

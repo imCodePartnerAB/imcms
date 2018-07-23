@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.persistence.entity.User;
 
 import java.util.List;
+import java.util.Set;
 
 public interface UserService extends UserDataService {
 
@@ -26,5 +27,7 @@ public interface UserService extends UserDataService {
     List<UserDTO> getUsersByEmail(String email);
 
     void saveUser(UserFormData userData);
+
+    List<UserDTO> searchUsers(String searchTerm, Set<Integer> withRoles, boolean includeInactive);
 
 }
