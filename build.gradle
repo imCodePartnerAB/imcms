@@ -48,6 +48,13 @@ ext {
     solrVersion = '7.2.1'
     slf4jVersion = '1.7.25'
     junitVersion = '5.2.0'
+    sharedManifest = manifest {
+        attributes "Build-Date": new Date()
+        attributes "Application-Version": project.version
+        attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
+        attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
+        attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
+    }
 }
 
 dependencies {
@@ -197,17 +204,9 @@ task explodedWar(type: Sync, dependsOn: war) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    classifier 'sources'
     manifest {
-        def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
-        if (new File(manifestFile).exists())
-            from(manifestFile)
-
-        attributes "Build-Date": new Date()
-        attributes "Application-Version": project.version
-        attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
-        attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
-        attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
+        from sharedManifest
     }
 }
 
@@ -290,15 +289,7 @@ css.source.custom.css.files.eachWithIndex { cssFile, idx ->
 
 jar.doFirst {
     manifest {
-        def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
-        if (new File(manifestFile).exists())
-            from(manifestFile)
-
-        attributes "Build-Date": new Date()
-        attributes "Application-Version": project.version
-        attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
-        attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
-        attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
+        from sharedManifest
     }
     classifier 'classes'
 }
@@ -318,15 +309,7 @@ war {
     exclude "**/css/**/*.css"
 
     manifest {
-        def manifestFile = "${projectDir}/META-INF/MANIFEST.MF"
-        if (new File(manifestFile).exists())
-            from(manifestFile)
-
-        attributes "Build-Date": new Date()
-        attributes "Application-Version": project.version
-        attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
-        attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
-        attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
+        from sharedManifest
     }
 
     //Copying configuration files
