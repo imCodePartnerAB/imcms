@@ -43,7 +43,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn(null);
-        when(request.getServerName()).thenReturn("127.0.0.1");
+        when(request.getServerName()).thenReturn("localhost");
 
         ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
@@ -68,7 +68,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001");
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("0");
-        when(request.getServerName()).thenReturn("127.0.0.1");
+        when(request.getServerName()).thenReturn("localhost");
 
         ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
@@ -81,7 +81,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001");
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("2");
-        when(request.getServerName()).thenReturn("127.0.0.1");
+        when(request.getServerName()).thenReturn("localhost");
 
         ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
@@ -94,7 +94,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001");
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("0");
-        when(request.getServerName()).thenReturn("127.0.0.1");
+        when(request.getServerName()).thenReturn("localhost");
 
         ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }
@@ -107,7 +107,7 @@ public class DocGetterCallbackTest {
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE)).thenReturn(null);
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)).thenReturn("1001");
         when(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION)).thenReturn("2");
-        when(request.getServerName()).thenReturn("127.0.0.1");
+        when(request.getServerName()).thenReturn("localhost");
 
         ImcmsSetupFilter.updateUserDocGetterCallback(request, services, user);
     }

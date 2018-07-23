@@ -8,7 +8,7 @@ plugins {
     id 'maven-publish'
     id 'idea'
     id 'war'
-//    id 'pmd'
+    id 'pmd'
 
     id 'io.franzbecker.gradle-lombok' version '1.14'
     id 'com.eriwen.gradle.js' version '2.14.1'
@@ -239,6 +239,10 @@ idea {
 }
 
 //gradleLint.rules = ['all-dependency']
+
+pmd {
+    ignoreFailures = true
+}
 
 javascript.source {
     custom {
