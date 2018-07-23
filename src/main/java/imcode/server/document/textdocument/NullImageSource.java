@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import imcode.util.image.ImageInfo;
 import imcode.util.io.EmptyInputStreamSource;
 import imcode.util.io.InputStreamSource;
-import lombok.EqualsAndHashCode;
 
 import java.util.Date;
 
