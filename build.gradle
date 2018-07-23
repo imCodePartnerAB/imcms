@@ -17,8 +17,8 @@ plugins {
     id 'war'
 
     id 'io.franzbecker.gradle-lombok' version '1.14'
-    id "com.eriwen.gradle.js" version "2.14.1"
-    id "com.eriwen.gradle.css" version "2.14.0"
+    id 'com.eriwen.gradle.js' version '2.14.1'
+    id 'com.eriwen.gradle.css' version '2.14.0'
 }
 
 apply plugin: 'org.junit.platform.gradle.plugin'
