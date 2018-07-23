@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
@@ -13,7 +14,6 @@ import com.imcode.imcms.persistence.repository.TextRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -68,7 +68,7 @@ public class TextControllerTest extends AbstractControllerTest {
         // both langs should already be created
 
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
     }
 

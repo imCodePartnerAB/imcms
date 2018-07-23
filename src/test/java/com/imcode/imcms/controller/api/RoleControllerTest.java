@@ -2,7 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.RoleDTO;
-import imcode.server.user.RoleId;
+import com.imcode.imcms.model.Roles;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +23,8 @@ public class RoleControllerTest extends AbstractControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        roles = Stream.of(RoleId.SUPERADMIN, RoleId.USERADMIN, RoleId.USERS)
-                .map(roleId -> new RoleDTO(roleId.getRoleId(), roleId.getName()))
+        roles = Stream.of(Roles.SUPER_ADMIN, Roles.USER_ADMIN, Roles.USER)
+                .map(roleId -> new RoleDTO(roleId.getId(), roleId.getName()))
                 .collect(Collectors.toList());
     }
 

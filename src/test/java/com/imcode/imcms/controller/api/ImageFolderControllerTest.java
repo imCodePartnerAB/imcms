@@ -4,9 +4,9 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.junit.Before;
@@ -20,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 
 import static java.io.File.separator;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 
 @Transactional
@@ -39,7 +37,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Before
     public void setAdminAsCurrentUser() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
     }
 
@@ -141,7 +139,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Test
     public void createNewImageFolder_When_UserIsNotAdmin_Expected_CorrectExceptionAndFolderNotCreated() throws Exception {
         final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(RoleId.USERS);
+        user.addRoleId(Roles.USER.getId());
         Imcms.setUser(user); // means current user is not admin now
 
         final String testFolderName = "test_folder_name";
@@ -300,9 +298,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         assertFalse(folder1.exists());
 
-        final String testRenamedFolderNewName = testFolderName;
-        imageFolderDTO1.setName(testRenamedFolderNewName);
-        final File renamedFolder = new File(folder, testRenamedFolderNewName);
+        imageFolderDTO1.setName(testFolderName);
+        final File renamedFolder = new File(folder, testFolderName);
 
         assertFalse(renamedFolder.exists());
 
@@ -361,7 +358,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
 
             final UserDomainObject user = new UserDomainObject(2);
-            user.addRoleId(RoleId.USERS);
+            user.addRoleId(Roles.USER.getId());
             Imcms.setUser(user); // means current user is not admin now
 
 
@@ -448,9 +445,8 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertTrue(folder.canRead());
 
         try {
-
             final UserDomainObject user = new UserDomainObject(2);
-            user.addRoleId(RoleId.USERS);
+            user.addRoleId(Roles.USER.getId());
             Imcms.setUser(user); // means current user is not admin now
 
 

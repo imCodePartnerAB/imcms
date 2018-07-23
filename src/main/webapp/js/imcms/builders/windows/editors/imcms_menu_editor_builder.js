@@ -576,9 +576,9 @@ Imcms.define("imcms-menu-editor-builder",
                 .find(".imcms-menu-items[data-menu-items-lvl=" + level + "]");
             if (!submenus.is(":animated")) {
                 submenus.each(function () {
-                        $(this).slideToggle();
-                        $(this).toggleClass("imcms-submenu-items--close");
-                    });
+                    $(this).slideToggle();
+                    $(this).toggleClass("imcms-submenu-items--close");
+                });
                 $btn.toggleClass("imcms-menu-item-btn--open");
             }
         }

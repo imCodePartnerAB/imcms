@@ -9,12 +9,12 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.After;
 import org.junit.Before;
@@ -31,11 +31,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -64,7 +61,7 @@ public class DocumentMenuServiceTest {
     public void setUp() throws Exception {
 
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(user); // means current user is admin now
 
@@ -88,15 +85,17 @@ public class DocumentMenuServiceTest {
     @Test
     public void hasUserAccessToDoc_When_MetaNotLinkedForUnauthorizedUsersAndUserHasRights_Expect_True() {
         meta.setLinkedForUnauthorizedUsers(false);
-        final HashMap<Integer, Permission> roleIdToPermission = new HashMap<>(Collections.singletonMap(RoleId.USERADMIN_ID, Permission.EDIT));
+        final HashMap<Integer, Permission> roleIdToPermission = new HashMap<>(Collections.singletonMap(
+                Roles.USER_ADMIN.getId(), Permission.EDIT
+        ));
         meta.setRoleIdToPermission(roleIdToPermission);
 
         metaRepository.saveAndFlush(meta);
 
         final UserDomainObject user = Imcms.getUser();
 
-        user.addRoleId(RoleId.USERS);
-        user.addRoleId(RoleId.USERADMIN);
+        user.addRoleId(Roles.USER.getId());
+        user.addRoleId(Roles.USER_ADMIN.getId());
 
         assertTrue(documentMenuService.hasUserAccessToDoc(meta.getId(), user));
     }
@@ -207,7 +206,7 @@ public class DocumentMenuServiceTest {
     @Test
     public void isPublicMenuItem_When_MetaHasViewPermissionsForDefaultUser_Expect_True() {
         final Map<Integer, Permission> roleIdToPermission = new HashMap<>(
-                Collections.singletonMap(RoleId.USERS_ID, Permission.VIEW)
+                Collections.singletonMap(Roles.USER.getId(), Permission.VIEW)
         );
         meta.setRoleIdToPermission(roleIdToPermission);
         meta.setPublicationStartDatetime(new Date(0, 1, 1));
@@ -219,7 +218,7 @@ public class DocumentMenuServiceTest {
     @Test
     public void isPublicMenuItem_When_MetaHasNonePermissionsForDefaultUser_Expect_False() {
         final Map<Integer, Permission> roleIdToPermission = new HashMap<>(
-                Collections.singletonMap(RoleId.USERS_ID, Permission.NONE)
+                Collections.singletonMap(Roles.USER.getId(), Permission.NONE)
         );
         meta.setRoleIdToPermission(roleIdToPermission);
         metaRepository.save(meta);

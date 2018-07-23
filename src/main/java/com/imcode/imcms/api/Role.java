@@ -1,16 +1,11 @@
 package com.imcode.imcms.api;
 
 import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
 
 /**
  * @since 2.0
  */
 public class Role implements Comparable<Role> {
-
-    public static final int SUPERADMIN_ID = RoleId.SUPERADMIN_ID;
-    public static final int USERADMIN_ID = RoleId.USERADMIN_ID;
-    public static final int USERS_ID = RoleId.USERS_ID;
 
     private final RoleDomainObject internalRole;
 
@@ -23,7 +18,7 @@ public class Role implements Comparable<Role> {
     }
 
     public int getId() {
-        return internalRole.getId().intValue();
+        return internalRole.getId();
     }
 
     public String getName() {
@@ -35,7 +30,15 @@ public class Role implements Comparable<Role> {
     }
 
     public boolean equals(Object o) {
-        return internalRole.equals(((Role) o).internalRole);
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Role)) {
+            return false;
+        }
+
+        final Role role = (Role) o;
+        return internalRole.equals(role.internalRole);
     }
 
     public int hashCode() {

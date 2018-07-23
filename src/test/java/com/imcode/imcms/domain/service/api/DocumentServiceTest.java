@@ -35,6 +35,7 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -53,7 +54,6 @@ import imcode.server.Config;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.index.MockDocumentIndex;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
@@ -86,14 +86,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.Type.TEXT;
-import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
-import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.*;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -218,7 +212,7 @@ public class DocumentServiceTest {
         }
 
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user); // means current user is admin now
     }
@@ -364,7 +358,7 @@ public class DocumentServiceTest {
     public void save_When_CreatedAndModifiedAndArchivedAndPublishedAndDepublishedAttributesSet_Expect_Saved() {
 
         final UserDomainObject currentUser = new UserDomainObject(1);
-        currentUser.addRoleId(RoleId.SUPERADMIN);
+        currentUser.addRoleId(Roles.SUPER_ADMIN.getId());
         currentUser.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(currentUser); // means current user is admin now
 
@@ -484,7 +478,7 @@ public class DocumentServiceTest {
     @Test
     public void save_When_CategoriesIsSet_Expect_Saved() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
 
         categoryDataInitializer.createData(20);
@@ -585,7 +579,7 @@ public class DocumentServiceTest {
     @Test(expected = DocumentNotExistException.class)
     public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         Imcms.setUser(user); // means current user is admin now
 

@@ -47,7 +47,7 @@ Imcms.define("imcms-keywords-builder",
                 $keywords = $keyword.parent()
             ;
 
-            $keyword.detach();
+            $keyword.remove();
 
             if ($keywords.children().length === 0) {
                 $keywords.css({"display": "none"})

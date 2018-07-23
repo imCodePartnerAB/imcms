@@ -13,6 +13,7 @@ Imcms.define(
         texts = texts.superAdmin.users;
 
         var $searchResultContainer;
+        var userArchivedClass = 'imcms-user-info-row--archived';
 
         function buildTitle() {
             return components.texts.titleText('<div>', texts.title, {
@@ -71,8 +72,17 @@ Imcms.define(
                 }
             }
 
-            function onArchiveUser() {
-                // todo: implement
+            function getOnArchiveUser(user) {
+                return function () {
+                    usersRestApi.update({id: user.id, active: false}).success(function () {
+                        $('#user-id-' + user.id).addClass(userArchivedClass)
+                            .find('.imcms-control--archive')
+                            .replaceWith($('<div>', {
+                                'class': 'imcms-user-info-row__archive',
+                                text: texts.searchResult.archived
+                            }));
+                    });
+                }
             }
 
             var UserListBuilder = function ($searchResultContainer) {
@@ -89,9 +99,18 @@ Imcms.define(
                     return this;
                 },
                 userToRow: function (user) {
+                    var infoRowAttributes = {
+                        id: 'user-id-' + user.id
+                    };
+
+                    user.active || (infoRowAttributes['class'] = userArchivedClass);
+
                     return new BEM({
                         block: 'imcms-user-info-row',
                         elements: {
+                            'user-id': $('<div>', {
+                                text: user.id
+                            }),
                             'first-name': $('<div>', {
                                 text: user.firstName
                             }),
@@ -105,9 +124,11 @@ Imcms.define(
                                 text: user.email
                             }),
                             'edit': components.controls.edit(getOnEditUser(user)),
-                            'archive': components.controls.archive(onArchiveUser)
+                            'archive': user.active
+                                ? components.controls.archive(getOnArchiveUser(user))
+                                : '<div>' + texts.searchResult.archived + '</div>'
                         }
-                    }).buildBlockStructure('<div>');
+                    }).buildBlockStructure('<div>', infoRowAttributes);
                 },
                 updateUsersFound: function (numberOfUsers) {
                     $usersCountContainer.text(numberOfUsers);
@@ -117,6 +138,7 @@ Imcms.define(
                     var $titleRow = new BEM({
                         block: 'imcms-user-title-row',
                         elements: {
+                            'user-id': $('<div>', {text: texts.searchResult.id}),
                             'first-name': $('<div>', {text: texts.searchResult.firstName}),
                             'last-name': $('<div>', {text: texts.searchResult.lastName}),
                             'user-name': $('<div>', {text: texts.searchResult.userName}),

@@ -4,8 +4,8 @@ import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
-import imcode.server.user.RoleId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -34,22 +33,15 @@ public class UserServiceTest {
     @Autowired
     private UserDataInitializer userDataInitializer;
 
-    private List<User> users;
-
     private List<UserDTO> expectedUsers;
 
     @Before
     public void createUsers() {
-        users = new ArrayList<>(12);
         List<User> adminUsers = new ArrayList<>(9);
 
-        final List<User> superAdmins = userDataInitializer.createData(5, RoleId.SUPERADMIN_ID);
-        final List<User> admins = userDataInitializer.createData(4, RoleId.USERADMIN_ID);
-        final List<User> defaultUsers = userDataInitializer.createData(3, RoleId.USERS_ID);
-
-        users.addAll(superAdmins);
-        users.addAll(admins);
-        users.addAll(defaultUsers);
+        final List<User> superAdmins = userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId());
+        final List<User> admins = userDataInitializer.createData(4, Roles.USER_ADMIN.getId());
+        userDataInitializer.createData(3, Roles.USER.getId());
 
         adminUsers.add(userService.getUser("admin"));
         adminUsers.addAll(superAdmins);

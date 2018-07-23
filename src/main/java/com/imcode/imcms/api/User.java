@@ -1,9 +1,16 @@
 package com.imcode.imcms.api;
 
 import imcode.server.Imcms;
-import imcode.server.user.RoleId;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
 import imcode.server.user.UserDomainObject;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@SuppressWarnings("unused")
 public class User {
     private UserDomainObject internalUser;
 
@@ -94,6 +101,7 @@ public class User {
     /**
      * @deprecated Use {@link #getProvince()}. Will be removed in 4.0.
      */
+    @Deprecated
     public String getCountyCouncil() {
         return internalUser.getProvince();
     }
@@ -101,6 +109,7 @@ public class User {
     /**
      * @deprecated Use {@link #setProvince(String)}. Will be removed in 4.0.
      */
+    @Deprecated
     public void setCountyCouncil(String countyCouncil) {
         internalUser.setProvince(countyCouncil);
     }
@@ -121,36 +130,76 @@ public class User {
         internalUser.setEmailAddress(emailAddress);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
+    @Deprecated
     public String getOtherPhone() {
-        return internalUser.getOtherPhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.OTHER);
     }
 
-    public void setOtherPhone(String otherphone) {
-        internalUser.setOtherPhone(otherphone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    @Deprecated
+    public void setOtherPhone(String otherPhone) {
+        internalUser.replacePhoneNumbersOfType(otherPhone, PhoneNumberType.OTHER);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
+    @Deprecated
     public String getWorkPhone() {
-        return internalUser.getWorkPhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.WORK);
     }
 
-    public void setWorkPhone(String workphone) {
-        internalUser.setWorkPhone(workphone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    @Deprecated
+    public void setWorkPhone(String workPhone) {
+        internalUser.replacePhoneNumbersOfType(workPhone, PhoneNumberType.WORK);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
+    @Deprecated
     public String getMobilePhone() {
-        return internalUser.getMobilePhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.MOBILE);
     }
 
-    public void setMobilePhone(String mobilephone) {
-        internalUser.setMobilePhone(mobilephone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    @Deprecated
+    public void setMobilePhone(String mobilePhone) {
+        internalUser.replacePhoneNumbersOfType(mobilePhone, PhoneNumberType.MOBILE);
     }
 
+    /**
+     * @deprecated Use {@link #getPhoneNumbersOfType(PhoneNumberType)}
+     */
+    @Deprecated
     public String getHomePhone() {
-        return internalUser.getHomePhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.HOME);
     }
 
-    public void setHomePhone(String homephone) {
-        internalUser.setHomePhone(homephone);
+    /**
+     * @deprecated Use {@link #addPhoneNumber(PhoneNumber)}
+     */
+    @Deprecated
+    public void setHomePhone(String homePhone) {
+        internalUser.replacePhoneNumbersOfType(homePhone, PhoneNumberType.HOME);
+    }
+
+    public void addPhoneNumber(PhoneNumber phoneNumber) {
+        internalUser.addPhoneNumber(phoneNumber);
+    }
+
+    public Set<PhoneNumber> getPhoneNumbersOfType(PhoneNumberType phoneNumberType) {
+        return internalUser.getPhoneNumbersOfType(phoneNumberType);
     }
 
     public boolean isActive() {
@@ -210,22 +259,20 @@ public class User {
      * @since 2.0
      */
     public Role[] getRoles() {
-        RoleId[] roleDOs = internalUser.getRoleIds();
-        Role[] roles = new Role[roleDOs.length];
-        for (int i = 0; i < roleDOs.length; i++) {
-            roles[i] = new Role(Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().getRole(roleDOs[i]));
-        }
-        return roles;
+        final ImcmsAuthenticatorAndUserAndRoleMapper mapper = Imcms.getServices()
+                .getImcmsAuthenticatorAndUserAndRoleMapper();
+
+        return internalUser.getRoleIds()
+                .stream()
+                .map(integer -> new Role(mapper.getRole(integer)))
+                .toArray(Role[]::new);
     }
 
     /**
      * @since 2.0
      */
     public void setRoles(Role[] roles) {
-        RoleId[] roleIds = new RoleId[roles.length];
-        for (int i = 0; i < roles.length; i++) {
-            roleIds[i] = roles[i].getInternal().getId();
-        }
+        final Set<Integer> roleIds = Arrays.stream(roles).map(Role::getId).collect(Collectors.toSet());
         internalUser.setRoleIds(roleIds);
     }
 
@@ -244,11 +291,11 @@ public class User {
     }
 
     public String getFaxPhone() {
-        return internalUser.getFaxPhone();
+        return internalUser.getFirstPhoneNumberOfTypeAsString(PhoneNumberType.FAX);
     }
 
-    public void setFaxPhone(String faxphone) {
-        internalUser.setFaxPhone(faxphone);
+    public void setFaxPhone(String faxPhone) {
+        internalUser.replacePhoneNumbersOfType(faxPhone, PhoneNumberType.FAX);
     }
 
     public void setPassword(String password) {

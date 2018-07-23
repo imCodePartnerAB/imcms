@@ -5,7 +5,11 @@ import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemplateService;
@@ -13,6 +17,7 @@ import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.model.TextDocumentTemplate;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -21,7 +26,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Config;
 import imcode.server.Imcms;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -116,7 +120,7 @@ public class TextDocumentServiceTest {
         }
 
         final UserDomainObject user = new UserDomainObject(userId);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user); // means current user is admin now
     }
@@ -246,7 +250,7 @@ public class TextDocumentServiceTest {
     @Test
     public void save_When_NewEmptyDoc_Expect_NoError() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
 
         final TextDocumentDTO emptyDocumentDTO = documentDtoFactory.createEmptyTextDocument();
@@ -267,7 +271,7 @@ public class TextDocumentServiceTest {
     @Test
     public void save_When_NewEmptyDocWithTarget_Expect_Saved() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
 
         final String testTarget = "_test";

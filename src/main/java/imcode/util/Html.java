@@ -1,14 +1,13 @@
 package imcode.util;
 
 import com.imcode.imcms.domain.dto.UserFormData;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.LifeCyclePhase;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.commons.text.StringEscapeUtils;
 
@@ -20,10 +19,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class Html {
 
@@ -121,11 +120,7 @@ public class Html {
         final List<Integer> userRoles = IntStream.of(userFormData.getRoleIds()).boxed().collect(Collectors.toList());
 
         return roles.stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        userRoles.contains(role.getId().getRoleId())
-                ))
+                .map(role -> new UserRole(role, userRoles.contains(role.getId())))
                 .collect(Collectors.toList());
     }
 
@@ -139,33 +134,19 @@ public class Html {
         final List<RoleDomainObject> usersRoles = getRoles(editedUser.getRoleIds());
 
         return roles.stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        usersRoles.contains(role)
-                ))
+                .map(role -> new UserRole(role, usersRoles.contains(role)))
                 .collect(Collectors.toList());
     }
 
     private static List<UserRole> getNewUserRoles() {
         return getAllRolesExceptUsersRole()
                 .stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        false
-                ))
+                .map(role -> new UserRole(role, false))
                 .collect(Collectors.toList());
     }
 
     public static List<UserRole> getUserAdministratedRoles(UserFormData userFormData) {
-        final List<RoleDomainObject> allRoles = getAllRolesExceptUsersRole()
-                .stream()
-                .filter(role -> {
-                    final RoleId roleId = role.getId();
-                    return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
-                })
-                .collect(Collectors.toList());
+        final List<RoleDomainObject> allRoles = getAllRoles();
 
         final int[] userAdminRoleIds = Optional.ofNullable(userFormData)
                 .map(UserFormData::getUserAdminRoleIds)
@@ -174,41 +155,37 @@ public class Html {
         final List<Integer> userAdminRoles = IntStream.of(userAdminRoleIds).boxed().collect(Collectors.toList());
 
         return allRoles.stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        userAdminRoles.contains(role.getId().getRoleId())
-                ))
+                .map(role -> new UserRole(role, userAdminRoles.contains(role.getId())))
+                .collect(Collectors.toList());
+    }
+
+    private static List<RoleDomainObject> getAllRoles() {
+        return getAllRolesExceptUsersRole()
+                .stream()
+                .filter(role -> {
+                    final Integer roleId = role.getId();
+                    return !(roleId.equals(Roles.SUPER_ADMIN.getId()) || roleId.equals(Roles.USER_ADMIN.getId()));
+                })
                 .collect(Collectors.toList());
     }
 
     public static List<UserRole> getUserAdministratedRoles(UserDomainObject editedUser) {
-        final List<RoleDomainObject> allRoles = getAllRolesExceptUsersRole()
-                .stream()
-                .filter(role -> {
-                    final RoleId roleId = role.getId();
-                    return !(roleId.equals(RoleId.SUPERADMIN) || roleId.equals(RoleId.USERADMIN));
-                })
-                .collect(Collectors.toList());
+        final List<RoleDomainObject> allRoles = getAllRoles();
 
         final List<RoleDomainObject> usersUserAdminRoles = (editedUser == null)
                 ? Collections.emptyList()
                 : getRoles(editedUser.getUserAdminRoleIds());
 
         return allRoles.stream()
-                .map(role -> new UserRole(
-                        role.getId().getRoleId(),
-                        role.getName(),
-                        usersUserAdminRoles.contains(role)
-                ))
+                .map(role -> new UserRole(role, usersUserAdminRoles.contains(role)))
                 .collect(Collectors.toList());
     }
 
-    private static List<RoleDomainObject> getRoles(RoleId[] roleIds) {
+    private static List<RoleDomainObject> getRoles(Set<Integer> roleIds) {
         final ImcmsAuthenticatorAndUserAndRoleMapper roleMapper = Imcms.getServices()
                 .getImcmsAuthenticatorAndUserAndRoleMapper();
 
-        return Stream.of(roleIds)
+        return roleIds.stream()
                 .map(roleMapper::getRole)
                 .collect(Collectors.toList());
     }
@@ -224,11 +201,16 @@ public class Html {
     }
 
     @Data
-    @AllArgsConstructor
     public static class UserRole {
         public final int id;
         public final String name;
         public final boolean checked;
+
+        private UserRole(RoleDomainObject role, boolean checked) {
+            this.id = role.getId();
+            this.name = role.getName();
+            this.checked = checked;
+        }
     }
 
 }

@@ -1,10 +1,10 @@
 package com.imcode.imcms.domain.dto;
 
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentStoredFields;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.common.SolrDocument;
 import org.junit.Before;
@@ -26,7 +26,7 @@ public class DocumentStoredFieldsDTOTest {
     public void setUp() throws Exception {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
     }
 

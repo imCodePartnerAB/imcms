@@ -1,8 +1,8 @@
 package com.imcode.imcms.servlet;
 
 import com.imcode.imcms.api.UserAlreadyExistsException;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 
 import javax.servlet.ServletException;
@@ -33,7 +33,7 @@ public class RegisterUserServlet extends HttpServlet {
             user.setEmailAddress(email);
             user.setLanguageIso639_2(Imcms.getUser().getLanguageIso639_2());
             user.setPassword(password);
-            user.addRoleId(RoleId.USERS);
+            user.addRoleId(Roles.USER.getId());
             Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().addUser(user);
         } catch (UserAlreadyExistsException e) {
             e.printStackTrace();

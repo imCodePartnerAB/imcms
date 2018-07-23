@@ -139,8 +139,7 @@ Imcms.define("imcms-loop-editor-builder",
 
         function buildControls() {
             var $remove = components.controls.remove(function () {
-                var $item = $remove.parents("." + LOOP_ITEM_CLASS);
-                $item.detach();
+                $remove.parents("." + LOOP_ITEM_CLASS).remove();
             });
 
             return components.controls.buildControlsBlock("<div>", [$remove]);

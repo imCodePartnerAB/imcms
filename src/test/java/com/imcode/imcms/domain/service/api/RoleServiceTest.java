@@ -4,7 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.model.Role;
-import imcode.server.user.RoleId;
+import com.imcode.imcms.model.Roles;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -30,9 +29,9 @@ public class RoleServiceTest {
     @Test
     public void getAllTest() {
         final List<Role> roles = roleService.getAll();
-        assertLike(RoleId.SUPERADMIN, roles.get(0));
-        assertLike(RoleId.USERADMIN, roles.get(1));
-        assertLike(RoleId.USERS, roles.get(2));
+        assertLike(Roles.SUPER_ADMIN, roles.get(0));
+        assertLike(Roles.USER_ADMIN, roles.get(1));
+        assertLike(Roles.USER, roles.get(2));
     }
 
     @Test
@@ -50,9 +49,9 @@ public class RoleServiceTest {
         assertEquals(received, saved);
     }
 
-    private void assertLike(RoleId roleId, Role role) {
-        assertEquals((Integer) roleId.getRoleId(), role.getId());
-        assertEquals(roleId.getName(), role.getName());
+    private void assertLike(Role roleA, Role roleB) {
+        assertEquals(roleA.getId(), roleB.getId());
+        assertEquals(roleA.getName(), roleB.getName());
     }
 
 }

@@ -1,9 +1,9 @@
 package com.imcode.imcms.api;
 
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -126,7 +126,7 @@ public class ContentManagementSystem implements Cloneable {
             throw new NoPermissionException("Class " + clazz.getName() + " is not signed by certificates in keystore.");
         }
         ContentManagementSystem cms = create(service, currentUser.clone());
-        cms.currentUser.addRoleId(RoleId.SUPERADMIN);
+        cms.currentUser.addRoleId(Roles.SUPER_ADMIN.getId());
         runnable.runWith(cms);
         cms.currentUser = null;
     }

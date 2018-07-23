@@ -8,24 +8,21 @@ import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static com.imcode.imcms.api.Role.USERS_ID;
 
 @Service
 public class DefaultDocumentMenuService implements DocumentMenuService {
@@ -57,8 +54,8 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
 
         final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
 
-        return Arrays.stream(user.getRoleIds())
-                .map(RoleId::getRoleId)
+        return user.getRoleIds()
+                .stream()
                 .map(docPermissions::get)
                 .filter(Objects::nonNull)
                 .anyMatch(permission -> permission.isAtLeastAsPrivilegedAs(Permission.VIEW));
@@ -127,7 +124,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     }
 
     private boolean isDefaultUserPermittedForView(Meta meta) {
-        final Permission userPermission = meta.getRoleIdToPermission().get(USERS_ID);
+        final Permission userPermission = meta.getRoleIdToPermission().get(Roles.USER.getId());
         return (userPermission == null) || userPermission.isAtLeastAsPrivilegedAs(Permission.VIEW);
     }
 }

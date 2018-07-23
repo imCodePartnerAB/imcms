@@ -726,7 +726,7 @@ Imcms.define("imcms-document-editor-builder",
 
             var title = (document.commonContents)
                 ? document.commonContents.filter(function (commonContent) {
-                    return commonContent.language.code === imcms.userLanguage;
+                        return commonContent.language.code === imcms.userLanguage;
                     })
                     .map(function (commonContent) {
                         return commonContent.headline;
@@ -822,8 +822,8 @@ Imcms.define("imcms-document-editor-builder",
 
                 if (sendSearchDocRequest
                     && innerHeight !== scrollHeight
-                    && (($this.scrollTop() + innerHeight) >= scrollHeight)
-                ) {
+                    && (($this.scrollTop() + innerHeight) >= scrollHeight))
+                {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
             });
@@ -919,7 +919,7 @@ Imcms.define("imcms-document-editor-builder",
                 $(selectItemValue).text("None");
             });
 
-            $editorBody.detach();
+            $editorBody.remove();
         }
 
         function incrementDocumentNumber(delta) {

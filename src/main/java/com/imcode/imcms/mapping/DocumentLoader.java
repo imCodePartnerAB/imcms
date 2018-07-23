@@ -6,7 +6,6 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
-import imcode.server.user.RoleId;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -73,7 +72,7 @@ public class DocumentLoader {
 
         for (Map.Entry<Integer, Permission> roleIdToPermissionSetId : jpaMeta.getRoleIdToPermission().entrySet()) {
             rolePermissionMappings.setPermissionSetTypeForRole(
-                    new RoleId(roleIdToPermissionSetId.getKey()),
+                    roleIdToPermissionSetId.getKey(),
                     roleIdToPermissionSetId.getValue());
         }
 

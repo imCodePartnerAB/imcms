@@ -262,8 +262,8 @@ Imcms.define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator
                     time = $inputTime.val().split(":");
 
                 if (isValid(time)
-                    && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($inputTime, time)) {
-
+                    && !dateTimeValidator.isPublishedDateBeforePublicationEndDate($inputTime, time))
+                {
                     $inputTime.val("");
                 }
 

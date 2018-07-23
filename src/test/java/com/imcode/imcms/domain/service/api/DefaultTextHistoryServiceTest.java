@@ -8,10 +8,10 @@ import com.imcode.imcms.domain.dto.TextHistoryDTO;
 import com.imcode.imcms.domain.service.TextHistoryService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -54,7 +54,7 @@ public class DefaultTextHistoryServiceTest {
     @BeforeClass
     public static void setUser() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
     }
 

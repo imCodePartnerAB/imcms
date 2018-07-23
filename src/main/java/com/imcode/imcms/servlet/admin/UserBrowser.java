@@ -13,7 +13,6 @@ import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.HttpSessionUtils;
 import imcode.util.Utility;
@@ -27,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class UserBrowser extends HttpServlet {
 
@@ -162,10 +162,10 @@ public class UserBrowser extends HttpServlet {
 
     private UserDomainObject[] getUsersWithUseradminPermissibleRoles(UserDomainObject loggedOnUser, UserDomainObject[] users) {
         List<UserDomainObject> userList = new ArrayList<>();
-        RoleId[] useradminPermissibleRoles = loggedOnUser.getUserAdminRoleIds();
+        final Set<Integer> userAdminPermissibleRoles = loggedOnUser.getUserAdminRoleIds();
         for (UserDomainObject user : users) {
-            for (RoleId useradminPermissibleRole : useradminPermissibleRoles) {
-                if (user.hasRoleId(useradminPermissibleRole)) {
+            for (Integer userAdminPermissibleRole : userAdminPermissibleRoles) {
+                if (user.hasRoleId(userAdminPermissibleRole)) {
                     userList.add(user);
                     break;
                 }

@@ -21,17 +21,17 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
             CHANGE_IMAGES_IN_ARCHIVE_PERMISSION,
     };
 
-    private RoleId id;
+    private Integer id;
     private String name;
     private int adminRoleId;
     private Set<RolePermissionDomainObject> permissions = new HashSet<>();
 
 
     public RoleDomainObject(String name) {
-        this(new RoleId(0), name, 0);
+        this(0, name, 0);
     }
 
-    public RoleDomainObject(RoleId roleId, String roleName, int adminRoleId) {
+    public RoleDomainObject(Integer roleId, String roleName, int adminRoleId) {
         this.id = roleId;
         this.name = roleName;
         this.adminRoleId = adminRoleId;
@@ -41,11 +41,11 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
         return ALL_ROLE_PERMISSIONS;
     }
 
-    public RoleId getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(RoleId id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -79,7 +79,7 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
             return -adminRoleId;
         }
 
-        return id.intValue();
+        return id;
     }
 
     public String toString() {
@@ -111,7 +111,7 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
     }
 
     public RolePermissionDomainObject[] getPermissions() {
-        return permissions.toArray(new RolePermissionDomainObject[permissions.size()]);
+        return permissions.toArray(new RolePermissionDomainObject[0]);
     }
 
     public void addUnionOfPermissionIdsToRole(int unionOfRolePermissionIds) {
@@ -130,7 +130,7 @@ public class RoleDomainObject implements Serializable, Comparable<RoleDomainObje
     @Override
     public RoleDomainObject clone() throws CloneNotSupportedException {
         RoleDomainObject clone = (RoleDomainObject) super.clone();
-        clone.id = new RoleId(getId().intValue());
+        clone.id = id;
         clone.permissions = new HashSet<>(permissions);
 
         return clone;

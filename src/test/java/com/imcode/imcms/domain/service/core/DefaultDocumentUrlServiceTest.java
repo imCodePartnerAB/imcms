@@ -6,11 +6,11 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.DocumentUrlJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import imcode.server.Imcms;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,8 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -52,7 +51,7 @@ public class DefaultDocumentUrlServiceTest {
     @Before
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.addRoleId(RoleId.SUPERADMIN);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
     }
 

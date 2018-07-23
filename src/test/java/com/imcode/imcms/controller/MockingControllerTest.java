@@ -2,6 +2,7 @@ package com.imcode.imcms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -12,6 +13,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,6 +34,12 @@ public abstract class MockingControllerTest {
 
     protected MvcResultActions perform(RequestBuilder requestBuilder) throws Exception {
         return new MvcResultActions(mockMvc.perform(requestBuilder));
+    }
+
+    @SneakyThrows
+    protected MvcResultActions perform(MockHttpServletRequestBuilder requestBuilder, Object jsonContent) {
+        requestBuilder = requestBuilder.contentType(MediaType.APPLICATION_JSON_UTF8).content(asJson(jsonContent));
+        return perform(requestBuilder);
     }
 
     protected String asJson(Object object) throws JsonProcessingException {

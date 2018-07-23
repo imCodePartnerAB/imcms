@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -14,10 +13,8 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.springframework.data.domain.Sort.Direction;
-import static org.springframework.data.domain.Sort.Order;
+import static org.springframework.data.domain.Sort.*;
 
 @Component
 public class DocumentSearchQueryConverter {
@@ -67,8 +64,9 @@ public class DocumentSearchQueryConverter {
         if (!searchingUser.isSuperAdmin()) {
             solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":true");
 
-            final String userRoleIdsFormatted = Stream.of(searchingUser.getRoleIds())
-                    .map(RoleId::toString)
+            final String userRoleIdsFormatted = searchingUser.getRoleIds()
+                    .stream()
+                    .map(Object::toString)
                     .collect(Collectors.joining(" ", "(", ")"));
 
             solrQuery.addFilterQuery(DocumentIndex.FIELD__ROLE_ID + ":" + userRoleIdsFormatted);

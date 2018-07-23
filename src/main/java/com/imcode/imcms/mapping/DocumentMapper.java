@@ -58,7 +58,7 @@ import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocu
 import static imcode.server.ImcmsConstants.*;
 
 @Component
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class DocumentMapper implements DocumentGetter {
 
     private final DocumentLoaderCachingProxy documentLoaderCachingProxy;
@@ -306,10 +306,9 @@ public class DocumentMapper implements DocumentGetter {
             throws DocumentSaveException, NoPermissionToAddDocumentToMenuException, NoPermissionToEditDocumentException {
 
         DocumentDomainObject docClone = doc.clone();
-        DocumentDomainObject oldDoc = getCustomDocument(doc.getRef());
 
         try {
-            documentSaver.updateDocument(docClone, commonContents, oldDoc, user);
+            documentSaver.updateDocument(docClone, commonContents, user);
         } finally {
             invalidateDocument(doc.getId());
         }

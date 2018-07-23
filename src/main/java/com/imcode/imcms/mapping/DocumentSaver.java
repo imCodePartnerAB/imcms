@@ -44,6 +44,7 @@ import java.util.stream.Stream;
  * Used internally by DocumentMapper.
  */
 @Service
+@SuppressWarnings("unused")
 public class DocumentSaver {
 
     private final DocRepository docRepository;
@@ -162,7 +163,6 @@ public class DocumentSaver {
     @Transactional
     public void updateDocument(DocumentDomainObject doc,
                                Map<DocumentLanguage, DocumentCommonContent> commonContents,
-                               DocumentDomainObject oldDoc,
                                UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -198,6 +198,19 @@ public class DocumentSaver {
         doc.accept(documentSavingVisitor);
         updateModifiedDtIfNotSetExplicitly(doc);
         docRepository.touch(doc.getVersionRef(), user, doc.getModifiedDatetime());
+    }
+
+    /**
+     * @deprecated use
+     */
+    @Deprecated
+    @Transactional
+    public void updateDocument(DocumentDomainObject doc,
+                               Map<DocumentLanguage, DocumentCommonContent> commonContents,
+                               DocumentDomainObject oldDoc,
+                               UserDomainObject user)
+            throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
+        updateDocument(doc, commonContents, user);
     }
 
     @Transactional
@@ -375,7 +388,7 @@ public class DocumentSaver {
         meta.setPublisherId(metaDO.getPublisherId());
         meta.setRoleIdToPermission(
                 Stream.of(metaDO.getRoleIdToDocumentPermissionSetTypeMappings().getMappings()).collect(
-                        Collectors.toMap(it -> it.getRoleId().getRoleId(), Mapping::getDocumentPermissionSetType)
+                        Collectors.toMap(Mapping::getRoleId, Mapping::getDocumentPermissionSetType)
                 )
         );
         meta.setSearchDisabled(metaDO.getSearchDisabled());

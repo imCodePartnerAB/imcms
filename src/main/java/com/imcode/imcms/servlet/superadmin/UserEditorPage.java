@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet.superadmin;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.flow.OkCancelPage;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -10,7 +11,6 @@ import imcode.server.LanguageMapper;
 import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.RoleDomainObject;
-import imcode.server.user.RoleId;
 import imcode.server.user.UserDomainObject;
 import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
 import imcode.util.Utility;
@@ -20,9 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
@@ -168,43 +166,43 @@ public class UserEditorPage extends OkCancelPage {
     private void updateUserAdminRolesFromRequest(HttpServletRequest request) {
         if (Utility.getLoggedOnUser(request).isSuperAdmin() || editedUser.isUserAdmin()) {
             editedUser.setUserAdminRolesIds(getRoleIdsFromRequestParameterValues(request));
-            editedUser.removeUserAdminRoleId(RoleId.SUPERADMIN);
-            editedUser.removeUserAdminRoleId(RoleId.USERADMIN);
+            editedUser.removeUserAdminRoleId(Roles.SUPER_ADMIN.getId());
+            editedUser.removeUserAdminRoleId(Roles.USER_ADMIN.getId());
         }
     }
 
-    private RoleId[] getRoleIdsFromRequestParameterValues(HttpServletRequest request) {
-        return getRoleIdsSetFromRequestParameterValues(request, UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS)
-                .toArray(new RoleId[0]);
+    private Set<Integer> getRoleIdsFromRequestParameterValues(HttpServletRequest request) {
+        return getRoleIdsSetFromRequestParameterValues(request, UserEditorPage.REQUEST_PARAMETER__USER_ADMIN_ROLE_IDS);
     }
 
-    private Set<RoleId> getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
-        Set<RoleId> roleIds = new HashSet<>();
-        String[] roleIdStrings = request.getParameterValues(requestParameter);
-        if (null != roleIdStrings) {
-            for (String roleIdString : roleIdStrings) {
-                RoleId roleId = new RoleId(Integer.parseInt(roleIdString));
-                roleIds.add(roleId);
-            }
+    private Set<Integer> getRoleIdsSetFromRequestParameterValues(HttpServletRequest request, String requestParameter) {
+        final Set<Integer> roleIds = new HashSet<>();
+        final String[] roleIdStrings = request.getParameterValues(requestParameter);
+
+        if (null == roleIdStrings) return roleIds;
+
+        for (final String roleIdString : roleIdStrings) {
+            roleIds.add(Integer.parseInt(roleIdString));
         }
         return roleIds;
     }
 
     private void updateUserRolesFromRequest(HttpServletRequest request) {
         UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
+
         if (loggedOnUser.canEditRolesFor(uneditedUser)) {
-            Set<RoleId> roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
-            RoleId[] userRoleIdsArray;
+            Set<Integer> roleIdsSetFromRequest = getRoleIdsSetFromRequestParameterValues(request, REQUEST_PARAMETER__ROLE_IDS);
+            Set<Integer> userRoleIdsArray;
+
             if (loggedOnUser.isUserAdminAndNotSuperAdmin()) {
-                List<RoleId> userAdminRoleIds = Arrays.asList(loggedOnUser.getUserAdminRoleIds());
+                Set<Integer> userAdminRoleIds = loggedOnUser.getUserAdminRoleIds();
                 roleIdsSetFromRequest.retainAll(userAdminRoleIds);
 
-                Set<RoleId> userRoleIds = new HashSet<>(Arrays.asList(editedUser.getRoleIds()));
-                userRoleIds.removeAll(userAdminRoleIds);
-                userRoleIds.addAll(roleIdsSetFromRequest);
-                userRoleIdsArray = userRoleIds.toArray(new RoleId[0]);
+                userRoleIdsArray = editedUser.getRoleIds();
+                userRoleIdsArray.removeAll(userAdminRoleIds);
+                userRoleIdsArray.addAll(roleIdsSetFromRequest);
             } else {
-                userRoleIdsArray = roleIdsSetFromRequest.toArray(new RoleId[0]);
+                userRoleIdsArray = roleIdsSetFromRequest;
             }
             editedUser.setRoleIds(userRoleIdsArray);
         }
@@ -260,7 +258,7 @@ public class UserEditorPage extends OkCancelPage {
             if (StringUtils.isBlank(editedUser.getPassword())) {
                 errorMessage = ERROR__PASSWORD_LENGTH;
             } else {
-                boolean editedUserHasOnlyTheUsersRole = 1 == editedUser.getRoleIds().length;
+                boolean editedUserHasOnlyTheUsersRole = (1 == editedUser.getRoleIds().size());
                 UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
                 if (editedUserHasOnlyTheUsersRole || loggedOnUser.isUserAdminAndNotSuperAdmin()
                         && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser))

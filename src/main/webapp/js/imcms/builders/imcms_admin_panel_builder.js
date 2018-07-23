@@ -147,7 +147,7 @@ Imcms.define("imcms-admin-panel-builder",
             var languageCode = $(this).text();
 
             if (languageCode !== imcms.language.code) {
-                languagesRestApi.update({code: languageCode}).done(function () {
+                languagesRestApi.replace({code: languageCode}).done(function () {
                     location.reload(true);
                 });
             }
