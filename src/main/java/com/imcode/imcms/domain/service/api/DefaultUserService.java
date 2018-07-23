@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -253,6 +254,23 @@ class DefaultUserService implements UserService {
         return Arrays.stream(roleIdsInt)
                 .mapToObj(roleService::getById)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserDTO> searchUsers(String searchTerm, Set<Integer> withRoles, boolean includeInactive) {
+        final List<User> users;
+
+        if ((withRoles == null) || (withRoles.isEmpty())) {
+            users = includeInactive
+                    ? userRepository.searchUsers(searchTerm)
+                    : userRepository.searchActiveUsers(searchTerm);
+        } else {
+            users = includeInactive
+                    ? userRepository.searchUsers(searchTerm, withRoles)
+                    : userRepository.searchActiveUsers(searchTerm, withRoles);
+        }
+
+        return toDTO(users);
     }
 
     // TODO: 13.10.17 Was moved. Rewrite to human code.
