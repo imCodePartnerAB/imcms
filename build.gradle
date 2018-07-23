@@ -51,9 +51,9 @@ ext {
     sharedManifest = manifest {
         attributes "Build-Date": new Date()
         attributes "Application-Version": project.version
-        attributes "Build-Jdk": System.getProperty("java.version") + " (" + System.getProperty("java.vendor") + ")"
+        attributes "Build-Jdk": System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')'
         attributes "Built-With": "gradle-${project.getGradle().getGradleVersion()}, groovy-${GroovySystem.getVersion()}"
-        attributes "Built-By": project.hasProperty("BF_USER") ? project.getProperty("BF_USER") : System.getProperty("user.name")
+        attributes "Built-By": project.hasProperty('BF_USER') ? project.getProperty('BF_USER') : System.getProperty('user.name')
     }
 }
 
