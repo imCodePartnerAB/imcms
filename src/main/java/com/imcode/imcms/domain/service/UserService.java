@@ -7,11 +7,11 @@ import com.imcode.imcms.persistence.entity.User;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends UserDataService {
 
     User getUser(int id) throws UserNotExistsException;
 
-    User getUser(String login) throws UserNotExistsException;
+    UserDTO getUser(String login) throws UserNotExistsException;
 
     void updateUser(UserDTO updateMe);
 
@@ -27,5 +27,4 @@ public interface UserService {
 
     void saveUser(UserFormData userData);
 
-    UserFormData getUserData(int id) throws UserNotExistsException;
 }

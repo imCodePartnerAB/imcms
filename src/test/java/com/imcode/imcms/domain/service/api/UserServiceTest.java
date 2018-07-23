@@ -16,6 +16,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,17 +38,19 @@ public class UserServiceTest {
 
     @Before
     public void createUsers() {
-        List<User> adminUsers = new ArrayList<>(9);
+        expectedUsers = new ArrayList<>(9);
 
-        final List<User> superAdmins = userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId());
-        final List<User> admins = userDataInitializer.createData(4, Roles.USER_ADMIN.getId());
+        final List<UserDTO> superAdmins = toDTO(userDataInitializer.createData(5, Roles.SUPER_ADMIN.getId()));
+        final List<UserDTO> admins = toDTO(userDataInitializer.createData(4, Roles.USER_ADMIN.getId()));
         userDataInitializer.createData(3, Roles.USER.getId());
 
-        adminUsers.add(userService.getUser("admin"));
-        adminUsers.addAll(superAdmins);
-        adminUsers.addAll(admins);
+        expectedUsers.add(userService.getUser("admin"));
+        expectedUsers.addAll(superAdmins);
+        expectedUsers.addAll(admins);
+    }
 
-        expectedUsers = adminUsers.stream()
+    private List<UserDTO> toDTO(Collection<User> usersToTransform) {
+        return usersToTransform.stream()
                 .map(UserDTO::new)
                 .collect(Collectors.toList());
     }

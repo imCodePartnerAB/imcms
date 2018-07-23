@@ -4,7 +4,6 @@ import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.persistence.entity.User;
 import imcode.util.Utility;
 import org.apache.commons.lang3.StringUtils;
 
@@ -50,7 +49,7 @@ class UserEditValidationResult extends UserValidationResult {
         setEmptyLoginName(StringUtils.isBlank(login));
 
         try {
-            final User user = userService.getUser(login);
+            final UserDTO user = userService.getUser(login);
             setLoginAlreadyTaken(!user.getId().equals(userData.getId()));
 
         } catch (UserNotExistsException e) {

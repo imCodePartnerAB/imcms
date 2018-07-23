@@ -43,6 +43,10 @@ public class RoleJPA extends Role {
     @Column(name = "admin_role", nullable = false)
     private Integer adminRole = 0;
 
+    public RoleJPA(String name) {
+        this.name = name;
+    }
+
     public RoleJPA(Role from) {
         super(from);
     }

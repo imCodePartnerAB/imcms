@@ -73,8 +73,9 @@ class DefaultUserService implements UserService {
     }
 
     @Override
-    public User getUser(String login) {
+    public UserDTO getUser(String login) {
         return Optional.ofNullable(userRepository.findByLogin(login))
+                .map(UserDTO::new)
                 .orElseThrow(() -> new UserNotExistsException(login));
     }
 
