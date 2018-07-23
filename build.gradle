@@ -418,13 +418,10 @@ war {
 
 publishing {
     publications {
-        mavenWeb(MavenPublication) {
-            from components.web
-        }
-
         mavenJava(MavenPublication) {
             from components.java
             artifact sourcesJar
+            artifact war
         }
     }
 
