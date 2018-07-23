@@ -314,8 +314,6 @@ csslint {
 }
 
 war {
-    classpath = jar.outputs.files + configurations.runtime - configurations.providedRuntime
-
     exclude "**/js/imcms/**/*.js"
     exclude "**/css/**/*.css"
 
