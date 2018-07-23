@@ -196,7 +196,6 @@ task importProperties(dependsOn: copyProperties) {
     }
 }
 
-//task explodedWar(type: Copy, dependsOn: war) {
 task explodedWar(type: Sync, dependsOn: war) {
     into "${buildDir}/libs/exploded/${project.name}-${project.version}.war/"
     with war
