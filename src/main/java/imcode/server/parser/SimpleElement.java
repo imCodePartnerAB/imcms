@@ -35,10 +35,8 @@ public class SimpleElement implements Element {
 
     public Element getChildElement(String name) {
         for (Element childNode : children) {
-            if (childNode.getNodeType() == Node.ELEMENT_NODE) {
-                if (childNode.getName().equals(name)) {
-                    return childNode;
-                }
+            if (childNode.getNodeType() == Node.ELEMENT_NODE && childNode.getName().equals(name)) {
+                return childNode;
             }
         }
         return null;

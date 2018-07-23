@@ -51,4 +51,9 @@ public class NullImageSource extends ImageSource {
     public boolean equals(Object obj) {
         return (obj instanceof NullImageSource);
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }
