@@ -202,7 +202,7 @@ task explodedWar(type: Sync, dependsOn: war) {
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-    from sourceSets.main.allSource
+    from sourceSets.main.allJava
     classifier 'sources'
     manifest {
         from sharedManifest
