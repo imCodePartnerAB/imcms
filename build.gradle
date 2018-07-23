@@ -2,13 +2,6 @@ import com.eriwen.gradle.css.tasks.MinifyCssTask
 import com.eriwen.gradle.js.tasks.MinifyJsTask
 import org.apache.tools.ant.filters.ReplaceTokens
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies { classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0' }
-}
-
 plugins {
     id 'java'
     id 'maven'
@@ -23,8 +16,6 @@ plugins {
 
     id 'nebula.lint' version '9.3.4'
 }
-
-apply plugin: 'org.junit.platform.gradle.plugin'
 
 group = "com.imcode.imcms"
 version = "6.0.0-beta3-SNAPSHOT"
@@ -50,6 +41,7 @@ ext {
     solrVersion = '7.2.1'
     slf4jVersion = '1.7.25'
     junitVersion = '5.2.0'
+
     sharedManifest = manifest {
         attributes "Build-Date": new Date()
         attributes "Application-Version": project.version
@@ -131,12 +123,14 @@ dependencies {
     testCompile "com.jayway.jsonpath:json-path-assert:2.2.0"
     testCompile "com.jcabi:jcabi-matchers:1.4"
     testCompile "org.dbunit:dbunit:2.5.1"
-    testCompile "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    testCompile "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testCompile "org.junit.vintage:junit-vintage-engine:${junitVersion}"
     testCompile "org.mockito:mockito-core:2.19.0"
     testCompile "org.mockito:mockito-junit-jupiter:2.19.0"
     testCompile "org.skyscreamer:jsonassert:1.5.0"
     testCompile "org.springframework:spring-test:${springframeworkVersion}"
+
+    testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
 //Migrated maven properties
@@ -305,6 +299,10 @@ csslint {
     dest = "${buildDir}/csslint.out"
 }
 
+test {
+    useJUnitPlatform()
+}
+
 war {
     exclude "**/js/imcms/**/*.js"
     exclude "**/css/**/*.css"
@@ -415,8 +413,8 @@ publishing {
     repositories {
         maven {
             credentials {
-                username ""
-                password ""
+                username "repo"
+                password "3GW8QxFxPal8k"
             }
             url "sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2"
 
