@@ -17,6 +17,7 @@ import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.UserRepository;
 import imcode.server.LanguageMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -259,6 +260,7 @@ class DefaultUserService implements UserService {
     @Override
     public List<UserDTO> searchUsers(String searchTerm, Set<Integer> withRoles, boolean includeInactive) {
         final List<User> users;
+        searchTerm = StringUtils.defaultString(searchTerm).toLowerCase();
 
         if ((withRoles == null) || (withRoles.isEmpty())) {
             users = includeInactive

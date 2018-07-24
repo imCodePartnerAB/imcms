@@ -40,7 +40,7 @@ class UserController {
     @GetMapping("/search")
     public List<UserDTO> searchUsers(@RequestParam String term,
                                      @RequestParam boolean includeInactive,
-                                     @RequestParam("roleIds[]") Set<Integer> roleIds) {
+                                     @RequestParam(value = "roleIds[]", required = false) Set<Integer> roleIds) {
         return userService.searchUsers(term, roleIds, includeInactive);
     }
 

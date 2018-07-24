@@ -194,6 +194,50 @@ public class UserRepositoryTest {
     }
 
     @Test
+    public void searchUsers_When_UserFieldsContainSearchedData_Expect_CorrectFoundIgnoringCase() {
+        final String term = "term";
+        final String password = "password";
+        final String termContainingPhrase = "pff-tERm-lala";
+
+        User user1 = new User(termContainingPhrase, password, "1");
+        user1 = repository.save(user1);
+
+        User user2 = new User("2", password, termContainingPhrase);
+        user2 = repository.save(user2);
+
+        User user3 = new User("3", password, "3");
+        user3.setFirstName(termContainingPhrase);
+        user3 = repository.save(user3);
+
+        User user4 = new User("4", password, "4");
+        user4.setLastName(termContainingPhrase);
+        user4 = repository.save(user4);
+
+        User user5 = new User("5", password, "5");
+        user5.setTitle(termContainingPhrase);
+        user5 = repository.save(user5);
+
+        User user6 = new User("6", password, "6");
+        user6.setCompany(termContainingPhrase);
+        user6 = repository.save(user6);
+
+        User user7 = new User("7", password, "7");
+        user7.setCompany("not what you are searching for");
+        repository.save(user7);
+
+        User user8 = new User("8", password, "8");
+        user8.setCompany(termContainingPhrase);
+        user8.setActive(false);
+        user8 = repository.save(user8);
+
+        final List<User> actual = repository.searchUsers(term);
+        final List<User> expected = Arrays.asList(user1, user2, user3, user4, user5, user6, user8);
+
+        assertTrue(actual.containsAll(expected));
+        assertTrue(expected.containsAll(actual));
+    }
+
+    @Test
     public void searchActiveUsers_When_ActiveAndNotActiveUsersWithSearchedDataExist_Expect_CorrectFound() {
         final String term = "term";
         final String password = "password";
