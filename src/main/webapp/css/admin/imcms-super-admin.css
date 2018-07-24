@@ -30,7 +30,7 @@
 }
 
 .imcms-pop-up-modal {
-    height: auto;
+    height: 975px;
 }
 
 .imcms-search-row > * {
@@ -46,6 +46,7 @@
 .imcms-pop-up-modal__right-side {
     width: 80%;
     padding-right: 5px;
+    height: auto;
 }
 
 .imcms-search-row__users-list-button .imcms-button {
@@ -127,4 +128,8 @@
 
 .imcms-user-info-row--archived {
     background-color: lightgray;
+}
+
+.imcms-drop-down-list__item .imcms-label {
+    margin-bottom: 0;
 }
