@@ -14,6 +14,9 @@ Imcms.define(
 
         var $searchResultContainer;
         var userArchivedClass = 'imcms-user-info-row--archived';
+        var $usersNameFilter;
+        var $includeInactiveCheckbox;
+        var $usersFilterSelect;
 
         function buildTitle() {
             return components.texts.titleText('<div>', texts.title, {
@@ -24,44 +27,39 @@ Imcms.define(
         function buildSearchRow() {
 
             function buildUsersNameFilter() {
-                return components.texts.textBox('<div>', texts.searchFilter.byName);
+                var $usersNameFilterBox = components.texts.textBox('<div>', texts.searchFilter.byName);
+                $usersNameFilter = $usersNameFilterBox.$input;
+                return $usersNameFilterBox;
             }
 
             function buildUsersRoleFilter() {
-                var onSelected = function (value) {
-                    console.log('Selected ' + value);
-                };
-
-                var $usersFilterSelectContainer = components.selects.selectContainer("<div>", {
+                $usersFilterSelect = components.selects.multipleSelect("<div>", {
                     id: "users-role-filter",
                     name: "users-role-filter",
-                    text: texts.searchFilter.byRole.title,
-                    emptySelect: true,
-                    onSelected: onSelected
+                    text: texts.searchFilter.byRole.title
                 });
 
                 rolesRestApi.read().done(function (roles) {
                     var rolesDataMapped = roles.map(function (role) {
                         return {
                             text: role.name,
-                            "data-value": role.id
+                            value: role.id
                         }
                     });
 
-                    components.selects.addOptionsToSelect(
-                        rolesDataMapped, $usersFilterSelectContainer.getSelect(), onSelected
-                    );
+                    components.selects.addOptionsToMultiSelect(rolesDataMapped, $usersFilterSelect);
                 });
 
-                return $usersFilterSelectContainer;
+                return $usersFilterSelect;
             }
 
             function includeInactiveUsers() {
             }
 
             function buildUsersActivityFilter() {
-                return components.checkboxes.imcmsCheckbox('<div>', {
+                return $includeInactiveCheckbox = components.checkboxes.imcmsCheckbox('<div>', {
                     text: texts.searchFilter.inactiveUsers,
+                    id: 'include-inactive-users',
                     click: includeInactiveUsers
                 });
             }
@@ -126,7 +124,7 @@ Imcms.define(
                             'edit': components.controls.edit(getOnEditUser(user)),
                             'archive': user.active
                                 ? components.controls.archive(getOnArchiveUser(user))
-                                : '<div>' + texts.searchResult.archived + '</div>'
+                                : $('<div>', {text: texts.searchResult.archived})
                         }
                     }).buildBlockStructure('<div>', infoRowAttributes);
                 },
@@ -163,8 +161,13 @@ Imcms.define(
             };
 
             function listUsers() {
+                var query = {
+                    term: $usersNameFilter.val(),
+                    includeInactive: $includeInactiveCheckbox.isChecked(),
+                    roleIds: $usersFilterSelect.getSelectedValues()
+                };
                 var tableBuilder = new UserListBuilder($searchResultContainer).clearList();
-                usersRestApi.read().done(tableBuilder.userAppender);
+                usersRestApi.search(query).done(tableBuilder.userAppender);
             }
 
             function buildListUsersButton() {
