@@ -2,7 +2,7 @@
 
 .imcms-info-page {
     position: absolute;
-    margin: 0 0 2%;
+    margin: 0;
     left: 15%;
     width: 70%;
     top: 2%;
@@ -30,7 +30,7 @@
 }
 
 .imcms-pop-up-modal {
-    height: 975px;
+    height: 905px;
 }
 
 .imcms-search-row > * {
