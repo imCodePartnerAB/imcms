@@ -4,21 +4,11 @@
  */
 Imcms.define(
     'imcms-ip-white-list-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
+    function (SuperAdminTab, texts) {
 
         texts = texts.superAdmin.ipWhiteList;
 
-        var IpWhiteListTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
-
-        IpWhiteListTab.prototype = Object.create(TabBuilder.prototype);
-
-        IpWhiteListTab.prototype.tabElementsFactory = function () {
-            return [];
-        };
-
-        return new IpWhiteListTab(texts.name);
+        return new SuperAdminTab(texts.name, []);
     }
 );

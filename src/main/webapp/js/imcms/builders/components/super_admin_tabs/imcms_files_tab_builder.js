@@ -4,21 +4,11 @@
  */
 Imcms.define(
     'imcms-files-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
+    function (SuperAdminTab, texts) {
 
         texts = texts.superAdmin.files;
 
-        var FilesTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
-
-        FilesTab.prototype = Object.create(TabBuilder.prototype);
-
-        FilesTab.prototype.tabElementsFactory = function () {
-            return [];
-        };
-
-        return new FilesTab(texts.name);
+        return new SuperAdminTab(texts.name, []);
     }
 );

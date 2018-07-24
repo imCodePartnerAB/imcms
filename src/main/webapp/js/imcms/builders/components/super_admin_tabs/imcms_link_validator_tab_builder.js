@@ -4,21 +4,11 @@
  */
 Imcms.define(
     'imcms-link-validator-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
+    function (SuperAdminTab, texts) {
 
         texts = texts.superAdmin.linkValidator;
 
-        var LinkValidatorTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
-
-        LinkValidatorTab.prototype = Object.create(TabBuilder.prototype);
-
-        LinkValidatorTab.prototype.tabElementsFactory = function () {
-            return [];
-        };
-
-        return new LinkValidatorTab(texts.name);
+        return new SuperAdminTab(texts.name, []);
     }
 );

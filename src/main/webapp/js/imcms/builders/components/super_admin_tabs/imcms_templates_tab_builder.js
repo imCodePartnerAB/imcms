@@ -4,21 +4,11 @@
  */
 Imcms.define(
     'imcms-templates-admin-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
+    function (SuperAdminTab, texts) {
 
         texts = texts.superAdmin.templates;
 
-        var TemplatesTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
-
-        TemplatesTab.prototype = Object.create(TabBuilder.prototype);
-
-        TemplatesTab.prototype.tabElementsFactory = function () {
-            return [];
-        };
-
-        return new TemplatesTab(texts.name);
+        return new SuperAdminTab(texts.name, []);
     }
 );

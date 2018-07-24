@@ -135,6 +135,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-window-tabs-builder": "builders/components/imcms_window_tabs_builder.js",
             "imcms-page-info-tab": "builders/components/imcms_page_info_tab.js",
             "imcms-window-tab-builder": "builders/components/imcms_window_tab_builder.js",
+            'imcms-super-admin-tab': 'builders/components/imcms_super_admin_tab.js',
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",

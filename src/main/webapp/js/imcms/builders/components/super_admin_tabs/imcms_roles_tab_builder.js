@@ -4,21 +4,17 @@
  */
 Imcms.define(
     'imcms-roles-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts', 'jquery'],
+    function (SuperAdminTab, texts, $) {
 
         texts = texts.superAdmin.roles;
 
-        var RolesTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
+        function buildRolesContainer() {
+            return $('<div>', {text: 'test'})
+        }
 
-        RolesTab.prototype = Object.create(TabBuilder.prototype);
-
-        RolesTab.prototype.tabElementsFactory = function () {
-            return [];
-        };
-
-        return new RolesTab(texts.name);
+        return new SuperAdminTab(texts.name, [
+            buildRolesContainer()
+        ]);
     }
 );

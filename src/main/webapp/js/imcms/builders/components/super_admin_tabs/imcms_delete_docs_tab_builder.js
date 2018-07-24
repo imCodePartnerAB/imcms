@@ -4,21 +4,11 @@
  */
 Imcms.define(
     'imcms-delete-docs-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
+    function (SuperAdminTab, texts) {
 
         texts = texts.superAdmin.deleteDocs;
 
-        var DeleteDocsTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
-
-        DeleteDocsTab.prototype = Object.create(TabBuilder.prototype);
-
-        DeleteDocsTab.prototype.tabElementsFactory = function () {
-            return [];
-        };
-
-        return new DeleteDocsTab(texts.name);
+        return new SuperAdminTab(texts.name, []);
     }
 );
