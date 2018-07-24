@@ -15,6 +15,10 @@ Imcms.define(
 
         DeleteDocsTab.prototype = Object.create(TabBuilder.prototype);
 
+        DeleteDocsTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new DeleteDocsTab(texts.name);
     }
 );

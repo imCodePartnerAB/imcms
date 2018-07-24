@@ -159,7 +159,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             'imcms-files-tab-builder': 'builders/components/super_admin_tabs/imcms_files_tab_builder.js',
             'imcms-search-tab-builder': 'builders/components/super_admin_tabs/imcms_search_tab_builder.js',
             'imcms-link-validator-tab-builder': 'builders/components/super_admin_tabs/imcms_link_validator_tab_builder.js',
-            'imcms-sections-tab-builder': 'builders/components/super_admin_tabs/imcms_sections_tab_builder.js',
             'imcms-categories-admin-tab-builder': 'builders/components/super_admin_tabs/imcms_categories_tab_builder.js',
             'imcms-profiles-tab-builder': 'builders/components/super_admin_tabs/imcms_profiles_tab_builder.js',
             'imcms-system-properties-tab-builder': 'builders/components/super_admin_tabs/imcms_system_properties_tab_builder.js',

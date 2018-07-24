@@ -15,6 +15,10 @@ Imcms.define(
 
         IpAccessTab.prototype = Object.create(TabBuilder.prototype);
 
+        IpAccessTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new IpAccessTab(texts.name);
     }
 );

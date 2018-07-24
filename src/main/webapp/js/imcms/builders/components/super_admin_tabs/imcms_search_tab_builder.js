@@ -15,6 +15,10 @@ Imcms.define(
 
         SearchTab.prototype = Object.create(TabBuilder.prototype);
 
+        SearchTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new SearchTab(texts.name);
     }
 );

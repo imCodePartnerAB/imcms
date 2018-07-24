@@ -15,6 +15,10 @@ Imcms.define(
 
         ProfilesTab.prototype = Object.create(TabBuilder.prototype);
 
+        ProfilesTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new ProfilesTab(texts.name);
     }
 );

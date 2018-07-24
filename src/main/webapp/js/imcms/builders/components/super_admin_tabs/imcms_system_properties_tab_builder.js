@@ -15,6 +15,10 @@ Imcms.define(
 
         SystemPropertiesTab.prototype = Object.create(TabBuilder.prototype);
 
+        SystemPropertiesTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new SystemPropertiesTab(texts.name);
     }
 );

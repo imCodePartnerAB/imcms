@@ -15,6 +15,10 @@ Imcms.define(
 
         CategoriesTab.prototype = Object.create(TabBuilder.prototype);
 
+        CategoriesTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new CategoriesTab(texts.name);
     }
 );

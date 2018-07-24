@@ -15,6 +15,10 @@ Imcms.define(
 
         IpWhiteListTab.prototype = Object.create(TabBuilder.prototype);
 
+        IpWhiteListTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new IpWhiteListTab(texts.name);
     }
 );

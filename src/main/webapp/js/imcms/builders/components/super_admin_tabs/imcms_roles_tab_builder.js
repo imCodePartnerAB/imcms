@@ -15,6 +15,10 @@ Imcms.define(
 
         RolesTab.prototype = Object.create(TabBuilder.prototype);
 
+        RolesTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new RolesTab(texts.name);
     }
 );

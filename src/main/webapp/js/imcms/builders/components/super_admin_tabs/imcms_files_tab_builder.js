@@ -15,6 +15,10 @@ Imcms.define(
 
         FilesTab.prototype = Object.create(TabBuilder.prototype);
 
+        FilesTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new FilesTab(texts.name);
     }
 );

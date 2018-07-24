@@ -15,6 +15,10 @@ Imcms.define(
 
         LinkValidatorTab.prototype = Object.create(TabBuilder.prototype);
 
+        LinkValidatorTab.prototype.tabElementsFactory = function () {
+            return [];
+        };
+
         return new LinkValidatorTab(texts.name);
     }
 );
