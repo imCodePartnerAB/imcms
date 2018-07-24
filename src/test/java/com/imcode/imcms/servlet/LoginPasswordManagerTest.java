@@ -7,8 +7,7 @@ import org.junit.runners.Parameterized;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(value = Parameterized.class)
 public class LoginPasswordManagerTest {
@@ -23,13 +22,6 @@ public class LoginPasswordManagerTest {
     static public Collection<String[]> parameters() {
         return Arrays.asList(new String[][]{{null}, {""}, {"secret"}});
     }
-
-    @Test
-    public void encryptPassword() {
-        String password = "abcdefg";
-        String encryptedPassword = manager.encryptPassword(password);
-    }
-
 
     @Test
     public void validatePasswordUsingSamePassword() {
