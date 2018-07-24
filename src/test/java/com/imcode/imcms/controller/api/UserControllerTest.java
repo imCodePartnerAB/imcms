@@ -79,7 +79,7 @@ public class UserControllerTest extends MockingControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = get(CONTROLLER_PATH + "/search")
                 .param("term", term)
                 .param("includeInactive", "" + includeInactive)
-                .param("roleIds", stringRoleIds);
+                .param("roleIds[]", stringRoleIds);
 
         perform(requestBuilder);
 
