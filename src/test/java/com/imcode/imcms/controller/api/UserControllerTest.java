@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -66,14 +67,21 @@ public class UserControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void searchUsers() {
+    void searchUsers() throws Exception {
         final String term = "term";
         final boolean includeInactive = true;
         final Set<Integer> roleIds = new HashSet<>();
         roleIds.add(2);
         roleIds.add(42);
 
-        perform(get(CONTROLLER_PATH + "/search"), new UserController.Query(term, includeInactive, roleIds));
+        final String[] stringRoleIds = roleIds.stream().map(String::valueOf).toArray(String[]::new);
+
+        final MockHttpServletRequestBuilder requestBuilder = get(CONTROLLER_PATH + "/search")
+                .param("term", term)
+                .param("includeInactive", "" + includeInactive)
+                .param("roleIds", stringRoleIds);
+
+        perform(requestBuilder);
 
         then(userService).should().searchUsers(term, roleIds, includeInactive);
     }
