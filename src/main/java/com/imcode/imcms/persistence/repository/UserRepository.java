@@ -49,12 +49,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> findByActiveIsTrue();
 
     @Query("select u from User u "
-            + "where u.login like ?1 "
-            + "or u.email like ?1 "
-            + "or u.firstName like ?1 "
-            + "or u.lastName like ?1 "
-            + "or u.title like ?1 "
-            + "or u.company like ?1 "
+            + "where lower(u.login) like %?1% "
+            + "or lower(u.email) like %?1% "
+            + "or lower(u.firstName) like %?1% "
+            + "or lower(u.lastName) like %?1% "
+            + "or lower(u.title) like %?1% "
+            + "or lower(u.company) like %?1% "
             + "group by u.id")
     List<User> searchUsers(String searchTerm);
 
@@ -62,23 +62,23 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             + "join UserRoles ur "
             + "on ur.user.id = u.id "
             + "where (ur.role.id in ?2) "
-            + "and (u.login like ?1 "
-            + "or u.email like ?1 "
-            + "or u.firstName like ?1 "
-            + "or u.lastName like ?1 "
-            + "or u.title like ?1 "
-            + "or u.company like ?1) "
+            + "and (lower(u.login) like %?1% "
+            + "or lower(u.email) like %?1% "
+            + "or lower(u.firstName) like %?1% "
+            + "or lower(u.lastName) like %?1% "
+            + "or lower(u.title) like %?1% "
+            + "or lower(u.company) like %?1%) "
             + "group by u.id")
     List<User> searchUsers(String searchTerm, Set<Integer> withRoles);
 
     @Query("select u from User u "
             + "where u.active = true "
-            + "and (u.login like ?1 "
-            + "or u.email like ?1 "
-            + "or u.firstName like ?1 "
-            + "or u.lastName like ?1 "
-            + "or u.title like ?1 "
-            + "or u.company like ?1) "
+            + "and (lower(u.login) like %?1% "
+            + "or lower(u.email) like %?1% "
+            + "or lower(u.firstName) like %?1% "
+            + "or lower(u.lastName) like %?1% "
+            + "or lower(u.title) like %?1% "
+            + "or lower(u.company) like %?1%) "
             + "group by u.id")
     List<User> searchActiveUsers(String searchTerm);
 
@@ -86,12 +86,12 @@ public interface UserRepository extends JpaRepository<User, Integer> {
             + "where u.active = true "
             + "and ur.user.id = u.id "
             + "and (ur.role.id in ?2) "
-            + "and (u.login like ?1 "
-            + "or u.email like ?1 "
-            + "or u.firstName like ?1 "
-            + "or u.lastName like ?1 "
-            + "or u.title like ?1 "
-            + "or u.company like ?1) "
+            + "and (lower(u.login) like %?1% "
+            + "or lower(u.email) like %?1% "
+            + "or lower(u.firstName) like %?1% "
+            + "or lower(u.lastName) like %?1% "
+            + "or lower(u.title) like %?1% "
+            + "or lower(u.company) like %?1%) "
             + "group by u.id")
     List<User> searchActiveUsers(String searchTerm, Set<Integer> withRoles);
 }
