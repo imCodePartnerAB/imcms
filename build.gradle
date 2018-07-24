@@ -422,8 +422,8 @@ publishing {
     repositories {
         maven {
             credentials {
-                username ""
-                password ""
+                username reposotiryUsername
+                password reposotiryPassword
             }
             url "sftp://repo.imcode.com:2022/srv/www/repo.imcode.com/maven2"
 
