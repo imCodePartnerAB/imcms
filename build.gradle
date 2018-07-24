@@ -31,8 +31,7 @@ tasks.withType(JavaCompile) {
 }
 
 repositories {
-    mavenCentral()
-    maven { url "http://repo.boundlessgeo.com/main/" }
+    jcenter()
     maven { url "http://repo.imcode.com/maven2" }
 }
 
