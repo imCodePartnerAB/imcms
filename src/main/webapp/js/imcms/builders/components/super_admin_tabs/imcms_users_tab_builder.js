@@ -18,12 +18,6 @@ Imcms.define(
         var $includeInactiveCheckbox;
         var $usersFilterSelect;
 
-        function buildTitle() {
-            return components.texts.titleText('<div>', texts.title, {
-                'class': 'imcms-field'
-            });
-        }
-
         function buildSearchRow() {
 
             function buildUsersNameFilter() {
@@ -209,11 +203,11 @@ Imcms.define(
             });
         }
 
-        function onCreateNewUserClicked() {
-            window.open(imcms.contextPath + '/api/user/creation', '_blank').focus();
-        }
-
         function buildCreateNewUserButton() {
+            function onCreateNewUserClicked() {
+                window.open(imcms.contextPath + '/api/user/creation', '_blank').focus();
+            }
+
             var $button = components.buttons.positiveButton({
                 text: texts.createNewUser,
                 click: onCreateNewUserClicked
@@ -230,7 +224,6 @@ Imcms.define(
 
         UsersTab.prototype.tabElementsFactory = function () {
             return [
-                buildTitle(),
                 buildSearchRow(),
                 buildSearchResultTitle(),
                 $searchResultContainer = buildSearchResultContainer(),

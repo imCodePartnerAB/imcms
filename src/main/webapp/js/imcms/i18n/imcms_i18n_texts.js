@@ -638,7 +638,6 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 head: 'SuperAdmin',
                 users: {
                     name: 'Users',
-                    title: 'Edit user properties',
                     searchFilter: {
                         byName: {
                             text: 'Search users',
