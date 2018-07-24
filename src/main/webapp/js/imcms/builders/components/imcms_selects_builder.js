@@ -3,8 +3,8 @@
  * 25.07.17.
  */
 Imcms.define("imcms-selects-builder",
-    ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "jquery"],
-    function (BEM, primitives, buttons, $) {
+    ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "jquery", "imcms-checkboxes-builder"],
+    function (BEM, primitives, buttons, $, checkboxesBuilder) {
 
         var SELECT__CLASS = "imcms-select",
             SELECT__CLASS_$ = "." + SELECT__CLASS,
@@ -34,6 +34,7 @@ Imcms.define("imcms-selects-builder",
                     "select-item": "",
                     "items": "",
                     "item": "",
+                    "checkbox": "",
                     "select-item-value": "",
                     "button": "imcms-button"
                 }
@@ -49,19 +50,17 @@ Imcms.define("imcms-selects-builder",
 
         $(document).click(closeSelect);
 
-        // fixme: toggle select also binds onClick EACH TIME
-        function toggleSelect(onSelected) {
+        function toggleSelect() {
             var $select = $(this).closest(SELECT__CLASS_$);
 
             if ($select.is('[disabled]')) return;
 
-            $select.find(DROP_DOWN_LIST__CLASS_$)
-                .toggleClass(DROP_DOWN_LIST__ACTIVE__CLASS)
-                .children(DROP_DOWN_LIST__ITEMS__CLASS_$)
-                .find(DROP_DOWN_LIST__ITEM__CLASS_$)
-                .click(function () {
-                    onOptionSelected.call(this, onSelected)
-                });
+            $select.find(DROP_DOWN_LIST__CLASS_$).toggleClass(DROP_DOWN_LIST__ACTIVE__CLASS)
+        }
+
+        function onMultiSelectOptionClicked() {
+            var $checkbox = $(this).find("input[type=checkbox]");
+            $checkbox.prop("checked", !$checkbox.prop("checked"));
         }
 
         function onOptionSelected(onSelected) {
@@ -86,22 +85,72 @@ Imcms.define("imcms-selects-builder",
             return itemValue;
         }
 
-        function mapOptionsToItemsArr(options, dropDownListBEM) {
+        function mapMultiSelectOptionsToItemsArr(options) {
             return options.map(function (option) {
+                var $element = dropDownListBEM.makeBlockElement(
+                    "item", checkboxesBuilder.imcmsCheckbox("<div>", option)
+                );
+                $element.click(onMultiSelectOptionClicked);
+
+                return $element;
+            });
+        }
+
+        function mapOptionsToItemsArr(options, onSelected) {
+            return options.map(function (option) {
+                option.click = function () {
+                    onOptionSelected.call(this, onSelected)
+                };
                 return dropDownListBEM.buildBlockElement("item", "<div>", option);
             });
         }
 
-        function addOptionsToExistingDropDown(options, $select, dropDownListBEM) {
+        function addOptionsToExistingDropDown(options, $select, onSelected) {
             return $select.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
-                .append(mapOptionsToItemsArr(options, dropDownListBEM))
+                .append(mapOptionsToItemsArr(options, onSelected))
                 .end()
                 .selectFirst();
         }
 
-        function buildSelectOptions(options, dropDownListBEM, onSelected) {
+        function addMultiSelectOptionsToExistingDropDown(options, $select) {
+            return $select.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
+                .append(mapMultiSelectOptionsToItemsArr(options));
+        }
+
+        function bindGetSelectedValues($select) {
+            return function () {
+                return $select.find("input:checked")
+                    .map(function () {
+                        return $(this).val();
+                    })
+                    .toArray();
+            }
+        }
+
+        function buildMultiSelectOptions(options) {
             var $itemsContainer = dropDownListBEM.buildElement("items", "<div>").append(
-                mapOptionsToItemsArr(options, dropDownListBEM)
+                mapMultiSelectOptionsToItemsArr(options)
+            );
+
+            var $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton());
+
+            var $selectedValue = dropDownListBEM.buildBlockElement("select-item-value", "<span>", {
+                text: "Choose values"
+            });
+            var $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {click: toggleSelect})
+                .append($selectedValue, $button);
+
+            var $dropDownList = dropDownListBEM.buildBlock("<div>", [
+                {"select-item": $selectItem},
+                {"items": $itemsContainer}
+            ]);
+
+            return selectBEM.makeBlockElement("drop-down-list", $dropDownList);
+        }
+
+        function buildSelectOptions(options, onSelected) {
+            var $itemsContainer = dropDownListBEM.buildElement("items", "<div>").append(
+                mapOptionsToItemsArr(options, onSelected)
             );
 
             var $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton());
@@ -109,11 +158,8 @@ Imcms.define("imcms-selects-builder",
             var $selectedValue = dropDownListBEM.buildBlockElement("select-item-value", "<span>", {
                 text: (options[0] && options[0].text) || "None"
             });
-            var $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {
-                click: function () {
-                    toggleSelect.call(this, onSelected);
-                }
-            }).append($selectedValue, $button);
+            var $selectItem = dropDownListBEM.buildElement("select-item", "<div>", {click: toggleSelect})
+                .append($selectedValue, $button);
 
             var $dropDownList = dropDownListBEM.buildBlock("<div>", [
                 {"select-item": $selectItem},
@@ -129,7 +175,7 @@ Imcms.define("imcms-selects-builder",
 
                 if ($selectCandidate.length) {
                     onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
-                    $selectedValInput.val(value);
+                    $selectedValInput && $selectedValInput.val(value);
                     return $resultImcmsSelect;
 
                 } else {
@@ -204,7 +250,36 @@ Imcms.define("imcms-selects-builder",
             $select.hasOptions = bindHasOptions($select);
         }
 
+        function buildSelectLabel(attributes) {
+            return primitives.imcmsLabel(attributes.id, attributes.text, {click: toggleSelect});
+        }
+
         return {
+            multipleSelect: function (tag, attributes, options) {
+                attributes = attributes || {};
+                options = options || [];
+
+                var blockElements = [];
+
+                if (attributes.text) {
+                    blockElements = [{"label": buildSelectLabel(attributes)}];
+                }
+
+                var $selectElements = [];
+
+                if (options && options.length) {
+                    $selectElements.push(buildMultiSelectOptions(options));
+                }
+
+                var $select = selectBEM.buildBlock(
+                    "<div>", blockElements, (attributes["class"] ? {"class": attributes["class"]} : {})
+                ).append($selectElements);
+
+                $select.selectValue = bindSelectValue($select);
+                $select.getSelectedValues = bindGetSelectedValues($select);
+
+                return $select;
+            },
             imcmsSelect: function (tag, attributes, options) {
                 attributes = attributes || {};
                 options = options || [];
@@ -212,12 +287,7 @@ Imcms.define("imcms-selects-builder",
                 var blockElements = [];
 
                 if (attributes.text) {
-                    var $label = primitives.imcmsLabel(attributes.id, attributes.text, {
-                        click: function () {
-                            toggleSelect.call(this, attributes.onSelected);
-                        }
-                    });
-                    blockElements = [{"label": $label}];
+                    blockElements = [{"label": buildSelectLabel(attributes)}];
                 }
 
                 var $selectElements = [];
@@ -230,7 +300,7 @@ Imcms.define("imcms-selects-builder",
                 }
 
                 if (options && options.length) {
-                    $selectElements.push(buildSelectOptions(options, dropDownListBEM, attributes.onSelected));
+                    $selectElements.push(buildSelectOptions(options, attributes.onSelected));
                 }
 
                 var $selectedValInput = $("<input>", {
@@ -241,8 +311,8 @@ Imcms.define("imcms-selects-builder",
 
                 $selectElements.push($selectedValInput);
 
-                var $resultImcmsSelect = selectBEM.buildBlock("<div>", blockElements,
-                    (attributes["class"] ? {"class": attributes["class"]} : {})
+                var $resultImcmsSelect = selectBEM.buildBlock(
+                    "<div>", blockElements, (attributes["class"] ? {"class": attributes["class"]} : {})
                 ).append($selectElements);
 
                 bindApi($resultImcmsSelect, $selectedValInput);
@@ -259,8 +329,15 @@ Imcms.define("imcms-selects-builder",
                 var selectContainsDropDownList = $select.find(SELECT__DROP_DOWN_LIST__CLASS_$).length;
 
                 return selectContainsDropDownList
-                    ? addOptionsToExistingDropDown(options, $select, dropDownListBEM)
-                    : $select.append(buildSelectOptions(options, dropDownListBEM, onSelected)).selectFirst();
+                    ? addOptionsToExistingDropDown(options, $select, onSelected)
+                    : $select.append(buildSelectOptions(options, onSelected)).selectFirst();
+            },
+            addOptionsToMultiSelect: function (options, $select) {
+                var selectContainsDropDownList = $select.find(SELECT__DROP_DOWN_LIST__CLASS_$).length;
+
+                return selectContainsDropDownList
+                    ? addMultiSelectOptionsToExistingDropDown(options, $select)
+                    : $select.append(buildMultiSelectOptions(options));
             },
             selectContainer: function (tag, attributes, options) {
                 var clas = (attributes && attributes["class"]) || "";
