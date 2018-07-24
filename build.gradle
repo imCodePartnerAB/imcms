@@ -247,7 +247,7 @@ pmd {
     ignoreFailures = true
 
 //Here is available list of rules    https://pmd.github.io/pmd-6.5.0/pmd_rules_java.html
-    ruleSets = []
+//    ruleSets = []
 }
 
 javascript.source {
