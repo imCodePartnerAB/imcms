@@ -321,6 +321,10 @@ Imcms.define("imcms-selects-builder",
             },
             makeImcmsSelect: function ($existingSelect) {
                 $existingSelect.find('.imcms-drop-down-list__select-item').click(toggleSelect);
+                $existingSelect.find(DROP_DOWN_LIST__ITEM__CLASS_$).each(function () {
+                    $(this).click(onOptionSelected)
+                });
+
                 bindApi($existingSelect, $existingSelect.find('input[type=hidden]'));
 
                 return $existingSelect;
