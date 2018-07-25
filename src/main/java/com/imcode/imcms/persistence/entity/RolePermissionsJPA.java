@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.model.RolePermissions;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,17 +17,22 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import java.io.Serializable;
 
 @Entity
 @Table(name = "roles_permissions")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class RolePermissionsJPA implements Serializable {
+public class RolePermissionsJPA extends RolePermissions {
 
     private static final long serialVersionUID = 6163509570147239505L;
+
+    private RoleJPA role;
+
+    public RolePermissionsJPA(RolePermissions from) {
+        super(from);
+    }
 
     @GenericGenerator(
             name = "generator",
@@ -40,38 +46,50 @@ public class RolePermissionsJPA implements Serializable {
             unique = true,
             nullable = false
     )
-    private Integer roleId;
+    @Override
+    public Integer getRoleId() {
+        return roleId;
+    }
 
     @Column(
             name = "get_password_by_email",
             nullable = false,
             columnDefinition = "tinyint"
     )
-    private boolean getPasswordByEmail;
+    public boolean isGetPasswordByEmail() {
+        return getPasswordByEmail;
+    }
 
     @Column(
             name = "access_to_admin_pages",
             nullable = false,
             columnDefinition = "tinyint"
     )
-    private boolean accessToAdminPages;
+    public boolean isAccessToAdminPages() {
+        return accessToAdminPages;
+    }
 
     @Column(
             name = "use_images_in_image_archive",
             nullable = false,
             columnDefinition = "tinyint"
     )
-    private boolean useImagesInImageArchive;
+    public boolean isUseImagesInImageArchive() {
+        return useImagesInImageArchive;
+    }
 
     @Column(
             name = "change_images_in_image_archive",
             nullable = false,
             columnDefinition = "tinyint"
     )
-    private boolean changeImagesInImageArchive;
+    public boolean isChangeImagesInImageArchive() {
+        return changeImagesInImageArchive;
+    }
 
     @OneToOne(fetch = FetchType.LAZY)
     @PrimaryKeyJoinColumn
-    private RoleJPA role;
-
+    public RoleJPA getRole() {
+        return role;
+    }
 }
