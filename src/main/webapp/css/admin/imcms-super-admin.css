@@ -133,3 +133,26 @@
 .imcms-drop-down-list__item .imcms-label {
     margin-bottom: 0;
 }
+
+.roles-table {
+    width: 40%;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    display: inline-block;
+}
+
+.roles-table__role-row {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.roles-table__role-row:hover {
+    background-color: #dfedff;
+}
+
+.roles-table__role-row.roles-table__role-row--active {
+    background-color: #c3d9f5;
+}
+
+
+

@@ -34,28 +34,33 @@ Imcms.define(
             }));
         }
 
-        var rolesTableBEM = new BEM({
-            block: 'roles-table',
-            elements: {
-                'role-row': ''
-            }
-        });
-
         function buildRolesContainer() {
+            var rolesTableBEM = new BEM({
+                block: 'roles-table',
+                elements: {
+                    'role-row': ''
+                }
+            });
+
             var $rolesContainer = rolesTableBEM.buildBlock('<div>');
 
             function getOnRoleClicked(role) {
                 return function () {
-                    // todo: implement
+                    var $this = $(this);
+
+                    if ($this.hasClass('roles-table__role-row--active')) return;
+
+                    $this.parent().find('.roles-table__role-row--active').removeClass('roles-table__role-row--active');
+                    $this.addClass('roles-table__role-row--active');
                 }
             }
 
             function roleToRow(role) {
-                return rolesTableBEM.buildElement('role-row', '<div>', {
+                return rolesTableBEM.makeBlockElement('role-row', $('<div>', {
                     id: 'role-id-' + role.id,
                     text: role.name,
                     click: getOnRoleClicked(role)
-                })
+                }))
             }
 
             rolesRestApi.read().success(function (roles) {
