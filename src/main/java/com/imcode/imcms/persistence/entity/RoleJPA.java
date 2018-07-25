@@ -9,16 +9,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
-/**
- * Who knows what are the fields {@link #permissions} and {@link #adminRole}. If you don't know what are them,
- * so do not use. They exist to be compatible with database, they're not null, so leave default value.
- */
 @Entity
 @Table(name = "roles")
 @Data
@@ -37,8 +34,8 @@ public class RoleJPA extends Role {
     @Column(name = "role_name", nullable = false, unique = true)
     private String name;
 
-    @NotNull
-    private Integer permissions = 0;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "role")
+    private RolePermissionsJPA permissions;
 
     @Column(name = "admin_role", nullable = false)
     private Integer adminRole = 0;
