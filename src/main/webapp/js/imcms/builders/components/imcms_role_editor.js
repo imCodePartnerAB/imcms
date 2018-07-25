@@ -12,9 +12,9 @@ Imcms.define(
         var $roleNameRow;
 
         function buildRoleNameRow() {
-            return $roleNameRow = components.texts.textBox("<div>", {
-                text: texts.roleName
-            });
+            $roleNameRow = components.texts.textBox("<div>", {text: texts.roleName});
+            $roleNameRow.$input.attr('disabled', 'disabled');
+            return $roleNameRow;
         }
 
         var $container;
