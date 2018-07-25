@@ -5,5 +5,9 @@ Imcms.define("imcms-users-rest-api", ["imcms-rest-api"], function (rest) {
         return rest.ajax.call({url: "/users/admins", type: "GET", json: false});
     };
 
+    api.search = function (queryObj) {
+        return rest.ajax.call({url: "/users/search", type: "GET", json: false}, queryObj);
+    };
+
     return api;
 });

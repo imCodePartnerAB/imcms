@@ -4,17 +4,11 @@
  */
 Imcms.define(
     'imcms-profiles-tab-builder',
-    ['imcms-window-tab-builder', 'imcms-i18n-texts'],
-    function (TabBuilder, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
+    function (SuperAdminTab, texts) {
 
         texts = texts.superAdmin.profiles;
 
-        var ProfilesTab = function (name) {
-            TabBuilder.apply(this, arguments);
-        };
-
-        ProfilesTab.prototype = Object.create(TabBuilder.prototype);
-
-        return new ProfilesTab(texts.name);
+        return new SuperAdminTab(texts.name, []);
     }
 );

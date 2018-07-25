@@ -135,6 +135,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-window-tabs-builder": "builders/components/imcms_window_tabs_builder.js",
             "imcms-page-info-tab": "builders/components/imcms_page_info_tab.js",
             "imcms-window-tab-builder": "builders/components/imcms_window_tab_builder.js",
+            'imcms-super-admin-tab': 'builders/components/imcms_super_admin_tab.js',
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",
@@ -159,7 +160,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             'imcms-files-tab-builder': 'builders/components/super_admin_tabs/imcms_files_tab_builder.js',
             'imcms-search-tab-builder': 'builders/components/super_admin_tabs/imcms_search_tab_builder.js',
             'imcms-link-validator-tab-builder': 'builders/components/super_admin_tabs/imcms_link_validator_tab_builder.js',
-            'imcms-sections-tab-builder': 'builders/components/super_admin_tabs/imcms_sections_tab_builder.js',
             'imcms-categories-admin-tab-builder': 'builders/components/super_admin_tabs/imcms_categories_tab_builder.js',
             'imcms-profiles-tab-builder': 'builders/components/super_admin_tabs/imcms_profiles_tab_builder.js',
             'imcms-system-properties-tab-builder': 'builders/components/super_admin_tabs/imcms_system_properties_tab_builder.js',

@@ -48,6 +48,8 @@ Imcms.define("imcms-checkboxes-builder",
 
         return {
             imcmsCheckbox: function (tag, attributes) {
+                attributes = attributes || {};
+
                 var id = attributes.id || uuidGenerator.generateUUID();
                 var $input = checkboxBEM.buildElement("checkbox", "<input>", {
                     type: "checkbox",
@@ -65,7 +67,6 @@ Imcms.define("imcms-checkboxes-builder",
                     text: attributes.text,
                     click: attributes.click
                 });
-
 
                 var imcmsCheckboxResult = checkboxBEM.buildBlock(tag, [
                     {"checkbox": $input},

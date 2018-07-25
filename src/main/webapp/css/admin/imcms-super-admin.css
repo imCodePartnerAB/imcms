@@ -2,7 +2,7 @@
 
 .imcms-info-page {
     position: absolute;
-    margin: 0 0 2%;
+    margin: 0;
     left: 15%;
     width: 70%;
     top: 2%;
@@ -30,7 +30,7 @@
 }
 
 .imcms-pop-up-modal {
-    height: auto;
+    height: 905px;
 }
 
 .imcms-search-row > * {
@@ -46,6 +46,7 @@
 .imcms-pop-up-modal__right-side {
     width: 80%;
     padding-right: 5px;
+    height: 95%;
 }
 
 .imcms-search-row__users-list-button .imcms-button {
@@ -127,4 +128,8 @@
 
 .imcms-user-info-row--archived {
     background-color: lightgray;
+}
+
+.imcms-drop-down-list__item .imcms-label {
+    margin-bottom: 0;
 }
