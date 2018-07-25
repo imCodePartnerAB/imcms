@@ -18,6 +18,10 @@ public class RoleDTO extends Role {
 
     private String name;
 
+    public RoleDTO(String name) {
+        this.name = name;
+    }
+
     public RoleDTO(Role from) {
         super(from);
     }

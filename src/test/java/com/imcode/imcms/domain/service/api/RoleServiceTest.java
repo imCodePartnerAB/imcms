@@ -42,7 +42,7 @@ public class RoleServiceTest {
 
     @Test
     public void save() {
-        final Role saveMe = new RoleDTO(null, "test_name_role");
+        final Role saveMe = new RoleDTO("test_name_role");
         final Role saved = roleService.save(saveMe);
         final Role received = roleService.getById(saved.getId());
 
