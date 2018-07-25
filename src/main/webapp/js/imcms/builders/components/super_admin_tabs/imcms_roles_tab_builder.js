@@ -6,9 +6,9 @@ Imcms.define(
     'imcms-roles-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api',
-        'imcms-bem-builder', 'jquery'
+        'imcms-bem-builder', 'imcms-role-editor', 'jquery'
     ],
-    function (SuperAdminTab, texts, components, rolesRestApi, BEM, $) {
+    function (SuperAdminTab, texts, components, rolesRestApi, BEM, roleEditor, $) {
 
         texts = texts.superAdmin.roles;
 
@@ -43,6 +43,7 @@ Imcms.define(
             });
 
             var $rolesContainer = rolesTableBEM.buildBlock('<div>');
+            var $roleViewEditContainer = roleEditor.buildContainer();
 
             function getOnRoleClicked(role) {
                 return function () {
@@ -52,6 +53,8 @@ Imcms.define(
 
                     $this.parent().find('.roles-table__role-row--active').removeClass('roles-table__role-row--active');
                     $this.addClass('roles-table__role-row--active');
+
+                    roleEditor.viewRole(role);
                 }
             }
 
@@ -67,7 +70,7 @@ Imcms.define(
                 $rolesContainer.append(roles.map(roleToRow))
             });
 
-            return wrapInImcmsField($rolesContainer);
+            return wrapInImcmsField([$rolesContainer, $roleViewEditContainer]);
         }
 
         return new SuperAdminTab(texts.name, [
