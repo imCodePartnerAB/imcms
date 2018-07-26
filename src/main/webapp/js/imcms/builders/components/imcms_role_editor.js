@@ -45,7 +45,9 @@ Imcms.define(
         }
 
         function onEditRole() {
-            // todo: implement
+            $roleViewButtons.slideToggle(function () {
+                $roleEditButtons.slideToggle();
+            });
         }
 
         function onDeleteRole() {
@@ -70,7 +72,9 @@ Imcms.define(
         }
 
         function onCancelChanges() {
-            // todo: implement
+            $roleEditButtons.slideToggle(function () {
+                $roleViewButtons.slideToggle();
+            });
         }
 
         function buildRoleEditButtons() {
