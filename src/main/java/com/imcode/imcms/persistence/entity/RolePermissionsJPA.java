@@ -4,6 +4,7 @@ import com.imcode.imcms.model.RolePermissions;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.GenericGenerator;
@@ -22,6 +23,7 @@ import javax.persistence.Table;
 @Table(name = "roles_permissions")
 @Data
 @NoArgsConstructor
+@ToString(exclude = "role", callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RolePermissionsJPA extends RolePermissions {
@@ -87,7 +89,7 @@ public class RolePermissionsJPA extends RolePermissions {
         return changeImagesInImageArchive;
     }
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @PrimaryKeyJoinColumn
     public RoleJPA getRole() {
         return role;

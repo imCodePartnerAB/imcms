@@ -1,12 +1,14 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.RolePermissions;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,7 +36,7 @@ public class RoleJPA extends Role {
     @Column(name = "role_name", nullable = false, unique = true)
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "role")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private RolePermissionsJPA permissions;
 
     @Column(name = "admin_role", nullable = false)
@@ -46,5 +48,17 @@ public class RoleJPA extends Role {
 
     public RoleJPA(Role from) {
         super(from);
+    }
+
+    @Override
+    public void setPermissions(RolePermissions permissions) {
+        if (permissions == null) {
+            this.permissions = null;
+            return;
+        }
+
+        this.permissions = new RolePermissionsJPA(permissions);
+        this.permissions.setRoleId(getId());
+        this.permissions.setRole(this);
     }
 }

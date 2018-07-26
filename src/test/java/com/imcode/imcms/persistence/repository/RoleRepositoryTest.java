@@ -80,9 +80,9 @@ public class RoleRepositoryTest {
     @Test
     public void createRoleWithPermissionsSpecified_Expect_Saved() {
         final RoleJPA role = roleRepository.save(new RoleJPA("test-role-name"));
-        final RolePermissionsJPA permissions = new RolePermissionsJPA();
         final Integer roleId = role.getId();
-        permissions.setRoleId(roleId);
+
+        final RolePermissionsJPA permissions = new RolePermissionsJPA();
         permissions.setAccessToAdminPages(true);
         permissions.setGetPasswordByEmail(true);
 
@@ -96,5 +96,22 @@ public class RoleRepositoryTest {
         assertEquals(roleId, savedPermissions.getRoleId());
         assertTrue(savedPermissions.isAccessToAdminPages());
         assertTrue(savedPermissions.isGetPasswordByEmail());
+    }
+
+    @Test
+    public void deleteRoleWithPermissionSpecified_Expect_Deleted() {
+        RoleJPA role = roleRepository.save(new RoleJPA("test-role-name"));
+        final Integer roleId = role.getId();
+
+        final RolePermissionsJPA permissions = new RolePermissionsJPA();
+        permissions.setAccessToAdminPages(true);
+        permissions.setGetPasswordByEmail(true);
+
+        role.setPermissions(permissions);
+
+        roleRepository.save(role);
+        roleRepository.delete(roleId);
+
+        assertNull(roleRepository.findOne(roleId));
     }
 }

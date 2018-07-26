@@ -514,7 +514,7 @@ public class DocumentServiceTest {
         final Map<Integer, Permission> roleIdToPermission = new HashMap<>();
 
         for (Permission permission : Permission.values()) {
-            final Role role = roleService.save(new RoleDTO(null, "test_role_" + permission));
+            final Role role = roleService.save(new RoleDTO("test_role_" + permission));
             roleIdToPermission.put(role.getId(), permission);
         }
 
