@@ -4,8 +4,8 @@
  */
 Imcms.define(
     'imcms-role-editor',
-    ['imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts'],
-    function (BEM, components, texts) {
+    ['imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder', 'imcms-roles-rest-api'],
+    function (BEM, components, texts, confirmationBuilder, rolesRestAPI) {
 
         texts = texts.superAdmin.roles;
 
@@ -26,6 +26,7 @@ Imcms.define(
         }
 
         function buildRolePermissions() {
+
             function createCheckboxWithText(text) {
                 return components.checkboxes.imcmsCheckbox("<div>", {
                     disabled: 'disabled',
@@ -39,6 +40,7 @@ Imcms.define(
                 $useImagesInImageArchive = createCheckboxWithText('Use images in image archive'),
                 $changeImagesInImageArchive = createCheckboxWithText('Change images in image archive')
             ];
+
             return components.checkboxes.checkboxContainerField(
                 '<div>', permissionCheckboxes$, {title: 'Role permissions'}
             );
@@ -55,7 +57,13 @@ Imcms.define(
         }
 
         function onDeleteRole() {
-            // todo: implement
+            confirmationBuilder.buildModalWindow('Do you really want to delete this role?', function (confirmed) {
+                if (!confirmed) return;
+
+                rolesRestAPI.remove().success(function () {
+
+                })
+            });
         }
 
         function buildRoleViewButtons() {
