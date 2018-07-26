@@ -35,10 +35,10 @@ public class RoleDTO extends Role {
     public RolePermissionsDTO getPermissions() {
         if (permissions != null) return permissions;
 
-        final RolePermissionsDTO rolePermissions = new RolePermissionsDTO();
-        rolePermissions.setRoleId(getId());
+        final RolePermissionsDTO fakePermissions = new RolePermissionsDTO();
+        fakePermissions.setRoleId(getId());
 
-        return permissions;
+        return fakePermissions;
     }
 
     @Override
