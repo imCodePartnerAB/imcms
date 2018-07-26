@@ -10,10 +10,14 @@ Imcms.define(
         texts = texts.superAdmin.roles;
 
         var $roleNameRow;
+
         var $getPasswordByEmail;
         var $accessToAdminPages;
         var $useImagesInImageArchive;
         var $changeImagesInImageArchive;
+
+        var $roleViewButtons;
+        var $roleEditButtons;
 
         function buildRoleNameRow() {
             $roleNameRow = components.texts.textBox('<div>', {text: texts.roleName});
@@ -40,6 +44,50 @@ Imcms.define(
             );
         }
 
+        function onEditRole() {
+            // todo: implement
+        }
+
+        function onDeleteRole() {
+            // todo: implement
+        }
+
+        function buildRoleViewButtons() {
+            return $roleViewButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.positiveButton({
+                    text: 'Edit role',
+                    click: onEditRole
+                }),
+                components.buttons.negativeButton({
+                    text: 'Delete role',
+                    click: onDeleteRole
+                })
+            ]);
+        }
+
+        function onSaveRole() {
+            // todo: implement
+        }
+
+        function onCancelChanges() {
+            // todo: implement
+        }
+
+        function buildRoleEditButtons() {
+            return $roleEditButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.saveButton({
+                    text: 'Save changes',
+                    click: onSaveRole
+                }),
+                components.buttons.negativeButton({
+                    text: 'Cancel',
+                    click: onCancelChanges
+                })
+            ], {
+                style: 'display: none;'
+            });
+        }
+
         var $container;
 
         return {
@@ -49,10 +97,8 @@ Imcms.define(
                     elements: {
                         'role-name-row': buildRoleNameRow(),
                         'role-permissions': buildRolePermissions(),
-                        'role-edit': '',
-                        'role-save': '',
-                        'role-cancel': '',
-                        'role-delete': ''
+                        'role-view-buttons': buildRoleViewButtons(),
+                        'role-edit-buttons': buildRoleEditButtons()
                     }
                 }).buildBlockStructure('<div>', {style: 'display: none;'}));
             },
