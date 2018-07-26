@@ -44,9 +44,14 @@ Imcms.define(
             );
         }
 
+        function slideToggle(elements$) {
+            elements$.forEach(function ($element) {
+                $element.slideToggle('fast');
+            })
+        }
+
         function onEditRole() {
-            $roleViewButtons.slideToggle('fast');
-            $roleEditButtons.slideToggle('fast');
+            slideToggle([$roleViewButtons, $roleEditButtons]);
         }
 
         function onDeleteRole() {
@@ -71,8 +76,7 @@ Imcms.define(
         }
 
         function onCancelChanges() {
-            $roleEditButtons.slideToggle('fast');
-            $roleViewButtons.slideToggle('fast');
+            slideToggle([$roleEditButtons, $roleViewButtons]);
         }
 
         function buildRoleEditButtons() {
