@@ -10,11 +10,34 @@ Imcms.define(
         texts = texts.superAdmin.roles;
 
         var $roleNameRow;
+        var $getPasswordByEmail;
+        var $accessToAdminPages;
+        var $useImagesInImageArchive;
+        var $changeImagesInImageArchive;
 
         function buildRoleNameRow() {
             $roleNameRow = components.texts.textBox('<div>', {text: texts.roleName});
             $roleNameRow.$input.attr('disabled', 'disabled');
             return $roleNameRow;
+        }
+
+        function buildRolePermissions() {
+            function createCheckboxWithText(text) {
+                return components.checkboxes.imcmsCheckbox("<div>", {
+                    disabled: 'disabled',
+                    text: text
+                });
+            }
+
+            var permissionCheckboxes$ = [
+                $getPasswordByEmail = createCheckboxWithText('Get password by email'),
+                $accessToAdminPages = createCheckboxWithText('Access to admin pages'),
+                $useImagesInImageArchive = createCheckboxWithText('Use images in image archive'),
+                $changeImagesInImageArchive = createCheckboxWithText('Change images in image archive')
+            ];
+            return components.checkboxes.checkboxContainerField(
+                '<div>', permissionCheckboxes$, {title: 'Role permissions'}
+            );
         }
 
         var $container;
@@ -25,7 +48,7 @@ Imcms.define(
                     block: 'roles-editor',
                     elements: {
                         'role-name-row': buildRoleNameRow(),
-                        'role-permissions': '',
+                        'role-permissions': buildRolePermissions(),
                         'role-edit': '',
                         'role-save': '',
                         'role-cancel': '',
@@ -35,6 +58,11 @@ Imcms.define(
             },
             viewRole: function (role) {
                 $roleNameRow.setValue(role.name);
+
+                $getPasswordByEmail.setChecked(role.permissions.getPasswordByEmail);
+                $accessToAdminPages.setChecked(role.permissions.accessToAdminPages);
+                $useImagesInImageArchive.setChecked(role.permissions.useImagesInImageArchive);
+                $changeImagesInImageArchive.setChecked(role.permissions.changeImagesInImageArchive);
 
                 $container.css('display', 'inline-block')
             }
