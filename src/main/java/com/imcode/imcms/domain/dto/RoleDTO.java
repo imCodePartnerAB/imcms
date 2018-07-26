@@ -32,6 +32,15 @@ public class RoleDTO extends Role {
         super(from);
     }
 
+    public RolePermissionsDTO getPermissions() {
+        if (permissions != null) return permissions;
+
+        final RolePermissionsDTO rolePermissions = new RolePermissionsDTO();
+        rolePermissions.setRoleId(getId());
+
+        return permissions;
+    }
+
     @Override
     public void setPermissions(RolePermissions permissions) {
         if (permissions == null) {
