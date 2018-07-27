@@ -10,8 +10,7 @@ import org.apache.solr.common.SolrDocument;
 import java.util.Date;
 import java.util.List;
 
-import static imcode.util.Utility.isDateInFuture;
-import static imcode.util.Utility.isDateInPast;
+import static imcode.util.Utility.*;
 
 /**
  * Document's fields stored in a Solr index.
@@ -96,7 +95,7 @@ public class DocumentStoredFields {
         } else if (PublicationStatus.APPROVED.equals(publicationStatus) && isDateInFuture.test(publicationStart())) {
             return DocumentStatus.PUBLISHED_WAITING;
 
-        } else { // should newer happen
+        } else { // should never happen
             return DocumentStatus.PUBLISHED;
         }
     }
