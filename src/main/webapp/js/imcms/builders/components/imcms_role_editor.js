@@ -54,6 +54,7 @@ Imcms.define(
 
         function onEditRole() {
             slideToggle([$roleViewButtons, $roleEditButtons]);
+            $roleNameRow.$input.removeAttr('disabled').focus();
         }
 
         function onDeleteRole() {
@@ -85,6 +86,7 @@ Imcms.define(
 
         function onCancelChanges() {
             slideToggle([$roleEditButtons, $roleViewButtons]);
+            $roleNameRow.$input.attr('disabled', 'disabled');
         }
 
         function buildRoleEditButtons() {
