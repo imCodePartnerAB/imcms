@@ -74,7 +74,7 @@ Imcms.define(
                 if (!confirmed) return;
 
                 rolesRestAPI.remove().success(function () {
-
+                    // todo: implement delete method in api with this callback
                 })
             });
         }
