@@ -93,7 +93,28 @@ Imcms.define(
         }
 
         function onSaveRole() {
-            // todo: implement
+            var updatedRole = {
+                id: currentRole.id,
+                name: $roleNameRow.getValue(),
+                permissions: {
+                    getPasswordByEmail: permissionCheckboxes$[0].isChecked(),
+                    accessToAdminPages: permissionCheckboxes$[1].isChecked(),
+                    useImagesInImageArchive: permissionCheckboxes$[2].isChecked(),
+                    changeImagesInImageArchive: permissionCheckboxes$[3].isChecked()
+                }
+            };
+
+            rolesRestAPI.update(updatedRole).success(function (savedRole) {
+                // todo: maybe there is better way to reassign fields' values, not object itself
+                currentRole.id = savedRole.id;
+                $roleRow.text(currentRole.name = savedRole.name);
+                currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
+                currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
+                currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
+                currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
+
+                (onRoleView = onRoleSimpleView)();
+            })
         }
 
         function onCancelChanges() {
