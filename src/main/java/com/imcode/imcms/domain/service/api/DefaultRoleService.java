@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +16,9 @@ import java.util.stream.Collectors;
 class DefaultRoleService implements RoleService {
 
     private final RoleRepository roleRepository;
-    private Function<Role, Role> roleSaver;
 
     DefaultRoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
-        this.roleSaver = ((Function<Role, RoleJPA>) RoleJPA::new).andThen(roleRepository::save).andThen(RoleDTO::new);
     }
 
     @Override
@@ -43,7 +40,7 @@ class DefaultRoleService implements RoleService {
      */
     @Override
     public Role save(Role saveMe) {
-        return roleSaver.apply(saveMe);
+        return new RoleDTO(roleRepository.save(new RoleJPA(saveMe)));
     }
 
 }

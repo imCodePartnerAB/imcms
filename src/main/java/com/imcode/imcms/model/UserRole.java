@@ -1,5 +1,6 @@
 package com.imcode.imcms.model;
 
+import com.imcode.imcms.domain.dto.RolePermissionsDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,7 +14,7 @@ public final class UserRole extends Role {
 
     private final String name = "Users";
 
-    private final int permissions = 1;
+    private RolePermissions permissions = new RolePermissionsDTO();
 
     private final int adminRole = 0;
 
@@ -27,10 +28,6 @@ public final class UserRole extends Role {
 
     @Override
     public void setName(String name) {
-        throwException();
-    }
-
-    public void setPermissions(int permissions) {
         throwException();
     }
 

@@ -673,7 +673,10 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: 'Search'
                 },
                 roles: {
-                    name: 'Roles'
+                    name: 'Roles',
+                    title: 'Roles administration',
+                    createNewRole: 'Create new role',
+                    roleName: 'Role name'
                 },
                 profiles: {
                     name: 'Profiles'

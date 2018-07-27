@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.persistence.entity.RoleJPA;
+import com.imcode.imcms.persistence.entity.RolePermissionsJPA;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -77,4 +77,41 @@ public class RoleRepositoryTest {
         assertEquals(all.size(), howMuch + prev);
     }
 
+    @Test
+    public void createRoleWithPermissionsSpecified_Expect_Saved() {
+        final RoleJPA role = roleRepository.save(new RoleJPA("test-role-name"));
+        final Integer roleId = role.getId();
+
+        final RolePermissionsJPA permissions = new RolePermissionsJPA();
+        permissions.setAccessToAdminPages(true);
+        permissions.setGetPasswordByEmail(true);
+
+        role.setPermissions(permissions);
+
+        roleRepository.save(role);
+
+        final RolePermissionsJPA savedPermissions = roleRepository.findOne(roleId).getPermissions();
+
+        assertNotNull(savedPermissions);
+        assertEquals(roleId, savedPermissions.getRoleId());
+        assertTrue(savedPermissions.isAccessToAdminPages());
+        assertTrue(savedPermissions.isGetPasswordByEmail());
+    }
+
+    @Test
+    public void deleteRoleWithPermissionSpecified_Expect_Deleted() {
+        RoleJPA role = roleRepository.save(new RoleJPA("test-role-name"));
+        final Integer roleId = role.getId();
+
+        final RolePermissionsJPA permissions = new RolePermissionsJPA();
+        permissions.setAccessToAdminPages(true);
+        permissions.setGetPasswordByEmail(true);
+
+        role.setPermissions(permissions);
+
+        roleRepository.save(role);
+        roleRepository.delete(roleId);
+
+        assertNull(roleRepository.findOne(roleId));
+    }
 }

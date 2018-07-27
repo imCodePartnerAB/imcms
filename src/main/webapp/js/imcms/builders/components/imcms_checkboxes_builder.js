@@ -51,12 +51,16 @@ Imcms.define("imcms-checkboxes-builder",
                 attributes = attributes || {};
 
                 var id = attributes.id || uuidGenerator.generateUUID();
-                var $input = checkboxBEM.buildElement("checkbox", "<input>", {
+                var options = {
                     type: "checkbox",
                     name: attributes.name,
                     id: id,
                     value: attributes.value
-                });
+                };
+
+                attributes.disabled && (options.disabled = attributes.disabled);
+
+                var $input = checkboxBEM.buildElement("checkbox", "<input>", options);
 
                 if (attributes.checked) {
                     $input.prop("checked", "checked");
@@ -73,6 +77,7 @@ Imcms.define("imcms-checkboxes-builder",
                     {"label": $label}
                 ]);
 
+                imcmsCheckboxResult.$input = $input;
                 imcmsCheckboxResult.setLabelText = bindSetLabelText(imcmsCheckboxResult, $label);
                 imcmsCheckboxResult.setChecked = bindSetChecked(imcmsCheckboxResult, $input);
                 imcmsCheckboxResult.isChecked = bindIsChecked($input);

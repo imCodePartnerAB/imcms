@@ -2,8 +2,10 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.RoleDTO;
+import com.imcode.imcms.domain.dto.RolePermissionsDTO;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.model.Roles;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +36,11 @@ public class RoleServiceTest {
         assertLike(Roles.USER, roles.get(2));
     }
 
+    private void assertLike(Role roleA, Role roleB) {
+        assertEquals(roleA.getId(), roleB.getId());
+        assertEquals(roleA.getName(), roleB.getName());
+    }
+
     @Test
     public void getById_When_Exist_Expect_NotNull() {
         final Integer id = roleService.getAll().get(0).getId();
@@ -42,16 +49,29 @@ public class RoleServiceTest {
 
     @Test
     public void save() {
-        final Role saveMe = new RoleDTO(null, "test_name_role");
+        final Role saveMe = new RoleDTO("test_name_role");
         final Role saved = roleService.save(saveMe);
         final Role received = roleService.getById(saved.getId());
 
         assertEquals(received, saved);
     }
 
-    private void assertLike(Role roleA, Role roleB) {
-        assertEquals(roleA.getId(), roleB.getId());
-        assertEquals(roleA.getName(), roleB.getName());
-    }
+    @Test
+    public void getById_When_RoleExistWithSpecifiedPermissions_Expect_SameReturned() {
+        final Role role = roleService.save(new RoleDTO("test_name_role"));
+        final Integer roleId = role.getId();
 
+        final RolePermissions permissions = new RolePermissionsDTO();
+        permissions.setRoleId(roleId);
+        permissions.setAccessToAdminPages(true);
+        permissions.setGetPasswordByEmail(true);
+
+        role.setPermissions(permissions);
+
+        roleService.save(role);
+
+        final RolePermissions savedPermissions = roleService.getById(roleId).getPermissions();
+
+        assertEquals(new RolePermissionsDTO(savedPermissions), new RolePermissionsDTO(permissions));
+    }
 }

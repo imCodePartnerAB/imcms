@@ -1,5 +1,6 @@
 package com.imcode.imcms.model;
 
+import com.imcode.imcms.domain.dto.RolePermissionsDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -13,7 +14,7 @@ public final class SuperAdminRole extends Role {
 
     private final String name = "Superadmin"; // fixme: tradition, would be better "Super Admin" or "super-admin"
 
-    private final int permissions = 0;
+    private RolePermissions permissions = new RolePermissionsDTO();
 
     private final int adminRole = 1;
 
@@ -27,10 +28,6 @@ public final class SuperAdminRole extends Role {
 
     @Override
     public void setName(String name) {
-        throwException();
-    }
-
-    public void setPermissions(int permissions) {
         throwException();
     }
 

@@ -211,7 +211,7 @@ Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
          * </code></pre>
          *
          * @param tag {string}
-         * @param elements {array}
+         * @param elements {array?}
          * @param attributes {object?}
          * @param blockNameForEach {string?}
          * @returns {jQuery} build block with elements inside

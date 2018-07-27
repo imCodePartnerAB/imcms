@@ -12,6 +12,7 @@ public abstract class Role implements Serializable {
     protected Role(Role from) {
         setId(from.getId());
         setName(from.getName());
+        setPermissions(from.getPermissions());
     }
 
     public abstract Integer getId();
@@ -21,5 +22,9 @@ public abstract class Role implements Serializable {
     public abstract String getName();
 
     public abstract void setName(String name);
+
+    public abstract RolePermissions getPermissions();
+
+    public abstract void setPermissions(RolePermissions permissions);
 
 }
