@@ -187,8 +187,10 @@ task copyProperties(type: Copy, dependsOn: initParams) {
 }
 
 task importProperties(dependsOn: copyProperties) {
+    doLast {
         file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
         tmpProps.setProperty("imcms.version", project.version)
+    }
 }
 
 task explodedWar(type: Sync, dependsOn: war) {
