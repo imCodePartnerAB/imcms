@@ -85,8 +85,13 @@ Imcms.define(
         }
 
         function onCancelChanges() {
-            slideToggle([$roleEditButtons, $roleViewButtons]);
-            $roleNameRow.$input.attr('disabled', 'disabled');
+            confirmationBuilder.buildModalWindow('Discard changes?', function (confirmed) {
+                if (!confirmed) return;
+
+                slideToggle([$roleEditButtons, $roleViewButtons]);
+                $roleNameRow.$input.attr('disabled', 'disabled');
+                viewRole(currentRole);
+            });
         }
 
         function buildRoleEditButtons() {
@@ -105,29 +110,36 @@ Imcms.define(
         }
 
         var $container;
+        var currentRole;
+
+        function buildContainer() {
+            return $container || ($container = new BEM({
+                block: 'roles-editor',
+                elements: {
+                    'role-name-row': buildRoleNameRow(),
+                    'role-permissions': buildRolePermissions(),
+                    'role-view-buttons': buildRoleViewButtons(),
+                    'role-edit-buttons': buildRoleEditButtons()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'}));
+        }
+
+        function viewRole(role) {
+            currentRole = role;
+
+            $roleNameRow.setValue(role.name);
+
+            $getPasswordByEmail.setChecked(role.permissions.getPasswordByEmail);
+            $accessToAdminPages.setChecked(role.permissions.accessToAdminPages);
+            $useImagesInImageArchive.setChecked(role.permissions.useImagesInImageArchive);
+            $changeImagesInImageArchive.setChecked(role.permissions.changeImagesInImageArchive);
+
+            $container.css('display', 'inline-block')
+        }
 
         return {
-            buildContainer: function () {
-                return $container || ($container = new BEM({
-                    block: 'roles-editor',
-                    elements: {
-                        'role-name-row': buildRoleNameRow(),
-                        'role-permissions': buildRolePermissions(),
-                        'role-view-buttons': buildRoleViewButtons(),
-                        'role-edit-buttons': buildRoleEditButtons()
-                    }
-                }).buildBlockStructure('<div>', {style: 'display: none;'}));
-            },
-            viewRole: function (role) {
-                $roleNameRow.setValue(role.name);
-
-                $getPasswordByEmail.setChecked(role.permissions.getPasswordByEmail);
-                $accessToAdminPages.setChecked(role.permissions.accessToAdminPages);
-                $useImagesInImageArchive.setChecked(role.permissions.useImagesInImageArchive);
-                $changeImagesInImageArchive.setChecked(role.permissions.changeImagesInImageArchive);
-
-                $container.css('display', 'inline-block')
-            }
+            buildContainer: buildContainer,
+            viewRole: viewRole
         }
     }
 );
