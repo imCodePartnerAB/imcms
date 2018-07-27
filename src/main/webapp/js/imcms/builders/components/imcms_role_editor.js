@@ -16,6 +16,8 @@ Imcms.define(
         var $useImagesInImageArchive;
         var $changeImagesInImageArchive;
 
+        var permissionCheckboxes$;
+
         var $roleViewButtons;
         var $roleEditButtons;
 
@@ -34,7 +36,7 @@ Imcms.define(
                 });
             }
 
-            var permissionCheckboxes$ = [
+            permissionCheckboxes$ = [
                 $getPasswordByEmail = createCheckboxWithText('Get password by email'),
                 $accessToAdminPages = createCheckboxWithText('Access to admin pages'),
                 $useImagesInImageArchive = createCheckboxWithText('Use images in image archive'),
@@ -53,8 +55,16 @@ Imcms.define(
         }
 
         function onEditRole() {
-            slideToggle([$roleViewButtons, $roleEditButtons]);
+            slideToggle([
+                $roleViewButtons,
+                $roleEditButtons
+            ]);
+
             $roleNameRow.$input.removeAttr('disabled').focus();
+
+            permissionCheckboxes$.forEach(function ($checkbox) {
+                $checkbox.$input.removeAttr('disabled');
+            })
         }
 
         function onDeleteRole() {
