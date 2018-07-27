@@ -77,6 +77,7 @@ Imcms.define("imcms-checkboxes-builder",
                     {"label": $label}
                 ]);
 
+                imcmsCheckboxResult.$input = $input;
                 imcmsCheckboxResult.setLabelText = bindSetLabelText(imcmsCheckboxResult, $label);
                 imcmsCheckboxResult.setChecked = bindSetChecked(imcmsCheckboxResult, $input);
                 imcmsCheckboxResult.isChecked = bindIsChecked($input);
