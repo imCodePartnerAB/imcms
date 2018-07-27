@@ -51,10 +51,7 @@ Imcms.define(
 
                     if ($this.hasClass('roles-table__role-row--active')) return;
 
-                    $this.parent().find('.roles-table__role-row--active').removeClass('roles-table__role-row--active');
-                    $this.addClass('roles-table__role-row--active');
-
-                    roleEditor.viewRole(role);
+                    roleEditor.viewRole.call($this, role);
                 }
             }
 

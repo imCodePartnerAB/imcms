@@ -55,6 +55,8 @@ Imcms.define(
         }
 
         function onEditRole() {
+            onRoleView = onCancelChanges;
+
             slideToggle([
                 $roleViewButtons,
                 $roleEditButtons
@@ -96,11 +98,7 @@ Imcms.define(
 
         function onCancelChanges() {
             confirmationBuilder.buildModalWindow('Discard changes?', function (confirmed) {
-                if (!confirmed) return;
-
-                slideToggle([$roleEditButtons, $roleViewButtons]);
-                $roleNameRow.$input.attr('disabled', 'disabled');
-                viewRole(currentRole);
+                confirmed && (onRoleView = onRoleSimpleView)();
             });
         }
 
@@ -119,8 +117,38 @@ Imcms.define(
             });
         }
 
+        function onRoleSimpleView() {
+            $roleRow.parent()
+                .find('.roles-table__role-row--active')
+                .removeClass('roles-table__role-row--active');
+
+            $roleRow.addClass('roles-table__role-row--active');
+
+            $roleEditButtons.slideUp('fast');
+            $roleViewButtons.slideDown('fast');
+
+            $roleNameRow.$input.attr('disabled', 'disabled');
+            $roleNameRow.setValue(currentRole.name);
+
+            var permissions = [
+                currentRole.permissions.getPasswordByEmail,
+                currentRole.permissions.accessToAdminPages,
+                currentRole.permissions.useImagesInImageArchive,
+                currentRole.permissions.changeImagesInImageArchive
+            ];
+
+            permissionCheckboxes$.forEach(function ($checkbox, i) {
+                $checkbox.$input.attr('disabled', 'disabled');
+                $checkbox.setChecked(permissions[i]);
+            });
+
+            $container.css('display', 'inline-block');
+        }
+
         var $container;
         var currentRole;
+        var $roleRow;
+        var onRoleView = onRoleSimpleView;
 
         function buildContainer() {
             return $container || ($container = new BEM({
@@ -136,15 +164,8 @@ Imcms.define(
 
         function viewRole(role) {
             currentRole = role;
-
-            $roleNameRow.setValue(role.name);
-
-            $getPasswordByEmail.setChecked(role.permissions.getPasswordByEmail);
-            $accessToAdminPages.setChecked(role.permissions.accessToAdminPages);
-            $useImagesInImageArchive.setChecked(role.permissions.useImagesInImageArchive);
-            $changeImagesInImageArchive.setChecked(role.permissions.changeImagesInImageArchive);
-
-            $container.css('display', 'inline-block')
+            $roleRow = this;
+            onRoleView();
         }
 
         return {
