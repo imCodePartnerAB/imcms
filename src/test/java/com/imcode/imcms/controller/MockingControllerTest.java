@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +17,8 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.IOException;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +31,7 @@ public abstract class MockingControllerTest {
     protected abstract Object controllerToMock();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUpMockMvc() {
         mockMvc = MockMvcBuilders.standaloneSetup(controllerToMock()).build();
     }
 
@@ -44,6 +47,10 @@ public abstract class MockingControllerTest {
 
     protected String asJson(Object object) throws JsonProcessingException {
         return objectMapper.writeValueAsString(object);
+    }
+
+    protected <T> T fromJson(String json, TypeReference<T> resultTypeReference) throws IOException {
+        return objectMapper.readValue(json, resultTypeReference);
     }
 
     protected class MvcResultActions implements ResultActions {
