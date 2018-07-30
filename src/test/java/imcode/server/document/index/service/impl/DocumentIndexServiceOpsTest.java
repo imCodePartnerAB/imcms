@@ -16,29 +16,32 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.SolrInputDocument;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DocumentIndexServiceOpsTest {
+@ExtendWith(MockitoExtension.class)
+class DocumentIndexServiceOpsTest {
 
     private static final DocumentSearchQueryConverter documentSearchQueryConverter = new DocumentSearchQueryConverter();
     private static final File testSolrFolder = new File("WEB-INF/solr").getAbsoluteFile();
@@ -58,7 +61,7 @@ public class DocumentIndexServiceOpsTest {
 
     private SearchQueryDTO searchQueryDTO;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         FileUtils.copyDirectory(mainSolrFolder, testSolrFolder); // assume that test solr folder does not exist
 
@@ -77,13 +80,13 @@ public class DocumentIndexServiceOpsTest {
         mockData.add("DSTE bv");
     }
 
-    @AfterClass
+    @AfterAll
     public static void deleteTestSolrFolder() throws IOException {
         solrClient.close();
         FileUtility.forceDelete(testSolrFolder);
     }
 
-    @Before
+    @BeforeEach
     public void createSolrInputDocuments() throws IOException, SolrServerException {
 
         searchQueryDTO = new SearchQueryDTO();
@@ -101,10 +104,11 @@ public class DocumentIndexServiceOpsTest {
     public void getDocumentWithMaxId_When_DefaultSearchQuerySet_Expect_isFirst() throws Exception {
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(documentSize));
-
-        assertThat(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID),
-                is(String.valueOf(getDocId(documentSize))));
+        assertEquals(solrDocumentList.size(), documentSize);
+        assertEquals(
+                solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID),
+                String.valueOf(getDocId(documentSize))
+        );
     }
 
     @Test
@@ -121,13 +125,13 @@ public class DocumentIndexServiceOpsTest {
         searchQueryDTO.setTerm(headlineValue);
         SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
-        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(headlineValue));
+        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(solrDocumentList.get(0).getFieldValue(titleField), headlineValue);
 
         documentIndexServiceOps.deleteDocsFromIndex(solrClient, getDocId(id));
 
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
-        assertThat(solrDocumentList.size(), is(0));
+        assertEquals(solrDocumentList.size(), 0);
 
         final SolrInputDocument solrInputDocumentUpdated = addRequiredFields(id);
         solrInputDocumentUpdated.addField(titleField, newHeadlineValue);
@@ -136,8 +140,8 @@ public class DocumentIndexServiceOpsTest {
         searchQueryDTO.setTerm(newHeadlineValue);
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
-        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(newHeadlineValue));
+        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(solrDocumentList.get(0).getFieldValue(titleField), newHeadlineValue);
     }
 
     @Test
@@ -154,8 +158,8 @@ public class DocumentIndexServiceOpsTest {
         searchQueryDTO.setTerm(headlineValue);
         SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
-        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(headlineValue));
+        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(solrDocumentList.get(0).getFieldValue(titleField), headlineValue);
 
         final SolrInputDocument solrInputDocumentUpdated = addRequiredFields(id);
         solrInputDocumentUpdated.addField(titleField, newHeadlineValue);
@@ -164,8 +168,8 @@ public class DocumentIndexServiceOpsTest {
         searchQueryDTO.setTerm(newHeadlineValue);
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
-        assertThat(solrDocumentList.get(0).getFieldValue(titleField), is(newHeadlineValue));
+        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(solrDocumentList.get(0).getFieldValue(titleField), newHeadlineValue);
     }
 
     // these tests are for searching by term
@@ -210,8 +214,8 @@ public class DocumentIndexServiceOpsTest {
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
-        assertThat(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID), is(termValue));
+        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID), termValue);
     }
 
     @Test
@@ -260,33 +264,33 @@ public class DocumentIndexServiceOpsTest {
 
         SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(documentNumberFirstUser));
+        assertEquals(solrDocumentList.size(), documentNumberFirstUser);
 
         solrDocumentList.forEach(doc -> assertTrue(
                 firstUserDocsId.contains(Integer.parseInt((String) doc.getFieldValue(DocumentIndex.FIELD__META_ID)))
         ));
 
-        firstUserDocsId.forEach(id -> verify(documentIndexer, times(1)).index(id));
+        firstUserDocsId.forEach(id -> then(documentIndexer).should().index(id));
 
         // checking for first user id
         searchQueryDTO.setUserId(secondUserId);
 
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(documentNumberSecondUser));
+        assertEquals(solrDocumentList.size(), documentNumberSecondUser);
 
         solrDocumentList.forEach(doc -> assertTrue(
                 secondUserDocsId.contains(Integer.parseInt((String) doc.getFieldValue(DocumentIndex.FIELD__META_ID)))
         ));
 
-        secondUserDocsId.forEach(id -> verify(documentIndexer, times(1)).index(id));
+        secondUserDocsId.forEach(id -> then(documentIndexer).should().index(id));
     }
 
     // these tests are for searching by page request
 
     @Test
     public void search_When_UseDefaultPageRequest_Expect_Found() throws Exception {
-        assertThat(getSolrDocumentList(searchQueryDTO).size(), is(documentSize));
+        assertEquals(getSolrDocumentList(searchQueryDTO).size(), documentSize);
     }
 
     @Test
@@ -301,7 +305,7 @@ public class DocumentIndexServiceOpsTest {
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(pageSize));
+        assertEquals(solrDocumentList.size(), pageSize);
 
         final List<Integer> expectedDocId = IntStream
                 .rangeClosed(documentSize - 2 * pageSize + 1, documentSize - pageSize)
@@ -326,7 +330,7 @@ public class DocumentIndexServiceOpsTest {
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(pageSize));
+        assertEquals(solrDocumentList.size(), pageSize);
 
         final List<Integer> expectedDocId = IntStream
                 .rangeClosed(documentSize - pageSize + 1, documentSize)
@@ -375,9 +379,9 @@ public class DocumentIndexServiceOpsTest {
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
+        assertEquals(solrDocumentList.size(), 1);
 
-        verify(documentIndexer, times(1)).index(getDocId(id));
+        then(documentIndexer).should().index(getDocId(id));
     }
 
     @Test
@@ -408,17 +412,18 @@ public class DocumentIndexServiceOpsTest {
 
         SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(documentNumberWithFirstCategory));
-
-        assertThat(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID),
-                is(String.valueOf(docIdWithFirstCategory.get(0))));
+        assertEquals(solrDocumentList.size(), documentNumberWithFirstCategory);
+        assertEquals(
+                solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__META_ID),
+                String.valueOf(docIdWithFirstCategory.get(0))
+        );
 
         // checking for second category id
         searchQueryDTO.setCategoriesId(Collections.singletonList(secondCategoryId));
 
         solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(documentNumberWithSecondCategory));
+        assertEquals(solrDocumentList.size(), documentNumberWithSecondCategory);
 
         solrDocumentList.forEach(solrDocument -> {
             final int docID = Integer.parseInt((String) solrDocument.getFieldValue(DocumentIndex.FIELD__META_ID));
@@ -439,7 +444,7 @@ public class DocumentIndexServiceOpsTest {
                 .filter(docIdString -> docIdString.contains(termValue))
                 .count();
 
-        assertThat(getSolrDocumentList(searchQueryDTO).getNumFound(), is(expectedDocumentSize));
+        assertEquals(getSolrDocumentList(searchQueryDTO).getNumFound(), expectedDocumentSize);
     }
 
     private void testKeywordOrAliasOrHeadlineForOneDocument(String field) throws Exception {
@@ -455,10 +460,10 @@ public class DocumentIndexServiceOpsTest {
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(1));
-        assertThat(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__ID), is(String.valueOf(documentSize)));
+        assertEquals(solrDocumentList.size(), 1);
+        assertEquals(solrDocumentList.get(0).getFieldValue(DocumentIndex.FIELD__ID), String.valueOf(documentSize));
 
-        verify(documentIndexer, times(1)).index(getDocId(id));
+        then(documentIndexer).should().index(getDocId(id));
     }
 
     private void testKeywordOrAliasOrHeadlineForMultipleDocuments(String field) throws Exception {
@@ -481,13 +486,13 @@ public class DocumentIndexServiceOpsTest {
 
         final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
 
-        assertThat(solrDocumentList.size(), is(documentNumberWithSpecifiedKeyword));
+        assertEquals(solrDocumentList.size(), documentNumberWithSpecifiedKeyword);
 
         solrDocumentList.forEach(doc ->
                 assertTrue(ids.contains(Integer.parseInt((String) doc.getFieldValue(DocumentIndex.FIELD__ID))))
         );
 
-        ids.forEach(id -> verify(documentIndexer, times(1)).index(getDocId(id)));
+        ids.forEach(id -> then(documentIndexer).should().index(getDocId(id)));
     }
 
     private void checkSorting(String property, Sort.Direction direction) throws Exception {
@@ -526,9 +531,9 @@ public class DocumentIndexServiceOpsTest {
         else
             expectedFieldValues.sort(Comparator.nullsLast(Collections.reverseOrder()));
 
-        assertThat(actualFieldValues, is(expectedFieldValues));
+        assertEquals(actualFieldValues, expectedFieldValues);
 
-        docIds.forEach(docId -> verify(documentIndexer, times(1)).index(docId));
+        docIds.forEach(docId -> then(documentIndexer).should().index(docId));
     }
 
     private void indexDocument(int id, SolrInputDocument solrInputDocument) throws IOException, SolrServerException {

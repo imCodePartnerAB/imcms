@@ -4,9 +4,12 @@
  */
 Imcms.define("imcms-window-keys-controller", ["mousetrap"], function (mousetrap) {
 
+    var onEscKeyPressedName = 'onEscKeyPressed';
+    var onEnterKeyPressedName = 'onEnterKeyPressed';
+
     function bindHotKeys() {
-        mousetrap.bind('esc', handleDecline);
-        mousetrap.bind('enter', handleConfirm);
+        mousetrap.bind('esc', getNamedCallbackHandler(onEscKeyPressedName));
+        mousetrap.bind('enter', getNamedCallbackHandler(onEnterKeyPressedName));
     }
 
     function unbindHotKeys() {
@@ -26,21 +29,15 @@ Imcms.define("imcms-window-keys-controller", ["mousetrap"], function (mousetrap)
         return false; // to stop bubbling
     }
 
-    function handleDecline() {
-        return handleCallback(function (callback) {
-            return callback && callback.onEscKeyPressed;
-        });
-    }
-
-    function handleConfirm() {
-        return handleCallback(function (callback) {
-            return callback.onEnterKeyPressed;
+    function getNamedCallbackHandler(name) {
+        return handleCallback.bind(this, function (callback) {
+            return callback && callback[name];
         });
     }
 
     var KeyCallbacks = function (onEscKeyPressed, onEnterKeyPressed) {
-        this.onEscKeyPressed = onEscKeyPressed;
-        this.onEnterKeyPressed = onEnterKeyPressed;
+        this[onEscKeyPressedName] = onEscKeyPressed;
+        this[onEnterKeyPressedName] = onEnterKeyPressed;
     };
 
     KeyCallbacks.prototype = {};
