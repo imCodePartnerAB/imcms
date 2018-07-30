@@ -53,6 +53,10 @@ public abstract class MockingControllerTest {
         return objectMapper.readValue(json, resultTypeReference);
     }
 
+    protected <T> T fromJson(String json, Class<T> type) throws IOException {
+        return objectMapper.readValue(json, type);
+    }
+
     protected class MvcResultActions implements ResultActions {
 
         private final ResultActions resultActions;

@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @ExtendWith(MockitoExtension.class)
 class RoleControllerTest extends MockingControllerTest {
@@ -37,7 +37,7 @@ class RoleControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void getRolesTest() throws Exception {
+    void getRoles() throws Exception {
         final List<Role> roles = Stream.of(Roles.SUPER_ADMIN, Roles.USER_ADMIN, Roles.USER)
                 .map(roleId -> new RoleDTO(roleId.getId(), roleId.getName()))
                 .collect(Collectors.toList());
@@ -54,6 +54,37 @@ class RoleControllerTest extends MockingControllerTest {
         assertTrue(roles.containsAll(receivedRoles));
 
         then(roleService).should().getAll();
+    }
+
+    @Test
+    void saveRole() throws Exception {
+        final Role role = new RoleDTO("test-role");
+        role.setId(42);
+
+        given(roleService.save(notNull(RoleDTO.class))).willReturn(role);
+
+        final String response = perform(patch(PATH), role).getResponse();
+        final RoleDTO receivedRole = fromJson(response, RoleDTO.class);
+
+        assertEquals(receivedRole, role);
+
+        then(roleService).should().save(notNull(RoleDTO.class));
+    }
+
+    @Test
+    void saveNewRole() throws Exception {
+        final Role role = new RoleDTO("test-role");
+        final Role savedRole = new RoleDTO("test-role");
+        savedRole.setId(42);
+
+        given(roleService.saveNewRole(notNull(RoleDTO.class))).willReturn(savedRole);
+
+        final String response = perform(post(PATH), role).getResponse();
+        final RoleDTO receivedRole = fromJson(response, RoleDTO.class);
+
+        assertEquals(receivedRole, savedRole);
+
+        then(roleService).should().saveNewRole(notNull(RoleDTO.class));
     }
 
 }

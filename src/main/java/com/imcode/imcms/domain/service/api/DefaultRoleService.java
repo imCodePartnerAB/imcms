@@ -43,4 +43,9 @@ class DefaultRoleService implements RoleService {
         return new RoleDTO(roleRepository.save(new RoleJPA(saveMe)));
     }
 
+    @Override
+    public Role saveNewRole(Role role) {
+        role.setId(null);
+        return save(role);
+    }
 }

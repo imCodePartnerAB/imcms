@@ -74,4 +74,25 @@ public class RoleServiceTest {
 
         assertEquals(new RolePermissionsDTO(savedPermissions), new RolePermissionsDTO(permissions));
     }
+
+    @Test
+    public void saveNewRole() {
+        final RoleDTO roleToSave = new RoleDTO("test-role");
+        final RolePermissionsDTO permissions = new RolePermissionsDTO();
+        permissions.setGetPasswordByEmail(true);
+        roleToSave.setPermissions(permissions);
+
+        final Role savedRole = roleService.saveNewRole(roleToSave);
+
+        assertNotNull(savedRole.getId());
+        assertEquals(roleToSave.getName(), savedRole.getName());
+
+        final RolePermissions savedPermissions = savedRole.getPermissions();
+        assertNotNull(savedPermissions);
+
+        assertEquals(permissions.isGetPasswordByEmail(), savedPermissions.isGetPasswordByEmail());
+        assertEquals(permissions.isAccessToAdminPages(), savedPermissions.isAccessToAdminPages());
+        assertEquals(permissions.isChangeImagesInImageArchive(), savedPermissions.isChangeImagesInImageArchive());
+        assertEquals(permissions.isUseImagesInImageArchive(), savedPermissions.isUseImagesInImageArchive());
+    }
 }
