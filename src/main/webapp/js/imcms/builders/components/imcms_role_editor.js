@@ -93,9 +93,16 @@ Imcms.define(
         }
 
         function onSaveRole() {
+            var name = $roleNameRow.getValue();
+
+            if (!name) {
+                $roleNameRow.$input.focus();
+                return;
+            }
+
             var updatedRole = {
                 id: currentRole.id,
-                name: $roleNameRow.getValue(),
+                name: name,
                 permissions: {
                     getPasswordByEmail: permissionCheckboxes$[0].isChecked(),
                     accessToAdminPages: permissionCheckboxes$[1].isChecked(),
