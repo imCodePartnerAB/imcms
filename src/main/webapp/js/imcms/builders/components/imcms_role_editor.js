@@ -124,7 +124,7 @@ Imcms.define(
                 });
             } else {
                 rolesRestAPI.create(saveMe).success(function (role) {
-                    var $roleRow = roleToRow.transform((currentRole = role), roleEditor);
+                    $roleRow = roleToRow.transform((currentRole = role), roleEditor);
                     $container.parent().find('.roles-table').append($roleRow);
 
                     onRoleView = onRoleSimpleView;
