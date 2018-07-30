@@ -52,7 +52,7 @@
         <dependset>
             <srcfileset file="build.properties"/>
             <targetfileset dir="${webinf.conf.dir}">
-                <include name="imcms_*"/>
+                <include name="imcms*"/>
                 <include name="server.properties"/>
                 <include name="jaas.conf"/>
                 <include name="krb.conf"/>
