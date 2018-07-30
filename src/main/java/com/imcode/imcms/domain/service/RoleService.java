@@ -13,4 +13,6 @@ public interface RoleService {
     Role save(Role saveMe);
 
     Role saveNewRole(Role role);
+
+    void delete(int roleID);
 }
