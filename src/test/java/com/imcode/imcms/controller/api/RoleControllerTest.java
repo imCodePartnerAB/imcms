@@ -61,14 +61,14 @@ class RoleControllerTest extends MockingControllerTest {
         final Role role = new RoleDTO("test-role");
         role.setId(42);
 
-        given(roleService.save(notNull(RoleDTO.class))).willReturn(role);
+        given(roleService.save(notNull())).willReturn(role);
 
         final String response = perform(patch(PATH), role).getResponse();
         final RoleDTO receivedRole = fromJson(response, RoleDTO.class);
 
         assertEquals(receivedRole, role);
 
-        then(roleService).should().save(notNull(RoleDTO.class));
+        then(roleService).should().save(notNull());
     }
 
     @Test
@@ -77,14 +77,14 @@ class RoleControllerTest extends MockingControllerTest {
         final Role savedRole = new RoleDTO("test-role");
         savedRole.setId(42);
 
-        given(roleService.saveNewRole(notNull(RoleDTO.class))).willReturn(savedRole);
+        given(roleService.saveNewRole(notNull())).willReturn(savedRole);
 
         final String response = perform(post(PATH), role).getResponse();
         final RoleDTO receivedRole = fromJson(response, RoleDTO.class);
 
         assertEquals(receivedRole, savedRole);
 
-        then(roleService).should().saveNewRole(notNull(RoleDTO.class));
+        then(roleService).should().saveNewRole(notNull());
     }
 
 }
