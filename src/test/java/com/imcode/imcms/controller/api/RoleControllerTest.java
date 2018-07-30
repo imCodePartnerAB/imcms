@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class RoleControllerTest extends MockingControllerTest {
@@ -87,4 +88,12 @@ class RoleControllerTest extends MockingControllerTest {
         then(roleService).should().saveNewRole(notNull());
     }
 
+    @Test
+    void deleteRole() throws Exception {
+        final int roleId = 42;
+
+        perform(delete(PATH + "/" + roleId)).andExpect(status().isOk());
+
+        then(roleService).should().delete(roleId);
+    }
 }
