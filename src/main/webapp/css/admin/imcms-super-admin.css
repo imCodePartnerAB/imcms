@@ -160,5 +160,11 @@
     vertical-align: top;
 }
 
+.auth-provider-icon {
+    width: 30px;
+    padding-left: 10px;
+    vertical-align: middle;
+}
+
 
 

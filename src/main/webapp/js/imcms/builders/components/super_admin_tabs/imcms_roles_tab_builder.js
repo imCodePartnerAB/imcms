@@ -5,10 +5,10 @@
 Imcms.define(
     'imcms-roles-tab-builder',
     [
-        'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api',
-        'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer'
+        'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api', 'imcms',
+        'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication'
     ],
-    function (SuperAdminTab, texts, components, rolesRestApi, BEM, roleEditor, $, roleToRow) {
+    function (SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth) {
 
         texts = texts.superAdmin.roles;
 
@@ -62,10 +62,54 @@ Imcms.define(
             return wrapInImcmsField([$rolesContainer, roleEditor.buildContainer()]);
         }
 
+        function buildExternalRolesContainer() {
+            var externalRolesBEM = new BEM({
+                block: 'external-roles',
+                elements: {
+                    'auth-provider': ''
+                }
+            });
+
+            var $externalRolesContainer = externalRolesBEM.buildBlock('<div>', [], {style: 'display: none;'});
+
+            auth.getAuthProviders().success(function (providers) {
+                if (!providers || !providers.length) return;
+
+                $externalRolesContainer.css('display', 'block');
+
+                var providerBEM = new BEM({
+                    block: 'external-provider',
+                    elements: {
+                        'title': '',
+                        'roles': ''
+                    }
+                });
+
+                var providers$ = providers.map(function (provider) {
+
+                    var $title = components.texts.titleText('<div>', provider.providerName).append($('<img>', {
+                        'class': 'auth-provider-icon',
+                        src: imcms.contextPath + provider.iconPath
+                    }));
+                    var $roles = $('<div>');
+                    var $providerBlock = providerBEM.buildBlock('<div>', [
+                        {'title': $title},
+                        {'roles': $roles}
+                    ]);
+                    return externalRolesBEM.makeBlockElement('auth-provider', $providerBlock);
+                });
+
+                $externalRolesContainer.append(providers$);
+            });
+
+            return wrapInImcmsField($externalRolesContainer);
+        }
+
         return new SuperAdminTab(texts.name, [
             buildTabTitle(),
             buildCreateNewRoleButton(),
-            buildRolesContainer()
+            buildRolesContainer(),
+            buildExternalRolesContainer()
         ]);
     }
 );
