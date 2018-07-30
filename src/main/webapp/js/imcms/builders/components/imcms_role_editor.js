@@ -68,8 +68,11 @@ Imcms.define(
             confirmationBuilder.buildModalWindow('Do you really want to delete this role?', function (confirmed) {
                 if (!confirmed) return;
 
-                rolesRestAPI.remove().success(function () {
-                    // todo: implement delete method in api with this callback
+                rolesRestAPI.remove(currentRole).success(function () {
+                    $roleRow.remove();
+                    currentRole = null;
+                    onEditDelegate = onSimpleEdit;
+                    $container.slideUp();
                 })
             });
         }
