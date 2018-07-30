@@ -6,11 +6,13 @@ Imcms.define(
     'imcms-roles-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api',
-        'imcms-bem-builder', 'imcms-role-editor', 'jquery'
+        'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer'
     ],
-    function (SuperAdminTab, texts, components, rolesRestApi, BEM, roleEditor, $) {
+    function (SuperAdminTab, texts, components, rolesRestApi, BEM, roleEditor, $, roleToRow) {
 
         texts = texts.superAdmin.roles;
+
+        var $rolesContainer;
 
         function wrapInImcmsField($wrapMe) {
             return $('<div>', {
@@ -24,7 +26,19 @@ Imcms.define(
         }
 
         function onCreateNewRole() {
-            // todo: implement
+            $rolesContainer.find('.roles-table__role-row--active')
+                .removeClass('roles-table__role-row--active');
+
+            roleEditor.editRole($('<div>'), {
+                id: null,
+                name: '',
+                permissions: {
+                    getPasswordByEmail: false,
+                    accessToAdminPages: false,
+                    useImagesInImageArchive: false,
+                    changeImagesInImageArchive: false
+                }
+            });
         }
 
         function buildCreateNewRoleButton() {
@@ -35,39 +49,17 @@ Imcms.define(
         }
 
         function buildRolesContainer() {
-            var rolesTableBEM = new BEM({
-                block: 'roles-table',
-                elements: {
-                    'role-row': ''
-                }
+            $rolesContainer = $('<div>', {
+                'class': 'roles-table'
             });
-
-            var $rolesContainer = rolesTableBEM.buildBlock('<div>');
-            var $roleViewEditContainer = roleEditor.buildContainer();
-
-            function getOnRoleClicked(role) {
-                return function () {
-                    var $this = $(this);
-
-                    if ($this.hasClass('roles-table__role-row--active')) return;
-
-                    roleEditor.viewRole.call($this, role);
-                }
-            }
-
-            function roleToRow(role) {
-                return rolesTableBEM.makeBlockElement('role-row', $('<div>', {
-                    id: 'role-id-' + role.id,
-                    text: role.name,
-                    click: getOnRoleClicked(role)
-                }))
-            }
 
             rolesRestApi.read().success(function (roles) {
-                $rolesContainer.append(roles.map(roleToRow))
+                $rolesContainer.append(roles.map(function (role) {
+                    return roleToRow.transform(role, roleEditor)
+                }))
             });
 
-            return wrapInImcmsField([$rolesContainer, $roleViewEditContainer]);
+            return wrapInImcmsField([$rolesContainer, roleEditor.buildContainer()]);
         }
 
         return new SuperAdminTab(texts.name, [

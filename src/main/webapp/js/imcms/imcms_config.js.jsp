@@ -137,6 +137,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-window-tab-builder": "builders/components/imcms_window_tab_builder.js",
             'imcms-super-admin-tab': 'builders/components/imcms_super_admin_tab.js',
             'imcms-role-editor': 'builders/components/imcms_role_editor.js',
+            'imcms-role-to-row-transformer': 'builders/components/imcms_role_to_row_transformer.js',
             //   <page_info_tabs>
             "imcms-page-info-tabs-builder": "builders/components/page_info_tabs/imcms_page_info_tabs_builder.js",
             "imcms-appearance-tab-builder": "builders/components/page_info_tabs/imcms_appearance_tab_builder.js",
