@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.net.URL;
+import java.util.List;
 
 import static com.imcode.imcms.controller.api.RequestExternalIdentifierController.EXTERNAL_IDENTIFIERS_PATH;
 import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_URL;
@@ -85,6 +86,11 @@ class RequestExternalIdentifierController {
         Utility.makeUserLoggedIn(request, user);
 
         return new ModelAndView(new RedirectView(nextURL));
+    }
+
+    @RequestMapping("/{identifierId}/roles")
+    public List<Object> getExternalRoles(@PathVariable String identifierId) {
+        return authenticationProvidersService.getAuthenticationProvider(identifierId).getRoles();
     }
 
 }

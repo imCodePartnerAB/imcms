@@ -1,10 +1,12 @@
 package com.imcode.imcms.model;
 
 import imcode.server.user.UserDomainObject;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.servlet.http.HttpServletRequest;
 
+@EqualsAndHashCode
 public abstract class AuthenticationProvider {
 
     @Getter

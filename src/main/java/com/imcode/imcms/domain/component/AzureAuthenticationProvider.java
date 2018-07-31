@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Authentication provider for Azure Active Directory
  */
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 public class AzureAuthenticationProvider extends AuthenticationProvider implements AuthenticationDataStorage {
 
     public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
@@ -87,15 +87,9 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
 
     @Override
     public void updateAuthData(HttpServletRequest request) {
-        if (isAuthDataExpired(request)) {
+        if (AuthHelper.isAuthDataExpired(AuthHelper.getAuthenticationResult(request))) {
             updateAuthDataUsingRefreshToken(request);
         }
-    }
-
-    private boolean isAuthDataExpired(HttpServletRequest request) {
-        return AuthHelper.getAuthenticationResult(request)
-                .getExpiresOnDate()
-                .before(new Date());
     }
 
     private void updateAuthDataUsingRefreshToken(HttpServletRequest request) {

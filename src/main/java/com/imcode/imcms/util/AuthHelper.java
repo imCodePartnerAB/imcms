@@ -30,6 +30,7 @@ import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Map;
 
 public final class AuthHelper {
@@ -41,6 +42,10 @@ public final class AuthHelper {
 
     public static boolean isAuthenticated(HttpServletRequest request) {
         return request.getSession().getAttribute(PRINCIPAL_SESSION_NAME) != null;
+    }
+
+    public static boolean isAuthDataExpired(AuthenticationResult result) {
+        return result.getExpiresOnDate().before(new Date());
     }
 
     public static AuthenticationResult getAuthenticationResult(HttpServletRequest request) {
