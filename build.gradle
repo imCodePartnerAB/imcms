@@ -157,7 +157,7 @@ task initParams() {
 
     file("build.properties").withInputStream { buildProps.load(it) }
 
-    buildProps.setProperty("imcms.version", project.version);
+    buildProps.setProperty("imcms.version", project.version as String)
 
     mergedPropertiesFile = file("${tmpDir}/server.properties")
 }
@@ -189,7 +189,7 @@ task mergeProperties(dependsOn: initParams) {
         }
     }
 
-    mergedPropertiesFile.withInputStream { serverProps.load(it) }
+    mergedPropertiesFile.withInputStream { serverProps.load it }
 }
 
 task explodedWar(type: Sync, dependsOn: war) {
