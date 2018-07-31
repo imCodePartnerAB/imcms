@@ -326,8 +326,7 @@ war {
         from "src/main/resources"
         from "src/main/resources-conf"
 
-        include "server.properties"
-        include "imcms_*.properties"
+        include "imcms*.properties"
         include "*.conf"
         include "log4j.xml"
         include "*.json"
