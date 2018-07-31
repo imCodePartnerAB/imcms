@@ -170,8 +170,8 @@ task initParams(dependsOn: checkPropertyFile) {
     mavenProps.setProperty("log4j.hibernate.level", "error")
     mavenProps.setProperty("log4j.console-appender.threshold", "off")
 
-    localizationLanguages.add("en")
-    localizationLanguages.add("sv")
+    localizationLanguages.add("")
+    localizationLanguages.add("_sv")
 
     file("build.properties").withInputStream { buildProps.load(it) }
 }
