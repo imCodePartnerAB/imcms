@@ -138,7 +138,8 @@ def mavenProps = new Properties()
 
 //Used to merge build and server properties file with replacement of inplace variables usage
 def buildProps = new Properties()
-def tmpProps = new Properties()
+def serverProps = new Properties()
+def mergedPropertiesFile
 
 //Directory to hold temporary data
 def tmpDir = "${buildDir}/tmp/"
@@ -146,26 +147,7 @@ def tmpDir = "${buildDir}/tmp/"
 //Translation Languages
 def localizationLanguages = new ArrayList()
 
-task copyPropertyFileFromTemplate(type: Copy) {
-    from projectDir
-    into projectDir
-    include 'build.properties.template'
-    rename '(.*).template', '$1'
-    doLast {
-        throw new GradleException(
-                '`build.properties` file was just created, fill in required properties and run execution again'
-        )
-    }
-}
-
-task checkPropertyFile(type: Copy) {
-    def buildProperties = new File("${projectDir}/build.properties")
-    if (!buildProperties.exists()) {
-        copyPropertyFileFromTemplate.execute()
-    }
-}
-
-task initParams(dependsOn: checkPropertyFile) {
+task initParams() {
     mavenProps.setProperty("log4j.threshold", "info")
     mavenProps.setProperty("log4j.hibernate.level", "error")
     mavenProps.setProperty("log4j.console-appender.threshold", "off")
@@ -174,23 +156,40 @@ task initParams(dependsOn: checkPropertyFile) {
     localizationLanguages.add("_sv")
 
     file("build.properties").withInputStream { buildProps.load(it) }
+
+    buildProps.setProperty("imcms.version", project.version);
+
+    mergedPropertiesFile = file("${tmpDir}/server.properties")
 }
 
-task copyProperties(type: Copy, dependsOn: initParams) {
-    from "${projectDir}"
-    include "build.properties"
+task mergeProperties(dependsOn: initParams) {
+    def lines = file("src/main/resources-conf/server.properties").readLines()
 
-    //Needed to perform this two times to replace inplace variables
-    filter(ReplaceTokens, tokens: buildProps)
-    filter(ReplaceTokens, tokens: buildProps)
-    into tmpDir
-}
+    def mergedProperties = new ArrayList<String>()
+    def customProps = buildProps.clone()
 
-task importProperties(dependsOn: copyProperties) {
-    doLast {
-        file("${tmpDir}/build.properties").withInputStream { tmpProps.load(it) }
-        tmpProps.setProperty("imcms.version", project.version)
+
+    lines.each {
+        buildProps.each { prop ->
+            if (it.matches("^" + prop.key + "\\s*= *.*\\s*\$")) {
+                it = prop.toString()
+                customProps.remove(prop.key)
+            }
+        }
+
+        mergedProperties.add(it)
     }
+    customProps.each {
+        mergedProperties.add(it.toString())
+    }
+
+    mergedPropertiesFile.withWriter { out ->
+        mergedProperties.each {
+            out.println it
+        }
+    }
+
+    mergedPropertiesFile.withInputStream { serverProps.load(it) }
 }
 
 task explodedWar(type: Sync, dependsOn: war) {
@@ -214,11 +213,8 @@ task cleanTemporaryDir(type: Delete, dependsOn: war) {
 //    delete tmpDir
 }
 
-//Task dependency settings
-copyProperties.finalizedBy importProperties
-
 tasks.war {
-    it.dependsOn importProperties
+    it.dependsOn mergeProperties
     it.dependsOn test
     it.dependsOn individualJsMinify
     it.dependsOn individualCssMinify
@@ -331,7 +327,7 @@ war {
         include "log4j.xml"
         include "*.json"
         into "/WEB-INF/conf"
-        filter(ReplaceTokens, tokens: tmpProps)
+        filter(ReplaceTokens, tokens: serverProps)
         filter(ReplaceTokens, tokens: mavenProps, beginToken: '${', endToken: '}')
     }
 
@@ -388,12 +384,14 @@ war {
 
     webInf {
         from "${tmpDir}/jsMin/"
+        from "${tmpDir}/cssMin/"
         into "/"
     }
 
     webInf {
-        from "${tmpDir}/cssMin/"
-        into "/"
+        from "${tmpDir}"
+        include 'server.properties'
+        into "/WEB-INF/conf"
     }
 
     webInf {
