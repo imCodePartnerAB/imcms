@@ -168,7 +168,6 @@ task mergeProperties(dependsOn: initParams) {
     def mergedProperties = new ArrayList<String>()
     def customProps = buildProps.clone()
 
-
     lines.each {
         buildProps.each { prop ->
             if (it.matches("^" + prop.key + "\\s*= *.*\\s*\$")) {
@@ -179,9 +178,8 @@ task mergeProperties(dependsOn: initParams) {
 
         mergedProperties.add(it)
     }
-    customProps.each {
-        mergedProperties.add(it.toString())
-    }
+
+    mergedProperties.addAll(customProps.findAll())
 
     mergedPropertiesFile.withWriter { out ->
         mergedProperties.each {
