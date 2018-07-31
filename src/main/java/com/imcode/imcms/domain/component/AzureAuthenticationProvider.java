@@ -49,7 +49,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Authentication provider for Azure Active Directory
  */
-@Data
 @EqualsAndHashCode(callSuper = false)
 public class AzureAuthenticationProvider extends AuthenticationProvider implements AuthenticationDataStorage {
 

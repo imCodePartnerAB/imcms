@@ -23,7 +23,8 @@ class DefaultRoleService implements RoleService {
 
     @Override
     public Role getById(int id) {
-        return new RoleDTO(roleRepository.findOne(id));
+        final RoleJPA role = roleRepository.findOne(id);
+        return (role == null) ? null : new RoleDTO(role);
     }
 
     @Override
@@ -48,4 +49,10 @@ class DefaultRoleService implements RoleService {
         role.setId(null);
         return save(role);
     }
+
+    @Override
+    public void delete(int roleID) {
+        roleRepository.delete(roleID);
+    }
+
 }

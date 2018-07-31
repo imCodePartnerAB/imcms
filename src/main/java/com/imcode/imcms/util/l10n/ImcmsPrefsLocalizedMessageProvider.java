@@ -24,7 +24,17 @@ public class ImcmsPrefsLocalizedMessageProvider extends LocalizedMessageProvider
     public ResourceBundle getResourceBundle(String languageIso639_2) {
         final String propertiesFilename = "WEB-INF/conf/imcms_" + LanguageMapper.convert639_2to639_1(languageIso639_2)
                 + ".properties";
-        final Properties languageProperties = PropertyManager.getPropertiesFrom(propertiesFilename);
+
+        final Properties languageProperties;
+        Properties properties = null;
+
+        try {
+            properties = PropertyManager.getPropertiesFrom(propertiesFilename);
+        } catch (NullPointerException e) { // props for specified lang not found, using default
+            properties = PropertyManager.getPropertiesFrom("WEB-INF/conf/imcms.properties");
+        } finally {
+            languageProperties = properties;
+        }
 
         return new ResourceBundle() {
             protected Object handleGetObject(String key) {

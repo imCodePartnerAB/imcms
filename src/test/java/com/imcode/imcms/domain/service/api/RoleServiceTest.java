@@ -57,6 +57,21 @@ public class RoleServiceTest {
     }
 
     @Test
+    public void delete() {
+        final Role saveMe = new RoleDTO("test_name_role");
+        final Role saved = roleService.save(saveMe);
+        final Role received = roleService.getById(saved.getId());
+
+        assertEquals(received, saved);
+
+        roleService.delete(received.getId());
+
+        final Role deleted = roleService.getById(saved.getId());
+
+        assertNull(deleted);
+    }
+
+    @Test
     public void getById_When_RoleExistWithSpecifiedPermissions_Expect_SameReturned() {
         final Role role = roleService.save(new RoleDTO("test_name_role"));
         final Integer roleId = role.getId();

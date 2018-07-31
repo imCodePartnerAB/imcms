@@ -4,8 +4,11 @@
  */
 Imcms.define(
     'imcms-role-editor',
-    ['imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder', 'imcms-roles-rest-api'],
-    function (BEM, components, texts, confirmationBuilder, rolesRestAPI) {
+    [
+        'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
+        'imcms-roles-rest-api', 'imcms-role-to-row-transformer'
+    ],
+    function (BEM, components, texts, confirmationBuilder, rolesRestAPI, roleToRow) {
 
         texts = texts.superAdmin.roles;
 
@@ -48,19 +51,11 @@ Imcms.define(
             );
         }
 
-        function slideToggle(elements$) {
-            elements$.forEach(function ($element) {
-                $element.slideToggle('fast');
-            })
-        }
-
         function onEditRole() {
             onRoleView = onCancelChanges;
 
-            slideToggle([
-                $roleViewButtons,
-                $roleEditButtons
-            ]);
+            $roleViewButtons.slideUp();
+            $roleEditButtons.slideDown();
 
             $roleNameRow.$input.removeAttr('disabled').focus();
 
@@ -73,8 +68,11 @@ Imcms.define(
             confirmationBuilder.buildModalWindow('Do you really want to delete this role?', function (confirmed) {
                 if (!confirmed) return;
 
-                rolesRestAPI.remove().success(function () {
-                    // todo: implement delete method in api with this callback
+                rolesRestAPI.remove(currentRole).success(function () {
+                    $roleRow.remove();
+                    currentRole = null;
+                    onEditDelegate = onSimpleEdit;
+                    $container.slideUp();
                 })
             });
         }
@@ -93,9 +91,16 @@ Imcms.define(
         }
 
         function onSaveRole() {
-            var updatedRole = {
+            var name = $roleNameRow.getValue();
+
+            if (!name) {
+                $roleNameRow.$input.focus();
+                return;
+            }
+
+            var saveMe = {
                 id: currentRole.id,
-                name: $roleNameRow.getValue(),
+                name: name,
                 permissions: {
                     getPasswordByEmail: permissionCheckboxes$[0].isChecked(),
                     accessToAdminPages: permissionCheckboxes$[1].isChecked(),
@@ -104,22 +109,37 @@ Imcms.define(
                 }
             };
 
-            rolesRestAPI.update(updatedRole).success(function (savedRole) {
-                // todo: maybe there is better way to reassign fields' values, not object itself
-                currentRole.id = savedRole.id;
-                $roleRow.text(currentRole.name = savedRole.name);
-                currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
-                currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
-                currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
-                currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
+            if (saveMe.id) {
+                rolesRestAPI.update(saveMe).success(function (savedRole) {
+                    // todo: maybe there is better way to reassign fields' values, not object itself
+                    currentRole.id = savedRole.id;
+                    $roleRow.text(currentRole.name = savedRole.name);
+                    currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
+                    currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
+                    currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
+                    currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
 
-                (onRoleView = onRoleSimpleView)();
-            })
+                    onRoleView = onRoleSimpleView;
+                    prepareRoleView();
+                });
+            } else {
+                rolesRestAPI.create(saveMe).success(function (role) {
+                    $roleRow = roleToRow.transform((currentRole = role), roleEditor);
+                    $container.parent().find('.roles-table').append($roleRow);
+
+                    onRoleView = onRoleSimpleView;
+                    prepareRoleView();
+                });
+            }
         }
 
-        function onCancelChanges() {
+        function onCancelChanges($roleRowElement, role) {
             confirmationBuilder.buildModalWindow('Discard changes?', function (confirmed) {
-                confirmed && (onRoleView = onRoleSimpleView)();
+                if (!confirmed) return;
+                onRoleView = onRoleSimpleView;
+                currentRole = role;
+                $roleRow = $roleRowElement;
+                prepareRoleView();
             });
         }
 
@@ -131,14 +151,30 @@ Imcms.define(
                 }),
                 components.buttons.negativeButton({
                     text: 'Cancel',
-                    click: onCancelChanges
+                    click: function () {
+                        confirmationBuilder.buildModalWindow('Discard changes?', function (confirmed) {
+                            if (!confirmed) return;
+                            onRoleView = onRoleSimpleView;
+
+                            if (currentRole.id) {
+                                prepareRoleView();
+
+                            } else {
+                                currentRole = null;
+                                onEditDelegate = onSimpleEdit;
+                                $container.slideUp();
+                            }
+                        });
+                    }
                 })
             ], {
                 style: 'display: none;'
             });
         }
 
-        function onRoleSimpleView() {
+        function prepareRoleView() {
+            onEditDelegate = onSimpleEdit;
+
             $roleRow.parent()
                 .find('.roles-table__role-row--active')
                 .removeClass('roles-table__role-row--active');
@@ -166,6 +202,14 @@ Imcms.define(
             $container.css('display', 'inline-block');
         }
 
+        function onRoleSimpleView($roleRowElement, role) {
+            if (currentRole && currentRole.id === role.id) return;
+            currentRole = role;
+            $roleRow = $roleRowElement;
+
+            prepareRoleView();
+        }
+
         var $container;
         var currentRole;
         var $roleRow;
@@ -183,15 +227,30 @@ Imcms.define(
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
 
-        function viewRole(role) {
-            currentRole = role;
-            $roleRow = this;
-            onRoleView();
+        function viewRole($roleRow, role) {
+            $container.slideDown();
+            onRoleView($roleRow, role);
         }
 
-        return {
-            buildContainer: buildContainer,
-            viewRole: viewRole
+        function onSimpleEdit($roleRow, role) {
+            viewRole($roleRow, role);
+            onEditRole();
         }
+
+        var onEditDelegate = onSimpleEdit;
+
+        function editRole($roleRow, role) {
+            onEditDelegate($roleRow, role);
+            onEditDelegate = function () {
+            }
+        }
+
+        var roleEditor = {
+            buildContainer: buildContainer,
+            viewRole: viewRole,
+            editRole: editRole
+        };
+
+        return roleEditor;
     }
 );
