@@ -219,7 +219,9 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-profiles-rest-api": "rest/imcms_profiles_rest_api.js",
             "imcms-document-validation-rest-api": "rest/imcms_document_validation_rest_api.js",
             "imcms-document-copy-rest-api": "rest/imcms_document_copy_rest_api.js",
-            'imcms-auth-providers-rest-api': 'rest/imcms_auth_providers_rest_api.js'
+            'imcms-auth-providers-rest-api': 'rest/imcms_auth_providers_rest_api.js',
+            'imcms-external-roles-rest-api': 'rest/imcms_external_roles_rest_api.js',
+            'imcms-azure-roles-rest-api': 'rest/imcms_azure_roles_rest_api.js'
         }
     };
 
