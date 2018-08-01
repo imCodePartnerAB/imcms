@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.model.AuthenticationProvider;
 import imcode.server.user.UserDomainObject;
@@ -7,9 +8,11 @@ import imcode.util.Utility;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -88,8 +91,9 @@ class RequestExternalIdentifierController {
         return new ModelAndView(new RedirectView(nextURL));
     }
 
-    @RequestMapping("/{identifierId}/roles")
-    public List<Object> getExternalRoles(@PathVariable String identifierId) {
+    @ResponseBody
+    @GetMapping("/{identifierId}/roles")
+    public List<ExternalRole> getExternalRoles(@PathVariable String identifierId) {
         return authenticationProvidersService.getAuthenticationProvider(identifierId).getRoles();
     }
 
