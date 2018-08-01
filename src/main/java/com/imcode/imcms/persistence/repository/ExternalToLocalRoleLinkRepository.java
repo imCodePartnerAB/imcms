@@ -13,4 +13,8 @@ public interface ExternalToLocalRoleLinkRepository extends JpaRepository<Externa
             String providerId, String externalRoleId, int localRoleId
     );
 
+    void deleteByProviderIdAndExternalRoleIdAndLocalRoleId(
+            String providerId, String externalRoleId, int localRoleId
+    );
+
 }

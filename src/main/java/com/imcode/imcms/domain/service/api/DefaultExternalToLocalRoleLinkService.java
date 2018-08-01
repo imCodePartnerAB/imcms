@@ -29,7 +29,9 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
 
     @Override
     public void removeLink(ExternalRole externalRole, int localRoleId) {
-//        repository.de
+        repository.deleteByProviderIdAndExternalRoleIdAndLocalRoleId(
+                externalRole.getProviderId(), externalRole.getId(), localRoleId
+        );
     }
 
     @Override
