@@ -146,4 +146,44 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
 
         assertNull(result);
     }
+
+    @Test
+    public void deleteByProviderIdAndExternalRoleId() {
+        final String provider = "provider";
+        final String externalRoleId1 = "external-role-1";
+        final String externalRoleId2 = "external-role-2";
+        final RoleJPA localRole1 = roleRepository.save(new RoleJPA("test-role-1"));
+        final RoleJPA localRole2 = roleRepository.save(new RoleJPA("test-role-2"));
+
+        repository.save(new ExternalToLocalRoleLink(provider, externalRoleId1, localRole1));
+        repository.save(new ExternalToLocalRoleLink(provider, externalRoleId2, localRole2));
+
+        ExternalToLocalRoleLink result1 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+                provider, externalRoleId1, localRole1.getId()
+        );
+
+        assertNotNull(result1);
+
+        ExternalToLocalRoleLink result2 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+                provider, externalRoleId2, localRole2.getId()
+        );
+
+        assertNotNull(result2);
+
+        repository.deleteByProviderIdAndExternalRoleId(provider, externalRoleId1);
+
+        result1 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+                provider, externalRoleId1, localRole1.getId()
+        );
+
+        assertNull(result1);
+
+        repository.deleteByProviderIdAndExternalRoleId(provider, externalRoleId2);
+
+        result2 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+                provider, externalRoleId2, localRole2.getId()
+        );
+
+        assertNull(result2);
+    }
 }
