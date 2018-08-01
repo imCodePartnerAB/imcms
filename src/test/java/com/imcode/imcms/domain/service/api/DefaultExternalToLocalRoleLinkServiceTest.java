@@ -74,5 +74,15 @@ class DefaultExternalToLocalRoleLinkServiceTest {
 
     @Test
     void removeLinks() {
+        final String providerId = "provider-id";
+        final String externalRoleId = "external-role-id";
+        final ExternalRole externalRole = mock(ExternalRole.class);
+
+        given(externalRole.getProviderId()).willReturn(providerId);
+        given(externalRole.getId()).willReturn(externalRoleId);
+
+        externalToLocalRoleLinkService.removeLinks(externalRole);
+
+        then(repository).should().deleteByProviderIdAndExternalRoleId(providerId, externalRoleId);
     }
 }
