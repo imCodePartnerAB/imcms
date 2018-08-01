@@ -6,9 +6,10 @@ Imcms.define(
     'imcms-roles-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api', 'imcms',
-        'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication'
+        'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication',
+        'imcms-azure-roles-rest-api'
     ],
-    function (SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth) {
+    function (SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth, azureRoles) {
 
         texts = texts.superAdmin.roles;
 
@@ -86,12 +87,22 @@ Imcms.define(
                 });
 
                 var providers$ = providers.map(function (provider) {
+                    var $roles = $('<div>');
+
+                    azureRoles.read().success(function (roles) {
+                        var roles$ = roles.map(function (role) {
+                            return $('<div>', {
+                                text: role.displayName
+                            });
+                        });
+
+                        $roles.append(roles$);
+                    });
 
                     var $title = components.texts.titleText('<div>', provider.providerName).append($('<img>', {
                         'class': 'auth-provider-icon',
                         src: imcms.contextPath + provider.iconPath
                     }));
-                    var $roles = $('<div>');
                     var $providerBlock = providerBEM.buildBlock('<div>', [
                         {'title': $title},
                         {'roles': $roles}

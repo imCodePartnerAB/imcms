@@ -116,7 +116,7 @@ public class User extends UserData implements Serializable {
     }
 
     public void setLogin(String login) {
-        this.login = (login == null) ? null : login.trim();
+        this.login = (login == null) ? "" : login.trim();
     }
 
 

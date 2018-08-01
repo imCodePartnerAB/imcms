@@ -1,20 +1,32 @@
 package com.imcode.imcms.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.imcode.imcms.domain.dto.ExternalRole;
 import imcode.server.user.UserDomainObject;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
+@EqualsAndHashCode
 public abstract class AuthenticationProvider {
 
     @Getter
-    protected String authenticationURL;
+    protected final String authenticationURL;
     @Getter
-    protected String providerId;
+    protected final String providerId;
     @Getter
-    protected String providerName;
+    protected final String providerName;
     @Getter
-    protected String iconPath;
+    protected final String iconPath;
+
+    public AuthenticationProvider(String authenticationURL, String providerId, String providerName, String iconPath) {
+        this.authenticationURL = authenticationURL;
+        this.providerId = providerId;
+        this.providerName = providerName;
+        this.iconPath = iconPath;
+    }
 
     public abstract String buildAuthenticationURL(String redirectURL, String sessionId, String nextUrl);
 
@@ -23,7 +35,11 @@ public abstract class AuthenticationProvider {
      */
     public abstract String processAuthentication(HttpServletRequest request);
 
+    @JsonIgnore
     public abstract UserDomainObject getUser(HttpServletRequest request);
 
     public abstract void updateAuthData(HttpServletRequest request);
+
+    @JsonIgnore
+    public abstract List<ExternalRole> getRoles();
 }
