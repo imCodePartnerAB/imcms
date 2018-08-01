@@ -6,7 +6,9 @@ import com.imcode.imcms.model.AuthenticationProvider;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
@@ -15,6 +17,8 @@ import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTE
 public class AuthenticationProvidersFactory {
 
     private final Properties properties;
+
+    private final Map<String, AuthenticationProvider> idToProvider = new HashMap<>();
 
     public AuthenticationProvidersFactory(Properties imcmsProperties) {
         properties = imcmsProperties;
@@ -33,9 +37,17 @@ public class AuthenticationProvidersFactory {
     }
 
     public AuthenticationProvider getProvider(String identifierId) {
-        switch (identifierId.toLowerCase()) {
+        identifierId = identifierId.toLowerCase();
+
+        final AuthenticationProvider authenticationProvider = idToProvider.get(identifierId);
+
+        if (authenticationProvider != null) return authenticationProvider;
+
+        switch (identifierId) {
             case EXTERNAL_AUTHENTICATOR_AZURE_AD:
-                return new AzureAuthenticationProvider(properties);
+                final AzureAuthenticationProvider provider = new AzureAuthenticationProvider(properties);
+                idToProvider.put(EXTERNAL_AUTHENTICATOR_AZURE_AD, provider);
+                return provider;
         }
 
         throw new ExternalIdentifierNotEnabledException(identifierId);
