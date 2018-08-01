@@ -9,4 +9,8 @@ public interface ExternalToLocalRoleLinkRepository extends JpaRepository<Externa
 
     Set<ExternalToLocalRoleLink> findByProviderId(String providerId);
 
+    ExternalToLocalRoleLink findByProviderIdAndExternalRoleIdAndLocalRoleId(
+            String providerId, String externalRoleId, int localRoleId
+    );
+
 }
