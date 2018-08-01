@@ -5,11 +5,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AzureActiveDirectoryGroupDTO extends ExternalRole {
 
-    private String id;
     private String createdDateTime;
     private String description;
     private String displayName;
