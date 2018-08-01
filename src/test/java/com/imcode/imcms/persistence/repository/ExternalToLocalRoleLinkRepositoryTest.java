@@ -128,9 +128,7 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final String externalRoleId = "external-role-1";
         final RoleJPA localRole = roleRepository.save(new RoleJPA("test-role"));
 
-        repository.save(
-                new ExternalToLocalRoleLink(provider, externalRoleId, localRole)
-        );
+        repository.save(new ExternalToLocalRoleLink(provider, externalRoleId, localRole));
 
         ExternalToLocalRoleLink result = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
                 provider, externalRoleId, localRole.getId()
