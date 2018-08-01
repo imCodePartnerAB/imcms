@@ -1,6 +1,5 @@
 package com.imcode.imcms.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
@@ -16,8 +15,6 @@ import org.springframework.test.web.servlet.ResultHandler;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-
-import java.io.IOException;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,7 +32,8 @@ public abstract class MockingControllerTest {
         mockMvc = MockMvcBuilders.standaloneSetup(controllerToMock()).build();
     }
 
-    protected MvcResultActions perform(RequestBuilder requestBuilder) throws Exception {
+    @SneakyThrows
+    protected MvcResultActions perform(RequestBuilder requestBuilder) {
         return new MvcResultActions(mockMvc.perform(requestBuilder));
     }
 
@@ -45,15 +43,18 @@ public abstract class MockingControllerTest {
         return perform(requestBuilder);
     }
 
-    protected String asJson(Object object) throws JsonProcessingException {
+    @SneakyThrows
+    protected String asJson(Object object) {
         return objectMapper.writeValueAsString(object);
     }
 
-    protected <T> T fromJson(String json, TypeReference<T> resultTypeReference) throws IOException {
+    @SneakyThrows
+    protected <T> T fromJson(String json, TypeReference<T> resultTypeReference) {
         return objectMapper.readValue(json, resultTypeReference);
     }
 
-    protected <T> T fromJson(String json, Class<T> type) throws IOException {
+    @SneakyThrows
+    protected <T> T fromJson(String json, Class<T> type) {
         return objectMapper.readValue(json, type);
     }
 
@@ -89,7 +90,8 @@ public abstract class MockingControllerTest {
                     .andExpect(content().json(asJson(expected)));
         }
 
-        public String getResponse() throws Exception {
+        @SneakyThrows
+        public String getResponse() {
             return resultActions.andExpect(status().isOk())
                     .andReturn()
                     .getResponse()
