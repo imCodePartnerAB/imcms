@@ -2,10 +2,12 @@ package com.imcode.imcms.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class AzureActiveDirectoryGroupDTO {
+public class AzureActiveDirectoryGroupDTO extends ExternalRole {
 
     private String id;
     private String createdDateTime;
