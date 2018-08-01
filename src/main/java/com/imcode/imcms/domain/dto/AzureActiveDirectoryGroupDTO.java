@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_USER_AND_ROLE_AZURE_AD;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -30,5 +32,9 @@ public class AzureActiveDirectoryGroupDTO extends ExternalRole {
     private boolean mailEnabled;
     private boolean securityEnabled;
     private boolean onPremisesSyncEnabled;
+
+    {
+        providerId = EXTERNAL_USER_AND_ROLE_AZURE_AD;
+    }
 
 }
