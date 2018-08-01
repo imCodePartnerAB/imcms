@@ -1,6 +1,9 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.ExternalRole;
+import com.imcode.imcms.model.Role;
+
+import java.util.Set;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -14,4 +17,5 @@ public interface ExternalToLocalRoleLinkService {
 
     void removeLinks(ExternalRole externalRole);
 
+    Set<Role> getLinkedLocalRoles(ExternalRole externalRole);
 }
