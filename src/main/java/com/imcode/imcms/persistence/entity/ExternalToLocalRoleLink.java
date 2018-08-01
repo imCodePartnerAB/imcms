@@ -38,7 +38,7 @@ public class ExternalToLocalRoleLink {
     @Column(name = "external_role_id", nullable = false)
     private String externalRoleId;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = true)
     @JoinColumn(name = "linked_local_role_id", referencedColumnName = "role_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private RoleJPA role;
