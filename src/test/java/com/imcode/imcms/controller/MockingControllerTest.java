@@ -66,12 +66,14 @@ public abstract class MockingControllerTest {
         }
 
         @Override
-        public ResultActions andExpect(ResultMatcher matcher) throws Exception {
+        @SneakyThrows
+        public ResultActions andExpect(ResultMatcher matcher) {
             return new MvcResultActions(resultActions.andExpect(matcher));
         }
 
         @Override
-        public ResultActions andDo(ResultHandler handler) throws Exception {
+        @SneakyThrows
+        public ResultActions andDo(ResultHandler handler) {
             return new MvcResultActions(resultActions.andDo(handler));
         }
 
@@ -80,7 +82,8 @@ public abstract class MockingControllerTest {
             return resultActions.andReturn();
         }
 
-        public void andExpectAsJson(Object expected) throws Exception {
+        @SneakyThrows
+        public void andExpectAsJson(Object expected) {
             resultActions.andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                     .andExpect(content().json(asJson(expected)));
