@@ -221,7 +221,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-document-copy-rest-api": "rest/imcms_document_copy_rest_api.js",
             'imcms-auth-providers-rest-api': 'rest/imcms_auth_providers_rest_api.js',
             'imcms-external-roles-rest-api': 'rest/imcms_external_roles_rest_api.js',
-            'imcms-azure-roles-rest-api': 'rest/imcms_azure_roles_rest_api.js'
+            'imcms-azure-roles-rest-api': 'rest/imcms_azure_roles_rest_api.js',
+            'imcms-external-to-local-roles-links-rest-api': 'rest/imcms_external_to_local_roles_links_rest_api.js'
         }
     };
 
