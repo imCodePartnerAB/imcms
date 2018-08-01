@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupDTO;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupsHolderDTO;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryUserDTO;
+import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.model.AuthenticationProvider;
 import com.imcode.imcms.util.AuthHelper;
 import com.microsoft.aad.adal4j.AuthenticationContext;
@@ -20,6 +21,10 @@ import imcode.server.user.UserDomainObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +35,9 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,7 +57,8 @@ import java.util.concurrent.TimeUnit;
  * Authentication provider for Azure Active Directory
  */
 @EqualsAndHashCode(callSuper = true)
-public class AzureAuthenticationProvider extends AuthenticationProvider implements AuthenticationDataStorage {
+public class AzureAuthenticationProvider extends AuthenticationProvider
+        implements AuthenticationDataStorage {
 
     public static final String EXTERNAL_AUTHENTICATOR_AZURE_AD = "aad";
     public static final String EXTERNAL_USER_AND_ROLE_AZURE_AD = "aad";
@@ -67,14 +75,15 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
     private final String secretKey;
     private final String authority = "https://login.microsoftonline.com/";
 
-    {
-        providerName = "Azure Active Directory";
-        providerId = EXTERNAL_AUTHENTICATOR_AZURE_AD;
-        iconPath = "/images_new/external_identifiers/azure-active-directory.svg";
-    }
+    private AuthenticationResultHolder applicationAccessToken = new NullAuthenticationResultHolder();
 
     public AzureAuthenticationProvider(Properties properties) {
-        authenticationURL = "https://login.microsoftonline.com/";
+        super(
+                "https://login.microsoftonline.com/",
+                EXTERNAL_AUTHENTICATOR_AZURE_AD,
+                "Azure Active Directory",
+                "/images_new/external_identifiers/azure-active-directory.svg"
+        );
 
         tenant = properties.getProperty("aad.tenant.name");
         clientId = properties.getProperty("aad.client.id");
@@ -312,6 +321,47 @@ public class AzureAuthenticationProvider extends AuthenticationProvider implemen
         } finally {
             service.shutdown();
         }
+    }
+
+    @Override
+    public List<ExternalRole> getRoles() {
+        final AuthenticationResultHolder token = getApplicationAccessToken();
+        final List<AzureActiveDirectoryGroupDTO> groups = getObjectFromGraph(
+                "groups", token.getAccessToken(), AzureActiveDirectoryGroupsHolderDTO.class
+        ).getGroups();
+
+        return new ArrayList<>(groups);
+    }
+
+    private AuthenticationResultHolder getApplicationAccessToken() {
+        if (applicationAccessToken.getExpiresOn().before(new Date())) {
+            applicationAccessToken = getNewApplicationAccessToken();
+        }
+
+        return applicationAccessToken;
+    }
+
+    @SneakyThrows
+    private AuthenticationResultHolder getNewApplicationAccessToken() {
+        final String spec = authority + tenant + "/oauth2/v2.0/token";
+        final String params = "client_id=" + URLEncoder.encode(clientId, StandardCharsets.UTF_8.name())
+                + "&client_secret=" + URLEncoder.encode(secretKey, StandardCharsets.UTF_8.name())
+                + "&scope=" + URLEncoder.encode("https://graph.microsoft.com/.default", StandardCharsets.UTF_8.name())
+                + "&grant_type=client_credentials";
+
+        final OkHttpClient client = new OkHttpClient();
+        final MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        final RequestBody body = RequestBody.create(mediaType, params);
+        final Request request = new Request.Builder()
+                .url(spec)
+                .post(body)
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Cache-Control", "no-cache")
+                .build();
+
+        final String result = Objects.requireNonNull(client.newCall(request).execute().body()).string();
+
+        return new ObjectMapper().readValue(result, AuthenticationResultHolder.class);
     }
 
     @Data
