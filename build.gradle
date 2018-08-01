@@ -140,7 +140,6 @@ def mavenProps = new Properties()
 //Used to merge build and server properties file with replacement of inplace variables usage
 def buildProps = new Properties()
 def serverProps = new Properties()
-def mergedPropertiesFile
 
 //Directory to hold temporary data
 def tmpDir = "${buildDir}/tmp/"
@@ -159,11 +158,16 @@ task initParams() {
     file("build.properties").withInputStream { buildProps.load(it) }
 
     buildProps.setProperty("imcms.version", project.version as String)
-
-    mergedPropertiesFile = file("${tmpDir}/server.properties")
+    file("src/main/resources-conf/server.properties").withInputStream { serverProps.load it }
 }
 
-task mergeProperties(dependsOn: initParams) {
+
+task explodedWar(type: Sync, dependsOn: war) {
+    into "${buildDir}/libs/exploded/${project.name}-${project.version}.war/"
+    with war
+}
+
+task mergeProperties() {
     def lines = file("src/main/resources-conf/server.properties").readLines()
 
     def mergedProperties = new ArrayList<String>()
@@ -182,18 +186,14 @@ task mergeProperties(dependsOn: initParams) {
 
     mergedProperties.addAll(customProps.findAll())
 
-    mergedPropertiesFile.withWriter { out ->
-        mergedProperties.each {
-            out.println it
+    doLast {
+        def mergedPropertiesFile = file("${buildDir}/libs/exploded/${project.name}-${project.version}.war/WEB-INF/conf/server.properties")
+        mergedPropertiesFile.withWriter { out ->
+            mergedProperties.each {
+                out.println it
+            }
         }
     }
-
-    mergedPropertiesFile.withInputStream { serverProps.load it }
-}
-
-task explodedWar(type: Sync, dependsOn: war) {
-    into "${buildDir}/libs/exploded/${project.name}-${project.version}.war/"
-    with war
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -213,12 +213,13 @@ task cleanTemporaryDir(type: Delete, dependsOn: war) {
 }
 
 tasks.war {
-    it.dependsOn mergeProperties
+    it.dependsOn initParams
     it.dependsOn test
     it.dependsOn individualJsMinify
     it.dependsOn individualCssMinify
     it.finalizedBy cleanTemporaryDir
 }
+explodedWar.finalizedBy mergeProperties
 
 //Plugins setting up
 lombok {
@@ -321,12 +322,14 @@ war {
         from "src/main/resources"
         from "src/main/resources-conf"
 
+        include "server.properties"
         include "imcms*.properties"
         include "*.conf"
         include "log4j.xml"
         include "*.json"
         into "/WEB-INF/conf"
         filter(ReplaceTokens, tokens: serverProps)
+        filter(ReplaceTokens, tokens: buildProps)
         filter(ReplaceTokens, tokens: mavenProps, beginToken: '${', endToken: '}')
     }
 
@@ -385,12 +388,6 @@ war {
         from "${tmpDir}/jsMin/"
         from "${tmpDir}/cssMin/"
         into "/"
-    }
-
-    webInf {
-        from "${tmpDir}"
-        include 'server.properties'
-        into "/WEB-INF/conf"
     }
 
     webInf {
