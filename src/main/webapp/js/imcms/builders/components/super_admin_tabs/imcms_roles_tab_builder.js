@@ -7,9 +7,12 @@ Imcms.define(
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api', 'imcms',
         'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication',
-        'imcms-azure-roles-rest-api'
+        'imcms-azure-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api'
     ],
-    function (SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth, azureRoles) {
+    function (
+        SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth, azureRoles,
+        externalToLocalRolesLinks
+    ) {
 
         texts = texts.superAdmin.roles;
 
@@ -91,9 +94,26 @@ Imcms.define(
 
                     azureRoles.read().success(function (roles) {
                         var roles$ = roles.map(function (role) {
-                            return $('<div>', {
+                            var $externalRoleRow = $('<div>', {
                                 text: role.displayName
                             });
+
+                            var $row = $('<div>', {html: $externalRoleRow});
+
+                            var requestData = {
+                                id: role.id,
+                                providerId: role.providerId
+                            }; // only these two needed for request
+
+                            externalToLocalRolesLinks.read(requestData).success(function (linkedRoles) {
+                                linkedRoles.forEach(function (linkedRole) {
+                                    $row.append($('<div>', {
+                                        text: linkedRole.id + ': ' + linkedRole.name
+                                    }))
+                                })
+                            });
+
+                            return $row;
                         });
 
                         $roles.append(roles$);
