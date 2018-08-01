@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.ExternalRole;
-import com.imcode.imcms.model.Role;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -9,9 +8,9 @@ import com.imcode.imcms.model.Role;
  */
 public interface ExternalToLocalRoleLinkService {
 
-    void addLink(ExternalRole externalRole, Role localRole);
+    void addLink(ExternalRole externalRole, int localRoleId);
 
-    void removeLink(ExternalRole externalRole, Role localRole);
+    void removeLink(ExternalRole externalRole, int localRoleId);
 
     void removeLinks(ExternalRole externalRole);
 
