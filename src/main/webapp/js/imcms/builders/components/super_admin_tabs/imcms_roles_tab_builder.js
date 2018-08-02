@@ -16,6 +16,27 @@ Imcms.define(
 
         texts = texts.superAdmin.roles;
 
+        var roleLoader = {
+            roles: false,
+            callbacks: [],
+            whenRolesLoaded: function (callback) {
+                (this.roles) ? callback(this.roles) : this.callbacks.push(callback)
+            },
+            runCallbacks: function (roles) {
+                this.roles = roles;
+
+                this.callbacks.forEach(function (callback) {
+                    callback(roles)
+                })
+            }
+        };
+
+        (function () {
+            rolesRestApi.read().success(function (roles) {
+                roleLoader.runCallbacks(roles);
+            });
+        })();
+
         var $rolesContainer;
 
         function wrapInImcmsField($wrapMe) {
@@ -57,7 +78,7 @@ Imcms.define(
                 'class': 'roles-table'
             });
 
-            rolesRestApi.read().success(function (roles) {
+            roleLoader.whenRolesLoaded(function (roles) {
                 $rolesContainer.append(roles.map(function (role) {
                     return roleToRow.transform(role, roleEditor)
                 }))
@@ -85,7 +106,17 @@ Imcms.define(
                     block: 'external-provider',
                     elements: {
                         'title': '',
+                        'text': '',
                         'roles': ''
+                    }
+                });
+
+                var externalRolesRowBEM = new BEM({
+                    block: 'external-role',
+                    elements: {
+                        'name': '',
+                        'linked-local-roles': '',
+                        'control': ''
                     }
                 });
 
@@ -94,23 +125,48 @@ Imcms.define(
 
                     azureRoles.read().success(function (roles) {
                         var roles$ = roles.map(function (role) {
-                            var $externalRoleRow = $('<div>', {
+                            var $externalRoleName = $('<div>', {
                                 text: role.displayName
                             });
 
-                            var $row = $('<div>', {html: $externalRoleRow});
+                            var $row = externalRolesRowBEM.buildBlock('<div>', [{'name': $externalRoleName}], {
+                                'class': 'imcms-field'
+                            });
 
                             var requestData = {
                                 id: role.id,
                                 providerId: role.providerId
-                            }; // only these two needed for request
+                            }; // only these two are required for request
 
                             externalToLocalRolesLinks.read(requestData).success(function (linkedRoles) {
-                                linkedRoles.forEach(function (linkedRole) {
-                                    $row.append($('<div>', {
-                                        text: linkedRole.id + ': ' + linkedRole.name
-                                    }))
-                                })
+                                roleLoader.whenRolesLoaded(function (roles) {
+
+                                    var rolesDataMapped = roles.map(function (role) {
+                                        var attributes = {
+                                            text: role.name,
+                                            value: role.id
+                                        };
+
+                                        for (var i = 0; i < linkedRoles.length; i++) {
+                                            var linkedRole = linkedRoles[i];
+
+                                            if (linkedRole.id === role.id) {
+                                                attributes.checked = 'checked';
+                                                break;
+                                            }
+                                        }
+
+                                        return attributes
+                                    });
+
+                                    var $linkedRolesSelect = components.selects.multipleSelect(
+                                        "<div>", {}, rolesDataMapped
+                                    );
+
+                                    $row.append(externalRolesRowBEM.makeBlockElement(
+                                        'linked-local-roles', $linkedRolesSelect
+                                    ))
+                                });
                             });
 
                             return $row;
@@ -123,8 +179,13 @@ Imcms.define(
                         'class': 'auth-provider-icon',
                         src: imcms.contextPath + provider.iconPath
                     }));
+                    var $text = $('<div>', {
+                        'class': 'imcms-field',
+                        text: 'You can set remote roles to behave as local ones'
+                    });
                     var $providerBlock = providerBEM.buildBlock('<div>', [
                         {'title': $title},
+                        {'text': $text},
                         {'roles': $roles}
                     ]);
                     return externalRolesBEM.makeBlockElement('auth-provider', $providerBlock);

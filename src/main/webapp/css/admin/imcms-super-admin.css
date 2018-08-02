@@ -166,5 +166,17 @@
     vertical-align: middle;
 }
 
+.external-role {
+    padding-bottom: 0;
+}
 
+.external-role__name {
+    display: inline-block;
+    padding: 5px;
+    width: 250px;
+}
+
+.external-role__linked-local-roles {
+    width: 230px;
+}
 
