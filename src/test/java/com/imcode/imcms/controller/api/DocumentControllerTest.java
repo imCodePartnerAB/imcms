@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.web.util.NestedServletException;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -38,7 +37,7 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void get_When_DocIdIsNull_Expect_NewDocumentCreated() throws Exception {
+    void get_When_DocIdIsNull_Expect_NewDocumentCreated() {
         final Meta.DocumentType documentType = Meta.DocumentType.TEXT;
         final int parentDocId = 13;
         final DocumentDTO newDoc = new DocumentDTO();
@@ -53,7 +52,7 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void get_When_DocIdIsNotNull_Expect_DocumentReceivedById() throws Exception {
+    void get_When_DocIdIsNotNull_Expect_DocumentReceivedById() {
         final int docId = 13;
         final FileDocumentDTO existingDoc = new FileDocumentDTO();
 
@@ -66,7 +65,7 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void copy_When_DocIdIsNotNull_Expect_CopyReturned() throws Exception {
+    void copy_When_DocIdIsNotNull_Expect_CopyReturned() {
         final int docId = 13;
         final TextDocumentDTO copy = new TextDocumentDTO();
 
@@ -79,7 +78,7 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void save_When_DocIdIsNotNull_Expect_CopyReturned() throws Exception {
+    void save_When_DocIdIsNotNull_Expect_CopyReturned() {
         final UberDocumentDTO saveMe = new UberDocumentDTO();
 
         given(documentService.save(saveMe)).willReturn(saveMe);
@@ -92,7 +91,7 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void delete_When_DeletingDisabled_Expect_NotImplementedException() throws Throwable {
+    void delete_When_DeletingDisabled_Expect_NotImplementedException() {
         final UberDocumentDTO deleteMe = new UberDocumentDTO();
 
         final RequestBuilder requestBuilder = delete(CONTROLLER_PATH)
@@ -103,7 +102,7 @@ class DocumentControllerTest extends MockingControllerTest {
             try {
                 perform(requestBuilder);
 
-            } catch (NestedServletException e) {
+            } catch (Exception e) {
                 throw e.getCause(); // real cause
             }
         });

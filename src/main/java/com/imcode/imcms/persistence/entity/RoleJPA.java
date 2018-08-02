@@ -43,6 +43,11 @@ public class RoleJPA extends Role {
     private Integer adminRole = 0;
 
     public RoleJPA(String name) {
+        this(null, name);
+    }
+
+    public RoleJPA(Integer id, String name) {
+        this.id = id;
         this.name = name;
     }
 

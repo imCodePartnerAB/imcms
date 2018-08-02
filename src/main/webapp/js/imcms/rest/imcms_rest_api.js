@@ -4,19 +4,20 @@ Imcms.define(
     function (imcms, sessionTimeoutManagement, $) {
 
         var API_PREFIX = "/api";
+        var counter = 0;
 
-        function logAjaxRequest(type, url, data) {
+        function logAjaxRequest(type, url, count, data) {
             var withData = (data !== null && data !== undefined);
 
-            console.time(url);
+            console.time(url + count);
             console.log("%c AJAX " + type + " call: " + url + (withData ? " with request: " : ""), "color: blue;");
             withData && console.log(data);
         }
 
-        function logAjaxResponse(type, url, response) {
+        function logAjaxResponse(type, url, count, response) {
             var hasResponse = (response !== null && response !== undefined);
 
-            console.timeEnd(url);
+            console.timeEnd(url + count);
             console.log("%c AJAX " + type + " call done: " + url + (hasResponse ? " response: " : ""), "color: green;");
             hasResponse && console.log(response);
         }
@@ -28,7 +29,8 @@ Imcms.define(
                 ? ('application/' + (this.json ? 'json' : 'x-www-form-urlencoded') + '; charset=UTF-8')
                 : this.contentType;
 
-            logAjaxRequest(type, url, data);
+            var count = ++counter;
+            logAjaxRequest(type, url, count, data);
 
             return $.ajax({
                 url: url,
@@ -39,7 +41,7 @@ Imcms.define(
 
                 success: function (response) {
                     sessionTimeoutManagement.initOrUpdateSessionTimeout();
-                    logAjaxResponse(type, url, response);
+                    logAjaxResponse(type, url, count, response);
                     callback && callback(response);
                 },
 

@@ -38,6 +38,9 @@ public class ExternalToLocalRoleLink {
     @Column(name = "external_role_id", nullable = false)
     private String externalRoleId;
 
+    @Column(name = "linked_local_role_id", insertable = false, updatable = false, nullable = false)
+    private Integer localRoleId;
+
     @OneToOne(fetch = FetchType.LAZY, optional = false, orphanRemoval = true)
     @JoinColumn(name = "linked_local_role_id", referencedColumnName = "role_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -47,5 +50,6 @@ public class ExternalToLocalRoleLink {
         this.providerId = providerId;
         this.externalRoleId = externalRoleId;
         this.role = localRole;
+        this.localRoleId = localRole.getId();
     }
 }
