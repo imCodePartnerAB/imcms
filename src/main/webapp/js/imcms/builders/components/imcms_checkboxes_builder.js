@@ -59,6 +59,7 @@ Imcms.define("imcms-checkboxes-builder",
                 };
 
                 attributes.disabled && (options.disabled = attributes.disabled);
+                attributes.change && (options.change = attributes.change);
 
                 var $input = checkboxBEM.buildElement("checkbox", "<input>", options);
 

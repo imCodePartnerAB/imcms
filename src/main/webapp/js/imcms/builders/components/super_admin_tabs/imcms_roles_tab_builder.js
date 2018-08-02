@@ -116,7 +116,7 @@ Imcms.define(
                     elements: {
                         'name': '',
                         'linked-local-roles': '',
-                        'control': ''
+                        'controls': ''
                     }
                 });
 
@@ -129,9 +129,18 @@ Imcms.define(
                                 text: role.displayName
                             });
 
-                            var $row = externalRolesRowBEM.buildBlock('<div>', [{'name': $externalRoleName}], {
-                                'class': 'imcms-field'
-                            });
+                            var $selectWrapper = $('<div>');
+                            var $controlsWrapper = $('<div>');
+
+                            var $row = externalRolesRowBEM.buildBlock(
+                                '<div>',
+                                [
+                                    {'name': $externalRoleName},
+                                    {'linked-local-roles': $selectWrapper},
+                                    {'controls': $controlsWrapper}
+                                ],
+                                {'class': 'imcms-field'}
+                            );
 
                             var requestData = {
                                 id: role.id,
@@ -141,10 +150,29 @@ Imcms.define(
                             externalToLocalRolesLinks.read(requestData).success(function (linkedRoles) {
                                 roleLoader.whenRolesLoaded(function (roles) {
 
+                                    var $saveButton = components.buttons.saveButton({
+                                        text: 'Save',
+                                        style: 'display: none;',
+                                        click: function () {
+                                            $saveButton.add($cancelButton).css('display', 'none');
+                                        }
+                                    });
+
+                                    var $cancelButton = components.buttons.negativeButton({
+                                        text: 'Cancel',
+                                        style: 'display: none;',
+                                        click: function () {
+                                            $saveButton.add($cancelButton).css('display', 'none');
+                                        }
+                                    });
+
                                     var rolesDataMapped = roles.map(function (role) {
                                         var attributes = {
                                             text: role.name,
-                                            value: role.id
+                                            value: role.id,
+                                            change: function () {
+                                                $saveButton.add($cancelButton).css('display', 'inline-block');
+                                            }
                                         };
 
                                         for (var i = 0; i < linkedRoles.length; i++) {
@@ -163,9 +191,9 @@ Imcms.define(
                                         "<div>", {}, rolesDataMapped
                                     );
 
-                                    $row.append(externalRolesRowBEM.makeBlockElement(
-                                        'linked-local-roles', $linkedRolesSelect
-                                    ))
+                                    $selectWrapper.append($linkedRolesSelect);
+
+                                    $controlsWrapper.append([$saveButton, $cancelButton])
                                 });
                             });
 

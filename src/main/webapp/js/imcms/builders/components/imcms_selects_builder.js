@@ -58,11 +58,6 @@ Imcms.define("imcms-selects-builder",
             $select.find(DROP_DOWN_LIST__CLASS_$).toggleClass(DROP_DOWN_LIST__ACTIVE__CLASS)
         }
 
-        function onMultiSelectOptionClicked() {
-            var $checkbox = $(this).find("input[type=checkbox]");
-            $checkbox.prop("checked", !$checkbox.prop("checked"));
-        }
-
         function onOptionSelected(onSelected) {
 
             var $this = $(this),
@@ -87,12 +82,9 @@ Imcms.define("imcms-selects-builder",
 
         function mapMultiSelectOptionsToItemsArr(options) {
             return options.map(function (option) {
-                var $element = dropDownListBEM.makeBlockElement(
+                return dropDownListBEM.makeBlockElement(
                     "item", checkboxesBuilder.imcmsCheckbox("<div>", option)
                 );
-                $element.click(onMultiSelectOptionClicked);
-
-                return $element;
             });
         }
 
