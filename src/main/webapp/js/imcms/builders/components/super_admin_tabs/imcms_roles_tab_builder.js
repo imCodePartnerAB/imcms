@@ -163,35 +163,38 @@ Imcms.define(
                                         style: 'display: none;',
                                         click: function () {
                                             $saveButton.add($cancelButton).css('display', 'none');
+                                            $selectWrapper.empty().append(buildRolesSelect());
                                         }
                                     });
 
-                                    var rolesDataMapped = roles.map(function (role) {
-                                        var attributes = {
-                                            text: role.name,
-                                            value: role.id,
-                                            change: function () {
-                                                $saveButton.add($cancelButton).css('display', 'inline-block');
+                                    function buildRolesSelect() {
+                                        var rolesDataMapped = roles.map(function (role) {
+                                            var attributes = {
+                                                text: role.name,
+                                                value: role.id,
+                                                change: function () {
+                                                    $saveButton.add($cancelButton).css('display', 'inline-block');
+                                                }
+                                            };
+
+                                            for (var i = 0; i < linkedRoles.length; i++) {
+                                                var linkedRole = linkedRoles[i];
+
+                                                if (linkedRole.id === role.id) {
+                                                    attributes.checked = 'checked';
+                                                    break;
+                                                }
                                             }
-                                        };
 
-                                        for (var i = 0; i < linkedRoles.length; i++) {
-                                            var linkedRole = linkedRoles[i];
+                                            return attributes
+                                        });
 
-                                            if (linkedRole.id === role.id) {
-                                                attributes.checked = 'checked';
-                                                break;
-                                            }
-                                        }
+                                        return components.selects.multipleSelect(
+                                            "<div>", {}, rolesDataMapped
+                                        );
+                                    }
 
-                                        return attributes
-                                    });
-
-                                    var $linkedRolesSelect = components.selects.multipleSelect(
-                                        "<div>", {}, rolesDataMapped
-                                    );
-
-                                    $selectWrapper.append($linkedRolesSelect);
+                                    $selectWrapper.append(buildRolesSelect());
 
                                     $controlsWrapper.append([$saveButton, $cancelButton])
                                 });
