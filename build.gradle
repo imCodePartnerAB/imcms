@@ -145,15 +145,15 @@ def serverProps = new Properties()
 def tmpDir = "${buildDir}/tmp/"
 
 //Translation Languages
-def localizationLanguages = new ArrayList()
+def localizationLanguages = new HashMap()
 
 task initParams() {
     mavenProps.setProperty("log4j.threshold", "info")
     mavenProps.setProperty("log4j.hibernate.level", "error")
     mavenProps.setProperty("log4j.console-appender.threshold", "off")
 
-    localizationLanguages.add("")
-    localizationLanguages.add("_sv")
+    localizationLanguages.put("", "en")
+    localizationLanguages.put("_sv", "sv")
 
     file("build.properties").withInputStream { buildProps.load(it) }
 
@@ -355,32 +355,32 @@ war {
     def langProperties
     localizationLanguages.each { lang ->
         langProperties = new Properties()
-        file("src/main/resources-conf/imcms${lang}.properties").withInputStream { langProperties.load(it) }
+        file("src/main/resources-conf/imcms${lang.key}.properties").withInputStream { langProperties.load(it) }
 
         webInf {
             from rootFolderForTemplates
             include templatePatterns
             filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
-            into "/WEB-INF/templates/${lang}"
+            into "/WEB-INF/templates/${lang.value}"
         }
 
         webInf {
             from rootFolderForTemplates
             exclude templatePatterns
-            into "/WEB-INF/templates/${lang}"
+            into "/WEB-INF/templates/${lang.value}"
         }
 
         webInf {
             from rootFolderForImcmsTemplates
             include templatePatterns
             filter(ReplaceTokens, tokens: langProperties, beginToken: "<? ", endToken: " ?>")
-            into "/imcms/${lang}"
+            into "/imcms/${lang.value}"
         }
 
         webInf {
             from rootFolderForImcmsTemplates
             exclude templatePatterns
-            into "/imcms/${lang}"
+            into "/imcms/${lang.value}"
         }
     }
 
