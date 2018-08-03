@@ -123,10 +123,10 @@ Imcms.define(
                 var providers$ = providers.map(function (provider) {
                     var $roles = $('<div>');
 
-                    azureRoles.read().success(function (roles) {
-                        var roles$ = roles.map(function (role) {
+                    azureRoles.read().success(function (externalRoles) {
+                        var roles$ = externalRoles.map(function (externalRole) {
                             var $externalRoleName = $('<div>', {
-                                text: role.displayName
+                                text: externalRole.displayName
                             });
 
                             var $selectWrapper = $('<div>');
@@ -143,18 +143,30 @@ Imcms.define(
                             );
 
                             var requestData = {
-                                id: role.id,
-                                providerId: role.providerId
+                                id: externalRole.id,
+                                providerId: externalRole.providerId
                             }; // only these two are required for request
 
                             externalToLocalRolesLinks.read(requestData).success(function (linkedRoles) {
                                 roleLoader.whenRolesLoaded(function (roles) {
 
+                                    var $rolesSelect;
+
                                     var $saveButton = components.buttons.saveButton({
                                         text: 'Save',
                                         style: 'display: none;',
                                         click: function () {
-                                            $saveButton.add($cancelButton).css('display', 'none');
+                                            var selectedRolesId = $rolesSelect.getSelectedValues();
+                                            var request = {
+                                                externalRole: requestData,
+                                                localRolesId: selectedRolesId
+                                            };
+                                            externalToLocalRolesLinks.replace(request).success(function () {
+                                                linkedRoles = selectedRolesId.map(function (selectedRoleId) {
+                                                    return {id: selectedRoleId}
+                                                });
+                                                $saveButton.add($cancelButton).css('display', 'none');
+                                            });
                                         }
                                     });
 
@@ -189,7 +201,7 @@ Imcms.define(
                                             return attributes
                                         });
 
-                                        return components.selects.multipleSelect(
+                                        return $rolesSelect = components.selects.multipleSelect(
                                             "<div>", {}, rolesDataMapped
                                         );
                                     }
