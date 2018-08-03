@@ -204,16 +204,10 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 
 task individualJsMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominifyJs") })
 
-task cleanTemporaryDir(type: Delete, dependsOn: war) {
-//    Disabled due to wrong file merging. Should be possible enabled in future. But clean task remove it as well
-//    delete tmpDir
-}
-
 tasks.war {
     it.dependsOn initParams
     it.dependsOn test
     it.dependsOn individualJsMinify
-    it.finalizedBy cleanTemporaryDir
 }
 explodedWar.finalizedBy mergeProperties
 
@@ -367,7 +361,6 @@ war {
         from versionFile
         into "/WEB-INF/"
     }
-
 }
 
 publishing {
