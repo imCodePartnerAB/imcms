@@ -166,5 +166,33 @@
     vertical-align: middle;
 }
 
+.external-role {
+    padding-bottom: 0;
+}
 
+.external-role__name {
+    display: inline-block;
+    padding: 5px;
+    width: 250px;
+}
+
+.external-role__linked-local-roles {
+    display: inline-block;
+    width: 230px;
+}
+
+.external-role__linked-local-roles .imcms-select {
+    width: 230px;
+}
+
+.external-role__controls {
+    display: inline-block;
+}
+
+.external-role__controls .imcms-button {
+    display: inline-block;
+    margin-left: 5px;
+    padding-bottom: 12px;
+    padding-top: 12px;
+}
 

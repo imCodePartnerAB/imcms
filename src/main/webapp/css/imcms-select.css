@@ -103,3 +103,7 @@
 .imcms-drop-down-list__item:last-child {
     padding-bottom: 10px;
 }
+
+.imcms-checkbox.imcms-drop-down-list__item {
+    cursor: default;
+}
