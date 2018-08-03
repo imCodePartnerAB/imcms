@@ -22,7 +22,7 @@ public class TreeSortKeyDomainObject implements Comparable, Serializable {
             throw new NullArgumentException("treeSortKey");
         }
         String[] keyStrings = treeSortKey.trim().split("\\D+", 0);
-        List<Integer> keyList = new ArrayList<Integer>();
+        List<Integer> keyList = new ArrayList<>();
         for (String keyString : keyStrings) {
             try {
                 Integer key = Integer.valueOf(keyString);

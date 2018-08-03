@@ -37,7 +37,7 @@ class UriEncodingWorkaroundWrapper extends HttpServletRequestWrapper {
     public Map getParameterMap() {
         Map<String, String[]> parameterMap = super.getParameterMap();
         if (redecodeParameters) {
-            Map<String, String[]> result = new HashMap<String, String[]>();
+            Map<String, String[]> result = new HashMap<>();
             for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
                 result.put(entry.getKey(), redecode(entry.getValue(), entry.getKey()));
             }

@@ -54,7 +54,7 @@ public class ImageHandling extends HttpServlet {
     private static final Pattern ABSOLUTE_PATH_PATTERN = Pattern.compile("^(\\\\|/)+");
     private static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.9) Gecko/20071025 Firefox/2.0.0.9";
     private static final HttpClient HTTP_CLIENT = new DefaultHttpClient(new ThreadSafeClientConnManager());
-    private static final List<String> ALLOWED_PATHS = new ArrayList<String>();
+    private static final List<String> ALLOWED_PATHS = new ArrayList<>();
 
     static {
         File rootFile = Imcms.getPath();

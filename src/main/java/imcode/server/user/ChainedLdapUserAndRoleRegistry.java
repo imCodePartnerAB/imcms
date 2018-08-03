@@ -14,9 +14,9 @@ public class ChainedLdapUserAndRoleRegistry implements Authenticator, UserAndRol
 
     public static final String[] DEFAULT_ROLES = {LdapUserAndRoleRegistry.DEFAULT_LDAP_ROLE};
 
-    private Collection<Authenticator> authenticators = new LinkedList<Authenticator>();
+    private Collection<Authenticator> authenticators = new LinkedList<>();
 
-    private Collection<UserAndRoleRegistry> userAndRoleRegistries = new LinkedList<UserAndRoleRegistry>();
+    private Collection<UserAndRoleRegistry> userAndRoleRegistries = new LinkedList<>();
 
     public ChainedLdapUserAndRoleRegistry() {
     }
