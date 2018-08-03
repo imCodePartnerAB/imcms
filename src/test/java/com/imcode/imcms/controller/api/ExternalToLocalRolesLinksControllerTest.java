@@ -17,7 +17,7 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
@@ -56,5 +56,18 @@ class ExternalToLocalRolesLinksControllerTest extends MockingControllerTest {
         }));
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void saveLinkedLocalRoles() {
+        final ExternalRole externalRole = new ExternalRole();
+        externalRole.setId("id");
+
+        final HashSet<Integer> localRolesId = new HashSet<>();
+        localRolesId.add(1);
+
+        perform(put(PATH), new ExternalToLocalRolesLinksController.ExternalRoleLinks(externalRole, localRolesId));
+
+        then(externalToLocalRoleLinkService).should().setLinkedRoles(externalRole, localRolesId);
     }
 }

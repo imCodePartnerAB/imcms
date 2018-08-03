@@ -3,10 +3,16 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.model.Role;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @RestController
@@ -22,6 +28,19 @@ class ExternalToLocalRolesLinksController {
     @GetMapping
     public Set<Role> getLinkedLocalRoles(ExternalRole externalRole) {
         return externalToLocalRoleLinkService.getLinkedLocalRoles(externalRole);
+    }
+
+    @PutMapping
+    public void saveLinkedLocalRoles(@RequestBody ExternalRoleLinks externalRoleLinks) {
+        externalToLocalRoleLinkService.setLinkedRoles(externalRoleLinks.externalRole, externalRoleLinks.localRolesId);
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    static class ExternalRoleLinks {
+        private ExternalRole externalRole;
+        private HashSet<Integer> localRolesId;
     }
 
 }
