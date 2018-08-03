@@ -28,6 +28,26 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
     }
 
     @Override
+    public void setLinkedRoles(ExternalRole externalRole, Set<Integer> localRolesId) {
+        final Set<ExternalToLocalRoleLink> linksSent = localRolesId.stream()
+                .map(localRoleId -> {
+                    final RoleJPA role = roleRepository.findOne(localRoleId);
+                    return new ExternalToLocalRoleLink(externalRole, role);
+                })
+                .collect(Collectors.toSet());
+
+        final Set<ExternalToLocalRoleLink> alreadyLinkedRoles = getLinkedRoles(externalRole);
+
+        alreadyLinkedRoles.stream()
+                .filter(alreadyLinkedRole -> !linksSent.contains(alreadyLinkedRole))
+                .forEach(repository::delete);
+
+        linksSent.stream()
+                .filter(linkSent -> !alreadyLinkedRoles.contains(linkSent))
+                .forEach(repository::save);
+    }
+
+    @Override
     public void addLink(ExternalRole externalRole, int localRoleId) {
         final RoleJPA localRole = Objects.requireNonNull(roleRepository.findOne(localRoleId));
         repository.save(new ExternalToLocalRoleLink(externalRole.getProviderId(), externalRole.getId(), localRole));
@@ -47,10 +67,14 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
 
     @Override
     public Set<Role> getLinkedLocalRoles(ExternalRole externalRole) {
-        return repository.findByProviderIdAndExternalRoleId(externalRole.getProviderId(), externalRole.getId())
+        return getLinkedRoles(externalRole)
                 .stream()
                 .map(ExternalToLocalRoleLink::getRole)
                 .map(RoleDTO::new)
                 .collect(Collectors.toSet());
+    }
+
+    private Set<ExternalToLocalRoleLink> getLinkedRoles(ExternalRole externalRole) {
+        return repository.findByProviderIdAndExternalRoleId(externalRole.getProviderId(), externalRole.getId());
     }
 }

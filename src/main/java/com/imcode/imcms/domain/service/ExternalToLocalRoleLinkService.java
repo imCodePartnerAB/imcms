@@ -11,6 +11,8 @@ import java.util.Set;
  */
 public interface ExternalToLocalRoleLinkService {
 
+    void setLinkedRoles(ExternalRole externalRole, Set<Integer> localRolesId);
+
     void addLink(ExternalRole externalRole, int localRoleId);
 
     void removeLink(ExternalRole externalRole, int localRoleId);

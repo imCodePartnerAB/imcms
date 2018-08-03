@@ -137,4 +137,53 @@ class DefaultExternalToLocalRoleLinkServiceTest {
         assertTrue(expected.containsAll(actual));
         assertTrue(actual.containsAll(expected));
     }
+
+    @Test
+    void setLinkedRoles_When_SomeRolesAlreadyLinkedAndSendingSomeExistingAndSomeNewAndSomeNotSent_Expect_NewSavedAndExistingSentNotTouchedAndNotSentDeleted() {
+        final String providerId = "provider-id";
+        final String externalRoleId1 = "external-role-1";
+
+        final ExternalRole externalRole1 = mock(ExternalRole.class);
+        given(externalRole1.getId()).willReturn(externalRoleId1);
+        given(externalRole1.getProviderId()).willReturn(providerId);
+
+        final Integer localRoleIdShouldBeDeleted = 1;
+        final Integer localRoleIdShouldNotBeDeleted = 2;
+        final Integer localRoleIdShouldBeLinked = 3;
+
+        final Set<Integer> rolesSent = new HashSet<>(Arrays.asList(
+                localRoleIdShouldNotBeDeleted, localRoleIdShouldBeLinked
+        ));
+
+        final RoleJPA localRoleWhichLinkShouldBeDeleted = new RoleJPA(localRoleIdShouldBeDeleted, "1");
+        final ExternalToLocalRoleLink linkShouldBeDeleted = new ExternalToLocalRoleLink(
+                providerId, externalRoleId1, localRoleWhichLinkShouldBeDeleted
+        );
+        final RoleJPA localRoleAlreadyLinkedShouldNotBeDeleted = new RoleJPA(localRoleIdShouldNotBeDeleted, "2");
+        final ExternalToLocalRoleLink linkShouldNotBeDeleted = new ExternalToLocalRoleLink(
+                providerId, externalRoleId1, localRoleAlreadyLinkedShouldNotBeDeleted
+        );
+        final Set<ExternalToLocalRoleLink> existingRoleLinks = new HashSet<>(Arrays.asList(
+                linkShouldBeDeleted,
+                linkShouldNotBeDeleted
+        ));
+
+        final RoleJPA localRoleShouldBeLinked = new RoleJPA(localRoleIdShouldBeLinked, "3");
+
+        given(roleRepository.findOne(anyInt())).willReturn(localRoleAlreadyLinkedShouldNotBeDeleted, localRoleShouldBeLinked);
+        given(repository.findByProviderIdAndExternalRoleId(providerId, externalRoleId1)).willReturn(existingRoleLinks);
+
+        externalToLocalRoleLinkService.setLinkedRoles(externalRole1, rolesSent);
+
+        then(repository).should().delete(linkShouldBeDeleted);
+
+        final ArgumentCaptor<ExternalToLocalRoleLink> captor = ArgumentCaptor.forClass(ExternalToLocalRoleLink.class);
+
+        then(repository).should().save(captor.capture());
+
+        final ExternalToLocalRoleLink savedLink = captor.getValue();
+        assertEquals(savedLink.getProviderId(), providerId);
+        assertEquals(savedLink.getLocalRoleId(), localRoleIdShouldBeLinked);
+        assertEquals(savedLink.getExternalRoleId(), externalRoleId1);
+    }
 }

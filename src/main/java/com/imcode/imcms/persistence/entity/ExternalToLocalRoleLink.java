@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.domain.dto.ExternalRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
@@ -49,6 +50,13 @@ public class ExternalToLocalRoleLink {
     public ExternalToLocalRoleLink(String providerId, String externalRoleId, RoleJPA localRole) {
         this.providerId = providerId;
         this.externalRoleId = externalRoleId;
+        this.role = localRole;
+        this.localRoleId = localRole.getId();
+    }
+
+    public ExternalToLocalRoleLink(ExternalRole externalRole, RoleJPA localRole) {
+        this.providerId = externalRole.getProviderId();
+        this.externalRoleId = externalRole.getId();
         this.role = localRole;
         this.localRoleId = localRole.getId();
     }
