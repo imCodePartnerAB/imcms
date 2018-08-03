@@ -30,8 +30,8 @@ public class AdminSearchTerms extends HttpServlet {
 
     public static List<TermCount> getTermCounts(Date fromDate, Date toDate) {
         Database database = Imcms.getServices().getDatabase();
-        List<String> whereClauses = new ArrayList<String>();
-        List<Date> parameters = new ArrayList<Date>();
+        List<String> whereClauses = new ArrayList<>();
+        List<Date> parameters = new ArrayList<>();
         if (null != fromDate) {
             whereClauses.add("datetime >= ?");
             parameters.add(new Timestamp(fromDate.getTime()));

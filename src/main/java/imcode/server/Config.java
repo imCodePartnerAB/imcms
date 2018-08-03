@@ -80,7 +80,7 @@ public class Config {
 
     private static List<String> splitCommaSeparatedString(String string) {
         StringTokenizer st = new StringTokenizer(StringUtils.trimToEmpty(string), " \t\n\r\f,");
-        List<String> tokens = new LinkedList<String>();
+        List<String> tokens = new LinkedList<>();
 
         while (st.hasMoreTokens()) {
             tokens.add(st.nextToken());
@@ -90,7 +90,7 @@ public class Config {
     }
 
     private static Set<String> distinctLowerCased(List<String> strings) {
-        Set<String> distinctStrings = new LinkedHashSet<String>();
+        Set<String> distinctStrings = new LinkedHashSet<>();
 
         for (String string : strings) {
             distinctStrings.add(string.toLowerCase());

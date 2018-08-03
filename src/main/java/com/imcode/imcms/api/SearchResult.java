@@ -17,11 +17,11 @@ public class SearchResult<T> {
     }
 
     public static <T> SearchResult<T> empty() {
-        return new SearchResult<T>(Collections.emptyList(), 0);
+        return new SearchResult<>(Collections.emptyList(), 0);
     }
 
     public static <T> SearchResult<T> of(List<T> documents, int totalCount) {
-        return new SearchResult<T>(documents, totalCount);
+        return new SearchResult<>(documents, totalCount);
     }
 
     public List<T> getDocuments() {

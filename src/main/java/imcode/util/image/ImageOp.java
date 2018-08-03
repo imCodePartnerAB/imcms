@@ -296,7 +296,7 @@ public class ImageOp {
     public byte[] processToByteArray() {
         String out = (outputFormat != null ? outputFormat.getFormat() + ":-" : "-");
 
-        List<String> arguments = new ArrayList<String>(args);
+        List<String> arguments = new ArrayList<>(args);
         arguments.add(addQuotes(out));
 
         try {
