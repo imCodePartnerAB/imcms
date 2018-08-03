@@ -3,6 +3,7 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -26,6 +27,7 @@ import javax.persistence.UniqueConstraint;
                 "provider_id", "external_role_id", "linked_local_role_id"
         })}
 )
+@ToString(exclude = "role")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ExternalToLocalRoleLink {
 

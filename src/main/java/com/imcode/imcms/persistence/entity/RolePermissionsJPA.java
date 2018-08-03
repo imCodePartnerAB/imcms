@@ -24,7 +24,7 @@ import javax.persistence.Table;
 @Data
 @NoArgsConstructor
 @ToString(exclude = "role", callSuper = true)
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, exclude = "role")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RolePermissionsJPA extends RolePermissions {
 

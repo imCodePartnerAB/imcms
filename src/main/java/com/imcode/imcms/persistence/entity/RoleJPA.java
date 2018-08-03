@@ -22,7 +22,7 @@ import javax.persistence.Table;
 @Table(name = "roles")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false, exclude = "permissions")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class RoleJPA extends Role {
 
