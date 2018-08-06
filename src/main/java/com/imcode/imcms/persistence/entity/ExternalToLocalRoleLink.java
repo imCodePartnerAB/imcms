@@ -49,16 +49,26 @@ public class ExternalToLocalRoleLink {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private RoleJPA role;
 
-    public ExternalToLocalRoleLink(String providerId, String externalRoleId, RoleJPA localRole) {
-        this.providerId = providerId;
-        this.externalRoleId = externalRoleId;
-        this.role = localRole;
-        this.localRoleId = localRole.getId();
+    public ExternalToLocalRoleLink(ExternalToLocalRoleLink from) {
+        this.id = from.getId();
+        this.providerId = from.getProviderId();
+        this.externalRoleId = from.getExternalRoleId();
+        this.role = from.getRole();
+        this.localRoleId = from.getLocalRoleId();
     }
 
     public ExternalToLocalRoleLink(ExternalRole externalRole, RoleJPA localRole) {
-        this.providerId = externalRole.getProviderId();
-        this.externalRoleId = externalRole.getId();
+        this(externalRole.getProviderId(), externalRole.getId(), localRole);
+    }
+
+    public ExternalToLocalRoleLink(String providerId, String externalRoleId, RoleJPA localRole) {
+        this(null, providerId, externalRoleId, localRole);
+    }
+
+    public ExternalToLocalRoleLink(Integer id, String providerId, String externalRoleId, RoleJPA localRole) {
+        this.id = id;
+        this.providerId = providerId;
+        this.externalRoleId = externalRoleId;
         this.role = localRole;
         this.localRoleId = localRole.getId();
     }

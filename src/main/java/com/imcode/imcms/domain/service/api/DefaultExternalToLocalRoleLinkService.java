@@ -39,12 +39,25 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
         final Set<ExternalToLocalRoleLink> alreadyLinkedRoles = getLinkedRoles(externalRole);
 
         alreadyLinkedRoles.stream()
-                .filter(alreadyLinkedRole -> !linksSent.contains(alreadyLinkedRole))
+                .filter(alreadyLinkedRole -> {
+                    final ExternalToLocalRoleLink linkWithoutId = removeId(alreadyLinkedRole);
+                    return !linksSent.contains(linkWithoutId);
+                })
                 .forEach(repository::delete);
 
+        final Set<ExternalToLocalRoleLink> alreadyLinkedRolesWithoutId = alreadyLinkedRoles.stream()
+                .map(this::removeId)
+                .collect(Collectors.toSet());
+
         linksSent.stream()
-                .filter(linkSent -> !alreadyLinkedRoles.contains(linkSent))
+                .filter(linkSent -> !alreadyLinkedRolesWithoutId.contains(linkSent))
                 .forEach(repository::save);
+    }
+
+    private ExternalToLocalRoleLink removeId(ExternalToLocalRoleLink roleLink) {
+        final ExternalToLocalRoleLink linkWithoutId = new ExternalToLocalRoleLink(roleLink);
+        linkWithoutId.setId(null);
+        return linkWithoutId;
     }
 
     @Override

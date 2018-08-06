@@ -157,15 +157,12 @@ class DefaultExternalToLocalRoleLinkServiceTest {
 
         final RoleJPA localRoleWhichLinkShouldBeDeleted = new RoleJPA(localRoleIdShouldBeDeleted, "1");
         final ExternalToLocalRoleLink linkShouldBeDeleted = new ExternalToLocalRoleLink(
-                providerId, externalRoleId1, localRoleWhichLinkShouldBeDeleted
+                13, providerId, externalRoleId1, localRoleWhichLinkShouldBeDeleted
         );
         final RoleJPA localRoleAlreadyLinkedShouldNotBeDeleted = new RoleJPA(localRoleIdShouldNotBeDeleted, "2");
-        final ExternalToLocalRoleLink linkShouldNotBeDeleted = new ExternalToLocalRoleLink(
-                providerId, externalRoleId1, localRoleAlreadyLinkedShouldNotBeDeleted
-        );
         final Set<ExternalToLocalRoleLink> existingRoleLinks = new HashSet<>(Arrays.asList(
                 linkShouldBeDeleted,
-                linkShouldNotBeDeleted
+                new ExternalToLocalRoleLink(14, providerId, externalRoleId1, localRoleAlreadyLinkedShouldNotBeDeleted)
         ));
 
         final RoleJPA localRoleShouldBeLinked = new RoleJPA(localRoleIdShouldBeLinked, "3");
