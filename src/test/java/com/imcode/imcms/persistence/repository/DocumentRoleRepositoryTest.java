@@ -19,15 +19,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.persistence.entity.Meta.Permission.EDIT;
-import static com.imcode.imcms.persistence.entity.Meta.Permission.VIEW;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
+import static com.imcode.imcms.persistence.entity.Meta.Permission.*;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -126,5 +126,38 @@ public class DocumentRoleRepositoryTest {
         assertThat(metaList, containsInAnyOrder(meta, meta));
         assertThat(roleList, containsInAnyOrder(roleJPA1, roleJPA2));
         assertThat(permissionList, containsInAnyOrder(permission1, permission2));
+    }
+
+    @Test
+    public void getByDocumentId() {
+        final int roleId1 = 0;
+        final int roleId2 = 1;
+
+        final Meta.Permission permission1 = VIEW;
+        final Meta.Permission permission2 = EDIT;
+
+        final TextDocumentDTO textDocument1 = textDocumentDataInitializer.createTextDocument();
+        final Integer docId1 = textDocument1.getId();
+
+        final Meta meta1 = metaRepository.findOne(docId1);
+
+        final TextDocumentDTO textDocument2 = textDocumentDataInitializer.createTextDocument();
+        final Integer docId2 = textDocument2.getId();
+
+        final Meta meta2 = metaRepository.findOne(docId2);
+
+        final RoleJPA roleJPA1 = roleRepository.findOne(roleId1);
+        final RoleJPA roleJPA2 = roleRepository.findOne(roleId2);
+
+        final DocumentRole docRole1 = documentRolesRepository.save(new DocumentRole(meta1, roleJPA1, permission1));
+        final DocumentRole docRole2 = documentRolesRepository.save(new DocumentRole(meta1, roleJPA2, permission2));
+        documentRolesRepository.save(new DocumentRole(meta2, roleJPA2, permission2));
+
+        final List<DocumentRole> expectedRoles = Arrays.asList(docRole1, docRole2);
+
+        final Set<DocumentRole> docRoles1 = documentRolesRepository.findByDocument_Id(docId1);
+
+        assertTrue(docRoles1.containsAll(expectedRoles));
+        assertTrue(expectedRoles.containsAll(docRoles1));
     }
 }

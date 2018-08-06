@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface DocumentRolesRepository extends JpaRepository<DocumentRole, DocumentRoleId> {
@@ -15,4 +16,6 @@ public interface DocumentRolesRepository extends JpaRepository<DocumentRole, Doc
             "WHERE userRoles.id.userId = ?1 AND docRoles.id.documentId = ?2 AND " +
             "docRoles.id.roleId = userRoles.id.roleId")
     List<DocumentRole> getDocumentRolesByUserIdAndDocId(int userId, int documentId);
+
+    Set<DocumentRole> findByDocument_Id(int documentId);
 }
