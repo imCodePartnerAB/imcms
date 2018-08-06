@@ -1,6 +1,11 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.DocumentRoles;
+import com.imcode.imcms.domain.dto.ExternalRole;
+import com.imcode.imcms.domain.dto.RoleDTO;
+import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
+import com.imcode.imcms.model.ExternalUser;
+import com.imcode.imcms.model.Role;
 import com.imcode.imcms.persistence.entity.DocumentRole;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.RoleJPA;
@@ -18,8 +23,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -31,6 +39,9 @@ class DefaultDocumentRolesServiceTest {
 
     @Mock
     private MetaRepository metaRepository;
+
+    @Mock
+    private ExternalToLocalRoleLinkService externalToLocalRoleLinkService;
 
     @InjectMocks
     private DefaultDocumentRolesService documentRolesService;
@@ -100,10 +111,10 @@ class DefaultDocumentRolesServiceTest {
 
         final List<DocumentRole> documentRoles = Collections.emptyList();
 
-        when(metaRepository.findOne(testDocId)).thenReturn(testDoc);
-        when(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
+        given(metaRepository.findOne(testDocId)).willReturn(testDoc);
+        given(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
                 testUserId, testDocId
-        )).thenReturn(documentRoles);
+        )).willReturn(documentRoles);
 
         final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
 
@@ -112,5 +123,52 @@ class DefaultDocumentRolesServiceTest {
         assertEquals(roles.getDocument(), testDoc);
         assertTrue(roles.getPermissions().isEmpty());
         assertEquals(roles.getMostPermission(), Meta.Permission.VIEW);
+    }
+
+    @Test
+    void getDocumentRoles_When_CurrentUserIsAzureExternalAndSomeExternalRolesLinkedToLocalOnes_Expect_LinkedLocalRolesReturned() {
+        final String providerId = EXTERNAL_AUTHENTICATOR_AZURE_AD;
+        final int testDocId = 1001;
+
+        final Meta testDoc = new Meta();
+        testDoc.setId(testDocId);
+
+        final ExternalRole externalRole1 = new ExternalRole();
+        externalRole1.setId("external-role-id-1");
+        externalRole1.setProviderId(providerId);
+
+        final RoleJPA role1 = new RoleJPA(1, "role-1");
+        final RoleJPA role2 = new RoleJPA(2, "role-2");
+
+        final DocumentRole documentRole1 = new DocumentRole(testDoc, role1, Meta.Permission.EDIT);
+        final DocumentRole documentRole2 = new DocumentRole(testDoc, role2, Meta.Permission.VIEW);
+
+        final Set<DocumentRole> documentRoles = new HashSet<>();
+        documentRoles.add(documentRole1);
+        documentRoles.add(documentRole2);
+
+        final Set<Role> linkedRoles = new HashSet<>();
+        linkedRoles.add(new RoleDTO(role1));
+
+        final ExternalRole externalRole2 = new ExternalRole();
+        externalRole1.setId("external-role-id-2");
+        externalRole1.setProviderId(providerId);
+
+        final Set<ExternalRole> externalUserRoles = new HashSet<>();
+        externalUserRoles.add(externalRole1);
+        externalUserRoles.add(externalRole2);
+
+        final ExternalUser user = new ExternalUser(providerId);
+        user.setExternalId("external-user-id");
+        user.setExternalRoles(externalUserRoles);
+
+        given(metaRepository.findOne(testDocId)).willReturn(testDoc);
+        given(externalToLocalRoleLinkService.getLinkedLocalRoles(any())).willReturn(linkedRoles);
+        given(documentRolesRepository.findByDocument_Id(testDocId)).willReturn(documentRoles);
+
+        final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
+
+        assertFalse(roles.hasNoRoles());
+        assertEquals(Meta.Permission.EDIT, roles.getMostPermission());
     }
 }
