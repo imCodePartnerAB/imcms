@@ -8,23 +8,23 @@ import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class DefaultDocumentRolesServiceTest {
+@ExtendWith(MockitoExtension.class)
+class DefaultDocumentRolesServiceTest {
 
     @Mock
     private DocumentRolesRepository documentRolesRepository;
@@ -35,19 +35,19 @@ public class DefaultDocumentRolesServiceTest {
     @InjectMocks
     private DefaultDocumentRolesService documentRolesService;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         final UserDomainObject user = new UserDomainObject();
         Imcms.setUser(user);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    void tearDown() {
         Imcms.removeUser();
     }
 
     @Test
-    public void getDocumentRoles_When_SomeRolesExist_Expect_CorrectResults() {
+    void getDocumentRoles_When_SomeRolesExist_Expect_CorrectResults() {
         final int testDocId = 1001;
         final int testUserId = 13;
 
@@ -71,10 +71,10 @@ public class DefaultDocumentRolesServiceTest {
                 new DocumentRole(testDoc, role2, permission2)
         );
 
-        when(metaRepository.findOne(testDocId)).thenReturn(testDoc);
-        when(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
+        given(metaRepository.findOne(testDocId)).willReturn(testDoc);
+        given(documentRolesRepository.getDocumentRolesByUserIdAndDocId(
                 testUserId, testDocId
-        )).thenReturn(documentRoles);
+        )).willReturn(documentRoles);
 
         final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
 
@@ -88,7 +88,7 @@ public class DefaultDocumentRolesServiceTest {
     }
 
     @Test
-    public void getDocumentRoles_When_NoRolesExist_Expect_CorrectResults() {
+    void getDocumentRoles_When_NoRolesExist_Expect_CorrectResults() {
         final int testDocId = 1001;
         final int testUserId = 13;
 
