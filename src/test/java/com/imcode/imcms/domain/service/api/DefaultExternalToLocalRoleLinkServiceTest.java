@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.model.Role;
-import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLink;
+import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLinkJPA;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.ExternalToLocalRoleLinkRepository;
 import com.imcode.imcms.persistence.repository.RoleRepository;
@@ -52,9 +52,9 @@ class DefaultExternalToLocalRoleLinkServiceTest {
 
         then(roleRepository).should().findOne(localRoleId);
 
-        final ArgumentCaptor<ExternalToLocalRoleLink> captor = ArgumentCaptor.forClass(ExternalToLocalRoleLink.class);
+        final ArgumentCaptor<ExternalToLocalRoleLinkJPA> captor = ArgumentCaptor.forClass(ExternalToLocalRoleLinkJPA.class);
         then(repository).should().save(captor.capture());
-        final ExternalToLocalRoleLink savedLink = captor.getValue();
+        final ExternalToLocalRoleLinkJPA savedLink = captor.getValue();
 
         assertNotNull(savedLink);
         assertEquals(providerId, savedLink.getProviderId());
@@ -122,9 +122,9 @@ class DefaultExternalToLocalRoleLinkServiceTest {
 
         final List<Role> expected = Arrays.asList(new RoleDTO(role1), new RoleDTO(role2));
 
-        final List<ExternalToLocalRoleLink> links = Arrays.asList(
-                new ExternalToLocalRoleLink(providerId, externalRoleId, role1),
-                new ExternalToLocalRoleLink(providerId, externalRoleId, role2)
+        final List<ExternalToLocalRoleLinkJPA> links = Arrays.asList(
+                new ExternalToLocalRoleLinkJPA(providerId, externalRoleId, role1),
+                new ExternalToLocalRoleLinkJPA(providerId, externalRoleId, role2)
         );
 
         given(externalRole.getProviderId()).willReturn(providerId);
@@ -156,29 +156,26 @@ class DefaultExternalToLocalRoleLinkServiceTest {
         ));
 
         final RoleJPA localRoleWhichLinkShouldBeDeleted = new RoleJPA(localRoleIdShouldBeDeleted, "1");
-        final ExternalToLocalRoleLink linkShouldBeDeleted = new ExternalToLocalRoleLink(
+        final ExternalToLocalRoleLinkJPA linkShouldBeDeleted = new ExternalToLocalRoleLinkJPA(
                 13, providerId, externalRoleId1, localRoleWhichLinkShouldBeDeleted
         );
         final RoleJPA localRoleAlreadyLinkedShouldNotBeDeleted = new RoleJPA(localRoleIdShouldNotBeDeleted, "2");
-        final Set<ExternalToLocalRoleLink> existingRoleLinks = new HashSet<>(Arrays.asList(
+        final Set<ExternalToLocalRoleLinkJPA> existingRoleLinks = new HashSet<>(Arrays.asList(
                 linkShouldBeDeleted,
-                new ExternalToLocalRoleLink(14, providerId, externalRoleId1, localRoleAlreadyLinkedShouldNotBeDeleted)
+                new ExternalToLocalRoleLinkJPA(14, providerId, externalRoleId1, localRoleAlreadyLinkedShouldNotBeDeleted)
         ));
 
-        final RoleJPA localRoleShouldBeLinked = new RoleJPA(localRoleIdShouldBeLinked, "3");
-
-        given(roleRepository.findOne(anyInt())).willReturn(localRoleAlreadyLinkedShouldNotBeDeleted, localRoleShouldBeLinked);
         given(repository.findByProviderIdAndExternalRoleId(providerId, externalRoleId1)).willReturn(existingRoleLinks);
 
         externalToLocalRoleLinkService.setLinkedRoles(externalRole1, rolesSent);
 
         then(repository).should().delete(linkShouldBeDeleted);
 
-        final ArgumentCaptor<ExternalToLocalRoleLink> captor = ArgumentCaptor.forClass(ExternalToLocalRoleLink.class);
+        final ArgumentCaptor<ExternalToLocalRoleLinkJPA> captor = ArgumentCaptor.forClass(ExternalToLocalRoleLinkJPA.class);
 
         then(repository).should().save(captor.capture());
 
-        final ExternalToLocalRoleLink savedLink = captor.getValue();
+        final ExternalToLocalRoleLinkJPA savedLink = captor.getValue();
         assertEquals(savedLink.getProviderId(), providerId);
         assertEquals(savedLink.getLocalRoleId(), localRoleIdShouldBeLinked);
         assertEquals(savedLink.getExternalRoleId(), externalRoleId1);

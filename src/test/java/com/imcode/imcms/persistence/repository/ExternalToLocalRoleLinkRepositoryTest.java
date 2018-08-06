@@ -1,7 +1,7 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
-import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLink;
+import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLinkJPA;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,30 +31,30 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final RoleJPA localRole1 = roleRepository.save(new RoleJPA("test-role-1"));
         final RoleJPA localRole2 = roleRepository.save(new RoleJPA("test-role-2"));
 
-        final ExternalToLocalRoleLink link11 = repository.save(new ExternalToLocalRoleLink(
+        final ExternalToLocalRoleLinkJPA link11 = repository.save(new ExternalToLocalRoleLinkJPA(
                 provider1, "external-role-1", localRole1
         ));
 
-        final ExternalToLocalRoleLink link12 = repository.save(new ExternalToLocalRoleLink(
+        final ExternalToLocalRoleLinkJPA link12 = repository.save(new ExternalToLocalRoleLinkJPA(
                 provider1, "external-role-2", localRole2
         ));
 
-        final ExternalToLocalRoleLink link21 = repository.save(new ExternalToLocalRoleLink(
+        final ExternalToLocalRoleLinkJPA link21 = repository.save(new ExternalToLocalRoleLinkJPA(
                 provider2, "external-role-1", localRole1
         ));
 
-        final ExternalToLocalRoleLink link22 = repository.save(new ExternalToLocalRoleLink(
+        final ExternalToLocalRoleLinkJPA link22 = repository.save(new ExternalToLocalRoleLinkJPA(
                 provider2, "external-role-2", localRole2
         ));
 
-        final Set<ExternalToLocalRoleLink> byProvider1 = repository.findByProviderId(provider1);
+        final Set<ExternalToLocalRoleLinkJPA> byProvider1 = repository.findByProviderId(provider1);
 
         assertNotNull(byProvider1);
         assertFalse(byProvider1.isEmpty());
 
         assertTrue(Arrays.asList(link11, link12).containsAll(byProvider1));
 
-        final Set<ExternalToLocalRoleLink> byProvider2 = repository.findByProviderId(provider2);
+        final Set<ExternalToLocalRoleLinkJPA> byProvider2 = repository.findByProviderId(provider2);
 
         assertNotNull(byProvider2);
         assertFalse(byProvider2.isEmpty());
@@ -70,11 +70,11 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final String provider = "provider";
         final RoleJPA localRole = roleRepository.save(new RoleJPA("test-role"));
 
-        final ExternalToLocalRoleLink link = repository.save(new ExternalToLocalRoleLink(
+        final ExternalToLocalRoleLinkJPA link = repository.save(new ExternalToLocalRoleLinkJPA(
                 provider, "external-role-1", localRole
         ));
 
-        final List<ExternalToLocalRoleLink> all = repository.findAll();
+        final List<ExternalToLocalRoleLinkJPA> all = repository.findAll();
 
         assertFalse(all.isEmpty());
         assertEquals(all.size(), 1);
@@ -92,7 +92,7 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
 
         assertTrue(repository.findAll().isEmpty());
 
-        repository.save(new ExternalToLocalRoleLink(
+        repository.save(new ExternalToLocalRoleLinkJPA(
                 provider, "external-role-1", localRole
         ));
 
@@ -111,11 +111,11 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final String externalRoleId = "external-role-1";
         final RoleJPA localRole = roleRepository.save(new RoleJPA("test-role"));
 
-        final ExternalToLocalRoleLink link = repository.save(
-                new ExternalToLocalRoleLink(provider, externalRoleId, localRole)
+        final ExternalToLocalRoleLinkJPA link = repository.save(
+                new ExternalToLocalRoleLinkJPA(provider, externalRoleId, localRole)
         );
 
-        final ExternalToLocalRoleLink result = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+        final ExternalToLocalRoleLinkJPA result = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
                 provider, externalRoleId, localRole.getId()
         );
 
@@ -129,12 +129,12 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final RoleJPA localRole1 = roleRepository.save(new RoleJPA("test-role-1"));
         final RoleJPA localRole2 = roleRepository.save(new RoleJPA("test-role-2"));
 
-        final ExternalToLocalRoleLink result1 = repository.save(new ExternalToLocalRoleLink(provider, externalRoleId, localRole1));
-        final ExternalToLocalRoleLink result2 = repository.save(new ExternalToLocalRoleLink(provider, externalRoleId, localRole2));
+        final ExternalToLocalRoleLinkJPA result1 = repository.save(new ExternalToLocalRoleLinkJPA(provider, externalRoleId, localRole1));
+        final ExternalToLocalRoleLinkJPA result2 = repository.save(new ExternalToLocalRoleLinkJPA(provider, externalRoleId, localRole2));
 
-        final List<ExternalToLocalRoleLink> expected = Arrays.asList(result1, result2);
+        final List<ExternalToLocalRoleLinkJPA> expected = Arrays.asList(result1, result2);
 
-        final Set<ExternalToLocalRoleLink> actual = repository.findByProviderIdAndExternalRoleId(
+        final Set<ExternalToLocalRoleLinkJPA> actual = repository.findByProviderIdAndExternalRoleId(
                 provider, externalRoleId
         );
 
@@ -148,9 +148,9 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final String externalRoleId = "external-role-1";
         final RoleJPA localRole = roleRepository.save(new RoleJPA("test-role"));
 
-        repository.save(new ExternalToLocalRoleLink(provider, externalRoleId, localRole));
+        repository.save(new ExternalToLocalRoleLinkJPA(provider, externalRoleId, localRole));
 
-        ExternalToLocalRoleLink result = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+        ExternalToLocalRoleLinkJPA result = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
                 provider, externalRoleId, localRole.getId()
         );
 
@@ -175,16 +175,16 @@ public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSp
         final RoleJPA localRole1 = roleRepository.save(new RoleJPA("test-role-1"));
         final RoleJPA localRole2 = roleRepository.save(new RoleJPA("test-role-2"));
 
-        repository.save(new ExternalToLocalRoleLink(provider, externalRoleId1, localRole1));
-        repository.save(new ExternalToLocalRoleLink(provider, externalRoleId2, localRole2));
+        repository.save(new ExternalToLocalRoleLinkJPA(provider, externalRoleId1, localRole1));
+        repository.save(new ExternalToLocalRoleLinkJPA(provider, externalRoleId2, localRole2));
 
-        ExternalToLocalRoleLink result1 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+        ExternalToLocalRoleLinkJPA result1 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
                 provider, externalRoleId1, localRole1.getId()
         );
 
         assertNotNull(result1);
 
-        ExternalToLocalRoleLink result2 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
+        ExternalToLocalRoleLinkJPA result2 = repository.findByProviderIdAndExternalRoleIdAndLocalRoleId(
                 provider, externalRoleId2, localRole2.getId()
         );
 

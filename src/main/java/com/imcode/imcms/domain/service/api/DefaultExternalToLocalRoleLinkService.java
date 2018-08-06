@@ -3,8 +3,9 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
+import com.imcode.imcms.model.ExternalToLocalRoleLink;
 import com.imcode.imcms.model.Role;
-import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLink;
+import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLinkJPA;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.repository.ExternalToLocalRoleLinkRepository;
 import com.imcode.imcms.persistence.repository.RoleRepository;
@@ -30,19 +31,13 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
     @Override
     public void setLinkedRoles(ExternalRole externalRole, Set<Integer> localRolesId) {
         final Set<ExternalToLocalRoleLink> linksSent = localRolesId.stream()
-                .map(localRoleId -> {
-                    final RoleJPA role = roleRepository.findOne(localRoleId);
-                    return new ExternalToLocalRoleLink(externalRole, role);
-                })
+                .map(localRoleId -> new ExternalToLocalRoleLink(externalRole, localRoleId))
                 .collect(Collectors.toSet());
 
-        final Set<ExternalToLocalRoleLink> alreadyLinkedRoles = getLinkedRoles(externalRole);
+        final Set<ExternalToLocalRoleLinkJPA> alreadyLinkedRoles = getLinkedRoles(externalRole);
 
         alreadyLinkedRoles.stream()
-                .filter(alreadyLinkedRole -> {
-                    final ExternalToLocalRoleLink linkWithoutId = removeId(alreadyLinkedRole);
-                    return !linksSent.contains(linkWithoutId);
-                })
+                .filter(alreadyLinkedRole -> !linksSent.contains(removeId(alreadyLinkedRole)))
                 .forEach(repository::delete);
 
         final Set<ExternalToLocalRoleLink> alreadyLinkedRolesWithoutId = alreadyLinkedRoles.stream()
@@ -51,19 +46,20 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
 
         linksSent.stream()
                 .filter(linkSent -> !alreadyLinkedRolesWithoutId.contains(linkSent))
+                .map(ExternalToLocalRoleLinkJPA::new)
                 .forEach(repository::save);
     }
 
-    private ExternalToLocalRoleLink removeId(ExternalToLocalRoleLink roleLink) {
-        final ExternalToLocalRoleLink linkWithoutId = new ExternalToLocalRoleLink(roleLink);
-        linkWithoutId.setId(null);
-        return linkWithoutId;
+    private ExternalToLocalRoleLink removeId(ExternalToLocalRoleLinkJPA roleLink) {
+        return new ExternalToLocalRoleLink(
+                roleLink.getProviderId(), roleLink.getExternalRoleId(), roleLink.getLocalRoleId()
+        );
     }
 
     @Override
     public void addLink(ExternalRole externalRole, int localRoleId) {
         final RoleJPA localRole = Objects.requireNonNull(roleRepository.findOne(localRoleId));
-        repository.save(new ExternalToLocalRoleLink(externalRole.getProviderId(), externalRole.getId(), localRole));
+        repository.save(new ExternalToLocalRoleLinkJPA(externalRole.getProviderId(), externalRole.getId(), localRole));
     }
 
     @Override
@@ -82,12 +78,12 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
     public Set<Role> getLinkedLocalRoles(ExternalRole externalRole) {
         return getLinkedRoles(externalRole)
                 .stream()
-                .map(ExternalToLocalRoleLink::getRole)
+                .map(ExternalToLocalRoleLinkJPA::getRole)
                 .map(RoleDTO::new)
                 .collect(Collectors.toSet());
     }
 
-    private Set<ExternalToLocalRoleLink> getLinkedRoles(ExternalRole externalRole) {
+    private Set<ExternalToLocalRoleLinkJPA> getLinkedRoles(ExternalRole externalRole) {
         return repository.findByProviderIdAndExternalRoleId(externalRole.getProviderId(), externalRole.getId());
     }
 }

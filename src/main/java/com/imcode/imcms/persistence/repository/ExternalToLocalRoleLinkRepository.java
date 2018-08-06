@@ -1,19 +1,19 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLink;
+import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLinkJPA;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Set;
 
-public interface ExternalToLocalRoleLinkRepository extends JpaRepository<ExternalToLocalRoleLink, Integer> {
+public interface ExternalToLocalRoleLinkRepository extends JpaRepository<ExternalToLocalRoleLinkJPA, Integer> {
 
-    Set<ExternalToLocalRoleLink> findByProviderId(String providerId);
+    Set<ExternalToLocalRoleLinkJPA> findByProviderId(String providerId);
 
-    ExternalToLocalRoleLink findByProviderIdAndExternalRoleIdAndLocalRoleId(
+    ExternalToLocalRoleLinkJPA findByProviderIdAndExternalRoleIdAndLocalRoleId(
             String providerId, String externalRoleId, int localRoleId
     );
 
-    Set<ExternalToLocalRoleLink> findByProviderIdAndExternalRoleId(
+    Set<ExternalToLocalRoleLinkJPA> findByProviderIdAndExternalRoleId(
             String providerId, String externalRoleId
     );
 
