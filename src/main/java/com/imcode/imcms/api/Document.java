@@ -167,7 +167,7 @@ public class Document implements Serializable {
 
     @SuppressWarnings("unused")
     public RestrictedPermission getDocumentPermissionSetForUser() {
-        return Imcms.getServices().getAccessService().getEditPermission(Imcms.getUser().getId(), getId());
+        return Imcms.getServices().getAccessService().getEditPermission(Imcms.getUser(), getId());
     }
 
     @Deprecated

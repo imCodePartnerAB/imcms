@@ -111,7 +111,7 @@ public class ViewDocumentController {
 
         final int docId = textDocument.getId();
 
-        final RestrictedPermission userEditPermission = accessService.getEditPermission(user.getId(), docId);
+        final RestrictedPermission userEditPermission = accessService.getEditPermission(user, docId);
 
         final String isEditModeStr = Objects.toString(request.getAttribute("isEditMode"), "false");
         final boolean isEditMode = Boolean.parseBoolean(isEditModeStr);

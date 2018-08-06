@@ -6,6 +6,7 @@ import com.imcode.imcms.persistence.entity.DocumentRole;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.repository.DocumentRolesRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,9 +25,9 @@ public class DefaultDocumentRolesService implements DocumentRolesService {
     }
 
     @Override
-    public DocumentRoles getDocumentRoles(int documentId, int userId) {
+    public DocumentRoles getDocumentRoles(int documentId, UserDomainObject user) {
         final List<DocumentRole> roleList = documentRolesRepository.getDocumentRolesByUserIdAndDocId(
-                userId, documentId
+                user.getId(), documentId
         );
 
         final Meta meta = metaRepository.findOne(documentId);

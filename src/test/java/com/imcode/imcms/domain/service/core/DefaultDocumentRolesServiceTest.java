@@ -51,6 +51,9 @@ public class DefaultDocumentRolesServiceTest {
         final int testDocId = 1001;
         final int testUserId = 13;
 
+        final UserDomainObject user = new UserDomainObject();
+        user.setId(testUserId);
+
         final Meta testDoc = new Meta();
         testDoc.setId(testDocId);
 
@@ -73,7 +76,7 @@ public class DefaultDocumentRolesServiceTest {
                 testUserId, testDocId
         )).thenReturn(documentRoles);
 
-        final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, testUserId);
+        final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
 
         assertNotNull(roles);
         assertFalse(roles.hasNoRoles());
@@ -89,6 +92,9 @@ public class DefaultDocumentRolesServiceTest {
         final int testDocId = 1001;
         final int testUserId = 13;
 
+        final UserDomainObject user = new UserDomainObject();
+        user.setId(testUserId);
+
         final Meta testDoc = new Meta();
         testDoc.setId(testDocId);
 
@@ -99,7 +105,7 @@ public class DefaultDocumentRolesServiceTest {
                 testUserId, testDocId
         )).thenReturn(documentRoles);
 
-        final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, testUserId);
+        final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);
 
         assertNotNull(roles);
         assertTrue(roles.hasNoRoles());

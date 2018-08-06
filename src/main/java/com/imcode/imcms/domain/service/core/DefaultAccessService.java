@@ -10,7 +10,7 @@ import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.util.Value;
-import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +47,8 @@ public class DefaultAccessService implements AccessService {
     }
 
     @Override
-    public boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType) {
-        final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, userId);
+    public boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType) {
+        final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, user);
 
         if (documentRoles.hasNoRoles()) {
             return false;
@@ -71,12 +71,12 @@ public class DefaultAccessService implements AccessService {
     }
 
     @Override
-    public RestrictedPermission getEditPermission(int userId, int documentId) {
-        if (Imcms.getUser().isSuperAdmin()) {
+    public RestrictedPermission getEditPermission(UserDomainObject user, int documentId) {
+        if (user.isSuperAdmin()) {
             return fullEditPermission;
         }
 
-        final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, userId);
+        final DocumentRoles documentRoles = documentRolesService.getDocumentRoles(documentId, user);
 
         // if no common roles for document and user then return VIEW permission
         if (documentRoles.hasNoRoles()) {

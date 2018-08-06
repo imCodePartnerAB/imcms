@@ -18,7 +18,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
@@ -27,8 +33,9 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultAccessServiceTest {
 
-    private static final int userId = 1;
     private static final int documentId = 1001;
+
+    private static final UserDomainObject USER = new UserDomainObject();
 
     @Mock
     private DocumentRolesService documentRolesService;
@@ -38,8 +45,7 @@ public class DefaultAccessServiceTest {
 
     @Before
     public void setUp() {
-        final UserDomainObject user = new UserDomainObject();
-        Imcms.setUser(user);
+        Imcms.setUser(USER);
     }
 
     @After
@@ -63,9 +69,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.EDIT);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), null);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertTrue(hasUserEditAccess);
     }
@@ -76,9 +82,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.VIEW);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), null);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
     }
@@ -89,9 +95,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.NONE);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), null);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
     }
@@ -108,9 +114,9 @@ public class DefaultAccessServiceTest {
                 Arrays.asList(firstDocumentRole, secondDocumentRole),
                 null
         );
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertTrue(hasUserEditAccess);
     }
@@ -129,9 +135,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
     }
@@ -158,9 +164,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertTrue(hasUserEditAccess);
     }
@@ -188,9 +194,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
     }
@@ -218,9 +224,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.MENU);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.MENU);
 
         assertTrue(hasUserEditAccess);
     }
@@ -248,9 +254,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.LOOP);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.LOOP);
 
         assertTrue(hasUserEditAccess);
     }
@@ -278,9 +284,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.TEXT);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.TEXT);
 
         assertTrue(hasUserEditAccess);
     }
@@ -308,9 +314,9 @@ public class DefaultAccessServiceTest {
         documentRole.setPermission(Permission.RESTRICTED_1);
 
         final DocumentRoles documentRoles = new DocumentRoles(Collections.singletonList(documentRole), meta);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.DOC_INFO);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.DOC_INFO);
 
         assertTrue(hasUserEditAccess);
     }
@@ -346,9 +352,9 @@ public class DefaultAccessServiceTest {
         );
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, null);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(editPermissionEnum));
         assertTrue(editPermission.isEditText());
@@ -372,9 +378,9 @@ public class DefaultAccessServiceTest {
         final List<DocumentRole> documentRoleList = Collections.singletonList(firstDocumentRole);
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(viewPermission));
         assertFalse(editPermission.isEditText());
@@ -426,9 +432,9 @@ public class DefaultAccessServiceTest {
         );
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(restricted1));
         assertTrue(editPermission.isEditText());
@@ -472,9 +478,9 @@ public class DefaultAccessServiceTest {
         );
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(viewPermission));
         assertFalse(editPermission.isEditText());
@@ -531,9 +537,9 @@ public class DefaultAccessServiceTest {
         );
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(Permission.VIEW));
         assertFalse(editPermission.isEditText());
@@ -582,9 +588,9 @@ public class DefaultAccessServiceTest {
         );
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         final RestrictedPermissionJPA actualRestrictedPermission = permissionMap.get(permissionEnum);
 
@@ -626,9 +632,9 @@ public class DefaultAccessServiceTest {
         );
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(permissionEnum));
         assertThat(editPermission.isEditText(), is(firstPermission.isEditText()));
@@ -662,9 +668,9 @@ public class DefaultAccessServiceTest {
         final List<DocumentRole> documentRoleList = Arrays.asList(firstDocumentRole, secondDocumentRole);
 
         final DocumentRoles documentRoles = new DocumentRoles(documentRoleList, document);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(permissionEnum));
         assertThat(editPermission.isEditText(), is(permissionJPA.isEditText()));
@@ -676,9 +682,9 @@ public class DefaultAccessServiceTest {
 
     private void testWhenDocumentRolesListIsEmpty() {
         final DocumentRoles documentRoles = new DocumentRoles(Collections.emptyList(), null);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final RestrictedPermission editPermission = accessService.getEditPermission(userId, documentId);
+        final RestrictedPermission editPermission = accessService.getEditPermission(USER, documentId);
 
         assertThat(editPermission.getPermission(), is(Permission.VIEW));
         assertFalse(editPermission.isEditText());
@@ -690,9 +696,9 @@ public class DefaultAccessServiceTest {
 
     private void testHasUserEditAccessWhenDocumentRolesListIsEmpty() {
         final DocumentRoles documentRoles = new DocumentRoles(Collections.emptyList(), null);
-        when(documentRolesService.getDocumentRoles(documentId, userId)).thenReturn(documentRoles);
+        when(documentRolesService.getDocumentRoles(documentId, USER)).thenReturn(documentRoles);
 
-        final boolean hasUserEditAccess = accessService.hasUserEditAccess(userId, documentId, AccessType.IMAGE);
+        final boolean hasUserEditAccess = accessService.hasUserEditAccess(USER, documentId, AccessType.IMAGE);
 
         assertFalse(hasUserEditAccess);
     }

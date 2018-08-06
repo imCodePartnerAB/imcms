@@ -75,8 +75,7 @@ public class AccessControlAspect {
             }
 
             if (docId != null) {
-                final int userId = user.getId();
-                hasAccess = accessService.hasUserEditAccess(userId, docId, accessType);
+                hasAccess = accessService.hasUserEditAccess(user, docId, accessType);
             }
 
             if (!hasAccess) {

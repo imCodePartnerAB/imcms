@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.security.AccessType;
+import imcode.server.user.UserDomainObject;
 
 /**
  * To know do the user have access to do something with some document or not.
@@ -10,7 +11,7 @@ import com.imcode.imcms.security.AccessType;
  * 13.02.18.
  */
 public interface AccessService {
-    boolean hasUserEditAccess(int userId, Integer documentId, AccessType accessType);
+    boolean hasUserEditAccess(UserDomainObject user, Integer documentId, AccessType accessType);
 
-    RestrictedPermission getEditPermission(int userId, int documentId);
+    RestrictedPermission getEditPermission(UserDomainObject user, int documentId);
 }

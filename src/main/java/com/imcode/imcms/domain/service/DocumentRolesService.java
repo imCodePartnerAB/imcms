@@ -1,9 +1,10 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.DocumentRoles;
+import imcode.server.user.UserDomainObject;
 
 public interface DocumentRolesService {
 
-    DocumentRoles getDocumentRoles(int documentId, int userId);
+    DocumentRoles getDocumentRoles(int documentId, UserDomainObject user);
 
 }
