@@ -3,7 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
 import com.imcode.imcms.model.AuthenticationProvider;
-import imcode.server.user.UserDomainObject;
+import com.imcode.imcms.model.ExternalUser;
 import imcode.util.Utility;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +85,7 @@ class RequestExternalIdentifierController {
         String nextURL = provider.processAuthentication(request);
         nextURL = (StringUtils.isBlank(nextURL) ? (request.getContextPath() + "/") : nextURL);
 
-        final UserDomainObject user = provider.getUser(request);
+        final ExternalUser user = provider.getUser(request);
         Utility.makeUserLoggedIn(request, user);
 
         return new ModelAndView(new RedirectView(nextURL));

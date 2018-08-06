@@ -2,7 +2,6 @@ package com.imcode.imcms.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.imcode.imcms.domain.dto.ExternalRole;
-import imcode.server.user.UserDomainObject;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -36,7 +35,7 @@ public abstract class AuthenticationProvider {
     public abstract String processAuthentication(HttpServletRequest request);
 
     @JsonIgnore
-    public abstract UserDomainObject getUser(HttpServletRequest request);
+    public abstract ExternalUser getUser(HttpServletRequest request);
 
     public abstract void updateAuthData(HttpServletRequest request);
 

@@ -1,10 +1,11 @@
 package com.imcode.imcms.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.imcode.imcms.model.ExternalUser;
 import imcode.server.ImcmsConstants;
-import imcode.server.user.UserDomainObject;
 import lombok.Data;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static com.imcode.imcms.domain.component.AzureAuthenticationProvider.EXTERNAL_AUTHENTICATOR_AZURE_AD;
@@ -39,16 +40,15 @@ public class AzureActiveDirectoryUserDTO {
 
     private Set<AzureActiveDirectoryGroupDTO> userGroups;
 
-    public UserDomainObject toDomainObject() {
-        final UserDomainObject user = new UserDomainObject(-1);
+    public ExternalUser toDomainObject() {
+        final ExternalUser user = new ExternalUser(EXTERNAL_AUTHENTICATOR_AZURE_AD);
 
-        user.setExternalProviderId(EXTERNAL_AUTHENTICATOR_AZURE_AD);
         user.setLoginName(id);
-        user.setImcmsExternal(true);
         user.setFirstName(givenName);
         user.setLastName(surname);
         user.setEmailAddress(mail);
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        user.setExternalRoles(new HashSet<>(userGroups));
 
         return user;
     }

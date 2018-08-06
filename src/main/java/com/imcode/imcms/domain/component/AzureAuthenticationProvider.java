@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.dto.AzureActiveDirectoryGroupsHolderDTO;
 import com.imcode.imcms.domain.dto.AzureActiveDirectoryUserDTO;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.model.AuthenticationProvider;
+import com.imcode.imcms.model.ExternalUser;
 import com.imcode.imcms.util.AuthHelper;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
@@ -17,7 +18,6 @@ import com.nimbusds.openid.connect.sdk.AuthenticationErrorResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponse;
 import com.nimbusds.openid.connect.sdk.AuthenticationResponseParser;
 import com.nimbusds.openid.connect.sdk.AuthenticationSuccessResponse;
-import imcode.server.user.UserDomainObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.SneakyThrows;
@@ -162,7 +162,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
     }
 
     @Override
-    public UserDomainObject getUser(HttpServletRequest request) {
+    public ExternalUser getUser(HttpServletRequest request) {
         final AuthenticationResult result = AuthHelper.getAuthenticationResult(request);
 
         if (result == null) {
