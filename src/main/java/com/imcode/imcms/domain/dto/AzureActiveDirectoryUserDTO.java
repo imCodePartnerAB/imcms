@@ -40,7 +40,7 @@ public class AzureActiveDirectoryUserDTO {
     private Set<AzureActiveDirectoryGroupDTO> userGroups;
 
     public UserDomainObject toDomainObject() {
-        final UserDomainObject user = new UserDomainObject();
+        final UserDomainObject user = new UserDomainObject(-1);
 
         user.setExternalProviderId(EXTERNAL_AUTHENTICATOR_AZURE_AD);
         user.setLoginName(id);
