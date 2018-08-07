@@ -10,7 +10,7 @@ public final class UserAdminRole extends Role {
 
     private static final long serialVersionUID = -2770811256467291410L;
 
-    private final Integer id = 1; // fixme: this is a tradition, but it would be better to be 2 (and 1 for super-admin)
+    private final Integer id = 2;
 
     private final String name = "Useradmin"; // fixme: tradition, would be better to be "User Admin" or "user-admin"
 

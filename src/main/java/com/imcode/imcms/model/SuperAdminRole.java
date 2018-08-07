@@ -10,7 +10,7 @@ public final class SuperAdminRole extends Role {
 
     private static final long serialVersionUID = 1675994734975791294L;
 
-    private final Integer id = 0; // fixme: this is a tradition, but it would be better to start from 1 for MySQL ID
+    private final Integer id = 1;
 
     private final String name = "Superadmin"; // fixme: tradition, would be better "Super Admin" or "super-admin"
 
