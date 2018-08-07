@@ -18,7 +18,7 @@ ALTER TABLE `useradmin_role_crossref`
   DROP FOREIGN KEY `useradmin_role_crossref_FK_role_id_roles`;
 
 ALTER TABLE `roles_permissions`
-  DROP FOREIGN KEY `roles_permissions_ibfk_1`;
+  DROP FOREIGN KEY `role_id_fk`;
 
 ALTER TABLE `roles_rights`
   DROP FOREIGN KEY `roles_rights_FK_role_id_roles`;
