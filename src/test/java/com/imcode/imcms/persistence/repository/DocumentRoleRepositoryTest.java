@@ -4,6 +4,7 @@ import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.DocumentRole;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.RoleJPA;
@@ -58,7 +59,7 @@ public class DocumentRoleRepositoryTest {
 
     @Test
     public void getDocumentRolesByDocIdAndUserId_When_OneExist_Expect_Returned() {
-        final int roleId = 0;
+        final int roleId = Roles.SUPER_ADMIN.getId();
         final Meta.Permission permission = VIEW;
 
         final User user = userDataInitializer.createData(1, roleId).get(0);
@@ -86,8 +87,8 @@ public class DocumentRoleRepositoryTest {
 
     @Test
     public void getDocumentRolesByDocIdAndUserId_When_TwoExist_Expect_Returned() {
-        final int roleId1 = 0;
-        final int roleId2 = 1;
+        final int roleId1 = Roles.SUPER_ADMIN.getId();
+        final int roleId2 = Roles.USER.getId();
 
         final Meta.Permission permission1 = VIEW;
         final Meta.Permission permission2 = EDIT;
@@ -130,8 +131,8 @@ public class DocumentRoleRepositoryTest {
 
     @Test
     public void getByDocumentId() {
-        final int roleId1 = 0;
-        final int roleId2 = 1;
+        final int roleId1 = Roles.SUPER_ADMIN.getId();
+        final int roleId2 = Roles.USER.getId();
 
         final Meta.Permission permission1 = VIEW;
         final Meta.Permission permission2 = EDIT;

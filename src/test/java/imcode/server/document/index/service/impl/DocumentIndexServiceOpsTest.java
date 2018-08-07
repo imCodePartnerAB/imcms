@@ -3,6 +3,7 @@ package imcode.server.document.index.service.impl;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
+import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.index.DocumentIndex;
@@ -552,7 +553,7 @@ class DocumentIndexServiceOpsTest {
         solrInputDocument.addField(DocumentIndex.FIELD__LANGUAGE_CODE, "test_lang_code");
         solrInputDocument.addField(DocumentIndex.FIELD__VERSION_NO, 0);
         solrInputDocument.addField(DocumentIndex.FIELD__SEARCH_ENABLED, true);
-        solrInputDocument.addField(DocumentIndex.FIELD__ROLE_ID, 2);
+        solrInputDocument.addField(DocumentIndex.FIELD__ROLE_ID, Roles.USER.getId());
 
         return solrInputDocument;
     }

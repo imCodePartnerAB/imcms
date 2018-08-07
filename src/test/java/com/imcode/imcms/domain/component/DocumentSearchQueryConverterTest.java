@@ -179,7 +179,7 @@ public class DocumentSearchQueryConverterTest {
         final List<String> filters = Arrays.asList(solrQuery.getFilterQueries());
 
         assertTrue(filters.contains(DocumentIndex.FIELD__SEARCH_ENABLED + ":true"));
-        assertTrue(filters.contains(DocumentIndex.FIELD__ROLE_ID + ":(2)"));
+        assertTrue(filters.contains(DocumentIndex.FIELD__ROLE_ID + ":(" + Roles.USER.getId() + ")"));
     }
 
     @Test
