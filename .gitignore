@@ -1,4 +1,4 @@
-build.properties
 .idea/
 build.log
 target/
+.gradle/
