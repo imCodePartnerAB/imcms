@@ -366,7 +366,7 @@ war {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            from components.java
+            artifact jar
             artifact sourcesJar
 
             //Ugly way to add war to publication with preserving correct final pom file
