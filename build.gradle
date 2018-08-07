@@ -258,9 +258,11 @@ javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
     }
 }
 
-jar.doFirst {
-    manifest {
-        from sharedManifest
+jar {
+    doFirst {
+        manifest {
+            from sharedManifest
+        }
     }
     classifier 'classes'
 }
