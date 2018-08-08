@@ -145,10 +145,6 @@ public class DocRepository {
                 "DELETE FROM imcms_url_docs WHERE doc_id = ?",
                 "DELETE FROM fileupload_docs WHERE doc_id = ?",
                 "DELETE FROM imcms_html_docs WHERE doc_id = ?",
-                "DELETE FROM new_doc_permission_sets_ex WHERE meta_id = ?",
-                "DELETE FROM new_doc_permission_sets WHERE meta_id = ?",
-                "DELETE FROM doc_permission_sets_ex WHERE meta_id = ?",
-                "DELETE FROM doc_permission_sets WHERE meta_id = ?",
                 "DELETE FROM includes WHERE meta_id = ?",
                 "DELETE FROM includes WHERE included_meta_id = ?",
                 "DELETE FROM imcms_text_doc_texts_history WHERE doc_id = ?",
@@ -160,7 +156,6 @@ public class DocRepository {
                 "DELETE FROM imcms_doc_i18n_meta WHERE doc_id = ?",
                 "DELETE FROM imcms_text_doc_contents WHERE loop_id IN (SELECT id FROM imcms_text_doc_content_loops WHERE doc_id = ?)",
                 "DELETE FROM imcms_text_doc_content_loops WHERE doc_id = ?",
-                "DELETE FROM imcms_doc_languages WHERE doc_id = ?",
                 "DELETE FROM imcms_doc_keywords WHERE doc_id = ?",
                 "DELETE FROM imcms_doc_versions WHERE doc_id = ?",
                 "DELETE FROM meta WHERE meta_id = ?"
