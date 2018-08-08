@@ -353,7 +353,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: 'IP vitlista'
                 },
                 deleteDocs: {
-                    name: 'Radera dokument'
+                    name: 'Radera dokument',
+                    title: 'Ta bort dokument med id'
                 },
                 templates: {
                     name: 'Mallar'
@@ -724,7 +725,8 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     name: 'IP White List'
                 },
                 deleteDocs: {
-                    name: 'Delete Documents'
+                    name: 'Delete Documents',
+                    title: 'Delete document by id'
                 },
                 templates: {
                     name: 'Templates'
