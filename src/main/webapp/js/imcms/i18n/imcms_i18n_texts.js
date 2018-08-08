@@ -437,7 +437,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     publisher: "Publisher",
                     currentVersion: "Current version:",
                     versionHasChanges: "This offline version has changes.",
-                    publishMessage: "Please press \"Save and publish this version\" to publish"
+                    publishMessage: "Please press \"Save and publish this version\" to publish as version № "
                 },
                 appearance: {
                     name: "Appearance",
