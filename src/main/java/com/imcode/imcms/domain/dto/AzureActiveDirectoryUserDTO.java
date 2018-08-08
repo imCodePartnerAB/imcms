@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.imcode.imcms.model.ExternalUser;
 import imcode.server.ImcmsConstants;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -46,7 +47,8 @@ public class AzureActiveDirectoryUserDTO {
         user.setLoginName(id);
         user.setFirstName(givenName);
         user.setLastName(surname);
-        user.setEmailAddress(mail);
+        user.setPassword("");
+        user.setEmailAddress(StringUtils.defaultString(mail));
         user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
         user.setExternalRoles(new HashSet<>(userGroups));
 

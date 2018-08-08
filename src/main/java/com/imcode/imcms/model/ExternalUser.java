@@ -17,8 +17,7 @@ public class ExternalUser extends UserDomainObject {
 
     private Set<ExternalRole> externalRoles;
 
-    {// default id for external users
-        id = -1; // not sure is it good idea =) but it's better than default 0 (which is superadmin's id)
+    {
         setImcmsExternal(true);
     }
 

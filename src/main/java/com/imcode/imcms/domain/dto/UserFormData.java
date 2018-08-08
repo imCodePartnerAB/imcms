@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.dto;
 import com.imcode.imcms.model.UserData;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.LanguageMapper;
+import imcode.server.user.UserDomainObject;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -39,6 +40,7 @@ public class UserFormData extends UserData {
     private String[] userPhoneNumber;
     private int[] roleIds;
     private int[] userAdminRoleIds;
+    private boolean external;
 
     public UserFormData(UserData from) {
         super(from);
@@ -49,5 +51,20 @@ public class UserFormData extends UserData {
         this.setCreateDate(from.getCreateDate());
         this.setActive(from.isActive());
         this.setLangCode(LanguageMapper.convert639_2to639_1(from.getLanguageIso639_2()));
+    }
+
+    public UserFormData(UserDomainObject from) {
+        super(from);
+
+        if (from.getId() == 0) {
+            setId(null);
+        }
+
+        setExternal(from.isImcmsExternal());
+        setLangCode(from.getLanguage());
+
+        final int[] roles = from.getRoleIds().stream().mapToInt(Integer::intValue).toArray();
+
+        setRoleIds(roles);
     }
 }
