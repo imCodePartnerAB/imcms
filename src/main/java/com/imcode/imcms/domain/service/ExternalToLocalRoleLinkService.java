@@ -20,4 +20,6 @@ public interface ExternalToLocalRoleLinkService {
     void removeLinks(ExternalRole externalRole);
 
     Set<Role> getLinkedLocalRoles(ExternalRole externalRole);
+
+    Set<Role> toLinkedLocalRoles(Set<ExternalRole> externalRoles);
 }

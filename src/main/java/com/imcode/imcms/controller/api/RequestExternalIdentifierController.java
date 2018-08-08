@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.service.AuthenticationProvidersService;
+import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.AuthenticationProvider;
 import com.imcode.imcms.model.ExternalUser;
 import imcode.util.Utility;
@@ -41,9 +42,12 @@ class RequestExternalIdentifierController {
     static final String EXTERNAL_IDENTIFIER_REDIRECT_URI = "logged-in";
 
     private final AuthenticationProvidersService authenticationProvidersService;
+    private final UserService userService;
 
-    RequestExternalIdentifierController(AuthenticationProvidersService authenticationProvidersService) {
+    RequestExternalIdentifierController(AuthenticationProvidersService authenticationProvidersService,
+                                        UserService userService) {
         this.authenticationProvidersService = authenticationProvidersService;
+        this.userService = userService;
     }
 
     @RequestMapping("login/{identifierId}")
@@ -85,7 +89,7 @@ class RequestExternalIdentifierController {
         String nextURL = provider.processAuthentication(request);
         nextURL = (StringUtils.isBlank(nextURL) ? (request.getContextPath() + "/") : nextURL);
 
-        final ExternalUser user = provider.getUser(request);
+        final ExternalUser user = userService.saveExternalUser(provider.getUser(request));
         Utility.makeUserLoggedIn(request, user);
 
         return new ModelAndView(new RedirectView(nextURL));

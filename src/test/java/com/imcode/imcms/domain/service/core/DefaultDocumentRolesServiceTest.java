@@ -62,8 +62,7 @@ class DefaultDocumentRolesServiceTest {
         final int testDocId = 1001;
         final int testUserId = 13;
 
-        final UserDomainObject user = new UserDomainObject();
-        user.setId(testUserId);
+        final UserDomainObject user = new UserDomainObject(testUserId);
 
         final Meta testDoc = new Meta();
         testDoc.setId(testDocId);
@@ -103,8 +102,7 @@ class DefaultDocumentRolesServiceTest {
         final int testDocId = 1001;
         final int testUserId = 13;
 
-        final UserDomainObject user = new UserDomainObject();
-        user.setId(testUserId);
+        final UserDomainObject user = new UserDomainObject(testUserId);
 
         final Meta testDoc = new Meta();
         testDoc.setId(testDocId);
@@ -163,7 +161,7 @@ class DefaultDocumentRolesServiceTest {
         user.setExternalRoles(externalUserRoles);
 
         given(metaRepository.findOne(testDocId)).willReturn(testDoc);
-        given(externalToLocalRoleLinkService.getLinkedLocalRoles(any())).willReturn(linkedRoles);
+        given(externalToLocalRoleLinkService.toLinkedLocalRoles(any())).willReturn(linkedRoles);
         given(documentRolesRepository.findByDocument_Id(testDocId)).willReturn(documentRoles);
 
         final DocumentRoles roles = documentRolesService.getDocumentRoles(testDocId, user);

@@ -4,11 +4,13 @@ import com.imcode.imcms.domain.dto.PhoneDTO;
 import com.imcode.imcms.domain.dto.UserDTO;
 import com.imcode.imcms.domain.dto.UserFormData;
 import com.imcode.imcms.domain.exception.UserNotExistsException;
+import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.UserAdminRolesService;
 import com.imcode.imcms.domain.service.UserRolesService;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.model.ExternalUser;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.model.PhoneType;
 import com.imcode.imcms.model.PhoneTypes;
@@ -50,6 +52,7 @@ class DefaultUserService implements UserService {
     private final RoleService roleService;
     private final PhoneService phoneService;
     private final UserRolesService userRolesService;
+    private final ExternalToLocalRoleLinkService externalToLocalRoleService;
     private final UserAdminRolesService userAdminRolesService;
 
     @PersistenceContext
@@ -59,23 +62,25 @@ class DefaultUserService implements UserService {
                        RoleService roleService,
                        PhoneService phoneService,
                        UserRolesService userRolesService,
+                       ExternalToLocalRoleLinkService externalToLocalRoleLinkService,
                        UserAdminRolesService userAdminRolesService) {
 
         this.userRepository = userRepository;
         this.roleService = roleService;
         this.phoneService = phoneService;
         this.userRolesService = userRolesService;
+        this.externalToLocalRoleService = externalToLocalRoleLinkService;
         this.userAdminRolesService = userAdminRolesService;
     }
 
     @Override
-    public User getUser(int id) {
+    public User getUser(int id) throws UserNotExistsException {
         return Optional.ofNullable(userRepository.findById(id))
                 .orElseThrow(() -> new UserNotExistsException(id));
     }
 
     @Override
-    public UserDTO getUser(String login) {
+    public UserDTO getUser(String login) throws UserNotExistsException {
         return Optional.ofNullable(userRepository.findByLogin(login))
                 .map(UserDTO::new)
                 .orElseThrow(() -> new UserNotExistsException(login));
@@ -194,6 +199,7 @@ class DefaultUserService implements UserService {
 
     private User toUserJPA(UserFormData userData) {
         final User user = new User(userData);
+        user.setExternal(userData.isExternal());
         user.setLanguageIso639_2(LanguageMapper.convert639_1to639_2(userData.getLangCode()));
         return user;
     }
@@ -327,4 +333,23 @@ class DefaultUserService implements UserService {
         return entityManager.createQuery(c).getResultList();
     }
 
+    @Override
+    public ExternalUser saveExternalUser(ExternalUser user) {
+        final Set<Integer> linkedLocalRoleIds = externalToLocalRoleService.toLinkedLocalRoles(user.getExternalRoles())
+                .stream()
+                .map(Role::getId)
+                .collect(Collectors.toSet());
+
+        user.setRoleIds(linkedLocalRoleIds);
+
+        final User savedUser = userRepository.findByLogin(user.getLogin());
+
+        if (savedUser != null) {
+            user.setId(savedUser.getId());
+        }
+
+        saveUser(new UserFormData(user));
+
+        return user;
+    }
 }

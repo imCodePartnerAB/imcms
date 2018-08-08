@@ -46,7 +46,11 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
 
         linksSent.stream()
                 .filter(linkSent -> !alreadyLinkedRolesWithoutId.contains(linkSent))
-                .map(ExternalToLocalRoleLinkJPA::new)
+                .map(from -> {
+                    final ExternalToLocalRoleLinkJPA linkJPA = new ExternalToLocalRoleLinkJPA(from);
+                    linkJPA.setRole(roleRepository.findOne(from.getLocalRoleId()));
+                    return linkJPA;
+                })
                 .forEach(repository::save);
     }
 
@@ -85,5 +89,12 @@ class DefaultExternalToLocalRoleLinkService implements ExternalToLocalRoleLinkSe
 
     private Set<ExternalToLocalRoleLinkJPA> getLinkedRoles(ExternalRole externalRole) {
         return repository.findByProviderIdAndExternalRoleId(externalRole.getProviderId(), externalRole.getId());
+    }
+
+    @Override
+    public Set<Role> toLinkedLocalRoles(Set<ExternalRole> externalRoles) {
+        return externalRoles.stream()
+                .flatMap(externalRole -> getLinkedLocalRoles(externalRole).stream())
+                .collect(Collectors.toSet());
     }
 }

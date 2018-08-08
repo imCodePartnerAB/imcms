@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service.core;
 
 import com.imcode.imcms.domain.dto.DocumentRoles;
-import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.service.DocumentRolesService;
 import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
@@ -15,7 +14,6 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -43,12 +41,9 @@ public class DefaultDocumentRolesService implements DocumentRolesService {
         if (user.isImcmsExternal()) {
             final ExternalUser externalUser = (ExternalUser) user;
 
-            final Set<Role> allLinkedLocalRoles = new HashSet<>();
-
-            for (ExternalRole externalRole : externalUser.getExternalRoles()) {
-                allLinkedLocalRoles.addAll(externalToLocalRoleLinkService.getLinkedLocalRoles(externalRole));
-            }
-
+            final Set<Role> allLinkedLocalRoles = externalToLocalRoleLinkService.toLinkedLocalRoles(
+                    externalUser.getExternalRoles()
+            );
             final Set<DocumentRole> allDocRoles = documentRolesRepository.findByDocument_Id(documentId);
 
             final Set<DocumentRole> localDocRolesLinkedToExternal = allDocRoles.stream()

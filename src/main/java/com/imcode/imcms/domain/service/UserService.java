@@ -8,7 +8,7 @@ import com.imcode.imcms.persistence.entity.User;
 import java.util.List;
 import java.util.Set;
 
-public interface UserService extends UserDataService {
+public interface UserService extends UserDataService, ExternalUserService {
 
     User getUser(int id) throws UserNotExistsException;
 
