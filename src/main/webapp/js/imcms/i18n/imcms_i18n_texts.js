@@ -304,41 +304,38 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 users: {
                     name: 'Användare'
                 },
-                templates: {
-                    name: 'Mallar'
-                },
-                systemProperties: {
-                    name: 'Systemegenskaper'
-                },
-                sections: {
-                    name: 'Sektioner'
-                },
-                search: {
-                    name: 'Sök'
-                },
                 roles: {
                     name: 'Roller'
-                },
-                profiles: {
-                    name: 'Profiler'
-                },
-                linkValidator: {
-                    name: 'Länk Validator'
-                },
-                ipWhiteList: {
-                    name: 'IP vitlista'
                 },
                 ipAccess: {
                     name: 'IP-åtkomst'
                 },
-                files: {
-                    name: 'Filer'
+                ipWhiteList: {
+                    name: 'IP vitlista'
                 },
                 deleteDocs: {
                     name: 'Radera dokument'
                 },
+                templates: {
+                    name: 'Mallar'
+                },
+                files: {
+                    name: 'Filer'
+                },
+                search: {
+                    name: 'Sök'
+                },
+                linkValidator: {
+                    name: 'Länk Validator'
+                },
                 categories: {
                     name: 'Kategorier'
+                },
+                profiles: {
+                    name: 'Profiler'
+                },
+                systemProperties: {
+                    name: 'Systemegenskaper'
                 }
             }
         },
@@ -660,44 +657,56 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     },
                     createNewUser: 'Create new user'
                 },
-                templates: {
-                    name: 'Templates'
-                },
-                systemProperties: {
-                    name: 'System Properties'
-                },
-                sections: {
-                    name: 'Sections'
-                },
-                search: {
-                    name: 'Search'
-                },
                 roles: {
                     name: 'Roles',
                     title: 'Roles administration',
                     createNewRole: 'Create new role',
-                    roleName: 'Role name'
-                },
-                profiles: {
-                    name: 'Profiles'
-                },
-                linkValidator: {
-                    name: 'Link Validator'
-                },
-                ipWhiteList: {
-                    name: 'IP White List'
+                    roleName: 'Role name',
+                    save: 'Save',
+                    cancel: 'Cancel',
+                    externalRolesInfo: 'You can set remote roles to behave as local ones',
+                    permissions: {
+                        title: 'Role permissions',
+                        getPasswordByEmail: 'Get password by email',
+                        accessToAdminPages: 'Access to admin pages',
+                        useImagesInImageArchive: 'Use images in image archive',
+                        changeImagesInImageArchive: 'Change images in image archive'
+                    },
+                    deleteConfirm: 'Do you really want to delete this role?',
+                    editRole: 'Edit role',
+                    deleteRole: 'Delete role',
+                    saveChanges: 'Save changes',
+                    discardChangesMessage: 'Discard changes?'
                 },
                 ipAccess: {
                     name: 'IP Access'
                 },
-                files: {
-                    name: 'Files'
+                ipWhiteList: {
+                    name: 'IP White List'
                 },
                 deleteDocs: {
                     name: 'Delete Documents'
                 },
+                templates: {
+                    name: 'Templates'
+                },
+                files: {
+                    name: 'Files'
+                },
+                search: {
+                    name: 'Search'
+                },
+                linkValidator: {
+                    name: 'Link Validator'
+                },
                 categories: {
                     name: 'Categories'
+                },
+                profiles: {
+                    name: 'Profiles'
+                },
+                systemProperties: {
+                    name: 'System Properties'
                 }
             }
         }

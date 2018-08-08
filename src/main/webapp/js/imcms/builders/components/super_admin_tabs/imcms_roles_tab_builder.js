@@ -153,7 +153,7 @@ Imcms.define(
                                     var $rolesSelect;
 
                                     var $saveButton = components.buttons.saveButton({
-                                        text: 'Save',
+                                        text: texts.save,
                                         style: 'display: none;',
                                         click: function () {
                                             var selectedRolesId = $rolesSelect.getSelectedValues();
@@ -171,7 +171,7 @@ Imcms.define(
                                     });
 
                                     var $cancelButton = components.buttons.negativeButton({
-                                        text: 'Cancel',
+                                        text: texts.cancel,
                                         style: 'display: none;',
                                         click: function () {
                                             $saveButton.add($cancelButton).css('display', 'none');
@@ -224,7 +224,7 @@ Imcms.define(
                     }));
                     var $text = $('<div>', {
                         'class': 'imcms-field',
-                        text: 'You can set remote roles to behave as local ones'
+                        text: texts.externalRolesInfo
                     });
                     var $providerBlock = providerBEM.buildBlock('<div>', [
                         {'title': $title},

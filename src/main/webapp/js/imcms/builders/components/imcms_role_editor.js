@@ -40,15 +40,24 @@ Imcms.define(
             }
 
             permissionCheckboxes$ = [
-                $getPasswordByEmail = createCheckboxWithText('Get password by email'),
-                $accessToAdminPages = createCheckboxWithText('Access to admin pages'),
-                $useImagesInImageArchive = createCheckboxWithText('Use images in image archive'),
-                $changeImagesInImageArchive = createCheckboxWithText('Change images in image archive')
+                $getPasswordByEmail = createCheckboxWithText(texts.permissions.getPasswordByEmail),
+                $accessToAdminPages = createCheckboxWithText(texts.permissions.accessToAdminPages),
+                $useImagesInImageArchive = createCheckboxWithText(texts.permissions.useImagesInImageArchive),
+                $changeImagesInImageArchive = createCheckboxWithText(texts.permissions.changeImagesInImageArchive)
             ];
 
             return components.checkboxes.checkboxContainerField(
-                '<div>', permissionCheckboxes$, {title: 'Role permissions'}
+                '<div>', permissionCheckboxes$, {title: texts.permissions.title}
             );
+        }
+
+        function onCancelChanges($roleRowElement, role) {
+            getOnDiscardChanges(function () {
+                onRoleView = onRoleSimpleView;
+                currentRole = role;
+                $roleRow = $roleRowElement;
+                prepareRoleView();
+            }).call();
         }
 
         function onEditRole() {
@@ -65,7 +74,7 @@ Imcms.define(
         }
 
         function onDeleteRole() {
-            confirmationBuilder.buildModalWindow('Do you really want to delete this role?', function (confirmed) {
+            confirmationBuilder.buildModalWindow(texts.deleteConfirm, function (confirmed) {
                 if (!confirmed) return;
 
                 rolesRestAPI.remove(currentRole).success(function () {
@@ -80,11 +89,11 @@ Imcms.define(
         function buildRoleViewButtons() {
             return $roleViewButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.positiveButton({
-                    text: 'Edit role',
+                    text: texts.editRole,
                     click: onEditRole
                 }),
                 components.buttons.negativeButton({
-                    text: 'Delete role',
+                    text: texts.deleteRole,
                     click: onDeleteRole
                 })
             ]);
@@ -133,39 +142,35 @@ Imcms.define(
             }
         }
 
-        function onCancelChanges($roleRowElement, role) {
-            confirmationBuilder.buildModalWindow('Discard changes?', function (confirmed) {
-                if (!confirmed) return;
-                onRoleView = onRoleSimpleView;
-                currentRole = role;
-                $roleRow = $roleRowElement;
-                prepareRoleView();
-            });
+        function getOnDiscardChanges(onConfirm) {
+            return function () {
+                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, function (confirmed) {
+                    if (!confirmed) return;
+                    onConfirm.call();
+                });
+            }
         }
 
         function buildRoleEditButtons() {
             return $roleEditButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
-                    text: 'Save changes',
+                    text: texts.saveChanges,
                     click: onSaveRole
                 }),
                 components.buttons.negativeButton({
-                    text: 'Cancel',
-                    click: function () {
-                        confirmationBuilder.buildModalWindow('Discard changes?', function (confirmed) {
-                            if (!confirmed) return;
-                            onRoleView = onRoleSimpleView;
+                    text: texts.cancel,
+                    click: getOnDiscardChanges(function () {
+                        onRoleView = onRoleSimpleView;
 
-                            if (currentRole.id) {
-                                prepareRoleView();
+                        if (currentRole.id) {
+                            prepareRoleView();
 
-                            } else {
-                                currentRole = null;
-                                onEditDelegate = onSimpleEdit;
-                                $container.slideUp();
-                            }
-                        });
-                    }
+                        } else {
+                            currentRole = null;
+                            onEditDelegate = onSimpleEdit;
+                            $container.slideUp();
+                        }
+                    })
                 })
             ], {
                 style: 'display: none;'
