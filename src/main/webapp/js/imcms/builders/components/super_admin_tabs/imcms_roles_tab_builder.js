@@ -7,11 +7,11 @@ Imcms.define(
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api', 'imcms',
         'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication',
-        'imcms-azure-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api'
+        'imcms-azure-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api', 'imcms-field-wrapper'
     ],
     function (
         SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth, azureRoles,
-        externalToLocalRolesLinks
+        externalToLocalRolesLinks, fieldWrapper
     ) {
 
         texts = texts.superAdmin.roles;
@@ -37,15 +37,8 @@ Imcms.define(
 
         var $rolesContainer;
 
-        function wrapInImcmsField($wrapMe) {
-            return $('<div>', {
-                'class': 'imcms-field',
-                html: $wrapMe
-            })
-        }
-
         function buildTabTitle() {
-            return wrapInImcmsField(components.texts.titleText('<div>', texts.title))
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
         }
 
         function onCreateNewRole() {
@@ -65,7 +58,7 @@ Imcms.define(
         }
 
         function buildCreateNewRoleButton() {
-            return wrapInImcmsField(components.buttons.positiveButton({
+            return fieldWrapper.wrap(components.buttons.positiveButton({
                 text: texts.createNewRole,
                 click: onCreateNewRole
             }));
@@ -82,7 +75,7 @@ Imcms.define(
                 }))
             });
 
-            return wrapInImcmsField([$rolesContainer, roleEditor.buildContainer()]);
+            return fieldWrapper.wrap([$rolesContainer, roleEditor.buildContainer()]);
         }
 
         function buildExternalRolesContainer() {
@@ -235,7 +228,7 @@ Imcms.define(
                 $externalRolesContainer.append(providers$);
             });
 
-            return wrapInImcmsField($externalRolesContainer);
+            return fieldWrapper.wrap($externalRolesContainer);
         }
 
         return new SuperAdminTab(texts.name, [
