@@ -77,12 +77,12 @@ Imcms.define(
             cropElements.$image.css(style);
             cropElements.$cropImg.css(style);
 
-            var imageWidth = cropElements.$image.width(),
+            var $cropArea = cropElements.$cropArea,
+                imageWidth = cropElements.$image.width(),
                 imageHeight = cropElements.$image.height(),
-                cropAreaHeight = (sameAngle) ? cropElements.$cropArea.height() : cropElements.$cropArea.width(),
-                cropAreaWidth = (sameAngle) ? cropElements.$cropArea.width() : cropElements.$cropArea.height();
+                cropAreaHeight = (sameAngle) ? $cropArea.height() : $cropArea.width(),
+                cropAreaWidth = (sameAngle) ? $cropArea.width() : $cropArea.height();
 
-            // TODO: fix crop area position when it is out of img
             imageResize.resize({
                     image: {
                         width: imageWidth,
@@ -91,8 +91,8 @@ Imcms.define(
                     cropArea: {
                         height: cropAreaHeight,
                         width: cropAreaWidth,
-                        top: 2,
-                        left: 2
+                        top: $cropArea.getTop(),
+                        left: $cropArea.getLeft()
                     }
                 },
                 dataContainers,

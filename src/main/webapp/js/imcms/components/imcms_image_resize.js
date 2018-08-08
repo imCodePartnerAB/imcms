@@ -18,10 +18,20 @@ Imcms.define(
 
                 cropElements.$image.animate(opts.image, 200);
 
+                var displayWidth = ((isImageProportionsInverted) ? newHeight : newWidth) + doubleAngleBorderSize;
+                var displayHeight = ((isImageProportionsInverted) ? newWidth : newHeight) + doubleAngleBorderSize;
+
                 imageDataContainers.$shadow.animate({
-                    "width": ((isImageProportionsInverted) ? newHeight : newWidth) + doubleAngleBorderSize,
-                    "height": ((isImageProportionsInverted) ? newWidth : newHeight) + doubleAngleBorderSize
+                    "width": displayWidth,
+                    "height": displayHeight
                 }, 200);
+
+                if ((croppingAngles.topRight.getLeft() + angleWidth + angleBorderSize) > displayWidth) {
+                    cropArea.left = angleBorderSize;
+                }
+                if ((croppingAngles.bottomRight.getTop() + angleWidth + angleBorderSize) > displayHeight) {
+                    cropArea.top = angleBorderSize;
+                }
 
                 cropElements.$cropImg.animate({
                     "left": -cropArea.left + angleBorderSize,
