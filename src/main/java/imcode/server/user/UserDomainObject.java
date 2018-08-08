@@ -3,6 +3,7 @@ package imcode.server.user;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.model.UserData;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import imcode.server.Imcms;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.apache.commons.collections4.functors.NotPredicate;
@@ -28,9 +30,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @SuppressWarnings({"unused", "WeakerAccess"})
-public class UserDomainObject implements Cloneable, Serializable {
+public class UserDomainObject extends UserData implements Cloneable, Serializable {
 
     public static final int DEFAULT_USER_ID = 2;
     private static final long serialVersionUID = -9176465092502055012L;
@@ -501,6 +504,36 @@ public class UserDomainObject implements Cloneable, Serializable {
 
     public boolean isAdmin() {
         return isSuperAdmin() || isUserAdmin();
+    }
+
+    @Override
+    public Integer getId() {
+        return id;
+    }
+
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getLogin() {
+        return getLoginName();
+    }
+
+    @Override
+    public void setLogin(String login) {
+        setLoginName(login);
+    }
+
+    @Override
+    public String getEmail() {
+        return getEmailAddress();
+    }
+
+    @Override
+    public void setEmail(String email) {
+        setEmailAddress(email);
     }
 
     /**
