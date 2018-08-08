@@ -302,10 +302,49 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
             superAdmin: {
                 head: 'SuperAdmin',
                 users: {
-                    name: 'Användare'
+                    name: 'Användare',
+                    searchFilter: {
+                        byName: {
+                            text: 'Sök användare',
+                            placeholder: 'Tomt fält visar allt'
+                        },
+                        byRole: {
+                            title: 'Användare med roll'
+                        },
+                        inactiveUsers: 'Inkludera inaktiva användare',
+                        listUsers: 'Lista användare'
+                    },
+                    searchResult: {
+                        title: ' användarna hittades',
+                        id: 'ID',
+                        firstName: 'Förnamn',
+                        lastName: 'Efternamn',
+                        userName: 'Användarnamn',
+                        email: 'E-post',
+                        archived: 'arkiveras'
+                    },
+                    createNewUser: 'Create new user'
                 },
                 roles: {
-                    name: 'Roller'
+                    name: 'Vält',
+                    title: 'Roller administrering',
+                    createNewRole: 'Skapa ny roll',
+                    roleName: 'Rollnamn',
+                    save: 'Spara',
+                    cancel: 'Annullera',
+                    externalRolesInfo: 'Du kan ställa in fjärrroller för att fungera som lokala',
+                    permissions: {
+                        title: 'Rollbehörigheter',
+                        getPasswordByEmail: 'Få lösenord via e-post',
+                        accessToAdminPages: 'Tillgång till admin sidor',
+                        useImagesInImageArchive: 'Använd bilder i bildarkivet',
+                        changeImagesInImageArchive: 'Ändra bilder i bildarkivet'
+                    },
+                    deleteConfirm: 'Vill du verkligen ta bort den här rollen?',
+                    editRole: 'Redigera rollen',
+                    deleteRole: 'Radera rollen',
+                    saveChanges: 'Spara ändringar',
+                    discardChangesMessage: 'Ignorera ändringar?'
                 },
                 ipAccess: {
                     name: 'IP-åtkomst'
