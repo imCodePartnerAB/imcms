@@ -9,7 +9,7 @@ CREATE TABLE `external_to_local_roles_links` (
   external_role_id     varchar(256) not null,
   linked_local_role_id int(11)      not null,
   unique (provider_id, external_role_id, linked_local_role_id),
-  foreign key role_id_fk (linked_local_role_id) references roles (role_id)
+  constraint role_id_fk foreign key (linked_local_role_id) references roles (role_id)
     on delete cascade
 );
 

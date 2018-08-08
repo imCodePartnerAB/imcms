@@ -9,7 +9,7 @@ CREATE TABLE `roles_permissions` (
   access_to_admin_pages          tinyint default '0' not null,
   use_images_in_image_archive    tinyint default '0' not null,
   change_images_in_image_archive tinyint default '0' not null,
-  foreign key role_id_fk (role_id) references roles (role_id)
+  constraint role_id_fk foreign key (role_id) references roles (role_id)
 );
 
 UPDATE database_version
