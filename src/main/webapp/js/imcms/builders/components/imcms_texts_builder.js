@@ -155,6 +155,7 @@ Imcms.define("imcms-texts-builder",
                 return this.textArea.apply(this, arguments).addClass("imcms-field");
             },
             textNumber: function (tag, attributes) {
+                attributes = attributes || {};
                 var id = attributes.id || uuidGenerator.generateUUID(),
                     $input = primitives.imcmsInputText({
                             id: id,

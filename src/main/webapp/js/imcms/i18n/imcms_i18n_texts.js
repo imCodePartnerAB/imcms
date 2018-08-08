@@ -354,7 +354,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 },
                 deleteDocs: {
                     name: 'Radera dokument',
-                    title: 'Ta bort dokument med id'
+                    title: 'Ta bort dokument med id',
+                    deleteConfirmation: 'VARNING: Dokumentet och dess data kommer att raderas. Är du säker?',
+                    deleteDocButton: 'Radera!'
                 },
                 templates: {
                     name: 'Mallar'
@@ -726,7 +728,9 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 },
                 deleteDocs: {
                     name: 'Delete Documents',
-                    title: 'Delete document by id'
+                    title: 'Delete document by id',
+                    deleteConfirmation: 'WARNING: Document and it\'s data will be deleted. Are you sure?',
+                    deleteDocButton: 'Delete!'
                 },
                 templates: {
                     name: 'Templates'

@@ -196,3 +196,15 @@
     padding-top: 12px;
 }
 
+.delete-document-row__input,
+.delete-document-row__confirm {
+    display: inline-block;
+}
+
+.delete-document-row__confirm {
+    margin-left: 15px;
+}
+
+.delete-document-row .imcms-number__error-msg {
+    position: absolute;
+}
