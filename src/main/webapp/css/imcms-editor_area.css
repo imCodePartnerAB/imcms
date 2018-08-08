@@ -59,7 +59,7 @@
     position: absolute;
     top: 5px;
     right: 5px;
-    z-index: 100001;
+    z-index: 1001;
 }
 
 .imcms-editor-area__control-edit {
