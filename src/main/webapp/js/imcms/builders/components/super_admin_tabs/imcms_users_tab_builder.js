@@ -27,9 +27,9 @@ Imcms.define(
             }
 
             function buildUsersRoleFilter() {
-                $usersFilterSelect = components.selects.multipleSelect("<div>", {
-                    id: "users-role-filter",
-                    name: "users-role-filter",
+                $usersFilterSelect = components.selects.multipleSelect('<div>', {
+                    id: 'users-role-filter',
+                    name: 'users-role-filter',
                     text: texts.searchFilter.byRole.title
                 });
 

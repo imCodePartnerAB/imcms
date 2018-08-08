@@ -202,7 +202,7 @@ Imcms.define(
                                         });
 
                                         return $rolesSelect = components.selects.multipleSelect(
-                                            "<div>", {}, rolesDataMapped
+                                            '<div>', {}, rolesDataMapped
                                         );
                                     }
 
