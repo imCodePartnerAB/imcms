@@ -31,11 +31,9 @@ Imcms.define(
             }
         };
 
-        (function () {
-            rolesRestApi.read().success(function (roles) {
-                roleLoader.runCallbacks(roles);
-            });
-        })();
+        rolesRestApi.read().success(function (roles) {
+            roleLoader.runCallbacks(roles);
+        });
 
         var $rolesContainer;
 
