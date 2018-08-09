@@ -224,7 +224,7 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
             tabData.$currentVersionRowBlock.css("display", imcms.isVersioningAllowed ? "block" : "none");
             tabData.$hasNewerVersionInfoBlock.css("display", displayRule);
-            tabData.$savingVersionInfo.find("#document-next-version").html(+document.currentVersion.id + 1);
+            tabData.$savingVersionInfo.find("#document-next-version").html(+document.latestVersion.id + 1);
             tabData.$docStatusSelect.selectValue(document.publicationStatus);
 
             statusRowsNames.forEach(function (rowName) {
@@ -233,9 +233,9 @@ Imcms.define("imcms-life-cycle-tab-builder",
 
             tabData.$publisherSelect.selectValue(document.published.id);
 
-            tabData.$currentVersionNumber.setValue(document.currentVersion.id);
-            tabData.$docVersionSaveDateTime.setDate(document.currentVersion.date)
-                .setTime(document.currentVersion.time);
+            tabData.$currentVersionNumber.setValue(document.latestVersion.id);
+            tabData.$docVersionSaveDateTime.setDate(document.latestVersion.date)
+                .setTime(document.latestVersion.time);
         };
         LifeCycleTab.prototype.saveData = function (documentDTO) {
             documentDTO.publicationStatus = tabData.$docStatusSelect.getSelectedValue();

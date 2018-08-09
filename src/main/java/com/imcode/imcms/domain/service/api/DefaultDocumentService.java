@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DeleterByDocumentId;
@@ -93,7 +94,13 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
                 docId, workingVersion.getNo()
         );
-        return documentMapping.apply(metaRepository.findOne(docId), workingVersion, commonContents);
+        final DocumentDTO documentDTO = documentMapping.apply(
+                metaRepository.findOne(docId), workingVersion, commonContents
+        );
+
+        documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
+
+        return documentDTO;
     }
 
     @Override

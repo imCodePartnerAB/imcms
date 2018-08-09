@@ -400,13 +400,7 @@ class MappingConfig {
             dto.setCreated(auditDtoCreator.apply(meta::getCreatorId, meta::getCreatedDatetime));
             dto.setModified(auditDtoCreator.apply(meta::getModifierId, meta::getModifiedDatetime));
             dto.setDisabledLanguageShowMode(meta.getDisabledLanguageShowMode());
-
-            final AuditDTO versionAudit = new AuditDTO();
-            versionAudit.setDateTime(latestVersion.getCreatedDt());
-            versionAudit.setId(latestVersion.getNo());
-            versionAudit.setBy(latestVersion.getModifiedBy().getLogin());
-
-            dto.setCurrentVersion(versionAudit);
+            dto.setCurrentVersion(AuditDTO.fromVersion(latestVersion));
             dto.setSearchDisabled(meta.isSearchDisabled());
             dto.setKeywords(meta.getKeywords());
             dto.setRoleIdToPermission(meta.getRoleIdToPermission());

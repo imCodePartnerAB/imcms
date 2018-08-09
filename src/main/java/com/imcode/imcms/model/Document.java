@@ -39,6 +39,7 @@ public abstract class Document implements Serializable {
         setCreated(from.getCreated());
         setDisabledLanguageShowMode(from.getDisabledLanguageShowMode());
         setCurrentVersion(from.getCurrentVersion());
+        setLatestVersion(from.getLatestVersion());
         setKeywords(from.getKeywords());
         setSearchDisabled(from.isSearchDisabled());
         setCategories(from.getCategories());
@@ -97,6 +98,10 @@ public abstract class Document implements Serializable {
     public abstract AuditDTO getCurrentVersion();
 
     public abstract void setCurrentVersion(AuditDTO currentVersion);
+
+    public abstract AuditDTO getLatestVersion();
+
+    public abstract void setLatestVersion(AuditDTO latestVersion);
 
     public abstract Set<String> getKeywords();
 

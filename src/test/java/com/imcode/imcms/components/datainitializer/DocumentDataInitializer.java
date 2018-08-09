@@ -1,5 +1,6 @@
 package com.imcode.imcms.components.datainitializer;
 
+import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -65,7 +66,10 @@ public class DocumentDataInitializer extends TestDataCleaner {
         final int versionIndex = version.getNo();
         final List<CommonContent> commonContents = commonContentDataInitializer.createData(docId, versionIndex);
 
-        return metaToDocumentDTO.apply(metaDoc, version, commonContents);
+        final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDoc, version, commonContents);
+        documentDTO.setLatestVersion(AuditDTO.fromVersion(version));
+
+        return documentDTO;
     }
 
     protected DocumentDTO createData(Meta.DocumentType type) {

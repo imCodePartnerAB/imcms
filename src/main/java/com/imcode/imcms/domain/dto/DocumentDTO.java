@@ -44,6 +44,7 @@ public class DocumentDTO extends Document implements Cloneable {
     private AuditDTO created;
     private Meta.DisabledLanguageShowMode disabledLanguageShowMode;
     private AuditDTO currentVersion;
+    private AuditDTO latestVersion;
     private Set<String> keywords;
     private boolean searchDisabled;
     private Set<CategoryDTO> categories;
