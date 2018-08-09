@@ -79,7 +79,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                 imageService,
                 loopService,
                 commonContentService,
-                versionService
         };
     }
 

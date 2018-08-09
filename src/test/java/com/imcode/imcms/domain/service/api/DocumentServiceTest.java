@@ -580,6 +580,7 @@ public class DocumentServiceTest {
         assertEquals(documentDTO.getId(), docId);
 
         documentService.deleteByDocId(docId);
+        metaRepository.flush();
 
         Assertions.assertThrows(DocumentNotExistException.class, () -> documentService.get(docId));
     }
@@ -638,6 +639,7 @@ public class DocumentServiceTest {
         menuService.saveFrom(menuDTO);
 
         documentService.deleteByDocId(documentDTO.getId());
+        metaRepository.flush();
 
         Assertions.assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
     }

@@ -143,6 +143,7 @@ public class UrlDocumentServiceTest {
         assertNotNull(urlDocumentService.get(savedDocId));
 
         urlDocumentService.deleteByDocId(savedDocId);
+        metaRepository.flush();
         urlDocumentService.get(savedDocId);
     }
 
@@ -153,6 +154,7 @@ public class UrlDocumentServiceTest {
         assertEquals(1, documentUrlRepository.findAll().size());
 
         urlDocumentService.deleteByDocId(savedDocId);
+        metaRepository.flush();
 
         assertEquals(0, documentUrlRepository.findAll().size());
     }
