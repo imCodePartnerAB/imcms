@@ -56,7 +56,7 @@ public class TemplateMapper {
     }
 
     public void addTemplateToGroup(TemplateDomainObject template, TemplateGroupDomainObject templateGroup) {
-        database.execute(new SqlUpdateCommand("INSERT INTO templates_cref (group_id,template_name) VALUES(?,?)",
+        database.execute(new SqlUpdateCommand("INSERT INTO imcms_template_group_crossref (group_id,template_name) VALUES(?,?)",
                 new Object[]{templateGroup.getId(), template.getName()}));
     }
 
@@ -110,7 +110,7 @@ public class TemplateMapper {
      */
     public void deleteTemplate(TemplateDomainObject template) {
 
-        database.execute(new SqlUpdateCommand("delete from templates_cref where template_name = ?", new String[]{template.getName()}));
+        database.execute(new SqlUpdateCommand("delete from imcms_template_group_crossref where template_name = ?", new String[]{template.getName()}));
         database.execute(new SqlUpdateCommand("delete from template where template_name = ?", new String[]{template.getName()}));
 
         // test if template exists and delete it
@@ -126,9 +126,9 @@ public class TemplateMapper {
 
     public void deleteTemplateGroup(int grp_id) {
         final Object[] parameters1 = new String[]{"" + grp_id};
-        database.execute(new SqlUpdateCommand("delete from templates_cref where group_id = ?", parameters1));
+        database.execute(new SqlUpdateCommand("delete from imcms_template_group_crossref where group_id = ?", parameters1));
         final Object[] parameters = new String[]{"" + grp_id};
-        database.execute(new SqlUpdateCommand("delete from templategroups where group_id = ?", parameters));
+        database.execute(new SqlUpdateCommand("delete from imcms_template_group where group_id = ?", parameters));
     }
 
     public TemplateGroupDomainObject[] getAllTemplateGroups() {
@@ -147,7 +147,7 @@ public class TemplateMapper {
 
     public Set<Integer> getAllTemplateGroupIds() {
         return database.execute(new SqlQueryCommand<>(
-                "SELECT group_id FROM templategroups",
+                "SELECT group_id FROM imcms_template_group",
                 null,
                 new CollectionHandler<>(new HashSet<>(), new IntRowTransformer())
         ));
@@ -240,7 +240,7 @@ public class TemplateMapper {
     }
 
     public TemplateGroupDomainObject getTemplateGroupById(int templateGroupId) {
-        String sqlStr = "SELECT group_id,group_name FROM templategroups WHERE group_id = ?";
+        String sqlStr = "SELECT group_id,group_name FROM imcms_template_group WHERE group_id = ?";
         final Object[] parameters = new String[]{"" + templateGroupId};
         String[] queryResult = database.execute(new SqlQueryCommand<>(sqlStr, parameters, Utility.STRING_ARRAY_HANDLER));
 
@@ -250,7 +250,7 @@ public class TemplateMapper {
     public TemplateGroupDomainObject getTemplateGroupByName(String name) {
         final Object[] parameters = new String[]{name};
         String[] sqlResultRow = database.execute(new SqlQueryCommand<>(
-                "select group_id, group_name from templategroups where group_name = ?",
+                "select group_id, group_name from imcms_template_group where group_name = ?",
                 parameters,
                 Utility.STRING_ARRAY_HANDLER
         ));
@@ -312,7 +312,7 @@ public class TemplateMapper {
     }
 
     public void removeTemplateFromGroup(TemplateDomainObject template, TemplateGroupDomainObject templateGroup) {
-        database.execute(new SqlUpdateCommand("DELETE FROM templates_cref WHERE group_id = ? AND template_name = ?",
+        database.execute(new SqlUpdateCommand("DELETE FROM imcms_template_group_crossref WHERE group_id = ? AND template_name = ?",
                 new String[]{"" + templateGroup.getId(), template.getName()}));
     }
 
@@ -354,7 +354,7 @@ public class TemplateMapper {
     }
 
     public void renameTemplateGroup(TemplateGroupDomainObject templateGroup, String newName) {
-        String sqlStr = "update templategroups\n"
+        String sqlStr = "update imcms_template_group\n"
                 + "set group_name = ?\n"
                 + "where group_id = ?\n";
         final Object[] parameters = new String[]{newName, "" + templateGroup.getId()};
@@ -406,7 +406,7 @@ public class TemplateMapper {
     }
 
     public void createTemplateGroup(String name) {
-        database.execute(new InsertIntoTableDatabaseCommand("templategroups", new Object[][]{
+        database.execute(new InsertIntoTableDatabaseCommand("imcms_template_group", new Object[][]{
                 {"group_name", name},
         }));
     }
