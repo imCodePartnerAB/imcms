@@ -20,7 +20,7 @@ Imcms.define(
             modal.buildModalWindow(texts.deleteConfirmation, function (confirm) {
                 if (!confirm) return;
 
-                docs.remove({id: $inputBlock.getInput().val()})
+                docs.remove($inputBlock.getInput().val())
                     .success(function () {
                         $inputBlock.getInput().val('')
                     })
