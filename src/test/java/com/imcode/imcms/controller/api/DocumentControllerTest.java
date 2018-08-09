@@ -7,8 +7,6 @@ import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UberDocumentDTO;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.apache.commons.lang3.NotImplementedException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,8 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.RequestBuilder;
 
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentControllerTest extends MockingControllerTest {
@@ -91,20 +90,13 @@ class DocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void delete_When_DeletingDisabled_Expect_NotImplementedException() {
+    void delete_When_DeletingDisabled_Expect_DeleteMethodCalledWithCorrectDocId() {
+        final int docId = 42;
         final UberDocumentDTO deleteMe = new UberDocumentDTO();
+        deleteMe.setId(docId);
 
-        final RequestBuilder requestBuilder = delete(CONTROLLER_PATH)
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(deleteMe));
+        perform(delete(CONTROLLER_PATH + '/' + docId)).andExpect(status().isOk());
 
-        Assertions.assertThrows(NotImplementedException.class, () -> {
-            try {
-                perform(requestBuilder);
-
-            } catch (Exception e) {
-                throw e.getCause(); // real cause
-            }
-        });
+        then(documentService).should().deleteByDocId(docId);
     }
 }

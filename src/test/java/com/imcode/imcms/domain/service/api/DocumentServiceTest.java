@@ -61,6 +61,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -569,14 +570,21 @@ public class DocumentServiceTest {
         assertEquals(documentDTO1, documentDTO);
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void deleteById_Expect_DocumentNotExistExceptionAfterDeletion() {
-        final int docId = createdDoc.getId();
+        final Integer docId = createdDoc.getId();
+
+        final DocumentDTO documentDTO = documentService.get(docId);
+
+        assertNotNull(documentDTO);
+        assertEquals(documentDTO.getId(), docId);
+
         documentService.deleteByDocId(docId);
-        documentService.get(docId);
+
+        Assertions.assertThrows(DocumentNotExistException.class, () -> documentService.get(docId));
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void delete_When_UserAdminAndDocExistWithContent_Expect_DocumentNotExistExceptionAfterDeletion() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
@@ -631,7 +639,7 @@ public class DocumentServiceTest {
 
         documentService.deleteByDocId(documentDTO.getId());
 
-        documentService.get(createdDocId);
+        Assertions.assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
     }
 
     @Test
@@ -649,9 +657,6 @@ public class DocumentServiceTest {
 
         //get language from image to not use repo.
         createText(index, image.getLanguage(), workingVersion);
-
-        //already created with doc
-        //commonContentDataInitializer.createData(workingVersion);
 
         //invoke test
 
@@ -723,9 +728,6 @@ public class DocumentServiceTest {
 
         //get language from image to not use repo.
         createText(index, image.getLanguage(), workingVersion);
-
-        //already created with doc
-        //commonContentDataInitializer.createData(workingVersion);
 
         //invoke test
 
