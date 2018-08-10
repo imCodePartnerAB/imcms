@@ -72,11 +72,11 @@ ${"-->"}
         </c:choose>
 
         <c:if test="${not empty imgPath}">
-            ${pre}
+            <c:if test="${not empty pre}">${pre}</c:if>
             <a${href}>
                 <img src="${contextPath}${imgPath}"${alignClass}${style}${alt}/>
             </a>
-            ${post}
+            <c:if test="${not empty post}">${post}</c:if>
         </c:if>
     </c:set>
 
