@@ -62,20 +62,22 @@ ${"-->"}
             <c:otherwise>
                 <c:choose>
                     <c:when test="${fn:startsWith(image.linkUrl, '//') || fn:startsWith(image.linkUrl, 'http')}">
-                        <c:set var="href" value="${'href=\"'.concat(image.linkUrl).concat('\"')}"/>
+                        <c:set var="href" value="${' href=\"'.concat(image.linkUrl).concat('\"')}"/>
                     </c:when>
                     <c:otherwise>
-                        <c:set var="href" value="${'href=\"'.concat('//').concat(image.linkUrl).concat('\"')}"/>
+                        <c:set var="href" value="${' href=\"'.concat('//').concat(image.linkUrl).concat('\"')}"/>
                     </c:otherwise>
                 </c:choose>
             </c:otherwise>
         </c:choose>
 
-        ${pre}
-        <a ${href}>
-            <img src="${empty imgPath ? '' : contextPath}${imgPath}"${alignClass}${style}${alt}/>
-        </a>
-        ${post}
+        <c:if test="${not empty imgPath}">
+            ${pre}
+            <a${href}>
+                <img src="${contextPath}${imgPath}"${alignClass}${style}${alt}/>
+            </a>
+            ${post}
+        </c:if>
     </c:set>
 
     <c:choose>
