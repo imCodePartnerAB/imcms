@@ -24,7 +24,7 @@ ${"-->"}
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
 
-<c:if test="${!isDocNew || editOptions.editImage}">
+<c:if test="${editOptions.editImage}">
     <c:if test="${empty index}">
         <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
     </c:if>
@@ -71,13 +71,11 @@ ${"-->"}
             </c:otherwise>
         </c:choose>
 
-        <c:if test="${not empty imgPath}">
-            <c:if test="${not empty pre}">${pre}</c:if>
-            <a${href}>
-                <img src="${contextPath}${imgPath}"${alignClass}${style}${alt}/>
-            </a>
-            <c:if test="${not empty post}">${post}</c:if>
-        </c:if>
+        ${pre}
+        <a${href}>
+            <img src="${empty imgPath ? '' : contextPath}${imgPath}"${alignClass}${style}${alt}/>
+        </a>
+        ${post}
     </c:set>
 
     <c:choose>
@@ -96,7 +94,7 @@ ${"-->"}
             </div>
         </c:when>
         <c:otherwise>
-            ${imageContent}
+            <c:if test="${not empty imgPath}">${imageContent}</c:if>
         </c:otherwise>
     </c:choose>
 </c:if>
