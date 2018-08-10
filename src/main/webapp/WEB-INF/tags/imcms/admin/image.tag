@@ -24,7 +24,7 @@ ${"-->"}
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
 
-<c:if test="${editOptions.editImage}">
+<c:if test="${!isDocNew || editOptions.editImage}">
     <c:if test="${empty index}">
         <c:set var="index" value="${no}"/><%-- old attribute "no" support --%>
     </c:if>
