@@ -86,6 +86,18 @@ Imcms.define("imcms-text-editor-initializer",
             delete editor.buttons.save.text;
         }
 
+        function onEditorFocus() {
+            $('.' + ACTIVE_EDIT_AREA_CLASS).removeClass(ACTIVE_EDIT_AREA_CLASS)
+                .find('.mce-edit-focus')
+                .removeClass('mce-edit-focus');
+
+            $(this).closest(".imcms-editor-area--text").addClass(ACTIVE_EDIT_AREA_CLASS)
+        }
+
+        function setEditorFocus($editor) {
+            $editor.focus(onEditorFocus)
+        }
+
         function setEditorFocusOnEditControlClick(editor) {
             editor.$()
                 .parents('.imcms-editor-area--text')
@@ -132,6 +144,7 @@ Imcms.define("imcms-text-editor-initializer",
 
         function prepareEditor(editor) {
             clearSaveBtnText(editor);
+            setEditorFocus($(editor.$()));
             setEditorFocusOnEditControlClick(editor);
             showEditButton($(editor.$()));
             initSaveContentConfirmation(editor);
@@ -140,16 +153,14 @@ Imcms.define("imcms-text-editor-initializer",
         function toggleFocusEditArea(e) {
             var $activeTextArea = $("." + ACTIVE_EDIT_AREA_CLASS);
 
-            if ($activeTextArea.find(".mce-edit-focus").length) {
-                return;
-            }
+            if (!$activeTextArea.length) return;
 
-            var $closestTextArea = $(e.target).closest(".imcms-editor-area--text");
-            $activeTextArea.removeClass(ACTIVE_EDIT_AREA_CLASS);
+            var $target = $(e.target);
+            if ($target.closest("." + ACTIVE_EDIT_AREA_CLASS).length) return;
 
-            if ($closestTextArea.length && $closestTextArea.find(".mce-edit-focus").length) {
-                $closestTextArea.addClass(ACTIVE_EDIT_AREA_CLASS);
-            }
+            $activeTextArea.removeClass(ACTIVE_EDIT_AREA_CLASS)
+                .find('.mce-edit-focus')
+                .removeClass('mce-edit-focus');
         }
 
         $(document).click(toggleFocusEditArea);
@@ -167,20 +178,6 @@ Imcms.define("imcms-text-editor-initializer",
                     .click(function () {
                         $textEditor[0].focus();
                     })
-            }
-
-            function setContentFocus($textEditor) {
-                var $parent = $textEditor.parent();
-
-                $textEditor.focus(function () {
-                    $textEditor.addClass('mce-edit-focus');
-                    $parent.addClass(ACTIVE_EDIT_AREA_CLASS)
-                });
-
-                $textEditor.blur(function () {
-                    $textEditor.removeClass('mce-edit-focus');
-                    $parent.removeClass(ACTIVE_EDIT_AREA_CLASS)
-                });
             }
 
             function buildTextHistoryButton($textEditor) {
@@ -215,7 +212,7 @@ Imcms.define("imcms-text-editor-initializer",
 
             setContentEditable($textEditor);
             focusEditorOnControlClick($textEditor);
-            setContentFocus($textEditor);
+            setEditorFocus($textEditor);
             buildToolbar($textEditor);
         }
 
