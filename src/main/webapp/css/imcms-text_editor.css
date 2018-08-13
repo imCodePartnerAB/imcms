@@ -126,6 +126,10 @@
     width: 100% !important;
 }
 
+.imcms-editor-content--text:focus {
+    outline: 1px dotted #333;
+}
+
 .imcms-editor-content--text.mce-content-body > * {
     margin: 0;
 }

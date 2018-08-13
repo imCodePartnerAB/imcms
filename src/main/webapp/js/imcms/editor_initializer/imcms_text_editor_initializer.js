@@ -47,6 +47,7 @@ Imcms.define("imcms-text-editor-initializer",
             content_css: imcms.contextPath + '/css/imcms-text_editor.css',
             menubar: false,
             statusbar: false,
+            forced_root_block: false,
             init_instance_callback: prepareEditor,
             save_onsavecallback: saveContent,
             setup: function (editor) {
@@ -61,29 +62,23 @@ Imcms.define("imcms-text-editor-initializer",
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
             toolbar: 'code | bold italic underline | bullist numlist | hr |'
-            + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
-            + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
-            + ' | save ' + discardChangesPlugin.pluginName
+                + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
+                + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
+                + ' | save ' + discardChangesPlugin.pluginName
         }, commonConfig);
 
         var textFormatEditorConfig = $.extend({
-            forced_root_block: '',
-            force_p_newlines: false,
-            force_br_newlines: false,
             paste_as_text: true,
             plugins: [fullScreenPlugin.pluginName + ' save paste'],
             toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
-            + ' | save ' + discardChangesPlugin.pluginName
+                + ' | save ' + discardChangesPlugin.pluginName
         }, commonConfig);
 
         var htmlFormatEditorConfig = $.extend({
-            forced_root_block: '',
-            force_p_newlines: false,
-            force_br_newlines: false,
             paste_as_text: true,
             plugins: [fullScreenPlugin.pluginName + ' save paste'],
             toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
-            + ' | save ' + discardChangesPlugin.pluginName
+                + ' | save ' + discardChangesPlugin.pluginName
         }, commonConfig);
 
         function clearSaveBtnText(editor) {
@@ -158,31 +153,50 @@ Imcms.define("imcms-text-editor-initializer",
 
         $(document).click(toggleFocusEditArea);
 
-        function initTextEditor() {
-            var toolbarId = uuidGenerator.generateUUID();
-            var textAreaId = uuidGenerator.generateUUID();
+        function initPlainTextEditor($textEditor) {
+            $textEditor.attr('contenteditable', 'true')
+                .attr('spellcheck', 'false')
+                .attr('tabindex', '1');
 
+            $textEditor.parent()
+                .find('.imcms-editor-area__control-wrap')
+                .click(function () {
+                    $textEditor[0].focus();
+                })
+        }
+
+        function initHtmlEditor() {
+            // todo: implement
+        }
+
+        function initTinyMCEEditor() {
+
+        }
+
+        function initTextEditor() {
             var $textEditor = $(this);
             var type = $textEditor.data("type");
-
-            $textEditor.attr("id", textAreaId)
-                .closest(".imcms-editor-area--text")
-                .find(".imcms-editor-area__text-toolbar")
-                .attr("id", toolbarId);
 
             var config;
 
             switch (type) {
                 case 'TEXT':
-                    config = textFormatEditorConfig;
-                    break;
+                    return initPlainTextEditor($textEditor);
                 case 'HTML':
                 case 'CLEAN_HTML':
-                    config = htmlFormatEditorConfig;
+                    config = htmlFormatEditorConfig; // return initHtmlEditor();
                     break;
                 default:
-                    config = inlineEditorConfig;
+                    config = inlineEditorConfig; // return initTinyMCEEditor();
             }
+
+            var toolbarId = uuidGenerator.generateUUID();
+            var textAreaId = uuidGenerator.generateUUID();
+
+            $textEditor.attr("id", textAreaId)
+                .closest(".imcms-editor-area--text")
+                .find(".imcms-editor-area__text-toolbar")
+                .attr("id", toolbarId);
 
             var editorConfig = $.extend({
                 selector: "#" + textAreaId,
