@@ -7,8 +7,8 @@
  */
 Imcms.define(
     "imcms-text-history-plugin",
-    ["imcms-text-history-window-builder", "jquery"],
-    function (textHistoryBuilder, $) {
+    ["imcms-text-history-window-builder", "jquery", 'imcms-bem-builder'],
+    function (textHistoryBuilder, $, BEM) {
         return {
             pluginName: 'text_history',
             initTextHistory: function (editor) {
@@ -23,6 +23,23 @@ Imcms.define(
                         textHistoryBuilder.buildTextHistory(textDTO);
                     }
                 });
+            },
+            buildPlainTextHistoryButton: function ($textEditor) {
+                return new BEM({
+                    block: 'text-history-button',
+                    elements: {
+                        'icon': $('<div>', {
+                            'class': 'text-toolbar__icon'
+                        })
+                    }
+                }).buildBlockStructure('<div>', {
+                    class: 'text-toolbar__button',
+                    click: function () {
+                        var textDTO = $textEditor.data();
+                        console.log(textDTO);
+                        textHistoryBuilder.buildTextHistory(textDTO);
+                    }
+                })
             }
         };
     }

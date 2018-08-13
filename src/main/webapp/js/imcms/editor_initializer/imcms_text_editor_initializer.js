@@ -9,10 +9,10 @@ Imcms.define("imcms-text-editor-initializer",
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
         "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
         "imcms-modal-window-builder", "imcms-text-full-screen-plugin", "imcms-text-discard-changes-plugin",
-        'imcms-bem-builder'
+        'imcms-text-editor'
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
-              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin, BEM) {
+              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin, textEditor) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -158,9 +158,13 @@ Imcms.define("imcms-text-editor-initializer",
             var $target = $(e.target);
             if ($target.closest("." + ACTIVE_EDIT_AREA_CLASS).length) return;
 
+            if ($target.closest('.text-history').length) return;
+
             $activeTextArea.removeClass(ACTIVE_EDIT_AREA_CLASS)
                 .find('.mce-edit-focus')
                 .removeClass('mce-edit-focus');
+
+            textEditor.setActiveTextEditor(false);
         }
 
         $(document).click(toggleFocusEditArea);
@@ -180,29 +184,13 @@ Imcms.define("imcms-text-editor-initializer",
                     })
             }
 
-            function buildTextHistoryButton($textEditor) {
-                return new BEM({
-                    block: 'text-history-button',
-                    elements: {
-                        'icon': $('<div>', {
-                            'class': 'text-toolbar__icon'
-                        })
-                    }
-                }).buildBlockStructure('<div>', {
-                    class: 'text-toolbar__button',
-                    click: function () {
-                        alert('text history')
-                    }
-                })
-            }
-
             function buildToolbar($textEditor) {
                 var $toolbarWrapper = $('<div>', {
                     'class': 'text-toolbar-wrapper'
                 });
 
                 $toolbarWrapper.append([
-                    buildTextHistoryButton($textEditor)
+                    textHistory.buildPlainTextHistoryButton($textEditor)
                 ]);
 
                 $textEditor.parent()
@@ -210,11 +198,38 @@ Imcms.define("imcms-text-editor-initializer",
                     .append($toolbarWrapper);
             }
 
+            function wrapAsTextEditor($textEditor) {
+                var TextEditor = function ($textEditor) {
+                    this.$editor = $textEditor;
+                    this.dirty = false;
+                };
+
+                TextEditor.prototype.setContent = function (content) {
+                    this.$editor.html(content)
+                };
+
+                TextEditor.prototype.setDirty = function (isDirty) {
+                    this.dirty = isDirty;
+                };
+
+                TextEditor.prototype.isDirty = function () {
+                    return this.dirty;
+                };
+
+                return new TextEditor($textEditor);
+            }
+
             setContentEditable($textEditor);
             focusEditorOnControlClick($textEditor);
             setEditorFocus($textEditor);
             buildToolbar($textEditor);
             showEditButton($textEditor);
+
+            var activeTextEditor = wrapAsTextEditor($textEditor);
+
+            $textEditor.focus(function () {
+                textEditor.setActiveTextEditor(activeTextEditor)
+            });
         }
 
         function initHtmlEditor() {

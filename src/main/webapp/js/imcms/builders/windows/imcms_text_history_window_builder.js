@@ -9,9 +9,9 @@
 Imcms.define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
-        "imcms-texts-history-rest-api", "tinyMCE", "imcms-events"
+        "imcms-texts-history-rest-api", "tinyMCE", "imcms-events", 'imcms-text-editor'
     ],
-    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, tinyMCE, events) {
+    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, tinyMCE, events, textEditor) {
 
         var $historyListContainer, $textHistoryView;
         texts = texts.textHistory;
@@ -20,8 +20,9 @@ Imcms.define("imcms-text-history-window-builder",
             var textButton = textHistoryWindowBuilder.$editor.find(".view-text-button")[0];
             viewText.call(textButton);
 
-            tinyMCE.activeEditor.setContent($textHistoryView.html());
-            tinyMCE.activeEditor.setDirty(true);
+            var activeTextEditor = textEditor.getActiveTextEditor();
+            activeTextEditor.setContent($textHistoryView.html());
+            activeTextEditor.setDirty(true);
             textHistoryWindowBuilder.closeWindow();
         }
 
