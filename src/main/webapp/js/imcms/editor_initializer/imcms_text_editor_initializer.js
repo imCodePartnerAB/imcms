@@ -132,13 +132,14 @@ Imcms.define("imcms-text-editor-initializer",
 
         var blurEnabled = true;
 
+        events.on("disable text editor blur", function () {
+            blurEnabled = false;
+        });
+        events.on("enable text editor blur", function () {
+            blurEnabled = true;
+        });
+
         function initSaveContentConfirmation(editor) {
-            events.on("disable text editor blur", function () {
-                blurEnabled = false;
-            });
-            events.on("enable text editor blur", function () {
-                blurEnabled = true;
-            });
             editor.on('blur', onEditorBlur);
         }
 
@@ -190,6 +191,11 @@ Imcms.define("imcms-text-editor-initializer",
 
                     saveContent(activeTextEditor);
                     $saveButton.addClass('text-toolbar__button--disabled');
+
+                    activeTextEditor.$()
+                        .parent()
+                        .find('.text-editor-discard-changes-button')
+                        .addClass('text-toolbar__button--disabled');
                 };
 
                 var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
@@ -201,7 +207,9 @@ Imcms.define("imcms-text-editor-initializer",
                 return $saveButton
             }
 
-            function buildToolbar($textEditor, activeTextEditor) {
+            function buildToolbar(activeTextEditor) {
+                var $textEditor = activeTextEditor.$();
+
                 var $toolbarWrapper = $('<div>', {
                     'class': 'text-toolbar-wrapper'
                 });
@@ -209,7 +217,8 @@ Imcms.define("imcms-text-editor-initializer",
                 $toolbarWrapper.append([
                     textHistory.buildPlainTextHistoryButton($textEditor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(activeTextEditor)
+                    buildSaveButton(activeTextEditor),
+                    discardChangesPlugin.buildPlainTextButton(activeTextEditor)
                 ]);
 
                 $textEditor.parent()
@@ -255,12 +264,15 @@ Imcms.define("imcms-text-editor-initializer",
 
             focusEditorOnControlClick($textEditor);
             setEditorFocus($textEditor);
-            buildToolbar($textEditor, activeTextEditor);
+            buildToolbar(activeTextEditor);
             showEditButton($textEditor);
 
             $textEditor.focus(function () {
                 textEditor.setActiveTextEditor(activeTextEditor)
             });
+
+            $textEditor.blur(function () {
+            })
         }
 
         function initHtmlEditor() {

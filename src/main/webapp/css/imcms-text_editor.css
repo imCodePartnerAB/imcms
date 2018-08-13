@@ -96,6 +96,10 @@
     background: url("../images_new/text_editor/ic_fullscreen.png") no-repeat center;
 }
 
+.imcms-editor-area__text-toolbar .text-editor-discard-changes-button__icon {
+    background: url("../images_new/text_editor/ic_cancel.png") no-repeat center;
+}
+
 .text-editor-save-button__icon {
     background: url("../images_new/text_editor/ic_save.png") no-repeat center;
 }

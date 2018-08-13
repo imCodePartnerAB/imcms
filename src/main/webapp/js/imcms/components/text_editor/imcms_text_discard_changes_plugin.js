@@ -4,12 +4,15 @@
  */
 Imcms.define(
     "imcms-text-discard-changes-plugin",
-    ["imcms-modal-window-builder", "tinyMCE", "imcms-events"],
-    function (modalWindowBuilder, tinyMCE, events) {
+    ["imcms-modal-window-builder", "tinyMCE", "imcms-events", 'imcms-text-editor-toolbar-button-builder'],
+    function (modalWindowBuilder, tinyMCE, events, toolbarButtonBuilder) {
+
+        var title = 'Discard changes'; // todo: localize!
+        var discardChangesMessage = "Discard changes?"; // todo: localize!
 
         function onDiscardChangesClick() {
             events.trigger("disable text editor blur");
-            modalWindowBuilder.buildModalWindow("Discard changes?", function (isDiscard) {
+            modalWindowBuilder.buildModalWindow(discardChangesMessage, function (isDiscard) {
                 if (isDiscard) {
                     /** @namespace tinyMCE.activeEditor.startContent */
                     /** @namespace tinyMCE.activeEditor.bodyElement */
@@ -39,7 +42,7 @@ Imcms.define(
 
                 editor.addButton(this.pluginName, {
                     icon: 'imcms-discard-changes-icon',
-                    tooltip: 'Discard changes',
+                    tooltip: title,
                     onclick: onDiscardChangesClick,
                     onPostRender: setEnablingStrategy
                 });
@@ -51,7 +54,34 @@ Imcms.define(
 
                     events.trigger(eventName);
                 });
+            },
+            buildPlainTextButton: function (activeTextEditor) {
+                var $btn;
+
+                activeTextEditor.$().on('DOMSubtreeModified', function () {
+                    $btn.removeClass('text-toolbar__button--disabled');
+                });
+
+                var onClick = function () {
+                    modalWindowBuilder.buildModalWindow(discardChangesMessage, function (isDiscard) {
+                        if (!isDiscard) return;
+
+                        activeTextEditor.setContent(activeTextEditor.startContent);
+                        activeTextEditor.setDirty(false);
+
+                        activeTextEditor.$()
+                            .parent()
+                            .find('.text-editor-save-button')
+                            .addClass('text-toolbar__button--disabled');
+
+                        $btn.addClass('text-toolbar__button--disabled');
+                    });
+                };
+
+                return $btn = toolbarButtonBuilder.buildButton(
+                    'text-editor-discard-changes-button', title, onClick, true
+                )
             }
-        };
+        }
     }
 );
