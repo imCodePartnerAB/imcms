@@ -7,14 +7,17 @@
  */
 Imcms.define(
     "imcms-text-history-plugin",
-    ["imcms-text-history-window-builder", "jquery", 'imcms-bem-builder'],
-    function (textHistoryBuilder, $, BEM) {
+    ["imcms-text-history-window-builder", "jquery", 'imcms-text-editor-toolbar-button-builder'],
+    function (textHistoryBuilder, $, toolbarButtonBuilder) {
+
+        var title = 'Show text history'; // todo: localize!
+
         return {
             pluginName: 'text_history',
             initTextHistory: function (editor) {
                 editor.addButton(this.pluginName, {
                     icon: 'imcms-text-history-icon',
-                    tooltip: 'Show text history',
+                    tooltip: title,
                     onclick: function () {
                         var textDTO = $(this.$el).parents(".imcms-editor-area--text")
                             .find(".imcms-editor-content--text")
@@ -25,20 +28,9 @@ Imcms.define(
                 });
             },
             buildPlainTextHistoryButton: function ($textEditor) {
-                return new BEM({
-                    block: 'text-history-button',
-                    elements: {
-                        'icon': $('<div>', {
-                            'class': 'text-toolbar__icon'
-                        })
-                    }
-                }).buildBlockStructure('<div>', {
-                    class: 'text-toolbar__button',
-                    title: 'Show text history',
-                    click: function () {
-                        var textDTO = $textEditor.data();
-                        textHistoryBuilder.buildTextHistory(textDTO);
-                    }
+                return toolbarButtonBuilder.buildButton('text-history-button', title, function () {
+                    var textDTO = $textEditor.data();
+                    textHistoryBuilder.buildTextHistory(textDTO);
                 })
             }
         };

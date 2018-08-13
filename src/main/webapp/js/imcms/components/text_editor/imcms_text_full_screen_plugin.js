@@ -4,8 +4,10 @@
  */
 Imcms.define(
     "imcms-text-full-screen-plugin",
-    ["jquery", "tinyMCE", "imcms-admin-panel-state", "imcms", 'imcms-bem-builder'],
-    function ($, tinyMCE, adminPanelState, imcms, BEM) {
+    ["jquery", "tinyMCE", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder'],
+    function ($, tinyMCE, adminPanelState, imcms, toolbarButtonBuilder) {
+
+        var title = 'Fullscreen'; // todo: localize!
 
         function setEnablingStrategy() {
             if (imcms.textEditorFullScreenEnabled) {
@@ -48,29 +50,18 @@ Imcms.define(
                     editor.addButton(name, {
                         icon: 'fullscreen',
                         cmd: 'mceFullscreen',
-                        title: 'Fullscreen',
+                        title: title,
                         onPostRender: setEnablingStrategy
                     });
                 });
             },
             buildPlainTextEditorButton: function ($textEditor) {
-                return new BEM({
-                    block: 'text-editor-fullscreen-button',
-                    elements: {
-                        'icon': $('<div>', {
-                            'class': 'text-toolbar__icon'
-                        })
-                    }
-                }).buildBlockStructure('<div>', {
-                    class: 'text-toolbar__button',
-                    title: 'Fullscreen',
-                    click: function () {
-                        $textEditor.parent()
-                            .find('.imcms-editor-area__text-toolbar')
-                            .toggleClass('mce-fullscreen-toolbar');
+                return toolbarButtonBuilder.buildButton('text-editor-fullscreen-button', title, function () {
+                    $textEditor.parent()
+                        .find('.imcms-editor-area__text-toolbar')
+                        .toggleClass('mce-fullscreen-toolbar');
 
-                        $textEditor.toggleClass('imcms-mce-fullscreen-inline');
-                    }
+                    $textEditor.toggleClass('imcms-mce-fullscreen-inline');
                 })
             }
         };

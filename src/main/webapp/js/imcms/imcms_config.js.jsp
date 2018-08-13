@@ -102,6 +102,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             "imcms-text-full-screen-plugin": "components/text_editor/imcms_text_full_screen_plugin.js",
             "imcms-text-discard-changes-plugin": "components/text_editor/imcms_text_discard_changes_plugin.js",
             'imcms-text-editor': 'components/text_editor/imcms_text_editor.js',
+            'imcms-text-editor-toolbar-button-builder': 'components/text_editor/imcms_text_editor_toolbar_button_builder.js',
             //  </text editor components>
             // <components>
             // editors initializer
