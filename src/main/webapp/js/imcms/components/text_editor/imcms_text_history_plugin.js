@@ -34,6 +34,7 @@ Imcms.define(
                     }
                 }).buildBlockStructure('<div>', {
                     class: 'text-toolbar__button',
+                    title: 'Show text history',
                     click: function () {
                         var textDTO = $textEditor.data();
                         textHistoryBuilder.buildTextHistory(textDTO);
