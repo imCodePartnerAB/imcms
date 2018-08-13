@@ -154,14 +154,21 @@ Imcms.define("imcms-text-editor-initializer",
         $(document).click(toggleFocusEditArea);
 
         function initPlainTextEditor($textEditor) {
-            $textEditor.attr('contenteditable', 'true')
-                .attr('spellcheck', 'false');
+            function setContentEditable($textEditor) {
+                $textEditor.attr('contenteditable', 'true')
+                    .attr('spellcheck', 'false')
+            }
 
-            $textEditor.parent()
-                .find('.imcms-editor-area__control-wrap')
-                .click(function () {
-                    $textEditor[0].focus();
-                })
+            function focusEditorOnControlClick($textEditor) {
+                $textEditor.parent()
+                    .find('.imcms-editor-area__control-wrap')
+                    .click(function () {
+                        $textEditor[0].focus();
+                    })
+            }
+
+            setContentEditable($textEditor);
+            focusEditorOnControlClick($textEditor);
         }
 
         function initHtmlEditor() {
