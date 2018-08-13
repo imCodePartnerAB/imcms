@@ -214,6 +214,7 @@ Imcms.define("imcms-text-editor-initializer",
             focusEditorOnControlClick($textEditor);
             setEditorFocus($textEditor);
             buildToolbar($textEditor);
+            showEditButton($textEditor);
         }
 
         function initHtmlEditor() {
