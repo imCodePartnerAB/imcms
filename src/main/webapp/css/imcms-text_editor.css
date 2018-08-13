@@ -1,3 +1,4 @@
+.imcms-editor-area__text-toolbar .text-toolbar-wrapper,
 .mce-tinymce.mce-tinymce-inline.mce-container.mce-panel {
     border: 2px solid rgba(0, 149, 217, 0.58) !important; /* this should be important, inline styles need to be overwritten */
     border-bottom-width: 1px !important; /* this should be important, inline styles need to be overwritten */
@@ -9,9 +10,31 @@
     float: left;
 }
 
+.imcms-editor-area__text-toolbar {
+    border-radius: 5px 5px 0 0;
+}
+
 .imcms-editor-area__text-toolbar,
 .imcms-editor-area__text-toolbar [class^="mce"] {
     padding: 0;
+}
+
+.imcms-editor-area__text-toolbar .text-toolbar__button {
+    display: inline-block;
+    width: 24px;
+}
+
+.imcms-editor-area__text-toolbar .text-toolbar__button .text-toolbar__icon {
+    height: 20px;
+}
+
+.text-toolbar-wrapper {
+    background-color: white;
+    display: none;
+}
+
+.imcms-editor-area--active .text-toolbar-wrapper {
+    display: block;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-imcms-image--in-text-editor-icon {
@@ -51,9 +74,10 @@
     background-size: 16px;
 }
 
+.imcms-editor-area__text-toolbar .text-history-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-text-history-icon {
     padding-top: 2px;
-    background: url("../images_new/text_editor/text_history.png") no-repeat;
+    background: url("../images_new/text_editor/text_history.png") no-repeat center;
     background-size: 16px;
 }
 

@@ -8,10 +8,11 @@ Imcms.define("imcms-text-editor-initializer",
     [
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
         "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
-        "imcms-modal-window-builder", "imcms-text-full-screen-plugin", "imcms-text-discard-changes-plugin"
+        "imcms-modal-window-builder", "imcms-text-full-screen-plugin", "imcms-text-discard-changes-plugin",
+        'imcms-bem-builder'
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
-              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin) {
+              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin, BEM) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -154,6 +155,7 @@ Imcms.define("imcms-text-editor-initializer",
         $(document).click(toggleFocusEditArea);
 
         function initPlainTextEditor($textEditor) {
+
             function setContentEditable($textEditor) {
                 $textEditor.attr('contenteditable', 'true')
                     .attr('spellcheck', 'false')
@@ -167,8 +169,54 @@ Imcms.define("imcms-text-editor-initializer",
                     })
             }
 
+            function setContentFocus($textEditor) {
+                var $parent = $textEditor.parent();
+
+                $textEditor.focus(function () {
+                    $textEditor.addClass('mce-edit-focus');
+                    $parent.addClass(ACTIVE_EDIT_AREA_CLASS)
+                });
+
+                $textEditor.blur(function () {
+                    $textEditor.removeClass('mce-edit-focus');
+                    $parent.removeClass(ACTIVE_EDIT_AREA_CLASS)
+                });
+            }
+
+            function buildTextHistoryButton($textEditor) {
+                return new BEM({
+                    block: 'text-history-button',
+                    elements: {
+                        'icon': $('<div>', {
+                            'class': 'text-toolbar__icon'
+                        })
+                    }
+                }).buildBlockStructure('<div>', {
+                    class: 'text-toolbar__button',
+                    click: function () {
+                        alert('text history')
+                    }
+                })
+            }
+
+            function buildToolbar($textEditor) {
+                var $toolbarWrapper = $('<div>', {
+                    'class': 'text-toolbar-wrapper'
+                });
+
+                $toolbarWrapper.append([
+                    buildTextHistoryButton($textEditor)
+                ]);
+
+                $textEditor.parent()
+                    .find('.imcms-editor-area__text-toolbar')
+                    .append($toolbarWrapper);
+            }
+
             setContentEditable($textEditor);
             focusEditorOnControlClick($textEditor);
+            setContentFocus($textEditor);
+            buildToolbar($textEditor);
         }
 
         function initHtmlEditor() {
