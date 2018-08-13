@@ -4,8 +4,8 @@
  */
 Imcms.define(
     "imcms-text-full-screen-plugin",
-    ["jquery", "tinyMCE", "imcms-admin-panel-state", "imcms"],
-    function ($, tinyMCE, adminPanelState, imcms) {
+    ["jquery", "tinyMCE", "imcms-admin-panel-state", "imcms", 'imcms-bem-builder'],
+    function ($, tinyMCE, adminPanelState, imcms, BEM) {
 
         function setEnablingStrategy() {
             if (imcms.textEditorFullScreenEnabled) {
@@ -52,6 +52,26 @@ Imcms.define(
                         onPostRender: setEnablingStrategy
                     });
                 });
+            },
+            buildPlainTextEditorButton: function ($textEditor) {
+                return new BEM({
+                    block: 'text-editor-fullscreen-button',
+                    elements: {
+                        'icon': $('<div>', {
+                            'class': 'text-toolbar__icon'
+                        })
+                    }
+                }).buildBlockStructure('<div>', {
+                    class: 'text-toolbar__button',
+                    title: 'Fullscreen',
+                    click: function () {
+                        $textEditor.parent()
+                            .find('.imcms-editor-area__text-toolbar')
+                            .toggleClass('mce-fullscreen-toolbar');
+
+                        $textEditor.toggleClass('imcms-mce-fullscreen-inline');
+                    }
+                })
             }
         };
     }

@@ -25,7 +25,9 @@
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .text-toolbar__icon {
+    padding-top: 2px;
     height: 20px;
+    background-size: 16px;
 }
 
 .text-toolbar-wrapper {
@@ -84,6 +86,10 @@
     padding-top: 2px;
     background: url("../images_new/text_editor/ic_cancel.png") no-repeat;
     background-size: 16px;
+}
+
+.text-editor-fullscreen-button__icon {
+    background: url("../images_new/text_editor/ic_fullscreen.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .text-history-button__icon,

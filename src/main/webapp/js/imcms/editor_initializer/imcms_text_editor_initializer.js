@@ -190,7 +190,8 @@ Imcms.define("imcms-text-editor-initializer",
                 });
 
                 $toolbarWrapper.append([
-                    textHistory.buildPlainTextHistoryButton($textEditor)
+                    textHistory.buildPlainTextHistoryButton($textEditor),
+                    fullScreenPlugin.buildPlainTextEditorButton($textEditor)
                 ]);
 
                 $textEditor.parent()
