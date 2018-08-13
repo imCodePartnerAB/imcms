@@ -155,8 +155,7 @@ Imcms.define("imcms-text-editor-initializer",
 
         function initPlainTextEditor($textEditor) {
             $textEditor.attr('contenteditable', 'true')
-                .attr('spellcheck', 'false')
-                .attr('tabindex', '1');
+                .attr('spellcheck', 'false');
 
             $textEditor.parent()
                 .find('.imcms-editor-area__control-wrap')
