@@ -31,6 +31,18 @@
 .text-toolbar-wrapper {
     background-color: white;
     display: none;
+    padding-top: 1px;
+    padding-left: 1px;
+    height: 25px;
+}
+
+.text-toolbar__button {
+    border: 1px solid transparent;
+}
+
+.text-toolbar__button:hover {
+    background-color: #f2f2f2;
+    border-color: #ccc;
 }
 
 .imcms-editor-area--active .text-toolbar-wrapper {
