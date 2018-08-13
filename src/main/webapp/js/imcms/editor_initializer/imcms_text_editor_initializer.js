@@ -9,10 +9,10 @@ Imcms.define("imcms-text-editor-initializer",
         "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
         "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
         "imcms-modal-window-builder", "imcms-text-full-screen-plugin", "imcms-text-discard-changes-plugin",
-        'imcms-text-editor'
+        'imcms-text-editor', 'imcms-text-editor-toolbar-button-builder'
     ],
     function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
-              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin, textEditor) {
+              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin, textEditor, toolbarButtonBuilder) {
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
@@ -184,14 +184,21 @@ Imcms.define("imcms-text-editor-initializer",
                     })
             }
 
-            function buildToolbar($textEditor) {
+            function buildSaveButton(activeTextEditor) {
+                return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', function () {
+                    saveContent(activeTextEditor);
+                })
+            }
+
+            function buildToolbar($textEditor, activeTextEditor) {
                 var $toolbarWrapper = $('<div>', {
                     'class': 'text-toolbar-wrapper'
                 });
 
                 $toolbarWrapper.append([
                     textHistory.buildPlainTextHistoryButton($textEditor),
-                    fullScreenPlugin.buildPlainTextEditorButton($textEditor)
+                    fullScreenPlugin.buildPlainTextEditorButton($textEditor),
+                    buildSaveButton(activeTextEditor)
                 ]);
 
                 $textEditor.parent()
@@ -203,30 +210,37 @@ Imcms.define("imcms-text-editor-initializer",
                 var TextEditor = function ($textEditor) {
                     this.$editor = $textEditor;
                     this.dirty = false;
+                    this.startContent = $textEditor.html();
                 };
 
-                TextEditor.prototype.setContent = function (content) {
-                    this.$editor.html(content)
-                };
-
-                TextEditor.prototype.setDirty = function (isDirty) {
-                    this.dirty = isDirty;
-                };
-
-                TextEditor.prototype.isDirty = function () {
-                    return this.dirty;
+                TextEditor.prototype = {
+                    $: function () {
+                        return this.$editor
+                    },
+                    setContent: function (content) {
+                        this.$editor.html(content)
+                    },
+                    getContent: function () {
+                        return this.$editor.html()
+                    },
+                    setDirty: function (isDirty) {
+                        this.dirty = isDirty;
+                    },
+                    isDirty: function () {
+                        return this.dirty;
+                    }
                 };
 
                 return new TextEditor($textEditor);
             }
 
+            var activeTextEditor = wrapAsTextEditor($textEditor);
+
             setContentEditable($textEditor);
             focusEditorOnControlClick($textEditor);
             setEditorFocus($textEditor);
-            buildToolbar($textEditor);
+            buildToolbar($textEditor, activeTextEditor);
             showEditButton($textEditor);
-
-            var activeTextEditor = wrapAsTextEditor($textEditor);
 
             $textEditor.focus(function () {
                 textEditor.setActiveTextEditor(activeTextEditor)

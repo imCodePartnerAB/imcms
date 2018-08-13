@@ -92,6 +92,10 @@
     background: url("../images_new/text_editor/ic_fullscreen.png") no-repeat center;
 }
 
+.text-editor-save-button__icon {
+    background: url("../images_new/text_editor/ic_save.png") no-repeat center;
+}
+
 .imcms-editor-area__text-toolbar .text-history-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-text-history-icon {
     padding-top: 2px;
