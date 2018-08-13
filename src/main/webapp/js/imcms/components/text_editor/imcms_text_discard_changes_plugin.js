@@ -68,13 +68,6 @@ Imcms.define(
 
                         activeTextEditor.setContent(activeTextEditor.startContent);
                         activeTextEditor.setDirty(false);
-
-                        activeTextEditor.$()
-                            .parent()
-                            .find('.text-editor-save-button')
-                            .addClass('text-toolbar__button--disabled');
-
-                        $btn.addClass('text-toolbar__button--disabled');
                     });
                 };
 

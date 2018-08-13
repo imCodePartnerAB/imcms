@@ -68,13 +68,6 @@ Imcms.define("imcms-text-editor-initializer",
                 + ' | save ' + discardChangesPlugin.pluginName
         }, commonConfig);
 
-        var textFormatEditorConfig = $.extend({
-            paste_as_text: true,
-            plugins: [fullScreenPlugin.pluginName + ' save paste'],
-            toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
-                + ' | save ' + discardChangesPlugin.pluginName
-        }, commonConfig);
-
         var htmlFormatEditorConfig = $.extend({
             paste_as_text: true,
             plugins: [fullScreenPlugin.pluginName + ' save paste'],
@@ -188,14 +181,7 @@ Imcms.define("imcms-text-editor-initializer",
             function buildSaveButton(activeTextEditor) {
                 var onClick = function () {
                     if (!activeTextEditor.isDirty()) return;
-
                     saveContent(activeTextEditor);
-                    $saveButton.addClass('text-toolbar__button--disabled');
-
-                    activeTextEditor.$()
-                        .parent()
-                        .find('.text-editor-discard-changes-button')
-                        .addClass('text-toolbar__button--disabled');
                 };
 
                 var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
@@ -242,16 +228,33 @@ Imcms.define("imcms-text-editor-initializer",
                         return this.$editor
                     },
                     setContent: function (content) {
-                        this.$editor.html(content)
+                        this.$editor.html(content);
+                        this.setDirty(true);
                     },
                     getContent: function () {
                         return this.$editor.html()
                     },
                     setDirty: function (isDirty) {
                         this.dirty = isDirty;
+
+                        var $parent = this.$editor.parent();
+                        var $discard = $parent.find('.text-editor-discard-changes-button');
+                        var $save = $parent.find('.text-editor-save-button');
+
+                        if (isDirty) {
+                            $discard.removeClass('text-toolbar__button--disabled');
+                            $save.removeClass('text-toolbar__button--disabled');
+
+                        } else {
+                            $discard.addClass('text-toolbar__button--disabled');
+                            $save.addClass('text-toolbar__button--disabled');
+                        }
                     },
                     isDirty: function () {
                         return this.dirty;
+                    },
+                    triggerBlur: function () {
+                        onEditorBlur({target: this})
                     }
                 };
 
@@ -270,9 +273,6 @@ Imcms.define("imcms-text-editor-initializer",
             $textEditor.focus(function () {
                 textEditor.setActiveTextEditor(activeTextEditor)
             });
-
-            $textEditor.blur(function () {
-            })
         }
 
         function initHtmlEditor() {
