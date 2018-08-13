@@ -36,7 +36,6 @@ Imcms.define(
                     class: 'text-toolbar__button',
                     click: function () {
                         var textDTO = $textEditor.data();
-                        console.log(textDTO);
                         textHistoryBuilder.buildTextHistory(textDTO);
                     }
                 })
