@@ -185,9 +185,20 @@ Imcms.define("imcms-text-editor-initializer",
             }
 
             function buildSaveButton(activeTextEditor) {
-                return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', function () {
+                var onClick = function () {
+                    if (!activeTextEditor.isDirty()) return;
+
                     saveContent(activeTextEditor);
-                })
+                    $saveButton.addClass('text-toolbar__button--disabled');
+                };
+
+                var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
+
+                activeTextEditor.$().on('DOMSubtreeModified', function () {
+                    $saveButton.removeClass('text-toolbar__button--disabled');
+                });
+
+                return $saveButton
             }
 
             function buildToolbar($textEditor, activeTextEditor) {
@@ -211,6 +222,10 @@ Imcms.define("imcms-text-editor-initializer",
                     this.$editor = $textEditor;
                     this.dirty = false;
                     this.startContent = $textEditor.html();
+
+                    this.$editor.on('DOMSubtreeModified', function () {
+                        this.dirty = true;
+                    }.bind(this));
                 };
 
                 TextEditor.prototype = {
@@ -234,9 +249,10 @@ Imcms.define("imcms-text-editor-initializer",
                 return new TextEditor($textEditor);
             }
 
+            setContentEditable($textEditor);
+
             var activeTextEditor = wrapAsTextEditor($textEditor);
 
-            setContentEditable($textEditor);
             focusEditorOnControlClick($textEditor);
             setEditorFocus($textEditor);
             buildToolbar($textEditor, activeTextEditor);

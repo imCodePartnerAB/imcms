@@ -24,6 +24,10 @@
     width: 24px;
 }
 
+.imcms-editor-area__text-toolbar .text-toolbar__button--disabled {
+    opacity: .4;
+}
+
 .imcms-editor-area__text-toolbar .text-toolbar__button .text-toolbar__icon {
     padding-top: 2px;
     height: 20px;

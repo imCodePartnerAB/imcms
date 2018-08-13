@@ -4,7 +4,7 @@
  */
 Imcms.define('imcms-text-editor-toolbar-button-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
     return {
-        buildButton: function (blockName, title, onClick) {
+        buildButton: function (blockName, title, onClick, isDisabled) {
             return new BEM({
                 block: blockName,
                 elements: {
@@ -13,7 +13,7 @@ Imcms.define('imcms-text-editor-toolbar-button-builder', ['imcms-bem-builder', '
                     })
                 }
             }).buildBlockStructure('<div>', {
-                class: 'text-toolbar__button',
+                class: 'text-toolbar__button' + (isDisabled ? ' text-toolbar__button--disabled' : ''),
                 title: title,
                 click: onClick
             })
