@@ -110,6 +110,11 @@
     background-size: 16px;
 }
 
+.imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-valid-icon,
+.imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-invalid-icon {
+    background-size: 20px;
+}
+
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-icon {
     background: url("../images_new/text_editor/ic_w3c.png") no-repeat center;
