@@ -20,9 +20,6 @@ Imcms.define("imcms-text-editor-initializer",
             textDTO.text = editor.getContent();
 
             if (textDTO.type === "HTML" || textDTO.type === "CLEAN_HTML") {
-                if (textDTO.text.startsWith("<p>") && textDTO.text.endsWith("</p>")) {
-                    textDTO.text = textDTO.text.substring(3, textDTO.text.length - 4);
-                }
                 textDTO.text = textDTO.text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
             }
 
@@ -44,7 +41,6 @@ Imcms.define("imcms-text-editor-initializer",
             inline: true,
             inline_boundaries: false,
             toolbar_items_size: 'small',
-            content_css: imcms.contextPath + '/css/imcms-text_editor.css',
             menubar: false,
             statusbar: false,
             forced_root_block: false,
@@ -64,13 +60,6 @@ Imcms.define("imcms-text-editor-initializer",
             toolbar: 'code | bold italic underline | bullist numlist | hr |'
                 + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
                 + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
-                + ' | save ' + discardChangesPlugin.pluginName
-        }, commonConfig);
-
-        var htmlFormatEditorConfig = $.extend({
-            paste_as_text: true,
-            plugins: [fullScreenPlugin.pluginName + ' save paste'],
-            toolbar: textHistory.pluginName + ' ' + textValidation.pluginName + ' | ' + fullScreenPlugin.pluginName
                 + ' | save ' + discardChangesPlugin.pluginName
         }, commonConfig);
 
@@ -164,9 +153,12 @@ Imcms.define("imcms-text-editor-initializer",
 
         function initPlainTextEditor($textEditor) {
 
-            function setContentEditable($textEditor) {
-                $textEditor.attr('contenteditable', 'true')
-                    .attr('spellcheck', 'false')
+            function setRows($textEditor) {
+                var rows = $textEditor.attr('data-rows');
+
+                if (rows) {
+                    $textEditor.attr('rows', rows);
+                }
             }
 
             function focusEditorOnControlClick($textEditor) {
@@ -185,7 +177,7 @@ Imcms.define("imcms-text-editor-initializer",
 
                 var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
 
-                activeTextEditor.$().on('DOMSubtreeModified', function () {
+                activeTextEditor.$().on('change keyup paste', function () {
                     $saveButton.removeClass('text-toolbar__button--disabled');
                 });
 
@@ -215,9 +207,9 @@ Imcms.define("imcms-text-editor-initializer",
                 var TextEditor = function ($textEditor) {
                     this.$editor = $textEditor;
                     this.dirty = false;
-                    this.startContent = $textEditor.html();
+                    this.startContent = $textEditor.val();
 
-                    this.$editor.on('DOMSubtreeModified', function () {
+                    this.$editor.on('change keyup paste', function () {
                         this.dirty = true;
                     }.bind(this));
                 };
@@ -227,11 +219,11 @@ Imcms.define("imcms-text-editor-initializer",
                         return this.$editor
                     },
                     setContent: function (content) {
-                        this.$editor.html(content);
+                        this.$editor.val(content);
                         this.setDirty(true);
                     },
                     getContent: function () {
-                        return this.$editor.html()
+                        return this.$editor.val()
                     },
                     setDirty: function (isDirty) {
                         this.dirty = isDirty;
@@ -260,7 +252,8 @@ Imcms.define("imcms-text-editor-initializer",
                 return new TextEditor($textEditor);
             }
 
-            setContentEditable($textEditor);
+            // setContentEditable($textEditor);
+            setRows($textEditor);
 
             var activeTextEditor = wrapAsTextEditor($textEditor);
 
@@ -274,8 +267,8 @@ Imcms.define("imcms-text-editor-initializer",
             });
         }
 
-        function initHtmlEditor() {
-            // todo: implement
+        function initHtmlEditor($textEditor) {
+            initPlainTextEditor($textEditor)
         }
 
         function initTinyMCEEditor() {
@@ -293,8 +286,7 @@ Imcms.define("imcms-text-editor-initializer",
                     return initPlainTextEditor($textEditor);
                 case 'HTML':
                 case 'CLEAN_HTML':
-                    config = htmlFormatEditorConfig; // return initHtmlEditor();
-                    break;
+                    return initHtmlEditor($textEditor);
                 default:
                     config = inlineEditorConfig; // return initTinyMCEEditor();
             }

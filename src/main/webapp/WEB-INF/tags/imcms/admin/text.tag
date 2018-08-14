@@ -36,6 +36,9 @@ ${"-->"}
                 data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
         </c:set>
 
+        <c:set var="tag">textarea</c:set>
+        <c:if test="${empty formats}"><c:set var="tag">div</c:set></c:if>
+
         <c:if test="${'html'.equalsIgnoreCase(formats) or 'cleanhtml'.equalsIgnoreCase(formats)}">
             <c:if test="${'html'.equalsIgnoreCase(formats)}">
                 <c:set var="format" value="HTML"/>
@@ -62,9 +65,10 @@ ${"-->"}
             </c:if>
             <div class="imcms-editor-area__text-toolbar"></div>
                 ${pre}
-            <div class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
+            <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
                  data-doc-id="${targetDocId}"
-                 data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}</div>
+            data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}</
+        ${tag}>
                 ${post}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">

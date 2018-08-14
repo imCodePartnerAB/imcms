@@ -55,7 +55,7 @@ Imcms.define(
             buildPlainTextButton: function (activeTextEditor) {
                 var $btn;
 
-                activeTextEditor.$().on('DOMSubtreeModified', function () {
+                activeTextEditor.$().on('change keyup paste', function () {
                     $btn.removeClass('text-toolbar__button--disabled');
                 });
 
