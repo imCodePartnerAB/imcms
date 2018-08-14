@@ -6,11 +6,11 @@
  */
 Imcms.define(
     "imcms-text-validation-plugin",
-    ["imcms-texts-validation-rest-api", "imcms-text-validation-result-builder", "tinyMCE", "jquery"],
-    function (textValidationAPI, textValidationBuilder, tinyMCE, $) {
+    ["imcms-texts-validation-rest-api", "imcms-text-validation-result-builder", "jquery", 'imcms-text-editor'],
+    function (textValidationAPI, textValidationBuilder, $, textEditor) {
 
         var onTextValidationClick = function () {
-            var content = tinyMCE.activeEditor.getContent();
+            var content = textEditor.getActiveTextEditor().getContent();
             var $icon = $(this.$el).find(".mce-ico")
                 .removeAttr("class")
                 .attr("class", "mce-ico mce-i-imcms-w3c-text-validation-processing-icon");

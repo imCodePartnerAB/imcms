@@ -1,5 +1,3 @@
-/** @namespace tinyMCE.activeEditor.setContent */
-/** @namespace tinyMCE.activeEditor.setDirty */
 /**
  * Text history window builder in text editor.
  *
@@ -9,9 +7,9 @@
 Imcms.define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
-        "imcms-texts-history-rest-api", "tinyMCE", "imcms-events", 'imcms-text-editor'
+        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor'
     ],
-    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, tinyMCE, events, textEditor) {
+    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditor) {
 
         var $historyListContainer, $textHistoryView;
         texts = texts.textHistory;

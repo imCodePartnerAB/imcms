@@ -3,7 +3,6 @@
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 08.02.18
- * @namespace tinyMCE.activeEditor.getContent
  */
 Imcms.define(
     "imcms-text-history-plugin",

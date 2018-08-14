@@ -14,9 +14,6 @@ Imcms.define(
             events.trigger("disable text editor blur");
             modalWindowBuilder.buildModalWindow(discardChangesMessage, function (isDiscard) {
                 if (isDiscard) {
-                    /** @namespace tinyMCE.activeEditor.startContent */
-                    /** @namespace tinyMCE.activeEditor.bodyElement */
-                    // tinyMCE.activeEditor.bodyElement.innerHTML = tinyMCE.activeEditor.startContent;
                     tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.startContent);
                     tinyMCE.activeEditor.save();
                 }
