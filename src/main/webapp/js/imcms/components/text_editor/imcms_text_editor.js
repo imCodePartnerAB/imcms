@@ -11,7 +11,7 @@ Imcms.define('imcms-text-editor', ['tinyMCE'], function (tinyMCE) {
             return activeEditor || tinyMCE.activeEditor;
         },
         setActiveTextEditor: function (activeTextEditor) {
-            if (activeEditor && (activeTextEditor !== activeEditor)) {
+            if (activeEditor && (activeTextEditor !== activeEditor) && activeEditor.triggerBlur) {
                 activeEditor.triggerBlur();
             }
 
