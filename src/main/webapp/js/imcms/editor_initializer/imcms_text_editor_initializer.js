@@ -15,6 +15,71 @@ Imcms.define("imcms-text-editor-initializer",
 
         var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
 
+        function focusEditorOnControlClick($textEditor) {
+            $textEditor.parent()
+                .find('.imcms-editor-area__control-wrap')
+                .click(function () {
+                    $textEditor[0].focus();
+                })
+        }
+
+        function autoGrow() {
+            this.style.cssText = 'height:auto';
+            this.style.cssText = 'height:' + this.scrollHeight + 'px';
+        }
+
+        var TextEditor = function ($textEditor) {
+            autoGrow.call($textEditor[0]);
+            $textEditor.on('keydown', autoGrow);
+
+            this.$editor = $textEditor;
+            this.dirty = false;
+            this.startContent = $textEditor.val();
+
+            this.$editor.on('change keyup paste', function () {
+                this.dirty = true;
+            }.bind(this));
+
+            focusEditorOnControlClick($textEditor);
+            setEditorFocus(this);
+            showEditButton($textEditor);
+        };
+
+        TextEditor.prototype = {
+            $: function () {
+                return this.$editor
+            },
+            setContent: function (content) {
+                this.$editor.val(content);
+                this.setDirty(true);
+            },
+            getContent: function () {
+                return this.$editor.val()
+            },
+            setDirty: function (isDirty) {
+                this.dirty = isDirty;
+
+                var $parent = this.$editor.parent();
+                var $discard = $parent.find('.text-editor-discard-changes-button');
+                var $save = $parent.find('.text-editor-save-button');
+
+                if (isDirty) {
+                    $discard.removeClass('text-toolbar__button--disabled');
+                    $save.removeClass('text-toolbar__button--disabled');
+
+                } else {
+                    $discard.addClass('text-toolbar__button--disabled');
+                    $save.addClass('text-toolbar__button--disabled');
+                }
+            },
+            isDirty: function () {
+                return this.dirty;
+            },
+            triggerBlur: function () {
+                onEditorBlur({target: this})
+            }
+        };
+
         function saveContent(editor) {
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
@@ -142,8 +207,8 @@ Imcms.define("imcms-text-editor-initializer",
             if (!$activeTextArea.length) return;
 
             var $target = $(e.target);
-            if ($target.closest("." + ACTIVE_EDIT_AREA_CLASS).length) return;
 
+            if ($target.closest("." + ACTIVE_EDIT_AREA_CLASS).length) return;
             if ($target.closest('.text-history').length) return;
 
             $activeTextArea.removeClass(ACTIVE_EDIT_AREA_CLASS)
@@ -155,131 +220,53 @@ Imcms.define("imcms-text-editor-initializer",
 
         $(document).click(toggleFocusEditArea);
 
-        function initPlainTextEditor($textEditor) {
+        function buildSaveButton(activeTextEditor) {
+            var onClick = function () {
+                if (activeTextEditor.isDirty()) saveContent(activeTextEditor);
+            };
 
-            function autoGrow() {
-                var el = this;
+            var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
 
-                setTimeout(function () {
-                    el.style.cssText = 'height:auto';
-                    el.style.cssText = 'height:' + el.scrollHeight + 'px';
-                });
-            }
+            activeTextEditor.$().on('change keyup paste', function () {
+                $saveButton.removeClass('text-toolbar__button--disabled');
+            });
 
-            autoGrow.call($textEditor[0]);
-            $textEditor.on('keydown', autoGrow);
+            return $saveButton
+        }
 
-            function setRows($textEditor) {
-                var rows = $textEditor.attr('data-rows');
+        function buildToolbar($textEditor, buttons$) {
+            var $toolbarWrapper = $('<div>', {
+                'class': 'text-toolbar-wrapper'
+            });
 
-                if (rows) {
-                    $textEditor.attr('rows', rows);
-                }
-            }
+            $toolbarWrapper.append(buttons$);
 
-            function focusEditorOnControlClick($textEditor) {
-                $textEditor.parent()
-                    .find('.imcms-editor-area__control-wrap')
-                    .click(function () {
-                        $textEditor[0].focus();
-                    })
-            }
-
-            function buildSaveButton(activeTextEditor) {
-                var onClick = function () {
-                    if (!activeTextEditor.isDirty()) return;
-                    saveContent(activeTextEditor);
-                };
-
-                var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
-
-                activeTextEditor.$().on('change keyup paste', function () {
-                    $saveButton.removeClass('text-toolbar__button--disabled');
-                });
-
-                return $saveButton
-            }
-
-            function buildToolbar(activeTextEditor) {
-                var $textEditor = activeTextEditor.$();
-
-                var $toolbarWrapper = $('<div>', {
-                    'class': 'text-toolbar-wrapper'
-                });
-
-                $toolbarWrapper.append([
-                    textHistory.buildPlainTextHistoryButton($textEditor),
-                    fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(activeTextEditor),
-                    discardChangesPlugin.buildPlainTextButton(activeTextEditor)
-                ]);
-
-                $textEditor.parent()
-                    .find('.imcms-editor-area__text-toolbar')
-                    .append($toolbarWrapper);
-            }
-
-            function wrapAsTextEditor($textEditor) {
-                var TextEditor = function ($textEditor) {
-                    this.$editor = $textEditor;
-                    this.dirty = false;
-                    this.startContent = $textEditor.val();
-
-                    this.$editor.on('change keyup paste', function () {
-                        this.dirty = true;
-                    }.bind(this));
-                };
-
-                TextEditor.prototype = {
-                    $: function () {
-                        return this.$editor
-                    },
-                    setContent: function (content) {
-                        this.$editor.val(content);
-                        this.setDirty(true);
-                    },
-                    getContent: function () {
-                        return this.$editor.val()
-                    },
-                    setDirty: function (isDirty) {
-                        this.dirty = isDirty;
-
-                        var $parent = this.$editor.parent();
-                        var $discard = $parent.find('.text-editor-discard-changes-button');
-                        var $save = $parent.find('.text-editor-save-button');
-
-                        if (isDirty) {
-                            $discard.removeClass('text-toolbar__button--disabled');
-                            $save.removeClass('text-toolbar__button--disabled');
-
-                        } else {
-                            $discard.addClass('text-toolbar__button--disabled');
-                            $save.addClass('text-toolbar__button--disabled');
-                        }
-                    },
-                    isDirty: function () {
-                        return this.dirty;
-                    },
-                    triggerBlur: function () {
-                        onEditorBlur({target: this})
-                    }
-                };
-
-                return new TextEditor($textEditor);
-            }
-
-            setRows($textEditor);
-
-            var activeTextEditor = wrapAsTextEditor($textEditor);
-
-            focusEditorOnControlClick($textEditor);
-            setEditorFocus(activeTextEditor);
-            buildToolbar(activeTextEditor);
-            showEditButton($textEditor);
+            $textEditor.parent()
+                .find('.imcms-editor-area__text-toolbar')
+                .append($toolbarWrapper);
         }
 
         function initHtmlEditor($textEditor) {
-            initPlainTextEditor($textEditor)
+            var activeTextEditor = new TextEditor($textEditor);
+
+            buildToolbar($textEditor, [
+                textHistory.buildPlainTextHistoryButton($textEditor),
+                textValidation.buildHtmlValidationButton(activeTextEditor),
+                fullScreenPlugin.buildPlainTextEditorButton($textEditor),
+                buildSaveButton(activeTextEditor),
+                discardChangesPlugin.buildPlainTextButton(activeTextEditor)
+            ]);
+        }
+
+        function initPlainTextEditor($textEditor) {
+            var activeTextEditor = new TextEditor($textEditor);
+
+            buildToolbar($textEditor, [
+                textHistory.buildPlainTextHistoryButton($textEditor),
+                fullScreenPlugin.buildPlainTextEditorButton($textEditor),
+                buildSaveButton(activeTextEditor),
+                discardChangesPlugin.buildPlainTextButton(activeTextEditor)
+            ]);
         }
 
         function initTinyMCEEditor() {
