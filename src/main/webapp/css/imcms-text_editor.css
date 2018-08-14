@@ -61,16 +61,19 @@
     padding-top: 2px;
 }
 
+.imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-processing-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-processing-icon {
-    background: url("../images_new/text_editor/ic_loader.gif") no-repeat;
+    background: url("../images_new/text_editor/ic_loader.gif") no-repeat center;
 }
 
+.imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-valid-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-valid-icon {
-    background: url("../images_new/text_editor/ic_valid.png") no-repeat;
+    background: url("../images_new/text_editor/ic_valid.png") no-repeat center;
 }
 
+.imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-invalid-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-invalid-icon {
-    background: url("../images_new/text_editor/ic_invalid.png") no-repeat;
+    background: url("../images_new/text_editor/ic_invalid.png") no-repeat center;
 }
 
 .text-editor-fullscreen-button__icon {
