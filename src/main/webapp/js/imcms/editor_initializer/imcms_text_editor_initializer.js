@@ -71,16 +71,16 @@ Imcms.define("imcms-text-editor-initializer",
             delete editor.buttons.save.text;
         }
 
-        function onEditorFocus() {
-            $('.' + ACTIVE_EDIT_AREA_CLASS).removeClass(ACTIVE_EDIT_AREA_CLASS)
-                .find('.mce-edit-focus')
-                .removeClass('mce-edit-focus');
+        function setEditorFocus(activeTextEditor) {
+            $(activeTextEditor.$()).focus(function () {
+                textEditor.setActiveTextEditor(activeTextEditor);
 
-            $(this).closest(".imcms-editor-area--text").addClass(ACTIVE_EDIT_AREA_CLASS)
-        }
+                $('.' + ACTIVE_EDIT_AREA_CLASS).removeClass(ACTIVE_EDIT_AREA_CLASS)
+                    .find('.mce-edit-focus')
+                    .removeClass('mce-edit-focus');
 
-        function setEditorFocus($editor) {
-            $editor.focus(onEditorFocus)
+                $(this).closest(".imcms-editor-area--text").addClass(ACTIVE_EDIT_AREA_CLASS);
+            })
         }
 
         function setEditorFocusOnEditControlClick(editor) {
@@ -130,7 +130,7 @@ Imcms.define("imcms-text-editor-initializer",
 
         function prepareEditor(editor) {
             clearSaveBtnText(editor);
-            setEditorFocus($(editor.$()));
+            setEditorFocus(editor);
             setEditorFocusOnEditControlClick(editor);
             showEditButton($(editor.$()));
             initSaveContentConfirmation(editor);
@@ -262,13 +262,13 @@ Imcms.define("imcms-text-editor-initializer",
             var activeTextEditor = wrapAsTextEditor($textEditor);
 
             focusEditorOnControlClick($textEditor);
-            setEditorFocus($textEditor);
+            setEditorFocus(activeTextEditor);
             buildToolbar(activeTextEditor);
             showEditButton($textEditor);
 
-            $textEditor.focus(function () {
-                textEditor.setActiveTextEditor(activeTextEditor)
-            });
+            // $textEditor.focus(function () {
+            //     textEditor.setActiveTextEditor(activeTextEditor)
+            // });
         }
 
         function initHtmlEditor($textEditor) {
