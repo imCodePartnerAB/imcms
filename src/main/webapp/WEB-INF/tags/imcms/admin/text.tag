@@ -37,7 +37,11 @@ ${"-->"}
         </c:set>
 
         <c:set var="tag">textarea</c:set>
-        <c:if test="${empty formats}"><c:set var="tag">div</c:set></c:if>
+        <c:set var="tagEnd"></textarea></c:set>
+        <c:if test="${empty formats}">
+            <c:set var="tag">div</c:set>
+            <c:set var="tagEnd"></div></c:set>
+        </c:if>
 
         <c:if test="${'html'.equalsIgnoreCase(formats) or 'cleanhtml'.equalsIgnoreCase(formats)}">
             <c:if test="${'html'.equalsIgnoreCase(formats)}">
@@ -66,9 +70,8 @@ ${"-->"}
             <div class="imcms-editor-area__text-toolbar"></div>
                 ${pre}
             <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
-                 data-doc-id="${targetDocId}"
-            data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}</
-        ${tag}>
+            data-doc-id="${targetDocId}"
+            data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}${tagEnd}
                 ${post}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
