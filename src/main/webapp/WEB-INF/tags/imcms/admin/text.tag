@@ -50,14 +50,16 @@ ${"-->"}
             <c:if test="${'cleanhtml'.equalsIgnoreCase(formats)}">
                 <c:set var="format" value="CLEAN_HTML"/>
             </c:if>
-            <c:set var="content">
-                <p>${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</p></c:set>
+            <c:set var="content">${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</c:set>
+            <c:if test="${not empty rows}">
+                <c:set var="rowsData" value=" rows=\"${rows}\""/>
+            </c:if>
         </c:if>
 
         <c:if test="${'text'.equalsIgnoreCase(formats)}">
             <c:set var="format" value="TEXT"/>
             <c:if test="${not empty rows}">
-                <c:set var="rowsData" value=" data-rows=\"${rows}\""/>
+                <c:set var="rowsData" value=" rows=\"${rows}\""/>
             </c:if>
         </c:if>
 
