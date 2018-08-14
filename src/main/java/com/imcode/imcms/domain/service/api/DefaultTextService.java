@@ -15,7 +15,6 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +22,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -81,12 +78,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
         if ((textJPA != null) && Objects.equals(textJPA.getText(), textContent)) return;
 
-        final Text.Type textType = text.getType();
-
-        if (Text.Type.HTML.equals(textType)) {
-            text.setText(cleanScriptContent(textContent));
-
-        } else if (Text.Type.CLEAN_HTML.equals(textType)) {
+        if (Text.Type.CLEAN_HTML.equals(text.getType())) {
             text.setText(textContentFilter.cleanText(textContent));
         }
 
@@ -98,24 +90,6 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         super.updateWorkingVersion(docId);
 
         textHistoryService.save(text);
-    }
-
-    String cleanScriptContent(String text) {
-        if (!text.contains("<script") || !text.contains("<br")) return text;
-
-        final Matcher matcher = Pattern.compile("<script.*?</script>").matcher(text);
-        final StringBuffer buffer = new StringBuffer();
-
-        while (matcher.find()) {
-            String fixed = matcher.group(0).replaceAll("<br>|<br >|<br/>|<br />", "\n");
-            fixed = fixed.replaceAll("\n+", "\n");
-            fixed = StringEscapeUtils.unescapeHtml(fixed);
-            matcher.appendReplacement(buffer, Matcher.quoteReplacement(fixed));
-        }
-
-        matcher.appendTail(buffer);
-
-        return buffer.toString();
     }
 
     @Override
