@@ -18,7 +18,7 @@ Imcms.define(
             return textValidationFailWindowBuilder.buildFooter([
                 components.buttons.saveButton({
                     text: texts.ok,
-                    click: closeWindow()
+                    click: closeWindow
                 })
             ]);
         }
