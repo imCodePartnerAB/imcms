@@ -386,38 +386,6 @@ public class TextServiceTest {
     }
 
     @Test
-    public void saveText_When_TypeIsHtmlWithIllegalPart_Expect_SavedWithCleaningIllegalPart() {
-        final List<Text> textDTOS = new ArrayList<>();
-        final String legalFirstPart = "this is legal text<br><script>console.log('test')";
-        final String illegalText = "<br ><br /><br><br/>";
-        final String legalMiddlePart = "console.log('test')";
-        final String legalTail = "</script><br/>text after tag";
-
-        final String originalText = legalFirstPart + illegalText + legalMiddlePart + illegalText + legalMiddlePart
-                + illegalText + legalTail;
-
-        for (LanguageJPA language : languages) {
-            for (int index = MIN_TEXT_INDEX; index <= MAX_TEXT_INDEX; index++) {
-                final Text textDTO = new TextDTO(index, DOC_ID, language.getCode(), null);
-                textDTO.setText(originalText);
-                textDTO.setType(HTML);
-
-                textDTOS.add(textDTO);
-
-                textService.save(textDTO);
-            }
-        }
-
-        final String illegalTextReplacement = "\n";
-        final String expectedText = legalFirstPart + illegalTextReplacement + legalMiddlePart + illegalTextReplacement
-                + legalMiddlePart + illegalTextReplacement + legalTail;
-
-        for (Text textDTO : textDTOS) {
-            assertEquals(expectedText, textService.getText(textDTO).getText());
-        }
-    }
-
-    @Test
     public void saveText_When_TypeIsCleanHtmlWithLegalContent_Expect_SavedWithoutChanges() {
         final List<Text> textDTOS = new ArrayList<>();
         final String legalText = "this is legal text";
