@@ -157,6 +157,18 @@ Imcms.define("imcms-text-editor-initializer",
 
         function initPlainTextEditor($textEditor) {
 
+            function autoGrow() {
+                var el = this;
+
+                setTimeout(function () {
+                    el.style.cssText = 'height:auto';
+                    el.style.cssText = 'height:' + el.scrollHeight + 'px';
+                });
+            }
+
+            autoGrow.call($textEditor[0]);
+            $textEditor.on('keydown', autoGrow);
+
             function setRows($textEditor) {
                 var rows = $textEditor.attr('data-rows');
 

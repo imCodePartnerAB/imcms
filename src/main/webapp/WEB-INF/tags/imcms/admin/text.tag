@@ -36,7 +36,7 @@ ${"-->"}
                 data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
         </c:set>
 
-        <c:set var="tag">textarea</c:set>
+        <c:set var="tag">textarea wrap="hard"</c:set>
         <c:set var="tagEnd"></textarea></c:set>
         <c:if test="${empty formats}">
             <c:set var="tag">div</c:set>

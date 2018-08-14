@@ -184,6 +184,7 @@ textarea.imcms-editor-content--text {
     resize: none;
     border: none;
     width: 100%;
+    overflow: hidden;
 }
 
 .imcms-editor-content--text:focus {
