@@ -19,8 +19,11 @@ Imcms.define("imcms-text-editor-initializer",
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            if (textDTO.type === "HTML" || textDTO.type === "CLEAN_HTML") {
-                textDTO.text = textDTO.text.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+            if (textDTO.type === 'HTML' || textDTO.type === 'CLEAN_HTML') {
+                textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+
+            } else if (textDTO.type === 'TEXT') {
+                textDTO.text = textDTO.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             }
 
             textsRestApi.create(textDTO).success(function () {

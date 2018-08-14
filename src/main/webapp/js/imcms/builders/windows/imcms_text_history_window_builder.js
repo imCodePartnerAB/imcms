@@ -16,10 +16,18 @@ Imcms.define("imcms-text-history-window-builder",
 
         function onWriteToTextField() {
             var textButton = textHistoryWindowBuilder.$editor.find(".view-text-button")[0];
-            viewText.call(textButton);
-
             var activeTextEditor = textEditor.getActiveTextEditor();
-            activeTextEditor.setContent($textHistoryView.html());
+            var content;
+
+            if (textDTO.type === 'TEXT') {
+                content = $textHistoryView.text();
+
+            } else {
+                viewText.call(textButton);
+                content = $textHistoryView.html();
+            }
+
+            activeTextEditor.setContent(content);
             activeTextEditor.setDirty(true);
             textHistoryWindowBuilder.closeWindow();
         }
@@ -127,12 +135,26 @@ Imcms.define("imcms-text-history-window-builder",
         }
 
         function showTextHistoryUnit(text) {
-            $textHistoryView.html(text);
+            if (textDTO.type === 'TEXT') {
+                text = text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                $textHistoryView.text(text);
+
+            } else {
+                $textHistoryView.html(text);
+            }
         }
 
         function onTextHistoryUnitClicked(unit) {
             $(".text-history-unit").removeClass("text-history-date-unit__unit--active");
             $(unit).addClass("text-history-date-unit__unit--active");
+
+            if (textDTO.type === 'TEXT') {
+                textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
+                    .find(".imcms-button")
+                    .css("display", "block");
+
+                return;
+            }
 
             textHistoryWindowBuilder.$editor.find(".imcms-buttons")
                 .find(".imcms-button")
@@ -206,8 +228,11 @@ Imcms.define("imcms-text-history-window-builder",
             onEnterKeyPressed: onWriteToTextField
         });
 
+        var textDTO;
+
         return {
             buildTextHistory: function (textData) {
+                textDTO = textData;
                 events.trigger("disable text editor blur");
                 textHistoryWindowBuilder.buildWindowWithShadow.applyAsync(arguments, textHistoryWindowBuilder);
             }
