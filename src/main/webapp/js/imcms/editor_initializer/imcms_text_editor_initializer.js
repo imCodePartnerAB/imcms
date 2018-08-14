@@ -268,7 +268,6 @@ Imcms.define("imcms-text-editor-initializer",
                 return new TextEditor($textEditor);
             }
 
-            // setContentEditable($textEditor);
             setRows($textEditor);
 
             var activeTextEditor = wrapAsTextEditor($textEditor);
@@ -277,10 +276,6 @@ Imcms.define("imcms-text-editor-initializer",
             setEditorFocus(activeTextEditor);
             buildToolbar(activeTextEditor);
             showEditButton($textEditor);
-
-            // $textEditor.focus(function () {
-            //     textEditor.setActiveTextEditor(activeTextEditor)
-            // });
         }
 
         function initHtmlEditor($textEditor) {
