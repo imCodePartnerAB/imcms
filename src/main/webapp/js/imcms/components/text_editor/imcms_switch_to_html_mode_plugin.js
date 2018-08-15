@@ -20,10 +20,10 @@ Imcms.define(
                     }
                 });
             },
-            buildSwitchToHtmlModeButton: function ($textEditor) {
+            buildSwitchToHtmlModeButton: function ($textEditor, isDisabled) {
                 return toolbarButtonBuilder.buildButton('switch-to-html-mode-button', title, function () {
                     alert('switch!!')
-                })
+                }, isDisabled)
             }
         }
     }

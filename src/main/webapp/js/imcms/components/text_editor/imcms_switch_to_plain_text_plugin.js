@@ -20,10 +20,10 @@ Imcms.define(
                     }
                 });
             },
-            buildSwitchToPlainTextButton: function ($textEditor) {
+            buildSwitchToPlainTextButton: function ($textEditor, isDisabled) {
                 return toolbarButtonBuilder.buildButton('switch-to-plain-text-button', title, function () {
                     alert('switch!!')
-                })
+                }, isDisabled)
             }
         }
     }

@@ -7,11 +7,13 @@ Imcms.define(
     [
         'tinyMCE', 'imcms-uuid-generator', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
         'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
-        'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode'
+        'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode',
+        'imcms-switch-to-text-editor'
     ],
     function (
         tinyMCE, uuidGenerator, $, imcms, textEditorUtils, textHistory, textValidation, imageInText,
-        discardChangesPlugin, fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin
+        discardChangesPlugin, fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin,
+        switchToTextEditorPlugin
     ) {
         var sourceCodePlugin = 'code';
         var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
@@ -22,7 +24,11 @@ Imcms.define(
         var customImcmsTextPlugins = [textHistory.pluginName, textValidation.pluginName].join(' ');
         var fullscreenPlugin = fullScreenPlugin.pluginName;
         var saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
-        var switchModePlugins = [switchToPlainTextPlugin.pluginName, switchToHtmlModePlugin.pluginName].join(' ');
+        var switchModePlugins = [
+            switchToPlainTextPlugin.pluginName,
+            switchToHtmlModePlugin.pluginName,
+            switchToTextEditorPlugin.pluginName
+        ].join(' ');
 
         var toolbar = [
             sourceCodePlugin,
@@ -59,6 +65,7 @@ Imcms.define(
                 discardChangesPlugin.initDiscardChanges(editor);
                 switchToPlainTextPlugin.initSwitchToPlainText(editor);
                 switchToHtmlModePlugin.initSwitchToHtmlMode(editor);
+                switchToTextEditorPlugin.initSwitchToTextEditor(editor);
             },
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],

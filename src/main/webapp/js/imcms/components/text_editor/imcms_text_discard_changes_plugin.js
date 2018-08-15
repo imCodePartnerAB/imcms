@@ -23,6 +23,7 @@ Imcms.define(
 
         function setEnablingStrategy() {
             var button = this;
+            button.disabled(true);
 
             events.on("disable discard changes button", function () {
                 button.disabled(true);

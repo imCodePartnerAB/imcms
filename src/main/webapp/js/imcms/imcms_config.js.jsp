@@ -108,6 +108,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             'imcms-text-editor-types': 'components/text_editor/imcms_text_editor_types.js',
             'imcms-switch-to-plain-text': 'components/text_editor/imcms_switch_to_plain_text_plugin.js',
             'imcms-switch-to-html-mode': 'components/text_editor/imcms_switch_to_html_mode_plugin.js',
+            'imcms-switch-to-text-editor': 'components/text_editor/imcms_switch_to_text_editor_plugin.js',
             //  </text editor components>
             // <components>
             // editors initializer

@@ -7,11 +7,11 @@ Imcms.define(
     [
         'imcms-text-history-plugin', 'imcms-text-validation-plugin', 'imcms-text-full-screen-plugin', 'jquery',
         'imcms-text-discard-changes-plugin', 'imcms-text-editor-utils', 'imcms-text-editor-toolbar-button-builder',
-        'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode'
+        'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode', 'imcms-switch-to-text-editor'
     ],
     function (
         textHistory, textValidation, fullScreenPlugin, $, discardChangesPlugin, textEditorUtils, toolbarButtonBuilder,
-        switchToPlainTextPlugin, switchToHtmlModePlugin
+        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin
     ) {
 
         function focusEditorOnControlClick($textEditor) {
@@ -114,7 +114,9 @@ Imcms.define(
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     buildSaveButton(activeTextEditor),
                     discardChangesPlugin.buildPlainTextButton(activeTextEditor),
-                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton($textEditor)
+                    switchToPlainTextPlugin.buildSwitchToPlainTextButton($textEditor, true),
+                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton($textEditor),
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton($textEditor)
                 ]);
             },
             initHtmlEditor: function ($textEditor) {
@@ -126,7 +128,9 @@ Imcms.define(
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     buildSaveButton(activeTextEditor),
                     discardChangesPlugin.buildPlainTextButton(activeTextEditor),
-                    switchToPlainTextPlugin.buildSwitchToPlainTextButton($textEditor)
+                    switchToPlainTextPlugin.buildSwitchToPlainTextButton($textEditor),
+                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton($textEditor, true),
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton($textEditor)
                 ]);
             }
         };
