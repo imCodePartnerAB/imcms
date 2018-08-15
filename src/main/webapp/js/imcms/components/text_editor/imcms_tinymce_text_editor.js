@@ -13,7 +13,29 @@ Imcms.define(
         tinyMCE, uuidGenerator, $, imcms, textEditorUtils, textHistory, textValidation, imageInText,
         discardChangesPlugin, fullScreenPlugin
     ) {
-        var commonConfig = {
+        var sourceCodePlugin = 'code';
+        var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
+        var listsPlugins = ['bullist', 'numlist'].join(' ');
+        var horizontalLinePlugin = 'hr';
+        var textAlignPlugins = ['alignleft', 'aligncenter', 'alignright', 'alignjustify'].join(' ');
+        var specialInsertsPlugins = ['link', imageInText.pluginName].join(' ');
+        var customImcmsTextPlugins = [textHistory.pluginName, textValidation.pluginName].join(' ');
+        var fullscreenPlugin = fullScreenPlugin.pluginName;
+        var saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
+
+        var toolbar = [
+            sourceCodePlugin,
+            fontPlugins,
+            listsPlugins,
+            horizontalLinePlugin,
+            textAlignPlugins,
+            specialInsertsPlugins,
+            customImcmsTextPlugins,
+            fullscreenPlugin,
+            saveAndDiscardPlugins
+        ].join(' | ');
+
+        var inlineEditorConfig = {
             skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
             convert_urls: false,
             cache_suffix: '?v=0.0.1',
@@ -33,17 +55,11 @@ Imcms.define(
                 textValidation.initTextValidation(editor);
                 imageInText.initImageInText(editor);
                 discardChangesPlugin.initDiscardChanges(editor);
-            }
-        };
-
-        var inlineEditorConfig = $.extend({
+            },
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
-            toolbar: 'code | bold italic underline | bullist numlist | hr |'
-                + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
-                + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
-                + ' | save ' + discardChangesPlugin.pluginName
-        }, commonConfig);
+            toolbar: toolbar
+        };
 
         fullScreenPlugin.initFullScreen();
 
@@ -75,7 +91,6 @@ Imcms.define(
 
         return {
             init: function ($textEditor) {
-                var config = inlineEditorConfig;
                 var toolbarId = uuidGenerator.generateUUID();
                 var textAreaId = uuidGenerator.generateUUID();
 
@@ -87,7 +102,7 @@ Imcms.define(
                 var editorConfig = $.extend({
                     selector: '#' + textAreaId,
                     fixed_toolbar_container: '#' + toolbarId
-                }, config);
+                }, inlineEditorConfig);
 
                 // 4.5.7 the last version compatible with IE 10
                 if (imcms.browserInfo.isIE10) {
