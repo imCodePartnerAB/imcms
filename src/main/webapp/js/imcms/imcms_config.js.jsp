@@ -105,6 +105,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             'imcms-text-editor-toolbar-button-builder': 'components/text_editor/imcms_text_editor_toolbar_button_builder.js',
             'imcms-tinymce-text-editor': 'components/text_editor/imcms_tinymce_text_editor.js',
             'imcms-text-editor': 'components/text_editor/imcms_text_editor.js',
+            'imcms-text-editor-types': 'components/text_editor/imcms_text_editor_types.js',
             //  </text editor components>
             // <components>
             // editors initializer

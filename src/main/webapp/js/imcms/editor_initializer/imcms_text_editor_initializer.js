@@ -4,8 +4,8 @@
  *
  */
 Imcms.define('imcms-text-editor-initializer',
-    ['jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor'],
-    function ($, textEditorUtils, tinyMceTextEditor, textEditor) {
+    ['jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor', 'imcms-text-editor-types'],
+    function ($, textEditorUtils, tinyMceTextEditor, textEditor, editorTypes) {
 
         function toggleFocusEditArea(e) {
             var $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
@@ -29,10 +29,10 @@ Imcms.define('imcms-text-editor-initializer',
             var type = $textEditor.data('type');
 
             switch (type) {
-                case 'TEXT':
+                case editorTypes.text:
                     return textEditor.initPlainTextEditor($textEditor);
-                case 'HTML':
-                case 'CLEAN_HTML':
+                case editorTypes.html:
+                case editorTypes.cleanHtml:
                     return textEditor.initHtmlEditor($textEditor);
                 default:
                     return tinyMceTextEditor.init($textEditor);

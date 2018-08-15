@@ -4,8 +4,11 @@
  */
 Imcms.define(
     'imcms-text-editor-utils',
-    ['tinyMCE', 'imcms-texts-rest-api', 'imcms-events', 'jquery', 'imcms-modal-window-builder'],
-    function (tinyMCE, textsRestApi, events, $, modalWindowBuilder) {
+    [
+        'tinyMCE', 'imcms-texts-rest-api', 'imcms-events', 'jquery', 'imcms-modal-window-builder',
+        'imcms-text-editor-types'
+    ],
+    function (tinyMCE, textsRestApi, events, $, modalWindowBuilder, editorTypes) {
 
         var ACTIVE_EDIT_AREA_CLASS = 'imcms-editor-area--active';
         var ACTIVE_EDIT_AREA_CLASS_$ = '.' + ACTIVE_EDIT_AREA_CLASS;
@@ -37,10 +40,10 @@ Imcms.define(
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            if (textDTO.type === 'HTML' || textDTO.type === 'CLEAN_HTML') {
+            if ((textDTO.type === editorTypes.html) || (textDTO.type === editorTypes.cleanHtml)) {
                 textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
 
-            } else if (textDTO.type === 'TEXT') {
+            } else if (textDTO.type === editorTypes.text) {
                 textDTO.text = textDTO.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
             }
 
