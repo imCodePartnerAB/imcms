@@ -7,11 +7,11 @@ Imcms.define(
     [
         'tinyMCE', 'imcms-uuid-generator', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
         'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
-        'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text'
+        'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode'
     ],
     function (
         tinyMCE, uuidGenerator, $, imcms, textEditorUtils, textHistory, textValidation, imageInText,
-        discardChangesPlugin, fullScreenPlugin, switchToPlainTextPlugin
+        discardChangesPlugin, fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin
     ) {
         var sourceCodePlugin = 'code';
         var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
@@ -22,7 +22,7 @@ Imcms.define(
         var customImcmsTextPlugins = [textHistory.pluginName, textValidation.pluginName].join(' ');
         var fullscreenPlugin = fullScreenPlugin.pluginName;
         var saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
-        var switchModePlugins = [switchToPlainTextPlugin.pluginName].join(' ');
+        var switchModePlugins = [switchToPlainTextPlugin.pluginName, switchToHtmlModePlugin.pluginName].join(' ');
 
         var toolbar = [
             sourceCodePlugin,
@@ -58,6 +58,7 @@ Imcms.define(
                 imageInText.initImageInText(editor);
                 discardChangesPlugin.initDiscardChanges(editor);
                 switchToPlainTextPlugin.initSwitchToPlainText(editor);
+                switchToHtmlModePlugin.initSwitchToHtmlMode(editor);
             },
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],

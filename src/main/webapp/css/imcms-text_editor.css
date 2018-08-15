@@ -57,6 +57,7 @@
     background: url("../images_new/text_editor/ic_images.png") no-repeat;
 }
 
+.imcms-editor-area__text-toolbar .mce-i-switch-to-html-mode-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-icon {
     padding-top: 2px;
 }
@@ -101,6 +102,11 @@
 .imcms-editor-area__text-toolbar .switch-to-plain-text-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-switch-to-plain-text-icon {
     background: url("../images_new/text_editor/ic_plain_text.png") no-repeat center;
+}
+
+.imcms-editor-area__text-toolbar .switch-to-html-mode-button__icon,
+.imcms-editor-area__text-toolbar .mce-i-switch-to-html-mode-icon {
+    background: url("../images_new/text_editor/ic_html.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-switch-to-plain-text-icon,

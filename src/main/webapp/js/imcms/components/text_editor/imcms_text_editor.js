@@ -7,11 +7,11 @@ Imcms.define(
     [
         'imcms-text-history-plugin', 'imcms-text-validation-plugin', 'imcms-text-full-screen-plugin', 'jquery',
         'imcms-text-discard-changes-plugin', 'imcms-text-editor-utils', 'imcms-text-editor-toolbar-button-builder',
-        'imcms-switch-to-plain-text'
+        'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode'
     ],
     function (
         textHistory, textValidation, fullScreenPlugin, $, discardChangesPlugin, textEditorUtils, toolbarButtonBuilder,
-        switchToPlainTextPlugin
+        switchToPlainTextPlugin, switchToHtmlModePlugin
     ) {
 
         function focusEditorOnControlClick($textEditor) {
@@ -113,7 +113,8 @@ Imcms.define(
                     textHistory.buildPlainTextHistoryButton($textEditor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     buildSaveButton(activeTextEditor),
-                    discardChangesPlugin.buildPlainTextButton(activeTextEditor)
+                    discardChangesPlugin.buildPlainTextButton(activeTextEditor),
+                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton($textEditor)
                 ]);
             },
             initHtmlEditor: function ($textEditor) {
