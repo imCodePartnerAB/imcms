@@ -1,0 +1,102 @@
+/**
+ * @author Serhii Maksymchuk from Ubrainians for imCode
+ * 15.08.18
+ */
+Imcms.define(
+    'imcms-tinymce-text-editor',
+    [
+        'tinyMCE', 'imcms-uuid-generator', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
+        'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
+        'imcms-text-full-screen-plugin'
+    ],
+    function (
+        tinyMCE, uuidGenerator, $, imcms, textEditorUtils, textHistory, textValidation, imageInText,
+        discardChangesPlugin, fullScreenPlugin
+    ) {
+        var commonConfig = {
+            skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
+            convert_urls: false,
+            cache_suffix: '?v=0.0.1',
+            branding: false,
+            skin: 'white',
+            inline: true,
+            inline_boundaries: false,
+            toolbar_items_size: 'small',
+            content_css: imcms.contextPath + '/css/imcms-text_editor.css',
+            menubar: false,
+            statusbar: false,
+            forced_root_block: false,
+            init_instance_callback: prepareEditor,
+            save_onsavecallback: textEditorUtils.saveContent,
+            setup: function (editor) {
+                textHistory.initTextHistory(editor);
+                textValidation.initTextValidation(editor);
+                imageInText.initImageInText(editor);
+                discardChangesPlugin.initDiscardChanges(editor);
+            }
+        };
+
+        var inlineEditorConfig = $.extend({
+            valid_elements: '*[*]',
+            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
+            toolbar: 'code | bold italic underline | bullist numlist | hr |'
+                + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
+                + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
+                + ' | save ' + discardChangesPlugin.pluginName
+        }, commonConfig);
+
+        fullScreenPlugin.initFullScreen();
+
+        function clearSaveBtnText(editor) {
+            delete editor.buttons.save.text;
+        }
+
+        function setEditorFocusOnEditControlClick(editor) {
+            editor.$().parents('.imcms-editor-area--text')
+                .find('.imcms-control--text')
+                .on('click', function () {
+                    editor.focus();
+                });
+        }
+
+        function initSaveContentConfirmation(editor) {
+            editor.on('blur', function (e) {
+                textEditorUtils.onEditorBlur(e.target)
+            });
+        }
+
+        function prepareEditor(editor) {
+            clearSaveBtnText(editor);
+            textEditorUtils.setEditorFocus(editor);
+            setEditorFocusOnEditControlClick(editor);
+            textEditorUtils.showEditButton($(editor.$()));
+            initSaveContentConfirmation(editor);
+        }
+
+        return {
+            init: function ($textEditor) {
+                var config = inlineEditorConfig;
+                var toolbarId = uuidGenerator.generateUUID();
+                var textAreaId = uuidGenerator.generateUUID();
+
+                $textEditor.attr('id', textAreaId)
+                    .closest('.imcms-editor-area--text')
+                    .find('.imcms-editor-area__text-toolbar')
+                    .attr('id', toolbarId);
+
+                var editorConfig = $.extend({
+                    selector: '#' + textAreaId,
+                    fixed_toolbar_container: '#' + toolbarId
+                }, config);
+
+                // 4.5.7 the last version compatible with IE 10
+                if (imcms.browserInfo.isIE10) {
+                    tinyMCE.baseURL = 'https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.7';
+                    tinyMCE.suffix = '.min';
+                }
+
+                tinyMCE.init(editorConfig);
+            }
+        };
+    }
+);

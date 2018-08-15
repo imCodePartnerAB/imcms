@@ -98,11 +98,18 @@ Imcms.define(
             }
         };
 
+        function buildModalWindow(question, callback) {
+            new ModalWindow(question, callback)
+                .addShadow()
+                .appendTo($("body"));
+        }
+
         return {
-            buildModalWindow: function (question, callback) {
-                new ModalWindow(question, callback)
-                    .addShadow()
-                    .appendTo($("body"));
+            buildModalWindow: buildModalWindow,
+            buildConfirmWindow: function (question, onConfirm) {
+                buildModalWindow(question, function (confirm) {
+                    confirm && onConfirm.call();
+                })
             }
         };
     }

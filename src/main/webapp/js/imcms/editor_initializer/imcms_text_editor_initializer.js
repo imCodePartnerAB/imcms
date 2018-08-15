@@ -3,317 +3,47 @@
  * 01.09.17
  *
  */
-Imcms.define("imcms-text-editor-initializer",
-    [
-        "tinyMCE", "imcms-uuid-generator", "jquery", "imcms", "imcms-texts-rest-api", "imcms-events",
-        "imcms-text-history-plugin", "imcms-text-validation-plugin", "imcms-image-in-text-plugin",
-        "imcms-modal-window-builder", "imcms-text-full-screen-plugin", "imcms-text-discard-changes-plugin",
-        'imcms-text-editor', 'imcms-text-editor-toolbar-button-builder'
-    ],
-    function (tinyMCE, uuidGenerator, $, imcms, textsRestApi, events, textHistory, textValidation, imageInText,
-              modalWindowBuilder, fullScreenPlugin, discardChangesPlugin, textEditor, toolbarButtonBuilder) {
-
-        var ACTIVE_EDIT_AREA_CLASS = "imcms-editor-area--active";
-
-        function focusEditorOnControlClick($textEditor) {
-            $textEditor.parent()
-                .find('.imcms-editor-area__control-wrap')
-                .click(function () {
-                    $textEditor[0].focus();
-                })
-        }
-
-        function autoGrow() {
-            this.style.cssText = 'height:auto';
-            this.style.cssText = 'height:' + this.scrollHeight + 'px';
-        }
-
-        var TextEditor = function ($textEditor) {
-            autoGrow.call($textEditor[0]);
-            $textEditor.on('keydown', autoGrow);
-
-            this.$editor = $textEditor;
-            this.dirty = false;
-            this.startContent = $textEditor.val();
-
-            this.$editor.on('change keyup paste', function () {
-                this.dirty = true;
-            }.bind(this));
-
-            focusEditorOnControlClick($textEditor);
-            setEditorFocus(this);
-            showEditButton($textEditor);
-        };
-
-        TextEditor.prototype = {
-            $: function () {
-                return this.$editor
-            },
-            setContent: function (content) {
-                this.$editor.val(content);
-                this.setDirty(true);
-            },
-            getContent: function () {
-                return this.$editor.val()
-            },
-            setDirty: function (isDirty) {
-                this.dirty = isDirty;
-
-                var $parent = this.$editor.parent();
-                var $discard = $parent.find('.text-editor-discard-changes-button');
-                var $save = $parent.find('.text-editor-save-button');
-
-                if (isDirty) {
-                    $discard.removeClass('text-toolbar__button--disabled');
-                    $save.removeClass('text-toolbar__button--disabled');
-
-                } else {
-                    $discard.addClass('text-toolbar__button--disabled');
-                    $save.addClass('text-toolbar__button--disabled');
-                }
-            },
-            isDirty: function () {
-                return this.dirty;
-            },
-            triggerBlur: function () {
-                onEditorBlur({target: this})
-            }
-        };
-
-        function saveContent(editor) {
-            var textDTO = $(editor.$()).data();
-            textDTO.text = editor.getContent();
-
-            if (textDTO.type === 'HTML' || textDTO.type === 'CLEAN_HTML') {
-                textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-
-            } else if (textDTO.type === 'TEXT') {
-                textDTO.text = textDTO.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            }
-
-            textsRestApi.create(textDTO).success(function () {
-                events.trigger("imcms-version-modified");
-                editor.startContent = editor.getContent();
-                editor.setDirty(false);
-            });
-        }
-
-        fullScreenPlugin.initFullScreen();
-
-        var commonConfig = {
-            skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
-            convert_urls: false,
-            cache_suffix: '?v=0.0.1',
-            branding: false,
-            skin: 'white',
-            inline: true,
-            inline_boundaries: false,
-            toolbar_items_size: 'small',
-            content_css: imcms.contextPath + '/css/imcms-text_editor.css',
-            menubar: false,
-            statusbar: false,
-            forced_root_block: false,
-            init_instance_callback: prepareEditor,
-            save_onsavecallback: saveContent,
-            setup: function (editor) {
-                textHistory.initTextHistory(editor);
-                textValidation.initTextValidation(editor);
-                imageInText.initImageInText(editor);
-                discardChangesPlugin.initDiscardChanges(editor);
-            }
-        };
-
-        var inlineEditorConfig = $.extend({
-            valid_elements: '*[*]',
-            plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
-            toolbar: 'code | bold italic underline | bullist numlist | hr |'
-                + ' alignleft aligncenter alignright alignjustify | link ' + imageInText.pluginName + ' | '
-                + textHistory.pluginName + ' ' + textValidation.pluginName + ' |' + ' ' + fullScreenPlugin.pluginName
-                + ' | save ' + discardChangesPlugin.pluginName
-        }, commonConfig);
-
-        function clearSaveBtnText(editor) {
-            delete editor.buttons.save.text;
-        }
-
-        function setEditorFocus(activeTextEditor) {
-            $(activeTextEditor.$()).focus(function () {
-                textEditor.setActiveTextEditor(activeTextEditor);
-
-                $('.' + ACTIVE_EDIT_AREA_CLASS).removeClass(ACTIVE_EDIT_AREA_CLASS)
-                    .find('.mce-edit-focus')
-                    .removeClass('mce-edit-focus');
-
-                $(this).closest(".imcms-editor-area--text").addClass(ACTIVE_EDIT_AREA_CLASS);
-            })
-        }
-
-        function setEditorFocusOnEditControlClick(editor) {
-            editor.$()
-                .parents('.imcms-editor-area--text')
-                .find('.imcms-control--text')
-                .on('click', function () {
-                    editor.focus();
-                });
-        }
-
-        function showEditButton($editor) {
-            $editor.parents(".imcms-editor-area--text")
-                .find(".imcms-control--edit.imcms-control--text")
-                .css("display", "block");
-        }
-
-        /** @function event.target.isDirty */
-        function onEditorBlur(event) {
-            if (!blurEnabled) {
-                return;
-            }
-
-            if (!event.target.isDirty()) {
-                return;
-            }
-
-            modalWindowBuilder.buildModalWindow("Save changes?", function (saveChanges) {
-                if (saveChanges) {
-                    saveContent(event.target);
-                }
-            })
-        }
-
-        var blurEnabled = true;
-
-        events.on("disable text editor blur", function () {
-            blurEnabled = false;
-        });
-        events.on("enable text editor blur", function () {
-            blurEnabled = true;
-        });
-
-        function initSaveContentConfirmation(editor) {
-            editor.on('blur', onEditorBlur);
-        }
-
-        function prepareEditor(editor) {
-            clearSaveBtnText(editor);
-            setEditorFocus(editor);
-            setEditorFocusOnEditControlClick(editor);
-            showEditButton($(editor.$()));
-            initSaveContentConfirmation(editor);
-        }
+Imcms.define('imcms-text-editor-initializer',
+    ['jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor'],
+    function ($, textEditorUtils, tinyMceTextEditor, textEditor) {
 
         function toggleFocusEditArea(e) {
-            var $activeTextArea = $("." + ACTIVE_EDIT_AREA_CLASS);
+            var $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
 
             if (!$activeTextArea.length) return;
 
             var $target = $(e.target);
 
-            if ($target.closest("." + ACTIVE_EDIT_AREA_CLASS).length) return;
+            if ($target.closest(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$).length) return;
             if ($target.closest('.text-history').length) return;
 
-            $activeTextArea.removeClass(ACTIVE_EDIT_AREA_CLASS)
+            $activeTextArea.removeClass(textEditorUtils.ACTIVE_EDIT_AREA_CLASS)
                 .find('.mce-edit-focus')
                 .removeClass('mce-edit-focus');
 
-            textEditor.setActiveTextEditor(false);
-        }
-
-        $(document).click(toggleFocusEditArea);
-
-        function buildSaveButton(activeTextEditor) {
-            var onClick = function () {
-                if (activeTextEditor.isDirty()) saveContent(activeTextEditor);
-            };
-
-            var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
-
-            activeTextEditor.$().on('change keyup paste', function () {
-                $saveButton.removeClass('text-toolbar__button--disabled');
-            });
-
-            return $saveButton
-        }
-
-        function buildToolbar($textEditor, buttons$) {
-            var $toolbarWrapper = $('<div>', {
-                'class': 'text-toolbar-wrapper'
-            });
-
-            $toolbarWrapper.append(buttons$);
-
-            $textEditor.parent()
-                .find('.imcms-editor-area__text-toolbar')
-                .append($toolbarWrapper);
-        }
-
-        function initHtmlEditor($textEditor) {
-            var activeTextEditor = new TextEditor($textEditor);
-
-            buildToolbar($textEditor, [
-                textHistory.buildPlainTextHistoryButton($textEditor),
-                textValidation.buildHtmlValidationButton(activeTextEditor),
-                fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                buildSaveButton(activeTextEditor),
-                discardChangesPlugin.buildPlainTextButton(activeTextEditor)
-            ]);
-        }
-
-        function initPlainTextEditor($textEditor) {
-            var activeTextEditor = new TextEditor($textEditor);
-
-            buildToolbar($textEditor, [
-                textHistory.buildPlainTextHistoryButton($textEditor),
-                fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                buildSaveButton(activeTextEditor),
-                discardChangesPlugin.buildPlainTextButton(activeTextEditor)
-            ]);
-        }
-
-        function initTinyMCEEditor() {
-
+            textEditorUtils.setActiveTextEditor(false);
         }
 
         function initTextEditor() {
             var $textEditor = $(this);
-            var type = $textEditor.data("type");
-
-            var config;
+            var type = $textEditor.data('type');
 
             switch (type) {
                 case 'TEXT':
-                    return initPlainTextEditor($textEditor);
+                    return textEditor.initPlainTextEditor($textEditor);
                 case 'HTML':
                 case 'CLEAN_HTML':
-                    return initHtmlEditor($textEditor);
+                    return textEditor.initHtmlEditor($textEditor);
                 default:
-                    config = inlineEditorConfig; // return initTinyMCEEditor();
+                    return tinyMceTextEditor.init($textEditor);
             }
-
-            var toolbarId = uuidGenerator.generateUUID();
-            var textAreaId = uuidGenerator.generateUUID();
-
-            $textEditor.attr("id", textAreaId)
-                .closest(".imcms-editor-area--text")
-                .find(".imcms-editor-area__text-toolbar")
-                .attr("id", toolbarId);
-
-            var editorConfig = $.extend({
-                selector: "#" + textAreaId,
-                fixed_toolbar_container: "#" + toolbarId
-            }, config);
-
-            // 4.5.7 the last version compatible with IE 10
-            if (Imcms.browserInfo.isIE10) {
-                tinyMCE.baseURL = "https://cdnjs.cloudflare.com/ajax/libs/tinymce/4.5.7";
-                tinyMCE.suffix = ".min";
-            }
-
-            tinyMCE.init(editorConfig);
         }
 
         return {
             initEditor: function () {
-                $(".imcms-editor-content--text").each(initTextEditor);
+                $(document).click(toggleFocusEditArea);
+
+                $('.imcms-editor-content--text').each(initTextEditor);
             }
         };
     }

@@ -7,16 +7,16 @@
 Imcms.define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
-        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor'
+        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor-utils'
     ],
-    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditor) {
+    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditorUtils) {
 
         var $historyListContainer, $textHistoryView;
         texts = texts.textHistory;
 
         function onWriteToTextField() {
             var textButton = textHistoryWindowBuilder.$editor.find(".view-text-button")[0];
-            var activeTextEditor = textEditor.getActiveTextEditor();
+            var activeTextEditor = textEditorUtils.getActiveTextEditor();
             var content;
 
             if (textDTO.type === 'TEXT') {

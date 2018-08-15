@@ -7,10 +7,10 @@
 Imcms.define(
     "imcms-text-validation-plugin",
     [
-        "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder", "jquery", 'imcms-text-editor',
+        "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder", "jquery",
         'imcms-text-editor-toolbar-button-builder'
     ],
-    function (textValidationAPI, textValidationBuilder, $, textEditor, toolbarButtonBuilder) {
+    function (textValidationAPI, textValidationBuilder, $, toolbarButtonBuilder) {
 
         var title = 'Validate Content over W3C'; // todo: localize!
 
