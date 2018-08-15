@@ -98,6 +98,12 @@
     background: url("../images_new/text_editor/text_history.png") no-repeat center;
 }
 
+.imcms-editor-area__text-toolbar .switch-to-plain-text-button__icon,
+.imcms-editor-area__text-toolbar .mce-i-switch-to-plain-text-icon {
+    background: url("../images_new/text_editor/ic_plain_text.png") no-repeat center;
+}
+
+.imcms-editor-area__text-toolbar .mce-i-switch-to-plain-text-icon,
 .imcms-editor-area__text-toolbar .text-toolbar__button .text-toolbar__icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-image--in-text-editor-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-processing-icon,

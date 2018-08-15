@@ -106,6 +106,7 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             'imcms-tinymce-text-editor': 'components/text_editor/imcms_tinymce_text_editor.js',
             'imcms-text-editor': 'components/text_editor/imcms_text_editor.js',
             'imcms-text-editor-types': 'components/text_editor/imcms_text_editor_types.js',
+            'imcms-switch-to-plain-text': 'components/text_editor/imcms_switch_to_plain_text_plugin.js',
             //  </text editor components>
             // <components>
             // editors initializer
