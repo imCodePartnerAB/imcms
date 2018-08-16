@@ -7,9 +7,9 @@
 Imcms.define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
-        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor-utils'
+        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor-utils', 'imcms-text-editor-types'
     ],
-    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditorUtils) {
+    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditorUtils, textTypes) {
 
         var $historyListContainer, $textHistoryView;
         texts = texts.textHistory;
@@ -19,7 +19,7 @@ Imcms.define("imcms-text-history-window-builder",
             var activeTextEditor = textEditorUtils.getActiveTextEditor();
             var content;
 
-            if (textDTO.type === 'TEXT') {
+            if ((textDTO.type === textTypes.text) || (textDTO.type === textTypes.textFromEditor)) {
                 content = $textHistoryView.text();
 
             } else {
@@ -135,7 +135,7 @@ Imcms.define("imcms-text-history-window-builder",
         }
 
         function showTextHistoryUnit(text) {
-            if (textDTO.type === 'TEXT') {
+            if ((textDTO.type === textTypes.text) || (textDTO.type === textTypes.textFromEditor)) {
                 text = text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
                 $textHistoryView.text(text);
 
@@ -148,7 +148,7 @@ Imcms.define("imcms-text-history-window-builder",
             $(".text-history-unit").removeClass("text-history-date-unit__unit--active");
             $(unit).addClass("text-history-date-unit__unit--active");
 
-            if (textDTO.type === 'TEXT') {
+            if ((textDTO.type === textTypes.text) || (textDTO.type === textTypes.textFromEditor)) {
                 textHistoryWindowBuilder.$editor.find(".imcms-footer__buttons")
                     .find(".imcms-button")
                     .css("display", "block");
@@ -193,7 +193,11 @@ Imcms.define("imcms-text-history-window-builder",
         }
 
         function loadData(textDTO) {
-            textsHistoryRestAPI.read(textDTO).done(function (textsHistory) {
+            var dto = $.extend({}, textDTO);
+
+            delete dto.type;
+
+            textsHistoryRestAPI.read(dto).done(function (textsHistory) {
                 var dateToTextHistoryUnits = {};
 
                 textsHistory.forEach(function (textHistory) {
