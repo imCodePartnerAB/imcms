@@ -76,7 +76,6 @@ dependencies {
     compile "javax.servlet:jstl:1.2"
     compile "javax.servlet.jsp:javax.servlet.jsp-api:2.3.1"
     compile "javax.validation:validation-api:2.0.1.Final"
-    compile "net.sf.ehcache:ehcache:2.7.0"
     compile("net.sf.ehcache:ehcache-web:2.0.4") {
         exclude(module: 'ehcache-core')
     }
