@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.imcode.imcms.persistence.entity.Version;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -24,13 +25,19 @@ public class AuditDTO implements Serializable {
 
     private String time;
 
+    public static AuditDTO fromVersion(Version version) {
+        final AuditDTO versionAudit = new AuditDTO();
+        versionAudit.setDateTime(version.getCreatedDt());
+        versionAudit.setId(version.getNo());
+        versionAudit.setBy(version.getModifiedBy().getLogin());
+
+        return versionAudit;
+    }
+
     @JsonIgnore
+    @SneakyThrows
     public Date getFormattedDate() {
-        try {
-            return DATETIME_DOC_FORMAT.parse(date + " " + time);
-        } catch (Exception e) {
-            return null;
-        }
+        return DATETIME_DOC_FORMAT.parse(date + " " + time);
     }
 
     @JsonIgnore
@@ -41,15 +48,6 @@ public class AuditDTO implements Serializable {
 
         setDate(DATE_FORMAT.format(dateTime));
         setTime(TIME_FORMAT.format(dateTime));
-    }
-
-    public static AuditDTO fromVersion(Version version) {
-        final AuditDTO versionAudit = new AuditDTO();
-        versionAudit.setDateTime(version.getCreatedDt());
-        versionAudit.setId(version.getNo());
-        versionAudit.setBy(version.getModifiedBy().getLogin());
-
-        return versionAudit;
     }
 
 }
