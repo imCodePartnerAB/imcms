@@ -36,6 +36,10 @@ public abstract class Text implements Documentable, Serializable {
     public abstract void setLoopEntryRef(LoopEntryRef loopEntryRef);
 
     public enum Type {
-        TEXT, HTML, CLEAN_HTML
+        TEXT,
+        TEXT_FROM_EDITOR,
+        HTML,
+        HTML_FROM_EDITOR,
+        CLEAN_HTML
     }
 }

@@ -5,7 +5,9 @@
 Imcms.define('imcms-text-editor-types', [], function () {
     return {
         text: 'TEXT',
+        textFromEditor: 'TEXT_FROM_EDITOR',
         html: 'HTML',
+        htmlFromEditor: 'HTML_FROM_EDITOR',
         cleanHtml: 'CLEAN_HTML'
     }
 });
