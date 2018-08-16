@@ -31,9 +31,13 @@ Imcms.define('imcms-text-editor-initializer',
             switch (type) {
                 case editorTypes.text:
                     return textEditor.initPlainTextEditor($textEditor);
+                case editorTypes.textFromEditor:
+                    return textEditor.initTextFromEditor($textEditor);
                 case editorTypes.html:
                 case editorTypes.cleanHtml:
                     return textEditor.initHtmlEditor($textEditor);
+                case editorTypes.htmlFromEditor:
+                    return textEditor.initHtmlFromEditor($textEditor);
                 default:
                     return tinyMceTextEditor.init($textEditor);
             }

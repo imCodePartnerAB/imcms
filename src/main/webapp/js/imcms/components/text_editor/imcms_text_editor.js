@@ -107,30 +107,51 @@ Imcms.define(
 
         return {
             initPlainTextEditor: function ($textEditor) {
-                var activeTextEditor = new ImcmsTextEditor($textEditor);
+                var editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
                     textHistory.buildPlainTextHistoryButton($textEditor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(activeTextEditor),
-                    discardChangesPlugin.buildPlainTextButton(activeTextEditor),
-                    switchToPlainTextPlugin.buildSwitchToPlainTextButton($textEditor, true),
-                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton($textEditor),
-                    switchToTextEditorPlugin.buildSwitchToTextEditorButton($textEditor)
+                    buildSaveButton(editor),
+                    discardChangesPlugin.buildPlainTextButton(editor)
                 ]);
             },
             initHtmlEditor: function ($textEditor) {
-                var activeTextEditor = new ImcmsTextEditor($textEditor);
+                var editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
                     textHistory.buildPlainTextHistoryButton($textEditor),
-                    textValidation.buildHtmlValidationButton(activeTextEditor),
+                    textValidation.buildHtmlValidationButton(editor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
-                    buildSaveButton(activeTextEditor),
-                    discardChangesPlugin.buildPlainTextButton(activeTextEditor),
-                    switchToPlainTextPlugin.buildSwitchToPlainTextButton($textEditor),
-                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton($textEditor, true),
-                    switchToTextEditorPlugin.buildSwitchToTextEditorButton($textEditor)
+                    buildSaveButton(editor),
+                    discardChangesPlugin.buildPlainTextButton(editor)
+                ]);
+            },
+            initTextFromEditor: function ($textEditor) {
+                var editor = new ImcmsTextEditor($textEditor);
+
+                buildToolbar($textEditor, [
+                    textHistory.buildPlainTextHistoryButton($textEditor),
+                    fullScreenPlugin.buildPlainTextEditorButton($textEditor),
+                    buildSaveButton(editor),
+                    discardChangesPlugin.buildPlainTextButton(editor),
+                    switchToPlainTextPlugin.buildSwitchToPlainTextButton(editor, true),
+                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton(editor),
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
+                ]);
+            },
+            initHtmlFromEditor: function ($textEditor) {
+                var editor = new ImcmsTextEditor($textEditor);
+
+                buildToolbar($textEditor, [
+                    textHistory.buildPlainTextHistoryButton($textEditor),
+                    textValidation.buildHtmlValidationButton(editor),
+                    fullScreenPlugin.buildPlainTextEditorButton($textEditor),
+                    buildSaveButton(editor),
+                    discardChangesPlugin.buildPlainTextButton(editor),
+                    switchToPlainTextPlugin.buildSwitchToPlainTextButton(editor),
+                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton(editor, true),
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
                 ]);
             }
         };

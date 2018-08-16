@@ -5,9 +5,10 @@
 Imcms.define('imcms-text-editor-types', [], function () {
     return {
         text: 'TEXT',
-        textFromEditor: 'TEXT_FROM_EDITOR',
+        textFromEditor: 'TEXT_FROM_EDITOR', // needs only on client, means 'TEXT' for server
         html: 'HTML',
-        htmlFromEditor: 'HTML_FROM_EDITOR',
-        cleanHtml: 'CLEAN_HTML'
+        htmlFromEditor: 'HTML_FROM_EDITOR', // needs only on client, means 'HTML' for server
+        editor: 'EDITOR',
+        cleanHtml: 'CLEAN_HTML' // todo: remove
     }
 });

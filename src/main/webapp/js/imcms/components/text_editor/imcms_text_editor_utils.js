@@ -40,11 +40,21 @@ Imcms.define(
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
-            if ((textDTO.type === editorTypes.html) || (textDTO.type === editorTypes.cleanHtml)) {
-                textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-
-            } else if (textDTO.type === editorTypes.text) {
-                textDTO.text = textDTO.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            switch (textDTO.type) {
+                case editorTypes.html:
+                case editorTypes.cleanHtml:
+                case editorTypes.htmlFromEditor:
+                {
+                    textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+                    if (textDTO.type === editorTypes.htmlFromEditor) textDTO.type = editorTypes.html;
+                    break;
+                }
+                case editorTypes.text:
+                case editorTypes.textFromEditor:
+                {
+                    textDTO.text = textDTO.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    if (textDTO.type === editorTypes.textFromEditor) textDTO.type = editorTypes.text;
+                }
             }
 
             textsRestApi.create(textDTO).success(function () {

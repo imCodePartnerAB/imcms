@@ -4,10 +4,17 @@
  */
 Imcms.define(
     'imcms-switch-to-plain-text',
-    ['imcms-text-editor-toolbar-button-builder'],
-    function (toolbarButtonBuilder) {
+    ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils'],
+    function (toolbarButtonBuilder, $, textTypes, textUtils) {
 
         var title = 'Switch to plain text mode'; // todo: localize!!11
+
+        function getOnSwitch(editor) {
+            return function () {
+                $(editor.$()).data('type', textTypes.text);
+                textUtils.saveContent(editor);
+            }
+        }
 
         return {
             pluginName: 'switch_to_plain_text',
@@ -15,15 +22,13 @@ Imcms.define(
                 editor.addButton(this.pluginName, {
                     icon: 'switch-to-plain-text-icon',
                     tooltip: title,
-                    onclick: function () {
-                        alert('switch!')
-                    }
+                    onclick: getOnSwitch(editor)
                 });
             },
-            buildSwitchToPlainTextButton: function ($textEditor, isDisabled) {
-                return toolbarButtonBuilder.buildButton('switch-to-plain-text-button', title, function () {
-                    alert('switch!!')
-                }, isDisabled)
+            buildSwitchToPlainTextButton: function (editor, isDisabled) {
+                return toolbarButtonBuilder.buildButton(
+                    'switch-to-plain-text-button', title, getOnSwitch(editor), isDisabled
+                )
             }
         }
     }

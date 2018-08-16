@@ -37,9 +37,8 @@ public abstract class Text implements Documentable, Serializable {
 
     public enum Type {
         TEXT,
-        TEXT_FROM_EDITOR,
         HTML,
-        HTML_FROM_EDITOR,
-        CLEAN_HTML
+        EDITOR,
+        CLEAN_HTML, // todo: remove
     }
 }
