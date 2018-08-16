@@ -37,7 +37,12 @@ public class AuditDTO implements Serializable {
     @JsonIgnore
     @SneakyThrows
     public Date getFormattedDate() {
-        return DATETIME_DOC_FORMAT.parse(date + " " + time);
+        if (null == date || null == time) {
+            return null;
+        } else {
+            String fixedTime = time.matches(TIME_NO_SECONDS_REGEX) ? time + ":00" : time;
+            return DATETIME_DOC_FORMAT.parse(date + " " + fixedTime);
+        }
     }
 
     @JsonIgnore
