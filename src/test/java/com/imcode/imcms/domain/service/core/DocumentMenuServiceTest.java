@@ -16,6 +16,7 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 
 @Transactional
@@ -115,12 +117,17 @@ public class DocumentMenuServiceTest {
 
     @Test
     public void getMenuItemDTO_When_AliasIsSet_Expect_AliasInLink() {
-        testMenuItemDTO(true);
+        testMenuItemDTO("test_alias");
     }
 
     @Test
     public void getMenuItemDTO_When_NoAlias_Expect_DocIdInLink() {
-        testMenuItemDTO(false);
+        testMenuItemDTO(null);
+    }
+
+    @Test
+    public void getMenuItemDTO_When_EmptyAlias_Expect_DocIdInLink() {
+        testMenuItemDTO("");
     }
 
     @Test(expected = DocumentNotExistException.class)
@@ -226,12 +233,11 @@ public class DocumentMenuServiceTest {
         assertFalse(documentMenuService.isPublicMenuItem(meta.getId()));
     }
 
-    private void testMenuItemDTO(boolean aliasExist) {
+    private void testMenuItemDTO(String testAlias) {
         final Integer docId = meta.getId();
         final LanguageDTO language = languageDataInitializer.createData().get(0);
 
         final DocumentDTO documentDTO = documentService.get(docId);
-        final String testAlias = "test_alias";
 
         final String headline = documentDTO.getCommonContents()
                 .stream()
@@ -240,17 +246,15 @@ public class DocumentMenuServiceTest {
                 .get()
                 .getHeadline();
 
-        if (aliasExist) {
-            documentDTO.setAlias(testAlias);
-            documentService.save(documentDTO);
-        }
+        documentDTO.setAlias(testAlias);
+        documentService.save(documentDTO);
 
         final MenuItemDTO menuItemDTO = documentMenuService.getMenuItemDTO(docId, language);
 
         assertThat(menuItemDTO.getDocumentId(), is(docId));
         assertThat(menuItemDTO.getType(), is(documentDTO.getType()));
         assertThat(menuItemDTO.getTitle(), is(headline));
-        assertThat(menuItemDTO.getLink(), is("/" + (aliasExist ? testAlias : docId)));
+        assertThat(menuItemDTO.getLink(), is("/" + (StringUtils.isBlank(testAlias) ? docId : testAlias)));
         assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
         assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
         assertThat(menuItemDTO.getChildren(), empty());

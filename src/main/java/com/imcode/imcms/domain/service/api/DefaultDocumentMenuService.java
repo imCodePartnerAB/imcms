@@ -16,6 +16,7 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -80,12 +81,13 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         final DocumentDTO documentDTO = metaToDocumentDTO.apply(metaDocument, latestVersion, commonContentList);
 
         final CommonContent commonContent = commonContentService.getOrCreate(docId, latestVersion.getNo(), language);
+        final String documentDTOAlias = documentDTO.getAlias();
 
         final MenuItemDTO menuItemDTO = new MenuItemDTO();
         menuItemDTO.setDocumentId(docId);
         menuItemDTO.setType(documentDTO.getType());
         menuItemDTO.setTitle(commonContent.getHeadline());
-        menuItemDTO.setLink("/" + (documentDTO.getAlias() == null ? docId : documentDTO.getAlias()));
+        menuItemDTO.setLink("/" + (StringUtils.isBlank(documentDTOAlias) ? docId : documentDTOAlias));
         menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
 
