@@ -40,7 +40,7 @@ public class CommonContentJPA extends CommonContent {
     @Column(name = "doc_id")
     private Integer docId;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id", referencedColumnName = "id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private LanguageJPA language;

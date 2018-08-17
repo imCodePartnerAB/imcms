@@ -210,7 +210,7 @@ class DocumentStoringVisitor extends DocumentVisitor {
             saveFileDocumentFile(fileDocumentFile, fileId);
         }
 
-        DocumentMapper.deleteOtherFileDocumentFiles(fileDocument);
+        DefaultDocumentMapper.deleteOtherFileDocumentFiles(fileDocument);
     }
 
     private String truncateFilename(String filename, int length) {

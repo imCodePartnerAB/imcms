@@ -5,6 +5,7 @@ import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.UserService;
 import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.DocumentCommonContent;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -43,7 +44,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * Can be set, changed and removed by an user which have rights to modify document information.
      * Must not be used as a hardcoded identity to access documents through API.
      *
-     * @see com.imcode.imcms.mapping.DocumentMapper#getDocument(String)
+     * @see DefaultDocumentMapper#getDocument(String)
      */
     public static final String DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS = "imcms.document.alias";
 

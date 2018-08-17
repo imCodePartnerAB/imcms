@@ -9,10 +9,12 @@ import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
+import lombok.val;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
@@ -57,8 +59,8 @@ public class MenuDataInitializer extends TestDataCleaner {
     }
 
     public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version) {
-        createDataEntity(withMenuItems, menuIndex, version);
-        return menuToMenuDTO.apply(savedMenu, languageService.findByCode(Imcms.getUser().getLanguage()));
+        val menu = createDataEntity(withMenuItems, menuIndex, version);
+        return menuToMenuDTO.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
     }
 
     public Version getVersion() {
@@ -93,8 +95,8 @@ public class MenuDataInitializer extends TestDataCleaner {
         if (withMenuItems) {
             addMenuItemsTo(savedMenu);
 
-        } else {
-            savedMenu.setMenuItems(new ArrayList<>());
+//        } else {
+//            savedMenu.setMenuItems(null);
         }
 
         return savedMenu;
@@ -117,20 +119,21 @@ public class MenuDataInitializer extends TestDataCleaner {
 
         final MenuItem menuItem0 = menuItems.get(0);
 
-        menuItem0.setChildren(Arrays.asList(
+        final List<MenuItem> menuItems1 = Arrays.asList(
                 createMenuItem(1),
                 createMenuItem(2),
                 createMenuItem(3)
-        ));
+        );
+        menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
 
-        menuItem0.getChildren().get(0).setChildren(Arrays.asList(
+        final List<MenuItem> menuItems2 = Arrays.asList(
                 createMenuItem(1),
                 createMenuItem(2),
                 createMenuItem(3)
-        ));
+        );
+        new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
 
-
-        menu.setMenuItems(menuItems);
+        menu.setMenuItems(new LinkedHashSet<>(menuItems));
 
         menuRepository.saveAndFlush(menu);
     }

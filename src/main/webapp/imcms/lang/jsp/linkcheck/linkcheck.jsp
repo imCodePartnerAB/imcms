@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
+<%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper,
                  com.imcode.imcms.servlet.admin.AdminDoc,
                  com.imcode.imcms.servlet.superadmin.LinkCheck,
                  imcode.server.ImcmsConstants,
@@ -102,7 +102,7 @@ if (doCheckLinks) {
     <%
 			if (link instanceof LinkCheck.UrlDocumentLink) {
 				LinkCheck.UrlDocumentLink urlDocumentLink = (LinkCheck.UrlDocumentLink)link ;
-				DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
+                DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument = urlDocumentLink.getDocumentMenuPairsContainingUrlDocument(); %>
 	<td nowrap><? webapp/imcms/lang/jsp/linkcheck/linkcheck.jsp/url_document ?></td>
 	<td nowrap><a href="<%= request.getContextPath() %>/servlet/AdminDoc?meta_id=<%=
 				document.getId() %>&<%=

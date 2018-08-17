@@ -20,13 +20,17 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
+@Transactional
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
@@ -39,7 +43,7 @@ public class MenuRepositoryTest {
     private MenuDataInitializer menuDataInitializer;
 
     @Autowired
-    @Qualifier("dataSourceWithAutoCommit")
+    @Qualifier("dataSource")
     private DataSource dataSource;
 
     private JdbcTemplate jdbcTemplate;
@@ -95,11 +99,12 @@ public class MenuRepositoryTest {
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
 
-        final List<MenuItem> menuItems = menuPersisted.getMenuItems();
+        final List<MenuItem> menuItems = new ArrayList<>(menuPersisted.getMenuItems());
+        final Set<MenuItem> children = menuItems.get(0).getChildren();
 
         assertEquals(2, menuItems.size());
-        assertEquals(3, menuItems.get(0).getChildren().size());
-        assertEquals(3, menuItems.get(0).getChildren().get(0).getChildren().size());
+        assertEquals(3, children.size());
+        assertEquals(3, new ArrayList<>(children).get(0).getChildren().size());
     }
 
     @Test
@@ -109,13 +114,15 @@ public class MenuRepositoryTest {
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
 
-        final List<MenuItem> menuItems = menuPersisted.getMenuItems();
+        final List<MenuItem> menuItems = new ArrayList<>(menuPersisted.getMenuItems());
 
         assertEquals(1, menuItems.get(0).getSortOrder().intValue());
         assertEquals(2, menuItems.get(1).getSortOrder().intValue());
-        assertEquals(1, menuItems.get(0).getChildren().get(0).getSortOrder().intValue());
-        assertEquals(2, menuItems.get(0).getChildren().get(1).getSortOrder().intValue());
-        assertEquals(3, menuItems.get(0).getChildren().get(2).getSortOrder().intValue());
+
+        final List<MenuItem> children = new ArrayList<>(menuItems.get(0).getChildren());
+        assertEquals(1, children.get(0).getSortOrder().intValue());
+        assertEquals(2, children.get(1).getSortOrder().intValue());
+        assertEquals(3, children.get(2).getSortOrder().intValue());
     }
 
     @Test

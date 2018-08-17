@@ -7,6 +7,7 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 
@@ -15,6 +16,7 @@ import java.util.Map;
  */
 @SuppressWarnings("WeakerAccess")
 @Component
+@Transactional
 public class DocumentLoader {
 
     private final MetaRepository metaRepository;

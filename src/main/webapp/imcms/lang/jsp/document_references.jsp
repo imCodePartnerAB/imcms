@@ -1,4 +1,4 @@
-<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
+<%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper,
                  com.imcode.imcms.servlet.admin.AdminDoc,
                  com.imcode.imcms.servlet.superadmin.DocumentReferences,
                  imcode.server.ImcmsConstants,
@@ -15,7 +15,7 @@
     if (!user.isSuperAdmin()) {
         return;
     }
-    DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = (DocumentMapper.TextDocumentMenuIndexPair[]) request.getAttribute(DocumentReferences.REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS);
+    DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = (DefaultDocumentMapper.TextDocumentMenuIndexPair[]) request.getAttribute(DocumentReferences.REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS);
 %>
 <html>
 <head>
@@ -54,7 +54,7 @@
     </tr>
     <%
         for (int i = 0; i < documentMenuPairs.length; i++) {
-            DocumentMapper.TextDocumentMenuIndexPair textDocumentMenuIndexPair = documentMenuPairs[i];
+            DefaultDocumentMapper.TextDocumentMenuIndexPair textDocumentMenuIndexPair = documentMenuPairs[i];
             TextDocumentDomainObject textDocument = textDocumentMenuIndexPair.getDocument();
             int menuIndex = textDocumentMenuIndexPair.getMenuIndex();
     %>

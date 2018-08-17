@@ -7,8 +7,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -30,12 +31,12 @@ public class TemplateGroupDTO extends TemplateGroup {
     }
 
     @Override
-    public List<Template> getTemplates() {
-        return (templates == null) ? null : new ArrayList<>(templates);
+    public Set<Template> getTemplates() {
+        return (templates == null) ? null : new HashSet<>(templates);
     }
 
     @Override
-    public void setTemplates(List<Template> templates) {
+    public void setTemplates(Set<Template> templates) {
         this.templates = (templates == null) ? null
                 : templates.stream().map(TemplateDTO::new).collect(Collectors.toList());
     }

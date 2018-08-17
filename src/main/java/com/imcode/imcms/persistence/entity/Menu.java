@@ -16,7 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "imcms_menu")
@@ -38,6 +39,20 @@ public class Menu extends VersionedContent {
     @Where(clause = "menu_id is not null")
     @OrderBy("sortOrder")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    private List<MenuItem> menuItems;
+    private Set<MenuItem> menuItems;
 
+    public Set<MenuItem> getMenuItems() {
+        if (menuItems == null) menuItems = new LinkedHashSet<>();
+        return menuItems;
+    }
+
+    public void setMenuItems(Set<MenuItem> menuItems) {
+        if (this.menuItems == null) {
+            this.menuItems = menuItems;
+            return;
+        }
+
+        this.menuItems.clear();
+        this.menuItems.addAll(menuItems);
+    }
 }

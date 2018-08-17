@@ -14,7 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -74,7 +79,7 @@ class DefaultTemplateService implements TemplateService {
 
     @Override
     public List<Template> getTemplates(TemplateGroup templateGroup) {
-        return templateGroupService.get(templateGroup.getId()).getTemplates();
+        return new ArrayList<>(templateGroupService.get(templateGroup.getId()).getTemplates());
     }
 
     public File getTemplateDirectory() {

@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -358,7 +359,7 @@ public class LinkCheck extends HttpServlet {
     public final static class UrlDocumentLink extends Link {
 
         private UrlDocumentDomainObject urlDocument;
-        private DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument;
+        private DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingUrlDocument;
 
         UrlDocumentLink(UrlDocumentDomainObject urlDocument, HttpServletRequest request) {
             super(request);
@@ -374,7 +375,7 @@ public class LinkCheck extends HttpServlet {
             return urlDocument;
         }
 
-        public DocumentMapper.TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingUrlDocument() {
+        public DefaultDocumentMapper.TextDocumentMenuIndexPair[] getDocumentMenuPairsContainingUrlDocument() {
             return documentMenuPairsContainingUrlDocument;
         }
     }

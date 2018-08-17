@@ -16,22 +16,24 @@ import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
         implements IdDeleterMenuService {
 
     private final VersionService versionService;
     private final DocumentMenuService documentMenuService;
-    private final Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList;
+    private final Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList;
     private final BiFunction<Menu, Language, MenuDTO> menuSaver;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
     private LanguageService languageService;
@@ -42,7 +44,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                        VersionService versionService,
                        DocumentMenuService documentMenuService,
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO,
-                       Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList,
+                       Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList,
                        LanguageService languageService,
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
@@ -109,10 +111,10 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         menu.setNo(jpa.getNo());
         menu.setVersion(newVersion);
 
-        final List<MenuItem> newMenuItems = jpa.getMenuItems()
+        final Set<MenuItem> newMenuItems = jpa.getMenuItems()
                 .stream()
                 .map(toMenuItemsWithoutId)
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
 
         menu.setMenuItems(newMenuItems);
 
@@ -153,7 +155,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
 
         return Optional.ofNullable(menu)
                 .map(Menu::getMenuItems)
-                .orElseGet(ArrayList::new)
+                .orElseGet(LinkedHashSet::new)
                 .stream()
                 .map(menuItemFunction)
                 .filter(Objects::nonNull)

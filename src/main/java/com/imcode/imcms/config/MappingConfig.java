@@ -51,6 +51,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -95,12 +96,14 @@ class MappingConfig {
         return new UnaryOperator<MenuItem>() {
             @Override
             public MenuItem apply(MenuItem menuItem) {
-                final MenuItem newMenuItem = new MenuItem(menuItem);
+                final MenuItem newMenuItem = new MenuItem();
+                newMenuItem.setDocumentId(menuItem.getDocumentId());
+                newMenuItem.setSortOrder(menuItem.getSortOrder());
 
-                final List<MenuItem> newChildren = menuItem.getChildren()
+                final Set<MenuItem> newChildren = menuItem.getChildren()
                         .stream()
                         .map(this)
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toCollection(LinkedHashSet::new));
 
                 newMenuItem.setChildren(newChildren);
 
@@ -189,7 +192,7 @@ class MappingConfig {
             public MenuItem apply(MenuItemDTO menuItemDTO) {
                 final MenuItem menuItem = new MenuItem();
                 menuItem.setDocumentId(menuItemDTO.getDocumentId());
-                final List<MenuItem> children = menuItemDtoListToMenuItemList(this).apply(menuItemDTO.getChildren());
+                final Set<MenuItem> children = menuItemDtoListToMenuItemList(this).apply(menuItemDTO.getChildren());
                 menuItem.setChildren(children);
                 return menuItem;
             }
@@ -197,14 +200,14 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<List<MenuItemDTO>, List<MenuItem>> menuItemDtoListToMenuItemList(Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
+    public Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList(Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
         return menuItemDtoList -> IntStream.range(0, menuItemDtoList.size())
                 .mapToObj(i -> {
                     final MenuItem menuItem = menuItemDtoToMenuItem.apply(menuItemDtoList.get(i));
                     menuItem.setSortOrder(i + 1);
                     return menuItem;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Bean

@@ -17,8 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "imcms_menu_item")
@@ -36,17 +36,17 @@ public class MenuItem implements Serializable {
     @Column(name = "document_id", nullable = false)
     private Integer documentId;
 
-    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "parent_item_id")
     @OrderBy("sortOrder")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    private List<MenuItem> children = new ArrayList<>();
+    private Set<MenuItem> children;
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
 
-    public MenuItem(MenuItem from) {
-        setDocumentId(from.getDocumentId());
-        setSortOrder(from.getSortOrder());
+    public Set<MenuItem> getChildren() {
+        if (children == null) children = new LinkedHashSet<>();
+        return children;
     }
 }

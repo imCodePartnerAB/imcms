@@ -1,5 +1,6 @@
 package com.imcode.imcms.servlet.superadmin;
 
+import com.imcode.imcms.mapping.DefaultDocumentMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -44,7 +45,7 @@ public class DocumentReferences extends HttpServlet {
         int documentId = Integer.parseInt(request.getParameter(REQUEST_PARAMETER__REFERENCED_DOCUMENT_ID));
         DocumentMapper documentMapper = Imcms.getServices().getDocumentMapper();
         DocumentDomainObject document = documentMapper.getDocument(documentId);
-        DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = documentMapper.getDocumentMenuPairsContainingDocument(document);
+        DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairs = documentMapper.getDocumentMenuPairsContainingDocument(document);
         request.setAttribute(REQUEST_ATTRIBUTE__DOCUMENT_MENU_PAIRS, documentMenuPairs);
         request.getRequestDispatcher("/imcms/" + user.getLanguage() + "/jsp/document_references.jsp").forward(request, response);
     }

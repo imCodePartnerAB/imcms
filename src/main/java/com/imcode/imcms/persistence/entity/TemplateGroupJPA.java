@@ -17,8 +17,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
@@ -44,20 +44,20 @@ public class TemplateGroupJPA extends TemplateGroup {
             joinColumns = @JoinColumn(name = "group_id"),
             inverseJoinColumns = @JoinColumn(name = "template_name"))
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    private List<TemplateJPA> templates;
+    private Set<TemplateJPA> templates;
 
     public TemplateGroupJPA(TemplateGroup from) {
         super(from);
     }
 
     @Override
-    public List<Template> getTemplates() {
-        return (templates == null) ? null : new ArrayList<>(templates);
+    public Set<Template> getTemplates() {
+        return (templates == null) ? null : new HashSet<>(templates);
     }
 
     @Override
-    public void setTemplates(List<Template> templates) {
-        this.templates = templates.stream().map(TemplateJPA::new).collect(Collectors.toList());
+    public void setTemplates(Set<Template> templates) {
+        this.templates = templates.stream().map(TemplateJPA::new).collect(Collectors.toSet());
     }
 }
 

@@ -1,4 +1,5 @@
-<%@ page import="com.imcode.imcms.mapping.DocumentMapper,
+<%@ page import="com.imcode.imcms.mapping.DefaultDocumentMapper,
+                 com.imcode.imcms.mapping.DocumentMapper,
                  com.imcode.imcms.servlet.superadmin.ListDocuments,
                  imcode.server.Imcms,
                  imcode.server.document.DocumentComparators,
@@ -8,8 +9,8 @@
                  imcode.util.Utility,
                  org.apache.commons.lang3.ObjectUtils,
                  org.apache.commons.text.StringEscapeUtils,
-                 java.net.URLEncoder,
-                 java.util.Collections" %>
+                 java.net.URLEncoder" %>
+<%@ page import="java.util.Collections" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
@@ -72,7 +73,7 @@
 
         while (formData.documentsIterator.hasNext()) {
             DocumentDomainObject document = (DocumentDomainObject) formData.documentsIterator.next();
-            DocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument(document); %>
+            DefaultDocumentMapper.TextDocumentMenuIndexPair[] documentMenuPairsContainingDocument = documentMapper.getDocumentMenuPairsContainingDocument(document); %>
     <tr>
         <td colspan="6"><img src="${contextPath}/imcms/${language}/images/admin/1x1_cccccc.gif" width="100%" height="1">
         </td>

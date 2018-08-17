@@ -13,6 +13,7 @@ import com.imcode.imcms.persistence.entity.Meta.DocumentType;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -74,6 +75,7 @@ class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocument
         getCorrespondingDocumentService(docIdToDelete).deleteByDocId(docIdToDelete);
     }
 
+    @Transactional
     private DocumentService<? extends Document> getCorrespondingDocumentService(int docId) {
         return Optional.ofNullable(metaRepository.findType(docId))
                 .map(this::getCorrespondingDocumentService)

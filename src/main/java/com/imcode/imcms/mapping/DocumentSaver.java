@@ -59,7 +59,7 @@ public class DocumentSaver {
     private final PropertyRepository propertyRepository;
     private final DocumentCreatingVisitor documentCreatingVisitor;
     private final DocumentSavingVisitor documentSavingVisitor;
-    private DocumentMapper documentMapper;
+    private DefaultDocumentMapper documentMapper;
 
     @Inject
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
@@ -273,7 +273,7 @@ public class DocumentSaver {
     @Transactional
     public <T extends DocumentDomainObject> int saveNewDocument(T doc,
                                                                 Map<DocumentLanguage, DocumentCommonContent> dccMap,
-                                                                EnumSet<DocumentMapper.SaveOpts> saveOpts,
+                                                                EnumSet<DefaultDocumentMapper.SaveOpts> saveOpts,
                                                                 UserDomainObject user)
             throws NoPermissionToAddDocumentToMenuException, DocumentSaveException {
 
@@ -316,7 +316,7 @@ public class DocumentSaver {
         doc.accept(documentCreatingVisitor);
 
         if (doc instanceof TextDocumentDomainObject
-                && saveOpts.contains(DocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
+                && saveOpts.contains(DefaultDocumentMapper.SaveOpts.CopyDocCommonContentIntoTextFields))
         {
             Map<DocumentLanguage, TextDomainObject> texts1 = new HashMap<>();
             Map<DocumentLanguage, TextDomainObject> texts2 = new HashMap<>();
@@ -401,7 +401,7 @@ public class DocumentSaver {
         return documentMapper;
     }
 
-    public void setDocumentMapper(DocumentMapper documentMapper) {
+    public void setDocumentMapper(DefaultDocumentMapper documentMapper) {
         this.documentMapper = documentMapper;
     }
 

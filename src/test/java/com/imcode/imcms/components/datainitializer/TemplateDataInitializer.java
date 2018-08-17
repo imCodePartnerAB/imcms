@@ -71,7 +71,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
         final TemplateGroupJPA templateGroupJPA = Value.apply(new TemplateGroupJPA(), templateGroupJpa -> {
             final List<Template> templates = createData(howMuchContainsTemplates);
             templateGroupJpa.setName(name);
-            templateGroupJpa.setTemplates(templates.stream().map(TemplateJPA::new).collect(Collectors.toList()));
+            templateGroupJpa.setTemplates(templates.stream().map(TemplateJPA::new).collect(Collectors.toSet()));
             if (withoutSaving) {
                 return templateGroupJpa;
             }

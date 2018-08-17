@@ -33,6 +33,7 @@ import java.util.function.Function;
  * Every specified document type has it's own corresponding service.
  */
 @Service
+@Transactional
 class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     private final MetaRepository metaRepository;
