@@ -43,7 +43,9 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     @Override
     public TextDocumentDTO createFromParent(Integer parentDocId) {
-        return Value.with(get(parentDocId).clone(), this::swapTemplateNames);
+        TextDocumentDTO parentClone = get(parentDocId).clone();
+        parentClone.setLatestVersion(parentClone.getCurrentVersion());
+        return Value.with(parentClone, this::swapTemplateNames);
     }
 
     @Override

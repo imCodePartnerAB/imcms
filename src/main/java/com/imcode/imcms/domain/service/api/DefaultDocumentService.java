@@ -84,7 +84,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO createFromParent(Integer parentDocId) {
-        return get(parentDocId).clone();
+        DocumentDTO parentClone = get(parentDocId).clone();
+        parentClone.setLatestVersion(parentClone.getCurrentVersion());
+        return parentClone;
     }
 
     @Override

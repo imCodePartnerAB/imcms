@@ -235,6 +235,7 @@ public class DocumentServiceTest {
         assertEquals(childDoc.getDisabledLanguageShowMode(), createdDoc.getDisabledLanguageShowMode());
         assertEquals(childDoc.getDisabledLanguageShowMode(), createdDoc.getDisabledLanguageShowMode());
         assertEquals(childDoc.getCommonContents().size(), createdDoc.getCommonContents().size());
+        assertEquals(childDoc.getLatestVersion().getId(), createdDoc.getCurrentVersion().getId());
 
         // special things
         assertNull(childDoc.getId());
