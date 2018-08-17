@@ -5,15 +5,14 @@
 Imcms.define(
     'imcms-tinymce-text-editor',
     [
-        'tinyMCE', 'imcms-uuid-generator', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
+        'tinyMCE', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
         'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
         'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode',
         'imcms-switch-to-text-editor'
     ],
     function (
-        tinyMCE, uuidGenerator, $, imcms, textEditorUtils, textHistory, textValidation, imageInText,
-        discardChangesPlugin, fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin,
-        switchToTextEditorPlugin
+        tinyMCE, $, imcms, textEditorUtils, textHistory, textValidation, imageInText, discardChangesPlugin,
+        fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin
     ) {
         var sourceCodePlugin = 'code';
         var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
@@ -87,8 +86,8 @@ Imcms.define(
         }
 
         function initSaveContentConfirmation(editor) {
-            editor.on('blur', function (e) {
-                textEditorUtils.onEditorBlur(e.target)
+            editor.on('blur', function () {
+                textEditorUtils.onEditorBlur(editor)
             });
         }
 
@@ -102,13 +101,10 @@ Imcms.define(
 
         return {
             init: function ($textEditor) {
-                var toolbarId = uuidGenerator.generateUUID();
-                var textAreaId = uuidGenerator.generateUUID();
-
-                $textEditor.attr('id', textAreaId)
-                    .closest('.imcms-editor-area--text')
+                var textAreaId = $textEditor.attr('id');
+                var toolbarId = $textEditor.closest('.imcms-editor-area--text')
                     .find('.imcms-editor-area__text-toolbar')
-                    .attr('id', toolbarId);
+                    .attr('id');
 
                 var editorConfig = $.extend({
                     selector: '#' + textAreaId,
@@ -121,7 +117,7 @@ Imcms.define(
                     tinyMCE.suffix = '.min';
                 }
 
-                tinyMCE.init(editorConfig);
+                return tinyMCE.init(editorConfig);
             }
         };
     }

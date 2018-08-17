@@ -36,7 +36,7 @@ Imcms.define(
             activeEditor = activeTextEditor;
         }
 
-        function saveContent(editor) {
+        function saveContent(editor, onSaved) {
             var textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
@@ -61,6 +61,8 @@ Imcms.define(
                 events.trigger('imcms-version-modified');
                 editor.startContent = editor.getContent();
                 editor.setDirty(false);
+
+                onSaved && onSaved.call && onSaved.call();
             });
         }
 

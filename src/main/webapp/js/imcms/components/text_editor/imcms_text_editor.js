@@ -22,9 +22,9 @@ Imcms.define(
                 })
         }
 
-        function autoGrow() {
+        function autoGrow(e) {
             this.style.cssText = 'height:auto';
-            this.style.cssText = 'height:' + this.scrollHeight + 'px';
+            this.style.cssText = 'height:' + (this.scrollHeight + ((e && (e.which === 13)) ? 15 : 0)) + 'px';
         }
 
         var ImcmsTextEditor = function ($textEditor) {
@@ -36,7 +36,7 @@ Imcms.define(
             this.startContent = $textEditor.val();
 
             this.$editor.on('change keyup paste', function () {
-                this.dirty = true;
+                this.setDirty(true);
             }.bind(this));
 
             focusEditorOnControlClick($textEditor);
@@ -83,14 +83,7 @@ Imcms.define(
             var onClick = function () {
                 if (activeTextEditor.isDirty()) textEditorUtils.saveContent(activeTextEditor);
             };
-
-            var $saveButton = toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
-
-            activeTextEditor.$().on('change keyup paste', function () {
-                $saveButton.removeClass('text-toolbar__button--disabled');
-            });
-
-            return $saveButton
+            return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true)
         }
 
         function buildToolbar($textEditor, buttons$) {
@@ -135,8 +128,8 @@ Imcms.define(
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     buildSaveButton(editor),
                     discardChangesPlugin.buildPlainTextButton(editor),
-                    switchToPlainTextPlugin.buildSwitchToPlainTextButton(editor, true),
-                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton(editor),
+                    switchToPlainTextPlugin.buildDisabledSwitchToPlainTextButton(),
+                    switchToHtmlModePlugin.buildSwitchToHtmlModeFromPlainTextButton(editor),
                     switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
                 ]);
             },
@@ -149,8 +142,8 @@ Imcms.define(
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     buildSaveButton(editor),
                     discardChangesPlugin.buildPlainTextButton(editor),
-                    switchToPlainTextPlugin.buildSwitchToPlainTextButton(editor),
-                    switchToHtmlModePlugin.buildSwitchToHtmlModeButton(editor, true),
+                    switchToPlainTextPlugin.buildSwitchToPlainTextFromHtmlButton(editor),
+                    switchToHtmlModePlugin.buildDisabledSwitchToHtmlModeButton(),
                     switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
                 ]);
             }

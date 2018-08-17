@@ -4,15 +4,31 @@
  */
 Imcms.define(
     'imcms-switch-to-text-editor',
-    ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils'],
-    function (toolbarButtonBuilder, $, textTypes, textUtils) {
+    [
+        'imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils',
+        'imcms', /* this must be the last ->*/'imcms-tag-replacer'
+    ],
+    function (toolbarButtonBuilder, $, textTypes, textUtils, imcms) {
 
         var title = 'Switch to text editor'; // todo: localize!!11
 
         function getOnSwitch(editor) {
             return function () {
-                $(editor.$()).data('type', textTypes.editor);
-                textUtils.saveContent(editor);
+                var $textEditor = $(editor.$());
+                $textEditor.attr('data-type', textTypes.editor).data('type', textTypes.editor);
+
+                textUtils.saveContent(editor, function () {
+                    imcms.require('imcms-tinymce-text-editor', function (tinyMceTextEditor) {
+                        var content = $textEditor.val();
+                        $textEditor.parent().find('.imcms-editor-area__text-toolbar').empty();
+                        $textEditor = $textEditor.replaceTagName('div').removeAttr('wrap').removeAttr('style');
+                        $textEditor.html(content);
+
+                        tinyMceTextEditor.init($textEditor).then(function (editor) {
+                            editor[0].focus();
+                        });
+                    })
+                });
             }
         }
 
@@ -22,7 +38,7 @@ Imcms.define(
                 editor.addButton(this.pluginName, {
                     icon: 'switch-to-text-editor-icon',
                     tooltip: title,
-                    onclick: getOnSwitch(editor),
+                    onclick: new Function(),
                     onPostRender: function () {
                         this.disabled(true)
                     }

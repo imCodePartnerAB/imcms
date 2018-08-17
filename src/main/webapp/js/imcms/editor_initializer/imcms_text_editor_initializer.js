@@ -4,8 +4,11 @@
  *
  */
 Imcms.define('imcms-text-editor-initializer',
-    ['jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor', 'imcms-text-editor-types'],
-    function ($, textEditorUtils, tinyMceTextEditor, textEditor, editorTypes) {
+    [
+        'jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor', 'imcms-uuid-generator',
+        'imcms-text-editor-types'
+    ],
+    function ($, textEditorUtils, tinyMceTextEditor, textEditor, uuidGenerator, editorTypes) {
 
         function toggleFocusEditArea(e) {
             var $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
@@ -26,7 +29,15 @@ Imcms.define('imcms-text-editor-initializer',
 
         function initTextEditor() {
             var $textEditor = $(this);
-            var type = $textEditor.data('type');
+            var type = $textEditor.attr('data-type');
+
+            var toolbarId = uuidGenerator.generateUUID();
+            var textAreaId = uuidGenerator.generateUUID();
+
+            $textEditor.attr('id', textAreaId)
+                .closest('.imcms-editor-area--text')
+                .find('.imcms-editor-area__text-toolbar')
+                .attr('id', toolbarId);
 
             switch (type) {
                 case editorTypes.text:
