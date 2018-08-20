@@ -53,7 +53,7 @@ Imcms.define(
                 });
             },
             buildDisabledSwitchToPlainTextButton: function () {
-                return toolbarButtonBuilder.buildButton('switch-to-plain-text-button', title, new Function(), true)
+                return toolbarButtonBuilder.buildButton('switch-to-plain-text-button', title, new Function(), true, true)
             },
             buildSwitchToPlainTextFromHtmlButton: function (editor) {
                 return toolbarButtonBuilder.buildButton(

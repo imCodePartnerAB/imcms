@@ -40,7 +40,8 @@ Imcms.define(
                     tooltip: title,
                     onclick: new Function(),
                     onPostRender: function () {
-                        this.disabled(true)
+                        this.disabled(true);
+                        this.active(true);
                     }
                 });
             },

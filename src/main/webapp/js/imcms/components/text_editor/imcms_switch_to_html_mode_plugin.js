@@ -53,7 +53,7 @@ Imcms.define(
                 });
             },
             buildDisabledSwitchToHtmlModeButton: function () {
-                return toolbarButtonBuilder.buildButton('switch-to-html-mode-button', title, new Function(), true)
+                return toolbarButtonBuilder.buildButton('switch-to-html-mode-button', title, new Function(), true, true)
             },
             buildSwitchToHtmlModeFromPlainTextButton: function (editor) {
                 return toolbarButtonBuilder.buildButton(
