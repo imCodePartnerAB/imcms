@@ -79,6 +79,7 @@ ${"-->"}
         </c:if>
 
         <c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
+        <c:set var="filterType"> data-html-filtering-policy="${textField.htmlFilteringPolicy}"</c:set>
 
         ${pre}
         <div class="imcms-editor-area imcms-editor-area--text">
@@ -88,7 +89,7 @@ ${"-->"}
             <div class="imcms-editor-area__text-toolbar"></div>
             <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
             data-doc-id="${targetDocId}"
-            data-lang-code="${language}"${rowsData}${typeData}${loopData}>${content}${tagEnd}
+            data-lang-code="${language}"${rowsData}${typeData}${loopData}${filterType}>${content}${tagEnd}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                     <div class="imcms-editor-area__control-title">Text Editor</div>
