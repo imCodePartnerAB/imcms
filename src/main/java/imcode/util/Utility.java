@@ -510,7 +510,7 @@ public class Utility {
             Matcher matcher = DOMAIN_PATTERN.matcher(serverName);
 
             if (matcher.matches()) {
-                cookie.setDomain("." + matcher.group(1));
+                cookie.setDomain(serverName);
             }
         }
     }
