@@ -110,6 +110,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             'imcms-switch-to-plain-text': 'components/text_editor/imcms_switch_to_plain_text_plugin.js',
             'imcms-switch-to-html-mode': 'components/text_editor/imcms_switch_to_html_mode_plugin.js',
             'imcms-switch-to-text-editor': 'components/text_editor/imcms_switch_to_text_editor_plugin.js',
+            'imcms-html-filtering-policy-plugin': 'components/text_editor/imcms_html_filtering_policy_plugin.js',
+            'imcms-html-filtering-policies': 'components/text_editor/imcms_html_filtering_policies.js',
             //  </text editor components>
             // <components>
             // editors initializer

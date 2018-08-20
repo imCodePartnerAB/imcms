@@ -8,11 +8,12 @@ Imcms.define(
         'tinyMCE', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
         'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
         'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode',
-        'imcms-switch-to-text-editor'
+        'imcms-switch-to-text-editor', 'imcms-html-filtering-policy-plugin'
     ],
     function (
         tinyMCE, $, imcms, textEditorUtils, textHistory, textValidation, imageInText, discardChangesPlugin,
-        fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin
+        fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin,
+        htmlFilteringPolicyPlugin
     ) {
         var sourceCodePlugin = 'code';
         var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
@@ -28,6 +29,7 @@ Imcms.define(
             switchToHtmlModePlugin.pluginName,
             switchToTextEditorPlugin.pluginName
         ].join(' ');
+        var htmlFilteringPolicyPlugins = htmlFilteringPolicyPlugin.pluginName;
 
         var toolbar = [
             sourceCodePlugin,
@@ -39,7 +41,8 @@ Imcms.define(
             customImcmsTextPlugins,
             fullscreenPlugin,
             saveAndDiscardPlugins,
-            switchModePlugins
+            switchModePlugins,
+            htmlFilteringPolicyPlugins
         ].join(' | ');
 
         var inlineEditorConfig = {
@@ -65,6 +68,7 @@ Imcms.define(
                 switchToPlainTextPlugin.initSwitchToPlainText(editor);
                 switchToHtmlModePlugin.initSwitchToHtmlMode(editor);
                 switchToTextEditorPlugin.initSwitchToTextEditor(editor);
+                htmlFilteringPolicyPlugin.initHtmlFilteringPolicy(editor);
             },
             valid_elements: '*[*]',
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],

@@ -23,7 +23,7 @@ Imcms.define('imcms-text-editor-toolbar-button-builder', ['imcms-bem-builder', '
                 title: title,
                 click: function () {
                     if ($btn.hasClass(classDisabled)) return;
-                    onClick.call();
+                    onClick.apply(this, arguments);
                 }
             })
         }

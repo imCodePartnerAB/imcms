@@ -79,6 +79,7 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
         if ((textJPA != null)
                 && Objects.equals(textJPA.getText(), textContent)
                 && Objects.equals(textJPA.getType(), text.getType())
+                && Objects.equals(textJPA.getHtmlFilteringPolicy(), text.getHtmlFilteringPolicy())
         ) return;
 
         if (Text.Type.CLEAN_HTML.equals(text.getType())) {

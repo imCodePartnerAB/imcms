@@ -7,11 +7,12 @@ Imcms.define(
     [
         'imcms-text-history-plugin', 'imcms-text-validation-plugin', 'imcms-text-full-screen-plugin', 'jquery',
         'imcms-text-discard-changes-plugin', 'imcms-text-editor-utils', 'imcms-text-editor-toolbar-button-builder',
-        'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode', 'imcms-switch-to-text-editor'
+        'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode', 'imcms-switch-to-text-editor',
+        'imcms-html-filtering-policy-plugin'
     ],
     function (
         textHistory, textValidation, fullScreenPlugin, $, discardChangesPlugin, textEditorUtils, toolbarButtonBuilder,
-        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin
+        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin, htmlFilteringPolicyPlugin
     ) {
 
         function focusEditorOnControlClick($textEditor) {
@@ -117,7 +118,8 @@ Imcms.define(
                     textValidation.buildHtmlValidationButton(editor),
                     fullScreenPlugin.buildPlainTextEditorButton($textEditor),
                     buildSaveButton(editor),
-                    discardChangesPlugin.buildPlainTextButton(editor)
+                    discardChangesPlugin.buildPlainTextButton(editor),
+                    htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor)
                 ]);
             },
             initTextFromEditor: function ($textEditor) {
@@ -144,7 +146,8 @@ Imcms.define(
                     discardChangesPlugin.buildPlainTextButton(editor),
                     switchToPlainTextPlugin.buildSwitchToPlainTextFromHtmlButton(editor),
                     switchToHtmlModePlugin.buildDisabledSwitchToHtmlModeButton(),
-                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
+                    switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor),
+                    htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor)
                 ]);
             }
         };
