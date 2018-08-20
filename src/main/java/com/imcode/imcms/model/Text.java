@@ -13,6 +13,7 @@ public abstract class Text implements Documentable, Serializable {
     protected Text(Text from) {
         setIndex(from.getIndex());
         setType(from.getType());
+        setHtmlFilteringPolicy(from.getHtmlFilteringPolicy());
         setText(from.getText());
         setLoopEntryRef(from.getLoopEntryRef());
     }
@@ -27,6 +28,10 @@ public abstract class Text implements Documentable, Serializable {
 
     public abstract void setType(Type type);
 
+    public abstract HtmlFilteringPolicy getHtmlFilteringPolicy();
+
+    public abstract void setHtmlFilteringPolicy(HtmlFilteringPolicy policy);
+
     public abstract String getText();
 
     public abstract void setText(String text);
@@ -34,6 +39,12 @@ public abstract class Text implements Documentable, Serializable {
     public abstract LoopEntryRef getLoopEntryRef();
 
     public abstract void setLoopEntryRef(LoopEntryRef loopEntryRef);
+
+    public enum HtmlFilteringPolicy {
+        RESTRICTED,
+        RELAXED,
+        ALLOW_ALL
+    }
 
     public enum Type {
         TEXT,

@@ -6,7 +6,6 @@ import com.imcode.imcms.model.Text;
 import com.imcode.imcms.model.TextHistory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -24,11 +23,11 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.Optional;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Entity
-@NoArgsConstructor
 @Table(name = "imcms_text_doc_texts_history")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TextHistoryJPA extends TextHistory {
@@ -54,6 +53,11 @@ public class TextHistoryJPA extends TextHistory {
     private Type type;
 
     @NotNull
+    @Column(nullable = false, name = "html_filtering_policy")
+    @Enumerated(EnumType.STRING)
+    private HtmlFilteringPolicy htmlFilteringPolicy;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -70,12 +74,17 @@ public class TextHistoryJPA extends TextHistory {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifiedDt;
 
+    public TextHistoryJPA() {
+        htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
+    }
+
     public TextHistoryJPA(Text text, Language language, User modifiedBy) {
         setIndex(text.getIndex());
         setText(text.getText());
         setType(text.getType());
         setDocId(text.getDocId());
         setLoopEntryRef(text.getLoopEntryRef());
+        setHtmlFilteringPolicy(text.getHtmlFilteringPolicy());
         setModifiedBy(modifiedBy);
         setModifiedDt(new Date());
         setLanguage(new LanguageJPA(language));
@@ -99,4 +108,10 @@ public class TextHistoryJPA extends TextHistory {
     public Integer getModifierId() {
         return this.modifiedBy.getId();
     }
+
+    @Override
+    public HtmlFilteringPolicy getHtmlFilteringPolicy() {
+        return Optional.ofNullable(htmlFilteringPolicy).orElse(HtmlFilteringPolicy.RESTRICTED);
+    }
+
 }

@@ -22,12 +22,14 @@ public class TextDTO extends Text {
     private LoopEntryRefDTO loopEntryRef;
     private String langCode;
     private Type type;
+    private HtmlFilteringPolicy htmlFilteringPolicy;
     private String text;
 
     public TextDTO(Integer index, Integer docId, String langCode, LoopEntryRef loopEntryRef) {
         this.index = index;
         this.docId = docId;
         this.langCode = langCode;
+        htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
         setLoopEntryRef(loopEntryRef);
     }
 
@@ -46,4 +48,10 @@ public class TextDTO extends Text {
     public Type getType() {
         return Optional.ofNullable(type).orElse(Type.EDITOR);
     }
+
+    @Override
+    public HtmlFilteringPolicy getHtmlFilteringPolicy() {
+        return Optional.ofNullable(htmlFilteringPolicy).orElse(HtmlFilteringPolicy.RESTRICTED);
+    }
+
 }

@@ -21,6 +21,7 @@ public class TextHistoryDTO extends TextHistory {
     private Integer index;
     private String text;
     private Type type;
+    private HtmlFilteringPolicy htmlFilteringPolicy;
     private String langCode;
     private LoopEntryRefDTO loopEntryRef;
     private UserDTO modifiedBy;

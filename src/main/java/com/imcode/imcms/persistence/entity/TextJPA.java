@@ -4,7 +4,6 @@ import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.Text;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -20,10 +19,10 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.Optional;
 
 @Entity
 @Table(name = "imcms_text_doc_texts")
-@NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -56,12 +55,21 @@ public class TextJPA extends Text {
     private Type type;
 
     @NotNull
+    @Column(nullable = false, name = "html_filtering_policy")
+    @Enumerated(EnumType.STRING)
+    private HtmlFilteringPolicy htmlFilteringPolicy;
+
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "language_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private LanguageJPA language;
 
     private LoopEntryRefJPA loopEntryRef;
+
+    public TextJPA() {
+        htmlFilteringPolicy = HtmlFilteringPolicy.RESTRICTED;
+    }
 
     public TextJPA(Text from, Version version, LanguageJPA language) {
         super(from);
@@ -87,4 +95,10 @@ public class TextJPA extends Text {
     public void setLoopEntryRef(LoopEntryRef loopEntryRef) {
         this.loopEntryRef = (loopEntryRef == null) ? null : new LoopEntryRefJPA(loopEntryRef);
     }
+
+    @Override
+    public HtmlFilteringPolicy getHtmlFilteringPolicy() {
+        return Optional.ofNullable(htmlFilteringPolicy).orElse(HtmlFilteringPolicy.RESTRICTED);
+    }
+
 }
