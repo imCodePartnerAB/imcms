@@ -29,8 +29,12 @@ Imcms.define(
         }
 
         var ImcmsTextEditor = function ($textEditor) {
-            autoGrow.call($textEditor[0]);
-            $textEditor.on('keydown', autoGrow);
+            var rows = $textEditor.attr('rows');
+
+            if (!rows) {
+                autoGrow.call($textEditor[0]);
+                $textEditor.on('keydown', autoGrow);
+            }
 
             this.$editor = $textEditor;
             this.dirty = false;

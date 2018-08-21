@@ -277,7 +277,16 @@ textarea.imcms-editor-content--text {
     background-color: #f0f0f0;
 }
 
+.filtering-policies__policy {
+    display: flex;
+}
+
 .mce-container .settings-section__setting {
     padding: 5px;
     cursor: pointer;
+}
+
+.filtering-policies__policy.settings-section__setting--enabled:after {
+    top: 0;
+    margin-left: 8px;
 }

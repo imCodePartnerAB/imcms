@@ -53,20 +53,27 @@ ${"-->"}
             </c:if>
 
             <c:if test="${'text'.equalsIgnoreCase(type)}">
+                <c:if test="${'unset'.equalsIgnoreCase(filteringPolicy)}">
+                    <c:set var="filteringPolicy" value="ALLOW_ALL"/>
+                </c:if>
                 <c:set var="format" value="TEXT_FROM_EDITOR"/>
             </c:if>
             <c:if test="${'html'.equalsIgnoreCase(type)}">
+                <c:if test="${'unset'.equalsIgnoreCase(filteringPolicy)}">
+                    <c:set var="filteringPolicy" value="ALLOW_ALL"/>
+                </c:if>
                 <c:set var="content">${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</c:set>
                 <c:set var="format" value="HTML_FROM_EDITOR"/>
             </c:if>
         </c:if>
 
+        <c:if test="${not empty rows}">
+            <c:set var="rowsData" value=" rows=\"${rows}\""/>
+        </c:if>
+
         <c:if test="${not empty formats}">
             <c:if test="${'text'.equalsIgnoreCase(formats)}">
                 <c:set var="format" value="TEXT"/>
-                <c:if test="${not empty rows}">
-                    <c:set var="rowsData" value=" rows=\"${rows}\""/>
-                </c:if>
             </c:if>
 
             <c:if test="${not 'text'.equalsIgnoreCase(formats)}"><%-- means 'html' and any other even wrong format --%>
@@ -75,9 +82,6 @@ ${"-->"}
                     <c:set var="filteringPolicy" value="ALLOW_ALL"/>
                 </c:if>
                 <c:set var="content">${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</c:set>
-                <c:if test="${not empty rows}">
-                    <c:set var="rowsData" value=" rows=\"${rows}\""/>
-                </c:if>
             </c:if>
         </c:if>
 
