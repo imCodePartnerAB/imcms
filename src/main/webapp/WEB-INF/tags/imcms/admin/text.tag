@@ -8,7 +8,7 @@ ${"-->"}
 <%@ attribute name="document" required="false" %>
 <%@ attribute name="placeholder" required="false" %>
 <%@ attribute name="label" required="false" %>
-<%@ attribute name="rows" required="false" %>
+<%@ attribute name="rows" required="false" type="java.lang.Integer" %>
 <%@ attribute name="mode" required="false" %>
 <%@ attribute name="formats" required="false" %>
 <%@ attribute name="pre" required="false" %>
@@ -38,6 +38,7 @@ ${"-->"}
         </c:set>
 
         <c:set var="tag">${'textarea wrap="hard"'}</c:set>
+        <c:set var="tagClose">${'>'}</c:set>
         <c:set var="tagEnd">${'</textarea>'}</c:set>
 
         <c:if test="${empty formats}">
@@ -49,6 +50,7 @@ ${"-->"}
                 </c:if>
 
                 <c:set var="tag">div</c:set>
+                <c:set var="tagClose">${'>'}</c:set>
                 <c:set var="tagEnd">${'</div>'}</c:set>
             </c:if>
 
@@ -67,11 +69,17 @@ ${"-->"}
             </c:if>
         </c:if>
 
-        <c:if test="${not empty rows}">
-            <c:set var="rowsData" value=" rows=\"${rows}\""/>
-        </c:if>
-
         <c:if test="${not empty formats}">
+            <c:if test="${not empty rows}">
+                <c:set var="rowsData" value=" rows=\"${rows}\""/>
+
+                <c:if test="${rows eq 1}">
+                    <c:set var="tag">${'input type="text"'}</c:set>
+                    <c:set var="tagClose">${' value=\"'}</c:set>
+                    <c:set var="tagEnd">${'\"/>'}</c:set>
+                </c:if>
+            </c:if>
+
             <c:if test="${'text'.equalsIgnoreCase(formats)}">
                 <c:set var="format" value="TEXT"/>
             </c:if>
@@ -96,7 +104,7 @@ ${"-->"}
             <div class="imcms-editor-area__text-toolbar"></div>
             <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
             data-doc-id="${targetDocId}"
-            data-lang-code="${language}"${rowsData}${typeData}${loopData}${filterType}>${content}${tagEnd}
+            data-lang-code="${language}"${rowsData}${typeData}${loopData}${filterType}${tagClose}${content}${tagEnd}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                     <div class="imcms-editor-area__control-title">Text Editor</div>

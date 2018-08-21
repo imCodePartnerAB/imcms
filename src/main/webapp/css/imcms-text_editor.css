@@ -225,16 +225,19 @@
     width: 100% !important;
 }
 
-textarea.imcms-editor-content--text[data-type="TEXT"] {
+textarea.imcms-editor-content--text[data-type="TEXT"],
+input.imcms-editor-content--text[data-type="TEXT"] {
     font-family: 'Source Sans Pro', sans-serif;
     font-size: unset;
 }
 
 textarea.imcms-editor-content--text[data-type="HTML"],
-textarea.imcms-editor-content--text[data-type="CLEAN_HTML"] {
+input.imcms-editor-content--text[data-type="HTML"] {
     font-family: monospace;
 }
-textarea.imcms-editor-content--text {
+
+textarea.imcms-editor-content--text,
+input.imcms-editor-content--text {
     resize: none;
     border: none;
     width: 100%;

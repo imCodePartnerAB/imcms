@@ -52,12 +52,12 @@
         <imcms:text no="5" label="Text format example" formats="text" post="<br/>" rows="4"/>
 
         <br/>
-        <div>Text editor, formats="html" example:</div>
-        <imcms:text no="6" label="HTML format example" formats="html" post="<br/>"/>
+        <div>Text editor, formats="html", rows="1" example:</div>
+        <imcms:text no="6" label="HTML format 1 row example" formats="html" rows="1" post="<br/>"/>
 
         <br/>
-        <div>Text editor, formats="cleanhtml" example:</div>
-        <imcms:text no="7" label="Clean HTML format example" formats="cleanhtml" post="<br/>"/>
+        <div>Text editor, rows="1" example:</div>
+        <imcms:text no="7" label="1 row text example" formats="text" post="<br/>" rows="1"/>
 
         <imcms:contentLoop index="1">
             <imcms:loop>
