@@ -92,7 +92,7 @@ Imcms.define(
                     icon: 'html-filtering-policy-icon',
                     tooltip: title,
                     onclick: function () {
-                        getOnClick(editor, $(this.$el)).apply(this, arguments)
+                        getOnClick(editor, $(this.$el).parent()).apply(this, arguments)
                     }
                 });
             },

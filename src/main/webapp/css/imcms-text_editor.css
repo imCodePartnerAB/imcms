@@ -263,3 +263,21 @@ textarea.imcms-editor-content--text {
 .filtering-policies .settings-section__setting {
     margin: 1px;
 }
+
+.mce-container-body.mce-abs-layout {
+    overflow: unset;
+}
+
+.mce-container .filtering-policies {
+    margin-top: 1px;
+}
+
+.mce-container .settings-section__setting--enabled {
+    margin-left: 1px;
+    background-color: #f0f0f0;
+}
+
+.mce-container .settings-section__setting {
+    padding: 5px;
+    cursor: pointer;
+}
