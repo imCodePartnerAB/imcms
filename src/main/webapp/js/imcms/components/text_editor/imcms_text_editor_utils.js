@@ -42,7 +42,6 @@ Imcms.define(
 
             switch (textDTO.type) {
                 case editorTypes.html:
-                case editorTypes.cleanHtml:
                 case editorTypes.htmlFromEditor:
                 {
                     textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');

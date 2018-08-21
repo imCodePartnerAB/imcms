@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.component;
 
+import com.imcode.imcms.model.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
@@ -38,7 +39,11 @@ class PropertyBasedTextContentFilter implements TextContentFilter {
 
     @Override
     public void addHtmlTagsToWhiteList(String[] newWhiteListTags) {
-        htmlTagsWhitelist.addTags(newWhiteListTags);
+        htmlTagsWhitelist.addTags(newWhiteListTags)
+                .removeTags("head", "script", "embed", "style")
+                .addAttributes(":all", "src", "href", "rel", "alt", "align", "width", "height", "border",
+                        "cellspacing", "cellpadding", "target", "title", "class", "data-doc-id", "data-lang-code",
+                        "data-in-text", "data-index", "data-mce-style", "data-mce-src");
     }
 
     @Override
@@ -48,5 +53,36 @@ class PropertyBasedTextContentFilter implements TextContentFilter {
                 .replaceAll(">\\n ", ">")
                 .replaceAll("\\n<", "<")
                 .replaceAll("(<br>*){2,}", "<br>");
+    }
+
+    @Override
+    public String cleanText(String cleanMe, Text.HtmlFilteringPolicy filteringPolicy) {
+        switch (filteringPolicy) {
+            case RESTRICTED:
+                return cleanText(cleanMe);
+            case RELAXED:
+                return unwrapNotAllowedTags(removeIllegalTags(cleanMe));
+            case ALLOW_ALL:
+            default:
+                return cleanMe; // no changes
+        }
+    }
+
+    private String unwrapNotAllowedTags(String cleanMe) {
+        return cleanMe.replaceAll("<html>", "")
+                .replaceAll("</html>", "")
+                .replaceAll("<body>", "")
+                .replaceAll("</body>", "")
+                .replaceAll("<doctype>", "")
+                .replaceAll("</doctype>", "");
+    }
+
+    private String removeIllegalTags(String cleanMe) {
+        return cleanMe.replaceAll("<head>.+?</head>", "")
+                .replaceAll("<script>.+?</script>", "")
+                .replaceAll("<script.+?/>", "")
+                .replaceAll("<embed>.+?</embed>", "")
+                .replaceAll("<embed.+?/>", "")
+                .replaceAll("<style>.+?</style>", "");
     }
 }

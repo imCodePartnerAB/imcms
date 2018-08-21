@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.component;
 
+import com.imcode.imcms.model.Text;
+
 /**
  * Text content filter, based on tags whitelist and cleaning text feature.
  * Used to clean non-supported tags from e.g. imcms:text tag.
@@ -13,5 +15,7 @@ public interface TextContentFilter {
     void addHtmlTagsToWhiteList(String[] newWhiteListTags);
 
     String cleanText(String cleanMe);
+
+    String cleanText(String cleanMe, Text.HtmlFilteringPolicy filteringPolicy);
 
 }

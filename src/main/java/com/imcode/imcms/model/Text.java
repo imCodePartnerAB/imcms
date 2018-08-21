@@ -43,13 +43,13 @@ public abstract class Text implements Documentable, Serializable {
     public enum HtmlFilteringPolicy {
         RESTRICTED,
         RELAXED,
-        ALLOW_ALL
+        ALLOW_ALL,
+        UNSET
     }
 
     public enum Type {
         TEXT,
         HTML,
         EDITOR,
-        CLEAN_HTML, // todo: remove
     }
 }

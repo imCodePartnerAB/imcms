@@ -45,10 +45,10 @@ Imcms.define('imcms-text-editor-initializer',
                 case editorTypes.textFromEditor:
                     return textEditor.initTextFromEditor($textEditor);
                 case editorTypes.html:
-                case editorTypes.cleanHtml:
                     return textEditor.initHtmlEditor($textEditor);
                 case editorTypes.htmlFromEditor:
                     return textEditor.initHtmlFromEditor($textEditor);
+                case editorTypes.editor:
                 default:
                     return tinyMceTextEditor.init($textEditor);
             }

@@ -24,6 +24,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.model.Text.HtmlFilteringPolicy.*;
+import static com.imcode.imcms.model.Text.Type.*;
+
 @Transactional
 @Service("textService")
 class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRepository> implements TextService {
@@ -75,15 +78,19 @@ class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRe
 
         final TextJPA textJPA = getText(text.getIndex(), version, language, text.getLoopEntryRef());
         final String textContent = text.getText();
+        final Text.Type type = text.getType();
+        final Text.HtmlFilteringPolicy filteringPolicy = text.getHtmlFilteringPolicy();
 
         if ((textJPA != null)
                 && Objects.equals(textJPA.getText(), textContent)
-                && Objects.equals(textJPA.getType(), text.getType())
-                && Objects.equals(textJPA.getHtmlFilteringPolicy(), text.getHtmlFilteringPolicy())
+                && Objects.equals(textJPA.getType(), type)
+                && Objects.equals(textJPA.getHtmlFilteringPolicy(), filteringPolicy)
         ) return;
 
-        if (Text.Type.CLEAN_HTML.equals(text.getType())) {
-            text.setText(textContentFilter.cleanText(textContent));
+        if ((EDITOR.equals(type) || HTML.equals(type))
+                && (RESTRICTED.equals(filteringPolicy) || RELAXED.equals(filteringPolicy)))
+        {
+            text.setText(textContentFilter.cleanText(textContent, filteringPolicy));
         }
 
         final TextJPA newTextJPA = new TextJPA(text, version, language);

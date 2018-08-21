@@ -8,7 +8,6 @@ Imcms.define('imcms-text-editor-types', [], function () {
         textFromEditor: 'TEXT_FROM_EDITOR', // needs only on client, means 'TEXT' for server
         html: 'HTML',
         htmlFromEditor: 'HTML_FROM_EDITOR', // needs only on client, means 'HTML' for server
-        editor: 'EDITOR',
-        cleanHtml: 'CLEAN_HTML' // todo: remove
+        editor: 'EDITOR'
     }
 });
