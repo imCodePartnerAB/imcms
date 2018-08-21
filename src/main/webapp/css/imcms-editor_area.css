@@ -59,6 +59,9 @@
     position: absolute;
     top: 5px;
     right: 5px;
+}
+
+.imcms-editor-area:hover .imcms-editor-area__control-wrap {
     z-index: 1001;
 }
 
