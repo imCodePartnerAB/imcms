@@ -163,6 +163,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 }
             },
             modal: {
+                doNotShowAgain: "Visa inte igen",
                 title: "Bekräfta",
                 yes: "Ja",
                 no: "Nej"
@@ -537,6 +538,7 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 }
             },
             modal: {
+                doNotShowAgain: "Do not show again",
                 title: "Confirm",
                 yes: "Yes",
                 no: "No"

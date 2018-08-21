@@ -33,9 +33,9 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function closePageInfo() {
-            buildModalWindow(texts.confirmMessageOnCancel, function () {
+            modalWindowBuilder.buildConfirmWindowWithDontShowAgain(texts.confirmMessageOnCancel, function () {
                 pageInfoWindowBuilder.closeWindow()
-            });
+            }, "page-info-close");
         }
 
         function saveAndClose(onDocumentSavedCallback) {
@@ -77,13 +77,7 @@ Imcms.define("imcms-page-info-builder",
         }
 
         function confirmSaving() {
-            buildModalWindow(texts.confirmMessage, saveAndClose);
-        }
-
-        function buildModalWindow(message, onClickYes) {
-            modalWindowBuilder.buildModalWindow(message, function (isClickedYes) {
-                isClickedYes && onClickYes();
-            });
+            modalWindowBuilder.buildConfirmWindow(texts.confirmMessage, saveAndClose);
         }
 
         function buildPageInfoFooterButtons() {

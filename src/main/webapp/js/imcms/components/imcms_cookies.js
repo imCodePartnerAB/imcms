@@ -19,7 +19,7 @@ Imcms.define("imcms-cookies", [], function () {
 
             var expires = options.expires;
 
-            if (typeof expires === "number" && expires) { // expires in days here
+            if (expires && (typeof expires === "number")) { // expires in days here
                 var currentDate = new Date();
                 currentDate.setTime(currentDate.getTime() + expires * 24 * 60 * 60 * 1000);
                 expires = options.expires = currentDate;

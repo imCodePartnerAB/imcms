@@ -43,3 +43,9 @@
     top: 13px;
     right: 13px;
 }
+
+.imcms-modal-window__modal-body .imcms-checkbox__label {
+    width: auto;
+    left: 25%;
+    margin-top: 50px;
+}

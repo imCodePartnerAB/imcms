@@ -1,7 +1,10 @@
 Imcms.define(
     "imcms-modal-window-builder",
-    ["imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts", "imcms-window-keys-controller"],
-    function (BEM, components, $, texts, windowKeysController) {
+    [
+        "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts", "imcms-window-keys-controller",
+        'imcms-cookies'
+    ],
+    function (BEM, components, $, texts, windowKeysController, cookies) {
 
         texts = texts.modal;
 
@@ -95,11 +98,12 @@ Imcms.define(
             appendTo: function ($appendToMe) {
                 $appendToMe.append(this.$shadow, this.$modal);
                 windowKeysController.registerWindow(this.onDeclined, this.onConfirmed);
+                return this;
             }
         };
 
         function buildModalWindow(question, callback) {
-            new ModalWindow(question, callback)
+            return new ModalWindow(question, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
@@ -110,6 +114,30 @@ Imcms.define(
                 buildModalWindow(question, function (confirm) {
                     confirm && onConfirm.call();
                 })
+            },
+            buildConfirmWindowWithDontShowAgain: function (question, onConfirm, cookieName) {
+                var cookie = cookies.getCookie(cookieName);
+                var doNotShow = "do-not-show";
+
+                if (cookie === doNotShow) {
+                    onConfirm.call();
+                    return;
+                }
+
+                var $checkbox = components.checkboxes.imcmsCheckbox('<div>', {
+                    text: 'Do not show again'
+                });
+
+                var modalWindow = buildModalWindow(question, function (confirm) {
+                    if (confirm) {
+                        if ($checkbox.isChecked()) {
+                            cookies.setCookie(cookieName, doNotShow, {expires: 30})
+                        }
+                        onConfirm.call();
+                    }
+                });
+
+                modalWindow.$modal.find('.imcms-modal-body').append($checkbox);
             }
         };
     }
