@@ -93,7 +93,7 @@ Imcms.define(
 
                 if (!imcms.disableContentManagerSaveButton) {
                     var $saveAndClose = components.buttons.saveButton({
-                        text: texts.saveAndClose,
+                        text: texts.useSelectedImage,
                         click: saveAndCloseWindow
                     });
 
