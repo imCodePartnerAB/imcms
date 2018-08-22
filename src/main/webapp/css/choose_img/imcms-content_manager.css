@@ -38,6 +38,11 @@
     position: relative;
     left: 0;
     z-index: 15;
+    height: 100%;
+}
+
+.imcms-content-manager.imcms-editor-window {
+    z-index: 10004;
 }
 
 .imcms-content-manager__left-side .imcms-button--close {

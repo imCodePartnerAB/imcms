@@ -57,9 +57,16 @@
     text-align: left;
 }
 
-.image-chosen,
 .imcms-choose-img-wrap:hover {
     background-color: #fff;
+}
+
+.imcms-choose-img-wrap.image-chosen {
+    background-color: #95e298;
+}
+
+.image-chosen,
+.imcms-choose-img-wrap:hover {
     border-radius: 5px;
     -webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
     -moz-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);

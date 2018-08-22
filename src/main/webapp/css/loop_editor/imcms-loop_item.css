@@ -39,3 +39,7 @@
 .imcms-loop-item:hover .imcms-loop-item__controls {
     display: block;
 }
+
+.imcms-loop-item__info.imcms-checkbox .imcms-checkbox__label:before {
+    top: 15px;
+}
