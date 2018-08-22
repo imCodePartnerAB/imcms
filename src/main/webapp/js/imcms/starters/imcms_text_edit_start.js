@@ -9,13 +9,7 @@ Imcms.require(
 
     function (textEditorInitializer, imageEditorInitializer, tinyMCE, events, imcms, $) {
         imcms.textEditorFullScreenEnabled = true;
-        textEditorInitializer.initEditor();
+        textEditorInitializer.initEditor({autoFocus: true});
         imageEditorInitializer.initEditor();
-        tinyMCE.activeEditor.fire("focus");
-
-        events.on("imcms-version-modified", function () {
-            var returnUrl = $("#return-url").val();
-            window.location = (returnUrl) ? returnUrl : $("#targetDocId").val();
-        })
     }
 );

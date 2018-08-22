@@ -54,3 +54,10 @@
     background-color: #d3d8de61;
 }
 
+.text-history {
+    z-index: 65536;
+}
+
+.text-history + .imcms-modal-layout {
+    z-index: 65535;
+}

@@ -63,6 +63,7 @@ Imcms.define(
             setup: function (editor) {
                 textHistory.initTextHistory(editor);
                 textValidation.initTextValidation(editor);
+                fullScreenPlugin.initFullScreen(editor);
                 imageInText.initImageInText(editor);
                 discardChangesPlugin.initDiscardChanges(editor);
                 switchToPlainTextPlugin.initSwitchToPlainText(editor);
@@ -74,8 +75,6 @@ Imcms.define(
             plugins: ['autolink link lists hr code ' + fullScreenPlugin.pluginName + ' save'],
             toolbar: toolbar
         };
-
-        fullScreenPlugin.initFullScreen();
 
         function clearSaveBtnText(editor) {
             delete editor.buttons.save.text;

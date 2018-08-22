@@ -96,7 +96,7 @@ Imcms.define(
             },
 
             appendTo: function ($appendToMe) {
-                $appendToMe.append(this.$shadow, this.$modal);
+                $appendToMe.append(this.$modal, this.$shadow);
                 windowKeysController.registerWindow(this.onDeclined, this.onConfirmed);
                 return this;
             }

@@ -81,6 +81,9 @@ Imcms.define(
             },
             triggerBlur: function () {
                 textEditorUtils.onEditorBlur(this)
+            },
+            then: function (onLoad) {
+                onLoad(this.$editor)
             }
         };
 
@@ -113,6 +116,8 @@ Imcms.define(
                     buildSaveButton(editor),
                     discardChangesPlugin.buildPlainTextButton(editor)
                 ]);
+
+                return editor;
             },
             initHtmlEditor: function ($textEditor) {
                 var editor = new ImcmsTextEditor($textEditor);
@@ -125,6 +130,8 @@ Imcms.define(
                     discardChangesPlugin.buildPlainTextButton(editor),
                     htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor)
                 ]);
+
+                return editor;
             },
             initTextFromEditor: function ($textEditor) {
                 var editor = new ImcmsTextEditor($textEditor);
@@ -138,6 +145,8 @@ Imcms.define(
                     switchToHtmlModePlugin.buildSwitchToHtmlModeFromPlainTextButton(editor),
                     switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor)
                 ]);
+
+                return editor;
             },
             initHtmlFromEditor: function ($textEditor) {
                 var editor = new ImcmsTextEditor($textEditor);
@@ -153,6 +162,8 @@ Imcms.define(
                     switchToTextEditorPlugin.buildSwitchToTextEditorButton(editor),
                     htmlFilteringPolicyPlugin.buildHtmlFilteringPolicyButton(editor)
                 ]);
+
+                return editor;
             }
         };
     }

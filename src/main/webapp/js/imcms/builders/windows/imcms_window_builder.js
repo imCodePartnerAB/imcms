@@ -49,8 +49,8 @@ Imcms.define(
                     }
                 });
 
+                this.buildWindow.apply(this, arguments);
                 this.shadowBuilder.buildWindow();
-                this.buildWindow.applyAsync(arguments, this);
             },
             buildWindow: function (windowInitData) {
                 try {

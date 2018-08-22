@@ -1,11 +1,14 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,12 +30,15 @@ class SuperAdminController {
 
     private final String imagesPath;
     private final TextService textService;
+    private final AccessService accessService;
 
     SuperAdminController(@Value("${ImagePath}") String imagesPath,
-                         TextService textService) {
+                         TextService textService,
+                         AccessService accessService) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
+        this.accessService = accessService;
     }
 
     @CheckAccess
@@ -63,9 +69,15 @@ class SuperAdminController {
 
         mav.setViewName("EditText");
 
+        final UserDomainObject user = Imcms.getUser();
+        final RestrictedPermission userEditPermission = accessService.getEditPermission(user, metaId);
+
+        mav.addObject("isAdmin", user.isSuperAdmin());
+        mav.addObject("editOptions", userEditPermission);
+        mav.addObject("isEditMode", true);
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("langCode", (langCode == null) ? Imcms.getUser().getLanguage() : langCode);
+        mav.addObject("language", (langCode == null) ? Imcms.getUser().getLanguage() : langCode);
         addCommonModelData(metaId, index, returnUrl, request, mav);
 
         return mav;

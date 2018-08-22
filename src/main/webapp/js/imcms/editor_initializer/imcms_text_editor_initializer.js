@@ -27,18 +27,7 @@ Imcms.define('imcms-text-editor-initializer',
             textEditorUtils.setActiveTextEditor(false);
         }
 
-        function initTextEditor() {
-            var $textEditor = $(this);
-            var type = $textEditor.attr('data-type');
-
-            var toolbarId = uuidGenerator.generateUUID();
-            var textAreaId = uuidGenerator.generateUUID();
-
-            $textEditor.attr('id', textAreaId)
-                .closest('.imcms-editor-area--text')
-                .find('.imcms-editor-area__text-toolbar')
-                .attr('id', toolbarId);
-
+        function initEditor(type, $textEditor) {
             switch (type) {
                 case editorTypes.text:
                     return textEditor.initPlainTextEditor($textEditor);
@@ -54,11 +43,34 @@ Imcms.define('imcms-text-editor-initializer',
             }
         }
 
+        function initTextEditor(opts) {
+            var $textEditor = $(this);
+            var type = $textEditor.attr('data-type');
+
+            var toolbarId = uuidGenerator.generateUUID();
+            var textAreaId = uuidGenerator.generateUUID();
+
+            $textEditor.attr('id', textAreaId)
+                .closest('.imcms-editor-area--text')
+                .find('.imcms-editor-area__text-toolbar')
+                .attr('id', toolbarId);
+
+            var editor = initEditor(type, $textEditor);
+
+            if (opts && opts.autoFocus) {
+                editor.then(function (editor) {
+                    editor[0].focus();
+                })
+            }
+        }
+
         return {
-            initEditor: function () {
+            initEditor: function (opts) {
                 $(document).click(toggleFocusEditArea);
 
-                $('.imcms-editor-content--text').each(initTextEditor);
+                $('.imcms-editor-content--text').each(function () {
+                    initTextEditor.call(this, opts)
+                });
             }
         };
     }
