@@ -233,6 +233,11 @@
     width: 100% !important;
 }
 
+.imcms-editor-content--text {
+    font-family: Verdana, sans-serif;
+    font-size: 14px;
+}
+
 textarea.imcms-editor-content--text[data-type="TEXT"],
 input.imcms-editor-content--text[data-type="TEXT"] {
     font-family: 'Source Sans Pro', sans-serif;
