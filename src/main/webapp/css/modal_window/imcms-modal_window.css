@@ -10,7 +10,7 @@
 }
 
 .imcms-modal-layout--front {
-    z-index: 10004;
+    z-index: 65534;
 }
 
 .imcms-modal-window {
@@ -31,7 +31,7 @@
     left: calc(50% - 130px);
     height: 200px;
     width: 260px;
-    z-index: 10005;
+    z-index: 65535;
 }
 
 .imcms-modal-window__modal-head {
