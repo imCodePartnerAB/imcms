@@ -65,6 +65,10 @@
     background-color: #95e298;
 }
 
+.imcms-choose-img-wrap.image-chosen:hover {
+    background-color: #7fe282;
+}
+
 .image-chosen,
 .imcms-choose-img-wrap:hover {
     border-radius: 5px;
