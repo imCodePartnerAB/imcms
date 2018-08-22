@@ -24,11 +24,17 @@ ${"-->"}
 <c:if test="${!isDocNew || editOptions.editMenu}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
-    <c:set var="menuItems" value="${menuService.getPublicMenuItems(index, targetDocId, language)}" scope="request"/>
+    <c:set var="menuItems" value="${
+    (isEditMode && editOptions.editMenu || isPreviewMode)
+         ? menuService.getVisibleMenuItems(index, targetDocId, language)
+         : menuService.getPublicMenuItems(index, targetDocId, language)
+     }" scope="request"/>
 
-    <c:set var="menuContent">${pre}
+    <c:set var="menuContent">
+        ${pre}
         <jsp:doBody/>
-        ${post}</c:set>
+        ${post}
+    </c:set>
     <c:remove var="menuItems"/>
 
     <c:choose>
@@ -45,8 +51,6 @@ ${"-->"}
                 </div>
             </div>
         </c:when>
-        <c:otherwise>
-            ${menuContent}
-        </c:otherwise>
+        <c:otherwise>${menuContent}</c:otherwise>
     </c:choose>
 </c:if>
