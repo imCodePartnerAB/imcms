@@ -6,7 +6,6 @@
     min-width: 146px;
     margin-left: .75%;
     margin-right: .75%;
-    margin-bottom: 51px;
     padding: 14px;
 }
 
@@ -21,6 +20,8 @@
     padding: 7px;
     position: relative;
     width: 100%;
+    margin-bottom: 50px;
+    max-height: 100px;
 }
 
 .imcms-choose-img-description__date {
@@ -75,7 +76,6 @@
     -webkit-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
     -moz-box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
     box-shadow: 0 0 18px 1px rgba(0, 0, 0, 0.07);
-    margin-bottom: 51px;
 }
 
 .image-chosen .imcms-choose-img,
