@@ -77,16 +77,19 @@ Imcms.define(
                     this.disableKeyBindings || windowKeysController.unRegister();
                 }
             },
-            closeWindow: function () {
+            closeWindow: function (opts) {
                 try {
                     this.disableKeyBindings || windowKeysController.unRegister();
-                    enableBackgroundPageScrolling(this._pageOverflow, this._scrollTop);
 
-                    this._scrollTop = 0;
+                    if (!opts || !opts.skipScrollFix) {
+                        enableBackgroundPageScrolling(this._pageOverflow, this._scrollTop);
+                        this._scrollTop = 0;
+                    }
+
                     this.$editor && this.$editor.css("display", "none");
 
                     if (this.shadowBuilder) {
-                        setTimeout(this.shadowBuilder.closeWindow.bind(this.shadowBuilder));
+                        setTimeout(this.shadowBuilder.closeWindow.bind(this.shadowBuilder, {skipScrollFix: true}));
                     }
 
                     if (this.clearDataStrategy && this.clearDataStrategy.call) {
