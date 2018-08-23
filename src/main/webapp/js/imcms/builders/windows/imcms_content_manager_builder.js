@@ -90,7 +90,12 @@ Imcms.define(
                     }
                 });
 
-                var footerElements$ = [$showHideFoldersButton, $fileInput];
+                var $cancelBtn = components.buttons.negativeButton({
+                    text: texts.cancel,
+                    click: closeWindow
+                });
+
+                var footerElements$ = [$showHideFoldersButton, $fileInput, $cancelBtn];
 
                 if (!imcms.disableContentManagerSaveButton) {
                     $saveAndCloseBtn = components.buttons.saveButton({

@@ -74,18 +74,20 @@
 .imcms-content-manager__footer .imcms-footer__buttons {
     display: inline-block;
     float: right;
+    width: 100%;
 }
 
-.imcms-content-manager__footer .imcms-button--save,
-.imcms-content-manager__footer .imcms-button--positive {
+.imcms-content-manager__footer .imcms-button {
     margin-top: 15px;
 }
 
 .imcms-content-manager__footer .imcms-button--neutral {
     display: none;
-    position: absolute;
-    top: 48%;
-    left: 27px;
+}
+
+.imcms-content-manager__footer .imcms-button--neutral,
+.imcms-content-manager__footer .imcms-button--positive {
+    float: left;
 }
 
 @media screen and (max-width: 1600px) {
