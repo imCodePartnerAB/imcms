@@ -47,6 +47,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
@@ -143,8 +144,9 @@ class MappingConfig {
 
                 if (isLanguageDisabled) {
 
-                    final boolean isShowInDefaultLanguage = documentMenuService.getDisabledLanguageShowMode(docId)
-                            .equals(SHOW_IN_DEFAULT_LANGUAGE);
+                    final boolean isShowInDefaultLanguage = SHOW_IN_DEFAULT_LANGUAGE.equals(
+                            documentMenuService.getDisabledLanguageShowMode(docId)
+                    );
 
                     if (isShowInDefaultLanguage) {
                         menuLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
@@ -212,6 +214,8 @@ class MappingConfig {
 
     @Bean
     public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath) {
+        final String generatedImagesPath = imagesPath + "generated/";
+
         return image -> {
             final ImageDTO dto = new ImageDTO();
 
@@ -227,9 +231,7 @@ class MappingConfig {
             final boolean filenameExists = (image.getGeneratedFilename() != null)
                     && !image.getGeneratedFilename().equals("");
 
-            final String generatedFilePath = filenameExists
-                    ? (imagesPath + "generated/" + image.getGeneratedFilename())
-                    : "";
+            final String generatedFilePath = filenameExists ? (generatedImagesPath + image.getGeneratedFilename()) : "";
 
             dto.setGeneratedFilePath(generatedFilePath);
             dto.setGeneratedFilename(image.getGeneratedFilename());
@@ -356,8 +358,8 @@ class MappingConfig {
 
             meta.setCategories(categories);
 
-            meta.setLinkableByOtherUsers(true);                         // fixme: not sure what to do with this
-            meta.setLinkedForUnauthorizedUsers(true);                   // fixme: not sure what to do with this
+            meta.setLinkableByOtherUsers(true);         // fixme: not sure what to do with this
+            meta.setLinkedForUnauthorizedUsers(true);   // fixme: not sure what to do with this
 
             meta.setRoleIdToPermission(documentDTO.getRoleIdToPermission());
 
@@ -417,76 +419,78 @@ class MappingConfig {
     }
 
     @Bean
+    @SneakyThrows
     public Function<File, ImageFileDTO> fileToImageFileDTO(@Value("${ImagePath}") Resource imagesPath) {
-        return new Function<File, ImageFileDTO>() {
-            @Override
-            @SneakyThrows
-            public ImageFileDTO apply(File imageFile) {
-                final ImageFileDTO imageFileDTO = new ImageFileDTO();
-                final String fileName = imageFile.getName();
+        final String imageRoot = imagesPath.getFile().getPath();
 
-                imageFileDTO.setName(fileName);
-                imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
+        return imageFile -> {
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            final String fileName = imageFile.getName();
 
-                final String relativePath = imageFile.getPath()
-                        .replace(imagesPath.getFile().getPath(), "")
-                        .replace("\\", "/");
+            imageFileDTO.setName(fileName);
+            imageFileDTO.setFormat(Format.findFormat(FilenameUtils.getExtension(fileName)));
 
-                imageFileDTO.setPath(relativePath);
+            final String relativePath = imageFile.getPath()
+                    .replace(imageRoot, "")
+                    .replace("\\", "/");
 
-                final Date lastModifiedDate = new Date(imageFile.lastModified());
-                final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
+            imageFileDTO.setPath(relativePath);
 
-                imageFileDTO.setUploaded(formattedDate);
+            final Date lastModifiedDate = new Date(imageFile.lastModified());
+            final String formattedDate = DateConstants.DATETIME_DOC_FORMAT.format(lastModifiedDate);
 
-                long fileSize = imageFile.length();
-                String suffix;
+            imageFileDTO.setUploaded(formattedDate);
 
-                final long k = 1000L;
-                final long square = k * k;
-                final long cube = square * k;
+            long fileSize = imageFile.length();
 
-                if (fileSize >= cube) {
-                    suffix = "GB"; // I hope it's not the real case
-                    fileSize /= cube;
+            final String suffix;
 
-                } else if (fileSize >= square) {
-                    suffix = "MB";
-                    fileSize /= square;
+            final long k = 1000L;
+            final long square = k * k;
+            final long cube = square * k;
 
-                } else if (fileSize >= k) {
-                    suffix = "kB";
-                    fileSize /= k;
+            if (fileSize >= cube) {
+                suffix = "GB"; // I hope it's not the real case
+                fileSize /= cube;
 
-                } else {
-                    suffix = "B";
-                }
+            } else if (fileSize >= square) {
+                suffix = "MB";
+                fileSize /= square;
 
-                imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
+            } else if (fileSize >= k) {
+                suffix = "kB";
+                fileSize /= k;
 
-                final java.awt.Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
-
-                if (imageDimension != null) {
-                    imageFileDTO.setWidth(imageDimension.width);
-                    imageFileDTO.setHeight(imageDimension.height);
-                    imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
-                }
-
-                return imageFileDTO;
+            } else {
+                suffix = "B";
             }
+
+            imageFileDTO.setSize(String.valueOf(fileSize) + suffix);
+
+            final Dimension imageDimension = ImcmsImageUtils.getImageDimension(imageFile);
+
+            if (imageDimension != null) {
+                imageFileDTO.setWidth(imageDimension.width);
+                imageFileDTO.setHeight(imageDimension.height);
+                imageFileDTO.setResolution(String.valueOf(imageDimension.width) + "x" + imageDimension.height);
+            }
+
+            return imageFileDTO;
         };
     }
 
     @Bean
+    @SneakyThrows
     public BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO(Function<File, ImageFileDTO> fileToImageFileDTO,
                                                                           @Value("${ImagePath}") Resource imagesPath) {
+        final String imageRoot = imagesPath.getFile().getPath();
+
         return new BiFunction<File, Boolean, ImageFolderDTO>() {
             @Override
-            @SneakyThrows
             public ImageFolderDTO apply(File folderFile, Boolean isRoot) {
                 final ImageFolderDTO imageFolderDTO = new ImageFolderDTO();
                 imageFolderDTO.setName(folderFile.getName());
-                final String relativePath = folderFile.getPath().replace(imagesPath.getFile().getPath(), "");
+                final String relativePath = folderFile.getPath().replace(imageRoot, "");
                 imageFolderDTO.setPath(relativePath);
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
