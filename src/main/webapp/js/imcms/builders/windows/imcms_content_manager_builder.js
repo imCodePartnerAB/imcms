@@ -11,6 +11,7 @@ Imcms.define(
     function (BEM, WindowBuilder, components, imageContentBuilder, $, texts, events, imcms) {
         var $foldersContainer;
         var $imagesContainer;
+        var $saveAndCloseBtn;
 
         texts = texts.editors.content;
 
@@ -92,12 +93,14 @@ Imcms.define(
                 var footerElements$ = [$showHideFoldersButton, $fileInput];
 
                 if (!imcms.disableContentManagerSaveButton) {
-                    var $saveAndClose = components.buttons.saveButton({
+                    $saveAndCloseBtn = components.buttons.saveButton({
+                        'class': 'imcms-button--disabled',
                         text: texts.useSelectedImage,
+                        disabled: 'disabled',
                         click: saveAndCloseWindow
                     });
 
-                    footerElements$.push($saveAndClose);
+                    footerElements$.push($saveAndCloseBtn);
                 }
 
                 footerElements$.push($uploadNewImage);
@@ -119,7 +122,8 @@ Imcms.define(
             imageContentBuilder.loadAndBuildContent({
                 foldersContainer: $foldersContainer,
                 imagesContainer: $imagesContainer,
-                selectedImagePath: selectedImagePath
+                selectedImagePath: selectedImagePath,
+                $saveAndCloseBtn: $saveAndCloseBtn
             });
         }
 
@@ -133,6 +137,7 @@ Imcms.define(
         }
 
         function clearData() {
+            $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
             events.trigger("content manager closed");
             imageContentBuilder.clearContent();
         }

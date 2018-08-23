@@ -19,7 +19,7 @@ Imcms.define("imcms-image-content-builder",
 
         var selectedFullImagePath;
 
-        var $foldersContainer, $imagesContainer, selectedImage;
+        var $foldersContainer, $imagesContainer, selectedImage, $saveAndCloseBtn;
 
         var viewModel = {
             root: {},
@@ -456,6 +456,7 @@ Imcms.define("imcms-image-content-builder",
         }
 
         function selectImage(imageFile) {
+            $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
             $(".image-chosen").removeClass("image-chosen");
             $(this).addClass("image-chosen");
             selectedImage = imageFile;
@@ -564,6 +565,7 @@ Imcms.define("imcms-image-content-builder",
 
                 if (selectedImageName === $image.find(".imcms-title").text()) {
                     $image.addClass("image-chosen");
+                    $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
                 }
             });
         }
@@ -576,6 +578,7 @@ Imcms.define("imcms-image-content-builder",
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;
                 selectedFullImagePath = options.selectedImagePath;
+                $saveAndCloseBtn = options.$saveAndCloseBtn;
 
                 imageFoldersREST.read().done(loadImageFoldersContent);
             },
