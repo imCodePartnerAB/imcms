@@ -442,13 +442,21 @@ class MappingConfig {
                 long fileSize = imageFile.length();
                 String suffix;
 
-                if (fileSize >= (1024L * 1024L)) {
-                    suffix = "MB";
-                    fileSize /= 1024L * 1024L;
+                final long k = 1000L;
+                final long square = k * k;
+                final long cube = square * k;
 
-                } else if (fileSize >= 1024L) {
+                if (fileSize >= cube) {
+                    suffix = "GB"; // I hope it's not the real case
+                    fileSize /= cube;
+
+                } else if (fileSize >= square) {
+                    suffix = "MB";
+                    fileSize /= square;
+
+                } else if (fileSize >= k) {
                     suffix = "kB";
-                    fileSize /= 1024L;
+                    fileSize /= k;
 
                 } else {
                     suffix = "B";
