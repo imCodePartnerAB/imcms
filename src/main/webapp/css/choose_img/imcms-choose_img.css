@@ -7,6 +7,7 @@
     margin-left: .75%;
     margin-right: .75%;
     padding: 14px;
+    max-height: 290px;
 }
 
 .imcms-choose-img {
@@ -29,8 +30,9 @@
     font-family: 'Source Sans Pro', sans-serif;
     font-weight: 400;
     font-size: 13px;
-    line-height: 25px;
+    line-height: 17px;
     text-align: left;
+    padding-bottom: 3px;
 }
 
 .imcms-choose-img-description__button {
