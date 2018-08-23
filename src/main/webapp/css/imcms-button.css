@@ -190,7 +190,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 }
 
 .imcms-button--proportions {
-    background: transparent url("../images_new/image_editor/icon_size_smth.png") no-repeat center;
+    background: transparent url("../images_new/image_editor/icon_lock_proportions.png") no-repeat center;
     border: 1px solid transparent;
     border-radius: 5px;
     display: block;
