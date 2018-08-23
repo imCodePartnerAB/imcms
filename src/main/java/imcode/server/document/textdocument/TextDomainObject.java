@@ -22,10 +22,6 @@ public class TextDomainObject implements Serializable, Cloneable {
      * WYSIWYG Editor
      */
     public static final int TEXT_TYPE_EDITOR = 2;
-    /**
-     * Clean HTML-code, illegal tags removed.
-     */
-    public final static int TEXT_TYPE_CLEAN_HTML = 3;
 
     private volatile String text;
     private volatile int type;
@@ -89,7 +85,6 @@ public class TextDomainObject implements Serializable, Cloneable {
         switch (type) {
             case TEXT_TYPE_PLAIN:
             case TEXT_TYPE_HTML:
-            case TEXT_TYPE_CLEAN_HTML:
             case TEXT_TYPE_EDITOR:
                 this.type = type;
                 break;

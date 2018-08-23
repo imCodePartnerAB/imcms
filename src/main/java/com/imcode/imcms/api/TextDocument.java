@@ -29,6 +29,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class TextDocument extends Document {
 
     public final static int TYPE_ID = DocumentTypeDomainObject.TEXT_ID;
@@ -77,7 +78,6 @@ public class TextDocument extends Document {
         final Map<Integer, T> filteredConverted = map.entrySet()
                 .stream()
                 .filter(predicate)
-                .sorted()
                 .collect(Collectors.toMap(Entry::getKey, entry -> transformer.apply(entry.getValue())));
 
         return new TreeMap<>(filteredConverted);
@@ -106,7 +106,7 @@ public class TextDocument extends Document {
 
     public void setCleanHtmlTextField(int textFieldIndexInDocument, String newText) {
         newText = Utility.getTextContentFilter().cleanText(newText);
-        setTextField(textFieldIndexInDocument, newText, TextField.Format.CLEAN_HTML);
+        setTextField(textFieldIndexInDocument, newText, TextField.Format.EDITOR);
     }
 
     public void setTextField(int textFieldIndexInDocument, String newText, TextField.Format format) {
@@ -257,7 +257,8 @@ public class TextDocument extends Document {
         public enum Format {
             PLAIN(TextDomainObject.TEXT_TYPE_PLAIN),
             HTML(TextDomainObject.TEXT_TYPE_HTML),
-            CLEAN_HTML(TextDomainObject.TEXT_TYPE_CLEAN_HTML),;
+            EDITOR(TextDomainObject.TEXT_TYPE_EDITOR),
+            ;
 
             private final int type;
 
@@ -269,8 +270,8 @@ public class TextDocument extends Document {
                 switch (type) {
                     case TextDomainObject.TEXT_TYPE_HTML:
                         return Format.HTML;
-                    case TextDomainObject.TEXT_TYPE_CLEAN_HTML:
-                        return Format.CLEAN_HTML;
+                    case TextDomainObject.TEXT_TYPE_EDITOR:
+                        return Format.EDITOR;
                     default:
                         return Format.PLAIN;
                 }
