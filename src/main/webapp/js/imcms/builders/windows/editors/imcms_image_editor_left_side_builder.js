@@ -169,15 +169,28 @@ Imcms.define(
                 block: "imcms-edit-image",
                 elements: {
                     "button": [
-                        components.buttons.zoomPlusButton({click: zoomPlus.bind(imageDataContainers)}),
-                        components.buttons.zoomMinusButton({click: zoomMinus.bind(imageDataContainers)}),
+                        components.buttons.zoomPlusButton({
+                            title: texts.buttons.zoomIn,
+                            click: zoomPlus.bind(imageDataContainers)
+                        }),
+                        components.buttons.zoomMinusButton({
+                            title: texts.buttons.zoomOut,
+                            click: zoomMinus.bind(imageDataContainers)
+                        }),
                         components.buttons.zoomContainButton({
+                            title: texts.buttons.zoomContain,
                             click: function () {
                                 zoomContain(imageDataContainers, $editableImageArea);
                             }
                         }),
-                        components.buttons.rotateLeftButton({click: imageRotate.rotateLeft}),
-                        components.buttons.rotateRightButton({click: imageRotate.rotateRight})
+                        components.buttons.rotateLeftButton({
+                            title: texts.buttons.rotateLeft,
+                            click: imageRotate.rotateLeft
+                        }),
+                        components.buttons.rotateRightButton({
+                            title: texts.buttons.rotateRight,
+                            click: imageRotate.rotateRight
+                        })
                     ]
                 }
             }).buildBlockStructure("<div>");

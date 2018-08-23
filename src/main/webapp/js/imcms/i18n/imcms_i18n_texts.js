@@ -256,6 +256,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         left: "Fungerar endast om funktionen har implementerats av utvecklaren. [Utvecklarinformation: 'imcms-image-align-left' klass läggs till för vanlig imcms bildtagg]",
                         right: "Fungerar endast om funktionen har implementerats av utvecklaren. [Utvecklarinformation: 'imcms-image-align-center' klass läggs till för vanlig imcms bildtagg]"
                     },
+                    buttons: {
+                        zoomIn: 'Zooma in',
+                        zoomOut: 'Zooma ut',
+                        zoomContain: 'Zooma för att innehålla redigeringsområde',
+                        rotateLeft: 'Rotera vänster',
+                        rotateRight: 'Vrid höger'
+                    },
                     proportionsButtonTitle: "Bevara bildens proportioner Av/På",
                     displaySize: "Visad storlek",
                     height: "Höjd",
@@ -631,6 +638,13 @@ Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         center: "Works only if allowed by developer. [Developer info: 'imcms-image-align-center' class must be added for regular imcms image tag]",
                         left: "Works only if allowed by developer. [Developer info: 'imcms-image-align-left' class must be added for regular imcms image tag]",
                         right: "Works only if allowed by developer. [Developer info: 'imcms-image-align-right' class must be added for regular imcms image tag]"
+                    },
+                    buttons: {
+                        zoomIn: 'Zoom in',
+                        zoomOut: 'Zoom out',
+                        zoomContain: 'Zoom to contain editor area',
+                        rotateLeft: 'Rotate left',
+                        rotateRight: 'Rotate right'
                     },
                     proportionsButtonTitle: "Keep image proportion On/Off",
                     displaySize: "Display size",
