@@ -38,25 +38,52 @@
     z-index: 10003;
 }
 
-.imcms-angle--top-left {
+.imcms-angle-inner {
+    border: 1px solid #000;
+    opacity: .6;
+    width: 19px;
+    height: 19px;
+}
+
+.imcms-angle--top-left,
+.imcms-angle--top-left .imcms-angle-inner {
     border-bottom-width: 0;
     border-right-width: 0;
     cursor: nw-resize;
 }
 
-.imcms-angle--top-right {
+.imcms-angle--top-left .imcms-angle-inner {
+    top: -1px;
+    left: -1px;
+    position: absolute;
+}
+
+.imcms-angle--top-right,
+.imcms-angle--top-right .imcms-angle-inner {
     border-bottom-width: 0;
     border-left-width: 0;
     cursor: ne-resize;
 }
 
-.imcms-angle--bottom-left {
+.imcms-angle--top-right .imcms-angle-inner {
+    position: absolute;
+    top: -1px;
+}
+
+.imcms-angle--bottom-left,
+.imcms-angle--bottom-left .imcms-angle-inner {
     border-top-width: 0;
     border-right-width: 0;
     cursor: sw-resize;
 }
 
-.imcms-angle--bottom-right {
+.imcms-angle--bottom-left .imcms-angle-inner {
+    left: -1px;
+    position: absolute;
+}
+
+.imcms-angle--bottom-right,
+.imcms-angle--bottom-right .imcms-angle-inner {
     border-top-width: 0;
     border-left-width: 0;
     cursor: se-resize;

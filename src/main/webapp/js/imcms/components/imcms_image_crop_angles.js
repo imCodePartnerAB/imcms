@@ -49,7 +49,9 @@ Imcms.define(
         Angle.prototype = {
             $angle: null,
             buildAngle: function () {
-                return this.$angle = $("<div>", angleAttributes).addClass(BEM.buildClass("", angleClass, this.modifier));
+                return this.$angle = $("<div>", angleAttributes)
+                    .addClass(BEM.buildClass("", angleClass, this.modifier))
+                    .append($('<div>', {'class': 'imcms-angle-inner'}));
             },
             setTop: function (newTop) {
                 this.$angle.css({top: newTop});
