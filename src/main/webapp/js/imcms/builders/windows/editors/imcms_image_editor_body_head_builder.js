@@ -110,7 +110,7 @@ Imcms.define(
                 return bodyHeadBEM.buildBlock("<div>", [
                     {
                         "button": $showHideBottomPanelBtn,
-                        modifiers: ["bottom-panel"]
+                        modifiers: ["toolbar"]
                     }, {
                         "img-title": opts.imageDataContainers.$imageTitle
                     }, {
