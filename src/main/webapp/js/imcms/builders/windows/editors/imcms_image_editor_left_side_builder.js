@@ -234,14 +234,14 @@ Imcms.define(
                 opts.imageDataContainers.$editableImageArea = buildEditableImageArea(opts.imageDataContainers);
                 var $previewImageArea = buildPreviewImageArea(opts.imageDataContainers);
 
-                opts.imageDataContainers.$bottomPanel = buildBottomPanel(
+                opts.imageDataContainers.$toolbar = buildBottomPanel(
                     opts.toggleImgArea, opts.imageDataContainers, opts.imageDataContainers.$editableImageArea
                 );
 
                 return $("<div>").append(
                     opts.imageDataContainers.$editableImageArea,
                     $previewImageArea,
-                    opts.imageDataContainers.$bottomPanel
+                    opts.imageDataContainers.$toolbar
                 );
             }
         };

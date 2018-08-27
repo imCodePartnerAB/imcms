@@ -33,11 +33,11 @@ Imcms.define(
             });
         }
 
-        function showHideBottomPanel($bottomPanel) {
+        function showHideBottomPanel($toolbar) {
             showHidePanel({
                 $btn: $(this),
-                newPanelSideValue: $bottomPanel.height(),
-                $panel: $bottomPanel,
+                newPanelSideValue: $toolbar.height(),
+                $panel: $toolbar,
                 panelSide: "bottom",
                 textHide: texts.panels.bottom.hide,
                 textShow: texts.panels.bottom.show
@@ -87,7 +87,7 @@ Imcms.define(
                     "class": "imcms-image-characteristic",
                     text: texts.panels.bottom.show,
                     click: function () {
-                        showHideBottomPanel.call(this, opts.imageDataContainers.$bottomPanel);
+                        showHideBottomPanel.call(this, opts.imageDataContainers.$toolbar);
                     }
                 });
 
