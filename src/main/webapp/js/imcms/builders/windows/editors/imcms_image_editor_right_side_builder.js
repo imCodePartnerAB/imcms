@@ -366,26 +366,8 @@ Imcms.define(
                         text: "PNG",
                         "data-value": "PNG"
                     }, {
-                        text: "BMP",
-                        "data-value": "BMP"
-                    }, {
                         text: "GIF",
                         "data-value": "GIF"
-                    }, {
-                        text: "PSD",
-                        "data-value": "PSD"
-                    }, {
-                        text: "SVG",
-                        "data-value": "SVG"
-                    }, {
-                        text: "TIFF",
-                        "data-value": "TIFF"
-                    }, {
-                        text: "XCF",
-                        "data-value": "XCF"
-                    }, {
-                        text: "PICT",
-                        "data-value": "PICT"
                     }]);
                 }
 
