@@ -12,13 +12,13 @@ Imcms.define(
                 panelAnimationOpts[panelOpts.panelSide] = "-" + panelOpts.newPanelSideValue + "px";
                 panelOpts.$panel.animate(panelAnimationOpts, 300);
                 panelOpts.$btn.data("state", false);
-                panelOpts.$btn.text(texts.panels.bottom.show);
+                panelOpts.$btn.text(panelOpts.textShow);
 
             } else {
                 panelAnimationOpts[panelOpts.panelSide] = 0;
                 panelOpts.$panel.animate(panelAnimationOpts, 300);
                 panelOpts.$btn.data("state", true);
-                panelOpts.$btn.text(texts.panels.bottom.hide);
+                panelOpts.$btn.text(panelOpts.textHide);
             }
         }
 
@@ -30,17 +30,6 @@ Imcms.define(
                 panelSide: "right",
                 textHide: texts.panels.right.hide,
                 textShow: texts.panels.right.show
-            });
-        }
-
-        function showHideBottomPanel($toolbar) {
-            showHidePanel({
-                $btn: $(this),
-                newPanelSideValue: $toolbar.height(),
-                $panel: $toolbar,
-                panelSide: "bottom",
-                textHide: texts.panels.bottom.hide,
-                textShow: texts.panels.bottom.show
             });
         }
 
@@ -83,14 +72,6 @@ Imcms.define(
                     }
                 });
 
-                var $showHideBottomPanelBtn = components.buttons.neutralButton({
-                    "class": "imcms-image-characteristic",
-                    text: texts.panels.bottom.show,
-                    click: function () {
-                        showHideBottomPanel.call(this, opts.imageDataContainers.$toolbar);
-                    }
-                });
-
                 opts.imageDataContainers.$imageTitle = bodyHeadBEM.buildElement("img-title", "<div>");
 
                 var $showHideRightPanelBtn = components.buttons.neutralButton({
@@ -109,9 +90,6 @@ Imcms.define(
 
                 return bodyHeadBEM.buildBlock("<div>", [
                     {
-                        "button": $showHideBottomPanelBtn,
-                        modifiers: ["toolbar"]
-                    }, {
                         "img-title": opts.imageDataContainers.$imageTitle
                     }, {
                         "button": $showHideRightPanelBtn,
