@@ -1,14 +1,13 @@
 .imcms-editable-img-controls {
-    display: block;
+    display: inline-block;
     overflow: hidden;
     padding-left: 42px;
-    width: 100%;
-    height: 125px;
+    width: 74%;
 }
 
 .imcms-editable-img-controls__image-revert {
     float: left;
-    margin-top: 40px;
+    margin-top: 10px;
 }
 
 .imcms-editable-img-controls__control-size,
@@ -31,7 +30,7 @@
 }
 
 .imcms-editable-img-control-tabs {
-    padding-top: 40px;
+    padding-top: 21px;
 }
 
 .imcms-editable-img-control-tabs__tab {

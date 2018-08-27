@@ -33,8 +33,7 @@
 
 .imcms-image_editor__image-characteristics {
     border-bottom: 1px solid #d3d8de;
-    padding-right: 42px;
-    padding-left: 42px;
+    padding: 0;
     height: 64px;
 }
 

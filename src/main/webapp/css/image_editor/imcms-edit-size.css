@@ -7,7 +7,7 @@
 .imcms-edit-size__title {
     display: block;
     width: 100%;
-    line-height: 40px;
+    line-height: 28px;
 }
 
 .imcms-edit-size__number {
@@ -21,7 +21,8 @@
 
 .imcms-edit-size__button {
     float: left;
-    margin: 3px 15px;
+    margin: 0 15px;
+    height: 30px;
 }
 
 .imcms-edit-size .imcms-edit-size__number {
@@ -30,6 +31,7 @@
 
 .imcms-edit-size__number .imcms-number__label {
     margin-right: 5px;
+    margin-top: 0;
 }
 
 .imcms-edit-size__number .imcms-number-box {
@@ -38,4 +40,7 @@
 
 .imcms-edit-size__number .imcms-number-box__input {
     width: 100px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    line-height: 18px;
 }
