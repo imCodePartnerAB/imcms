@@ -296,7 +296,8 @@ public class ImcmsImageUtils {
         try {
             File imagePath = Imcms.getServices().getConfig().getImagePath();
             String imagePathCanon = imagePath.getCanonicalPath();
-            String genFileCanon = genFile.getCanonicalPath();
+            boolean isPathContainSymlink = !genFile.getAbsolutePath().equals(genFile.getCanonicalPath());
+            String genFileCanon = isPathContainSymlink ? genFile.getAbsolutePath() : genFile.getCanonicalPath();
 
             if (!genFileCanon.startsWith(imagePathCanon)) {
                 return;

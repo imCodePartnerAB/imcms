@@ -12,9 +12,9 @@ import org.apache.oro.text.regex.*;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedList;
 
 public class FileUtility {
@@ -37,7 +37,7 @@ public class FileUtility {
     }
 
     public static File relativizeFile(File ancestorDirectory, File file) throws IOException {
-        File currentParent = file.getCanonicalFile();
+        File currentParent = Files.isSymbolicLink(file.toPath()) ? file : file.getCanonicalFile();
         ancestorDirectory = ancestorDirectory.getCanonicalFile();
 
         LinkedList<String> fileParents = new LinkedList();
