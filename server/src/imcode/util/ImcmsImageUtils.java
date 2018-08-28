@@ -63,9 +63,9 @@ public class ImcmsImageUtils {
                 try {
                     if (linkUrl.matches("^\\d+$")) { // metaId
                         linkUrl = request.getContextPath() + "/" + linkUrl;
-                    } else if (linkUrl.indexOf(":") == -1 && !"".equals(request.getContextPath()) && linkUrl.startsWith("/") && !linkUrl.startsWith(request.getContextPath())) { // /pathOrMetaIdWithoutCp
+                    } else if (!linkUrl.contains(":") && !"".equals(request.getContextPath()) && linkUrl.startsWith("/") && !linkUrl.startsWith(request.getContextPath())) { // /pathOrMetaIdWithoutCp
                         linkUrl = request.getContextPath() + linkUrl;
-                    } else if (linkUrl.indexOf(":") == -1 && linkUrl.toLowerCase().matches("^[\\w].*")) { // alias no slashOrCp
+                    } else if (!linkUrl.contains(":") && linkUrl.toLowerCase().matches("^[\\w].*")) { // alias no slashOrCp
                         linkUrl = request.getContextPath() + "/" + linkUrl;
                     }
                 } catch (Exception ignore) {

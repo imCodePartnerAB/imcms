@@ -39,22 +39,22 @@ public class FileUtility {
     public static File relativizeFile(File ancestorDirectory, File file) throws IOException {
         File currentParent = file.getCanonicalFile();
         ancestorDirectory = ancestorDirectory.getCanonicalFile();
-        LinkedList fileParents = new LinkedList();
+
+        LinkedList<String> fileParents = new LinkedList();
         while (!currentParent.equals(ancestorDirectory)) {
             fileParents.addFirst(currentParent.getName());
             currentParent = currentParent.getParentFile();
         }
-        File relativeFile = new File((String) fileParents.removeFirst());
-        for (Iterator iterator = fileParents.iterator(); iterator.hasNext(); ) {
-            relativeFile = new File(relativeFile, (String) iterator.next());
+        File relativeFile = new File(fileParents.removeFirst());
+        for (String fileParent : fileParents) {
+            relativeFile = new File(relativeFile, fileParent);
         }
         return relativeFile;
     }
 
     public static boolean directoryIsAncestorOfOrEqualTo(File dir, File file) throws IOException {
         dir = dir.getCanonicalFile();
-        for (File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile())
-        {
+        for (File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile()) {
             if (currentFile.equals(dir)) {
                 return true;
             }
