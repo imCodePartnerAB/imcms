@@ -37,11 +37,12 @@ public class FileUtility {
     }
 
     public static File relativizeFile(File ancestorDirectory, File file) throws IOException {
-        File currentParent = Files.isSymbolicLink(file.toPath()) ? file : file.getCanonicalFile();
-        ancestorDirectory = ancestorDirectory.getCanonicalFile();
+        boolean isPathContainSymlink = !file.getAbsolutePath().equals(file.getCanonicalPath());
+        File currentParent = isPathContainSymlink ? file : file.getCanonicalFile();
 
+        ancestorDirectory = ancestorDirectory.getCanonicalFile();
         LinkedList<String> fileParents = new LinkedList();
-        while (!currentParent.equals(ancestorDirectory)) {
+        while (null != currentParent && !currentParent.equals(ancestorDirectory)) {
             fileParents.addFirst(currentParent.getName());
             currentParent = currentParent.getParentFile();
         }
@@ -54,8 +55,8 @@ public class FileUtility {
 
     public static boolean directoryIsAncestorOfOrEqualTo(File dir, File file) throws IOException {
         dir = dir.getCanonicalFile();
-        for (File currentFile = file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile()) {
-            if (currentFile.equals(dir)) {
+        for (File currentFile = Files.isSymbolicLink(file.toPath()) ? file.getAbsoluteFile() : file.getCanonicalFile(); null != currentFile; currentFile = currentFile.getParentFile()) {
+            if (currentFile.getAbsoluteFile().equals(dir.getAbsoluteFile())) {
                 return true;
             }
         }
