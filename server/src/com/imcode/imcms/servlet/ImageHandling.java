@@ -172,7 +172,9 @@ public class ImageHandling extends HttpServlet {
 
         for (String allowedPath : ALLOWED_PATHS) {
             try {
-                if (localFile.getCanonicalPath().startsWith(allowedPath)) {
+                boolean isPathContainSymlink = !localFile.getAbsolutePath().equals(localFile.getCanonicalPath());
+                String localFilePath = isPathContainSymlink ? localFile.getAbsolutePath() : localFile.getCanonicalPath();
+                if (localFilePath.startsWith(allowedPath)) {
                     return new SourceFile(localFile, false);
                 }
             } catch (IOException ex) {

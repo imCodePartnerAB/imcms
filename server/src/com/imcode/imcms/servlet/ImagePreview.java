@@ -66,7 +66,9 @@ public class ImagePreview extends HttpServlet {
 
         File root = Imcms.getPath();
         File imageFile = new File(root, path);
-        imageFile = imageFile.getCanonicalFile();
+        boolean isPathContainSymlink = !imageFile.getAbsolutePath().equals(imageFile.getCanonicalPath());
+
+        imageFile = isPathContainSymlink ? imageFile.getAbsoluteFile() : imageFile.getCanonicalFile();
 
         if (!imageFile.getAbsolutePath().startsWith(root.getCanonicalPath())) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
