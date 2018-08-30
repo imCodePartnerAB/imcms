@@ -1,4 +1,7 @@
 .idea/
-build.log
 target/
+build/
+auto/
 .gradle/
+src/main/webapp/dist/
+src/main/webapp/node_modules/
