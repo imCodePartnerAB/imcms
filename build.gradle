@@ -243,6 +243,7 @@ test {
 
 task webpack {
     exec {
+        commandLine "npm", "install", "--production", "--prefix", "src/main/webapp/"
         commandLine "npm", "run", "build:prod", "--prefix", "src/main/webapp/"
     }
 }
