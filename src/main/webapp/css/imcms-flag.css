@@ -36,21 +36,3 @@
     opacity: 1;
 }
 
-/*
-@media
-only screen and (-webkit-min-device-pixel-ratio: 2),
-only screen and (   min--moz-device-pixel-ratio: 2),
-only screen and (     -o-min-device-pixel-ratio: 2/1),
-only screen and (        min-device-pixel-ratio: 2),
-only screen and (                min-resolution: 192dpi),
-only screen and (                min-resolution: 2dppx) {
-    .imcms-flag--en {
-        background: url("../images_new/icon_flag_en_active.png") no-repeat left top;
-        background-size: 58px 34px;
-    }
-
-    .imcms-flag--sw {
-        background: url("../images_new/icon_flag_sw_active.png") no-repeat left top;
-        background-size: 58px 34px;
-    }
-}*/
