@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 29.08.17
  */
-Imcms.define("imcms-loop-editor-builder",
+define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder", "jquery",
         "imcms-events", "imcms-i18n-texts"

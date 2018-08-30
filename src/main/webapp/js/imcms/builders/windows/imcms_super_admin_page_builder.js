@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.06.18
  */
-Imcms.define(
+define(
     'imcms-super-admin-page-builder',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-super-admin-tabs-builder', 'imcms-i18n-texts', 'jquery'

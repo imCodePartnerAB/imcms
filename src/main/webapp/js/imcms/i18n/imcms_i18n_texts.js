@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 09.02.18
  */
-Imcms.define("imcms-i18n-texts", ["imcms"], function (imcms) {
+define("imcms-i18n-texts", ["imcms"], function (imcms) {
 
     var texts = {
         "sv": {

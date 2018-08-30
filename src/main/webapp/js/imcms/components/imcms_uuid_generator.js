@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 01.08.17.
  */
-Imcms.define("imcms-uuid-generator", [], function () {
+define("imcms-uuid-generator", [], function () {
     var hexValues = [
         '0', '1', '2', '3',
         '4', '5', '6', '7',

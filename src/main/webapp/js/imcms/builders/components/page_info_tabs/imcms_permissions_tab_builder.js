@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-permissions-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-page-info-tab"

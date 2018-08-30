@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 07.05.18
  */
-Imcms.define(
+define(
     "imcms-admin-panel-settings-builder",
     [
         "imcms-bem-builder", "imcms-cookies", "imcms-i18n-texts", "imcms-admin-panel-state", "jquery", "imcms-events",

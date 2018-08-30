@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 16.08.17.
  */
-Imcms.define("imcms-image-content-builder",
+define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
         "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts"

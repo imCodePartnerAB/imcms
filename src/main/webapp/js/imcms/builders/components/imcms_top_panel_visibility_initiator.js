@@ -2,16 +2,14 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 04.05.18
  */
-Imcms.define(
+define(
     "imcms-top-panel-visibility-initiator",
     ["imcms-events", "imcms-admin-panel-settings-builder", "imcms-admin-panel-state", "imcms-streams", "jquery"],
     function (events, panelSettings, panelState, streams, $) {
 
         var panelSensitivePixels = 15;
         var panels$ = [];
-
         var listenersNotSet = true;
-        var $body = $("body");
 
         function showPanels() {
             $("#imcmsAdminSpecial").not(".imcms-special-hidden").css("display", "block");
@@ -27,7 +25,7 @@ Imcms.define(
         }
 
         function hidePanels() {
-            $body.css({"top": 0});
+            $("body").css({"top": 0});
             panels$.forEach(hidePanel);
 
             setTimeout(function () {

@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.05.18
  */
-Imcms.define('imcms-displacing-array', [], function () { // todo: rename "array"->"list" in module name and file
+define('imcms-displacing-array', [], function () { // todo: rename "array"->"list" in module name and file
 
     var DisplacingList = function (size) {
         if (typeof size !== 'number') throw new Error("Size should be integer!");

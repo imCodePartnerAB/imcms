@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 08.02.18
  */
-Imcms.define(
+define(
     "imcms-text-history-plugin",
     ["imcms-text-history-window-builder", "jquery", 'imcms-text-editor-toolbar-button-builder'],
     function (textHistoryBuilder, $, toolbarButtonBuilder) {

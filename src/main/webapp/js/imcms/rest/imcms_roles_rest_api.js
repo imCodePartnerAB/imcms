@@ -1,4 +1,4 @@
-Imcms.define('imcms-roles-rest-api', ['imcms-rest-api'], function (rest) {
+define('imcms-roles-rest-api', ['imcms-rest-api'], function (rest) {
     var url = '/roles';
     var api = new rest.API(url);
 

@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 24.07.17.
  */
-Imcms.define("imcms-buttons-builder", ["imcms-bem-builder"], function (bemBuilder) {
+define("imcms-buttons-builder", ["imcms-bem-builder"], function (bemBuilder) {
     var buttonsBEM = new bemBuilder({
         block: "imcms-buttons",
         elements: {

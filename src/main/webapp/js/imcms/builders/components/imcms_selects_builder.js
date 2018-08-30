@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 25.07.17.
  */
-Imcms.define("imcms-selects-builder",
+define("imcms-selects-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "jquery", "imcms-checkboxes-builder"],
     function (BEM, primitives, buttons, $, checkboxesBuilder) {
 

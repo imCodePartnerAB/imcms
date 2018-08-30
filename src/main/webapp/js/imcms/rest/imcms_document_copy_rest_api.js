@@ -1,4 +1,4 @@
-Imcms.define("imcms-document-copy-rest-api", ["imcms-rest-api"], function (rest) {
+define("imcms-document-copy-rest-api", ["imcms-rest-api"], function (rest) {
     return {
         copy: function (docIdentifier) {
             var url = "/documents/copy/" + docIdentifier;

@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 07.09.17
  */
-Imcms.define(
+define(
     "imcms-image-cropper",
     ["imcms-events", "imcms-image-crop-angles", "imcms-numeric-limiter", "imcms-image-cropping-elements"],
     function (events, angles, Limit, cropElements) {

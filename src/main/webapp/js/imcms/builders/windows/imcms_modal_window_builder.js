@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-modal-window-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts", "imcms-window-keys-controller",

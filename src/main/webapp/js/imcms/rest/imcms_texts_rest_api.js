@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 08.11.17
  */
-Imcms.define("imcms-texts-rest-api", ["imcms-rest-api"], function (rest) {
+define("imcms-texts-rest-api", ["imcms-rest-api"], function (rest) {
     var apiPath = "/texts";
     var api = new rest.API(apiPath);
 

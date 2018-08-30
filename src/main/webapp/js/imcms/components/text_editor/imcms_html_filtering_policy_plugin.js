@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 20.08.18
  */
-Imcms.define(
+define(
     'imcms-html-filtering-policy-plugin',
     [
         'imcms-text-editor-toolbar-button-builder', 'imcms-html-filtering-policies', 'imcms-bem-builder', 'jquery',

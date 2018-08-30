@@ -1,4 +1,4 @@
-Imcms.define("imcms-access-tab-builder",
+define("imcms-access-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator", "jquery",
         "imcms-i18n-texts", "imcms-page-info-tab"

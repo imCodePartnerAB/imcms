@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 30.07.18
  */
-Imcms.define('imcms-role-to-row-transformer', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
+define('imcms-role-to-row-transformer', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
 
     var rolesTableBEM = new BEM({
         block: 'roles-table',

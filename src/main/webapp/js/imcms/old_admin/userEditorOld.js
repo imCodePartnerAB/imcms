@@ -1,11 +1,11 @@
-import '../../../imcms/css/imcms_admin.css';
-import '../../../css/imcms-imports_files.css';
-import '../../../css/imcms-edit-user-page.css';
-
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 18.06.18
  */
+
+import '../../../imcms/css/imcms_admin.css';
+import '../../../css/imcms-imports_files.css';
+import '../../../css/imcms-edit-user-page.css';
 
 var $ = require('jquery');
 var components = require('imcms-components-builder');
@@ -14,43 +14,39 @@ var imcms = require('imcms');
 
 function activateUserAdminRoles() {
     var $form = $('#user-edit-form');
-    var $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
+    var $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
 
-    var onUserAdminRoleClicked = function () {
-        var $checkbox = $(this);
+    if (!$userAdminRoleIds.length) return;
 
-        if ($checkbox.is(':checked')) {
-            $userAdminRoleIds.removeAttr('disabled');
+    $userAdminRoleIds.attr('disabled', 'disabled');
 
-        } else {
-            $userAdminRoleIds.removeAttr('checked');
-            $userAdminRoleIds.attr('disabled', 'disabled');
-        }
-    };
+    var isUserAdminSelected = $form.find('input[name=role_ids]')
+        .find("option")
+        .filter(function () {
+            var $option = $(this);
+            return ($option.text() === 'Useradmin' && $option.is(':selected'));
+        })
+        .length;
 
-    var $userAdminRole = $form.find('#role-1');
-    $userAdminRole.click(onUserAdminRoleClicked);
-
-    onUserAdminRoleClicked.call($userAdminRole);
+    if (isUserAdminSelected) {
+        $userAdminRoleIds.removeAttr('disabled');
+    }
 }
 
 function onSubmit(e) {
     var $form = $('#user-edit-form');
-    var $pass1 = $form.find('input[name=password]');
-    var $pass2 = $form.find('input[name=password2]');
 
-    if (!$form.find('input[name=login]').val()
-        || !$pass1.val()
-        || !$pass2.val()
-        || !$form.find('#email').val())
-    {
+    if ($form.find('input[name=login_name]').val() === "") {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;
     }
 
+    var $pass1 = $form.find('input[name=password1]');
+    var $pass2 = $form.find('input[name=password2]');
+
     if ($pass1.val() === $pass2.val()) {
-        $('[name=userPhoneNumber]').removeAttr('disabled');
+        $('[name=user_phone_number]').removeAttr('disabled');
         return;
     }
 
@@ -60,20 +56,12 @@ function onSubmit(e) {
     alert($('#pass-verification-failed-text').val());
 }
 
-function onReset() {
-    window.location.reload(true);
-}
-
-function onCancel() {
-    window.location.href = imcms.contextPath || "/";
-}
-
 function loadLanguages() {
     var $langSelectContainer = $('#languages-select-container');
 
     var selectAttributes = {
         text: $langSelectContainer.attr('data-text'),
-        name: 'langCode'
+        name: 'lang_id'
     };
 
     var $select = components.selects.imcmsSelect("<div>", selectAttributes);
@@ -159,12 +147,12 @@ function addPhone(e) {
         .end()
         .find('#phone-type-selected')
         .removeAttr('id')
-        .attr('name', 'userPhoneNumberType')
+        .attr('name', 'user_phone_number_type')
         .end()
         .find('#phone')
         .removeAttr('id')
         .attr('disabled', 'disabled')
-        .attr('name', 'userPhoneNumber')
+        .attr('name', 'user_phone_number')
         .val(phone)
         .end()
         .find('#phone-type-select')
@@ -189,21 +177,19 @@ function filterNonDigits(e) {
 }
 
 $(function () {
-    $('input[name=login]').focus();
+    $('input[name=login_name]').focus();
     activateUserAdminRoles();
     loadLanguages();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
+    $('#select-role-ids').change(activateUserAdminRoles);
     $('#edit-user-submit-button').click(onSubmit);
-    $('#edit-user-reset').click(onReset);
-    $('#edit-user-cancel').click(onCancel);
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', function (e) {
         e.preventDefault();
     });
-
 
     $('.imcms-text-box--existing-phone-box').each(function () {
         var $row = $(this);

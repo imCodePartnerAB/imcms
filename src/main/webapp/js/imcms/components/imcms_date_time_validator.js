@@ -1,4 +1,4 @@
-Imcms.define("imcms-date-time-validator", [], function () {
+define("imcms-date-time-validator", [], function () {
 
     var PUBLISHED = "Published",
         PUBLICATION_END = "Publication end",

@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 19.08.17.
  */
-Imcms.define("imcms-controls-builder", ["imcms-bem-builder"], function (BEM) {
+define("imcms-controls-builder", ["imcms-bem-builder"], function (BEM) {
     var controlsBEM = new BEM({
         block: "imcms-controls",
         elements: {"control": "imcms-control"}

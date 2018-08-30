@@ -1,4 +1,4 @@
-Imcms.define("imcms-categories-tab-builder",
+define("imcms-categories-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts", "jquery",
         "imcms-page-info-tab"

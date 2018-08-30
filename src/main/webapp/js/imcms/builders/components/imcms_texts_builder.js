@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 26.07.17.
  */
-Imcms.define("imcms-texts-builder",
+define("imcms-texts-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "imcms-uuid-generator", "jquery"],
     function (BEM, primitives, buttons, uuidGenerator, $) {
         function activateNumberBox() {

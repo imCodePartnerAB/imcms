@@ -1,4 +1,4 @@
-Imcms.define("imcms-admin-panel-state", ["jquery"], function ($) {
+define("imcms-admin-panel-state", ["jquery"], function ($) {
 
     var PanelState = function () {
         this.isSpecialPanelHidingPrevented = false;

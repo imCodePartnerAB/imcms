@@ -1,11 +1,11 @@
-import '../../../imcms/css/imcms_admin.css';
-import '../../../css/imcms-imports_files.css';
-import '../../../css/imcms-edit-user-page.css';
-
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 18.06.18
  */
+
+import '../../../imcms/css/imcms_admin.css';
+import '../../../css/imcms-imports_files.css';
+import '../../../css/imcms-edit-user-page.css';
 
 var $ = require('jquery');
 var components = require('imcms-components-builder');
@@ -36,28 +36,14 @@ function activateUserAdminRoles() {
 
 function onSubmit(e) {
     var $form = $('#user-edit-form');
-    var $pass1 = $form.find('input[name=password]');
-    var $pass2 = $form.find('input[name=password2]');
 
-    if (!$form.find('input[name=login]').val()
-        || !$pass1.val()
-        || !$pass2.val()
-        || !$form.find('#email').val())
-    {
+    if (!$form.find('input[name=login]').val() || !$form.find('#email').val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;
     }
 
-    if ($pass1.val() === $pass2.val()) {
-        $('[name=userPhoneNumber]').removeAttr('disabled');
-        return;
-    }
-
-    e.preventDefault();
-    $pass2.val("");
-    $pass1.val("").focus();
-    alert($('#pass-verification-failed-text').val());
+    $('[name=userPhoneNumber]').removeAttr('disabled');
 }
 
 function onReset() {

@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-image-editor-body-head-builder",
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',

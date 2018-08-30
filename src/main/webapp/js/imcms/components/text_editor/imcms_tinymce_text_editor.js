@@ -2,10 +2,10 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 15.08.18
  */
-Imcms.define(
+define(
     'imcms-tinymce-text-editor',
     [
-        'tinyMCE', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
+        'tinymce', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
         'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
         'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode',
         'imcms-switch-to-text-editor', 'imcms-html-filtering-policy-plugin'
@@ -15,6 +15,16 @@ Imcms.define(
         fullScreenPlugin, switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin,
         htmlFilteringPolicyPlugin
     ) {
+
+        require('tinymce/themes/modern/theme');
+        require('tinymce/plugins/autolink');
+        require('tinymce/plugins/link');
+        require('tinymce/plugins/lists');
+        require('tinymce/plugins/hr');
+        require('tinymce/plugins/code');
+        require('tinymce/plugins/save');
+        require('tinymce/plugins/fullscreen');
+
         var sourceCodePlugin = 'code';
         var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
         var listsPlugins = ['bullist', 'numlist'].join(' ');

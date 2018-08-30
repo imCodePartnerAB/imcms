@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.05.18
  */
-Imcms.define('imcms-streams', ['imcms-displacing-array'], function (DisplacingList) {
+define('imcms-streams', ['imcms-displacing-array'], function (DisplacingList) {
 
     var Subscriber = function (topic) {
         (this.topic = topic).addSubscriber(this);

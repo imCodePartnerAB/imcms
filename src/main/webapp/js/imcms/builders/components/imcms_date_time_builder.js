@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 28.07.17.
  */
-Imcms.define("imcms-date-time-builder",
+define("imcms-date-time-builder",
     ["imcms-bem-builder", "imcms-buttons-builder", "imcms-validator", "imcms-date-picker", "imcms-time-picker"],
     function (BEM, buttons, Validator, DatePicker, TimePicker) {
         var datePickerBEM = new BEM({

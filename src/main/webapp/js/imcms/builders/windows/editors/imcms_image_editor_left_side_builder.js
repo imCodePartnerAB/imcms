@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-image-editor-left-side-builder",
     ["imcms-bem-builder", "jquery", "imcms-image-crop-angles", "imcms-image-cropping-elements"],
 

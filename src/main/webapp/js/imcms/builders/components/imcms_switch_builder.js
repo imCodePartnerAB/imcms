@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 15.08.17.
  */
-Imcms.define("imcms-switch-builder", ["imcms-bem-builder", "imcms-primitives-builder"], function (BEM, primitives) {
+define("imcms-switch-builder", ["imcms-bem-builder", "imcms-primitives-builder"], function (BEM, primitives) {
 
     var switchBlockBEM = new BEM({
         block: "imcms-switches",

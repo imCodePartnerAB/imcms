@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 04.09.17
  */
-Imcms.define(
+define(
     "imcms-window-builder",
     ["imcms-window-components-builder", "imcms-window-keys-controller", "jquery"],
     function (windowComponents, windowKeysController, $) {

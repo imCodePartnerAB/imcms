@@ -1,15 +1,18 @@
+import '../../../css/imcms-imports_files.css';
+
 /**
  * Starter for text edit view.
  *
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 16.02.18
  */
-Imcms.require(
-    ["imcms-text-editor-initializer", "imcms-image-editor-initializer", "tinyMCE", "imcms-events", "imcms", "jquery"],
+var textEditorInitializer = require("imcms-text-editor-initializer");
+var imageEditorInitializer = require("imcms-image-editor-initializer");
+var imcms = require("imcms");
 
-    function (textEditorInitializer, imageEditorInitializer, tinyMCE, events, imcms, $) {
-        imcms.textEditorFullScreenEnabled = true;
-        textEditorInitializer.initEditor({autoFocus: true});
-        imageEditorInitializer.initEditor();
-    }
-);
+imcms.textEditorFullScreenEnabled = true;
+
+$(function () {
+    textEditorInitializer.initEditor({autoFocus: true});
+    imageEditorInitializer.initEditor();
+});

@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 16.03.18
  */
-Imcms.define(
+define(
     "imcms-image-cropping-elements",
     ["jquery", "imcms-bem-builder", "imcms-events"],
     function ($, BEM, events) {

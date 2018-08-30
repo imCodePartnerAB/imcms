@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-Imcms.define(
+define(
     "imcms-image-resize",
     ["imcms-image-crop-angles", "imcms-image-cropping-elements", "imcms-events"],
     function (croppingAngles, cropElements, events) {

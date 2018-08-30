@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-rest-api",
     ["imcms", "imcms-session-timeout-management", "jquery"],
     function (imcms, sessionTimeoutManagement, $) {

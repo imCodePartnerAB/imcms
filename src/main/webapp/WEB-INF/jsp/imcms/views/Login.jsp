@@ -13,14 +13,10 @@ ${"-->"}
 <html>
 <head>
     <title><fmt:message key="templates/login/index.html/1"/></title>
-    <link rel="stylesheet" type="text/css" href="${cp}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${cp}/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${cp}/css/imcms-login-page.css">
     <script>
         <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
     </script>
-    <script src="${cp}/js/imcms/imcms_main.js" data-name="imcms"
-            data-main="${cp}/js/imcms/starters/imcms_login_start.js"></script>
+    <script src="${cp}/dist/imcms_login_start.js"></script>
 </head>
 <body>
 <div class="imcms-info-page">

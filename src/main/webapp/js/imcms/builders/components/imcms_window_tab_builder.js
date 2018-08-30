@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 23.06.18
  */
-Imcms.define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
+define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
 
     var formsBEM = new BEM({
         block: 'imcms-form',

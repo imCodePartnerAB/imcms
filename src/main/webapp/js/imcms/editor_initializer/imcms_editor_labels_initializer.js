@@ -1,4 +1,4 @@
-Imcms.define("imcms-editor-labels-initializer", ["jquery"], function ($) {
+define("imcms-editor-labels-initializer", ["jquery"], function ($) {
     return {
         initEditorLabels: function () {
             var editControls = $(".imcms-editor-area__control-wrap")

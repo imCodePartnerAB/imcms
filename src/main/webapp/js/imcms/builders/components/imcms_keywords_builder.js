@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 27.07.17.
  */
-Imcms.define("imcms-keywords-builder",
+define("imcms-keywords-builder",
     ["imcms-bem-builder", "imcms-texts-builder", "imcms-buttons-builder", "imcms-primitives-builder", "imcms-uuid-generator", "jquery"],
     function (BEM, texts, buttons, primitives, uuidGenerator, $) {
 

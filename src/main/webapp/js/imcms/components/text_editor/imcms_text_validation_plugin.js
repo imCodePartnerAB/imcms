@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 08.02.18
  */
-Imcms.define(
+define(
     "imcms-text-validation-plugin",
     [
         "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder", "jquery",

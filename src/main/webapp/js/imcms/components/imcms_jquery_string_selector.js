@@ -1,4 +1,4 @@
-Imcms.define("imcms-jquery-string-selector", ["imcms-dom-attributes-extractor"], function (getAttributes) {
+define("imcms-jquery-string-selector", ["imcms-dom-attributes-extractor"], function (getAttributes) {
     /*
      * Transform element into String selector
      * @returns {string|null} transformed DOM object as string like

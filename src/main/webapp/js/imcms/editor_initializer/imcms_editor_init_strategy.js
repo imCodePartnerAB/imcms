@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 04.09.17
  */
-Imcms.define("imcms-editor-init-strategy", ["jquery"], function ($) {
+define("imcms-editor-init-strategy", ["jquery"], function ($) {
     return {
         initEditor: function (editorInitData) {
             var openEditor = function () {

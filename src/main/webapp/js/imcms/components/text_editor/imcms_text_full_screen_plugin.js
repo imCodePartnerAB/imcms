@@ -2,9 +2,9 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 09.02.18
  */
-Imcms.define(
+define(
     "imcms-text-full-screen-plugin",
-    ["jquery", "tinyMCE", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder'],
+    ["jquery", "tinymce", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder'],
     function ($, tinyMCE, adminPanelState, imcms, toolbarButtonBuilder) {
 
         var title = 'Fullscreen'; // todo: localize!

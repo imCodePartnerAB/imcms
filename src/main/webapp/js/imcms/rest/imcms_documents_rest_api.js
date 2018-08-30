@@ -1,4 +1,4 @@
-Imcms.define('imcms-documents-rest-api', ['imcms-rest-api'], function (rest) {
+define('imcms-documents-rest-api', ['imcms-rest-api'], function (rest) {
     var url = '/documents';
     var api = new rest.API(url);
 

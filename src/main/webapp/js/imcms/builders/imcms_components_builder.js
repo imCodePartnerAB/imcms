@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 24.07.17.
  */
-Imcms.define("imcms-components-builder",
+define("imcms-components-builder",
     [
         "imcms-buttons-builder", "imcms-flags-builder", "imcms-checkboxes-builder", "imcms-radio-buttons-builder",
         "imcms-selects-builder", "imcms-texts-builder", "imcms-keywords-builder", "imcms-date-time-builder",

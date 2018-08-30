@@ -1,4 +1,4 @@
-Imcms.define("imcms-life-cycle-tab-builder",
+define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms", "imcms-i18n-texts",
         "imcms-date-time-validator", "imcms-page-info-tab"

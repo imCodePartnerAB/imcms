@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 15.05.18
  */
-Imcms.define("imcms-window-keys-controller", ["mousetrap"], function (mousetrap) {
+define("imcms-window-keys-controller", ["mousetrap"], function (mousetrap) {
 
     var onEscKeyPressedName = 'onEscKeyPressed';
     var onEnterKeyPressedName = 'onEnterKeyPressed';

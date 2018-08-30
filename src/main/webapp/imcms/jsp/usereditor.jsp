@@ -21,16 +21,12 @@ ${"-->"}
 <html>
 <head>
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1"/></title>
-    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-edit-user-page.css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+    <script src="${contextPath}/dist/imcms_admin.js"></script>
     <imcms:ifAdmin>
         <script>
             <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
         </script>
-        <script src="${contextPath}/js/imcms/imcms_main.js" data-main="${contextPath}/js/imcms/old_admin/userEditor.js"
-                data-name="imcms"></script>
+        <script src="${contextPath}/dist/userEditorOld.js"></script>
     </imcms:ifAdmin>
 </head>
 <body>

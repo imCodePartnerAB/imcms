@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 30.03.18
  */
-Imcms.define(
+define(
     "imcms-image-edit-size-controls",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-image-crop-angles",

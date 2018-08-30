@@ -5,7 +5,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 13.12.17
  */
-Imcms.define("imcms-events", [], function () {
+define("imcms-events", [], function () {
 
     /**
      * Event name to array of handlers

@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.01.18
  */
-Imcms.define("imcms-text-history-window-builder",
+define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
         "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor-utils', 'imcms-text-editor-types'

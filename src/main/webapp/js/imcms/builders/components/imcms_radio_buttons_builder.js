@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 25.07.17.
  */
-Imcms.define("imcms-radio-buttons-builder",
+define("imcms-radio-buttons-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-uuid-generator"],
     function (bemBuilder, primitives, uuidGenerator) {
 

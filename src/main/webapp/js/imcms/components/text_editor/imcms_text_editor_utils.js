@@ -2,10 +2,10 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 13.08.18
  */
-Imcms.define(
+define(
     'imcms-text-editor-utils',
     [
-        'tinyMCE', 'imcms-texts-rest-api', 'imcms-events', 'jquery', 'imcms-modal-window-builder',
+        'tinymce', 'imcms-texts-rest-api', 'imcms-events', 'jquery', 'imcms-modal-window-builder',
         'imcms-text-editor-types'
     ],
     function (tinyMCE, textsRestApi, events, $, modalWindowBuilder, editorTypes) {

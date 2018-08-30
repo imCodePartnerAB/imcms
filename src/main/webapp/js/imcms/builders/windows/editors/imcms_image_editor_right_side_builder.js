@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-image-editor-right-side-builder",
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
@@ -532,6 +532,11 @@ Imcms.define(
                     RIGHT: doRightAlign
                 };
 
+                function setDirty() {
+                    var tinyMCE = require("tinymce");
+                    tinyMCE.activeEditor.setDirty(true);
+                }
+
                 function reloadImageOnPage(imageDTO) {
 
                     var $image = $tag.find(".imcms-editor-content>a>img").first();
@@ -554,9 +559,7 @@ Imcms.define(
 
                         if (!filePath && $tag.hasClass("imcms-image-in-text")) {
                             $tag.remove();
-                            imcms.require("tinyMCE", function (tinyMCE) {
-                                tinyMCE.activeEditor.setDirty(true);
-                            });
+                            setDirty();
                             return;
                         }
 
@@ -564,9 +567,7 @@ Imcms.define(
 
                         if ($image.attr("data-mce-src")) {
                             $image.attr("data-mce-src", filePath);
-                            imcms.require("tinyMCE", function (tinyMCE) {
-                                tinyMCE.activeEditor.setDirty(true);
-                            });
+                            setDirty();
                         }
 
                         if ($tag.hasClass("imcms-image-in-text") && alignNameToAction[imageDTO.align]) {

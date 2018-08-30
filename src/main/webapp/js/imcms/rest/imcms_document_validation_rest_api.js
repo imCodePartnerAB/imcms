@@ -1,4 +1,4 @@
-Imcms.define("imcms-document-validation-rest-api", ["imcms-rest-api"], function (rest) {
+define("imcms-document-validation-rest-api", ["imcms-rest-api"], function (rest) {
     return {
         checkIsTextDocument: function (docIdentifier) {
             var url = "/documents/validate/isTextDocument/" + docIdentifier;

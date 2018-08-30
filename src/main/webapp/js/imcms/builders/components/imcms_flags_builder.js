@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 24.07.17.
  */
-Imcms.define("imcms-flags-builder",
+define("imcms-flags-builder",
     ["imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery"],
     function (bemBuilder, languagesRestApi, imcms, $) {
         var FLAGS_CLASS = "imcms-flag",

@@ -1,4 +1,4 @@
-Imcms.define(
+define(
     "imcms-image-editor-factory",
     [
         "imcms-image-editor-right-side-builder", "imcms-image-editor-left-side-builder", 'jquery', "imcms-i18n-texts",

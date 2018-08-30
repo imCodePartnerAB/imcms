@@ -1,4 +1,4 @@
-Imcms.define('imcms-users-rest-api', ['imcms-rest-api'], function (rest) {
+define('imcms-users-rest-api', ['imcms-rest-api'], function (rest) {
     var url = '/users';
     var api = new rest.API(url);
 

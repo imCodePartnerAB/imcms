@@ -1,4 +1,4 @@
-Imcms.define("imcms-keywords-tab-builder",
+define("imcms-keywords-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "imcms-page-info-tab"
     ],

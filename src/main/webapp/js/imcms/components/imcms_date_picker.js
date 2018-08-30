@@ -1,4 +1,4 @@
-Imcms.define("imcms-date-picker",
+define("imcms-date-picker",
     ["imcms", "imcms-calendar", "jquery", "imcms-date-time-validator"],
     function (imcms, imcmsCalendar, $, dateTimeValidator) {
         var DATE_PICKER_CLASS_SELECTOR = ".imcms-date-picker";

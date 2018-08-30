@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 20.12.17
  */
-Imcms.define("imcms-document-type-select-window-builder",
+define("imcms-document-type-select-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "imcms-document-types",
         "imcms-i18n-texts"

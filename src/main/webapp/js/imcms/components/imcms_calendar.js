@@ -1,4 +1,4 @@
-Imcms.define("imcms-calendar", ["imcms", "jquery", "imcms-date-time-validator"], function (imcms, $, dateTimeValidator) {
+define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, dateTimeValidator) {
 
     function setSelectDate() {
         var $thisDay = $(this),

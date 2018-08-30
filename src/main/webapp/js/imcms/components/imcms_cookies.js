@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 03.05.18
  */
-Imcms.define("imcms-cookies", [], function () {
+define("imcms-cookies", [], function () {
 
     var Cookies = function () {
     };

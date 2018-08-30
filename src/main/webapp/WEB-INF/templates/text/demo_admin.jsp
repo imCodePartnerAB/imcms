@@ -189,10 +189,7 @@ ${"-->"}
         });
     };
 
-    <imcms:ifAdmin>
-    Imcms.require("imcms-site-specific", function (siteSpecific) {
-        siteSpecific.init(addEventsToSpecialAdmin);
-    });
+    <imcms:ifAdmin>Imcms.initSiteSpecific(addEventsToSpecialAdmin);
     </imcms:ifAdmin>
 
 </script>

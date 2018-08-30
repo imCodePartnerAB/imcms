@@ -2,9 +2,9 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 08.02.18
  */
-Imcms.define(
+define(
     "imcms-image-in-text-plugin",
-    ["tinyMCE", "jquery", "imcms-image-editor-builder"],
+    ["tinymce", "jquery", "imcms-image-editor-builder"],
     function (tinyMCE, $, imageEditorBuilder) {
 
         function onPluginButtonClicked() {

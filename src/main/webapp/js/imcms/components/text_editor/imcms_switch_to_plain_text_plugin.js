@@ -2,13 +2,13 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 15.08.18
  */
-Imcms.define(
+
+define(
     'imcms-switch-to-plain-text',
-    [
-        'imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils',
-        'imcms', /* this must be the last ->*/'imcms-tag-replacer'
-    ],
-    function (toolbarButtonBuilder, $, textTypes, textUtils, imcms) {
+    ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils'],
+    function (toolbarButtonBuilder, $, textTypes, textUtils) {
+
+        require('imcms-tag-replacer');
 
         var title = 'Switch to plain text mode'; // todo: localize!!11
 
@@ -18,10 +18,9 @@ Imcms.define(
                 $textEditor.attr('data-type', textTypes.text).data('type', textTypes.text);
 
                 textUtils.saveContent(editor, function () {
-                    imcms.require('imcms-text-editor', function (textEditor) {
-                        $textEditor = transformEditor($textEditor, editor);
-                        textEditor.initTextFromEditor($textEditor);
-                    })
+                    var textEditor = require('imcms-text-editor');
+                    $textEditor = transformEditor($textEditor, editor);
+                    textEditor.initTextFromEditor($textEditor);
                 });
             }
         }

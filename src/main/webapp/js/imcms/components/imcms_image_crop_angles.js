@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 15.03.18
  */
-Imcms.define(
+define(
     "imcms-image-crop-angles",
     ["jquery", "imcms-bem-builder", "imcms-numeric-limiter", "imcms-image-cropping-elements"],
     function ($, BEM, Limit, cropElements) {

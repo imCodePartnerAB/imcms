@@ -1,4 +1,4 @@
-Imcms.define("imcms-status-tab-builder",
+define("imcms-status-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-i18n-texts", "jquery", "imcms-page-info-tab"
     ],

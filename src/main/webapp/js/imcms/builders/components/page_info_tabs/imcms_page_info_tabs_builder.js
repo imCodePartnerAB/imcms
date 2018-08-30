@@ -1,4 +1,4 @@
-Imcms.define("imcms-page-info-tabs-builder",
+define("imcms-page-info-tabs-builder",
     [
         "imcms-appearance-tab-builder", "imcms-life-cycle-tab-builder", "imcms-keywords-tab-builder",
         "imcms-categories-tab-builder", "imcms-access-tab-builder", "imcms-permissions-tab-builder",

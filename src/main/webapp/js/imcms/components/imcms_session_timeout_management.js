@@ -1,4 +1,4 @@
-Imcms.define("imcms-session-timeout-management", ["imcms", "imcms-i18n-texts"], function (imcms, texts) {
+define("imcms-session-timeout-management", ["imcms", "imcms-i18n-texts"], function (imcms, texts) {
 
     var twoMinutesInMillis = 2 * 60 * 1000;
 

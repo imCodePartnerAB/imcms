@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-Imcms.define(
+define(
     "imcms-image-rotate",
     ["imcms-image-cropping-elements", "imcms-image-resize", "imcms-events"],
     function (cropElements, imageResize, events) {

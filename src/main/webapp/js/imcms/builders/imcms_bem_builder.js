@@ -4,7 +4,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 24.07.17.
  */
-Imcms.define("imcms-bem-builder", ["jquery"], function ($) {
+define("imcms-bem-builder", ["jquery"], function ($) {
     var MODIFIER_SEPARATOR = "--",
         BLOCK_SEPARATOR = "__"
     ;

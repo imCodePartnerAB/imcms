@@ -1,7 +1,7 @@
 /**
  * source: https://stackoverflow.com/a/36247124/5797023
  */
-Imcms.define('imcms-tag-replacer', ['jquery'], function ($) {
+define('imcms-tag-replacer', ['jquery'], function ($) {
 
     $.fn.replaceTagName = function (f) {
         var g = [],

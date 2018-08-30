@@ -3,7 +3,7 @@
  * @date 31.01.18
  * @namespace validationResult.data.warnings
  */
-Imcms.define(
+define(
     "imcms-text-validation-result-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-events",

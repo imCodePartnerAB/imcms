@@ -2,9 +2,9 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 09.02.18
  */
-Imcms.define(
+define(
     "imcms-text-discard-changes-plugin",
-    ["imcms-modal-window-builder", "tinyMCE", "imcms-events", 'imcms-text-editor-toolbar-button-builder'],
+    ["imcms-modal-window-builder", "tinymce", "imcms-events", 'imcms-text-editor-toolbar-button-builder'],
     function (modalWindowBuilder, tinyMCE, events, toolbarButtonBuilder) {
 
         var title = 'Discard changes'; // todo: localize!

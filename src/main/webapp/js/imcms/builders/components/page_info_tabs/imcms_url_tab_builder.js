@@ -4,7 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 26.01.18
  */
-Imcms.define("imcms-url-tab-builder",
+define("imcms-url-tab-builder",
     [
         "imcms-components-builder", "imcms-document-types", "imcms-i18n-texts", "imcms-page-info-tab"
     ],

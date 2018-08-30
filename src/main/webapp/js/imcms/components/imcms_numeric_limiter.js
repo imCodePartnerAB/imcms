@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 16.03.18
  */
-Imcms.define("imcms-numeric-limiter", [], function () {
+define("imcms-numeric-limiter", [], function () {
 
     var Limit = function () {
     };

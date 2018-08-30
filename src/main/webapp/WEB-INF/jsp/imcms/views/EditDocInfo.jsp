@@ -18,12 +18,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Direct Page Info Editor</title>
-    <link rel="stylesheet" href="${contextPath}/css/imcms-imports_files.css">
     <script>
         <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
     </script>
-    <script src="${contextPath}/js/imcms/imcms_main.js" data-name="imcms"
-            data-main="${contextPath}/js/imcms/starters/imcms_doc_info_edit_start.js"></script>
+    <script src="${contextPath}/dist/imcms_doc_info_edit_start.js"></script>
 </head>
 <body>
 <input type="hidden" id="return-url" value="${returnUrl}">

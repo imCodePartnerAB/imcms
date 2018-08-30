@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 21.08.17
  */
-Imcms.define(
+define(
     "imcms-image-editor-builder",
     [
         "imcms-window-builder", "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",

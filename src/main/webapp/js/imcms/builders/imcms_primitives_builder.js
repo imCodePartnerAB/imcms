@@ -2,7 +2,7 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 27.07.17.
  */
-Imcms.define("imcms-primitives-builder", ["imcms-bem-builder"], function (BEM) {
+define("imcms-primitives-builder", ["imcms-bem-builder"], function (BEM) {
     var IMCMS_LABEL_CLASS = "imcms-label",
         IMCMS_INPUT_CLASS = "imcms-input"
     ;

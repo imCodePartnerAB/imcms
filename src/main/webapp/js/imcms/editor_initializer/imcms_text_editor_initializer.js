@@ -3,7 +3,7 @@
  * 01.09.17
  *
  */
-Imcms.define('imcms-text-editor-initializer',
+define('imcms-text-editor-initializer',
     [
         'jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor', 'imcms-uuid-generator',
         'imcms-text-editor-types'

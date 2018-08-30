@@ -2,7 +2,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 23.06.18
  */
-Imcms.define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowBuilder) {
+define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowBuilder) {
 
     var PageInfoTab = function (name, supportedDocumentType) {
         TabWindowBuilder.call(this, name);
