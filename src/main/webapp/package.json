@@ -31,14 +31,14 @@
     "style-loader": "^0.21.0",
     "uglifyjs-webpack-plugin": "latest",
     "url-loader": "^1.1.1",
-    "webpack": "^4.17.1",
-    "webpack-cli": "^3.1.0",
     "webpack-dev-server": "^3.1.5",
     "webpack-merge": "^4.1.4"
   },
   "dependencies": {
     "jquery": "^1.12.4",
     "tinymce": "latest",
-    "mousetrap": "latest"
+    "mousetrap": "latest",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0"
   }
 }
