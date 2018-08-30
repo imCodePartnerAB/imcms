@@ -46,7 +46,7 @@ Imcms.define(
         ].join(' | ');
 
         var inlineEditorConfig = {
-            skin_url: imcms.contextPath + '/js/libs/tinymce/skins/white',
+            skin_url: imcms.contextPath + '/css/tinymce/skins/white',
             convert_urls: false,
             cache_suffix: '?v=0.0.1',
             branding: false,
