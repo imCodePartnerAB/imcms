@@ -80,6 +80,10 @@ ${"-->"}
 
     <c:choose>
         <c:when test="${isEditMode && editOptions.editImage}">
+            <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+            <c:set var="label"
+                   value="${isInternal ? 'Image Editor' : 'This image is edited on page '.concat(document)}"/>
+
             <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"
                  data-lang-code="${language}"
                  data-index="${no}"${empty loopEntryRef
@@ -88,7 +92,7 @@ ${"-->"}
                 <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                        <div class="imcms-editor-area__control-title">Image Editor</div>
+                        <div class="imcms-editor-area__control-title">${label}</div>
                     </div>
                 </div>
             </div>
