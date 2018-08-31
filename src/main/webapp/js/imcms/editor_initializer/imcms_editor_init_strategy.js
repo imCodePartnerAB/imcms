@@ -11,7 +11,8 @@ define("imcms-editor-init-strategy", ["jquery", 'imcms-modal-window-builder'], f
                 const editorData = $editedTag.data();
 
                 if (editorData.external) {
-                    const confirmMessage = `This ${editorInitData.context} (#${editorData.index})`
+                    const index = editorData.menuIndex || editorData.index;
+                    const confirmMessage = `This ${editorInitData.context} (#${index})`
                         + ` is edited on page ${editorData.external}\nGo to the page?`;
 
                     modalWindowBuilder.buildConfirmWindow(confirmMessage, () => {
