@@ -83,12 +83,14 @@ ${"-->"}
             <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
             <c:set value="${isInternal ? 'Image Editor' : 'This image is edited on page '.concat(document)}"
                    var="label"/>
+            <c:set var="externalPart"
+                   value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\"'))}"/>
+            <c:set var="loopPart" value="${empty loopEntryRef ? ''
+                    : ' data-loop-index=\"'.concat(loopEntryRef.loopIndex).concat('\" data-loop-entry-index=\"')
+            .concat(loopEntryRef.loopEntryIndex).concat('\"')}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"
-                 data-lang-code="${language}"${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}
-                 data-index="${no}"${empty loopEntryRef ? ''
-                    : ' data-loop-index="'.concat(loopEntryRef.loopIndex).concat('" data-loop-entry-index="')
-                    .concat(loopEntryRef.loopEntryIndex).concat('"')}>
+            <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"${externalPart}
+                 data-lang-code="${language}" data-index="${no}"${loopPart}>
                 <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">

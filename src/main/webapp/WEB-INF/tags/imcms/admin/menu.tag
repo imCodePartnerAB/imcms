@@ -41,9 +41,11 @@ ${"-->"}
         <c:when test="${isEditMode && editOptions.editMenu}">
             <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
             <c:set var="label" value="${isInternal ? 'Menu Editor' : 'This menu is edited on page '.concat(document)}"/>
+            <c:set var="externalPart"
+                   value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"
-                 data-menu-index="${index}"${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\"'))}>
+            <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
+                 data-menu-index="${index}">
                 <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
                      data-menu-index="${index}">${menuContent}</div>
                     <%-- attributes used as unique identifier while reload --%>
