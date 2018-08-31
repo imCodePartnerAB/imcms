@@ -71,19 +71,19 @@
 }
 
 .imcms-editor-area__control-title {
+    padding: 15px 5px;
     background: #2e3f47;
     border-radius: 5px;
     color: #ffffff;
     font-size: 14px;
     font-weight: 400;
-    line-height: 40px;
+    line-height: 20px;
     text-align: center;
     display: none;
     position: absolute;
     top: -47px;
     left: -46px;
-    width: 120px;
-    height: 40px;
+    width: 130px;
     z-index: 25;
 }
 
