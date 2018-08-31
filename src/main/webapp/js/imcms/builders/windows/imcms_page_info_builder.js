@@ -8,23 +8,23 @@ define("imcms-page-info-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
         "imcms-modal-window-builder", "imcms-i18n-texts"
     ],
-    function (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
-              modalWindowBuilder, texts) {
+    (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
+     modalWindowBuilder, texts) => {
 
         texts = texts.pageInfo;
 
-        var panels$, $title, documentDTO, $saveAndPublishBtn;
+        let panels$, $title, documentDTO, $saveAndPublishBtn;
 
         function buildPageInfoHead() {
-            var $head = pageInfoWindowBuilder.buildHead("", closePageInfo);
+            const $head = pageInfoWindowBuilder.buildHead("", closePageInfo);
             $title = $head.find(".imcms-head__title");
 
             return $head;
         }
 
         function buildPageInfoPanels(docId) {
-            return pageInfoTabs.tabBuilders.map(function (tabBuilder, index) {
-                var $tab = tabBuilder.buildTab(index, docId);
+            return pageInfoTabs.tabBuilders.map((tabBuilder, index) => {
+                const $tab = tabBuilder.buildTab(index, docId);
 
                 (index === 0) ? $tab.slideDown() : $tab.slideUp();
 
@@ -33,19 +33,19 @@ define("imcms-page-info-builder",
         }
 
         function closePageInfo() {
-            modalWindowBuilder.buildConfirmWindowWithDontShowAgain(texts.confirmMessageOnCancel, function () {
-                pageInfoWindowBuilder.closeWindow()
-            }, "page-info-close");
+            modalWindowBuilder.buildConfirmWindowWithDontShowAgain(
+                texts.confirmMessageOnCancel,
+                () => pageInfoWindowBuilder.closeWindow(),
+                "page-info-close"
+            );
         }
 
         function saveAndClose(onDocumentSavedCallback) {
-            pageInfoTabs.tabBuilders.forEach(function (tabBuilder) {
-                documentDTO = tabBuilder.saveData(documentDTO);
-            });
+            pageInfoTabs.tabBuilders.forEach((tabBuilder) => documentDTO = tabBuilder.saveData(documentDTO));
 
             pageInfoWindowBuilder.closeWindow();
 
-            documentsRestApi.create(documentDTO).success(function (savedDoc) {
+            documentsRestApi.create(documentDTO).success((savedDoc) => {
 
                 if (documentDTO.newFiles) {
                     // files saved separately because of different content types and in file-doc case
@@ -71,22 +71,20 @@ define("imcms-page-info-builder",
         }
 
         function saveAndPublish() {
-            saveAndClose(function () {
-                events.trigger("imcms-publish-new-version-current-doc");
-            });
+            saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"))
         }
 
         function confirmSaving() {
-            modalWindowBuilder.buildConfirmWindow(texts.confirmMessage, saveAndClose);
+            modalWindowBuilder.buildConfirmWindow(texts.confirmMessage, saveAndClose)
         }
 
         function buildPageInfoFooterButtons() {
-            var $saveBtn = components.buttons.positiveButton({
+            const $saveBtn = components.buttons.positiveButton({
                 text: texts.buttons.ok,
                 click: confirmSaving
             });
 
-            var $cancelBtn = components.buttons.negativeButton({
+            const $cancelBtn = components.buttons.negativeButton({
                 text: texts.buttons.cancel,
                 click: closePageInfo
             });
@@ -97,7 +95,7 @@ define("imcms-page-info-builder",
                 style: "display: none;"
             });
 
-            var buttons = [$cancelBtn, $saveBtn];
+            const buttons = [$cancelBtn, $saveBtn];
 
             if (imcms.isAdmin && imcms.isVersioningAllowed) {
                 buttons.unshift($saveAndPublishBtn);
@@ -127,7 +125,7 @@ define("imcms-page-info-builder",
                 $saveAndPublishBtn.css("display", "block");
             }
 
-            var requestData = {
+            const requestData = {
                 docId: docId,
                 parentDocId: parentDocId
             };
@@ -136,11 +134,11 @@ define("imcms-page-info-builder",
                 requestData.type = docType;
             }
 
-            documentsRestApi.read(requestData).done(function (document) {
+            documentsRestApi.read(requestData).done((document) => {
                 documentDTO = document;
                 $title.text((document.id) ? (texts.document + " " + document.id) : texts.newDocument);
 
-                pageInfoTabs.tabBuilders.forEach(function (tab) {
+                pageInfoTabs.tabBuilders.forEach((tab) => {
                     if (tab.isDocumentTypeSupported(document.type)) {
                         tab.fillTabDataFromDocument(document);
                         tab.showTab();
@@ -156,7 +154,7 @@ define("imcms-page-info-builder",
             events.trigger("page info closed");
             $saveAndPublishBtn.css("display", "none");
 
-            pageInfoTabs.tabBuilders.forEach(function (tab) {
+            pageInfoTabs.tabBuilders.forEach((tab) => {
                 tab.clearTabData();
             });
         }
@@ -167,7 +165,7 @@ define("imcms-page-info-builder",
             loadPageInfoDataFromDocumentBy(docId, docType, parentDocId);
         }
 
-        var pageInfoWindowBuilder = new WindowBuilder({
+        const pageInfoWindowBuilder = new WindowBuilder({
             factory: buildPageInfo,
             loadDataStrategy: loadData,
             clearDataStrategy: clearPageInfoData,
@@ -175,7 +173,7 @@ define("imcms-page-info-builder",
             onEnterKeyPressed: confirmSaving
         });
 
-        var onDocumentSaved;
+        let onDocumentSaved;
 
         return {
             build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
