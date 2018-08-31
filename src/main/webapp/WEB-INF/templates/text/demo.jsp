@@ -59,6 +59,12 @@
         <div>Text editor, rows="1" example:</div>
         <imcms:text no="7" label="1 row text example" formats="text" post="<br/>" rows="1"/>
 
+        <br/>
+        <div>Text for doc 1001:</div>
+        <imcms:text document="1001" no="8" label="Read-only text for all non-1001 docs" formats="text" post="<br/>"
+                    rows="1"/>
+
+        <br/>
         <imcms:contentLoop index="1">
             <imcms:loop>
                 <div class="imcms-demo-content__loop-content demo-loop-content">
@@ -75,6 +81,15 @@
                 </div>
             </imcms:loop>
         </imcms:contentLoop>
+
+        <br/>
+        <br/>
+        <imcms:contentLoop index="10" document="1001">
+            <imcms:loop>
+                <div>#${entryIndex} Loop example for doc 1001</div>
+            </imcms:loop>
+        </imcms:contentLoop>
+
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
                 <imcms:image no="1"/>
@@ -89,7 +104,31 @@
                 <imcms:text no="3" label="Demo text 3"/>
             </div>
         </div>
+
+        <br/>
+        <div>Image for doc 1001:</div>
+        <imcms:image no="30" document="1001"/>
     </div>
+
+    <br/>
+    <div>Menu for doc 1001:</div>
+    <imcms:menu index='10' document="1001">
+        <div class="imcms-demo-page__menu imcms-demo-menu">
+            <imcms:menuLoop>
+                <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
+                    <imcms:menuItemLink classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
+                    <imcms:menuLoop>
+                        <div class="imcms-demo-menu__menu-items imcms-demo-menu__menu-items--child">
+                            <div class="imcms-demo-menu__menu-item">
+                                <imcms:menuItemLink
+                                        classes="imcms-demo-menu-item__text">${menuItem.title}</imcms:menuItemLink>
+                            </div>
+                        </div>
+                    </imcms:menuLoop>
+                </div>
+            </imcms:menuLoop>
+        </div>
+    </imcms:menu>
 </div>
 
 </body>
