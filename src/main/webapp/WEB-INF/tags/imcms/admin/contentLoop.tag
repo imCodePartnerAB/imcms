@@ -43,11 +43,17 @@ ${"-->"}
 
     <c:choose>
         <c:when test="${isEditMode && editOptions.editLoop}">
-            <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}" data-index="${index}">
+            <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+            <c:set var="label" value="${isInternal ? 'Loop Editor' : 'This loop is edited on page '.concat(document)}"/>
+            <c:set var="externalPart"
+                   value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
+
+            <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
+                 data-index="${index}">
                 <div class="imcms-editor-area__content imcms-editor-content">${loopContent}</div>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
-                        <div class="imcms-editor-area__control-title">Loop Editor</div>
+                        <div class="imcms-editor-area__control-title">${label}</div>
                     </div>
                 </div>
             </div>
