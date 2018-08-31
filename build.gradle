@@ -9,7 +9,6 @@ plugins {
     id 'pmd'
 
     id 'io.franzbecker.gradle-lombok' version '1.14'
-    id 'com.eriwen.gradle.js' version '2.14.1'
 }
 
 group = "com.imcode.imcms"
