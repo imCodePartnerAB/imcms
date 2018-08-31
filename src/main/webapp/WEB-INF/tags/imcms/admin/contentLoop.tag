@@ -31,9 +31,11 @@ ${"-->"}
 
     <c:set var="loopContent" value=""/>
     <c:if test="${loop.entries.size() gt 0}">
-        <c:set var="loopContent">${pre}
+        <c:set var="loopContent">
+            ${pre}
             <jsp:doBody/>
-            ${post}</c:set>
+            ${post}
+        </c:set>
     </c:if>
 
     <c:remove var="loop"/>
