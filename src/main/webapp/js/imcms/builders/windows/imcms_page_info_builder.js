@@ -6,10 +6,10 @@ define("imcms-page-info-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-documents-rest-api", "imcms-window-builder",
         "imcms-page-info-tabs-builder", "jquery", "imcms-events", "imcms", "imcms-file-doc-files-rest-api",
-        "imcms-modal-window-builder", "imcms-i18n-texts"
+        "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder'
     ],
     (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
-     modalWindowBuilder, texts) => {
+     modalWindowBuilder, texts, appearanceTab) => {
 
         texts = texts.pageInfo;
 
@@ -78,10 +78,24 @@ define("imcms-page-info-builder",
             modalWindowBuilder.buildConfirmWindow(texts.confirmMessage, saveAndClose)
         }
 
+        function validateDoc() {
+            return {
+                isValid: appearanceTab.isValid(), // only this tab for now...
+                message: 'At least one language must be enabled!' // todo: localize!!!111
+            };
+        }
+
+        function ifValidDocInfo(callMeIfValid) {
+            return () => {
+                const validationResult = validateDoc();
+                (validationResult.isValid) ? callMeIfValid.call() : alert(validationResult.message);
+            }
+        }
+
         function buildPageInfoFooterButtons() {
             const $saveBtn = components.buttons.positiveButton({
                 text: texts.buttons.ok,
-                click: confirmSaving
+                click: ifValidDocInfo(confirmSaving)
             });
 
             const $cancelBtn = components.buttons.negativeButton({
@@ -91,7 +105,7 @@ define("imcms-page-info-builder",
 
             $saveAndPublishBtn = components.buttons.saveButton({
                 text: texts.buttons.saveAndPublish,
-                click: saveAndPublish,
+                click: ifValidDocInfo(saveAndPublish),
                 style: "display: none;"
             });
 

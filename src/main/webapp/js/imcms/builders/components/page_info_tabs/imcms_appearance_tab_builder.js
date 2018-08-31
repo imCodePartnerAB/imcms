@@ -199,6 +199,11 @@ define("imcms-appearance-tab-builder",
             tabData.$documentAlias.setValue(emptyString);
             tabData.$showDefaultLang.setChecked(true); //default value
         };
+        AppearanceTab.prototype.isValid = function () {
+            return tabData.commonContents.reduce(function (isChecked, commonContent) {
+                return isChecked || commonContent.checkbox.isChecked()
+            }, false);
+        };
 
         return new AppearanceTab(texts.name);
     }

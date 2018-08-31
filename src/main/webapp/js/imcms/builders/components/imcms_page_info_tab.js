@@ -23,6 +23,9 @@ define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowB
     PageInfoTab.prototype.clearTabData = function () {
         // override
     };
+    PageInfoTab.prototype.isValid = function () {
+        return true;
+    };
 
     return PageInfoTab;
 });
