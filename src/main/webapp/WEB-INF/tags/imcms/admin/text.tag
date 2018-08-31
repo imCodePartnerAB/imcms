@@ -30,6 +30,7 @@ ${"-->"}
     <c:set var="filteringPolicy" value="${textField.htmlFilteringPolicy}"/>
 
     <c:if test="${not empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
+
     <c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
 
         <c:set var="loopData">
@@ -96,18 +97,24 @@ ${"-->"}
         <c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
         <c:set var="filterType"> data-html-filtering-policy="${filteringPolicy}"</c:set>
 
+        <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+        <c:set var="editingLabel"
+               value="${isInternal ? 'Text Editor' : 'This text is edited on page '.concat(document)}"/>
+        <c:set var="externalPart"
+               value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
+
         ${pre}
         <div class="imcms-editor-area imcms-editor-area--text">
             <c:if test="${not empty label}">
                 <div class="imcms-editor-area__text-label">${label}</div>
             </c:if>
             <div class="imcms-editor-area__text-toolbar"></div>
-            <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"
-            data-doc-id="${targetDocId}"
-            data-lang-code="${language}"${rowsData}${typeData}${loopData}${filterType}${tagClose}${content}${tagEnd}
+            <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
+            data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
+            data-lang-code="${language}"${tagClose}${content}${tagEnd}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                    <div class="imcms-editor-area__control-title">Text Editor</div>
+                    <div class="imcms-editor-area__control-title">${editingLabel}</div>
                 </div>
             </div>
         </div>

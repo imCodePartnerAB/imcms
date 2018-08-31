@@ -6,16 +6,16 @@
 define('imcms-text-editor-initializer',
     [
         'jquery', 'imcms-text-editor-utils', 'imcms-tinymce-text-editor', 'imcms-text-editor', 'imcms-uuid-generator',
-        'imcms-text-editor-types'
+        'imcms-text-editor-types', 'imcms-modal-window-builder'
     ],
-    function ($, textEditorUtils, tinyMceTextEditor, textEditor, uuidGenerator, editorTypes) {
+    ($, textEditorUtils, tinyMceTextEditor, textEditor, uuidGenerator, editorTypes, modalWindowBuilder) => {
 
         function toggleFocusEditArea(e) {
-            var $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
+            const $activeTextArea = $(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$);
 
             if (!$activeTextArea.length) return;
 
-            var $target = $(e.target);
+            const $target = $(e.target);
 
             if ($target.closest(textEditorUtils.ACTIVE_EDIT_AREA_CLASS_$).length) return;
             if ($target.closest('.text-history').length) return;
@@ -44,18 +44,40 @@ define('imcms-text-editor-initializer',
         }
 
         function initTextEditor(opts) {
-            var $textEditor = $(this);
-            var type = $textEditor.attr('data-type');
+            const $textEditor = $(this);
+            const editorData = $textEditor.data();
 
-            var toolbarId = uuidGenerator.generateUUID();
-            var textAreaId = uuidGenerator.generateUUID();
+            if (editorData.external) {
+                const confirmMessage = `This text (#${editorData.index})`
+                    + ` is edited on page ${editorData.external}\nGo to the page?`;
+
+                $textEditor.parent()
+                    .find('.imcms-editor-area__control-wrap')
+                    .click(() => {
+                        modalWindowBuilder.buildConfirmWindow(confirmMessage, () => {
+                            const url = window.location.origin + window.location.pathname
+                                + '?meta_id=' + editorData.external;
+
+                            window.open(url, '_blank');
+                        });
+                    });
+
+                $textEditor.attr('disabled', 'disabled');
+                textEditorUtils.showEditButton($textEditor);
+                return;
+            }
+
+            const type = $textEditor.attr('data-type'); // exactly through the attr, '.data' can cache value
+
+            const toolbarId = uuidGenerator.generateUUID();
+            const textAreaId = uuidGenerator.generateUUID();
 
             $textEditor.attr('id', textAreaId)
                 .closest('.imcms-editor-area--text')
                 .find('.imcms-editor-area__text-toolbar')
                 .attr('id', toolbarId);
 
-            var editor = initEditor(type, $textEditor);
+            const editor = initEditor(type, $textEditor);
 
             if (opts && opts.autoFocus) {
                 editor.then(function (editor) {
@@ -65,7 +87,7 @@ define('imcms-text-editor-initializer',
         }
 
         return {
-            initEditor: function (opts) {
+            initEditor: (opts) => {
                 $(document).click(toggleFocusEditArea);
 
                 $('.imcms-editor-content--text').each(function () {
