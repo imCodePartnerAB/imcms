@@ -38,21 +38,31 @@ ${"-->"}
      : imageService.getPublicImage(targetDocId, index, language, loopEntryRef)}"/>
         <c:set var="imgPath" value="${image.generatedFilePath}"/>
 
-        <c:set var="spaceTop">margin-top: ${image.spaceAround.top}px;</c:set>
-        <c:set var="spaceRight">margin-right: ${image.spaceAround.right}px;</c:set>
-        <c:set var="spaceBottom">margin-bottom: ${image.spaceAround.bottom}px;</c:set>
-        <c:set var="spaceLeft">margin-left: ${image.spaceAround.left}px;</c:set>
+        <c:set var="classes" value=""/>
 
-        <c:set var="spaceStyle">${spaceTop} ${spaceRight} ${spaceBottom} ${spaceLeft}</c:set>
+        <c:if test="${image.spaceAround.top ne 0}">
+            <c:set var="spaceTop" value="img--mt-${image.spaceAround.top} "/>
+        </c:if>
+        <c:if test="${image.spaceAround.right ne 0}">
+            <c:set var="spaceRight" value="img--mr-${image.spaceAround.right} "/>
+        </c:if>
+        <c:if test="${image.spaceAround.bottom ne 0}">
+            <c:set var="spaceBottom" value="img--mb-${image.spaceAround.bottom} "/>
+        </c:if>
+        <c:if test="${image.spaceAround.left ne 0}">
+            <c:set var="spaceLeft" value="img--ml-${image.spaceAround.left} "/>
+        </c:if>
+        <c:set var="spaces">${spaceTop}${spaceRight}${spaceBottom}${spaceLeft}</c:set>
 
         <c:set var="alignClass" value=""/>
-        <c:if test="${'CENTER' eq image.align}"><c:set var="alignClass" value="imcms-image-align-center"/></c:if>
-        <c:if test="${'LEFT' eq image.align}"><c:set var="alignClass" value="imcms-image-align-left"/></c:if>
-        <c:if test="${'RIGHT' eq image.align}"><c:set var="alignClass" value="imcms-image-align-right"/></c:if>
+        <c:if test="${'CENTER' eq image.align}"><c:set var="alignClass" value="imcms-image-align-center "/></c:if>
+        <c:if test="${'LEFT' eq image.align}"><c:set var="alignClass" value="imcms-image-align-left "/></c:if>
+        <c:if test="${'RIGHT' eq image.align}"><c:set var="alignClass" value="imcms-image-align-right "/></c:if>
 
-        <c:if test="${not empty alignClass}"><c:set var="alignClass" value=" class=\"${alignClass}\""/></c:if>
+        <c:if test="${not empty alignClass or not empty spaces}">
+            <c:set var="classes" value=" class=\"${alignClass}${spaces}\""/>
+        </c:if>
 
-        <c:set var="style" value=" style=\"${not empty style?style.concat(' '):''}${spaceStyle}\""/>
         <c:set var="alt"
                value="${empty image.alternateText ? '' : ' alt=\"'.concat(image.alternateText).concat('\"')}"/>
 
@@ -74,7 +84,7 @@ ${"-->"}
 
         ${pre}
         <a${href}>
-            <img src="${empty imgPath ? '' : contextPath}${imgPath}"${alignClass}${style}${alt}/>
+            <img src="${empty imgPath ? '' : contextPath}${imgPath}"${classes}${alt}/>
         </a>
         ${post}
     </c:set>
