@@ -95,12 +95,9 @@ define(
             $cropImg: null,
             $cropArea: null,
             $image: null,
-            buildCropImage: function () {
-                this.$cropImg = $("<img>", {"class": BEM.buildClass(cropAreaClass, "crop-img")});
-                return setFunctionality(this.$cropImg);
-            },
             buildCropArea: function () {
-                this.$cropArea = $("<div>", {"class": cropAreaClass}).append(this.buildCropImage());
+                this.$cropImg = setFunctionality($("<img>", {"class": BEM.buildClass(cropAreaClass, "crop-img")}));
+                this.$cropArea = $("<div>", {"class": cropAreaClass}).append(this.$cropImg);
                 return setPositionListeners(setFunctionality(this.$cropArea), "crop area position changed");
             },
             buildImage: function () {
