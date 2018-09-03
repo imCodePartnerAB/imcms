@@ -45,23 +45,22 @@ module.exports = {
                 use: [
                     'style-loader',
                     {
-                        loader: 'css-loader',
-                        options: {
-                            url: false,
-                            importLoaders: 2
-                            // 0 => no loaders (default); 1 => postcss-loader; 2 => postcss-loader, sass-loader
-                        }
+                        loader: 'css-loader'
                     }
                 ]
             }, {
-                test: /\.(eot|ttf|woff|woff2)$/,
-                loader: 'url-loader'
-            }, {
                 test: /\.(png|jpg|gif|svg)$/,
+                loader: 'url-loader',
+                options: {
+                    limit: 8192
+                }
+            }, {
+                test: /\.(png|jpg|gif|svg|eot|ttf|woff|woff2)$/,
                 use: [
                     {
                         loader: 'file-loader',
                         options: {
+                            publicPath: '/',
                             name: '[path][name].[ext]'
                         }
                     }
