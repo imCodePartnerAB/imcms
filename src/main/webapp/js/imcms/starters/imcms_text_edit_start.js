@@ -9,6 +9,7 @@ import '../../../css/imcms-imports_files.css';
 var textEditorInitializer = require("imcms-text-editor-initializer");
 var imageEditorInitializer = require("imcms-image-editor-initializer");
 var imcms = require("imcms");
+var $ = require('jquery');
 
 imcms.textEditorFullScreenEnabled = true;
 
