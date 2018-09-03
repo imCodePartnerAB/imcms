@@ -100,7 +100,9 @@ ${"-->"}
                     : ' data-loop-index=\"'.concat(loopEntryRef.loopIndex).concat('\" data-loop-entry-index=\"')
             .concat(loopEntryRef.loopEntryIndex).concat('\"')}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"${externalPart}
+            <c:if test="${not empty style}"><c:set var="style" value=" data-style=\"${style}\""/></c:if>
+
+            <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"${externalPart}${style}
                  data-lang-code="${language}" data-index="${no}"${loopPart}>
                 <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
                 <div class="imcms-editor-area__control-wrap">
