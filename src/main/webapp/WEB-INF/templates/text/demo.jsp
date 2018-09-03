@@ -92,11 +92,13 @@
 
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
-                <imcms:image no="1"/>
+                <div>imcms:image tag with attribute style="width: 100px; height: 100px;"</div>
+                <imcms:image no="1" style="width: 100px; height: 100px;"/>
                 <imcms:text no="1" label="Demo text 1"/>
             </div>
             <div class="demo-row__column demo-element">
-                <imcms:image no="2"/>
+                <div>imcms:image tag with attribute style="max-width: 120px; max-height: 120px;"</div>
+                <imcms:image no="2" style="max-width: 120px; max-height: 120px;"/>
                 <imcms:text no="2" label="Demo text 2" rows="4"/>
             </div>
             <div class="demo-row__column demo-element">
