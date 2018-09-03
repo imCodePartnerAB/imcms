@@ -23,6 +23,7 @@ ${"-->"}
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 <%--@elvariable id="contextPath" type="java.lang.String"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
+<%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>
 
 <c:if test="${!isDocNew || editOptions.editImage}">
     <c:if test="${empty index}">
@@ -80,7 +81,7 @@ ${"-->"}
 
     <c:choose>
         <c:when test="${isEditMode && editOptions.editImage}">
-            <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+            <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
             <c:set value="${isInternal ? 'Image Editor' : 'This image is edited on page '.concat(document)}"
                    var="label"/>
             <c:set var="externalPart"

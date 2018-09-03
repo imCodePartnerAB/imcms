@@ -20,6 +20,7 @@ ${"-->"}
 <%--@elvariable id="language" type="java.lang.String"--%>
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
+<%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>
 
 <c:if test="${!isDocNew || editOptions.editMenu}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
@@ -39,7 +40,7 @@ ${"-->"}
 
     <c:choose>
         <c:when test="${isEditMode && editOptions.editMenu}">
-            <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+            <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
             <c:set var="label" value="${isInternal ? 'Menu Editor' : 'This menu is edited on page '.concat(document)}"/>
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>

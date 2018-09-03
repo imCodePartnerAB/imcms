@@ -97,7 +97,7 @@ ${"-->"}
         <c:set var="typeData" value="${empty format ? '' : ' data-type=\"'.concat(format).concat('\"')}"/>
         <c:set var="filterType"> data-html-filtering-policy="${filteringPolicy}"</c:set>
 
-        <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+        <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
         <c:set var="editingLabel"
                value="${isInternal ? 'Text Editor' : 'This text is edited on page '.concat(document)}"/>
         <c:set var="externalPart"
@@ -133,3 +133,4 @@ ${"-->"}
 <%--@elvariable id="language" type="java.lang.String"--%>
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
+<%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>

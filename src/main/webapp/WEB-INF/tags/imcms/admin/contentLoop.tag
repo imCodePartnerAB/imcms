@@ -21,6 +21,7 @@ ${"-->"}
 <%--@elvariable id="isPreviewMode" type="boolean"--%>
 <%--@elvariable id="editOptions" type="com.imcode.imcms.domain.dto.RestrictedPermissionDTO"--%>
 <%--@elvariable id="isDocNew" type="boolean"--%>
+<%--@elvariable id="disableExternal" type="java.lang.Boolean"--%>
 
 <c:if test="${!isDocNew || editOptions.editLoop}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
@@ -43,7 +44,7 @@ ${"-->"}
 
     <c:choose>
         <c:when test="${isEditMode && editOptions.editLoop}">
-            <c:set var="isInternal" value="${document eq null or document eq currentDocument.id}"/>
+            <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
             <c:set var="label" value="${isInternal ? 'Loop Editor' : 'This loop is edited on page '.concat(document)}"/>
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
