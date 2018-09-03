@@ -608,8 +608,10 @@ define("imcms-menu-editor-builder",
                 + menuElementTree.title;
 
             elements.push({
-                info: components.texts.titleText("<div>", titleText, {
-                    title: menuElementTree.title
+                info: components.texts.titleText("<a>", titleText, {
+                    title: menuElementTree.title,
+                    href: '/' + menuElementTree.documentId,
+                    target: '_blank'
                 })
             });
 
