@@ -61,8 +61,7 @@
 
         <br/>
         <div>Text for doc 1001:</div>
-        <imcms:text document="1001" no="8" label="Read-only text for all non-1001 docs" formats="text" post="<br/>"
-                    rows="1"/>
+        <imcms:text document="1001" no="8" label="Read-only text for all non-1001 docs" formats="text" post="<br/>"/>
 
         <br/>
         <imcms:contentLoop index="1">

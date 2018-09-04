@@ -29,7 +29,15 @@ ${"-->"}
     <c:set var="content" value="${textField.text}"/>
     <c:set var="filteringPolicy" value="${textField.htmlFilteringPolicy}"/>
 
-    <c:if test="${not empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">${pre}${content}${post}</c:if>
+    <c:set var="type" value="${textField.type}"/>
+
+    <c:if test="${not empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">
+        <c:if test="${'text'.equalsIgnoreCase(type)}">
+            <c:set var="newLine" value="\n"/>
+            <c:set var="content" value="${content.replaceAll(newLine, '<br>')}"/>
+        </c:if>
+        ${pre}${content}${post}
+    </c:if>
 
     <c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
 
@@ -43,8 +51,6 @@ ${"-->"}
         <c:set var="tagEnd">${'</textarea>'}</c:set>
 
         <c:if test="${empty formats}">
-            <c:set var="type" value="${textField.type}"/>
-
             <c:if test="${'editor'.equalsIgnoreCase(type)}">
                 <c:if test="${'unset'.equalsIgnoreCase(filteringPolicy)}">
                     <c:set var="filteringPolicy" value="RESTRICTED"/>
