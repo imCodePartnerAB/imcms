@@ -9,7 +9,7 @@ define(
         texts = texts.editors.image;
 
         function showHidePanel(panelOpts) {
-            var panelAnimationOpts = {};
+            const panelAnimationOpts = {};
 
             if (panelOpts.$btn.data("state")) {
                 panelAnimationOpts[panelOpts.panelSide] = "-" + panelOpts.newPanelSideValue + "px";
@@ -37,7 +37,7 @@ define(
         }
 
         function buildHeightWidthBlock(imageDataContainers) {
-            var $heightBlock = new BEM({
+            const $heightBlock = new BEM({
                 block: "imcms-img-origin-size",
                 elements: {
                     "height-title": components.texts.titleText("<span>", "H:"),
@@ -45,7 +45,7 @@ define(
                 }
             }).buildBlockStructure("<div>");
 
-            var $widthBlock = new BEM({
+            const $widthBlock = new BEM({
                 block: "imcms-img-origin-size",
                 elements: {
                     "width-title": components.texts.titleText("<span>", "W:"),
@@ -68,15 +68,13 @@ define(
         }
 
         function zoom(zoomCoefficient, imageDataContainers) {
-            var newHeight = ~~(cropElements.$image.height() * zoomCoefficient),
-                newWidth = ~~(cropElements.$image.width() * zoomCoefficient),
-                newCropAreaHeight = ~~(cropElements.$cropArea.height() * zoomCoefficient),
-                newCropAreaWeight = ~~(cropElements.$cropArea.width() * zoomCoefficient),
-                newCropAreaLeft = ~~(cropElements.$cropArea.position().left * zoomCoefficient),
-                newCropAreaTop = ~~(cropElements.$cropArea.position().top * zoomCoefficient)
-            ;
-
-            var borderSize = croppingAngles.getBorderSize();
+            const newHeight = ~~(cropElements.$image.height() * zoomCoefficient);
+            const newWidth = ~~(cropElements.$image.width() * zoomCoefficient);
+            const newCropAreaHeight = ~~(cropElements.$cropArea.height() * zoomCoefficient);
+            const newCropAreaWeight = ~~(cropElements.$cropArea.width() * zoomCoefficient);
+            let newCropAreaLeft = ~~(cropElements.$cropArea.position().left * zoomCoefficient);
+            let newCropAreaTop = ~~(cropElements.$cropArea.position().top * zoomCoefficient);
+            const borderSize = croppingAngles.getBorderSize();
 
             if (newCropAreaLeft <= borderSize) {
                 newCropAreaLeft = borderSize;
@@ -113,17 +111,14 @@ define(
         function zoomContain(imageDataContainers, $editableImageArea) {
             // fixme: save proportions! now image becomes just as editable area
             // only one side should be as area's side and one as needed to save proportions
-            var proportionsInverted = imageRotate.isProportionsInverted();
-            var newHeight = $editableImageArea.height(),
-                newWidth = $editableImageArea.width(),
-                newCropAreaHeight = (proportionsInverted)
-                    ? $editableImageArea.width() : $editableImageArea.height(),
-                newCropAreaWeight = (proportionsInverted)
-                    ? $editableImageArea.height() : $editableImageArea.width(),
-                newCropAreaLeft = croppingAngles.getBorderSize(),
-                newCropAreaTop = croppingAngles.getBorderSize(),
-                twiceAngleBorderSize = croppingAngles.getDoubleBorderSize()
-            ;
+            const proportionsInverted = imageRotate.isProportionsInverted();
+            const newHeight = $editableImageArea.height();
+            const newWidth = $editableImageArea.width();
+            const newCropAreaHeight = (proportionsInverted) ? $editableImageArea.width() : $editableImageArea.height();
+            const newCropAreaWeight = (proportionsInverted) ? $editableImageArea.height() : $editableImageArea.width();
+            const newCropAreaLeft = croppingAngles.getBorderSize();
+            const newCropAreaTop = croppingAngles.getBorderSize();
+            const twiceAngleBorderSize = croppingAngles.getDoubleBorderSize();
 
             resizeImage({
                 imageDataContainers: imageDataContainers,
@@ -144,8 +139,8 @@ define(
         function revertImageChanges(imageDataContainers) {
             imageRotate.rotateImage("NORTH");
 
-            var newWidth = imageDataContainers.original.width;
-            var newHeight = imageDataContainers.original.height;
+            const newWidth = imageDataContainers.original.width;
+            const newHeight = imageDataContainers.original.height;
 
             resizeImage({
                 imageDataContainers: imageDataContainers,
@@ -207,11 +202,11 @@ define(
         }
 
         function buildSwitchViewControls(toggleImgArea, imageDataContainers) {
-            var $preview = components.texts.titleText("<div>", texts.preview, {
+            const $preview = components.texts.titleText("<div>", texts.preview, {
                 "data-tab": "prev",
                 click: toggleImgArea
             });
-            var $origin = components.texts.titleText("<div>", texts.original, {
+            const $origin = components.texts.titleText("<div>", texts.original, {
                 "data-tab": "origin",
                 click: toggleImgArea
             });
@@ -239,11 +234,11 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        var $imgUrl;
+        let $imgUrl;
 
         return {
             build: function (opts, $rightSidePanel) {
-                var bodyHeadBEM = new BEM({
+                const bodyHeadBEM = new BEM({
                     block: "imcms-image-toolbar",
                     elements: {
                         "button": "imcms-image-characteristic",
@@ -255,7 +250,7 @@ define(
 
                 opts.imageDataContainers.$imageTitle = bodyHeadBEM.buildElement("img-title", "<div>");
 
-                var $showHideRightPanelBtn = components.buttons.neutralButton({
+                const $showHideRightPanelBtn = components.buttons.neutralButton({
                     "class": "imcms-image-characteristic",
                     text: texts.panels.right.show,
                     click: function () {
@@ -267,7 +262,7 @@ define(
                     text: "Url: "
                 }).append(opts.imageDataContainers.$imgUrl = $("<span>"));
 
-                var $heightWidthBlock = buildHeightWidthBlock(opts.imageDataContainers);
+                const $heightWidthBlock = buildHeightWidthBlock(opts.imageDataContainers);
 
                 opts.imageDataContainers.$toolbar = buildToolbar(
                     opts.toggleImgArea, opts.imageDataContainers, opts.imageDataContainers.$editableImageArea
