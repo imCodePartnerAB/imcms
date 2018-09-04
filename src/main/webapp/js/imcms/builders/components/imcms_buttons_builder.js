@@ -3,72 +3,38 @@
  * 24.07.17.
  */
 define("imcms-buttons-builder", ["imcms-bem-builder"], function (bemBuilder) {
-    var buttonsBEM = new bemBuilder({
+    const buttonsBEM = new bemBuilder({
         block: "imcms-buttons",
         elements: {
             "button": "imcms-button"
         }
     });
 
-    function buildButtonElement(tag, attributes, modifier) {
-        return buttonsBEM.buildElement("button", tag, attributes, [modifier]);
-    }
+    const getButtonBuilder = (modifier) =>
+        (tag, attributes) => buttonsBEM.buildElement("button", tag, attributes, [modifier]);
 
     return {
         imcmsButton: function (attributes, modifiers) {
             return buttonsBEM.buildElement("button", "<button>", attributes, modifiers);
         },
-        negative: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "negative");
-        },
-        positive: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "positive");
-        },
-        neutral: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "neutral");
-        },
-        save: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "save");
-        },
-        close: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "close");
-        },
-        increment: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "increment");
-        },
-        decrement: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "decrement");
-        },
-        prev: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "prev");
-        },
-        next: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "next");
-        },
-        dropDown: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "drop-down");
-        },
-        search: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "search");
-        },
-        proportions: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "proportions");
-        },
-        zoomPlus: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "zoom-plus");
-        },
-        zoomMinus: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "zoom-minus");
-        },
-        zoomContain: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "zoom-contain");
-        },
-        rotateLeft: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "rotate-left");
-        },
-        rotateRight: function (tag, attributes) {
-            return buildButtonElement(tag, attributes, "rotate-right");
-        },
+        negative: getButtonBuilder("negative"),
+        positive: getButtonBuilder("positive"),
+        neutral: getButtonBuilder("neutral"),
+        save: getButtonBuilder("save"),
+        close: getButtonBuilder("close"),
+        increment: getButtonBuilder("increment"),
+        decrement: getButtonBuilder("decrement"),
+        prev: getButtonBuilder("prev"),
+        next: getButtonBuilder("next"),
+        dropDown: getButtonBuilder("drop-down"),
+        search: getButtonBuilder("search"),
+        proportions: getButtonBuilder("proportions"),
+        zoomPlus: getButtonBuilder("zoom-plus"),
+        zoomMinus: getButtonBuilder("zoom-minus"),
+        zoomContain: getButtonBuilder("zoom-contain"),
+        rotation: getButtonBuilder("rotation"),
+        rotateLeft: getButtonBuilder("rotate-left"),
+        rotateRight: getButtonBuilder("rotate-right"),
         negativeButton: function (attributes) {
             return this.negative("<button>", attributes);
         },
@@ -114,14 +80,15 @@ define("imcms-buttons-builder", ["imcms-bem-builder"], function (bemBuilder) {
         zoomContainButton: function (attributes) {
             return this.zoomContain("<button>", attributes);
         },
+        rotationButton: function (attributes) {
+            return this.rotation("<button>", attributes);
+        },
         rotateLeftButton: function (attributes) {
             return this.rotateLeft("<button>", attributes);
         },
         rotateRightButton: function (attributes) {
             return this.rotateRight("<button>", attributes);
         },
-        buttonsContainer: function (tag, elements, attributes) {
-            return buttonsBEM.buildBlock(tag, elements, attributes, "button");
-        }
+        buttonsContainer: (tag, elements, attributes) => buttonsBEM.buildBlock(tag, elements, attributes, "button"),
     }
 });
