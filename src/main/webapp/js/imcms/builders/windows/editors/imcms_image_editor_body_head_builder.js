@@ -158,49 +158,6 @@ define(
             });
         }
 
-        function buildRevertButton(imageDataContainers) {
-            return components.buttons.negativeButton({
-                text: "Revert",
-                click: function () {
-                    revertImageChanges(imageDataContainers);
-                }
-            })
-        }
-
-        function buildScaleAndRotateControls(imageDataContainers, $editableImageArea) {
-            imageRotate.setDataContainers(imageDataContainers);
-
-            return new BEM({
-                block: "imcms-edit-image",
-                elements: {
-                    "button": [
-                        components.buttons.zoomPlusButton({
-                            title: texts.buttons.zoomIn,
-                            click: zoomPlus.bind(imageDataContainers)
-                        }),
-                        components.buttons.zoomMinusButton({
-                            title: texts.buttons.zoomOut,
-                            click: zoomMinus.bind(imageDataContainers)
-                        }),
-                        components.buttons.zoomContainButton({
-                            title: texts.buttons.zoomContain,
-                            click: function () {
-                                zoomContain(imageDataContainers, $editableImageArea);
-                            }
-                        }),
-                        components.buttons.rotateLeftButton({
-                            title: texts.buttons.rotateLeft,
-                            click: imageRotate.rotateLeft
-                        }),
-                        components.buttons.rotateRightButton({
-                            title: texts.buttons.rotateRight,
-                            click: imageRotate.rotateRight
-                        })
-                    ]
-                }
-            }).buildBlockStructure("<div>");
-        }
-
         function buildSwitchViewControls(toggleImgArea, imageDataContainers) {
             const $preview = components.texts.titleText("<div>", texts.preview, {
                 "data-tab": "prev",
@@ -223,15 +180,132 @@ define(
         }
 
         function buildToolbar(toggleImgArea, imageDataContainers, $editableImageArea) {
+            let sizeControls;
+
+            const onCancel = () => {
+                imageRotate.rotateImageByDegrees(previousRotateDegrees);
+                onApply();
+            };
+
+            const onApply = () => {
+                $(cancelChangesButton).add(applyChangesButton)
+                    .add(rotateLeftButton)
+                    .add(rotateRightButton)
+                    .slideUp('fast', () => {
+                        $(zoomPlusButton).add(zoomMinusButton)
+                            .add(zoomContainButton)
+                            .add(showImageRotationControls)
+                            .add(sizeControls)
+                            .add(revertButton)
+                            .slideDown();
+                    });
+            };
+
+            let previousRotateDegrees = null;
+
+            const onRotationActivated = () => {
+                previousRotateDegrees = parseInt(cropElements.$image[0].style.transform.split(' ')[0].replace(/\D/g, ''));
+
+                $(zoomPlusButton).add(zoomMinusButton)
+                    .add(zoomContainButton)
+                    .add(showImageRotationControls)
+                    .add(sizeControls)
+                    .add(revertButton)
+                    .slideUp('fast', () => {
+                        $(cancelChangesButton).add(applyChangesButton)
+                            .add(rotateLeftButton)
+                            .add(rotateRightButton)
+                            .slideDown();
+                    });
+            };
+
+            const cancelChangesButton = components.buttons.negativeButton({
+                text: 'Cancel', //todo: localize!!!111
+                title: 'Cancel changes', //todo: localize!!!111
+                click: onCancel,
+                style: 'display: none;',
+            });
+
+            const applyChangesButton = components.buttons.saveButton({
+                text: 'Apply',//todo: localize!!!111
+                title: 'Apply changes', //todo: localize!!!111
+                click: onApply,
+                style: 'display: none;',
+            });
+
+            const showImageRotationControls = components.buttons.rotationButton({
+                title: 'Activate rotation controls',//todo: localize!!!111
+                click: onRotationActivated,
+            });
+
+            // const showImageCropControls = components.buttons.
+
+            const zoomPlusButton = components.buttons.zoomPlusButton({
+                title: texts.buttons.zoomIn,
+                click: zoomPlus.bind(imageDataContainers),
+            });
+            const zoomMinusButton = components.buttons.zoomMinusButton({
+                title: texts.buttons.zoomOut,
+                click: zoomMinus.bind(imageDataContainers),
+            });
+            const zoomContainButton = components.buttons.zoomContainButton({ // change to "unzoom" or smth like that
+                title: texts.buttons.zoomContain,
+                click: function () {
+                    zoomContain(imageDataContainers, $editableImageArea);
+                },
+            });
+            const rotateLeftButton = components.buttons.rotateLeftButton({
+                title: texts.buttons.rotateLeft,
+                click: imageRotate.rotateLeft,
+                style: 'display: none;',
+            });
+            const rotateRightButton = components.buttons.rotateRightButton({
+                title: texts.buttons.rotateRight,
+                click: imageRotate.rotateRight,
+                style: 'display: none;',
+            });
+
+            const revertButton = components.buttons.negativeButton({
+                text: "Revert",
+                click: function () {
+                    revertImageChanges(imageDataContainers);
+                }
+            });
+
+            function buildScaleAndRotateControls(imageDataContainers) {
+                imageRotate.setDataContainers(imageDataContainers);
+
+                return new BEM({
+                    block: "imcms-edit-image",
+                    elements: {
+                        "button": [
+                            zoomPlusButton,
+                            zoomMinusButton,
+                            zoomContainButton,
+                            showImageRotationControls,
+                            rotateLeftButton,
+                            rotateRightButton,
+                        ]
+                    }
+                }).buildBlockStructure("<div>");
+            }
+
             return new BEM({
                 block: "imcms-editable-img-controls",
                 elements: {
-                    "control-size": imageEditSizeControls.buildEditSizeControls(imageDataContainers),
-                    "control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers, $editableImageArea),
-                    "image-revert": buildRevertButton(imageDataContainers),
-                    "control-view": buildSwitchViewControls(toggleImgArea, imageDataContainers)
+                    "control-size": '',
+                    'control-button': '',
+                    "control-scale-n-rotate": '',
+                    "control-view": '',
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlock("<div>", [
+                {"control-size": sizeControls = imageEditSizeControls.buildEditSizeControls(imageDataContainers)},
+                {'control-button': cancelChangesButton},
+                {"control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers)},
+                {"control-button": applyChangesButton},
+                {"control-button": revertButton},
+                {"control-view": buildSwitchViewControls(toggleImgArea, imageDataContainers)}
+            ]);
         }
 
         let $imgUrl;

@@ -152,116 +152,152 @@ define(
             });
         }
 
-        function fillData(image) {
+        function fillBodyHeadData(imageData) {
+            var titleText = imageData.name;
+            var fullTitle = titleText;
+            var pathText = imageData.path;
+            var fullPath = pathText;
 
-            function fillBodyHeadData(imageData) {
-                var titleText = imageData.name;
-                var fullTitle = titleText;
-                var pathText = imageData.path;
-                var fullPath = pathText;
-
-                if (titleText.length > 50) {
-                    titleText = titleText.substr(0, 50) + "...";
-                }
-
-                if (pathText.length > 50) {
-                    pathText = pathText.substr(0, 50) + "...";
-                }
-
-                imageDataContainers.$imageTitle.text(titleText);
-                imageDataContainers.$imageTitle.attr("title", fullTitle);
-
-                imageDataContainers.$imgUrl.text(pathText);
-                imageDataContainers.$imgUrl.attr("title", fullPath);
+            if (titleText.length > 50) {
+                titleText = titleText.substr(0, 50) + "...";
             }
 
-            function fillLeftSideData(imageData) {
+            if (pathText.length > 50) {
+                pathText = pathText.substr(0, 50) + "...";
+            }
 
-                imageDataContainers.$widthControlInput.getInput().val(imageData.width);
-                imageDataContainers.$heightControlInput.getInput().val(imageData.height);
+            imageDataContainers.$imageTitle.text(titleText);
+            imageDataContainers.$imageTitle.attr("title", fullTitle);
 
-                imageDataContainers.$shadow.css({
-                    width: "100%",
-                    height: "100%"
+            imageDataContainers.$imgUrl.text(pathText);
+            imageDataContainers.$imgUrl.attr("title", fullPath);
+        }
+
+        function fillLeftSideData(imageData) {
+
+            imageDataContainers.$widthControlInput.getInput().val(imageData.width);
+            imageDataContainers.$heightControlInput.getInput().val(imageData.height);
+
+            imageDataContainers.$shadow.css({
+                width: "100%",
+                height: "100%"
+            });
+
+            if (!imageData.path) {
+                cropElements.$image.removeAttr("src");
+                cropElements.$image.removeAttr("style");
+
+                cropElements.$cropImg.removeAttr("src");
+                cropElements.$cropImg.removeAttr("style");
+
+                cropElements.$cropArea.removeAttr("style").width(0);
+
+                cropAngles.hideAll();
+                events.trigger("clean crop coordinates");
+
+                return;
+            }
+
+            cropElements.$image.css("display", "none");
+            cropElements.$image.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
+
+            setTimeout(function () { // to let image src load
+                const style = $tag.data('style');
+                const resultStyleObj = {};
+
+                // fixes to prevent stupid little scroll because of borders
+                let imageWidth = cropElements.$image.width();
+                let imageHeight = cropElements.$image.height();
+
+                imageDataContainers.original = {
+                    width: imageWidth,
+                    height: imageHeight
+                };
+
+                imageDataContainers.$heightValue.text(imageHeight);
+                imageDataContainers.$widthValue.text(imageWidth);
+
+                if (style) {
+                    style.split(';')
+                        .map(x => x.trim())
+                        .filter(x => !!x)
+                        .forEach(x => {
+                            const styleKeyAndValue = x.split(':').map(x => x.trim());
+                            resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                        });
+
+                    cropElements.$image.css(resultStyleObj);
+
+                    if (resultStyleObj.width) {
+                        imageData.width = parseInt(resultStyleObj.width);
+                        const $input = imageDataContainers.$widthControlInput.getInput();
+                        $input.val(imageData.width);
+                        $input.attr('disabled', 'disabled');
+                    }
+                    if (resultStyleObj.height) {
+                        imageData.height = parseInt(resultStyleObj.height);
+                        const $input = imageDataContainers.$heightControlInput.getInput();
+                        $input.val(imageData.height);
+                        $input.attr('disabled', 'disabled');
+                    }
+                    if (resultStyleObj['max-width']) {
+                        imageData.width = Math.max(imageData.width, parseInt(resultStyleObj['max-width']))
+                    }
+                    if (resultStyleObj['max-height']) {
+                        imageData.height = Math.max(imageData.height, parseInt(resultStyleObj['max-height']))
+                    }
+                }
+
+                if (imageData.width && imageData.height) {
+                    cropElements.$image.width(imageData.width);
+                    cropElements.$image.height(imageData.height);
+
+                    imageWidth = imageData.width;
+                    imageHeight = imageData.height;
+                }
+
+                imageDataContainers.$editableImageArea.width(imageDataContainers.$editableImageArea.width());  // removes float values
+                imageDataContainers.$editableImageArea.height(imageDataContainers.$editableImageArea.height());// removes float values
+
+                var maxShadowHeight = imageHeight + cropAngles.getDoubleBorderSize();
+                var maxShadowWidth = imageWidth + cropAngles.getDoubleBorderSize();
+
+                if (imageDataContainers.$shadow.height() < maxShadowHeight) {
+                    imageDataContainers.$shadow.height(maxShadowHeight);
+                }
+
+                if (imageDataContainers.$shadow.width() < maxShadowWidth) {
+                    imageDataContainers.$shadow.width(maxShadowWidth);
+                }
+
+                cropElements.$image.css({
+                    left: cropAngles.getBorderSize(),
+                    top: cropAngles.getBorderSize()
                 });
 
-                if (!imageData.path) {
-                    cropElements.$image.removeAttr("src");
-                    cropElements.$image.removeAttr("style");
+                cropElements.$cropImg.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
 
-                    cropElements.$cropImg.removeAttr("src");
-                    cropElements.$cropImg.removeAttr("style");
+                // todo: receive correct crop area
+                cropElements.$cropArea.css({
+                    width: cropElements.$image.width(),
+                    height: cropElements.$image.height(),
+                    left: cropAngles.getBorderSize(),
+                    top: cropAngles.getBorderSize()
+                });
 
-                    cropElements.$cropArea.removeAttr("style").width(0);
+                imageCropper.initImageCropper({
+                    imageData: imageData,
+                    $imageEditor: imageWindowBuilder.$editor
+                });
 
-                    cropAngles.hideAll();
-                    events.trigger("clean crop coordinates");
+                imageRotate.rotateImage(imageData.rotateDirection);
 
-                    return;
-                }
+                cropElements.$image.css("display", "block");
 
-                cropElements.$image.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
+            }, 200);
+        }
 
-                setTimeout(function () { // to let image src load
-                    cropElements.$image.removeAttr("style");
-                    // fixes to prevent stupid little scroll because of borders
-                    var imageWidth = cropElements.$image.width();
-                    var imageHeight = cropElements.$image.height();
-
-                    imageDataContainers.original = {
-                        width: imageWidth,
-                        height: imageHeight
-                    };
-
-                    imageDataContainers.$heightValue.text(imageHeight);
-                    imageDataContainers.$widthValue.text(imageWidth);
-
-                    if (imageData.width && imageData.height) {
-                        cropElements.$image.width(imageData.width);
-                        cropElements.$image.height(imageData.height);
-
-                        imageWidth = imageData.width;
-                        imageHeight = imageData.height;
-                    }
-
-                    imageDataContainers.$editableImageArea.width(imageDataContainers.$editableImageArea.width());  // removes float values
-                    imageDataContainers.$editableImageArea.height(imageDataContainers.$editableImageArea.height());// removes float values
-
-                    var maxShadowHeight = imageHeight + cropAngles.getDoubleBorderSize();
-                    var maxShadowWidth = imageWidth + cropAngles.getDoubleBorderSize();
-
-                    if (imageDataContainers.$shadow.height() < maxShadowHeight) {
-                        imageDataContainers.$shadow.height(maxShadowHeight);
-                    }
-
-                    if (imageDataContainers.$shadow.width() < maxShadowWidth) {
-                        imageDataContainers.$shadow.width(maxShadowWidth);
-                    }
-
-                    cropElements.$image.css({
-                        left: cropAngles.getBorderSize(),
-                        top: cropAngles.getBorderSize()
-                    });
-
-                    cropElements.$cropImg.attr("src", imcms.contextPath + "/" + imcms.imagesPath + imageData.path);
-
-                    // todo: receive correct crop area
-                    cropElements.$cropArea.css({
-                        width: cropElements.$image.width(),
-                        height: cropElements.$image.height(),
-                        left: cropAngles.getBorderSize(),
-                        top: cropAngles.getBorderSize()
-                    });
-
-                    imageCropper.initImageCropper({
-                        imageData: imageData,
-                        $imageEditor: imageWindowBuilder.$editor
-                    });
-
-                    imageRotate.rotateImage(imageData.rotateDirection);
-
-                }, 200);
-            }
+        function fillData(image) {
 
             if (!image) {
                 return;
