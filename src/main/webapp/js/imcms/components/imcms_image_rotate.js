@@ -44,6 +44,13 @@ define(
             "WEST": angleWest
         };
 
+        const anglesByDegrees = {
+            0: angleNorth,
+            90: angleEast,
+            180: angleSouth,
+            270: angleWest,
+        };
+
         function getRotateCss(angle) {
             var degrees = angle.degrees;
             var transform = "rotate(" + degrees + "deg)";
@@ -123,6 +130,7 @@ define(
             rotateRight: function () {
                 rotate(currentAngle.next);
             },
+            rotateImageByDegrees: (degrees) => rotate(anglesByDegrees[degrees]),
             rotateImage: function (direction) {
                 rotate(anglesByDirection[direction]);
             },

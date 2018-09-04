@@ -15,17 +15,17 @@
     display: block;
     outline: none;
     padding: 15px 28px;
-    -webkit-transition: all .3s;
-    -moz-transition: all .3s;
-    -o-transition: all .3s;
-    transition: all .3s;
+    -webkit-transition: color .3s, background-color .3s;
+    -moz-transition: color .3s, background-color .3s;
+    -o-transition: color .3s, background-color .3s;
+    transition: color .3s, background-color .3s;
 }
 
 .imcms-button:hover {
-    -webkit-transition: all .3s;
-    -moz-transition: all .3s;
-    -o-transition: all .3s;
-    transition: all .3s;
+    -webkit-transition: color .3s, background-color .3s;
+    -moz-transition: color .3s, background-color .3s;
+    -o-transition: color .3s, background-color .3s;
+    transition: color .3s, background-color .3s;
 }
 
 .imcms-button--negative {
@@ -226,6 +226,17 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--zoom-contain {
     background: #fff url("../images_new/image_editor/icon_zoom_contain.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--rotation {
+    background: #fff url("../images_new/image_editor/icon_rotate.png") no-repeat center;
+    background-size: contain;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;

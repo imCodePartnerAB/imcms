@@ -11,15 +11,15 @@ var events = require("imcms-events");
 var imcms = require("imcms");
 var $ = require("jquery");
 
-var docId = $("#targetDocId").val();
-
-function onPageInfoClosed() {
-    var returnUrl = $("#return-url").val();
-    window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + docId);
-}
-
-events.on("page info closed", onPageInfoClosed);
-
 $(function () {
+    var docId = $("#targetDocId").val();
+
+    function onPageInfoClosed() {
+        var returnUrl = $("#return-url").val();
+        window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + docId);
+    }
+
+    events.on("page info closed", onPageInfoClosed);
+
     pageInfoBuilder.build(docId, onPageInfoClosed);
 });

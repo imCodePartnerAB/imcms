@@ -1,6 +1,6 @@
 .imcms-edit-image {
     text-align: center;
-    display: block;
+    display: inline-block;
     padding-top: 20px;
 }
 
@@ -15,4 +15,8 @@
 
 .imcms-edit-image__button:last-child {
     margin-right: 0;
+}
+
+.imcms-image-toolbar__toolbar {
+    height: 100%;
 }

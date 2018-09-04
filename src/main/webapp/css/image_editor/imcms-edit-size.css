@@ -1,5 +1,5 @@
 .imcms-edit-size {
-    display: block;
+    display: inline-block;
     min-width: 300px;
     height: 100%;
 }
@@ -43,4 +43,8 @@
     padding-top: 5px;
     padding-bottom: 5px;
     line-height: 18px;
+}
+
+.imcms-editable-img-controls__control-size .imcms-number-box__input {
+    width: 70px;
 }
