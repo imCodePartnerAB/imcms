@@ -6,18 +6,25 @@
     <defaultCache
             maxEntriesLocalHeap="10000"
             eternal="false"
-            timeToIdleSeconds="300"
-            timeToLiveSeconds="600"
+            timeToIdleSeconds="6000"
+            timeToLiveSeconds="3000"
             maxEntriesLocalDisk="10000000"
             diskExpiryThreadIntervalSeconds="120"
             memoryStoreEvictionPolicy="LRU">
         <persistence strategy="localTempSwap"/>
     </defaultCache>
-    <cache name="SimpleCachingHeadersCachingFilter"
-           maxEntriesLocalHeap="100"
+    <cache name="StaticContentCachingFilter"
+           maxEntriesLocalHeap="2000"
+           eternal="true"
+           timeToIdleSeconds="31556926"
+           timeToLiveSeconds="31556926">
+        <persistence strategy="localTempSwap"/>
+    </cache>
+    <cache name="OtherContentCachingFilter"
+           maxEntriesLocalHeap="2000"
            eternal="false"
-           timeToIdleSeconds="10000"
-           timeToLiveSeconds="10000">
+           timeToIdleSeconds="2629744"
+           timeToLiveSeconds="2629744">
         <persistence strategy="localTempSwap"/>
     </cache>
 </ehcache>
