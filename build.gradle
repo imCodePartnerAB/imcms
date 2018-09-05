@@ -30,7 +30,7 @@ repositories {
 }
 
 ext {
-    springframeworkVersion = '4.3.13.RELEASE'
+    springframeworkVersion = '5.0.8.RELEASE'
     hibernateVersion = '5.2.13.Final'
     solrVersion = '7.2.1'
     slf4jVersion = '1.7.25'
