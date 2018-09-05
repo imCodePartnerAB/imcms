@@ -240,10 +240,12 @@ test {
     }
 }
 
-task webpack (type:Exec){
+task webpack {
+    exec {
         commandLine "npm", "install", "webpack", "--prefix", "src/main/webapp/"
         commandLine "npm", "install", "--production", "--prefix", "src/main/webapp/"
         commandLine "npm", "run", "build:prod", "--prefix", "src/main/webapp/"
+    }
 }
 
 war {
