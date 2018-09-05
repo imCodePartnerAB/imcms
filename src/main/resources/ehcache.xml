@@ -15,14 +15,11 @@
     </defaultCache>
     <cache name="StaticContentCachingFilter"
            maxEntriesLocalHeap="2000"
-           eternal="true"
-           timeToIdleSeconds="31556926"
-           timeToLiveSeconds="31556926">
+           eternal="true">
         <persistence strategy="localTempSwap"/>
     </cache>
     <cache name="OtherContentCachingFilter"
            maxEntriesLocalHeap="2000"
-           eternal="false"
            timeToIdleSeconds="2629744"
            timeToLiveSeconds="2629744">
         <persistence strategy="localTempSwap"/>
