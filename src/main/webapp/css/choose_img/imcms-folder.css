@@ -10,7 +10,7 @@
 
 .imcms-folder__btn {
     padding-left: 70px;
-    background: url("../../images_new/controls/icon_sub_close.png") no-repeat center;
+    background: url("/images_new/controls/icon_sub_close.png") no-repeat center;
 }
 
 .imcms-folder--active {
@@ -33,15 +33,15 @@
 }
 
 .imcms-folder-btn--open {
-    background: url("../../images_new/controls/icon_sub_open.png") no-repeat center;
+    background: url("/images_new/controls/icon_sub_open.png") no-repeat center;
 }
 
 .imcms-folder--active .imcms-folder__btn {
-    background-image: url("../../images_new/controls/icon_sub_close_dark.png");
+    background-image: url("/images_new/controls/icon_sub_close_dark.png");
 }
 
 .imcms-folder--active .imcms-folder-btn--open {
-    background-image: url("../../images_new/controls/icon_sub_open_dark.png");
+    background-image: url("/images_new/controls/icon_sub_open_dark.png");
 }
 
 .imcms-folder__name {
@@ -62,11 +62,11 @@
 }
 
 .imcms-folder--active:hover .imcms-folder__btn.imcms-folder-btn--open {
-    background-image: url("../../images_new/controls/icon_sub_open.png");
+    background-image: url("/images_new/controls/icon_sub_open.png");
 }
 
 .imcms-folder--active:hover .imcms-folder__btn {
-    background-image: url("../../images_new/controls/icon_sub_close.png");
+    background-image: url("/images_new/controls/icon_sub_close.png");
 }
 
 .imcms-folder--active:hover .imcms-folder__name {
