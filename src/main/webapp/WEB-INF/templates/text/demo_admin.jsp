@@ -189,7 +189,8 @@ ${"-->"}
         });
     };
 
-    <imcms:ifAdmin>Imcms.initSiteSpecific(addEventsToSpecialAdmin);
+    <imcms:ifAdmin>
+    Imcms.initSiteSpecific(addEventsToSpecialAdmin);
     </imcms:ifAdmin>
 
 </script>
