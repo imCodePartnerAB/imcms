@@ -31,7 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static imcode.server.ImcmsConstants.*;
 import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
 
 /**
@@ -41,7 +41,7 @@ import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
  * 18.09.17.
  */
 @Controller
-@RequestMapping("/viewDoc")
+@RequestMapping(API_VIEW_DOC_PATH)
 public class ViewDocumentController {
 
     private final DocumentMapper documentMapper;
@@ -87,7 +87,6 @@ public class ViewDocumentController {
             throws ServletException, IOException {
 
         final String urlPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-
         final String docIdentifier = pathMatcher.extractPathWithinPattern(urlPattern, request.getPathInfo());
 
         final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
