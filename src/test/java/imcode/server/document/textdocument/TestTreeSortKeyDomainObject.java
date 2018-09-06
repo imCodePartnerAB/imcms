@@ -31,7 +31,7 @@ public class TestTreeSortKeyDomainObject extends TestCase {
         assertEquals(0, treeSortKeyDomainObject.getLevelCount());
     }
 
-    public void testSeparators() throws Exception {
+    public void testSeparators() {
         treeSortKeyDomainObject = new TreeSortKeyDomainObject("1,2.3 4");
         assertEquals(1, treeSortKeyDomainObject.getLevelKey(0));
         assertEquals(2, treeSortKeyDomainObject.getLevelKey(1));

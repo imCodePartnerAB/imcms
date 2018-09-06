@@ -137,6 +137,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);
         }
 
+        publishMe.setDefaultVersionNo(newVersion.getNo());
+
         final Date publicationStartDatetime = publishMe.getPublicationStartDatetime();
         final Date currentDate = new Date();
 

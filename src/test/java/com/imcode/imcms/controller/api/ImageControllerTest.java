@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
@@ -22,20 +23,18 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
 
-@Transactional
 public class ImageControllerTest extends AbstractControllerTest {
 
-    private static final int TEST_DOC_ID = 1001;
     private static final int TEST_IMAGE_INDEX = 1;
     private static final int TEST_VERSION_INDEX = 0;
-    private static final ImageDTO TEST_IMAGE_DTO = new ImageDTO(TEST_IMAGE_INDEX, TEST_DOC_ID);
+    private static int testDocId;
+    private static ImageDTO testImageDto;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -45,6 +44,9 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
 
     @Autowired
     private ImageRepository imageRepository;
@@ -62,7 +64,13 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+        documentDataInitializer.cleanRepositories();
+        versionDataInitializer.cleanRepositories();
+        imageDataInitializer.cleanRepositories();
+
+        testDocId = documentDataInitializer.createData().getId();
+        versionDataInitializer.createData(TEST_VERSION_INDEX, testDocId);
+        testImageDto = new ImageDTO(TEST_IMAGE_INDEX, testDocId);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
@@ -73,14 +81,17 @@ public class ImageControllerTest extends AbstractControllerTest {
     @After
     public void tearDown() {
         Imcms.removeUser();
+        documentDataInitializer.cleanRepositories();
+        versionDataInitializer.cleanRepositories();
+        imageDataInitializer.cleanRepositories();
     }
 
     @Test
     public void getImage_Expect_Ok() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", String.valueOf(TEST_DOC_ID))
+                .param("docId", String.valueOf(testDocId))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX))
                 .param("langCode", imageDTO.getLangCode());
 
@@ -90,11 +101,11 @@ public class ImageControllerTest extends AbstractControllerTest {
     @Test
     public void getImage_When_ImageNotExist_Expect_OkAndEmptyDTO() throws Exception {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", String.valueOf(TEST_DOC_ID))
+                .param("docId", String.valueOf(testDocId))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX))
-                .param("langCode", TEST_IMAGE_DTO.getLangCode());
+                .param("langCode", testImageDto.getLangCode());
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(TEST_IMAGE_DTO));
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(testImageDto));
     }
 
     @Test
@@ -109,10 +120,10 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImage_When_ImageExist_Expect_OkAndEqualContent() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
-                .param("docId", String.valueOf(TEST_DOC_ID))
+                .param("docId", String.valueOf(testDocId))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX))
                 .param("langCode", imageDTO.getLangCode());
 
@@ -122,7 +133,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     @Test
     public void getImage_When_LoopEntryRefIsNotNull_Expect_OkAndEqualContent() throws Exception {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(imageDTO.getDocId()))
@@ -140,7 +151,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
         Imcms.setUser(user); // means current user is default user
 
-        performPostWithContentExpectException(TEST_IMAGE_DTO, NoPermissionToEditDocumentException.class);
+        performPostWithContentExpectException(testImageDto, NoPermissionToEditDocumentException.class);
     }
 
     @Test
@@ -153,7 +164,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void postImage_When_LoopEntryRefIsNull_Expect_Ok() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, null);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, null);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
         performPostWithContentExpectOk(imageDTO);
@@ -162,7 +173,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     @Test
     public void postImage_When_LoopEntryRefIsNotNull_Expect_Ok() throws Exception {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
         performPostWithContentExpectOk(imageDTO);
@@ -170,7 +181,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void postImage_When_DataChanged_Expect_CorrectSave() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, null);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, null);
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
         final MockHttpServletRequestBuilder getImageReqBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -274,7 +285,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     private void deleteImageWhenAllLanguagesFlagIsSet(boolean inLoop) throws Exception {
-        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, testDocId);
 
         final LoopEntryRefJPA loopEntryRefJPA = inLoop
                 ? new LoopEntryRefJPA(1, 1)
@@ -302,7 +313,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     private void deleteImageWhenAllLanguagesFlagIsNotSet(boolean inLoop) throws Exception {
-        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, testDocId);
 
         final LoopEntryRefJPA loopEntryRefJPA = inLoop
                 ? new LoopEntryRefJPA(1, 1)
@@ -339,8 +350,8 @@ public class ImageControllerTest extends AbstractControllerTest {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
         final Image image = inLoop
-                ? imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef)
-                : imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+                ? imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef)
+                : imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
 
         image.setGeneratedFilename("testGeneratedFilename");
         imageRepository.save(image);
@@ -359,8 +370,8 @@ public class ImageControllerTest extends AbstractControllerTest {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
         final Image image = inLoop
-                ? imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef)
-                : imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX);
+                ? imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef)
+                : imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -379,7 +390,7 @@ public class ImageControllerTest extends AbstractControllerTest {
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, TEST_DOC_ID);
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, testDocId);
 
         languageRepository.findAll().forEach(language -> {
             final Image image = imageDataInitializer
@@ -407,7 +418,7 @@ public class ImageControllerTest extends AbstractControllerTest {
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, TEST_VERSION_INDEX, loopEntryRef);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
         image.setAllLanguages(true);
 
         final ImageDTO expected = imageToImageDTO.apply(image);
@@ -418,7 +429,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         languageRepository.findAll()
                 .forEach(language -> {
                     final ImageDTO actual = imageService
-                            .getImage(TEST_DOC_ID, TEST_IMAGE_INDEX, language.getCode(), loopEntryRef);
+                            .getImage(testDocId, TEST_IMAGE_INDEX, language.getCode(), loopEntryRef);
 
                     expected.setLangCode(language.getCode());
 

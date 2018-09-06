@@ -29,7 +29,7 @@ class DocumentValidationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void isTextDocument_When_ServiceReturnsTrue_Expect_TrueReturned() throws Exception {
+    void isTextDocument_When_ServiceReturnsTrue_Expect_TrueReturned() {
         final String testIdentifier = "test_identifier";
 
         given(validatingService.isTextDocument(testIdentifier)).willReturn(true);
@@ -43,7 +43,7 @@ class DocumentValidationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void isTextDocument_When_ServiceReturnsFalse_Expect_FalseReturned() throws Exception {
+    void isTextDocument_When_ServiceReturnsFalse_Expect_FalseReturned() {
         final String testIdentifier = "test_identifier";
 
         when(validatingService.isTextDocument(testIdentifier)).thenReturn(false);

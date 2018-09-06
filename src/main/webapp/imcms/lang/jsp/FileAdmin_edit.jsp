@@ -16,6 +16,7 @@
 <%@ page import="java.io.InputStreamReader" %>
 <%@ page import="java.io.OutputStreamWriter" %>
 <%@ page import="java.io.Writer" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
 <%
 
 request.setCharacterEncoding("UTF-8");
@@ -153,7 +154,7 @@ String tempStr ;
 
 if (isEditable && !doSave) {
 
-	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn), "UTF-8")) ;
+	BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn), StandardCharsets.UTF_8)) ;
 
 	fileSrc = "" ;
 	while ((fileLine = br.readLine()) != null) {
@@ -457,12 +458,12 @@ function popWinOpen(winW,winH,sUrl,sName,iResize,iScroll) {
 
 					fileNameToShow = sTemp.substring(0,40) + "<br>\n" ;
 					fileNameToShow += sTemp.substring(40,80) + "<br>\n" ;
-					fileNameToShow += sTemp.substring(80,sTemp.length()) ;
+					fileNameToShow += sTemp.substring(80) ;
 
 				} else if (fileNameToShow.length() > 40) {
 
 					fileNameToShow = sTemp.substring(0,40) + "<br>\n" ;
-					fileNameToShow += sTemp.substring(40,sTemp.length()) ;
+					fileNameToShow += sTemp.substring(40) ;
 
 				}
 				out.print(fileNameToShow) ;

@@ -20,7 +20,7 @@ class RequestExternalIdentifierControllerTest {
     private RequestExternalIdentifierController controller;
 
     @Test
-    void getRedirectURL_When_HttpLocalHostWithPortAndContextPath_Expect_CorrectUrlBuilt() throws MalformedURLException {
+    void getRedirectURL_When_HttpLocalHostWithPortAndContextPath_Expect_CorrectUrlBuilt() {
         final String id = "test-id";
         final String protocol = "http";
         final String host = "localhost";
@@ -42,7 +42,7 @@ class RequestExternalIdentifierControllerTest {
     }
 
     @Test
-    void getRedirectURL_When_HttpsNotLocalHost_Expect_CorrectUrlBuilt() throws MalformedURLException {
+    void getRedirectURL_When_HttpsNotLocalHost_Expect_CorrectUrlBuilt() {
         final String id = "test-id";
         final String protocol = "https";
         final String host = "imcode.com";

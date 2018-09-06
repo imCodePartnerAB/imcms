@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -23,7 +24,7 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(classes = {TestConfig.class})
 public class VersionRepositoryTest {
     private final static int userId = 1;
-    private final static int docId = 1001;
+    private static int docId;
 
     @Autowired
     private VersionRepository versionRepository;
@@ -31,11 +32,16 @@ public class VersionRepositoryTest {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
     @Before
     public void setUpVersions() {
         versionDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
 
-        versionDataInitializer.createData(0, docId);
+        docId = documentDataInitializer.createData().getId();
+
         versionDataInitializer.createData(1, docId);
         versionDataInitializer.createData(2, docId);
         versionDataInitializer.createData(3, docId);

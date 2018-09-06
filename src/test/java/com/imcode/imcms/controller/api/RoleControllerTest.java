@@ -38,7 +38,7 @@ class RoleControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void getRoles() throws Exception {
+    void getRoles() {
         final List<Role> roles = Stream.of(Roles.SUPER_ADMIN, Roles.USER_ADMIN, Roles.USER)
                 .map(roleId -> new RoleDTO(roleId.getId(), roleId.getName()))
                 .collect(Collectors.toList());
@@ -58,7 +58,7 @@ class RoleControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void saveRole() throws Exception {
+    void saveRole() {
         final Role role = new RoleDTO("test-role");
         role.setId(42);
 
@@ -73,7 +73,7 @@ class RoleControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void saveNewRole() throws Exception {
+    void saveNewRole() {
         final Role role = new RoleDTO("test-role");
         final Role savedRole = new RoleDTO("test-role");
         savedRole.setId(42);
@@ -89,7 +89,7 @@ class RoleControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void deleteRole() throws Exception {
+    void deleteRole() {
         final int roleId = 42;
 
         perform(delete(PATH + "/" + roleId)).andExpect(status().isOk());
