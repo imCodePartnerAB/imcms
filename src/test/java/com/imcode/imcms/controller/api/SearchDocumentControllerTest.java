@@ -34,7 +34,7 @@ class SearchDocumentControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void getTextDocument_When_DefaultSearchQuery_Expect_JsonIsReturned() throws Exception {
+    void getTextDocument_When_DefaultSearchQuery_Expect_JsonIsReturned() {
 
         final SearchQueryDTO searchQuery = new SearchQueryDTO();
 

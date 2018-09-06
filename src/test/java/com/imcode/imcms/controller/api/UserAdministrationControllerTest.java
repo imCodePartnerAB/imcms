@@ -44,7 +44,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void createUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() throws Exception {
+    void createUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() {
 
         final UserDomainObject user = mock(UserDomainObject.class);
         Imcms.setUser(user);
@@ -61,7 +61,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void createUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() throws Exception {
+    void createUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() {
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/create");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());
@@ -70,7 +70,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void editUser_When_GoingToEditPageWithExistingUserId_Expect_ThatUserIsInModel() throws Exception {
+    void editUser_When_GoingToEditPageWithExistingUserId_Expect_ThatUserIsInModel() {
         final UserDomainObject user = mock(UserDomainObject.class);
         Imcms.setUser(user);
 
@@ -85,7 +85,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void editUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() throws Exception {
+    void editUser_When_UserDataIsInvalid_Expect_ReturnedMavWithValidationResult() {
 
         final UserDomainObject user = mock(UserDomainObject.class);
         Imcms.setUser(user);
@@ -102,7 +102,7 @@ class UserAdministrationControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void editUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() throws Exception {
+    void editUser_When_UserDataIsValid_Expect_CreateUserCalledAndStatusOk() {
         final RequestBuilder requestBuilder = post(CONTROLLER_PATH + "/edit");
 
         perform(requestBuilder).andExpect(status().is3xxRedirection());

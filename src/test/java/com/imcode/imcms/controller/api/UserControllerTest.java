@@ -32,7 +32,7 @@ public class UserControllerTest extends MockingControllerTest {
     private UserController userController;
 
     @Test
-    public void getAdminUsersTest() throws Exception {
+    public void getAdminUsersTest() {
         final UserDTO user1 = new UserDTO();
         final UserDTO user2 = new UserDTO();
         final List<UserDTO> users = Arrays.asList(user1, user2);
@@ -42,7 +42,7 @@ public class UserControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void getAll() throws Exception {
+    void getAll() {
         final UserDTO user1 = new UserDTO();
         final UserDTO user2 = new UserDTO();
         final List<UserDTO> users = Arrays.asList(user1, user2);
@@ -67,7 +67,7 @@ public class UserControllerTest extends MockingControllerTest {
     }
 
     @Test
-    void searchUsers() throws Exception {
+    void searchUsers() {
         final String term = "term";
         final boolean includeInactive = true;
         final Set<Integer> roleIds = new HashSet<>();
