@@ -22,14 +22,12 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
 
-@Transactional
 public class ImageControllerTest extends AbstractControllerTest {
 
     private static final int TEST_DOC_ID = 1001;
