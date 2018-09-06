@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 public class KerberosLoginService {
     private static final Logger log = Logger.getLogger(KerberosLoginService.class);
@@ -137,7 +138,7 @@ public class KerberosLoginService {
 
         auth = auth.substring(NEGOTIATE_PREFIX.length());
 
-        byte[] spnegoReqToken = Base64.decodeBase64(auth.getBytes("UTF-8"));
+        byte[] spnegoReqToken = Base64.decodeBase64(auth.getBytes(StandardCharsets.UTF_8));
 
         if (spnegoReqToken == null || spnegoReqToken.length == 0) {
             // Missing SPNEGO Negotiate token
@@ -153,7 +154,7 @@ public class KerberosLoginService {
         if (authResult.getSpnegoResponseToken() != null) {
             // Send back the SPNEGO response token if we have one
             byte[] data = Base64.encodeBase64(authResult.getSpnegoResponseToken());
-            response.setHeader(AUTHENTICATE_HEADER, NEGOTIATE_PREFIX + new String(data, "UTF-8"));
+            response.setHeader(AUTHENTICATE_HEADER, NEGOTIATE_PREFIX + new String(data, StandardCharsets.UTF_8));
         }
 
         if (!authResult.isEstablished()) {
