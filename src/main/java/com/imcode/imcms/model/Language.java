@@ -21,8 +21,14 @@ public abstract class Language implements Serializable {
 
     public abstract void setId(Integer id);
 
+    /**
+     * Two-letter ISO-639-1 code, like "en" or "sv"
+     */
     public abstract String getCode();
 
+    /**
+     * Two-letter ISO-639-1 code, like "en" or "sv"
+     */
     public abstract void setCode(String code);
 
     public abstract String getName();
