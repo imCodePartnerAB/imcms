@@ -41,7 +41,7 @@ import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
  * 18.09.17.
  */
 @Controller
-@RequestMapping(API_VIEW_DOC_PATH)
+@RequestMapping(VIEW_DOC_PATH)
 public class ViewDocumentController {
 
     private final DocumentMapper documentMapper;
