@@ -40,20 +40,17 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     private String extractDocIdentifier(String path) {
         String documentPathPrefix = Imcms.getServices().getConfig().getDocumentPathPrefix();
-        String documentIdString = null;
+        String documentId = null;
 
         if (StringUtils.isNotBlank(documentPathPrefix) && path.startsWith(documentPathPrefix)) {
-            documentIdString = path.substring(documentPathPrefix.length());
+            documentId = path.substring(documentPathPrefix.length());
 
-            if (documentIdString.endsWith("/")) {
-                documentIdString = documentIdString.substring(0, documentIdString.length() - 1);
-            }
-
-            documentIdString = StringUtils.substringAfterLast(documentIdString, "/");
-            if ("".equals(documentIdString)) documentIdString = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
+            if (documentId.endsWith("/")) documentId = documentId.substring(0, documentId.length() - 1);
+            if (documentId.contains("/")) documentId = StringUtils.substringAfterLast(documentId, "/");
+            if ("".equals(documentId)) documentId = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
         }
 
-        return documentIdString;
+        return documentId;
     }
 
     @Override
