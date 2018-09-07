@@ -35,6 +35,7 @@ ext {
     solrVersion = '7.2.1'
     slf4jVersion = '1.7.25'
     junitVersion = '5.2.0'
+    lombokVersion = '1.18.2'
 
     sharedManifest = manifest {
         attributes "Build-Date": new Date()
@@ -46,6 +47,7 @@ ext {
 }
 
 dependencies {
+    compile "org.projectlombok:lombok:${lombokVersion}"
     compile "com.drewnoakes:metadata-extractor:2.11.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.5"
     compile("com.imcode.db:imcode-db:0.7") {
@@ -212,7 +214,7 @@ explodedWar.finalizedBy mergeProperties
 
 //Plugins setting up
 lombok {
-    version = "1.18.2"
+    version = lombokVersion
     sha256 = ""
 }
 

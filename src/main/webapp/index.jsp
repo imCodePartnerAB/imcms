@@ -1,1 +1,1 @@
-<% request.getRequestDispatcher( "/servlet/StartDoc" ).forward( request, response ); %>
+<% request.getRequestDispatcher(imcode.server.ImcmsConstants.API_VIEW_DOC_PATH).forward(request, response); %>

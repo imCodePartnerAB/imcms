@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -34,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
 public class ViewDocumentControllerTest {
+
+    private static final String VIEW_DOC = VIEW_DOC_PATH + "/";
 
     @Autowired
     private MockMvc mockMvc;
@@ -160,7 +163,7 @@ public class ViewDocumentControllerTest {
         commonContentService.save(docId, commonContents);
 
         try {
-            mockMvc.perform(get("/viewDoc/" + docId));
+            mockMvc.perform(get(VIEW_DOC + docId));
         } catch (Exception e) {
             throw e.getCause();
         }
@@ -190,7 +193,7 @@ public class ViewDocumentControllerTest {
 
         commonContentService.save(docId, commonContents);
 
-        mockMvc.perform(get("/viewDoc/" + docId))
+        mockMvc.perform(get(VIEW_DOC + docId))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("language", LanguageMapper.convert639_2to639_1(languageIso639_2)));
     }
@@ -203,7 +206,7 @@ public class ViewDocumentControllerTest {
 
         final Integer docId = textDocument.getId();
 
-        mockMvc.perform(get("/viewDoc/" + docId))
+        mockMvc.perform(get(VIEW_DOC + docId))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("language", language.getCode()));
     }
@@ -219,7 +222,7 @@ public class ViewDocumentControllerTest {
         commonContentService.save(docId, commonContents);
 
         try {
-            mockMvc.perform(get("/viewDoc/" + docId));
+            mockMvc.perform(get(VIEW_DOC + docId));
         } catch (Exception e) {
             throw e.getCause();
         }
@@ -240,7 +243,7 @@ public class ViewDocumentControllerTest {
 
         commonContentService.save(docId, commonContents);
 
-        mockMvc.perform(get("/viewDoc/" + docId))
+        mockMvc.perform(get(VIEW_DOC + docId))
                 .andExpect(status().is(200))
                 .andExpect(model().attribute("language", language.getCode()));
     }

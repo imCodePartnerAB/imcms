@@ -35,6 +35,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static imcode.server.ImcmsConstants.API_VIEW_DOC_PATH;
+
 /**
  * Retrieves document by metaId.
  */
@@ -75,7 +77,7 @@ public class GetDoc extends HttpServlet {
      */
     @SneakyThrows
     // fixme: what a mess! rewrite!
-    static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) {
+    public static void viewDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) {
         if (null == document) {
             res.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -132,7 +134,7 @@ public class GetDoc extends HttpServlet {
 
     private static void getTextDoc(DocumentDomainObject document, HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         Utility.setDefaultHtmlContentType(res);
-        req.getRequestDispatcher("/api/viewDoc/" + document.getId()).forward(req, res);
+        req.getRequestDispatcher(API_VIEW_DOC_PATH + "/" + document.getId()).forward(req, res);
     }
 
     private static void getUrlDoc(UrlDocumentDomainObject document, HttpServletResponse res) throws IOException {

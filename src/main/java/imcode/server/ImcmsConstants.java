@@ -154,6 +154,9 @@ ImcmsConstants {
     public static final int MAXIMUM_PASSWORD_LENGTH = 128;
     public static final int MINIMUM_PASSWORD_LENGTH = 4;
 
+    public static final String VIEW_DOC_PATH = "/viewDoc";
+    public static final String API_VIEW_DOC_PATH = API_PREFIX + "/viewDoc";
+
     private ImcmsConstants() {
         throw new AssertionError();
     }

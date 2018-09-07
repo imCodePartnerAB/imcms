@@ -217,36 +217,37 @@ define(
                 imageDataContainers.$heightValue.text(imageHeight);
                 imageDataContainers.$widthValue.text(imageWidth);
 
-                if (style) {
-                    style.split(';')
-                        .map(x => x.trim())
-                        .filter(x => !!x)
-                        .forEach(x => {
-                            const styleKeyAndValue = x.split(':').map(x => x.trim());
-                            resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
-                        });
-
-                    cropElements.$image.css(resultStyleObj);
-
-                    if (resultStyleObj.width) {
-                        imageData.width = parseInt(resultStyleObj.width);
-                        const $input = imageDataContainers.$widthControlInput.getInput();
-                        $input.val(imageData.width);
-                        $input.attr('disabled', 'disabled');
-                    }
-                    if (resultStyleObj.height) {
-                        imageData.height = parseInt(resultStyleObj.height);
-                        const $input = imageDataContainers.$heightControlInput.getInput();
-                        $input.val(imageData.height);
-                        $input.attr('disabled', 'disabled');
-                    }
-                    if (resultStyleObj['max-width']) {
-                        imageData.width = Math.max(imageData.width, parseInt(resultStyleObj['max-width']))
-                    }
-                    if (resultStyleObj['max-height']) {
-                        imageData.height = Math.max(imageData.height, parseInt(resultStyleObj['max-height']))
-                    }
-                }
+                // disabled because not finished
+                // if (style) {
+                //     style.split(';')
+                //         .map(x => x.trim())
+                //         .filter(x => !!x)
+                //         .forEach(x => {
+                //             const styleKeyAndValue = x.split(':').map(x => x.trim());
+                //             resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                //         });
+                //
+                //     cropElements.$image.css(resultStyleObj);
+                //
+                //     if (resultStyleObj.width) {
+                //         imageData.width = parseInt(resultStyleObj.width);
+                //         const $input = imageDataContainers.$widthControlInput.getInput();
+                //         $input.val(imageData.width);
+                //         $input.attr('disabled', 'disabled');
+                //     }
+                //     if (resultStyleObj.height) {
+                //         imageData.height = parseInt(resultStyleObj.height);
+                //         const $input = imageDataContainers.$heightControlInput.getInput();
+                //         $input.val(imageData.height);
+                //         $input.attr('disabled', 'disabled');
+                //     }
+                //     if (resultStyleObj['max-width']) {
+                //         imageData.width = Math.max(imageData.width, parseInt(resultStyleObj['max-width']))
+                //     }
+                //     if (resultStyleObj['max-height']) {
+                //         imageData.height = Math.max(imageData.height, parseInt(resultStyleObj['max-height']))
+                //     }
+                // }
 
                 if (imageData.width && imageData.height) {
                     cropElements.$image.width(imageData.width);

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static imcode.server.ImcmsConstants.API_VIEW_DOC_PATH;
+
 @Controller
 @RequestMapping("/editDoc")
 public class EditDocumentController {
@@ -45,7 +47,7 @@ public class EditDocumentController {
         switch (document.getType()) {
             case TEXT: {
                 request.setAttribute("isEditMode", "true");
-                request.getRequestDispatcher("/api/viewDoc/" + metaId).forward(request, response);
+                request.getRequestDispatcher(API_VIEW_DOC_PATH + "/" + metaId).forward(request, response);
                 return;
             }
             case URL:
