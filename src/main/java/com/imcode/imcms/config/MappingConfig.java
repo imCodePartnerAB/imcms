@@ -396,7 +396,7 @@ class MappingConfig {
             final Integer metaId = meta.getId();
             dto.setId(metaId);
             dto.setTarget(meta.getTarget());
-            dto.setAlias(meta.getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS));
+            dto.setAlias(meta.getAlias());
             dto.setPublicationStatus(meta.getPublicationStatus());
             dto.setCommonContents(commonContents);
             dto.setPublished(auditDtoCreator.apply(meta::getPublisherId, meta::getPublicationStartDatetime));

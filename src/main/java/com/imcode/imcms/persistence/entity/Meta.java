@@ -32,6 +32,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
+
 /**
  * Document's meta.
  * <p/>
@@ -251,5 +253,9 @@ public class Meta implements Serializable {
 
     public void setCategories(Set<Category> categories) {
         this.categories = categories.stream().map(CategoryJPA::new).collect(Collectors.toSet());
+    }
+
+    public String getAlias() {
+        return getProperties().get(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
     }
 }
