@@ -98,6 +98,24 @@
     </filter>
 
     <filter>
+        <filter-name>PublicDocCachingFilter</filter-name>
+        <filter-class>com.imcode.imcms.filters.PublicDocumentCacheFilter</filter-class>
+        <init-param>
+            <param-name>suppressStackTrace</param-name>
+            <param-value>false</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cacheName</param-name>
+            <param-value>PublicDocumentsCache</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>UrlHandlerFilter</filter-name>
+        <filter-class>com.imcode.imcms.filters.UrlHandlerFilter</filter-class>
+    </filter>
+
+    <filter>
         <description>
             Restricts access to mapped resources to users who are in the superadmin role.
             Currently API samples only.
@@ -129,6 +147,16 @@
 
     <filter-mapping>
         <filter-name>ImcmsSetupFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>PublicDocCachingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>UrlHandlerFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 

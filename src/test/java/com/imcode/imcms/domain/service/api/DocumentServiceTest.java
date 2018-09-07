@@ -7,6 +7,7 @@ import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
@@ -89,6 +90,7 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.*;
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 @Transactional
 @WebAppConfiguration
@@ -165,6 +167,8 @@ public class DocumentServiceTest {
     @Autowired
     private Function<DocumentDTO, Meta> documentDtoToMeta;
 
+    private DocumentsCache documentsCache = mock(DocumentsCache.class);
+
     @Autowired
     @Qualifier("versionedContentServices")
     private List<VersionedContentService> versionedContentServices;
@@ -188,6 +192,7 @@ public class DocumentServiceTest {
                 imageService,
                 loopService,
                 new MockDocumentIndex(),
+                documentsCache,
                 versionedContentServices
         );
         ((DefaultDocumentService) documentService).init();

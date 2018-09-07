@@ -9,7 +9,6 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
-import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -33,7 +32,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.Set;
 
 import static imcode.server.ImcmsConstants.*;
 
@@ -259,7 +257,7 @@ public class ImcmsSetupFilter implements Filter {
 
             Utility.initRequestWithApi(request, user);
 
-            handleDocumentUri(filterChain, request, response, service, fallbackDecoder);
+            filterChain.doFilter(request, response);
         } finally {
             Imcms.removeUser();
         }
@@ -295,45 +293,6 @@ public class ImcmsSetupFilter implements Filter {
         }
 
         return invalidRemoteAddress;
-    }
-
-    /**
-     * When request path matches a physical or mapped resource then processes request normally.
-     * Otherwise threats a request as a document request.
-     */
-    private void handleDocumentUri(FilterChain chain,
-                                   HttpServletRequest request,
-                                   HttpServletResponse response,
-                                   ImcmsServices service,
-                                   FallbackDecoder fallbackDecoder) throws ServletException, IOException {
-
-        String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
-        path = StringUtils.substringAfter(path, request.getContextPath());
-        final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
-
-        if (resourcePaths == null || resourcePaths.size() == 0) {
-            final String documentIdString = getDocumentIdString(service, path);
-            final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
-            final DocumentDomainObject document = service.getDocumentMapper()
-                    .getVersionedDocument(documentIdString, langCode, request);
-
-            request.setAttribute("contextPath", request.getContextPath());
-            request.setAttribute("language", langCode);
-
-            if (null != document) {
-                if (Utility.isTextDocument(document)) {
-
-                    final String newPath = "/api/viewDoc" + request.getServletPath();
-                    request.getRequestDispatcher(newPath).forward(request, response);
-
-                } else {
-                    GetDoc.viewDoc(document, request, response);
-                }
-
-                return;
-            }
-        }
-        chain.doFilter(request, response);
     }
 
     private void setDomainSessionCookie(ServletResponse response, HttpSession session) {

@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -16,6 +17,7 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
+import imcode.server.Imcms;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
@@ -44,6 +47,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final ImageService imageService;
     private final LoopService loopService;
     private final DocumentIndex documentIndex;
+    private final DocumentsCache documentsCache;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
 
@@ -58,6 +62,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            ImageService imageService,
                            LoopService loopService,
                            DocumentIndex documentIndex,
+                           DocumentsCache documentsCache,
                            @Qualifier("versionedContentServices")
                                    List<VersionedContentService> versionedContentServices) {
 
@@ -69,6 +74,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.imageService = imageService;
         this.loopService = loopService;
         this.documentIndex = documentIndex;
+        this.documentsCache = documentsCache;
         this.versionedContentServices = versionedContentServices;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
@@ -108,13 +114,28 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     @Transactional
     public DocumentDTO save(DocumentDTO saveMe) {
+
+        final Integer id = saveMe.getId();
         final boolean isNew = (saveMe.getId() == null);
+        final String newAlias = saveMe.getAlias();
+
+        if (!isNew) {
+            final String oldAlias = metaRepository.findOne(id).getAlias();
+
+            if (!Objects.equals(oldAlias, newAlias)) {
+                documentsCache.invalidateDoc(id, oldAlias);
+            }
+        }
+
         final Integer docId = documentSaver.apply(saveMe).getId();
 
         if (isNew) {
             saveMe.setId(docId);
             versionService.create(docId);
             saveMe.getCommonContents().forEach(commonContentDTO -> commonContentDTO.setDocId(docId));
+
+        } else if (!Imcms.isVersioningAllowed()) {
+            documentsCache.invalidateDoc(docId, newAlias);
         }
 
         commonContentService.save(docId, saveMe.getCommonContents());
@@ -132,6 +153,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         versionedContentServices.forEach(vcs -> vcs.createVersionedContent(workingVersion, newVersion));
 
         final Meta publishMe = metaRepository.findOne(docId);
+        documentsCache.invalidateDoc(docId, publishMe.getAlias());
 
         if (Meta.PublicationStatus.NEW.equals(publishMe.getPublicationStatus())) {
             publishMe.setPublicationStatus(Meta.PublicationStatus.APPROVED);
