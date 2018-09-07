@@ -31,7 +31,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Override
     public String calculateKey(HttpServletRequest request) {
-        String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
+        final String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
         final String documentIdString = extractDocIdentifier(path);
         final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
 
