@@ -263,8 +263,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
         deleteDocumentContent(docIdToDelete);
+
+        final String alias = metaRepository.findOne(docIdToDelete).getAlias();
+
         metaRepository.delete(docIdToDelete);
         documentIndex.removeDocument(docIdToDelete);
+        documentsCache.invalidateDoc(docIdToDelete, alias);
     }
 
     @Transactional
