@@ -48,3 +48,13 @@
 .imcms-editable-img-controls__control-size .imcms-number-box__input {
     width: 70px;
 }
+
+.imcms-edit-size__number .imcms-button--increment {
+    height: 10px;
+    margin-top: 4px;
+}
+
+.imcms-edit-size__number .imcms-button--decrement {
+    height: 10px;
+    margin-bottom: 4px;
+}
