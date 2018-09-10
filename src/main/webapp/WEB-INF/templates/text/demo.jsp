@@ -41,6 +41,9 @@
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
 
+        <div>imcms:image tag without style attribute</div>
+        <imcms:image no="100"/>
+
         <div>imcms:image tag with attribute style="width: 100px;"</div>
         <imcms:image no="101" style="width: 100px;"/>
 
