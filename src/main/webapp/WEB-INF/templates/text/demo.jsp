@@ -41,6 +41,27 @@
     <div class="imcms-demo-page__content imcms-demo-content">
         <div class="imcms-demo-content__title">Start page</div>
 
+        <div>imcms:image tag without style attribute</div>
+        <imcms:image no="100"/>
+
+        <div>imcms:image tag with attribute style="width: 100px;"</div>
+        <imcms:image no="101" style="width: 100px;"/>
+
+        <div>imcms:image tag with attribute style="max-width: 120px;"</div>
+        <imcms:image no="102" style="max-width: 120px;"/>
+
+        <div>imcms:image tag with attribute style="height: 100px;"</div>
+        <imcms:image no="103" style="height: 100px;"/>
+
+        <div>imcms:image tag with attribute style="max-height: 120px;"</div>
+        <imcms:image no="104" style="max-height: 120px;"/>
+
+        <div>imcms:image tag with attribute style="width: 100px; height: 100px;"</div>
+        <imcms:image no="105" style="width: 100px; height: 100px;"/>
+
+        <div>imcms:image tag with attribute style="max-width: 120px; max-height: 120px;"</div>
+        <imcms:image no="106" style="max-width: 120px; max-height: 120px;"/>
+
         <div>Text editor, mode="read" example:</div>
         <imcms:text no="4" label="Read mode example" mode="read" post="<br/>"/>
 
@@ -91,13 +112,11 @@
 
         <div class="imcms-demo-content__images-texts-demo demo-row">
             <div class="demo-row__column demo-element">
-                <div>imcms:image tag with attribute style="width: 100px; height: 100px;"</div>
-                <imcms:image no="1" style="width: 100px; height: 100px;"/>
+                <imcms:image no="1"/>
                 <imcms:text no="1" label="Demo text 1"/>
             </div>
             <div class="demo-row__column demo-element">
-                <div>imcms:image tag with attribute style="max-width: 120px; max-height: 120px;"</div>
-                <imcms:image no="2" style="max-width: 120px; max-height: 120px;"/>
+                <imcms:image no="2"/>
                 <imcms:text no="2" label="Demo text 2" rows="4"/>
             </div>
             <div class="demo-row__column demo-element">
