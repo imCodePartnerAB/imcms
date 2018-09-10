@@ -28,7 +28,7 @@ define(
                 block: 'imcms-head',
                 elements: {
                     'logo': $('<a>', {
-                        href: 'https://www.imcms.net/'
+                        href: '/'
                     }),
                     'title': $('<div>', {
                         'class': 'imcms-title',
