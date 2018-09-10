@@ -21,7 +21,8 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             id: ${empty currentDocument.id ? 'null' : currentDocument.id},
             type: ${empty currentDocument.documentTypeId ? 'null' : currentDocument.documentTypeId},
             hasNewerVersion: ${hasNewerVersion or false},
-            headline: "${currentDocument.headline}"
+            headline: "${currentDocument.headline}",
+            alias: "${currentDocument.alias}"
         },
         language: {
             name: "${currentDocument.language.name}",

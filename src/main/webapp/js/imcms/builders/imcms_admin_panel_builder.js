@@ -168,7 +168,8 @@ define("imcms-admin-panel-builder",
                 elements: {
                     "item": "",
                     "logo": "",
-                    "title": ""
+                    "title": "",
+                    "meta": ""
                 }
             });
 
@@ -178,6 +179,9 @@ define("imcms-admin-panel-builder",
             var $title = adminPanelBEM.buildBlockElement("title", "<div>", {text: imcms.version});
             var $titleItem = $("<div>").append($title);
 
+            var $meta = adminPanelBEM.buildBlockElement("meta", "<div>", {text: imcms.document.id, title: imcms.document.alias})
+            var $metaItem = $("<div>").append($meta);
+
             var $flagsItem = buildFlags();
             var $buttonsContainer = buildPanelButtons(opts);
 
@@ -185,6 +189,7 @@ define("imcms-admin-panel-builder",
                 $logoItem,
                 $titleItem,
                 $flagsItem,
+                $metaItem,
                 $buttonsContainer
             ];
 
