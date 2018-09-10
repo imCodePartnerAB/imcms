@@ -4,7 +4,6 @@
  */
 
 const path = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -23,12 +22,6 @@ module.exports = {
         userEditorNew: './js/imcms/new_admin/userEditorNew.js',
         userEditorOld: './js/imcms/old_admin/userEditorOld.js'
     },
-    output: {
-        path: path.resolve(__dirname, 'dist')
-    },
-    plugins: [
-        new CleanWebpackPlugin(['dist'])
-    ],
     module: {
         rules: [
             {
