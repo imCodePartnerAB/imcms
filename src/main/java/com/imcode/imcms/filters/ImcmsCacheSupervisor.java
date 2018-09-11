@@ -1,5 +1,6 @@
 package com.imcode.imcms.filters;
 
+import imcode.server.ImcmsConstants;
 import imcode.util.Utility;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.constructs.web.filter.SimpleCachingHeadersPageCachingFilter;
@@ -62,7 +63,7 @@ public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter 
         final ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
         final Properties properties = ctx.getBean("imcmsProperties", Properties.class);
         final String imageUrl = properties.getProperty("ImageUrl");
-        final String generatedImagesPath = servletContext.getContextPath() + imageUrl + "generated";
+        final String generatedImagesPath = servletContext.getContextPath() + imageUrl + ImcmsConstants.IMAGE_GENERATED_FOLDER;
         cacheURLs.add(generatedImagesPath);
 
         super.doInit(filterConfig);

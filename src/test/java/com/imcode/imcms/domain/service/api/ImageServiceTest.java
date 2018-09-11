@@ -25,6 +25,7 @@ import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.ImageSource;
 import imcode.server.document.textdocument.NullImageSource;
 import imcode.server.user.UserDomainObject;
@@ -50,10 +51,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -215,7 +213,7 @@ public class ImageServiceTest {
 
         assertNotNull(result);
 
-        final File croppedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
+        final File croppedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
 
         assertTrue(croppedImage.exists());
         assertTrue(FileUtility.forceDelete(croppedImage));
@@ -254,7 +252,7 @@ public class ImageServiceTest {
             assertNotNull(result);
             assertEquals(result.getCropRegion(), cropRegion);
 
-            generatedImage = new File(imagesPath, "generated/" + result.getGeneratedFilename());
+            generatedImage = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + result.getGeneratedFilename());
             assertTrue(generatedImage.exists());
 
         } finally {
