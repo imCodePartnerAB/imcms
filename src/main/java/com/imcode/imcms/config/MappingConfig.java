@@ -463,6 +463,7 @@ class MappingConfig {
                 imageFolderDTO.setName(folderFile.getName());
                 final String relativePath = folderFile.getPath().replace(imageRoot, "");
                 imageFolderDTO.setPath(relativePath);
+                final String generatedImagesPath = new File(imageRoot, ImcmsConstants.IMAGE_GENERATED_FOLDER).getPath();
 
                 final ArrayList<ImageFolderDTO> subFolders = new ArrayList<>();
                 final ArrayList<ImageFileDTO> folderFiles = new ArrayList<>();
@@ -474,7 +475,7 @@ class MappingConfig {
                 }
 
                 for (File file : files) {
-                    if ((file.isDirectory())) {
+                    if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
                         subFolders.add(this.apply(file, false));
 
                     } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
