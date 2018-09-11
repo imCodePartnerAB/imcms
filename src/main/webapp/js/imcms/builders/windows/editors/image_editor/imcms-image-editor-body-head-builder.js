@@ -62,7 +62,7 @@ define(
         }
 
         function resizeImage(opts) {
-            imageResize.resize(opts, opts.imageDataContainers, false);
+            imageResize.resize(opts, opts.imageDataContainers, opts.isProportionsInverted);
             opts.imageDataContainers.$heightControlInput.getInput().val(opts.image.height);
             opts.imageDataContainers.$widthControlInput.getInput().val(opts.image.width);
         }

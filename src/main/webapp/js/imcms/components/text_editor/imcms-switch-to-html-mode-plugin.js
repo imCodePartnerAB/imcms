@@ -4,11 +4,11 @@
  */
 
 define(
-    'imcms-switch-to-html-mode',
+    'imcms-switch-to-html-mode-plugin',
     ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils'],
     function (toolbarButtonBuilder, $, textTypes, textUtils) {
 
-        require('imcms-tag-replacer');
+        require('imcms-jquery-tag-replacer');
 
         var title = 'Switch to HTML mode'; // todo: localize!!11
 

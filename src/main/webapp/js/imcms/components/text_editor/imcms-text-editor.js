@@ -7,7 +7,7 @@ define(
     [
         'imcms-text-history-plugin', 'imcms-text-validation-plugin', 'imcms-text-full-screen-plugin', 'jquery',
         'imcms-text-discard-changes-plugin', 'imcms-text-editor-utils', 'imcms-text-editor-toolbar-button-builder',
-        'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode', 'imcms-switch-to-text-editor',
+        'imcms-switch-to-plain-text-plugin', 'imcms-switch-to-html-mode-plugin', 'imcms-switch-to-text-editor-plugin',
         'imcms-html-filtering-policy-plugin'
     ],
     function (

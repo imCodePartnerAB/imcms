@@ -29,11 +29,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             nativeName: "${currentDocument.language.nativeName}",
             code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
         },
-        loadedDependencies: {},
-        dependencyTree: {
-            imcms: []
-        },
-        requiresQueue: [],
         browserInfo: {
             isIE10: (window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0)
         }

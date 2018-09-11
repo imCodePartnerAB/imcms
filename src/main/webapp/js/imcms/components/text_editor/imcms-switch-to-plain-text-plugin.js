@@ -4,11 +4,11 @@
  */
 
 define(
-    'imcms-switch-to-plain-text',
+    'imcms-switch-to-plain-text-plugin',
     ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils'],
     function (toolbarButtonBuilder, $, textTypes, textUtils) {
 
-        require('imcms-tag-replacer');
+        require('imcms-jquery-tag-replacer');
 
         var title = 'Switch to plain text mode'; // todo: localize!!11
 

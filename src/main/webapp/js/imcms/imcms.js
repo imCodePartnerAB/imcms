@@ -4,7 +4,7 @@
  */
 define('imcms', [], function () {
     Imcms.initSiteSpecific = function (addEventsToSpecialAdmin) {
-        var siteSpecific = require("imcms-site-specific");
+        var siteSpecific = require("imcms-site-specific-admin-panel");
         siteSpecific.init(addEventsToSpecialAdmin);
     };
 
