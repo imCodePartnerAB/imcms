@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
+import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,14 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.io.File.separator;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 @Transactional
 @WebAppConfiguration
@@ -48,6 +47,20 @@ public class ImageFolderServiceTest {
         assertNotNull(imageFolder);
         assertThat(imageFolder.getName(), is("images"));
         assertThat(imageFolder.getPath(), is(""));
+    }
+
+    @Test
+    public void getImageFolder_Expected_RootFolderWithOutGeneratedFolder() {
+        final ImageFolderDTO imageFolder = imageFolderService.getImageFolder();
+
+        assertNotNull(imageFolder);
+        assertThat(imageFolder.getName(), is("images"));
+
+        final List<String> imageSubFoldersNames = imageFolder.getFolders().stream()
+                .map(ImageFolderDTO::getName)
+                .collect(Collectors.toList());
+
+        assertFalse(imageSubFoldersNames.contains(ImcmsConstants.IMAGE_GENERATED_FOLDER));
     }
 
     @Test
