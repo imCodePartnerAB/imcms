@@ -505,7 +505,7 @@ define("imcms-image-content-builder",
             var slashLastIndex = selectedFullImagePath.lastIndexOf("/");
 
             var $subfolders = buildSubFolders(
-                viewModel.root, ROOT_FOLDER_LEVEL + 1, selectedFullImagePath.substring(0, slashLastIndex)
+                viewModel.root, ROOT_FOLDER_LEVEL + 1, '/'+selectedFullImagePath.substring(0, slashLastIndex)
             ).map(function ($subfolder) {
                 return rootFolderBEM.makeBlockElement("folders", $subfolder);
             });
