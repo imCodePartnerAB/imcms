@@ -176,6 +176,14 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     freeTextPlaceholder: "Skriv för att söka dokument",
                     owner: "Ägare",
                     category: "Kategori",
+                    controls: {
+                        edit: {
+                            title: "Redigera"
+                        },
+                        copy: {
+                            title: "Kopiera"
+                        },
+                    },
                     sort: {
                         id: "ID",
                         title: "Titel",
@@ -559,6 +567,14 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     freeTextPlaceholder: "Type to find document",
                     owner: "Owner",
                     category: "Category",
+                    controls: {
+                        edit: {
+                            title: "Edit"
+                        },
+                        copy: {
+                            title: "Copy"
+                        },
+                    },
                     sort: {
                         id: "ID",
                         title: "Title",

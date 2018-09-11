@@ -448,6 +448,7 @@ define("imcms-document-editor-builder",
                         addDocumentToList(copiedDocument);
                     })
                 });
+                $controlCopy.prop('title', texts.controls.copy.title);
                 controls.push($controlCopy);
             }
 
@@ -455,6 +456,7 @@ define("imcms-document-editor-builder",
                 var $controlEdit = components.controls.edit(function () {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
+                $controlEdit.prop('title', texts.controls.edit.title);
                 controls.push($controlEdit);
             }
 
@@ -726,8 +728,8 @@ define("imcms-document-editor-builder",
 
             var title = (document.commonContents)
                 ? document.commonContents.filter(function (commonContent) {
-                        return commonContent.language.code === imcms.userLanguage;
-                    })
+                    return commonContent.language.code === imcms.userLanguage;
+                })
                     .map(function (commonContent) {
                         return commonContent.headline;
                     })[0]
@@ -825,8 +827,7 @@ define("imcms-document-editor-builder",
 
                 if (sendSearchDocRequest
                     && innerHeight !== scrollHeight
-                    && (($this.scrollTop() + innerHeight) >= scrollHeight))
-                {
+                    && (($this.scrollTop() + innerHeight) >= scrollHeight)) {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
             });
