@@ -4,6 +4,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFileService;
+import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -76,7 +77,7 @@ public class ImageFileServiceTest {
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Arrays.asList(file, file);
-        final String folder = separator + "generated";
+        final String folder = separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
         final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(folder, files);
 
         assertNotNull(imageFileDTOS);
@@ -102,7 +103,7 @@ public class ImageFileServiceTest {
 
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         final List<MultipartFile> files = Collections.singletonList(file);
-        final String folder = separator + "generated";
+        final String folder = separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
 
         final List<ImageFileDTO> imageFileDTOS = imageFileService.saveNewImageFiles(folder, files);
 
