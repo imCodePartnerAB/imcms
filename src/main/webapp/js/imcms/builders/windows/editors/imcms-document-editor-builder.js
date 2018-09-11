@@ -444,15 +444,19 @@ define("imcms-document-editor-builder",
             }
 
             if (opts.copyEnable) {
-                var $controlCopy = components.controls.copy(function () {
+                function onConfirm() {
+                    docCopyRestApi.copy(document.id).success(function (copiedDocument) {
+                        addDocumentToList(copiedDocument);
+                    });
+                }
+
+                var $controlCopy = components.controls.copy(() => {
                     modalWindowBuilder.buildConfirmWindow(
                         texts.controls.copy.confirmMessage + document.id + '?',
-                        () =>
-                            docCopyRestApi.copy(document.id).success(function (copiedDocument) {
-                                addDocumentToList(copiedDocument);
-                            })
+                        onConfirm
                     );
                 });
+
                 $controlCopy.prop('title', texts.controls.copy.title);
                 controls.push($controlCopy);
             }
@@ -733,8 +737,8 @@ define("imcms-document-editor-builder",
 
             var title = (document.commonContents)
                 ? document.commonContents.filter(function (commonContent) {
-                    return commonContent.language.code === imcms.userLanguage;
-                })
+                        return commonContent.language.code === imcms.userLanguage;
+                    })
                     .map(function (commonContent) {
                         return commonContent.headline;
                     })[0]
@@ -832,7 +836,8 @@ define("imcms-document-editor-builder",
 
                 if (sendSearchDocRequest
                     && innerHeight !== scrollHeight
-                    && (($this.scrollTop() + innerHeight) >= scrollHeight)) {
+                    && (($this.scrollTop() + innerHeight) >= scrollHeight))
+                {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
             });
