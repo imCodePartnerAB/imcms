@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.model.ImageCropRegion;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject.FileDocumentFile;
@@ -29,14 +30,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -393,7 +387,7 @@ public class ImageHandling extends HttpServlet {
         final String generatedFileName = request.getParameter("generated_file_name");
 
         if (generatedFileName != null) {
-            imageFile = new File(ImcmsImageUtils.imagesPath, "generated/" + generatedFileName);
+            imageFile = new File(ImcmsImageUtils.imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + generatedFileName);
         }
 
         cacheFile = ImageCacheManager.storeImage(

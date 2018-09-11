@@ -13,15 +13,11 @@ import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
+import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.FileDocumentImageSource;
-import imcode.server.document.textdocument.ImageArchiveImageSource;
-import imcode.server.document.textdocument.ImageDomainObject;
-import imcode.server.document.textdocument.ImageSource;
-import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
-import imcode.server.document.textdocument.NullImageSource;
+import imcode.server.document.textdocument.*;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
@@ -42,18 +38,9 @@ import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 import java.awt.*;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 
 @Component
 public class ImcmsImageUtils {
@@ -310,7 +297,7 @@ public class ImcmsImageUtils {
     }
 
     public static void generateImage(ImageData image, boolean overwrite) {
-        File genFile = new File(imagesPath, "generated/" + image.getGeneratedFilename());
+        File genFile = new File(imagesPath, ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator + image.getGeneratedFilename());
 
         if (!overwrite && genFile.exists()) {
             return;
