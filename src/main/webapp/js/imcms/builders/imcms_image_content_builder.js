@@ -505,7 +505,7 @@ define("imcms-image-content-builder",
             var slashLastIndex = selectedFullImagePath.lastIndexOf("/");
 
             var $subfolders = buildSubFolders(
-                viewModel.root, ROOT_FOLDER_LEVEL + 1, selectedFullImagePath.substring(0, slashLastIndex)
+                viewModel.root, ROOT_FOLDER_LEVEL + 1, '/'+selectedFullImagePath.substring(0, slashLastIndex)
             ).map(function ($subfolder) {
                 return rootFolderBEM.makeBlockElement("folders", $subfolder);
             });
@@ -526,7 +526,7 @@ define("imcms-image-content-builder",
 
             } else {
 
-                if (slashLastIndex === 0) { // path only with image name (image from root)
+                if (slashLastIndex === -1) { // path only with image name (image from root)
                     setUpSelectedImage(imagesRootFolder, imageName);
                 }
 
