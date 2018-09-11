@@ -526,7 +526,7 @@ define("imcms-image-content-builder",
 
             } else {
 
-                if (slashLastIndex === 0) { // path only with image name (image from root)
+                if (slashLastIndex === -1) { // path only with image name (image from root)
                     setUpSelectedImage(imagesRootFolder, imageName);
                 }
 
