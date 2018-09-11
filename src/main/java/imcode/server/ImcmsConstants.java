@@ -157,6 +157,8 @@ ImcmsConstants {
     public static final String VIEW_DOC_PATH = "/viewDoc";
     public static final String API_VIEW_DOC_PATH = API_PREFIX + "/viewDoc";
 
+    public static final String IMAGE_GENERATED_FOLDER = "generated";
+
     private ImcmsConstants() {
         throw new AssertionError();
     }
