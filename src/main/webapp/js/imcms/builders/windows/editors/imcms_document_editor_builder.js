@@ -8,11 +8,12 @@ define("imcms-document-editor-builder",
         "imcms-documents-rest-api", "imcms-documents-search-rest-api", "imcms-users-rest-api",
         "imcms-categories-rest-api", "imcms-window-builder", "jquery", "imcms", "imcms-modal-window-builder",
         "imcms-document-type-select-window-builder", "imcms-i18n-texts", "imcms-events",
-        "imcms-document-profile-select-window-builder", "imcms-document-copy-rest-api"
+        "imcms-document-profile-select-window-builder", "imcms-document-copy-rest-api",
+        "imcms-modal-window-builder"
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi) {
+              docProfileSelectBuilder, docCopyRestApi, modalWindowBuilder) {
 
         texts = texts.editors.document;
 
@@ -444,9 +445,13 @@ define("imcms-document-editor-builder",
 
             if (opts.copyEnable) {
                 var $controlCopy = components.controls.copy(function () {
-                    docCopyRestApi.copy(document.id).success(function (copiedDocument) {
-                        addDocumentToList(copiedDocument);
-                    })
+                    modalWindowBuilder.buildConfirmWindow(
+                        texts.controls.copy.confirmMessage + document.id + '?',
+                        () =>
+                            docCopyRestApi.copy(document.id).success(function (copiedDocument) {
+                                addDocumentToList(copiedDocument);
+                            })
+                    );
                 });
                 $controlCopy.prop('title', texts.controls.copy.title);
                 controls.push($controlCopy);

@@ -181,7 +181,8 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                             title: "Redigera"
                         },
                         copy: {
-                            title: "Kopiera"
+                            title: "Kopiera",
+                            confirmMessage: "Vill du verkligen kopiera doc med id "
                         },
                     },
                     sort: {
@@ -572,7 +573,8 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                             title: "Edit"
                         },
                         copy: {
-                            title: "Copy"
+                            title: "Copy",
+                            confirmMessage: "Do you really want to copy doc with id "
                         },
                     },
                     sort: {
