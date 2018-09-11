@@ -13,6 +13,8 @@ const dateFormatter = require('date-format');
 const imcms = require('imcms');
 const $ = require('jquery');
 
+imcms.$ = $;
+
 events.on('imcms-version-modified', function () {
     imcms.document.hasNewerVersion = true;
 });

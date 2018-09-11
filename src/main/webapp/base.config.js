@@ -3,7 +3,7 @@
  * 30.08.18
  */
 
-const path = require('path');
+const pathResolver = require('./dependency_path_resolver');
 
 module.exports = {
     entry: {
@@ -49,448 +49,196 @@ module.exports = {
     },
     resolve: {
         extensions: [".js", ".jsx"],
-        alias: {
-            'imcms': path.resolve(
-                __dirname, 'js/imcms/imcms.js'
-            ),
-            'imcms-authentication': path.resolve(
-                __dirname, 'js/imcms/components/imcms_authentication.js'
-            ),
-            'imcms-events': path.resolve(
-                __dirname, 'js/imcms/events/imcms_events.js'
-            ),
-            'imcms-streams': path.resolve(
-                __dirname, 'js/imcms/streams/imcms_streams.js'
-            ),
-            'imcms-i18n-texts': path.resolve(
-                __dirname, 'js/imcms/i18n/imcms_i18n_texts.js'
-            ),
-            'imcms-document-types': path.resolve(
-                __dirname, 'js/imcms/components/imcms_document_types.js'
-            ),
-            'imcms-calendar': path.resolve(
-                __dirname, 'js/imcms/components/imcms_calendar.js'
-            ),
-            'imcms-date-picker': path.resolve(
-                __dirname, 'js/imcms/components/imcms_date_picker.js'
-            ),
-            'imcms-time-picker': path.resolve(
-                __dirname, 'js/imcms/components/imcms_time_picker.js'
-            ),
-            'imcms-uuid-generator': path.resolve(
-                __dirname, 'js/imcms/components/imcms_uuid_generator.js'
-            ),
-            'imcms-validator': path.resolve(
-                __dirname, 'js/imcms/components/imcms_validator.js'
-            ),
-            'imcms-jquery-element-reload': path.resolve(
-                __dirname, 'js/imcms/components/imcms_jquery_element_reload.js'
-            ),
-            'imcms-jquery-string-selector': path.resolve(
-                __dirname, 'js/imcms/components/imcms_jquery_string_selector.js'
-            ),
-            'imcms-dom-attributes-extractor': path.resolve(
-                __dirname, 'js/imcms/components/imcms_dom_attributes_extractor.js'
-            ),
-            'imcms-numeric-limiter': path.resolve(
-                __dirname, 'js/imcms/components/imcms_numeric_limiter.js'
-            ),
-            'imcms-session-timeout-management': path.resolve(
-                __dirname, 'js/imcms/components/imcms_session_timeout_management.js'
-            ),
-            'imcms-date-time-validator': path.resolve(
-                __dirname, 'js/imcms/components/imcms_date_time_validator.js'
-            ),
-            'imcms-cookies': path.resolve(
-                __dirname, 'js/imcms/components/imcms_cookies.js'
-            ),
-            'imcms-displacing-array': path.resolve(
-                __dirname, 'js/imcms/components/imcms_displacing_array.js'
-            ),
-            'imcms-window-keys-controller': path.resolve(
-                __dirname, 'js/imcms/components/imcms_window_keys_controller.js'
-            ),
-            'date-format': path.resolve(
-                __dirname, 'js/imcms/components/date_format.js'
-            ),
-            'imcms-tag-replacer': path.resolve(
-                __dirname, 'js/imcms/components/imcms_jquery_tag_replacer.js'
-            ),
-            'imcms-image-in-text-plugin': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_image_in_text_plugin.js'
-            ),
-            'imcms-text-history-plugin': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_history_plugin.js'
-            ),
-            'imcms-text-validation-plugin': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_validation_plugin.js'
-            ),
-            'imcms-text-full-screen-plugin': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_full_screen_plugin.js'
-            ),
-            'imcms-text-discard-changes-plugin': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_discard_changes_plugin.js'
-            ),
-            'imcms-text-editor-utils': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_editor_utils.js'
-            ),
-            'imcms-text-editor-toolbar-button-builder': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_editor_toolbar_button_builder.js'
-            ),
-            'imcms-tinymce-text-editor': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_tinymce_text_editor.js'
-            ),
-            'imcms-text-editor': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_editor.js'
-            ),
-            'imcms-text-editor-types': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_text_editor_types.js'
-            ),
-            'imcms-switch-to-plain-text': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_switch_to_plain_text_plugin.js'
-            ),
-            'imcms-switch-to-html-mode': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_switch_to_html_mode_plugin.js'
-            ),
-            'imcms-switch-to-text-editor': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_switch_to_text_editor_plugin.js'
-            ),
-            'imcms-html-filtering-policy-plugin': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_html_filtering_policy_plugin.js'
-            ),
-            'imcms-html-filtering-policies': path.resolve(
-                __dirname, 'js/imcms/components/text_editor/imcms_html_filtering_policies.js'
-            ),
-            'imcms-text-editor-initializer': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_text_editor_initializer.js'
-            ),
-            'imcms-editors-initializer': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_editors_initializer.js'
-            ),
-            'imcms-image-editor-initializer': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_image_editor_initializer.js'
-            ),
-            'imcms-loop-editor-initializer': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_loop_editor_initializer.js'
-            ),
-            'imcms-menu-editor-initializer': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_menu_editor_initializer.js'
-            ),
-            'imcms-editor-labels-initializer': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_editor_labels_initializer.js'
-            ),
-            'imcms-image-editor-init-data': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_editors_init_data/imcms_image_editor_init_data.js'
-            ),
-            'imcms-menu-editor-init-data': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_editors_init_data/imcms_menu_editor_init_data.js'
-            ),
-            'imcms-loop-editor-init-data': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_editors_init_data/imcms_loop_editor_init_data.js'
-            ),
-            'imcms-editor-init-strategy': path.resolve(
-                __dirname, 'js/imcms/editor_initializer/imcms_editor_init_strategy.js'
-            ),
-            'imcms-buttons-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_buttons_builder.js'
-            ),
-            'imcms-flags-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_flags_builder.js'
-            ),
-            'imcms-checkboxes-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_checkboxes_builder.js'
-            ),
-            'imcms-radio-buttons-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_radio_buttons_builder.js'
-            ),
-            'imcms-selects-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_selects_builder.js'
-            ),
-            'imcms-texts-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_texts_builder.js'
-            ),
-            'imcms-switch-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_switch_builder.js'
-            ),
-            'imcms-choose-image-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_choose_image_builder.js'
-            ),
-            'imcms-keywords-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_keywords_builder.js'
-            ),
-            'imcms-date-time-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_date_time_builder.js'
-            ),
-            'imcms-controls-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_controls_builder.js'
-            ),
-            'imcms-top-panel-visibility-initiator': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_top_panel_visibility_initiator.js'
-            ),
-            'imcms-admin-panel-settings-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_admin_panel_settings_builder.js'
-            ),
-            'imcms-admin-panel-state': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_admin_panel_state.js'
-            ),
-            'imcms-window-tabs-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_window_tabs_builder.js'
-            ),
-            'imcms-page-info-tab': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_page_info_tab.js'
-            ),
-            'imcms-window-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_window_tab_builder.js'
-            ),
-            'imcms-super-admin-tab': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_super_admin_tab.js'
-            ),
-            'imcms-role-editor': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_role_editor.js'
-            ),
-            'imcms-role-to-row-transformer': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_role_to_row_transformer.js'
-            ),
-            'imcms-field-wrapper': path.resolve(
-                __dirname, 'js/imcms/builders/components/imcms_field_wrapper.js'
-            ),
-            'imcms-image-rotate': path.resolve(
-                __dirname, 'js/imcms/builders/components/image_editor/imcms_image_rotate.js'
-            ),
-            'imcms-image-resize': path.resolve(
-                __dirname, 'js/imcms/builders/components/image_editor/imcms_image_resize.js'
-            ),
-            'imcms-image-edit-size-controls': path.resolve(
-                __dirname, 'js/imcms/builders/components/image_editor/imcms_image_edit_size_controls.js'
-            ),
-            'imcms-image-cropper': path.resolve(
-                __dirname, 'js/imcms/builders/components/image_editor/imcms_image_cropper.js'
-            ),
-            'imcms-image-cropping-elements': path.resolve(
-                __dirname, 'js/imcms/builders/components/image_editor/imcms_image_cropping_elements.js'
-            ),
-            'imcms-image-crop-angles': path.resolve(
-                __dirname, 'js/imcms/builders/components/image_editor/imcms_image_crop_angles.js'
-            ),
-            'imcms-page-info-tabs-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_page_info_tabs_builder.js'
-            ),
-            'imcms-appearance-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_appearance_tab_builder.js'
-            ),
-            'imcms-life-cycle-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_life_cycle_tab_builder.js'
-            ),
-            'imcms-templates-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_templates_tab_builder.js'
-            ),
-            'imcms-file-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_file_tab_builder.js'
-            ),
-            'imcms-url-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_url_tab_builder.js'
-            ),
-            'imcms-keywords-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_keywords_tab_builder.js'
-            ),
-            'imcms-categories-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_categories_tab_builder.js'
-            ),
-            'imcms-access-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_access_tab_builder.js'
-            ),
-            'imcms-permissions-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_permissions_tab_builder.js'
-            ),
-            'imcms-status-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/page_info_tabs/imcms_status_tab_builder.js'
-            ),
-            'imcms-super-admin-tabs-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_super_admin_tabs_builder.js'
-            ),
-            'imcms-users-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_users_tab_builder.js'
-            ),
-            'imcms-roles-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_roles_tab_builder.js'
-            ),
-            'imcms-ip-access-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_ip_access_tab_builder.js'
-            ),
-            'imcms-ip-white-list-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_ip_white_list_tab_builder.js'
-            ),
-            'imcms-delete-docs-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_delete_docs_tab_builder.js'
-            ),
-            'imcms-templates-admin-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_templates_tab_builder.js'
-            ),
-            'imcms-files-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_files_tab_builder.js'
-            ),
-            'imcms-search-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_search_tab_builder.js'
-            ),
-            'imcms-link-validator-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_link_validator_tab_builder.js'
-            ),
-            'imcms-categories-admin-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_categories_tab_builder.js'
-            ),
-            'imcms-profiles-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_profiles_tab_builder.js'
-            ),
-            'imcms-system-properties-tab-builder': path.resolve(
-                __dirname, 'js/imcms/builders/components/super_admin_tabs/imcms_system_properties_tab_builder.js'
-            ),
-            'imcms-window-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_window_builder.js'
-            ),
-            'imcms-modal-window-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_modal_window_builder.js'
-            ),
-            'imcms-content-manager-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_content_manager_builder.js'
-            ),
-            'imcms-page-info-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_page_info_builder.js'
-            ),
-            'imcms-document-type-select-window-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_document_type_select_window_builder.js'
-            ),
-            'imcms-document-profile-select-window-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_document_profile_select_window_builder.js'
-            ),
-            'imcms-text-history-window-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_text_history_window_builder.js'
-            ),
-            'imcms-text-validation-result-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_text_validation_result_builder.js'
-            ),
-            'imcms-super-admin-page-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/imcms_super_admin_page_builder.js'
-            ),
-            'imcms-menu-editor-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/imcms_menu_editor_builder.js'
-            ),
-            'imcms-document-editor-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/imcms_document_editor_builder.js'
-            ),
-            'imcms-image-editor-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/image_editor/imcms_image_editor_builder.js'
-            ),
-            'imcms-image-editor-factory': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/image_editor/imcms_image_editor_factory.js'
-            ),
-            'imcms-image-editor-right-side-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/image_editor/imcms_image_editor_right_side_builder.js'
-            ),
-            'imcms-image-editor-left-side-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/image_editor/imcms_image_editor_left_side_builder.js'
-            ),
-            'imcms-image-editor-body-head-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/image_editor/imcms_image_editor_body_head_builder.js'
-            ),
-            'imcms-loop-editor-builder': path.resolve(
-                __dirname, 'js/imcms/builders/windows/editors/imcms_loop_editor_builder.js'
-            ),
-            'imcms-primitives-builder': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_primitives_builder.js'
-            ),
-            'imcms-components-builder': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_components_builder.js'
-            ),
-            'imcms-window-components-builder': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_window_components_builder.js'
-            ),
-            'imcms-bem-builder': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_bem_builder.js'
-            ),
-            'imcms-image-content-builder': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_image_content_builder.js'
-            ),
-            'imcms-admin-panel-builder': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_admin_panel_builder.js'
-            ),
-            'imcms-site-specific': path.resolve(
-                __dirname, 'js/imcms/builders/imcms_site_specific_admin_panel.js'
-            ),
-            'imcms-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_rest_api.js'
-            ),
-            'imcms-image-files-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_image_files_rest_api.js'
-            ),
-            'imcms-image-folders-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_image_folders_rest_api.js'
-            ),
-            'imcms-documents-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_documents_rest_api.js'
-            ),
-            'imcms-documents-search-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_documents_search_rest_api.js'
-            ),
-            'imcms-users-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_users_rest_api.js'
-            ),
-            'imcms-categories-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_categories_rest_api.js'
-            ),
-            'imcms-roles-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_roles_rest_api.js'
-            ),
-            'imcms-templates-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_templates_rest_api.js'
-            ),
-            'imcms-category-types-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_category_types_rest_api.js'
-            ),
-            'imcms-loops-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_loops_rest_api.js'
-            ),
-            'imcms-menus-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_menus_rest_api.js'
-            ),
-            'imcms-images-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_images_rest_api.js'
-            ),
-            'imcms-languages-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_languages_rest_api.js'
-            ),
-            'imcms-texts-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_texts_rest_api.js'
-            ),
-            'imcms-texts-history-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_texts_history_rest_api.js'
-            ),
-            'imcms-texts-validation-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_texts_validation_rest_api.js'
-            ),
-            'imcms-file-doc-files-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_file_doc_files_rest_api.js'
-            ),
-            'imcms-profiles-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_profiles_rest_api.js'
-            ),
-            'imcms-document-validation-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_document_validation_rest_api.js'
-            ),
-            'imcms-document-copy-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_document_copy_rest_api.js'
-            ),
-            'imcms-auth-providers-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_auth_providers_rest_api.js'
-            ),
-            'imcms-external-roles-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_external_roles_rest_api.js'
-            ),
-            'imcms-azure-roles-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_azure_roles_rest_api.js'
-            ),
-            'imcms-external-to-local-roles-links-rest-api': path.resolve(
-                __dirname, 'js/imcms/rest/imcms_external_to_local_roles_links_rest_api.js'
-            )
-        }
+        alias: pathResolver.resolvePaths({
+                imcms: {
+                    '': ['imcms'],
+                    events: 'imcms-events',
+                    streams: 'imcms-streams',
+                    i18n: 'imcms-i18n-texts',
+                    components: {
+                        text_editor: [
+                            'imcms-image-in-text-plugin',
+                            'imcms-text-history-plugin',
+                            'imcms-text-validation-plugin',
+                            'imcms-text-full-screen-plugin',
+                            'imcms-text-discard-changes-plugin',
+                            'imcms-text-editor-utils',
+                            'imcms-text-editor-toolbar-button-builder',
+                            'imcms-tinymce-text-editor',
+                            'imcms-text-editor',
+                            'imcms-text-editor-types',
+                            'imcms-switch-to-plain-text-plugin',
+                            'imcms-switch-to-html-mode-plugin',
+                            'imcms-switch-to-text-editor-plugin',
+                            'imcms-html-filtering-policy-plugin',
+                            'imcms-html-filtering-policies',
+                            'imcms-text-editor-initializer',
+                        ],
+                        '': [
+                            'imcms-authentication',
+                            'imcms-document-types',
+                            'imcms-calendar',
+                            'imcms-date-picker',
+                            'imcms-time-picker',
+                            'imcms-uuid-generator',
+                            'imcms-validator',
+                            'imcms-jquery-element-reload',
+                            'imcms-jquery-string-selector',
+                            'imcms-dom-attributes-extractor',
+                            'imcms-numeric-limiter',
+                            'imcms-session-timeout-management',
+                            'imcms-date-time-validator',
+                            'imcms-cookies',
+                            'imcms-displacing-array',
+                            'imcms-window-keys-controller',
+                            'date-format',
+                            'imcms-jquery-tag-replacer',
+                        ]
+                    },
+                    editor_initializer: {
+                        '': [
+                            'imcms-text-editor-initializer',
+                            'imcms-editors-initializer',
+                            'imcms-image-editor-initializer',
+                            'imcms-loop-editor-initializer',
+                            'imcms-menu-editor-initializer',
+                            'imcms-editor-labels-initializer',
+                            'imcms-editor-init-strategy',
+                        ],
+                        imcms_editors_init_data: [
+                            'imcms-image-editor-init-data',
+                            'imcms-menu-editor-init-data',
+                            'imcms-loop-editor-init-data',
+                        ]
+                    },
+                    builders: {
+                        components: {
+                            image_editor: [
+                                'imcms-image-rotate',
+                                'imcms-image-resize',
+                                'imcms-image-edit-size-controls',
+                                'imcms-image-cropper',
+                                'imcms-image-cropping-elements',
+                                'imcms-image-crop-angles',
+                            ],
+                            page_info_tabs: [
+                                'imcms-page-info-tabs-builder',
+                                'imcms-appearance-tab-builder',
+                                'imcms-life-cycle-tab-builder',
+                                'imcms-templates-tab-builder',
+                                'imcms-file-tab-builder',
+                                'imcms-url-tab-builder',
+                                'imcms-keywords-tab-builder',
+                                'imcms-categories-tab-builder',
+                                'imcms-access-tab-builder',
+                                'imcms-permissions-tab-builder',
+                                'imcms-status-tab-builder',
+                            ],
+                            super_admin_tabs: [
+                                'imcms-super-admin-tabs-builder',
+                                'imcms-users-tab-builder',
+                                'imcms-roles-tab-builder',
+                                'imcms-ip-access-tab-builder',
+                                'imcms-ip-white-list-tab-builder',
+                                'imcms-delete-docs-tab-builder',
+                                'imcms-templates-admin-tab-builder',
+                                'imcms-files-tab-builder',
+                                'imcms-search-tab-builder',
+                                'imcms-link-validator-tab-builder',
+                                'imcms-categories-admin-tab-builder',
+                                'imcms-profiles-tab-builder',
+                                'imcms-system-properties-tab-builder',
+                            ],
+                            '': [
+                                'imcms-buttons-builder',
+                                'imcms-flags-builder',
+                                'imcms-checkboxes-builder',
+                                'imcms-radio-buttons-builder',
+                                'imcms-selects-builder',
+                                'imcms-texts-builder',
+                                'imcms-switch-builder',
+                                'imcms-choose-image-builder',
+                                'imcms-keywords-builder',
+                                'imcms-date-time-builder',
+                                'imcms-controls-builder',
+                                'imcms-top-panel-visibility-initiator',
+                                'imcms-admin-panel-settings-builder',
+                                'imcms-admin-panel-state',
+                                'imcms-window-tabs-builder',
+                                'imcms-page-info-tab',
+                                'imcms-window-tab-builder',
+                                'imcms-super-admin-tab',
+                                'imcms-role-editor',
+                                'imcms-role-to-row-transformer',
+                                'imcms-field-wrapper',
+                            ]
+                        },
+                        windows: {
+                            editors: {
+                                image_editor: [
+                                    'imcms-image-editor-builder',
+                                    'imcms-image-editor-factory',
+                                    'imcms-image-editor-right-side-builder',
+                                    'imcms-image-editor-left-side-builder',
+                                    'imcms-image-editor-body-head-builder',
+                                ],
+                                '': [
+                                    'imcms-menu-editor-builder',
+                                    'imcms-document-editor-builder',
+                                    'imcms-loop-editor-builder',
+                                ]
+                            },
+                            '': [
+                                'imcms-window-builder',
+                                'imcms-modal-window-builder',
+                                'imcms-content-manager-builder',
+                                'imcms-page-info-builder',
+                                'imcms-document-type-select-window-builder',
+                                'imcms-document-profile-select-window-builder',
+                                'imcms-text-history-window-builder',
+                                'imcms-text-validation-result-builder',
+                                'imcms-super-admin-page-builder',
+                            ]
+                        },
+                        '': [
+                            'imcms-primitives-builder',
+                            'imcms-components-builder',
+                            'imcms-window-components-builder',
+                            'imcms-bem-builder',
+                            'imcms-image-content-builder',
+                            'imcms-admin-panel-builder',
+                            'imcms-site-specific-admin-panel',
+                        ]
+                    },
+                    rest: [
+                        'imcms-rest-api',
+                        'imcms-image-files-rest-api',
+                        'imcms-image-folders-rest-api',
+                        'imcms-documents-rest-api',
+                        'imcms-documents-search-rest-api',
+                        'imcms-users-rest-api',
+                        'imcms-categories-rest-api',
+                        'imcms-roles-rest-api',
+                        'imcms-templates-rest-api',
+                        'imcms-category-types-rest-api',
+                        'imcms-loops-rest-api',
+                        'imcms-menus-rest-api',
+                        'imcms-images-rest-api',
+                        'imcms-languages-rest-api',
+                        'imcms-texts-rest-api',
+                        'imcms-texts-history-rest-api',
+                        'imcms-texts-validation-rest-api',
+                        'imcms-file-doc-files-rest-api',
+                        'imcms-profiles-rest-api',
+                        'imcms-document-validation-rest-api',
+                        'imcms-document-copy-rest-api',
+                        'imcms-auth-providers-rest-api',
+                        'imcms-external-roles-rest-api',
+                        'imcms-azure-roles-rest-api',
+                        'imcms-external-to-local-roles-links-rest-api',
+                    ]
+                },
+            }
+        ),
     }
 };

@@ -3,7 +3,7 @@
  * 02.05.18
  */
 define(
-    "imcms-site-specific",
+    "imcms-site-specific-admin-panel",
     [
         "imcms-admin-panel-builder", "imcms-i18n-texts", "imcms-cookies", "imcms-top-panel-visibility-initiator",
         "imcms-admin-panel-state", "imcms-events", "imcms-streams", "jquery"

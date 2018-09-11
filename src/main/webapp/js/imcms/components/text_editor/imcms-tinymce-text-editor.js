@@ -7,8 +7,8 @@ define(
     [
         'tinymce', 'jquery', 'imcms', 'imcms-text-editor-utils', 'imcms-text-history-plugin',
         'imcms-text-validation-plugin', 'imcms-image-in-text-plugin', 'imcms-text-discard-changes-plugin',
-        'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text', 'imcms-switch-to-html-mode',
-        'imcms-switch-to-text-editor', 'imcms-html-filtering-policy-plugin'
+        'imcms-text-full-screen-plugin', 'imcms-switch-to-plain-text-plugin', 'imcms-switch-to-html-mode-plugin',
+        'imcms-switch-to-text-editor-plugin', 'imcms-html-filtering-policy-plugin'
     ],
     function (
         tinyMCE, $, imcms, textEditorUtils, textHistory, textValidation, imageInText, discardChangesPlugin,

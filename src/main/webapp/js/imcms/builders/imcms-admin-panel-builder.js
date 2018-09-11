@@ -179,7 +179,10 @@ define("imcms-admin-panel-builder",
             var $title = adminPanelBEM.buildBlockElement("title", "<div>", {text: imcms.version});
             var $titleItem = $("<div>").append($title);
 
-            var $meta = adminPanelBEM.buildBlockElement("meta", "<div>", {text: imcms.document.id, title: imcms.document.alias})
+            var $meta = adminPanelBEM.buildBlockElement("meta", "<div>", {
+                text: imcms.document.id,
+                title: imcms.document.alias
+            });
             var $metaItem = $("<div>").append($meta);
 
             var $flagsItem = buildFlags();
