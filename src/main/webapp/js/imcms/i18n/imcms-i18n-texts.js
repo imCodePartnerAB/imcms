@@ -182,7 +182,7 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         },
                         copy: {
                             title: "Kopiera",
-                            confirmMessage: "Vill du verkligen kopiera doc med id "
+                            confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id "
                         },
                     },
                     sort: {
@@ -574,7 +574,7 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                         },
                         copy: {
                             title: "Copy",
-                            confirmMessage: "Do you really want to copy doc with id "
+                            confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id "
                         },
                     },
                     sort: {
