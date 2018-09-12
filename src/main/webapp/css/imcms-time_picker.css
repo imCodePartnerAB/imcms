@@ -31,6 +31,10 @@
     width: 100%;
 }
 
+.imcms-current-time__input[readonly] {
+    cursor: not-allowed;
+}
+
 .imcms-time-picker--active {
     -webkit-border-radius: 4px 4px 0 0;
     -moz-border-radius: 4px 4px 0 0;

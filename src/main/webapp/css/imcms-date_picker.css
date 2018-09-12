@@ -32,6 +32,10 @@
     width: 100%;
 }
 
+.imcms-current-date__input[readonly] {
+    cursor: not-allowed;
+}
+
 .imcms-currrent-date__input--error {
     background-color: #fff;
     border-color: #da1a1a;

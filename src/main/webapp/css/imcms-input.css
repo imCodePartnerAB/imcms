@@ -16,6 +16,10 @@
     cursor: not-allowed;
 }
 
+.imcms-input[readonly] {
+    cursor: not-allowed;
+}
+
 .imcms-input:focus {
     border-color: #0b94d8;
 }
