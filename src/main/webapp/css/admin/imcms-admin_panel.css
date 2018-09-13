@@ -473,6 +473,7 @@
 
     .imcms-panel__item--logout {
         width: 100px;
+        padding-top: 0;
     }
 
     .imcms-admin-panel__item:last-of-type {
