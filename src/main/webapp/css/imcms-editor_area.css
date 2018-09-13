@@ -42,6 +42,7 @@
 
 .imcms-editor-area--active,
 .imcms-editor-area:hover {
+    z-index: 999;
     border: 2px solid rgba(0, 149, 217, 0.58);
 }
 
