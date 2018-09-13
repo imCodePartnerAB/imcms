@@ -533,6 +533,9 @@ define("imcms-image-content-builder",
                 activeFolder = imagesRootFolder;
                 showImagesIn(viewModel.root);
             }
+
+            var jumpPosition = $('.image-chosen:first').position();
+            $(".imcms-content-manager__right-side").scrollTop(jumpPosition.top);
         }
 
         function openParentFolders(folder) {
