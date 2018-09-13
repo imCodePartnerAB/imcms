@@ -534,8 +534,8 @@ define("imcms-image-content-builder",
                 showImagesIn(viewModel.root);
             }
 
-            var jumpPosition = $('.image-chosen:first').position();
-            $(".imcms-content-manager__right-side").scrollTop(jumpPosition.top);
+            var selectedImagePosition = $('.image-chosen:first').position();
+            $(".imcms-content-manager__right-side").scrollTop(selectedImagePosition.top);
         }
 
         function openParentFolders(folder) {
