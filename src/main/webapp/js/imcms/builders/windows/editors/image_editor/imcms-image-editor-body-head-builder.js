@@ -322,8 +322,6 @@ define(
                     }
                 });
 
-                opts.imageDataContainers.$imageTitle = bodyHeadBEM.buildElement("img-title", "<div>");
-
                 const $showHideRightPanelBtn = components.buttons.neutralButton({
                     "class": "imcms-image-characteristic",
                     text: texts.panels.right.show,
@@ -334,7 +332,7 @@ define(
 
                 $imgUrl = bodyHeadBEM.buildElement("img-url", "<div>", {
                     text: "Url: "
-                }).append(opts.imageDataContainers.$imgUrl = $("<span>"));
+                }).append(opts.imageDataContainers.$imgUrl = $("<a>"));
 
                 const $heightWidthBlock = buildHeightWidthBlock(opts.imageDataContainers);
 
