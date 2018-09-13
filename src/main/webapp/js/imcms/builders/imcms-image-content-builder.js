@@ -517,8 +517,10 @@ define("imcms-image-content-builder",
             $imagesContainer.append(viewModel.$images);
 
             function scrollToSelectedImage() {
-                const selectedImagePosition = $('.image-chosen:first').position();
-                $(".imcms-content-manager__right-side").scrollTop(selectedImagePosition.top);
+                const selectedImage = $('.image-chosen:first');
+                if (selectedImage.length) {
+                    $(".imcms-content-manager__right-side").scrollTop(selectedImage.position().top);
+                }
             }
 
             var imageName = selectedFullImagePath.substring(slashLastIndex + 1);
