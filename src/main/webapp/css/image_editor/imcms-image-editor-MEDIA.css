@@ -21,13 +21,8 @@
         display: block;
     }
 
-    .imcms-editable-img-controls {
-        background-color: #f3f3fc;
-        position: absolute;
-        left: 0;
-        bottom: -124px;
-        height: 124px;
-        z-index: 990;
+    .imcms-image-toolbar__button {
+        display: block;
     }
 
     .imcms-editable-img-area {

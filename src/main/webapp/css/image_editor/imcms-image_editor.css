@@ -70,13 +70,15 @@
     border-left: 1px solid #d3d8de;
     display: block;
     position: relative;
-    height: 125px;
+    height: 65px;
     width: 100%;
 }
 
 .imcms-image_editor__footer button {
     position: absolute;
     top: 25%;
+    display: inline-block;
+    margin-left: 5px;
 }
 
 .imcms-image_editor__footer .imcms-button--negative {
