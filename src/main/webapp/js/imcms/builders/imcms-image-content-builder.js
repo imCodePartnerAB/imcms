@@ -102,7 +102,11 @@ define("imcms-image-content-builder",
                     }),
                     "control": folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL)
                 }
-            }).buildBlockStructure("<div>", {click: onFolderClick.bindArgs(rootFile)});
+            }).buildBlockStructure("<div>", {
+                click: function () {
+                    onFolderClick.call(this, rootFile)
+                }
+            });
         }
 
         function buildRootFolder(rootFile) {
@@ -538,6 +542,7 @@ define("imcms-image-content-builder",
                 }
 
                 activeFolder = imagesRootFolder;
+                activeFolder.$folder.find('.imcms-main-folders-controls').addClass(ACTIVE_FOLDER_CLASS);
                 showImagesIn(viewModel.root);
                 scrollToSelectedImage();
             }

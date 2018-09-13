@@ -17,6 +17,7 @@
     background-color: #f3f3fc;
 }
 
+.imcms-folder--active .imcms-main-folders-controls__name,
 .imcms-folder--active .imcms-folder__name {
     color: #2f4047;
 }
@@ -53,6 +54,7 @@
     float: left;
 }
 
+.imcms-main-folders-controls:hover,
 .imcms-folder:hover {
     background: #4b5366;
 }
@@ -69,6 +71,7 @@
     background-image: url("/images_new/controls/icon_sub_close.png");
 }
 
+.imcms-folder--active:hover .imcms-main-folders-controls__name,
 .imcms-folder--active:hover .imcms-folder__name {
     color: #fff;
 }
