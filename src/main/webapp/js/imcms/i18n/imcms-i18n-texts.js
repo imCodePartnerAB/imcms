@@ -9,7 +9,6 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
     var texts = {
         "sv": {
             panel: {
-                settings: 'inställningar',
                 settingsTitle: 'Inställningar för administratörspanelen',
                 settingsList: {
                     size: {
@@ -401,7 +400,6 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
         },
         "en": {
             panel: {
-                settings: 'Settings',
                 settingsTitle: 'Admin panel settings',
                 settingsList: {
                     size: {
