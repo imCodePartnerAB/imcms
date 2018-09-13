@@ -65,13 +65,6 @@ define("imcms-admin-panel-builder",
                 ? ["has-newer-version"] : [];
             var buttons = [
                 {
-                    name: 'settings',
-                    tag: '<div>',
-                    onClick: panelSettings.onSettingsClicked,
-                    content: texts.settings,
-                    title: texts.settingsTitle,
-                    modifiers: ["settings"]
-                }, {
                     name: 'public',
                     tag: '<a>',
                     href: imcms.contextPath + '/' + imcms.document.id,
@@ -135,6 +128,12 @@ define("imcms-admin-panel-builder",
                         text: texts.logout
                     }),
                     modifiers: ["logout"]
+                }, {
+                    name: 'settings',
+                    tag: '<div>',
+                    onClick: panelSettings.onSettingsClicked,
+                    title: texts.settingsTitle,
+                    modifiers: ["settings"]
                 }
             ].map(buildPanelButton);
 

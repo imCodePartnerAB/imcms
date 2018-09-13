@@ -211,8 +211,9 @@
 }
 
 .imcms-panel__item--settings {
-    float: left;
     background-image: url("/images_new/admin_panel/icon_settings.png");
+    min-width: 25px;
+    background-position-y: 0px;
 }
 
 .imcms-panel__item--admin {
