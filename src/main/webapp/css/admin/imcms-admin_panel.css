@@ -153,8 +153,8 @@
     width: 1px;
 }
 
-.imcms-panel__item:last-of-type button {
-    margin: 5px 0 5px 20px;
+.imcms-panel__item--logout button {
+    margin: 5px 10px 5px 10px;
 }
 
 .imcms-panel__item--versioning-off {
@@ -213,7 +213,7 @@
 .imcms-panel__item--settings {
     background-image: url("/images_new/admin_panel/icon_settings.png");
     min-width: 25px;
-    background-position-y: 0px;
+    background-position-y: 0;
 }
 
 .imcms-panel__item--admin {
@@ -348,7 +348,7 @@
     padding-top: 5px;
 }
 
-.imcms-admin-panel--small .imcms-panel__item:last-of-type button {
+.imcms-admin-panel--small .imcms-panel__item--logout button {
     margin-top: 0;
     padding-top: 6px;
     padding-bottom: 6px;
@@ -480,9 +480,9 @@
         width: 55%;
     }
 
-    .imcms-panel__item:last-of-type button {
+    .imcms-panel__item--logout button {
         margin: 0 0 0 5px;
-        padding: 10px 15px;
+        padding: 10px 20px;
     }
 }
 
@@ -490,6 +490,11 @@
     .imcms-panel__item {
         font-size: 10px;
         min-width: 60px;
+    }
+
+    .imcms-panel__item--settings {
+        min-width: 25px;
+        background-position-y: 0;
     }
 }
 
@@ -555,7 +560,7 @@
         top: 36px;
     }
 
-    .imcms-panel__item:last-of-type button {
+    .imcms-panel__item--logout button {
         font-size: 10px;
         padding: 5px 10px;
     }
@@ -607,6 +612,10 @@
     .imcms-panel__item--logout {
         max-width: 80px;
     }
+
+    .imcms-panel__item--settings {
+        min-width: 25px;
+    }
 }
 
 @media screen and (max-width: 700px) {
@@ -617,6 +626,10 @@
 
     .imcms-panel__item--logout {
         max-width: 70px;
+    }
+
+    .imcms-panel__item--settings {
+        min-width: 25px;
     }
 }
 
