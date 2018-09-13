@@ -1,13 +1,14 @@
 .admin-panel-settings-list {
     position: absolute;
     top: 90px;
+    right: 0px;
     background-color: whitesmoke;
     border-left: 2px solid #2faef4;
     border-bottom: 2px solid #2faef4;
     border-right: 2px solid #2faef4;
     border-bottom-left-radius: 5px;
     border-bottom-right-radius: 5px;
-    width: 300px;
+    min-width: 200px;
     text-align: left;
     cursor: default;
     font-family: 'Source Sans Pro', sans-serif;
