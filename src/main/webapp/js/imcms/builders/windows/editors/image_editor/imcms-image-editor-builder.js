@@ -162,6 +162,7 @@ define(
             imageDataContainers.$imgUrl.text(titleText);
             imageDataContainers.$imgUrl.attr('href', '/images' + (imageData.path.startsWith('/') ? '' : '/') + imageData.path);
             imageDataContainers.$imgUrl.attr('target', '_blank');
+            imageDataContainers.$imgUrl.attr('data-name', imageData.path);
             imageDataContainers.$imgUrl.attr("title", imageData.path);
         }
 

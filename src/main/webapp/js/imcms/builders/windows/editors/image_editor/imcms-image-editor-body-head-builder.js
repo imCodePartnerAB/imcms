@@ -354,7 +354,7 @@ define(
                 ]);
             },
             getImageUrl: function () {
-                return $imgUrl.find("span").text()
+                return $imgUrl.find("a").attr('data-name')
             }
         }
     }

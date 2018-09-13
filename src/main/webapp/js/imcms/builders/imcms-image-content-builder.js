@@ -504,9 +504,10 @@ define("imcms-image-content-builder",
 
             var slashLastIndex = selectedFullImagePath.lastIndexOf("/");
 
-            var $subfolders = buildSubFolders(
-                viewModel.root, ROOT_FOLDER_LEVEL + 1, '/' + selectedFullImagePath.substring(0, slashLastIndex)
-            ).map(function ($subfolder) {
+            const path = selectedFullImagePath.substring(0, slashLastIndex);
+            const fixedPath = (path.startsWith('/') ? '' : '/') + path;
+
+            var $subfolders = buildSubFolders(viewModel.root, ROOT_FOLDER_LEVEL + 1, fixedPath).map(function ($subfolder) {
                 return rootFolderBEM.makeBlockElement("folders", $subfolder);
             });
 
@@ -515,6 +516,11 @@ define("imcms-image-content-builder",
             $foldersContainer.append(viewModel.folders);
             $imagesContainer.append(viewModel.$images);
 
+            function scrollToSelectedImage() {
+                const selectedImagePosition = $('.image-chosen:first').position();
+                $(".imcms-content-manager__right-side").scrollTop(selectedImagePosition.top);
+            }
+
             var imageName = selectedFullImagePath.substring(slashLastIndex + 1);
 
             if (activeFolder) {
@@ -522,20 +528,17 @@ define("imcms-image-content-builder",
 
                 loadImages(activeFolder, function () {
                     setUpSelectedImage(activeFolder, imageName);
+                    scrollToSelectedImage();
                 });
-
             } else {
-
                 if (slashLastIndex === -1) { // path only with image name (image from root)
                     setUpSelectedImage(imagesRootFolder, imageName);
                 }
 
                 activeFolder = imagesRootFolder;
                 showImagesIn(viewModel.root);
+                scrollToSelectedImage();
             }
-
-            var selectedImagePosition = $('.image-chosen:first').position();
-            $(".imcms-content-manager__right-side").scrollTop(selectedImagePosition.top);
         }
 
         function openParentFolders(folder) {
