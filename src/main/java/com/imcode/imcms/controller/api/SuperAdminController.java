@@ -54,7 +54,7 @@ class SuperAdminController {
     @CheckAccess(AccessType.TEXT)
     public ModelAndView editText(@RequestParam("meta-id") int metaId,
                                  @RequestParam int index,
-                                 @RequestParam(value = "language-code", required = false) String langCode,
+                                 @RequestParam(value = "lang", required = false) String langCode,
                                  @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                  @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
                                  @RequestParam(value = "return", required = false) String returnUrl,
@@ -87,7 +87,7 @@ class SuperAdminController {
     @CheckAccess(AccessType.IMAGE)
     public ModelAndView editImage(@RequestParam("meta-id") int metaId,
                                   @RequestParam int index,
-                                  @RequestParam(value = "language-code", required = false) String langCode,
+                                  @RequestParam(value = "lang", required = false) String langCode,
                                   @RequestParam(value = "loop-index", required = false) Integer loopIndex,
                                   @RequestParam(value = "loop-entry-index", required = false) Integer loopEntryIndex,
                                   @RequestParam(value = "return", required = false) String returnUrl,
