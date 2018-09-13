@@ -153,24 +153,16 @@ define(
         }
 
         function fillBodyHeadData(imageData) {
-            var titleText = imageData.name;
-            var fullTitle = titleText;
-            var pathText = imageData.path;
-            var fullPath = pathText;
+            let titleText = imageData.name;
 
-            if (titleText.length > 50) {
-                titleText = titleText.substr(0, 50) + "...";
+            if (titleText.length > 15) {
+                titleText = titleText.substr(0, 15) + "...";
             }
 
-            if (pathText.length > 50) {
-                pathText = pathText.substr(0, 50) + "...";
-            }
-
-            imageDataContainers.$imageTitle.text(titleText);
-            imageDataContainers.$imageTitle.attr("title", fullTitle);
-
-            imageDataContainers.$imgUrl.text(pathText);
-            imageDataContainers.$imgUrl.attr("title", fullPath);
+            imageDataContainers.$imgUrl.text(titleText);
+            imageDataContainers.$imgUrl.attr('href', '/images' + (imageData.path.startsWith('/') ? '' : '/') + imageData.path);
+            imageDataContainers.$imgUrl.attr('target', '_blank');
+            imageDataContainers.$imgUrl.attr("title", imageData.path);
         }
 
         function fillLeftSideData(imageData) {

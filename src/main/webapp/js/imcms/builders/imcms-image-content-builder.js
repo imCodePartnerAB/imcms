@@ -5,9 +5,9 @@
 define("imcms-image-content-builder",
     [
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
-        "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts"
+        "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts", 'imcms'
     ],
-    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, modalWindow, $, texts) {
+    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, modalWindow, $, texts, imcms) {
         var OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         var SUBFOLDER_CLASS = "imcms-folders__subfolder";
         var ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -468,7 +468,7 @@ define("imcms-image-content-builder",
                 elements: {
                     "img": $("<div>", {
                         "class": "imcms-choose-img",
-                        style: "background-image: url(" + Imcms.contextPath + "/" + Imcms.imagesPath + imageFile.path + ")"
+                        style: "background-image: url('" + imcms.contextPath + "/" + imcms.imagesPath + imageFile.path + "')"
                     }),
                     "description": buildImageDescription(imageFile)
                 }
