@@ -208,6 +208,7 @@ module.exports = {
                             'imcms-image-content-builder',
                             'imcms-admin-panel-builder',
                             'imcms-site-specific-admin-panel',
+                            'imcms-standalone-editor-toolbar-builder'
                         ]
                     },
                     rest: [
