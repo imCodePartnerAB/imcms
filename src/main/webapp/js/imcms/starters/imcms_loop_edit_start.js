@@ -23,6 +23,19 @@ $(function () {
     var $editedTag = $(loopEditorInitData.EDIT_AREA_SELECTOR);
     var editorData = $editedTag.data();
 
+    const toolbarContent = [
+        {
+            type: 'id',
+            text: editorData.docId,
+            title: '',
+        },
+        {
+            type: 'index',
+            text: editorData.index,
+            title: '',
+        }
+    ];
+
     loopEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
-    toolbarBuilder.buildPanel();
+    toolbarBuilder.buildPanel(toolbarContent);
 });

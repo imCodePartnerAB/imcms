@@ -7,6 +7,8 @@ import '../../../css/imcms-imports_files.css';
  * 19.02.18
  */
 
+const toolbarBuilder = require('imcms-standalone-editor-toolbar-builder');
+
 var menuEditorInitData = require("imcms-menu-editor-init-data");
 var $ = require("jquery");
 var events = require("imcms-events");
@@ -21,4 +23,19 @@ $(function () {
     var $editedTag = $(menuEditorInitData.EDIT_AREA_SELECTOR);
     var editorData = $editedTag.data();
     menuEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
+
+    const toolbarContent = [
+        {
+            type: 'id',
+            text: editorData.docId,
+            title: '',
+        },
+        {
+            type: 'index',
+            text: editorData.menuIndex,
+            title: '',
+        }
+    ];
+
+    toolbarBuilder.buildPanel(toolbarContent);
 });
