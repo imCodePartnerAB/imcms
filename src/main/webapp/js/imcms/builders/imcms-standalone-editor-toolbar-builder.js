@@ -1,6 +1,6 @@
 /**
  * Created by Dmytro Zemlianskyi from Ubrainians for imCode
- * 14.09.19.
+ * 14.09.18.
  */
 define("imcms-standalone-editor-toolbar-builder",
     [
