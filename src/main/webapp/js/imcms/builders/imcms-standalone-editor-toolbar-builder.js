@@ -29,50 +29,41 @@ define("imcms-standalone-editor-toolbar-builder",
             });
         }
 
-        function createToolbarPanel() {
+        function createToolbarPanel(itemsToDisplay) {
             const adminPanelBEM = new BEM({
                 block: "imcms-editor-toolbar-panel",
                 elements: {
                     "id": "",
-                    "no": "",
+                    "index": "",
                     "label": ""
                 }
             });
 
-            const $tag = $(".imcms-editor-area");
-
-            const $id = adminPanelBEM.buildBlockElement("id", "<div>", {
-                text: $tag.attr("data-doc-id"),
-                title: "docId"
+            let toolbarElements = [];
+            itemsToDisplay.forEach(function (item) {
+                const $item = adminPanelBEM.buildBlockElement(item.type, "<div>", {
+                    text: item.text,
+                    title: item.title,
+                });
+                const $itemContainer = $("<div>").append($item);
+                toolbarElements.push($itemContainer);
             });
-            const $idItem = $("<div>").append($id);
-
-
-            const $no = adminPanelBEM.buildBlockElement("no", "<div>", {
-                text: $tag.attr("data-index"),
-                title: "data index"
-            });
-            const $noItem = $("<div>").append($no);
 
             const $flagsItem = buildFlags();
             // var $buttonsContainer = buildPanelButtons(opts);
 
-            const adminPanelElements$ = [
-                $idItem,
-                $noItem,
-                $flagsItem,
-                // $buttonsContainer
-            ];
+            toolbarElements.push($flagsItem);
+            // toolbarElements.push($buttonsContainer);
 
             const panelAttributes = {
                 id: "imcms-editor-toolbar-panel",
             };
-            return $panel = adminPanelBEM.buildBlock("<div>", adminPanelElements$, panelAttributes, "item");
+            return $panel = adminPanelBEM.buildBlock("<div>", toolbarElements, panelAttributes, "item");
 
         }
 
         return {
-            buildPanel: () => {
+            buildPanel: function (itemsToDisplay) {
                 if ($panelContainer) {
                     return;
                 }
@@ -80,7 +71,7 @@ define("imcms-standalone-editor-toolbar-builder",
                 $panelContainer = $("<div>", {
                     "id": "imcms-editor-toolbar",
                     "class": "imcms-editor-toolbar",
-                    html: createToolbarPanel()
+                    html: createToolbarPanel(itemsToDisplay)
                 });
 
                 console.log(imcms);
