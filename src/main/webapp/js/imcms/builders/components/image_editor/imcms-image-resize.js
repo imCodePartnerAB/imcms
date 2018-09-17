@@ -2,83 +2,68 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-define(
-    "imcms-image-resize",
-    ["imcms-image-crop-angles", "imcms-image-cropping-elements", "imcms-events"],
-    function (croppingAngles, cropElements, events) {
-        return {
-            resize: function (opts, imageDataContainers, isImageProportionsInverted) {
-                var angleHeight = croppingAngles.getHeight();
-                var angleWidth = croppingAngles.getWidth();
-                var angleBorderSize = croppingAngles.getBorderSize();
-                var doubleAngleBorderSize = croppingAngles.getDoubleBorderSize();
-                var newWidth = opts.image.width;
-                var newHeight = opts.image.height;
-                var cropArea = opts.cropArea;
+const originImageHeightBlock = require('imcms-origin-image-height-block');
+const originImageWidthBlock = require('imcms-origin-image-width-block');
+const editableImage = require('imcms-editable-image');
 
-                cropElements.$image.animate(opts.image, 200);
+let saveProportions = true; // by default
+const original = {};
 
-                var displayWidth = ((isImageProportionsInverted) ? newHeight : newWidth) + doubleAngleBorderSize;
-                var displayHeight = ((isImageProportionsInverted) ? newWidth : newHeight) + doubleAngleBorderSize;
+function setWidth(newWidth) {
+    editableImage.getImage().width(newWidth);
+    $widthControl.val(newWidth);
+}
 
-                imageDataContainers.$shadow.animate({
-                    "width": displayWidth,
-                    "height": displayHeight
-                }, 200);
+function setHeight(newHeight) {
+    editableImage.getImage().height(newHeight);
+    $heightControl.val(newHeight);
+}
 
-                if ((croppingAngles.topRight.getLeft() + angleWidth + angleBorderSize) > displayWidth) {
-                    cropArea.left = angleBorderSize;
-                }
-                if ((croppingAngles.bottomRight.getTop() + angleWidth + angleBorderSize) > displayHeight) {
-                    cropArea.top = angleBorderSize;
-                }
+function updateWidthProportionally(newHeight) {
+    const proportionalWidth = ~~((newHeight * original.width) / original.height);
+    setWidth(proportionalWidth);
+}
 
-                cropElements.$cropImg.animate({
-                    "left": -cropArea.left + angleBorderSize,
-                    "top": -cropArea.top + angleBorderSize,
-                    "width": newWidth,
-                    "height": newHeight
-                }, 200);
+function updateHeightProportionally(newWidth) {
+    const proportionalHeight = ~~((newWidth * original.height) / original.width);
+    setHeight(proportionalHeight);
+}
 
-                cropElements.$cropArea.animate(cropArea, 200);
+let $heightControl, $widthControl;
 
-                var positionTopForAngelsTop = cropArea.top - angleBorderSize;
-                var positionTopForAngelsBottom = cropArea.top + cropArea.height - angleHeight;
-                var positionLeftForAngelsLeft = cropArea.left - angleBorderSize;
-                var positionLeftForAngelsRight = cropArea.left + cropArea.width - angleWidth;
+module.exports = {
+    resetToOriginal: () => {
+        setHeight(original.height);
+        setWidth(original.width);
+    },
+    setOriginal: (originalWidth, originalHeight) => {
+        originImageHeightBlock.setOriginalHeight(originalHeight);
+        originImageWidthBlock.setOriginalWidth(originalWidth);
 
-                if (cropArea.left <= angleBorderSize) {
-                    positionLeftForAngelsLeft = 0;
-                }
+        original.width = originalWidth;
+        original.height = originalHeight;
+    },
+    setWidthControl: ($control) => $widthControl = $control,
 
-                if (cropArea.top <= angleBorderSize) {
-                    positionTopForAngelsTop = 0;
-                }
+    setHeightControl: ($control) => $heightControl = $control,
 
-                croppingAngles.topRight.animate({
-                    "top": positionTopForAngelsTop,
-                    "left": positionLeftForAngelsRight
-                }, 200);
+    toggleSaveProportions: () => (saveProportions = !saveProportions),
 
-                croppingAngles.bottomRight.animate({
-                    "top": positionTopForAngelsBottom,
-                    "left": positionLeftForAngelsRight
-                }, 200);
+    setHeight: setHeight,
 
-                croppingAngles.topLeft.animate({
-                    "top": positionTopForAngelsTop,
-                    "left": positionLeftForAngelsLeft
-                }, 200);
+    setWidth: setWidth,
 
-                croppingAngles.bottomLeft.animate({
-                    "top": positionTopForAngelsBottom,
-                    "left": positionLeftForAngelsLeft
-                }, 200);
+    setHeightProportionally: (newHeight) => {
+        // todo: add checking for (max-)width from page
+        setHeight(newHeight);
+        saveProportions && updateWidthProportionally(newHeight);
+    },
+    setWidthProportionally: (newWidth) => {
+        // todo: add checking for (max-)height from page
+        setWidth(newWidth);
+        saveProportions && updateHeightProportionally(newWidth);
+    },
+    getWidth: () => editableImage.getImage().width(),
 
-                setTimeout(function () {
-                    events.trigger("update cropArea");
-                }, 250);
-            }
-        };
-    }
-);
+    getHeight: () => editableImage.getImage().height(),
+};

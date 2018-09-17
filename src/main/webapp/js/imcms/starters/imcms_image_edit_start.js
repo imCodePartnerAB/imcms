@@ -11,6 +11,8 @@ var $ = require("jquery");
 var events = require("imcms-events");
 var imcms = require("imcms");
 
+imcms.$ = $;
+
 $(function () {
     events.on("enable text editor blur", function () {
         var returnUrl = $("#return-url").val();

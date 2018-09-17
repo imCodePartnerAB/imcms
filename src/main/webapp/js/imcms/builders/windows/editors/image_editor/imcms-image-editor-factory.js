@@ -14,7 +14,7 @@ define(
             buildEditor: function (opts) {
                 var $rightSidePanel = rightSideBuilder.build(opts);
                 var $leftSide = leftSideBuilder.build(opts);
-                var $bodyHead = bodyHeadBuilder.build(opts, $rightSidePanel);
+                var $bodyHead = bodyHeadBuilder.build($rightSidePanel);
                 var $head = opts.imageWindowBuilder.buildHead(texts.title);
 
                 $head.find('.imcms-title').append($imageInfo);
