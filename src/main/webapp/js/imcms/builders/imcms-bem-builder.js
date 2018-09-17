@@ -58,10 +58,8 @@ module.exports = class BemBuilder {
     /**
      * Build BEM-styled class with needed separators
      *
-     * Usage:
-     * <pre><code>
+     * @example
      *     var bemClass = BEM.buildClass("one", "two", "three"); // = "one__two--three"
-     * </code></pre>
      *
      * @param block {null|string}
      * @param element {null|string?}
@@ -78,10 +76,8 @@ module.exports = class BemBuilder {
     /**
      * Build selector for BEM-styled class
      *
-     * Usage:
-     * <pre><code>
+     * @example
      *     var bemClassSelector = BEM.buildClassSelector("one", "two", "three"); // = ".one__two--three"
-     * </code></pre>
      *
      * @param block {*|string}
      * @param element {null|string?}
@@ -95,8 +91,7 @@ module.exports = class BemBuilder {
     /**
      * Adds BEM-styled class to element
      *
-     * Usage:
-     * <pre><code>
+     * @example
      *     var exampleBEM = new BEM({
      *          block: "the-block",
      *          elements: {
@@ -105,7 +100,6 @@ module.exports = class BemBuilder {
      *     });
      *     var $element = exampleBEM.makeBlockElement("some-element", $(".some-class"), ["mod-1", "mod-2"]);
      *     // $element will have class "the-block__some-element the-block__some-element--mod-1 the-block__some-element--mod-2"
-     * </code></pre>
      *
      * @param elementName {string} name of element in current BEM-builder
      * @param $baseElement {object} jquery-element to be modified
@@ -123,8 +117,7 @@ module.exports = class BemBuilder {
     /**
      * Builds an BEM-styled jquery-element.
      *
-     * Usage:
-     * <pre><code>
+     * @example
      *     var exampleBEM = new BEM({
      *          block: "the-block",
      *          elements: {
@@ -132,11 +125,10 @@ module.exports = class BemBuilder {
      *          }
      *     });
      *     var $element = exampleBEM.buildBlockElement(
-     *          "some-element", "&lt;div&gt;", {"name":"some-name"}, ["mod-1", "mod-2"]
+     *          "some-element", "<div>", {"name":"some-name"}, ["mod-1", "mod-2"]
      *     );
      *     // $element will be:
-     *     &lt;div name="some-name" class="some-element-class some-element-class--mod-1 some-element-class--mod-2 the-block__some-element"&gt;&lt;/div&gt;
-     * </code></pre>
+     *     <div name="some-name" class="some-element-class some-element-class--mod-1 some-element-class--mod-2 the-block__some-element"></div>
      *
      * @param elementName {string}
      * @param tag {string}
@@ -153,8 +145,7 @@ module.exports = class BemBuilder {
     /**
      * Builds an BEM-styled jquery-element without block__element class.
      *
-     * Usage:
-     * <pre><code>
+     * @example
      *     var exampleBEM = new BEM({
      *          block: "the-block",
      *          elements: {
@@ -162,11 +153,10 @@ module.exports = class BemBuilder {
      *          }
      *     });
      *     var $element = exampleBEM.buildElement(
-     *          "some-element", "&lt;div&gt;", {"name":"some-name"}, ["mod-1", "mod-2"]
+     *          "some-element", "<div>", {"name":"some-name"}, ["mod-1", "mod-2"]
      *     );
      *     // $element will be:
-     *     &lt;div name="some-name" class="some-element-class some-element-class--mod-1 some-element-class--mod-2"&gt;&lt;/div&gt;
-     * </code></pre>
+     *     <div name="some-name" class="some-element-class some-element-class--mod-1 some-element-class--mod-2"></div>
      *
      * @param elementName {string}
      * @param tag {string}
@@ -188,23 +178,21 @@ module.exports = class BemBuilder {
     /**
      * Builds block element.
      *
-     * Usage:
-     * <pre><code>
+     * @example
      *     var panelButtonsBEM = new BEM({
      *         block: "imcms-menu"
      *     });
      *
-     *     var $block = panelButtonsBEM.buildBlock("&lt;div&gt;", [{"items": $("&lt;ul&gt;")}], {name: "some-name"});
+     *     var $block = panelButtonsBEM.buildBlock("<div>", [{"items": $("<ul>")}], {name: "some-name"});
      *
      *     // $block will be:<br/>
-     *     &lt;div class="imcms-menu" name="some-name"&gt;
-     *     &nbsp;&nbsp;&lt;ul class="imcms-menu__items"&gt;&lt;/ul&gt;
-     *     &lt;/div&gt;
+     *     <div class="imcms-menu" name="some-name">
+     *       <ul class="imcms-menu__items"></ul>
+     *     </div>
      *
      *     // or the same result with this:
-     *     var $block = panelButtonsBEM.buildBlock("&lt;div&gt;", [$("&lt;ul&gt;")], {name: "some-name"}, "items");
+     *     var $block = panelButtonsBEM.buildBlock("<div>", [$("<ul>")], {name: "some-name"}, "items");
      *
-     * </code></pre>
      *
      * @param tag {string}
      * @param elements {array?}
@@ -251,23 +239,19 @@ module.exports = class BemBuilder {
     /**
      * Builds block using elements from constructor.
      *
-     * Usage:
-     * <pre><code>
-     *
+     * @example
      *     var $block = new BEM({
      *         block: "imcms-list",
      *         elements: {
-     *             "imcms-list-item": [$("&lt;li&gt;"), $("&lt;li&gt;")]
+     *             "imcms-list-item": [$("<li>"), $("<li>")]
      *         }
-     *     }).buildBlockStructure("&lt;ul&gt;", {id: "the-id"});
+     *     }).buildBlockStructure("<ul>", {id: "the-id"});
      *
      *     // $block will be:<br/>
-     *     &lt;ul id="the-id" class="imcms-list"&gt;
-     *     &nbsp;&nbsp;&lt;li class="imcms-list__imcms-list-item"&gt;&lt;/li&gt;
-     *     &nbsp;&nbsp;&lt;li class="imcms-list__imcms-list-item"&gt;&lt;/li&gt;
-     *     &lt;/ul&gt;
-     *
-     * </code></pre>
+     *     <ul id="the-id" class="imcms-list">
+     *       <li class="imcms-list__imcms-list-item"></li>
+     *       <li class="imcms-list__imcms-list-item"></li>
+     *     </ul>
      *
      * @param tag {string}
      * @param attributes {object?}
