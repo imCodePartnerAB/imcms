@@ -70,7 +70,7 @@
     border-left: 1px solid #d3d8de;
     display: block;
     position: relative;
-    height: 65px;
+    height: 5%;
     width: 100%;
 }
 
@@ -78,15 +78,17 @@
     position: absolute;
     top: 25%;
     display: inline-block;
-    margin-left: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+    width: 45%;
 }
 
 .imcms-image_editor__footer .imcms-button--negative {
-    right: 50%;
+    left: 3%;
 }
 
 .imcms-image_editor__footer .imcms-button--save {
-    right: 10%;
+    left: 52%;
 }
 
 .image-exif-window {
@@ -100,14 +102,6 @@
 
 .imcms-pop-up-modal__body .image-exif-window__row {
     padding: 6px 15px;
-}
-
-@media screen and (max-width: 1450px) {
-
-    .imcms-image_editor__footer button {
-        position: static;
-        margin: 10px auto;
-    }
 }
 
 @media screen and (max-width: 790px) {
