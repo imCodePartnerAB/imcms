@@ -10,8 +10,8 @@ const $imageInfo = $('<span>');
 module.exports = {
     buildEditor: function (opts) {
         const $rightSidePanel = rightSideBuilder.build(opts);
-        const $leftSide = leftSideBuilder.build(opts);
-        const $bodyHead = bodyHeadBuilder.build($rightSidePanel);
+        const $leftSide = leftSideBuilder.build();
+        const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
         const $head = opts.imageWindowBuilder.buildHead(texts.title);
 
         $head.find('.imcms-title').append($imageInfo);

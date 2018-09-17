@@ -4,8 +4,11 @@
  */
 define(
     "imcms-image-cropper",
-    ["imcms-events", "imcms-image-crop-angles", "imcms-numeric-limiter", "imcms-image-cropping-elements"],
-    function (events, angles, Limit, cropElements) {
+    [
+        "imcms-events", "imcms-image-crop-angles", "imcms-numeric-limiter", "imcms-image-cropping-elements", 'jquery',
+        'imcms-cropping-area'
+    ],
+    function (events, angles, Limit, cropElements, $, cropArea) {
 
         var $imageEditor, croppingAreaParams, angleBorderSize, doubleAngleBorderSize, imageCoords, imageData;
 
@@ -14,7 +17,7 @@ define(
                 cropImgLeft = -newLeft + angleBorderSize
             ;
 
-            setElementTopLeft(cropElements.$cropImg, cropImgTop, cropImgLeft);
+            setElementTopLeft(cropArea.$cropImg, cropImgTop, cropImgLeft);
         }
 
         function setElementTopLeft($element, newTop, newLeft) {
@@ -31,25 +34,25 @@ define(
 
         function getValidCoordX(coordX) {
             return new Limit().setMin(imageCoords.left)
-                .setMax(cropElements.$image.getCurrentWidth() + imageCoords.left + angleBorderSize)
+                .setMax(cropArea.getCroppingImage().getCurrentWidth() + imageCoords.left + angleBorderSize)
                 .forValue(coordX);
         }
 
         function getValidCoordY(coordY) {
             return new Limit().setMin(imageCoords.top)
-                .setMax(cropElements.$image.getCurrentHeight() + imageCoords.top + angleBorderSize)
+                .setMax(cropArea.getCroppingImage().getCurrentHeight() + imageCoords.top + angleBorderSize)
                 .forValue(coordY);
         }
 
         function getValidLeftOnMove(left) {
             return new Limit().setMin(angleBorderSize)
-                .setMax(cropElements.$image.getCurrentWidth() - croppingAreaParams.width + angleBorderSize)
+                .setMax(cropArea.getCroppingImage().getCurrentWidth() - croppingAreaParams.width + angleBorderSize)
                 .forValue(left);
         }
 
         function getValidTopOnMove(top) {
             return new Limit().setMin(angleBorderSize)
-                .setMax(cropElements.$image.getCurrentHeight() - croppingAreaParams.height + angleBorderSize)
+                .setMax(cropArea.getCroppingImage().getCurrentHeight() - croppingAreaParams.height + angleBorderSize)
                 .forValue(top);
         }
 
@@ -61,64 +64,64 @@ define(
 
         function getValidTopOnResize(top) {
             return new Limit().setMin(angleBorderSize)
-                .setMax(cropElements.$cropArea.getTop() + cropElements.$cropArea.getCurrentHeight() - angles.getDoubleHeight())
+                .setMax(cropArea.getCroppingArea().getTop() + cropArea.getCroppingArea().getCurrentHeight() - angles.getDoubleHeight())
                 .forValue(top);
         }
 
         function getValidLeftCropWidth(width) {
             return new Limit().setMin(angles.getDoubleWidth())
-                .setMax(cropElements.$cropArea.getLeft() + cropElements.$cropArea.getCurrentWidth() - angleBorderSize)
+                .setMax(cropArea.getCroppingArea().getLeft() + cropArea.getCroppingArea().getCurrentWidth() - angleBorderSize)
                 .forValue(width);
         }
 
         function getValidRightCropWidth(width) {
             return new Limit().setMin(angles.getDoubleWidth())
-                .setMax(cropElements.$image.getCurrentWidth() - cropElements.$cropArea.getLeft() + angleBorderSize)
+                .setMax(cropArea.getCroppingImage().getCurrentWidth() - cropArea.getCroppingArea().getLeft() + angleBorderSize)
                 .forValue(width);
         }
 
         function getValidCropHeightTop(height) {
             return new Limit().setMin(angles.getDoubleHeight())
-                .setMax(cropElements.$cropArea.getTop() + cropElements.$cropArea.getCurrentHeight() - angleBorderSize)
+                .setMax(cropArea.getCroppingArea().getTop() + cropArea.getCroppingArea().getCurrentHeight() - angleBorderSize)
                 .forValue(height);
         }
 
         function getValidCropHeightBottom(height) {
             return new Limit().setMin(angles.getDoubleHeight())
-                .setMax(cropElements.$image.getCurrentHeight() - cropElements.$cropArea.getTop() + angleBorderSize)
+                .setMax(cropArea.getCroppingImage().getCurrentHeight() - cropArea.getCroppingArea().getTop() + angleBorderSize)
                 .forValue(height);
         }
 
         function moveCropArea(top, left) {
-            setElementTopLeft(cropElements.$cropArea, top, left);
+            setElementTopLeft(cropArea.getCroppingArea(), top, left);
             moveCropImage(top, left);
         }
 
         events.on("update cropArea", function () {
-            croppingAreaParams.width = cropElements.$cropArea.width();
-            croppingAreaParams.height = cropElements.$cropArea.height();
+            croppingAreaParams.width = cropArea.getCroppingArea().width();
+            croppingAreaParams.height = cropArea.getCroppingArea().height();
         });
 
         function setCropAreaX(newX) {
             var newLeft = getValidLeftOnResize(newX + angleBorderSize);
-            var oldLeft = cropElements.$cropArea.getLeft();
+            var oldLeft = cropArea.getCroppingArea().getLeft();
 
             if (newLeft === oldLeft) {
                 return;
             }
 
-            var oldWidth = cropElements.$cropArea.width();
+            var oldWidth = cropArea.getCroppingArea().width();
             var deltaX = oldLeft - newLeft;
             var legalWidth = croppingAreaParams.width = getValidLeftCropWidth(oldWidth + deltaX);
 
-            cropElements.$cropArea.width(legalWidth);
-            cropElements.$cropArea.css("left", newLeft);
-            cropElements.$cropImg.css("left", angleBorderSize - newLeft);
+            cropArea.getCroppingArea().width(legalWidth);
+            cropArea.getCroppingArea().css("left", newLeft);
+            cropArea.$cropImg.css("left", angleBorderSize - newLeft);
         }
 
         function setCropAreaX1(newX1) {
-            var oldLeft = cropElements.$cropArea.getLeft();
-            var oldWidth = cropElements.$cropArea.width();
+            var oldLeft = cropArea.getCroppingArea().getLeft();
+            var oldWidth = cropArea.getCroppingArea().width();
             var oldX1 = oldLeft + oldWidth - angleBorderSize;
 
             if (oldX1 === newX1) {
@@ -129,11 +132,11 @@ define(
             var newWidth = oldWidth - deltaX1;
             var legalWidth = croppingAreaParams.width = getValidRightCropWidth(newWidth);
 
-            cropElements.$cropArea.width(legalWidth);
+            cropArea.getCroppingArea().width(legalWidth);
         }
 
         function setCropAreaY(newY) {
-            var oldTop = cropElements.$cropArea.getTop();
+            var oldTop = cropArea.getCroppingArea().getTop();
             var newTop = newY + angleBorderSize;
 
             newTop = getValidTopOnResize(newTop);
@@ -143,17 +146,17 @@ define(
             }
 
             var deltaY = newTop - oldTop;
-            var newHeight = cropElements.$cropArea.height() - deltaY;
+            var newHeight = cropArea.getCroppingArea().height() - deltaY;
             var legalHeight = croppingAreaParams.height = getValidCropHeightTop(newHeight);
 
-            cropElements.$cropArea.height(legalHeight);
-            cropElements.$cropImg.css("top", (angleBorderSize - newTop));
-            cropElements.$cropArea.css("top", newTop);
+            cropArea.getCroppingArea().height(legalHeight);
+            cropArea.$cropImg.css("top", (angleBorderSize - newTop));
+            cropArea.getCroppingArea().css("top", newTop);
         }
 
         function setCropAreaY1(newY1) {
-            var oldHeight = cropElements.$cropArea.height();
-            var oldTop = cropElements.$cropArea.getTop();
+            var oldHeight = cropArea.getCroppingArea().height();
+            var oldTop = cropArea.getCroppingArea().getTop();
             var oldY1 = oldHeight + oldTop - angleBorderSize;
 
             if (oldY1 === newY1) {
@@ -163,64 +166,64 @@ define(
             var newHeight = newY1 - oldTop + angleBorderSize;
             var legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
 
-            cropElements.$cropArea.height(legalHeight);
+            cropArea.getCroppingArea().height(legalHeight);
         }
 
         function resizeCroppingTopLeft(deltaX, deltaY) {
-            var newWidth = cropElements.$cropArea.width() + deltaX;
-            var newHeight = cropElements.$cropArea.height() + deltaY;
+            var newWidth = cropArea.getCroppingArea().width() + deltaX;
+            var newHeight = cropArea.getCroppingArea().height() + deltaY;
 
-            var newTop = cropElements.$cropArea.getTop() - deltaY;
+            var newTop = cropArea.getCroppingArea().getTop() - deltaY;
             newTop = getValidTopOnResize(newTop);
-            var newLeft = cropElements.$cropArea.getLeft() - deltaX;
+            var newLeft = cropArea.getCroppingArea().getLeft() - deltaX;
             newLeft = getValidLeftOnResize(newLeft);
 
             var legalWidth = croppingAreaParams.width = getValidLeftCropWidth(newWidth);
             var legalHeight = croppingAreaParams.height = getValidCropHeightTop(newHeight);
 
-            setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
-            setElementTopLeft(cropElements.$cropImg, (angleBorderSize - newTop), (angleBorderSize - newLeft));
-            setElementTopLeft(cropElements.$cropArea, newTop, newLeft);
+            setElementWidthHeight(cropArea.getCroppingArea(), legalWidth, legalHeight);
+            setElementTopLeft(cropArea.$cropImg, (angleBorderSize - newTop), (angleBorderSize - newLeft));
+            setElementTopLeft(cropArea.getCroppingArea(), newTop, newLeft);
         }
 
         function resizeCroppingTopRight(deltaX, deltaY) {
-            var newWidth = cropElements.$cropArea.width() - deltaX;
-            var newHeight = cropElements.$cropArea.height() + deltaY;
+            var newWidth = cropArea.getCroppingArea().width() - deltaX;
+            var newHeight = cropArea.getCroppingArea().height() + deltaY;
 
-            var newTop = cropElements.$cropArea.getTop() - deltaY;
+            var newTop = cropArea.getCroppingArea().getTop() - deltaY;
             newTop = getValidTopOnResize(newTop);
 
             var legalWidth = croppingAreaParams.width = getValidRightCropWidth(newWidth);
             var legalHeight = croppingAreaParams.height = getValidCropHeightTop(newHeight);
 
-            setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
-            cropElements.$cropImg.css("top", angleBorderSize - newTop);
-            cropElements.$cropArea.css("top", newTop);
+            setElementWidthHeight(cropArea.getCroppingArea(), legalWidth, legalHeight);
+            cropArea.$cropImg.css("top", angleBorderSize - newTop);
+            cropArea.getCroppingArea().css("top", newTop);
         }
 
         function resizeCroppingBottomRight(deltaX, deltaY) {
-            var newWidth = cropElements.$cropArea.width() - deltaX;
-            var newHeight = cropElements.$cropArea.height() - deltaY;
+            var newWidth = cropArea.getCroppingArea().width() - deltaX;
+            var newHeight = cropArea.getCroppingArea().height() - deltaY;
 
             var legalWidth = croppingAreaParams.width = getValidRightCropWidth(newWidth);
             var legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
 
-            setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
+            setElementWidthHeight(cropArea.getCroppingArea(), legalWidth, legalHeight);
         }
 
         function resizeCroppingBottomLeft(deltaX, deltaY) {
-            var newWidth = cropElements.$cropArea.width() + deltaX;
-            var newHeight = cropElements.$cropArea.height() - deltaY;
+            var newWidth = cropArea.getCroppingArea().width() + deltaX;
+            var newHeight = cropArea.getCroppingArea().height() - deltaY;
 
-            var newLeft = cropElements.$cropArea.getLeft() - deltaX;
+            var newLeft = cropArea.getCroppingArea().getLeft() - deltaX;
             newLeft = getValidLeftOnResize(newLeft);
 
             var legalWidth = croppingAreaParams.width = getValidLeftCropWidth(newWidth);
             var legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
 
-            setElementWidthHeight(cropElements.$cropArea, legalWidth, legalHeight);
-            cropElements.$cropImg.css("left", angleBorderSize - newLeft);
-            cropElements.$cropArea.css("left", newLeft);
+            setElementWidthHeight(cropArea.getCroppingArea(), legalWidth, legalHeight);
+            cropArea.$cropImg.css("left", angleBorderSize - newLeft);
+            cropArea.getCroppingArea().css("left", newLeft);
         }
 
         function moveCroppingAngles(angleName, deltaX, deltaY) {
@@ -261,22 +264,21 @@ define(
             bottomLeft: resizeCroppingBottomLeft
         };
 
-        function init(imageCropComponents) {
-            var isMouseDown = false,
-                isResizing = false
-            ;
+        function init(_imageData) {
+            let isMouseDown = false;
+            let isResizing = false;
 
-            imageData = imageCropComponents.imageData;
-            $imageEditor = imageCropComponents.$imageEditor;
+            imageData = _imageData;
+            $imageEditor = $('.imcms-image_editor');
 
             angleBorderSize = angles.getBorderSize();
             doubleAngleBorderSize = angles.getDoubleBorderSize();
-            imageCoords = cropElements.$image.offset();
+            imageCoords = cropArea.getCroppingImage().offset();
             imageCoords.top -= angleBorderSize;
             imageCoords.left -= angleBorderSize;
 
-            var originImageWidth = cropElements.$image.width();
-            var originImageHeight = cropElements.$image.height();
+            var originImageWidth = cropArea.getCroppingImage().width();
+            var originImageHeight = cropArea.getCroppingImage().height();
 
             var croppingCoefficientX = imageData.width / originImageWidth;
             var croppingCoefficientY = imageData.height / originImageHeight;
@@ -291,8 +293,8 @@ define(
                 cropRegion = imageData.cropRegion = {
                     cropX1: 0,
                     cropY1: 0,
-                    cropX2: cropElements.$cropArea.width(),
-                    cropY2: cropElements.$cropArea.height()
+                    cropX2: cropArea.getCroppingArea().width(),
+                    cropY2: cropArea.getCroppingArea().height()
                 };
             } else {
                 if (cropRegion.cropX1 === -1) {
@@ -308,10 +310,10 @@ define(
                 }
 
                 if (cropRegion.cropX2 === -1) {
-                    cropRegion.cropX2 = cropElements.$cropArea.width();
+                    cropRegion.cropX2 = cropArea.getCroppingArea().width();
                 }
                 if (cropRegion.cropY2 === -1) {
-                    cropRegion.cropY2 = cropElements.$cropArea.height();
+                    cropRegion.cropY2 = cropArea.getCroppingArea().height();
                 }
 
                 cropRegion.cropX2 /= croppingCoefficientX;
@@ -324,10 +326,10 @@ define(
             };
 
             removeCroppingListeners();
-            setElementWidthHeight(cropElements.$cropImg, originImageWidth, originImageHeight);
-            setElementWidthHeight(cropElements.$cropArea, croppingAreaParams.width, croppingAreaParams.height);
-            setElementTopLeft(cropElements.$cropArea, cropRegion.cropY1 + angleBorderSize, cropRegion.cropX1 + angleBorderSize);
-            setElementTopLeft(cropElements.$cropImg, -cropRegion.cropY1, -cropRegion.cropX1);
+            setElementWidthHeight(cropArea.$cropImg, originImageWidth, originImageHeight);
+            setElementWidthHeight(cropArea.getCroppingArea(), croppingAreaParams.width, croppingAreaParams.height);
+            setElementTopLeft(cropArea.getCroppingArea(), cropRegion.cropY1 + angleBorderSize, cropRegion.cropX1 + angleBorderSize);
+            setElementTopLeft(cropArea.$cropImg, -cropRegion.cropY1, -cropRegion.cropX1);
 
             (function setStartCroppingAngles() {
                 setCroppingAnglesTopLeft(
@@ -343,7 +345,7 @@ define(
 
             angles.showAll();
 
-            cropElements.$cropArea.mousedown(function (event) {
+            cropArea.getCroppingArea().mousedown(function (event) {
                 (isMouseDown = (event.which === 1)) && setCursor("move");
             });
 
@@ -386,7 +388,7 @@ define(
                     angles.topRight.$angle,
                     angles.bottomRight.$angle,
                     angles.bottomLeft.$angle,
-                    cropElements.$cropArea,
+                    cropArea.getCroppingArea(),
                     $imageEditor
 
                 ].forEach(function ($element) {
@@ -423,8 +425,8 @@ define(
                     resizeCropper[resizeAngleName](deltaX, deltaY);
 
                 } else {
-                    var croppingAreaTop = cropElements.$cropArea.getTop();
-                    var croppingAreaLeft = cropElements.$cropArea.getLeft();
+                    var croppingAreaTop = cropArea.getCroppingArea().getTop();
+                    var croppingAreaLeft = cropArea.getCroppingArea().getLeft();
 
                     var newLeft = croppingAreaLeft - deltaX;
                     var newTop = croppingAreaTop - deltaY;
@@ -436,10 +438,10 @@ define(
                     setCroppingAnglesTopLeft(newTop, newLeft);
                 }
 
-                imageData.cropRegion.cropX1 = croppingCoefficientX * (cropElements.$cropArea.getLeft() - 2);
-                imageData.cropRegion.cropY1 = croppingCoefficientY * (cropElements.$cropArea.getTop() - 2);
-                imageData.cropRegion.cropX2 = croppingCoefficientX * (cropElements.$cropArea.getLeft() + cropElements.$cropArea.width() - 2);
-                imageData.cropRegion.cropY2 = croppingCoefficientY * (cropElements.$cropArea.getTop() + cropElements.$cropArea.height() - 2);
+                imageData.cropRegion.cropX1 = croppingCoefficientX * (cropArea.getCroppingArea().getLeft() - 2);
+                imageData.cropRegion.cropY1 = croppingCoefficientY * (cropArea.getCroppingArea().getTop() - 2);
+                imageData.cropRegion.cropX2 = croppingCoefficientX * (cropArea.getCroppingArea().getLeft() + cropArea.getCroppingArea().width() - 2);
+                imageData.cropRegion.cropY2 = croppingCoefficientY * (cropArea.getCroppingArea().getTop() + cropArea.getCroppingArea().height() - 2);
             });
 
             $imageEditor.on("dragstart", function () {
@@ -454,7 +456,7 @@ define(
         }
 
         function removeCroppingListeners() {
-            removeEventListeners(cropElements.$cropArea, ["mousedown", "mouseup"]);
+            removeEventListeners(cropArea.getCroppingArea(), ["mousedown", "mouseup"]);
             angles.forEach(function ($angle) {
                 removeEventListeners($angle, ["mousedown", "mouseup"]);
             });
@@ -469,13 +471,13 @@ define(
             moveCropArea(0, 0);
 
             [
-                cropElements.$cropImg,
-                cropElements.$image,
+                cropArea.$cropImg,
+                cropArea.getCroppingImage(),
                 angles.topLeft.$angle,
                 angles.topRight.$angle,
                 angles.bottomRight.$angle,
                 angles.bottomLeft.$angle,
-                cropElements.$cropArea
+                cropArea.getCroppingArea()
 
             ].forEach(function ($element) {
                 $element.removeAttr("style");
@@ -512,7 +514,7 @@ define(
             setCropAreaY1(newY1);
         }
 
-        return {
+        module.exports = {
             initImageCropper: init,
             setCropX: setCropX,
             setCropX1: setCropX1,

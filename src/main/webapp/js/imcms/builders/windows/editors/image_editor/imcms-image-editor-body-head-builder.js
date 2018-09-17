@@ -5,11 +5,11 @@ define(
     "imcms-image-editor-body-head-builder",
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
-        "imcms-image-rotate", "imcms-image-resize", "imcms-image-crop-angles", "imcms-image-cropping-elements",
-        'imcms-editable-image', 'imcms-preview-image-area', 'imcms-toolbar-view-builder'
+        "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
+        'imcms-toolbar-view-builder', 'imcms-image-cropper'
     ],
-    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, croppingAngles, cropElements,
-              editableImage, previewImage, ToolbarViewBuilder) {
+    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImage,
+              ToolbarViewBuilder, cropper) {
 
         texts = texts.editors.image;
 
@@ -293,7 +293,10 @@ define(
         }
 
         function showCroppingStuff() {
-            //todo: init cropper
+            // todo: come up with solution for very small images, when there's nothing to crop
+
+            cropper.initImageCropper(imageData);
+
             new ToolbarViewBuilder()
                 .hide(
                     getShowImageRotationControls(),
@@ -306,7 +309,11 @@ define(
                     getCancelChangesButton(),
                     getApplyChangesButton(),
                 )
-                // .onCancel(() => imageRotate.rotateImageByDegrees(previousRotateDegrees))
+                .onCancel(cropper.destroyImageCropper)
+                .onApply(() => {
+                    // todo: apply changes
+                    cropper.destroyImageCropper();
+                })
                 .build();
         }
 
@@ -357,11 +364,14 @@ define(
         }
 
         let $imgUrl;
+        let imageData;
 
         module.exports = {
             showOriginalImageArea: () => toggleImgArea.call($tabOriginal),
 
-            build: function ($rightSidePanel) {
+            build: function ($rightSidePanel, _imageData) {
+                imageData = _imageData;
+
                 const bodyHeadBEM = new BEM({
                     block: "imcms-image-toolbar",
                     elements: {
