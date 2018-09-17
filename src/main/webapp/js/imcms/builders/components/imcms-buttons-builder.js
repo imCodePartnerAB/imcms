@@ -36,6 +36,7 @@ module.exports = {
     rotateLeft: getButtonBuilder('rotate-left'),
     rotateRight: getButtonBuilder('rotate-right'),
     revert: getButtonBuilder('revert'),
+    cropping: getButtonBuilder('crop'),
     negativeButton: function (attributes) {
         return this.negative('<button>', attributes);
     },
@@ -92,6 +93,9 @@ module.exports = {
     },
     revertButton: function (attributes) {
         return this.revert('<button>', attributes);
+    },
+    croppingButton: function (attributes) {
+        return this.cropping('<button>', attributes);
     },
     buttonsContainer: (tag, elements, attributes) => buttonsBEM.buildBlock(tag, elements, attributes, 'button'),
 };

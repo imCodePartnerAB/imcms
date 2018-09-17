@@ -285,6 +285,16 @@ a[class^="imcms"].imcms-button--neutral:hover {
     height: 35px;
 }
 
+.imcms-button--crop {
+    background: #fff url("/images_new/image_editor/icon_crop.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
 .imcms-button--align:hover,
 .imcms-button--align-active {
     border-color: #0b94d8;
