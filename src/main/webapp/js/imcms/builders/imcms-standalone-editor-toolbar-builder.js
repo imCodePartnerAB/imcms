@@ -11,13 +11,16 @@ define("imcms-standalone-editor-toolbar-builder",
         let $panelContainer, $panel;
 
         function flagOnClick() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const languageParamName = 'lang';
             const languageCode = $(this).text();
 
-            if (languageCode !== imcms.language.code) {
-                languagesRestApi.replace({code: languageCode}).done(function () {
-                    location.reload(true);
-                });
+            if (urlParams.has(languageParamName)) {
+                urlParams.delete(languageParamName);
             }
+            urlParams.append(languageParamName, languageCode);
+
+            location.href = location.origin + location.pathname + '?' + urlParams.toString();
         }
 
         function buildFlags() {
