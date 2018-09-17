@@ -35,6 +35,14 @@ $(function () {
             title: texts.toolbar.elementIndexTitle,
         },
         {
+            type: 'label',
+            text: editorData.label ? ('Label ' + editorData.label) : ''
+        },
+        {
+            type: 'placeholder',
+            text: editorData.placeholder ? ('Placeholder ' + editorData.placeholder) : ''
+        },
+        {
             type: 'language'
         }
     ];
