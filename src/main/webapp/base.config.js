@@ -125,6 +125,8 @@ module.exports = {
                                 'imcms-image-crop-angles',
                                 'imcms-origin-image-width-block',
                                 'imcms-origin-image-height-block',
+                                'imcms-cropping-area',
+                                'imcms-toolbar-view-builder',
                             ],
                             page_info_tabs: [
                                 'imcms-page-info-tabs-builder',

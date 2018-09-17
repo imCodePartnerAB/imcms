@@ -6,12 +6,25 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", "imcms-image-crop-angles", "imcms-image-cropping-elements",
-        'imcms-editable-image', 'imcms-preview-image-area'
+        'imcms-editable-image', 'imcms-preview-image-area', 'imcms-toolbar-view-builder'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, croppingAngles, cropElements,
-              editableImage, previewImage) {
+              editableImage, previewImage, ToolbarViewBuilder) {
 
         texts = texts.editors.image;
+
+        const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
+            .hide(
+                getShowImageRotationControls(),
+                imageEditSizeControls.getEditSizeControls(),
+                getRevertButton(),
+                getCroppingButton(),
+            )
+            .show(
+                getZoomPlusButton(),
+                getZoomMinusButton(),
+                getZoomResetButton(),
+            );
 
         function toggleImgArea() {
 
@@ -30,29 +43,14 @@ define(
 
             if ($(this).data("tab") === "prev") {
                 initPreviewImageArea();
-
-                $(getShowImageRotationControls())
-                    .add(imageEditSizeControls.getEditSizeControls())
-                    .add(getRevertButton())
-                    .slideUp('fast', () => {
-                        $(getZoomPlusButton()).add(getZoomMinusButton())
-                            .add(getZoomResetButton())
-                            .slideDown();
-                    });
+                toggleImageAreaToolbarViewBuilder.build();
 
                 $previewImageArea.css({
                     "z-index": "50",
                     "display": "block"
                 });
             } else {
-                $(getZoomPlusButton()).add(getZoomMinusButton())
-                    .add(getZoomResetButton())
-                    .slideUp('fast', () => {
-                        $(getShowImageRotationControls())
-                            .add(imageEditSizeControls.getEditSizeControls())
-                            .add(getRevertButton())
-                            .slideDown();
-                    });
+                toggleImageAreaToolbarViewBuilder.cancelChanges();
 
                 $previewImageArea.css({
                     "z-index": "10",
@@ -146,6 +144,12 @@ define(
             imageResize.resetToOriginal();
         }
 
+        let $switchViewControls;
+
+        function getSwitchViewControls() {
+            return $switchViewControls || ($switchViewControls = buildSwitchViewControls())
+        }
+
         let $tabOriginal;
 
         function buildSwitchViewControls() {
@@ -167,40 +171,36 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        const onCancel = () => {
-            imageRotate.rotateImageByDegrees(previousRotateDegrees);
-            onApply();
-        };
+        function onCancel() {
+            ToolbarViewBuilder.getCurrentToolbarView().cancelChanges();
+        }
 
-        const onApply = () => {
-            $(getCancelChangesButton()).add(getApplyChangesButton())
-                .add(getRotateLeftButton())
-                .add(getRotateRightButton())
-                .slideUp('fast', () => {
-                    $(getShowImageRotationControls())
-                        .add(imageEditSizeControls.getEditSizeControls())
-                        .add(getRevertButton())
-                        .slideDown();
-                });
-        };
+        function onApply() {
+            ToolbarViewBuilder.getCurrentToolbarView().applyChanges();
+        }
 
-        let previousRotateDegrees = null;
-
-        const onRotationActivated = () => {
-            previousRotateDegrees = parseInt(
+        function onRotationActivated() {
+            let previousRotateDegrees = parseInt(
                 editableImage.getImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
             );
 
-            $(getShowImageRotationControls())
-                .add(imageEditSizeControls.getEditSizeControls())
-                .add(getRevertButton())
-                .slideUp('fast', () => {
-                    $(getCancelChangesButton()).add(getApplyChangesButton())
-                        .add(getRotateLeftButton())
-                        .add(getRotateRightButton())
-                        .slideDown();
-                });
-        };
+            new ToolbarViewBuilder()
+                .hide(
+                    getShowImageRotationControls(),
+                    imageEditSizeControls.getEditSizeControls(),
+                    getRevertButton(),
+                    getCroppingButton(),
+                    getSwitchViewControls(),
+                )
+                .show(
+                    getCancelChangesButton(),
+                    getApplyChangesButton(),
+                    getRotateLeftButton(),
+                    getRotateRightButton(),
+                )
+                .onCancel(() => imageRotate.rotateImageByDegrees(previousRotateDegrees))
+                .build();
+        }
 
         let $cancelChangesButton;
 
@@ -292,6 +292,33 @@ define(
             }))
         }
 
+        function showCroppingStuff() {
+            //todo: init cropper
+            new ToolbarViewBuilder()
+                .hide(
+                    getShowImageRotationControls(),
+                    imageEditSizeControls.getEditSizeControls(),
+                    getRevertButton(),
+                    getCroppingButton(),
+                    getSwitchViewControls(),
+                )
+                .show(
+                    getCancelChangesButton(),
+                    getApplyChangesButton(),
+                )
+                // .onCancel(() => imageRotate.rotateImageByDegrees(previousRotateDegrees))
+                .build();
+        }
+
+        let $croppingButton;
+
+        function getCroppingButton() {
+            return $croppingButton || ($croppingButton = components.buttons.croppingButton({
+                title: texts.buttons.cropping,
+                click: showCroppingStuff,
+            }))
+        }
+
         function buildScaleAndRotateControls() {
             return new BEM({
                 block: "imcms-edit-image",
@@ -304,6 +331,7 @@ define(
                         getRotateLeftButton(),
                         getRotateRightButton(),
                         getRevertButton(),
+                        getCroppingButton(),
                     ]
                 }
             }).buildBlockStructure("<div>");
@@ -324,7 +352,7 @@ define(
                 {'control-button': getCancelChangesButton()},
                 {"control-scale-n-rotate": buildScaleAndRotateControls()},
                 {"control-button": getApplyChangesButton()},
-                {"control-view": buildSwitchViewControls()}
+                {"control-view": getSwitchViewControls()}
             ]);
         }
 
