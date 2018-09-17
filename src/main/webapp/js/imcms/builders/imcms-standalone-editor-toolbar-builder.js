@@ -4,20 +4,23 @@
  */
 define("imcms-standalone-editor-toolbar-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms", "imcms-events", "imcms-languages-rest-api",
+        "imcms-bem-builder", "imcms-components-builder", "jquery"
     ],
-    function (BEM, componentsBuilder, $, imcms, events, languagesRestApi) {
+    function (BEM, componentsBuilder, $) {
 
         let $panelContainer, $panel;
 
         function flagOnClick() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const languageParamName = 'lang';
             const languageCode = $(this).text();
 
-            if (languageCode !== imcms.language.code) {
-                languagesRestApi.replace({code: languageCode}).done(function () {
-                    location.reload(true);
-                });
+            if (urlParams.has(languageParamName)) {
+                urlParams.delete(languageParamName);
             }
+            urlParams.append(languageParamName, languageCode);
+
+            location.href = location.origin + location.pathname + '?' + urlParams.toString();
         }
 
         function buildFlags() {
@@ -30,35 +33,40 @@ define("imcms-standalone-editor-toolbar-builder",
         }
 
         function createToolbarPanel(itemsToDisplay) {
-            const adminPanelBEM = new BEM({
+            const toolbarBEM = new BEM({
                 block: "imcms-editor-toolbar-panel",
                 elements: {
                     "id": "",
                     "index": "",
-                    "label": ""
+                    "label": "",
+                    "placeholder": ""
                 }
             });
 
             let toolbarElements = [];
             itemsToDisplay.forEach(function (item) {
-                const $item = adminPanelBEM.buildBlockElement(item.type, "<div>", {
-                    text: item.text,
-                    title: item.title,
-                });
-                const $itemContainer = $("<div>").append($item);
+                let $itemContainer;
+
+                switch (item.type) {
+                    case 'language':
+                        $itemContainer = buildFlags();
+                        break;
+                    default:
+                        const $item = toolbarBEM.buildBlockElement(item.type, "<div>", {
+                            text: item.text,
+                            title: item.title,
+                        });
+                        $itemContainer = $("<div>").append($item);
+                        break;
+                }
+
                 toolbarElements.push($itemContainer);
             });
-
-            const $flagsItem = buildFlags();
-            // var $buttonsContainer = buildPanelButtons(opts);
-
-            toolbarElements.push($flagsItem);
-            // toolbarElements.push($buttonsContainer);
 
             const panelAttributes = {
                 id: "imcms-editor-toolbar-panel",
             };
-            return $panel = adminPanelBEM.buildBlock("<div>", toolbarElements, panelAttributes, "item");
+            return $panel = toolbarBEM.buildBlock("<div>", toolbarElements, panelAttributes, "item");
 
         }
 
@@ -74,12 +82,9 @@ define("imcms-standalone-editor-toolbar-builder",
                     html: createToolbarPanel(itemsToDisplay)
                 });
 
-                console.log(imcms);
-
                 $("body")
                     .addClass("standalone-editor-body")
                     .prepend($panelContainer);
-
             }
         }
     }

@@ -3,6 +3,15 @@
     height: calc(100% - 50px);
 }
 
+.standalone-editor-body .mce-fullscreen-toolbar {
+    top: 50px !important;
+}
+
+.standalone-editor-body .imcms-editor-content--text{
+    top: 80px !important;
+    height: calc(100% - 80px) !important;
+}
+
 .imcms-editor-toolbar {
     height: 50px;
 }
