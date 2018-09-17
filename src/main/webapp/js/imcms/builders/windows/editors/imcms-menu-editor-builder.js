@@ -441,7 +441,7 @@ define("imcms-menu-editor-builder",
                     change: createItem
                 });
 
-            return menuWindowBuilder.buildFooter([$saveAndClose, $dataInput]);
+            return WindowBuilder.buildFooter([$saveAndClose, $dataInput]);
         }
 
         function removeMenuItemFromEditor(currentMenuItem) {

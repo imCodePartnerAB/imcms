@@ -156,7 +156,7 @@ define(
         }
 
         function buildFooter() {
-            return windowBuilder.buildFooter([
+            return WindowBuilder.buildFooter([
                 components.buttons.positiveButton({
                     text: texts.createDocButton,
                     click: onSubmit

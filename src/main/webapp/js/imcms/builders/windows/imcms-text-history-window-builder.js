@@ -37,7 +37,7 @@ define("imcms-text-history-window-builder",
         }
 
         function buildFooter() {
-            return textHistoryWindowBuilder.buildFooter([
+            return WindowBuilder.buildFooter([
                 components.buttons.negativeButton({
                     text: texts.cancel,
                     "class": "imcms-text-history-cancel",

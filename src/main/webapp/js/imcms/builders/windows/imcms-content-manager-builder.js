@@ -109,7 +109,7 @@ define(
                 }
 
                 footerElements$.push($uploadNewImage);
-                return contentManagerWindowBuilder.buildFooter(footerElements$);
+                return WindowBuilder.buildFooter(footerElements$);
             }
 
             return new BEM({

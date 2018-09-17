@@ -15,7 +15,7 @@ define(
         texts = texts.textValidation;
 
         function buildFooter() {
-            return textValidationFailWindowBuilder.buildFooter([
+            return WindowBuilder.buildFooter([
                 components.buttons.saveButton({
                     text: texts.ok,
                     click: closeWindow

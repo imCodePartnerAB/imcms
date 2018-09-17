@@ -856,7 +856,7 @@ define("imcms-document-editor-builder",
         }
 
         function buildFooter() {
-            return documentWindowBuilder.buildFooter();
+            return WindowBuilder.buildFooter();
         }
 
         function buildBody() {

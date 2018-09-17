@@ -58,7 +58,7 @@ define(
             RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
         };
 
-        return {
+        module.exports = {
             updateImageData: function ($newTag, newImageData) {
                 $tag = $newTag;
                 imageData = newImageData;
