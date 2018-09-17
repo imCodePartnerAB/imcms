@@ -48,6 +48,12 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 adminTitle: 'Visar alla systeminställningar (endast för systemadministratörer)',
                 logout: "logga ut"
             },
+            toolbar:{
+              documentId:"Dokument ",
+              documentIdTitle:"Dokument no",
+              elementIndex:"Element ",
+              elementIndexTitle:"Element no",
+            },
             pageInfo: {
                 document: "Dokument",
                 newDocument: "Nytt dokument",
@@ -438,6 +444,12 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 admin: "admin",
                 adminTitle: 'Shows all system settings (only for system administrators)',
                 logout: "log out"
+            },
+            toolbar:{
+                documentId:"Document ",
+                documentIdTitle:"Document no",
+                elementIndex:"Element ",
+                elementIndexTitle:"Element no",
             },
             pageInfo: {
                 document: "Document",

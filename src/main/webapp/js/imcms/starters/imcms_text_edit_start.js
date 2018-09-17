@@ -12,6 +12,7 @@ var textEditorInitializer = require("imcms-text-editor-initializer");
 var imageEditorInitializer = require("imcms-image-editor-initializer");
 var imcms = require("imcms");
 var $ = require('jquery');
+const texts = require("imcms-i18n-texts");
 
 imcms.textEditorFullScreenEnabled = true;
 
@@ -25,13 +26,13 @@ $(function () {
     const toolbarContent = [
         {
             type: 'id',
-            text: editorData.docId,
-            title: '',
+            text: texts.toolbar.documentId + editorData.docId,
+            title: texts.toolbar.documentIdTitle,
         },
         {
             type: 'index',
-            text: editorData.index,
-            title: '',
+            text: texts.toolbar.elementIndex + editorData.index,
+            title: texts.toolbar.elementIndexTitle,
         }
     ];
 

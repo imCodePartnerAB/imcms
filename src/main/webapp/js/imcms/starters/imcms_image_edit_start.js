@@ -12,6 +12,7 @@ var imageEditorInitData = require("imcms-image-editor-init-data");
 var $ = require("jquery");
 var events = require("imcms-events");
 var imcms = require("imcms");
+const texts = require("imcms-i18n-texts");
 
 $(function () {
     events.on("enable text editor blur", function () {
@@ -26,13 +27,13 @@ $(function () {
     const toolbarContent = [
         {
             type: 'id',
-            text: editorData.docId,
-            title: '',
+            text: texts.toolbar.documentId + editorData.docId,
+            title: texts.toolbar.documentIdTitle,
         },
         {
             type: 'index',
-            text: editorData.index,
-            title: '',
+            text: texts.toolbar.elementIndex + editorData.index,
+            title: texts.toolbar.elementIndexTitle,
         }
     ];
 

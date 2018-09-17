@@ -13,6 +13,7 @@ var menuEditorInitData = require("imcms-menu-editor-init-data");
 var $ = require("jquery");
 var events = require("imcms-events");
 var imcms = require("imcms");
+const texts = require("imcms-i18n-texts");
 
 $(function () {
     events.on("menu editor closed", function () {
@@ -24,16 +25,18 @@ $(function () {
     var editorData = $editedTag.data();
     menuEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
 
+    console.log('texts', texts);
+
     const toolbarContent = [
         {
             type: 'id',
-            text: editorData.docId,
-            title: '',
+            text: texts.toolbar.documentId + editorData.docId,
+            title: texts.toolbar.documentIdTitle,
         },
         {
             type: 'index',
-            text: editorData.menuIndex,
-            title: '',
+            text: texts.toolbar.elementIndex + editorData.menuIndex,
+            title: texts.toolbar.elementIndexTitle,
         }
     ];
 
