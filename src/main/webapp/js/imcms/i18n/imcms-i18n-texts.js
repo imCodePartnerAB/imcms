@@ -267,9 +267,10 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     buttons: {
                         zoomIn: 'Zooma in',
                         zoomOut: 'Zooma ut',
-                        zoomContain: 'Zooma för att innehålla redigeringsområde',
+                        zoomReset: 'Återställ zoom till standardvärdet',
                         rotateLeft: 'Rotera vänster',
-                        rotateRight: 'Vrid höger'
+                        rotateRight: 'Vrid höger',
+                        revert: 'Återställ till original',
                     },
                     proportionsButtonTitle: "Bevara bildens proportioner Av/På",
                     displaySize: "Visad storlek",
@@ -658,9 +659,10 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     buttons: {
                         zoomIn: 'Zoom in',
                         zoomOut: 'Zoom out',
-                        zoomContain: 'Zoom to contain editor area',
+                        zoomReset: 'Reset zoom to default value',
                         rotateLeft: 'Rotate left',
-                        rotateRight: 'Rotate right'
+                        rotateRight: 'Rotate right',
+                        revert: 'Reset to original',
                     },
                     proportionsButtonTitle: "Keep image proportion On/Off",
                     displaySize: "Display size",
