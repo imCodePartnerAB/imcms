@@ -38,7 +38,8 @@ define("imcms-standalone-editor-toolbar-builder",
                 elements: {
                     "id": "",
                     "index": "",
-                    "label": ""
+                    "label": "",
+                    "placeholder": ""
                 }
             });
 
