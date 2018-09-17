@@ -71,14 +71,16 @@ class SuperAdminController {
 
         final UserDomainObject user = Imcms.getUser();
         final RestrictedPermission userEditPermission = accessService.getEditPermission(user, metaId);
+        final String language = (langCode == null) ? Imcms.getUser().getLanguage() : langCode;
 
         mav.addObject("isAdmin", user.isSuperAdmin());
         mav.addObject("editOptions", userEditPermission);
         mav.addObject("isEditMode", true);
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("language", (langCode == null) ? Imcms.getUser().getLanguage() : langCode);
+        mav.addObject("language", language);
         addCommonModelData(metaId, index, returnUrl, request, mav);
+        mav.addObject("userLanguage", language);
 
         return mav;
     }
@@ -100,13 +102,15 @@ class SuperAdminController {
             loopEntryRef = new LoopEntryRefDTO(loopIndex, loopEntryIndex);
         }
 
+        final String language = (langCode == null) ? Imcms.getUser().getLanguage() : langCode;
+
         mav.setViewName("EditImage");
 
         mav.addObject("loopEntryRef", loopEntryRef);
-        mav.addObject("langCode", (langCode == null) ? Imcms.getUser().getLanguage() : langCode);
+        mav.addObject("langCode", language);
         mav.addObject("imagesPath", imagesPath);
         addCommonModelData(metaId, index, returnUrl, request, mav);
-
+        mav.addObject("userLanguage", language);
         return mav;
     }
 
