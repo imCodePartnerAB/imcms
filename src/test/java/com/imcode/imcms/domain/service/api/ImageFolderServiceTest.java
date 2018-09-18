@@ -482,7 +482,38 @@ public class ImageFolderServiceTest {
     }
 
     @Test(expected = DirectoryNotEmptyException.class)
-    public void canDeleteSubdirectoryWithSubdirectoryWithFiles_Expect_FalseAndDirectoryNotEmptyException() throws IOException {
+    public void canDeleteSubdirectoryWithSubdirectoryWithFile_Expect_FalseAndDirectoryNotEmptyException() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+        final String testImageName = "test.png";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final File testImage2 = new File(testSubdirectory, testImageName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+
+            final boolean isTestFile2Created = testImage2.createNewFile();
+
+            assertTrue(isTestFile2Created);
+
+            assertFalse(imageFolderService.canBeDeleted(testImageFolderDTO));
+            assertFalse(imageFolderService.canBeDeleted(testImageSubFolderDTO));
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test(expected = DirectoryNotEmptyException.class)
+    public void canDeleteSubdirectoryWithSubdirectoryWithFilesAtAllDirectories_Expect_FalseAndDirectoryNotEmptyException() throws IOException {
         final String testDirectoryName = "testDirectory";
         final String testSubdirectoryName = "testSubDirectory";
         final String testImageName = "test.png";
