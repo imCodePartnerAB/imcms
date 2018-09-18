@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.util.List;
 import java.util.stream.Collectors;
 
