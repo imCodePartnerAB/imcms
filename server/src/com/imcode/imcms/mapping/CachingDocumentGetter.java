@@ -3,6 +3,7 @@ package com.imcode.imcms.mapping;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.ShouldNotBeThrownException;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,16 @@ public class CachingDocumentGetter extends DocumentGetterWrapper {
         }
     }
 
-    public List<DocumentDomainObject> getDocuments(Collection documentIds) {
-        return super.getDocuments(documentIds);
+    public DocumentDomainObject getDocument(Integer documentId) {
+        return getDocument(documentId, false);
+    }
+
+    public List<DocumentDomainObject> getDocuments(Collection<Integer> documentIds) {
+        List<DocumentDomainObject> list = new ArrayList<>();
+        for (Integer documentId : documentIds) {
+            list.add(getDocument(documentId, false));
+        }
+        return list;
     }
 
 }

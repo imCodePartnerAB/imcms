@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class DefaultDirectoryIndex implements DirectoryIndex {
 
@@ -141,10 +140,12 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         if ((maxResults <= 0) || (maxResults >= cutResultSize)) { // no limit
             nextSkip = totalCount;
 
-            documentList = documentGetter.getDocuments(documentIds)
-                    .stream()
-                    .filter(searchingPredicate)
-                    .collect(Collectors.toList());
+            documentList = new ArrayList<>();
+            for (DocumentDomainObject documentDomainObject : documentGetter.getDocuments(documentIds)) {
+                if (searchingPredicate.test(documentDomainObject)) {
+                    documentList.add(documentDomainObject);
+                }
+            }
         } else {
             documentList = new ArrayList<>();
 
