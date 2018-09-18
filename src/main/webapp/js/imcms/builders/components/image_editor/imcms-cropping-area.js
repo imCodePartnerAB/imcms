@@ -2,8 +2,6 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 17.09.18
  */
-const cropAreaClass = 'imcms-crop-area';
-
 const BEM = require('imcms-bem-builder');
 const $ = require('jquery');
 const events = require('imcms-events');
@@ -91,17 +89,22 @@ function setPositionListeners($element, eventName) {
     return $element;
 }
 
+let $croppingBlock;
 let $croppingArea;
 let $cropImage;
 let $image;
 
 function buildCroppingArea() {
     return new BEM({
-        block: cropAreaClass,
+        block: 'imcms-crop-area',
         elements: {
             'crop-img': getCroppingImage(),
         }
     }).buildBlockStructure('<div>')
+}
+
+function getCroppingArea() {
+    return $croppingArea || ($croppingArea = setPositionListeners(setFunctionality(buildCroppingArea())))
 }
 
 function getCroppingImage() {
@@ -112,10 +115,42 @@ function buildImage() {
     return setFunctionality($("<img>", {"class": "imcms-editable-img"}));
 }
 
+function getImage() {
+    return $image || ($image = buildImage())
+}
+
+let $originalImageBackground;
+
+function getOriginalImageBackground() {
+    return $originalImageBackground || ($originalImageBackground = $('<img>', {'class': 'imcms-editable-img'}))
+}
+
+let $shadowLayout;
+
+function getShadowLayout() {
+    return $shadowLayout || ($shadowLayout = $('<div>'))
+}
+
+function buildCroppingBlock() {
+    const angles = require('imcms-image-crop-angles');
+
+    return new BEM({
+        block: 'image-cropping-block',
+        elements: [
+            {img: getOriginalImageBackground()},
+            {layout: getShadowLayout()},
+            {'crop-area': getCroppingArea()},
+            {angle: angles.topLeft.buildAngle()},
+            {angle: angles.topRight.buildAngle()},
+            {angle: angles.bottomRight.buildAngle()},
+            {angle: angles.bottomLeft.buildAngle()},
+        ]
+    }).buildBlockStructure('<div>')
+}
+
 module.exports = {
-    getImage: () => $image || ($image = buildImage()),
-
+    getImage: getImage,
     getCroppingImage: getCroppingImage,
-
-    getCroppingArea: () => $croppingArea || ($croppingArea = setPositionListeners(setFunctionality(buildCroppingArea()))),
+    getCroppingArea: getCroppingArea,
+    getCroppingBlock: () => $croppingBlock || ($croppingBlock = buildCroppingBlock())
 };

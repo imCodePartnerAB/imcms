@@ -7,7 +7,7 @@ module.exports = {
     build: function () {
         return $("<div>").append(
             editableArea.getEditableImageArea(),
-            croppingArea.getCroppingArea(),
+            croppingArea.getCroppingBlock(),
             previewImageArea.getPreviewImageArea(),
         );
     }

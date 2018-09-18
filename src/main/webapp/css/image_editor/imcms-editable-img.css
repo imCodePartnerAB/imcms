@@ -1,3 +1,4 @@
+.image-cropping-block,
 .imcms-editable-img-area {
     background-color: #9b9b9b;
     display: block;
@@ -8,6 +9,10 @@
     z-index: 15;
 }
 
+.image-cropping-block {
+    display: none;
+}
+
 .imcms-editable-img {
     background: 0 0 no-repeat;
     display: block;
@@ -15,7 +20,7 @@
     z-index: 20;
 }
 
-.imcms-editable-img-area__layout {
+.image-cropping-block__layout {
     background: rgba(37, 34, 34, .5);
     position: absolute;
     min-width: 100%;

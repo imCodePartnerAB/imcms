@@ -4,6 +4,9 @@
  */
 
 module.exports = class Limit {
+    constructor() {
+    }
+
     setMin(min) {
         this.min = min;
         return this;
