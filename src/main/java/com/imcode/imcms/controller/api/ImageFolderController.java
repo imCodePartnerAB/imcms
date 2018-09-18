@@ -33,7 +33,7 @@ public class ImageFolderController {
                 : imageFolderService.getImagesFrom(folderToGet);
     }
 
-    @GetMapping("/canDelete")
+    @PostMapping("/can-delete")
     @CheckAccess
     public boolean canBeDeleted(@RequestBody ImageFolderDTO folderToCheck) {
         return imageFolderService.canBeDeleted(folderToCheck);

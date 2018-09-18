@@ -23,8 +23,7 @@ import java.io.File;
 
 import static java.io.File.separator;
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @Transactional
 public class ImageFolderControllerTest extends AbstractControllerTest {
@@ -569,7 +568,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertTrue(testDirectory.canRead());
 
         try {
-            final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/canDelete")
+            final MockHttpServletRequestBuilder requestBuilderGet = post(controllerPath() + "/can-delete")
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
@@ -609,7 +608,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         assertTrue(testSubdirectory.canRead());
 
         try {
-            final MockHttpServletRequestBuilder requestBuilderDelete = get(controllerPath() + "/canDelete")
+            final MockHttpServletRequestBuilder requestBuilderDelete = post(controllerPath() + "/can-delete")
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFolderDTO));
 
