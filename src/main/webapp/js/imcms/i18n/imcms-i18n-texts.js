@@ -647,7 +647,7 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     useSelectedImage: "Use selected image",
                     removeFolderMessage: "Do you want to remove folder \"",
                     removeImageConfirm: "Do you want to remove image ",
-                    folderNotEmptyMessage: "Folder not empty,
+                    folderNotEmptyMessage: "Folder not empty",
                     newFolderName: "New folder name",
                     add: "ADD+"
                 },
