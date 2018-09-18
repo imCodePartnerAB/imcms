@@ -83,6 +83,7 @@ class DefaultImageFolderService implements ImageFolderService {
         return folder.renameTo(newFolder);
     }
 
+    @Override
     public boolean canBeDeleted(ImageFolderDTO checkMe) {
         final String imageFolderRelativePath = checkMe.getPath();
         final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
