@@ -249,6 +249,7 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     useSelectedImage: "Använd vald bild",
                     removeFolderMessage: "Vill du ta bort mapp \"",
                     removeImageConfirm: "Vill du ta bort bilden ",
+                    folderNotEmptyMessage: "Mappen är inte tom",
                     newFolderName: "Nytt mappnamn",
                     add: "LÄGG TILL+"
                 },
@@ -646,6 +647,7 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                     useSelectedImage: "Use selected image",
                     removeFolderMessage: "Do you want to remove folder \"",
                     removeImageConfirm: "Do you want to remove image ",
+                    folderNotEmptyMessage: "Folder not empty,
                     newFolderName: "New folder name",
                     add: "ADD+"
                 },
