@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -83,9 +83,8 @@ class DefaultImageFolderService implements ImageFolderService {
         return folder.renameTo(newFolder);
     }
 
-    @Override
-    public boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException {
-        final String imageFolderRelativePath = deleteMe.getPath();
+    public boolean canBeDeleted(ImageFolderDTO checkMe) {
+        final String imageFolderRelativePath = checkMe.getPath();
         final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
 
         if (!folderToDelete.exists() || !folderToDelete.isDirectory()) {
@@ -102,7 +101,19 @@ class DefaultImageFolderService implements ImageFolderService {
             throw new DirectoryNotEmptyException("Folder with path " + imageFolderRelativePath + " not empty!");
         }
 
-        return FileUtility.forceDelete(folderToDelete);
+        return true;
+    }
+
+    @Override
+    public boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException {
+        if (canBeDeleted(deleteMe)) {
+            final String imageFolderRelativePath = deleteMe.getPath();
+            final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
+
+            return FileUtility.forceDelete(folderToDelete);
+        } else {
+            return false;
+        }
     }
 
     @Override
