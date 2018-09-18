@@ -17,8 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
@@ -88,6 +90,16 @@ class DefaultImageFolderService implements ImageFolderService {
 
         if (!folderToDelete.exists() || !folderToDelete.isDirectory()) {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
+        }
+
+        File[] files = Optional.ofNullable(
+                folderToDelete.listFiles(
+                        file -> file.isFile() && Format.isImage(FilenameUtils.getExtension(file.getName()))
+                )
+        ).orElse(new File[0]);
+
+        if (files.length > 0) {
+            throw new DirectoryNotEmptyException("Folder with path " + imageFolderRelativePath + " not empty!");
         }
 
         return FileUtility.forceDelete(folderToDelete);
