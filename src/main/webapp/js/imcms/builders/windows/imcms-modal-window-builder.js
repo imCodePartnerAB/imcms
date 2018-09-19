@@ -38,11 +38,11 @@ define(
             return $("<div>", {"class": "imcms-modal-layout imcms-modal-layout--front"});
         }
 
-        function buildHead() {
+        function buildHead(titleText) {
             return new BEM({
                 block: "imcms-head",
                 elements: {
-                    "title": components.texts.titleText("<div>", texts.title)
+                    "title": components.texts.titleText("<div>", titleText)
                 }
             }).buildBlockStructure("<div>");
         }
@@ -60,7 +60,7 @@ define(
             return new BEM({
                 block: "imcms-modal-window",
                 elements: {
-                    "modal-head": buildHead(),
+                    "modal-head": buildHead(texts.title),
                     "modal-body": buildBody(question),
                     "modal-footer": buildFooter(onConfirmed, onDeclined)
                 }
