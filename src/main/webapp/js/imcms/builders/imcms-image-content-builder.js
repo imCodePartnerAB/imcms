@@ -162,8 +162,7 @@ define("imcms-image-content-builder",
                     modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
                 })
                 .error(function () {
-                    modalWindow.buildModalWindow(texts.folderNotEmptyMessage, function () {
-                    });
+                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {});
                 });
         }
 
