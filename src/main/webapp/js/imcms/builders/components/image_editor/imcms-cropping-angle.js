@@ -58,8 +58,8 @@ module.exports = class Angle {
     }
 
     moveAngle(deltaX, deltaY) {
-        var newLeft = this._trimToValidLeftValue(this.getLeft() - deltaX);
-        var newTop = this._trimToValidTopValue(this.getTop() - deltaY);
+        const newLeft = this._trimToValidLeftValue(this.getLeft() - deltaX);
+        const newTop = this._trimToValidTopValue(this.getTop() - deltaY);
 
         this.setTopLeft(newTop, newLeft);
     }

@@ -162,7 +162,7 @@ define(
         var showImageStrategy;
         var selectedImagePath;
 
-        return {
+        module.exports = {
             build: function (imageEditorShowImageStrategy, getSelectedImagePath) {
                 showImageStrategy = imageEditorShowImageStrategy;
                 selectedImagePath = getSelectedImagePath();

@@ -1,35 +1,30 @@
-define("imcms-session-timeout-management", ["imcms", "imcms-i18n-texts"], function (imcms, texts) {
+const imcms = require('imcms');
+const texts = require('imcms-i18n-texts');
 
-    var twoMinutesInMillis = 2 * 60 * 1000;
+const twoMinutesInMillis = 2 * 60 * 1000;
+const justBeforeSessionExpires = imcms.expiredSessionTimeInMillis - twoMinutesInMillis;
 
-    var sessionTimeoutId;
-    var saveWarningMessageId;
+let sessionTimeoutId;
+let saveWarningMessageId;
 
-    function initOrUpdateSessionTimeout() {
-        clearTimeOut(saveWarningMessageId);
-        clearTimeOut(sessionTimeoutId);
+function onSessionTimeOut() {
+    const redirectToLoginPage = confirm(texts.sessionExpiredMessage);
 
-        saveWarningMessageId = setTimeout(function () {
-            alert(texts.contentSaveWarningMessage)
-        }, imcms.expiredSessionTimeInMillis - twoMinutesInMillis);
+    if (redirectToLoginPage) window.location.href = imcms.contextPath + "/login";
+}
 
-        sessionTimeoutId = setTimeout(function () {
-            var redirectToLoginPage = confirm(texts.sessionExpiredMessage);
+function initOrUpdateSessionTimeout() {
+    clearTimeOut(saveWarningMessageId);
+    clearTimeOut(sessionTimeoutId);
 
-            if (redirectToLoginPage) {
-                window.location.href = imcms.contextPath + "/login";
-            }
+    saveWarningMessageId = setTimeout(() => alert(texts.contentSaveWarningMessage), justBeforeSessionExpires);
+    sessionTimeoutId = setTimeout(onSessionTimeOut, imcms.expiredSessionTimeInMillis);
+}
 
-        }, imcms.expiredSessionTimeInMillis);
-    }
+function clearTimeOut(timeOutId) {
+    if (timeOutId) clearTimeout(timeOutId);
+}
 
-    function clearTimeOut(timeOutId) {
-        if (timeOutId) {
-            clearTimeout(timeOutId);
-        }
-    }
-
-    return {
-        initOrUpdateSessionTimeout: initOrUpdateSessionTimeout
-    }
-});
+module.exports = {
+    initOrUpdateSessionTimeout: initOrUpdateSessionTimeout
+};

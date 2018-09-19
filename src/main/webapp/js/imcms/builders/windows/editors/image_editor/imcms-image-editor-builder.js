@@ -5,12 +5,12 @@
 define(
     "imcms-image-editor-builder",
     [
-        "imcms-window-builder", "imcms-images-rest-api", "imcms-image-cropper", "jquery", "imcms-events", "imcms",
-        "imcms-image-editor-factory", "imcms-image-crop-angles", "imcms-image-cropping-elements", "imcms-image-rotate",
-        'imcms-editable-image', 'imcms-image-resize', 'imcms-image-editor-body-head-builder'
+        "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
+        "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
+        'imcms-image-resize'
     ],
-    function (WindowBuilder, imageRestApi, imageCropper, $, events, imcms, imageEditorFactory, cropAngles, cropElements,
-              imageRotate, editableImage, imageResize, bodyHeadBuilder) {
+    function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
+              bodyHeadBuilder, imageResize) {
 
         const imageDataContainers = {};
         const imageData = {};
