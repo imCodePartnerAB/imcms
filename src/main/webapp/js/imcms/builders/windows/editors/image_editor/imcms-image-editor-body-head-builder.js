@@ -309,12 +309,9 @@ define(
                     getCancelChangesButton(),
                     getApplyChangesButton(),
                 )
-                .onCancel(() => {
-                    cropper.destroyImageCropper();
-
-                })
+                .onCancel(cropper.destroyImageCropper)
                 .onApply(() => {
-                    // todo: apply changes
+                    cropper.applyCropping();
                     cropper.destroyImageCropper();
                 })
                 .build();

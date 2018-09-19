@@ -525,5 +525,14 @@ module.exports = {
     setCropX1: setCropX1,
     setCropY: setCropY,
     setCropY1: setCropY1,
+    applyCropping() {
+        const $croppingArea = cropArea.getCroppingArea();
+        const cropRegion = imageData.cropRegion;
+
+        cropRegion.cropX1 = $croppingArea.getLeft() - editableAreaBorderSize;
+        cropRegion.cropY1 = $croppingArea.getTop() - editableAreaBorderSize;
+        cropRegion.cropX2 = $croppingArea.getCurrentWidth() + cropRegion.cropX1;
+        cropRegion.cropY2 = $croppingArea.getCurrentHeight() + cropRegion.cropY1;
+    },
     destroyImageCropper: destroy
 };
