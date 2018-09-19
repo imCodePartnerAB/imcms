@@ -38,6 +38,10 @@
     background-color: #389ecf;
 }
 
+.imcms-modal-window--warning .imcms-modal-window__modal-head {
+    background-color: #ffc107;
+}
+
 .imcms-modal-window__modal-body {
     background-color: #f3f5f7;
     display: block;
