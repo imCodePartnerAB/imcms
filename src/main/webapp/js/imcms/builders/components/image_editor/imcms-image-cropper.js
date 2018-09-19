@@ -433,33 +433,28 @@ function destroy() {
 }
 
 function setCropAreaX(newX) {
-    const newLeft = getValidLeftOnResize(newX + angleBorderSize);
+    const newLeft = getValidLeftOnResize(newX);
     const oldLeft = cropArea.getCroppingArea().getLeft();
-
-    if (newLeft === oldLeft) {
-        return;
-    }
-
     const oldWidth = cropArea.getCroppingArea().width();
     const deltaX = oldLeft - newLeft;
     const legalWidth = croppingAreaParams.width = getValidLeftCropWidth(oldWidth + deltaX);
 
     cropArea.getCroppingArea().width(legalWidth);
     cropArea.getCroppingArea().css("left", newLeft);
-    cropArea.getCroppingImage().css("left", angleBorderSize - newLeft);
+    cropArea.getCroppingImage().css("left", editableAreaBorderSize - newLeft);
 }
 
 function setCropX(newX) {
-    angles.topLeft.setNewX(newX);
-    angles.bottomLeft.setNewX(newX);
+    angles.topLeft.setNewX(newX + editableAreaBorderSize - angleBorderSize);
+    angles.bottomLeft.setNewX(newX + editableAreaBorderSize - angleBorderSize);
 
-    setCropAreaX(newX);
+    setCropAreaX(newX + editableAreaBorderSize);
 }
 
 function setCropAreaX1(newX1) {
     const oldLeft = cropArea.getCroppingArea().getLeft();
     const oldWidth = cropArea.getCroppingArea().width();
-    const oldX1 = oldLeft + oldWidth - angleBorderSize;
+    const oldX1 = oldLeft + oldWidth;
 
     if (oldX1 === newX1) {
         return;
@@ -473,34 +468,30 @@ function setCropAreaX1(newX1) {
 }
 
 function setCropX1(newX1) {
-    angles.topRight.setNewX(newX1 - angles.getWidth() + angles.getBorderSize());
-    angles.bottomRight.setNewX(newX1 - angles.getWidth() + angles.getBorderSize());
+    angles.topRight.setNewX(newX1 - angles.getWidth() + editableAreaBorderSize);
+    angles.bottomRight.setNewX(newX1 - angles.getWidth() + editableAreaBorderSize);
 
-    setCropAreaX1(newX1);
+    setCropAreaX1(newX1 + editableAreaBorderSize);
 }
 
 function setCropAreaY(newY) {
     const oldTop = cropArea.getCroppingArea().getTop();
-    let newTop = newY + angleBorderSize;
+    let newTop = newY + editableAreaBorderSize;
 
     newTop = getValidTopOnResize(newTop);
-
-    if (oldTop === newTop) {
-        return;
-    }
 
     const deltaY = newTop - oldTop;
     const newHeight = cropArea.getCroppingArea().height() - deltaY;
     const legalHeight = croppingAreaParams.height = getValidCropHeightTop(newHeight);
 
     cropArea.getCroppingArea().height(legalHeight);
-    cropArea.getCroppingImage().css("top", (angleBorderSize - newTop));
+    cropArea.getCroppingImage().css("top", editableAreaBorderSize - newTop);
     cropArea.getCroppingArea().css("top", newTop);
 }
 
 function setCropY(newY) {
-    angles.topRight.setNewY(newY);
-    angles.topLeft.setNewY(newY);
+    angles.topRight.setNewY(newY + editableAreaBorderSize - angleBorderSize);
+    angles.topLeft.setNewY(newY + editableAreaBorderSize - angleBorderSize);
 
     setCropAreaY(newY);
 }
@@ -508,23 +499,24 @@ function setCropY(newY) {
 function setCropAreaY1(newY1) {
     const oldHeight = cropArea.getCroppingArea().height();
     const oldTop = cropArea.getCroppingArea().getTop();
-    const oldY1 = oldHeight + oldTop - angleBorderSize;
+    const oldY1 = oldHeight + oldTop;
 
     if (oldY1 === newY1) {
         return;
     }
 
-    const newHeight = newY1 - oldTop + angleBorderSize;
+    const deltaY1 = newY1 - oldY1;
+    const newHeight = oldHeight + deltaY1;
     const legalHeight = croppingAreaParams.height = getValidCropHeightBottom(newHeight);
 
     cropArea.getCroppingArea().height(legalHeight);
 }
 
 function setCropY1(newY1) {
-    angles.bottomRight.setNewY(newY1 - angles.getWidth() + angles.getBorderSize());
-    angles.bottomLeft.setNewY(newY1 - angles.getWidth() + angles.getBorderSize());
+    angles.bottomRight.setNewY(newY1 - angles.getWidth() + editableAreaBorderSize);
+    angles.bottomLeft.setNewY(newY1 - angles.getWidth() + editableAreaBorderSize);
 
-    setCropAreaY1(newY1);
+    setCropAreaY1(newY1 + editableAreaBorderSize);
 }
 
 module.exports = {
