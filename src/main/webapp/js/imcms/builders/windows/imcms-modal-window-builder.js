@@ -189,7 +189,7 @@ define(
 
                 modalWindow.$modal.find('.imcms-modal-body').append($checkbox);
             },
-            buildWarningWidow: function (message, callback) {
+            buildWarningWindow: function (message, callback) {
                 buildWarningWindow(message, callback)
             }
         };
