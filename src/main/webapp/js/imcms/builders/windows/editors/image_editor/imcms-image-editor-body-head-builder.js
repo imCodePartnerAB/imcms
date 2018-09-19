@@ -6,10 +6,10 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper'
+        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImage,
-              ToolbarViewBuilder, cropper) {
+              ToolbarViewBuilder, cropper, editableArea) {
 
         texts = texts.editors.image;
 
@@ -30,12 +30,14 @@ define(
 
             function initPreviewImageArea() {
                 const $previewImg = previewImage.getPreviewImage();
+                const $previewImgWrap = previewImage.getPreviewImageWrap();
                 const $editableImg = editableImage.getImage();
-                const imgSrc = $editableImg.attr('src');
-                const imgStyle = $editableImg.attr('style');
+                const $editableWrap = editableArea.getEditableImageWrapper();
 
-                $previewImg.attr('src', imgSrc);
-                $previewImg.attr('style', imgStyle);
+                $previewImg.attr('src', $editableImg.attr('src'));
+                $previewImg.attr('style', $editableImg.attr('style'));
+
+                $previewImgWrap.attr('style', $editableWrap.attr('style'));
             }
 
             const $previewImageArea = previewImage.getPreviewImageArea();
@@ -116,15 +118,15 @@ define(
         }
 
         function zoom(delta) {
-            const $previewImage = previewImage.getPreviewImage();
+            const $previewArea = previewImage.getPreviewImageArea();
 
             if (!delta) {
-                $previewImage.css('zoom', 1);
+                $previewArea.css('zoom', 1);
                 return;
             }
 
-            const currentZoom = +$previewImage.css('zoom');
-            $previewImage.css('zoom', currentZoom + delta);
+            const currentZoom = +$previewArea.css('zoom');
+            $previewArea.css('zoom', currentZoom + delta);
         }
 
         function zoomPlus() {

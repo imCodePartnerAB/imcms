@@ -7,10 +7,10 @@ define(
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
-        'imcms-image-resize'
+        'imcms-image-resize', 'imcms-editable-area'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize) {
+              bodyHeadBuilder, imageResize, editableArea) {
 
         const imageDataContainers = {};
         const imageData = {};
@@ -44,13 +44,44 @@ define(
             if (!imageData.path) return;
 
             editableImage.setImageSource(imageData.path);
+            editableImage.getImage().hide();
 
             setTimeout(function () { // to let image src load
                 const style = $tag.data('style');
                 const resultStyleObj = {};
 
-                imageResize.setWidth(imageData.width);
-                imageResize.setHeight(imageData.height);
+                const cropRegion = imageData.cropRegion;
+
+                if (cropRegion
+                    && (cropRegion.cropX1 >= 0)
+                    && (cropRegion.cropX2 >= 1)
+                    && (cropRegion.cropY1 >= 0)
+                    && (cropRegion.cropY2 >= 1))
+                {
+                    const $imageWrapper = editableArea.getEditableImageWrapper();
+                    const $image = editableImage.getImage();
+
+                    const width = cropRegion.cropX2 - cropRegion.cropX1;
+                    const height = cropRegion.cropY2 - cropRegion.cropY1;
+
+                    $imageWrapper.css({
+                        width: width,
+                        height: height,
+                    });
+
+                    $image.css({
+                        left: -cropRegion.cropX1 + 'px',
+                        top: -cropRegion.cropY1 + 'px',
+                    });
+
+                    imageResize.setWidth(width);
+                    imageResize.setHeight(height);
+                }
+
+                setTimeout(() => {
+                    imageResize.setWidth(imageData.width);
+                    imageResize.setHeight(imageData.height);
+                });
 
                 // disabled because not finished
                 // if (style) {
@@ -85,6 +116,7 @@ define(
                 // }
 
                 imageRotate.rotateImage(imageData.rotateDirection);
+                editableImage.getImage().show();
 
             }, 200);
         }

@@ -104,6 +104,10 @@
     padding: 6px 15px;
 }
 
+.imcms-editable-img-area__img {
+    overflow: hidden;
+}
+
 @media screen and (max-width: 790px) {
     .imcms-image_editor__image-characteristics {
         padding: 0 20px;

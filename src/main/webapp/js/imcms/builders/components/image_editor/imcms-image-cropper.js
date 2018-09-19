@@ -219,6 +219,7 @@ function init(_imageData) {
 
     angleBorderSize = angles.getBorderSize();
     doubleAngleBorderSize = angles.getDoubleBorderSize();
+
     imageCoords = cropArea.getImage().offset();
     imageCoords.top -= angleBorderSize;
     imageCoords.left -= angleBorderSize;
@@ -226,9 +227,6 @@ function init(_imageData) {
     const original = imageResize.getOriginal();
     const originImageWidth = original.width;
     const originImageHeight = original.height;
-
-    const cropCoefficientX = imageData.width / originImageWidth;
-    const cropCoefficientY = imageData.height / originImageHeight;
 
     if (!originImageWidth || !originImageHeight) {
         return;
@@ -247,14 +245,10 @@ function init(_imageData) {
     } else {
         if (cropRegion.cropX1 < 0) {
             cropRegion.cropX1 = 0;
-        } else {
-            cropRegion.cropX1 /= cropCoefficientX;
         }
 
         if (cropRegion.cropY1 < 0) {
             cropRegion.cropY1 = 0;
-        } else {
-            cropRegion.cropY1 /= cropCoefficientY;
         }
 
         if (cropRegion.cropX2 < 0) {
@@ -263,9 +257,6 @@ function init(_imageData) {
         if (cropRegion.cropY2 < 0) {
             cropRegion.cropY2 = $croppingArea.height();
         }
-
-        cropRegion.cropX2 /= cropCoefficientX;
-        cropRegion.cropY2 /= cropCoefficientY;
     }
 
     croppingAreaParams = {
@@ -284,11 +275,6 @@ function init(_imageData) {
         cropRegion.cropY1 + editableAreaBorderSize,
         cropRegion.cropX1 + editableAreaBorderSize,
     );
-
-    cropRegion.cropX1 *= cropCoefficientX;
-    cropRegion.cropY1 *= cropCoefficientY;
-    cropRegion.cropX2 *= cropCoefficientX;
-    cropRegion.cropY2 *= cropCoefficientY;
 
     angles.showAll();
 
@@ -385,14 +371,6 @@ function init(_imageData) {
             moveCropArea(newTop, newLeft);
             setCroppingAnglesTopLeft(newTop, newLeft);
         }
-
-        const cropAreaLeft = cropArea.getCroppingArea().getLeft() - 2;
-        const cropAreaTop = cropArea.getCroppingArea().getTop() - 2;
-
-        cropRegion.cropX1 = cropCoefficientX * (cropAreaLeft);
-        cropRegion.cropY1 = cropCoefficientY * (cropAreaTop);
-        cropRegion.cropX2 = cropCoefficientX * (cropAreaLeft + cropArea.getCroppingArea().width());
-        cropRegion.cropY2 = cropCoefficientY * (cropAreaTop + cropArea.getCroppingArea().height());
     });
 
     $imageEditor.on("dragstart", () => false);
@@ -414,8 +392,6 @@ function destroy() {
     if (!imageData) {
         return;
     }
-
-    moveCropArea(0, 0);
 
     [
         cropArea.getCroppingImage(),

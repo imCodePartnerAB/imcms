@@ -4,15 +4,20 @@
  */
 const BEM = require('imcms-bem-builder');
 const editableImage = require('imcms-editable-image');
+const $ = require('jquery');
 
 let $editableImageArea;
+let $editableImageWrapper;
 
 module.exports = {
-    getEditableImageArea: () => {
+    getEditableImageWrapper() {
+        return $editableImageWrapper || ($editableImageWrapper = $('<div>', {html: editableImage.getImage()}))
+    },
+    getEditableImageArea() {
         return $editableImageArea || ($editableImageArea = new BEM({
             block: "imcms-editable-img-area",
             elements: {
-                "img": editableImage.getImage(),
+                "img": this.getEditableImageWrapper(),
             }
         }).buildBlockStructure('<div>'));
     },

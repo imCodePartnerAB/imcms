@@ -35,5 +35,6 @@ function getPreviewImageArea() {
 
 module.exports = {
     getPreviewImage: getPreviewImage,
+    getPreviewImageWrap: getPreviewImageContainer,
     getPreviewImageArea: getPreviewImageArea,
 };
