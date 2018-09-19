@@ -22,6 +22,13 @@ define(
             });
         }
 
+        function buildWarningButton(callback) {
+            return components.buttons.warningButton({
+                text: texts.ok,
+                click: callback
+            });
+        }
+
         function buildFooter(onConfirmed, onDeclined) {
             var $yesButton = buildYesButton(onConfirmed);
             var $noButton = buildNoButton(onDeclined);
@@ -30,6 +37,17 @@ define(
                 block: "imcms-modal-footer",
                 elements: {
                     "button": [$yesButton, $noButton]
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildWarningFooter(onConfirmed) {
+            var $warningButton = buildWarningButton(onConfirmed);
+
+            return new BEM({
+                block: "imcms-modal-footer",
+                elements: {
+                    "button": [$warningButton]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -67,10 +85,26 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function createModalWarningWindow(message, onConfirmed) {
+            return new BEM({
+                block: "imcms-modal-window",
+                elements: {
+                    "modal-head": buildHead(),
+                    "modal-body": buildBody(message),
+                    "modal-footer": buildWarningFooter(onConfirmed)
+                }
+            }).buildBlockStructure("<div>", {"class": "imcms-modal-window--warning"},);
+        }
+
         var ModalWindow = function (question, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
+        };
+
+        var ModalWarningWindow = function (message, callback) {
+            this.onConfirmed = this.confirmAction(callback);
+            this.$modal = createModalWarningWindow(message, this.onConfirmed);
         };
 
         ModalWindow.prototype = {
@@ -102,8 +136,24 @@ define(
             }
         };
 
+        ModalWarningWindow.prototype = Object.create(ModalWindow.prototype);
+        ModalWarningWindow.prototype.confirmAction = function (callback) {
+            var context = this;
+            return function () {
+                callback();
+                context.closeModal();
+                return false;
+            }
+        };
+
         function buildModalWindow(question, callback) {
             return new ModalWindow(question, callback)
+                .addShadow()
+                .appendTo($("body"));
+        }
+
+        function buildWarningWindow(message, callback) {
+            return new ModalWarningWindow(message, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
@@ -138,6 +188,9 @@ define(
                 });
 
                 modalWindow.$modal.find('.imcms-modal-body').append($checkbox);
+            },
+            buildWarningWidow: function (message, callback) {
+                buildWarningWindow(message, callback)
             }
         };
     }
