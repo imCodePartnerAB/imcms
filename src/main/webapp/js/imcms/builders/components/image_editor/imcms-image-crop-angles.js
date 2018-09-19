@@ -7,8 +7,10 @@ const Limit = require('imcms-numeric-limiter');
 const cropArea = require('imcms-cropping-area');
 const Angle = require('imcms-cropping-angle');
 
+const editableAreaBorderWidth = cropArea.getEditableAreaBorderWidth();
+
 function getValidTopAngleY(top) {
-    return new Limit().setMin(0)
+    return new Limit().setMin(editableAreaBorderWidth - _this.getBorderSize())
         .setMax(
             cropArea.getCroppingArea().getTop()
             + cropArea.getCroppingArea().getCurrentHeight()
@@ -20,12 +22,12 @@ function getValidTopAngleY(top) {
 
 function getValidBottomAngleY(top) {
     return new Limit().setMin(cropArea.getCroppingArea().getTop() + _this.getHeight())
-        .setMax(cropArea.getImage().getCurrentHeight() - _this.getHeight() + _this.getBorderSize())
+        .setMax(cropArea.getImage().getCurrentHeight() - _this.getHeight() + editableAreaBorderWidth)
         .forValue(top);
 }
 
 function getValidLeftAngleX(left) {
-    return new Limit().setMin(0)
+    return new Limit().setMin(editableAreaBorderWidth - _this.getBorderSize())
         .setMax(
             cropArea.getCroppingArea().getLeft()
             + cropArea.getCroppingArea().getCurrentWidth()
@@ -37,7 +39,7 @@ function getValidLeftAngleX(left) {
 
 function getValidRightAngleX(left) {
     return new Limit().setMin(cropArea.getCroppingArea().getLeft() + _this.getWidth())
-        .setMax(cropArea.getImage().getCurrentWidth() - _this.getWidth() + _this.getBorderSize())
+        .setMax(cropArea.getImage().getCurrentWidth() - _this.getWidth() + editableAreaBorderWidth)
         .forValue(left);
 }
 

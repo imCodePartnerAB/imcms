@@ -8,6 +8,9 @@ const events = require('imcms-events');
 
 let isImageProportionsInverted = false;
 
+const editableAreaBorderWidth = 35;
+const editableAreaDoubleBorderWidth = editableAreaBorderWidth * 2;
+
 function getCurrentWidth($element) {
     return (isImageProportionsInverted) ? $element.height() : $element.width();
 }
@@ -104,25 +107,40 @@ function buildCroppingArea() {
 }
 
 function getCroppingArea() {
-    return $croppingArea || ($croppingArea = setPositionListeners(setFunctionality(buildCroppingArea())))
+    return $croppingArea || ($croppingArea = setPositionListeners(setFunctionality(buildCroppingArea()), 'crop area position changed'))
 }
 
 function getCroppingImage() {
     return $cropImage || ($cropImage = setFunctionality($("<img>")))
 }
 
-function buildImage() {
-    return setFunctionality($("<img>", {"class": "imcms-editable-img"}));
+function onImageLoad() {
+    const $img = $(this);
+    const shadowLayout = getShadowLayout();
+
+    setTimeout(() => {
+        const width = $img.width();
+        const height = $img.height();
+        const wholeWidth = width + editableAreaDoubleBorderWidth;
+        const wholeHeight = height + editableAreaDoubleBorderWidth;
+
+        shadowLayout.css({
+            width: wholeWidth,
+            height: wholeHeight,
+        });
+        $croppingWrap.css({
+            width: width,
+            height: height,
+            border: '' + editableAreaBorderWidth + 'px solid gray',
+        });
+    });
 }
 
 function getImage() {
-    return $image || ($image = buildImage())
-}
-
-let $originalImageBackground;
-
-function getOriginalImageBackground() {
-    return $originalImageBackground || ($originalImageBackground = $('<img>', {'class': 'imcms-editable-img'}))
+    return $image || ($image = setFunctionality($("<img>", {
+        "class": "imcms-editable-img",
+        load: onImageLoad,
+    })))
 }
 
 let $shadowLayout;
@@ -131,13 +149,15 @@ function getShadowLayout() {
     return $shadowLayout || ($shadowLayout = $('<div>'))
 }
 
+let $croppingWrap;
+
 function buildCroppingBlock() {
     const angles = require('imcms-image-crop-angles');
 
-    return new BEM({
-        block: 'image-cropping-block',
+    $croppingWrap = new BEM({
+        block: 'image-cropping-wrap',
         elements: [
-            {img: getOriginalImageBackground()},
+            {img: getImage()},
             {layout: getShadowLayout()},
             {'crop-area': getCroppingArea()},
             {angle: angles.topLeft.buildAngle()},
@@ -145,10 +165,17 @@ function buildCroppingBlock() {
             {angle: angles.bottomRight.buildAngle()},
             {angle: angles.bottomLeft.buildAngle()},
         ]
-    }).buildBlockStructure('<div>')
+    }).buildBlockStructure('<div>');
+
+    return $('<div>', {
+        'class': 'image-cropping-block',
+        html: $croppingWrap,
+    })
 }
 
 module.exports = {
+    getEditableAreaBorderWidth: () => editableAreaBorderWidth,
+    getEditableAreaDoubleBorderWidth: () => editableAreaDoubleBorderWidth,
     getImage: getImage,
     getCroppingImage: getCroppingImage,
     getCroppingArea: getCroppingArea,

@@ -309,7 +309,10 @@ define(
                     getCancelChangesButton(),
                     getApplyChangesButton(),
                 )
-                .onCancel(cropper.destroyImageCropper)
+                .onCancel(() => {
+                    cropper.destroyImageCropper();
+
+                })
                 .onApply(() => {
                     // todo: apply changes
                     cropper.destroyImageCropper();
@@ -337,8 +340,8 @@ define(
                         getShowImageRotationControls(),
                         getRotateLeftButton(),
                         getRotateRightButton(),
-                        getRevertButton(),
                         getCroppingButton(),
+                        getRevertButton(),
                     ]
                 }
             }).buildBlockStructure("<div>");
