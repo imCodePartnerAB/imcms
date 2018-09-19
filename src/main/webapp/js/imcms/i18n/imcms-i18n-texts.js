@@ -171,7 +171,8 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 doNotShowAgain: "Visa inte igen",
                 title: "Bekräfta",
                 yes: "Ja",
-                no: "Nej"
+                no: "Nej",
+                ok: "Ok"
             },
             editors: {
                 document: {
@@ -569,7 +570,8 @@ define("imcms-i18n-texts", ["imcms"], function (imcms) {
                 doNotShowAgain: "Do not show again",
                 title: "Confirm",
                 yes: "Yes",
-                no: "No"
+                no: "No",
+                ok: "Ok"
             },
             editors: {
                 document: {
