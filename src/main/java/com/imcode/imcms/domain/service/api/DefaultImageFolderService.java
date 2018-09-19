@@ -18,11 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional
@@ -84,21 +87,18 @@ class DefaultImageFolderService implements ImageFolderService {
     }
 
     @Override
-    public boolean canBeDeleted(ImageFolderDTO checkMe) {
+    public boolean canBeDeleted(ImageFolderDTO checkMe) throws IOException {
         final String imageFolderRelativePath = checkMe.getPath();
         final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
-
         if (!folderToDelete.exists() || !folderToDelete.isDirectory()) {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
         }
 
-        File[] files = Optional.ofNullable(
-                folderToDelete.listFiles(
-                        file -> file.isFile() && Format.isImage(FilenameUtils.getExtension(file.getName()))
-                )
-        ).orElse(new File[0]);
+        List<Path> foundFilesPath = Files.walk(folderToDelete.toPath())
+                .filter(s -> Files.isRegularFile(s) && Format.isImage(FilenameUtils.getExtension(s.getFileName().toString())))
+                .collect(toList());
 
-        if (files.length > 0) {
+        if (!foundFilesPath.isEmpty()) {
             throw new DirectoryNotEmptyException("Folder with path " + imageFolderRelativePath + " not empty!");
         }
 

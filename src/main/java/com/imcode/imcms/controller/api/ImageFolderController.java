@@ -35,7 +35,7 @@ public class ImageFolderController {
 
     @PostMapping("/can-delete")
     @CheckAccess
-    public boolean canBeDeleted(@RequestBody ImageFolderDTO folderToCheck) {
+    public boolean canBeDeleted(@RequestBody ImageFolderDTO folderToCheck) throws IOException {
         return imageFolderService.canBeDeleted(folderToCheck);
     }
 
