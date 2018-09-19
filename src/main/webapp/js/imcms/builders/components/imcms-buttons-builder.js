@@ -20,6 +20,7 @@ define("imcms-buttons-builder", ["imcms-bem-builder"], function (bemBuilder) {
         negative: getButtonBuilder("negative"),
         positive: getButtonBuilder("positive"),
         neutral: getButtonBuilder("neutral"),
+        warning: getButtonBuilder("warning"),
         save: getButtonBuilder("save"),
         close: getButtonBuilder("close"),
         increment: getButtonBuilder("increment"),
@@ -43,6 +44,9 @@ define("imcms-buttons-builder", ["imcms-bem-builder"], function (bemBuilder) {
         },
         neutralButton: function (attributes) {
             return this.neutral("<button>", attributes);
+        },
+        warningButton: function (attributes) {
+            return this.warning("<button>", attributes);
         },
         saveButton: function (attributes) {
             return this.save("<button>", attributes);

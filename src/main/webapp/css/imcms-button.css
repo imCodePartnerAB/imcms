@@ -63,6 +63,17 @@
     color: #2f4047;
 }
 
+.imcms-button--warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #fff;
+}
+
+.imcms-button--warning:hover {
+    background-color: transparent;
+    color: #d39e00;
+}
+
 .imcms-button--neutral,
 a[class^="imcms"].imcms-button--neutral {
     background-color: transparent;
