@@ -279,10 +279,6 @@ public class ImageFileServiceTest {
             imageIntermediate.setName(testImageFileName);
             imageIntermediate.setLinkUrl(File.separator + testImageFileName);
 
-            final ImageDTO imageDTOIntermediate = imageToImageDTO.apply(imageIntermediate);
-
-            imageService.saveImage(imageDTOIntermediate);
-
             imageFileService.deleteImage(imageFileDTO);
 
             assertFalse(testImageFile.exists());
