@@ -1,8 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
@@ -10,7 +12,9 @@ import com.imcode.imcms.domain.exception.ImageReferenceException;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
@@ -56,11 +60,14 @@ public class ImageFileServiceTest {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
+
     @Value("classpath:img1.jpg")
     private File testImageFile;
 
     @Value("${ImagePath}")
     private File imagesPath;
+    @Autowired
+    private CommonContentDataInitializer commonContentDataInitializer;
 
     @Test
     public void saveNewImageFiles_When_FolderIsNotSet_Expect_CorrectResultSize() throws IOException {
@@ -223,9 +230,9 @@ public class ImageFileServiceTest {
             testImageFile.createNewFile();
             assertTrue(testImageFile.exists());
 
-            final int tempDocId = documentDataInitializer.createData().getId();
+            final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
 
-            final Version latestVersion = versionService.getLatestVersion(1001);
+            final Version latestVersion = versionService.getDocumentWorkingVersion(1001);
             final Version workingVersion = versionService.getLatestVersion(tempDocId);
 
             final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
