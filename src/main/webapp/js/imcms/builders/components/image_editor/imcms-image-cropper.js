@@ -199,6 +199,9 @@ const resizeCropper = {
 };
 
 function init(_imageData) {
+
+    if (!_imageData || !_imageData.path) return;
+
     cropArea.getCroppingBlock().css("z-index", "50");
 
     const $image = editableImage.getImage();
@@ -228,12 +231,10 @@ function init(_imageData) {
     const originImageWidth = original.width;
     const originImageHeight = original.height;
 
-    if (!originImageWidth || !originImageHeight) {
-        return;
-    }
+    if (!originImageWidth || !originImageHeight) return;
 
     const $croppingArea = cropArea.getCroppingArea();
-    let cropRegion = $.extend({}, imageData.cropRegion);
+    let cropRegion = imageData.cropRegion && {...imageData.cropRegion};
 
     if (cropRegion) {
         if (cropRegion.cropX1 < 0) cropRegion.cropX1 = 0;
@@ -379,9 +380,7 @@ function removeCroppingListeners() {
 function destroy() {
     cropArea.getCroppingBlock().css("z-index", "10");
 
-    if (!imageData) {
-        return;
-    }
+    if (!imageData) return;
 
     [
         cropArea.getCroppingImage(),
@@ -492,8 +491,11 @@ module.exports = {
     setCropY: setCropY,
     setCropY1: setCropY1,
     applyCropping() {
+
+        if (!imageData || !imageData.path) return;
+
         const $croppingArea = cropArea.getCroppingArea();
-        const cropRegion = imageData.cropRegion;
+        const cropRegion = imageData.cropRegion || {};
         const croppedWidth = $croppingArea.getCurrentWidth();
         const croppedHeight = $croppingArea.getCurrentHeight();
 

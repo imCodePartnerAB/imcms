@@ -7,10 +7,10 @@ define(
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
-        'imcms-image-resize', 'imcms-editable-area'
+        'imcms-image-resize'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editableArea) {
+              bodyHeadBuilder, imageResize) {
 
         const imageDataContainers = {};
         const imageData = {};
@@ -63,10 +63,14 @@ define(
 
                     imageResize.setWidthStrict(cropRegion.cropX1, width);
                     imageResize.setHeightStrict(cropRegion.cropY1, height);
-                }
 
-                imageResize.setWidth(imageData.width);
-                imageResize.setHeight(imageData.height);
+                    imageResize.setWidth(imageData.width);
+                    imageResize.setHeight(imageData.height);
+
+                } else {
+                    imageResize.setWidthStrict(0, imageData.width);
+                    imageResize.setHeightStrict(0, imageData.height);
+                }
 
                 // disabled because not finished
                 // if (style) {
@@ -108,9 +112,7 @@ define(
 
         function fillData(image) {
 
-            if (!image) {
-                return;
-            }
+            if (!image) return;
 
             bodyHeadBuilder.showOriginalImageArea();
 
@@ -122,9 +124,7 @@ define(
 
             $.extend(imageData, image);
 
-            if (imageData.inText) {
-                $tag.attr("data-index", imageData.index);
-            }
+            if (imageData.inText) $tag.attr("data-index", imageData.index);
 
             imageEditorFactory.updateImageData($tag, imageData);
 

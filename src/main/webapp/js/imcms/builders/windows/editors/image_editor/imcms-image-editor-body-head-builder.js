@@ -175,6 +175,12 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function wrapWithNoOpIfNoImageYet(wrapMe) {
+            return function () {
+                if (imageData && imageData.path) wrapMe.apply(this, arguments)
+            }
+        }
+
         function onCancel() {
             ToolbarViewBuilder.getCurrentToolbarView().cancelChanges();
         }
@@ -265,7 +271,7 @@ define(
         function getZoomPlusButton() {
             return $zoomPlusButton || ($zoomPlusButton = components.buttons.zoomPlusButton({
                 title: texts.buttons.zoomIn,
-                click: zoomPlus,
+                click: wrapWithNoOpIfNoImageYet(zoomPlus),
                 style: 'display: none;',
             }))
         }
@@ -275,7 +281,7 @@ define(
         function getZoomMinusButton() {
             return $zoomMinusButton || ($zoomMinusButton = components.buttons.zoomMinusButton({
                 title: texts.buttons.zoomOut,
-                click: zoomMinus,
+                click: wrapWithNoOpIfNoImageYet(zoomMinus),
                 style: 'display: none;',
             }))
         }
@@ -286,7 +292,7 @@ define(
             return $zoomResetButton || ($zoomResetButton = components.buttons.zoomResetButton({
                 title: texts.buttons.zoomReset,
                 style: 'display: none;',
-                click: zoomFit,
+                click: wrapWithNoOpIfNoImageYet(zoomFit),
             }))
         }
 
@@ -295,7 +301,7 @@ define(
         function getRotateLeftButton() {
             return $rotateLeftButton || ($rotateLeftButton = components.buttons.rotateLeftButton({
                 title: texts.buttons.rotateLeft,
-                click: imageRotate.rotateLeft,
+                click: wrapWithNoOpIfNoImageYet(imageRotate.rotateLeft),
                 style: 'display: none;',
             }))
         }
@@ -305,7 +311,7 @@ define(
         function getRotateRightButton() {
             return $rotateRightButton || ($rotateRightButton = components.buttons.rotateRightButton({
                 title: texts.buttons.rotateRight,
-                click: imageRotate.rotateRight,
+                click: wrapWithNoOpIfNoImageYet(imageRotate.rotateRight),
                 style: 'display: none;',
             }))
         }
@@ -315,7 +321,7 @@ define(
         function getRevertButton() {
             return $revertButton || ($revertButton = components.buttons.revertButton({
                 title: texts.buttons.revert,
-                click: revertImageChanges,
+                click: wrapWithNoOpIfNoImageYet(revertImageChanges),
             }))
         }
 
