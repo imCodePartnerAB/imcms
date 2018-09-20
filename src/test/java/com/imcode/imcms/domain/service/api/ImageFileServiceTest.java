@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageDTO;
@@ -52,6 +53,8 @@ public class ImageFileServiceTest {
     private VersionService versionService;
     @Autowired
     private ImageDataInitializer imageDataInitializer;
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
 
     @Value("classpath:img1.jpg")
     private File testImageFile;
@@ -207,6 +210,47 @@ public class ImageFileServiceTest {
             assertTrue(testImageFile.delete());
         }
     }
+
+    @Test(expected = ImageReferenceException.class)
+    public void deleteImage_When_ImageUsedAtWorkingDocumentAndPublishedDocument_Expect_CorrectException() throws IOException {
+        final String testImageFileName = "test.png";
+        final File testImageFile = new File(imagesPath, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            testImageFile.createNewFile();
+            assertTrue(testImageFile.exists());
+
+            final int tempDocId = documentDataInitializer.createData().getId();
+
+            final Version latestVersion = versionService.getLatestVersion(1001);
+            final Version workingVersion = versionService.getLatestVersion(tempDocId);
+
+            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
+            final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
+
+            imageLatest.setName(testImageFileName);
+            imageLatest.setLinkUrl(File.separator + testImageFileName);
+
+            imageWorking.setName(testImageFileName);
+            imageWorking.setLinkUrl(File.separator + testImageFileName);
+
+            final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
+            final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
+
+            imageService.saveImage(imageDTOLatest);
+            imageService.saveImage(imageDTOWorking);
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertTrue(testImageFile.exists());
+
+        } finally {
+            assertTrue(testImageFile.delete());
+        }
+    }
+
 
     @Test
     public void deleteImage_When_ImageNotUsedAtAnyLatestAndWorkingDocument_Expect_TrueAndFileDeleted() throws IOException {
