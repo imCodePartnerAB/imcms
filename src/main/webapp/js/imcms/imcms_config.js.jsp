@@ -28,9 +28,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
             name: "${currentDocument.language.name}",
             nativeName: "${currentDocument.language.nativeName}",
             code: "${empty currentDocument.language.code ? userLanguage : currentDocument.language.code}"
-        },
-        browserInfo: {
-            isIE10: (window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0)
         }
     };
 

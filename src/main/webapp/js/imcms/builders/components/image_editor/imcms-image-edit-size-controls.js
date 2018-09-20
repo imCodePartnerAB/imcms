@@ -69,24 +69,33 @@ function getWidthControl() {
     return $widthControl ? $widthControl : buildWidthControl()
 }
 
-function buildEditSizeControls() {
+let $proportionsBtn;
 
-    const $title = components.texts.titleText("<div>", texts.displaySize);
-    const $proportionsBtn = components.buttons.proportionsButton({
+function getProportionsButton() {
+    return $proportionsBtn || ($proportionsBtn = components.buttons.proportionsButton({
         "data-state": "active",
         title: texts.proportionsButtonTitle,
         click: function () {
             let saveProportions = imageResize.toggleSaveProportions();
             $(this).attr("data-state", saveProportions ? "active" : "passive");
         }
-    });
+    }))
+}
+
+let $title;
+
+function getTitle() {
+    return $title || ($title = components.texts.titleText("<div>", texts.displaySize))
+}
+
+function buildEditSizeControls() {
 
     return new BEM({
         block: "imcms-edit-size",
         elements: [
-            {"title": $title},
+            {"title": getTitle()},
             {"number": getWidthControl()},
-            {"button": $proportionsBtn},
+            {"button": getProportionsButton()},
             {"number": getHeightControl()}
         ]
     }).buildBlockStructure("<div>");
@@ -102,6 +111,8 @@ module.exports = {
     setHeight: (newHeight) => getHeightControl().getInput().val(newHeight),
 
     setWidth: (newWidth) => getWidthControl().getInput().val(newWidth),
+
+    getProportionsButton: getProportionsButton,
 
     getEditSizeControls: () => $sizeControls || ($sizeControls = buildEditSizeControls()),
 };

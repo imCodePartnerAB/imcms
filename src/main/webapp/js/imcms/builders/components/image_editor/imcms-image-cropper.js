@@ -202,7 +202,7 @@ function init(_imageData) {
     cropArea.getCroppingBlock().css("z-index", "50");
 
     const $image = editableImage.getImage();
-    const src = $image.attr('src');
+    const src = $image.attr('data-src');
 
     cropArea.getCroppingArea().css({
         top: editableAreaBorderSize,
@@ -504,11 +504,16 @@ module.exports = {
     applyCropping() {
         const $croppingArea = cropArea.getCroppingArea();
         const cropRegion = imageData.cropRegion;
+        const croppedWidth = $croppingArea.getCurrentWidth();
+        const croppedHeight = $croppingArea.getCurrentHeight();
 
         cropRegion.cropX1 = $croppingArea.getLeft() - editableAreaBorderSize;
         cropRegion.cropY1 = $croppingArea.getTop() - editableAreaBorderSize;
-        cropRegion.cropX2 = $croppingArea.getCurrentWidth() + cropRegion.cropX1;
-        cropRegion.cropY2 = $croppingArea.getCurrentHeight() + cropRegion.cropY1;
+        cropRegion.cropX2 = croppedWidth + cropRegion.cropX1;
+        cropRegion.cropY2 = croppedHeight + cropRegion.cropY1;
+
+        imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth);
+        imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight);
     },
     destroyImageCropper: destroy
 };

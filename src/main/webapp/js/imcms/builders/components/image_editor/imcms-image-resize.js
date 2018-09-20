@@ -5,40 +5,37 @@
 const originImageHeightBlock = require('imcms-origin-image-height-block');
 const originImageWidthBlock = require('imcms-origin-image-width-block');
 const editableImage = require('imcms-editable-image');
-const editArea = require('imcms-editable-area');
 
 let saveProportions = true; // by default
 const original = {};
 
 function setWidth(newWidth) {
     const $image = editableImage.getImage();
-    const $imageWrapper = editArea.getEditableImageWrapper();
-    const oldWidth = $imageWrapper.width();
+    const oldWidth = $image.width();
     const k = newWidth / oldWidth;
 
-    const newImageLeft = k * $image.position().left;
-    const newImageWidth = k * $image.width();
+    const newImageLeft = k * editableImage.getBackgroundPositionX();
+    const newImageBackgroundWidth = k * editableImage.getBackgroundWidth();
 
-    if (newImageLeft) $image.css('left', newImageLeft);
-    if (newImageWidth) $image.width(newImageWidth);
+    $image.width(newWidth);
+    editableImage.setBackgroundWidth(newImageBackgroundWidth);
+    editableImage.setBackgroundPositionX(newImageLeft);
 
-    $imageWrapper.width(newWidth);
     $widthControl.val(newWidth);
 }
 
 function setHeight(newHeight) {
     const $image = editableImage.getImage();
-    const $imageWrapper = editArea.getEditableImageWrapper();
-    const oldHeight = $imageWrapper.height();
+    const oldHeight = $image.height();
     const k = newHeight / oldHeight;
 
-    const newImageTop = k * $image.position().top;
-    const newImageHeight = k * $image.height();
+    const newImageTop = k * editableImage.getBackgroundPositionY();
+    const newImageBackgroundHeight = k * editableImage.getBackgroundHeight();
 
-    if (newImageTop) $image.css('top', newImageTop);
-    if (newImageHeight) $image.height(newImageHeight);
+    $image.height(newHeight);
+    editableImage.setBackgroundHeight(newImageBackgroundHeight);
+    editableImage.setBackgroundPositionY(newImageTop);
 
-    $imageWrapper.height(newHeight);
     $heightControl.val(newHeight);
 }
 
@@ -61,8 +58,8 @@ module.exports = {
     },
     getOriginal: () => original,
     setOriginal: (originalWidth, originalHeight) => {
-        originImageHeightBlock.setOriginalHeight(originalHeight);
-        originImageWidthBlock.setOriginalWidth(originalWidth);
+        originImageHeightBlock.setValue(originalHeight);
+        originImageWidthBlock.setValue(originalWidth);
 
         original.width = originalWidth;
         original.height = originalHeight;
@@ -71,11 +68,35 @@ module.exports = {
 
     setHeightControl: ($control) => $heightControl = $control,
 
+    isSaveProportionsEnabled: () => saveProportions,
+
     toggleSaveProportions: () => (saveProportions = !saveProportions),
 
     setHeight: setHeight,
 
     setWidth: setWidth,
+
+    setWidthStrict(padding, newWidth) {
+        const originWidth = originImageWidthBlock.getValue();
+
+        editableImage.setBackgroundWidth(originWidth);
+        editableImage.getImage().width(newWidth);
+
+        if (padding >= 0) editableImage.setBackgroundPositionX(-padding);
+
+        $widthControl.val(newWidth);
+    },
+
+    setHeightStrict(padding, newHeight) {
+        const originHeight = originImageHeightBlock.getValue();
+
+        editableImage.setBackgroundHeight(originHeight);
+        editableImage.getImage().height(newHeight);
+
+        if (padding >= 0) editableImage.setBackgroundPositionY(-padding);
+
+        $heightControl.val(newHeight);
+    },
 
     setHeightProportionally: (newHeight) => {
         // todo: add checking for (max-)width from page
@@ -87,7 +108,7 @@ module.exports = {
         setWidth(newWidth);
         saveProportions && updateHeightProportionally(newWidth);
     },
-    getWidth: () => editArea.getEditableImageWrapper().width(),
+    getWidth: () => editableImage.getImage().width(),
 
-    getHeight: () => editArea.getEditableImageWrapper().height(),
+    getHeight: () => editableImage.getImage().height(),
 };

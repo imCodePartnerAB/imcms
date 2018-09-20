@@ -6,10 +6,10 @@ define(
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
         "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
-        'imcms-toolbar-view-builder', 'imcms-image-cropper', 'imcms-editable-area'
+        'imcms-toolbar-view-builder', 'imcms-image-cropper'
     ],
     function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImage,
-              ToolbarViewBuilder, cropper, editableArea) {
+              ToolbarViewBuilder, cropper) {
 
         texts = texts.editors.image;
 
@@ -30,14 +30,10 @@ define(
 
             function initPreviewImageArea() {
                 const $previewImg = previewImage.getPreviewImage();
-                const $previewImgWrap = previewImage.getPreviewImageWrap();
                 const $editableImg = editableImage.getImage();
-                const $editableWrap = editableArea.getEditableImageWrapper();
 
                 $previewImg.attr('src', $editableImg.attr('src'));
                 $previewImg.attr('style', $editableImg.attr('style'));
-
-                $previewImgWrap.attr('style', $editableWrap.attr('style'));
             }
 
             const $previewImageArea = previewImage.getPreviewImageArea();
@@ -97,7 +93,7 @@ define(
                 block: "imcms-img-origin-size",
                 elements: {
                     "height-title": components.texts.titleText("<span>", "H:"),
-                    "height-value": originImageHeightBlock.getOriginalHeightContainer(),
+                    "height-value": originImageHeightBlock.getContainer(),
                 }
             }).buildBlockStructure("<div>");
 
@@ -105,7 +101,7 @@ define(
                 block: "imcms-img-origin-size",
                 elements: {
                     "width-title": components.texts.titleText("<span>", "W:"),
-                    "width-value": originImageWidthBlock.getOriginalWidthContainer(),
+                    "width-value": originImageWidthBlock.getContainer(),
                 }
             }).buildBlockStructure("<div>");
 
@@ -235,6 +231,29 @@ define(
             }))
         }
 
+        let $proportionsButtonCopy;
+
+        function getProportionsButtonCopy() {
+            return $proportionsButtonCopy || (
+                $proportionsButtonCopy = imageEditSizeControls.getProportionsButton()
+                    .click(() => {
+                        setTimeout(() => {
+                            let saveProportions = imageResize.isSaveProportionsEnabled();
+                            $proportionsButtonCopy.attr("data-state", saveProportions ? "active" : "passive");
+                        })
+                    })
+                    .clone(true, true)
+                    .hide()
+                    .click(() => {
+                        setTimeout(() => {
+                            let saveProportions = imageResize.isSaveProportionsEnabled();
+                            imageEditSizeControls.getProportionsButton()
+                                .attr("data-state", saveProportions ? "active" : "passive");
+                        })
+                    })
+            )
+        }
+
         let $zoomPlusButton;
 
         function getZoomPlusButton() {
@@ -309,6 +328,7 @@ define(
                 )
                 .show(
                     getCancelChangesButton(),
+                    getProportionsButtonCopy(),
                     getApplyChangesButton(),
                 )
                 .onCancel(cropper.destroyImageCropper)
@@ -333,6 +353,7 @@ define(
                 block: "imcms-edit-image",
                 elements: {
                     "button": [
+                        getProportionsButtonCopy(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getZoomResetButton(),

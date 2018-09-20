@@ -12,4 +12,8 @@ module.exports = class Container {
     setValue(value) {
         this.getContainer().text(value)
     }
+
+    getValue() {
+        return this.getContainer().text()
+    }
 };

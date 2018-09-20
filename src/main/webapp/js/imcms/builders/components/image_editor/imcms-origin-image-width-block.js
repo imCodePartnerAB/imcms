@@ -4,9 +4,4 @@
  */
 const Container = require('imcms-title-text-builder');
 
-const widthContainer = new Container();
-
-module.exports = {
-    getOriginalWidthContainer: () => widthContainer.getContainer(),
-    setOriginalWidth: (newWidth) => widthContainer.setValue(newWidth),
-};
+module.exports = new Container();

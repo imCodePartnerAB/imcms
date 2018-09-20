@@ -34,7 +34,7 @@ define(
 
             const $imgUrl = bodyHeadBuilder.getImageUrl();
             $imgUrl.text(titleText);
-            $imgUrl.attr('href', '/images' + (imageData.path.startsWith('/') ? '' : '/') + imageData.path);
+            $imgUrl.attr('href', `/images${(imageData.path.startsWith('/') ? '' : '/') + imageData.path}`);
             $imgUrl.attr('target', '_blank');
             $imgUrl.attr('data-path', imageData.path);
             $imgUrl.attr("title", imageData.path);
@@ -43,8 +43,8 @@ define(
         function fillLeftSideData(imageData) {
             if (!imageData.path) return;
 
-            editableImage.setImageSource(imageData.path);
             editableImage.getImage().hide();
+            editableImage.setImageSource(imageData.path);
 
             setTimeout(function () { // to let image src load
                 const style = $tag.data('style');
@@ -58,30 +58,15 @@ define(
                     && (cropRegion.cropY1 >= 0)
                     && (cropRegion.cropY2 >= 1))
                 {
-                    const $imageWrapper = editableArea.getEditableImageWrapper();
-                    const $image = editableImage.getImage();
-
                     const width = cropRegion.cropX2 - cropRegion.cropX1;
                     const height = cropRegion.cropY2 - cropRegion.cropY1;
 
-                    $imageWrapper.css({
-                        width: width,
-                        height: height,
-                    });
-
-                    $image.css({
-                        left: -cropRegion.cropX1 + 'px',
-                        top: -cropRegion.cropY1 + 'px',
-                    });
-
-                    imageResize.setWidth(width);
-                    imageResize.setHeight(height);
+                    imageResize.setWidthStrict(cropRegion.cropX1, width);
+                    imageResize.setHeightStrict(cropRegion.cropY1, height);
                 }
 
-                setTimeout(() => {
-                    imageResize.setWidth(imageData.width);
-                    imageResize.setHeight(imageData.height);
-                });
+                imageResize.setWidth(imageData.width);
+                imageResize.setHeight(imageData.height);
 
                 // disabled because not finished
                 // if (style) {

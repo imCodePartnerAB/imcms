@@ -4,9 +4,4 @@
  */
 const Container = require('imcms-title-text-builder');
 
-const heightContainer = new Container();
-
-module.exports = {
-    getOriginalHeightContainer: () => heightContainer.getContainer(),
-    setOriginalHeight: (newHeight) => heightContainer.setValue(newHeight),
-};
+module.exports = new Container();
