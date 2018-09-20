@@ -18,20 +18,20 @@ module.exports = { // all stuff reassigned for code highlight/completion purpose
     isVersioningAllowed: Imcms.isVersioningAllowed,
     isAdmin: Imcms.isAdmin,
     editOptions: {
-        isEditDocInfo: Imcms.isEditDocInfo,
-        isEditContent: Imcms.isEditContent,
+        isEditDocInfo: Imcms.editOptions.isEditDocInfo,
+        isEditContent: Imcms.editOptions.isEditContent,
     },
     document: {
-        id: Imcms.id,
-        type: Imcms.type,
-        hasNewerVersion: Imcms.hasNewerVersion,
-        headline: Imcms.headline,
-        alias: Imcms.alias,
+        id: Imcms.document.id,
+        type: Imcms.document.type,
+        hasNewerVersion: Imcms.document.hasNewerVersion,
+        headline: Imcms.document.headline,
+        alias: Imcms.document.alias,
     },
     language: {
-        name: Imcms.name,
-        nativeName: Imcms.nativeName,
-        code: Imcms.code,
+        name: Imcms.language.name,
+        nativeName: Imcms.language.nativeName,
+        code: Imcms.language.code,
     },
     browserInfo: {
         isIE10: (window.navigator.userAgent.indexOf("Mozilla/5.0 (compatible; MSIE 10.0;") === 0)
