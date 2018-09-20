@@ -1,10 +1,19 @@
 package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.exception.ImageReferenceException;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.document.NoPermissionToEditDocumentException;
@@ -13,6 +22,7 @@ import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -24,6 +34,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Function;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -31,6 +42,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Transactional
 public class ImageFileControllerTest extends AbstractControllerTest {
+
+    @Autowired
+    Function<Image, ImageDTO> imageToImageDTO;
+    @Autowired
+    private ImageService imageService;
+    @Autowired
+    private VersionService versionService;
+    @Autowired
+    private ImageDataInitializer imageDataInitializer;
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
 
     @Value("classpath:img1.jpg")
     private File testImageFile;
@@ -219,6 +241,65 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
         assertTrue(imageFile.exists());
         assertTrue(FileUtility.forceDelete(imageFile));
+    }
+
+
+    @Test
+    public void deleteImage_When_PublishedOrWorkingDocumentImageReferencesImageExpect_CorrectExceptionAndImageNotDeleted() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final String originalFilename = "img1-test.jpg";
+        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
+        final String folderName = File.separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
+
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", folderName);
+
+        assertFalse(imageFile.exists());
+        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+        assertTrue(imageFile.exists());
+
+
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(folderName + File.separator + originalFilename);
+
+
+        assertTrue(imageFile.exists());
+
+        final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+
+        final Version latestVersion = versionService.getDocumentWorkingVersion(1001);
+        final Version workingVersion = versionService.getLatestVersion(tempDocId);
+
+        final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
+        final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
+
+        imageLatest.setName(originalFilename);
+        imageLatest.setLinkUrl(File.separator + originalFilename);
+
+        imageWorking.setName(originalFilename);
+        imageWorking.setLinkUrl(File.separator + originalFilename);
+
+        final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
+        final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
+
+        imageService.saveImage(imageDTOLatest);
+        imageService.saveImage(imageDTOWorking);
+
+        final MockHttpServletRequestBuilder requestLatestBuilder = delete(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(imageDTOLatest));
+
+        final MockHttpServletRequestBuilder requestWorkingBuilder = delete(controllerPath())
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(imageDTOWorking));
+
+        performRequestBuilderExpectException(ImageReferenceException.class, requestLatestBuilder);
+        performRequestBuilderExpectException(ImageReferenceException.class, requestWorkingBuilder);
+        assertTrue(imageFile.exists());
+        assertTrue(FileUtility.forceDelete(imageFile));
+
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
