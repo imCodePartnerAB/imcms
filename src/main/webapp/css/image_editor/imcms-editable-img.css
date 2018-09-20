@@ -41,7 +41,6 @@
 }
 
 .imcms-preview-img-container {
-    overflow: hidden;
     position: absolute;
     z-index: 10003;
 }

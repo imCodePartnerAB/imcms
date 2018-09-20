@@ -52,9 +52,9 @@ function updateHeightProportionally(newWidth) {
 let $heightControl, $widthControl;
 
 module.exports = {
-    resetToOriginal: () => {
-        setHeight(original.height);
-        setWidth(original.width);
+    resetToOriginal() {
+        this.setHeightStrict(0, original.height);
+        this.setWidthStrict(0, original.width);
     },
     getOriginal: () => original,
     setOriginal: (originalWidth, originalHeight) => {

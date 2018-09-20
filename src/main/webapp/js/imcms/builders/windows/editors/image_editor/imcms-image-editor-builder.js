@@ -115,13 +115,8 @@ define(
             bodyHeadBuilder.showOriginalImageArea();
 
             // direct reassign because $.extend skip 'undefined' but it's needed!
-            imageData.cropRegion = {//image.cropRegion;
-                cropX1: 0,
-                cropX2: 0,
-                cropY1: 0,
-                cropY2: 0,
-            };
-            // imageData.align = image.align;
+            imageData.cropRegion = image.cropRegion;
+            imageData.align = image.align;
             imageData.rotateDirection = image.rotateDirection;
             imageData.rotateAngle = image.rotateAngle;
 

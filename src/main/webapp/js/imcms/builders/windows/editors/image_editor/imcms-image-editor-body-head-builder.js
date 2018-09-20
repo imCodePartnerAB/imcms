@@ -140,6 +140,12 @@ define(
         function revertImageChanges() {
             imageRotate.rotateImage("NORTH");
             imageResize.resetToOriginal();
+            imageData.cropRegion = {
+                cropX1: -1,
+                cropX2: -1,
+                cropY1: -1,
+                cropY2: -1,
+            };
         }
 
         let $switchViewControls;

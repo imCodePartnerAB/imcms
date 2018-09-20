@@ -235,28 +235,18 @@ function init(_imageData) {
     const $croppingArea = cropArea.getCroppingArea();
     let cropRegion = $.extend({}, imageData.cropRegion);
 
-    if (!cropRegion) {
+    if (cropRegion) {
+        if (cropRegion.cropX1 < 0) cropRegion.cropX1 = 0;
+        if (cropRegion.cropY1 < 0) cropRegion.cropY1 = 0;
+        if (cropRegion.cropX2 < 0) cropRegion.cropX2 = originImageWidth;
+        if (cropRegion.cropY2 < 0) cropRegion.cropY2 = originImageHeight;
+    } else {
         cropRegion = {
             cropX1: 0,
             cropY1: 0,
-            cropX2: $croppingArea.width(),
-            cropY2: $croppingArea.height()
+            cropX2: originImageWidth,
+            cropY2: originImageHeight
         };
-    } else {
-        if (cropRegion.cropX1 < 0) {
-            cropRegion.cropX1 = 0;
-        }
-
-        if (cropRegion.cropY1 < 0) {
-            cropRegion.cropY1 = 0;
-        }
-
-        if (cropRegion.cropX2 < 0) {
-            cropRegion.cropX2 = $croppingArea.width();
-        }
-        if (cropRegion.cropY2 < 0) {
-            cropRegion.cropY2 = $croppingArea.height();
-        }
     }
 
     croppingAreaParams = {
