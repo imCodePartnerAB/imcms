@@ -260,6 +260,40 @@ public class ImageFileServiceTest {
 
 
     @Test
+    public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_CorrectException() throws IOException {
+        final String testImageFileName = "test.png";
+        final File testImageFile = new File(imagesPath, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            testImageFile.createNewFile();
+            assertTrue(testImageFile.exists());
+
+            final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+            final Version intermediateVersion = versionService.create(tempDocId, 1);
+            versionService.create(tempDocId, 1);
+            final Image imageIntermediate = imageDataInitializer.createData(1, intermediateVersion);
+
+            imageIntermediate.setName(testImageFileName);
+            imageIntermediate.setLinkUrl(File.separator + testImageFileName);
+
+            final ImageDTO imageDTOIntermediate = imageToImageDTO.apply(imageIntermediate);
+
+            imageService.saveImage(imageDTOIntermediate);
+
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertFalse(testImageFile.exists());
+
+        } finally {
+            assertTrue(testImageFile.delete());
+        }
+    }
+
+
+    @Test
     public void deleteImage_When_ImageNotUsedAtAnyLatestAndWorkingDocument_Expect_TrueAndFileDeleted() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
