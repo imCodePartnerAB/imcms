@@ -1,9 +1,16 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.exception.ImageReferenceException;
 import com.imcode.imcms.domain.service.ImageFileService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -24,6 +31,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import static java.io.File.separator;
 import static org.junit.Assert.*;
@@ -35,7 +43,15 @@ import static org.junit.Assert.*;
 public class ImageFileServiceTest {
 
     @Autowired
+    Function<Image, ImageDTO> imageToImageDTO;
+    @Autowired
     private ImageFileService imageFileService;
+    @Autowired
+    private ImageService imageService;
+    @Autowired
+    private VersionService versionService;
+    @Autowired
+    private ImageDataInitializer imageDataInitializer;
 
     @Value("classpath:img1.jpg")
     private File testImageFile;
@@ -127,6 +143,91 @@ public class ImageFileServiceTest {
 
         assertFalse(nonExistingImageFile.exists());
         imageFileService.deleteImage(imageFileDTO); // exception expected here
+    }
+
+
+    @Test(expected = ImageReferenceException.class)
+    public void deleteImage_When_ImageUsedAtWorkingSingleDocument_Expect_CorrectException() throws IOException {
+        final String testImageFileName = "test.png";
+        final File testImageFile = new File(imagesPath, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            testImageFile.createNewFile();
+            assertTrue(testImageFile.exists());
+
+            final Version workingVersion = versionService.getDocumentWorkingVersion(1001);
+
+            final Image image = imageDataInitializer.createData(1, workingVersion);
+
+            image.setName(testImageFileName);
+            image.setLinkUrl(File.separator + testImageFileName);
+
+            final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+            imageService.saveImage(imageDTO);
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertTrue(testImageFile.exists());
+
+        } finally {
+            assertTrue(testImageFile.delete());
+        }
+    }
+
+    @Test(expected = ImageReferenceException.class)
+    public void deleteImage_When_ImageUsedAtLatestSingleDocument_Expect_CorrectException() throws IOException {
+        final String testImageFileName = "test.png";
+        final File testImageFile = new File(imagesPath, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            testImageFile.createNewFile();
+            assertTrue(testImageFile.exists());
+
+            final Version latestVersion = versionService.getLatestVersion(1001);
+
+            final Image image = imageDataInitializer.createData(1, latestVersion);
+
+            image.setName(testImageFileName);
+            image.setLinkUrl(File.separator + testImageFileName);
+
+            final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+            imageService.saveImage(imageDTO);
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertTrue(testImageFile.exists());
+
+        } finally {
+            assertTrue(testImageFile.delete());
+        }
+    }
+
+    @Test
+    public void deleteImage_When_ImageNotUsedAtAnyLatestAndWorkingDocument_Expect_TrueAndFileDeleted() throws IOException {
+        final String testImageFileName = "test.png";
+        final File testImageFile = new File(imagesPath, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            testImageFile.createNewFile();
+            assertTrue(testImageFile.exists());
+
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertFalse(testImageFile.exists());
+        } finally {
+            if (testImageFile.exists()) {
+                testImageFile.delete();
+            }
+        }
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
