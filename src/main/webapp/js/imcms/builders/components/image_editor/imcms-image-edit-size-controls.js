@@ -104,6 +104,10 @@ function buildEditSizeControls() {
 let $sizeControls;
 
 module.exports = {
+    getWidthControl: getWidthControl,
+
+    getHeightControl: getHeightControl,
+
     swapControls: (isInverted) => {
         $widthControl.find('label').text((isInverted) ? heightLabelText : widthLabelText);
         $heightControl.find('label').text((isInverted) ? widthLabelText : heightLabelText);

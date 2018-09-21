@@ -7,10 +7,10 @@ define(
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
-        'imcms-image-resize'
+        'imcms-image-resize', 'imcms-image-edit-size-controls'
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize) {
+              bodyHeadBuilder, imageResize, editSizeControls) {
 
         const imageDataContainers = {};
         const imageData = {};
@@ -44,11 +44,52 @@ define(
             if (!imageData.path) return;
 
             editableImage.getImage().hide();
-            editableImage.setImageSource(imageData.path);
 
-            setTimeout(function () { // to let image src load
+            editableImage.setImageSource(imageData.path, () => {
                 const style = $tag.data('style');
                 const resultStyleObj = {};
+
+                if (style) {
+                    style.split(';')
+                        .map(x => x.trim())
+                        .filter(x => !!x)
+                        .forEach(x => {
+                            const styleKeyAndValue = x.split(':').map(x => x.trim());
+                            resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
+                        });
+
+                    let maxWidth = resultStyleObj['max-width'];
+
+                    if (maxWidth && !isNaN(maxWidth = parseInt(maxWidth, 10))) {
+                        imageData.width = Math.min(imageData.width, maxWidth);
+                        imageResize.setMaxWidth(maxWidth);
+                    }
+
+                    let maxHeight = resultStyleObj['max-height'];
+
+                    if (maxHeight && !isNaN(maxHeight = parseInt(maxHeight, 10))) {
+                        imageData.height = Math.min(imageData.height, maxHeight);
+                        imageResize.setMaxHeight(maxHeight);
+                    }
+
+                    let width = resultStyleObj.width;
+
+                    if (width && !isNaN(width = parseInt(width, 10))) {
+                        imageData.width = width;
+                        imageResize.setMaxWidth(width);
+                        imageResize.setMinWidth(width);
+                        editSizeControls.getWidthControl().getInput().attr('disabled', 'disabled');
+                    }
+
+                    let height = resultStyleObj.height;
+
+                    if (height && !isNaN(height = parseInt(height, 10))) {
+                        imageData.height = height;
+                        imageResize.setMaxHeight(height);
+                        imageResize.setMinHeight(height);
+                        editSizeControls.getHeightControl().getInput().attr('disabled', 'disabled');
+                    }
+                }
 
                 const cropRegion = imageData.cropRegion;
 
@@ -68,46 +109,17 @@ define(
                     imageResize.setHeight(imageData.height);
 
                 } else {
-                    imageResize.setWidthStrict(0, imageData.width);
-                    imageResize.setHeightStrict(0, imageData.height);
-                }
+                    const original = imageResize.getOriginal();
+                    imageResize.setWidthStrict(0, original.width);
+                    imageResize.setHeightStrict(0, original.height);
 
-                // disabled because not finished
-                // if (style) {
-                //     style.split(';')
-                //         .map(x => x.trim())
-                //         .filter(x => !!x)
-                //         .forEach(x => {
-                //             const styleKeyAndValue = x.split(':').map(x => x.trim());
-                //             resultStyleObj[styleKeyAndValue[0]] = styleKeyAndValue[1];
-                //         });
-                //
-                //     cropElements.$image.css(resultStyleObj);
-                //
-                //     if (resultStyleObj.width) {
-                //         imageData.width = parseInt(resultStyleObj.width);
-                //         const $input = imageDataContainers.$widthControlInput.getInput();
-                //         $input.val(imageData.width);
-                //         $input.attr('disabled', 'disabled');
-                //     }
-                //     if (resultStyleObj.height) {
-                //         imageData.height = parseInt(resultStyleObj.height);
-                //         const $input = imageDataContainers.$heightControlInput.getInput();
-                //         $input.val(imageData.height);
-                //         $input.attr('disabled', 'disabled');
-                //     }
-                //     if (resultStyleObj['max-width']) {
-                //         imageData.width = Math.max(imageData.width, parseInt(resultStyleObj['max-width']))
-                //     }
-                //     if (resultStyleObj['max-height']) {
-                //         imageData.height = Math.max(imageData.height, parseInt(resultStyleObj['max-height']))
-                //     }
-                // }
+                    imageResize.setWidthProportionally(imageData.width);
+                    imageResize.setHeightProportionally(imageData.height);
+                }
 
                 imageRotate.rotateImage(imageData.rotateDirection);
                 editableImage.getImage().show();
-
-            }, 200);
+            });
         }
 
         function fillData(image) {
@@ -116,7 +128,6 @@ define(
 
             bodyHeadBuilder.showOriginalImageArea();
 
-            // direct reassign because $.extend skip 'undefined' but it's needed!
             imageData.cropRegion = image.cropRegion;
             imageData.align = image.align;
             imageData.rotateDirection = image.rotateDirection;
@@ -166,8 +177,12 @@ define(
 
         function clearData() {
             editableImage.clearData();
+            imageResize.clearData();
             events.trigger("enable text editor blur");
             imageRotate.destroy();
+
+            editSizeControls.getWidthControl().getInput().removeAttr('disabled').val('');
+            editSizeControls.getHeightControl().getInput().removeAttr('disabled').val('');
         }
 
         var imageWindowBuilder = new WindowBuilder({
@@ -189,7 +204,7 @@ define(
             },
             build: function (opts) {
                 events.trigger("disable text editor blur");
-                imageWindowBuilder.buildWindow.applyAsync(arguments, imageWindowBuilder);
+                imageWindowBuilder.buildWindow.apply(imageWindowBuilder, arguments);
             }
         };
     }

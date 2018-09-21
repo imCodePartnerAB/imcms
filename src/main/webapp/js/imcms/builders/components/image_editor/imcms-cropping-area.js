@@ -175,7 +175,6 @@ function buildCroppingBlock() {
 
 module.exports = {
     getEditableAreaBorderWidth: () => editableAreaBorderWidth,
-    getEditableAreaDoubleBorderWidth: () => editableAreaDoubleBorderWidth,
     getImage: getImage,
     getCroppingImage: getCroppingImage,
     getCroppingArea: getCroppingArea,

@@ -9,6 +9,22 @@ const editableImage = require('imcms-editable-image');
 let saveProportions = true; // by default
 const original = {};
 
+let maxWidth, maxHeight, minWidth, minHeight;
+
+function trimToMaxMinWidth(newWidth) {
+    if (maxWidth) newWidth = Math.min(newWidth, maxWidth);
+    if (minWidth) newWidth = Math.max(newWidth, minWidth);
+
+    return newWidth;
+}
+
+function trimToMaxMinHeight(newHeight) {
+    if (maxHeight) newHeight = Math.min(newHeight, maxHeight);
+    if (minHeight) newHeight = Math.max(newHeight, minHeight);
+
+    return newHeight;
+}
+
 function setWidth(newWidth) {
     const $image = editableImage.getImage();
     const oldWidth = $image.width();
@@ -39,14 +55,34 @@ function setHeight(newHeight) {
     $heightControl.val(newHeight);
 }
 
+function setHeightProportionally(newHeight) {
+    newHeight = trimToMaxMinHeight(newHeight);
+    setHeight(newHeight);
+    saveProportions && updateWidthProportionally(newHeight);
+}
+
+function setWidthProportionally(newWidth) {
+    newWidth = trimToMaxMinWidth(newWidth);
+    setWidth(newWidth);
+    saveProportions && updateHeightProportionally(newWidth);
+}
+
 function updateWidthProportionally(newHeight) {
     const proportionalWidth = ~~((newHeight * original.width) / original.height);
-    setWidth(proportionalWidth);
+    const fixedWidth = trimToMaxMinWidth(proportionalWidth);
+
+    (fixedWidth === proportionalWidth)
+        ? setWidth(proportionalWidth)
+        : setWidthProportionally(proportionalWidth); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
 function updateHeightProportionally(newWidth) {
     const proportionalHeight = ~~((newWidth * original.height) / original.width);
-    setHeight(proportionalHeight);
+    const fixedHeight = trimToMaxMinHeight(proportionalHeight);
+
+    (fixedHeight === proportionalHeight)
+        ? setHeight(proportionalHeight)
+        : setHeightProportionally(proportionalHeight); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
 }
 
 let $heightControl, $widthControl;
@@ -55,31 +91,44 @@ module.exports = {
     resetToOriginal() {
         this.setHeightStrict(0, original.height);
         this.setWidthStrict(0, original.width);
+
+        this.updateSizing();
     },
     getOriginal: () => original,
-    setOriginal: (originalWidth, originalHeight) => {
+    setOriginal(originalWidth, originalHeight) {
         originImageHeightBlock.setValue(originalHeight);
         originImageWidthBlock.setValue(originalWidth);
 
         original.width = originalWidth;
         original.height = originalHeight;
     },
-    setWidthControl: ($control) => $widthControl = $control,
+    setWidthControl($control) {
+        $widthControl = $control
+    },
 
-    setHeightControl: ($control) => $heightControl = $control,
+    setHeightControl($control) {
+        $heightControl = $control
+    },
 
     isSaveProportionsEnabled: () => saveProportions,
 
     toggleSaveProportions: () => (saveProportions = !saveProportions),
 
-    setHeight: setHeight,
+    setHeight(newValue) {
+        setHeight(trimToMaxMinHeight(newValue));
+    },
 
-    setWidth: setWidth,
+    setWidth(newValue) {
+        setWidth(trimToMaxMinWidth(newValue));
+    },
 
+    /**
+     * Setting without any proportions or min/max checking
+     * @param padding for cropped images
+     * @param newWidth
+     */
     setWidthStrict(padding, newWidth) {
-        const originWidth = originImageWidthBlock.getValue();
-
-        editableImage.setBackgroundWidth(originWidth);
+        editableImage.setBackgroundWidth(original.width);
         editableImage.getImage().width(newWidth);
 
         if (padding >= 0) editableImage.setBackgroundPositionX(-padding);
@@ -87,10 +136,13 @@ module.exports = {
         $widthControl.val(newWidth);
     },
 
+    /**
+     * Setting without any proportions or min/max checking
+     * @param padding for cropped images
+     * @param newHeight
+     */
     setHeightStrict(padding, newHeight) {
-        const originHeight = originImageHeightBlock.getValue();
-
-        editableImage.setBackgroundHeight(originHeight);
+        editableImage.setBackgroundHeight(original.height);
         editableImage.getImage().height(newHeight);
 
         if (padding >= 0) editableImage.setBackgroundPositionY(-padding);
@@ -98,17 +150,43 @@ module.exports = {
         $heightControl.val(newHeight);
     },
 
-    setHeightProportionally: (newHeight) => {
-        // todo: add checking for (max-)width from page
-        setHeight(newHeight);
-        saveProportions && updateWidthProportionally(newHeight);
-    },
-    setWidthProportionally: (newWidth) => {
-        // todo: add checking for (max-)height from page
-        setWidth(newWidth);
-        saveProportions && updateHeightProportionally(newWidth);
-    },
+    setHeightProportionally: setHeightProportionally,
+
+    setWidthProportionally: setWidthProportionally,
+
     getWidth: () => editableImage.getImage().width(),
 
     getHeight: () => editableImage.getImage().height(),
+
+    setMaxWidth(maxWidthValue) {
+        maxWidth = maxWidthValue
+    },
+
+    setMaxHeight(maxHeightValue) {
+        maxHeight = maxHeightValue
+    },
+
+    setMinWidth(minWidthValue) {
+        minWidth = minWidthValue
+    },
+
+    setMinHeight(minHeightValue) {
+        minHeight = minHeightValue
+    },
+
+    /**
+     * Can be used after setting strict w/h to update all proportions and min/max restrictions
+     */
+    updateSizing() {
+        setWidthProportionally(editableImage.getImage().width());
+        setHeightProportionally(editableImage.getImage().height());
+    },
+
+    clearData() {
+        maxWidth = null;
+        maxHeight = null;
+        saveProportions = true;
+        original.width = null;
+        original.height = null;
+    },
 };

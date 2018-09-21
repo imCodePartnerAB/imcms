@@ -13,7 +13,7 @@ function getImage() {
 }
 
 module.exports = {
-    setImageSource: (path) => {
+    setImageSource: (path, onLoad) => {
         const src = imcms.contextPath + '/' + imcms.imagesPath + path;
 
         $image.attr('data-src', src);
@@ -26,6 +26,8 @@ module.exports = {
         actualImage.onload = function () {
             $image.css('background-size', `${this.width}px ${this.height}px`);
             require('imcms-image-resize').setOriginal(this.width, this.height);
+
+            onLoad && onLoad.call();
         };
     },
 

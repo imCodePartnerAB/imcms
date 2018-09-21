@@ -12,7 +12,7 @@ const imageResize = require('imcms-image-resize');
 
 const editableAreaBorderSize = cropArea.getEditableAreaBorderWidth();
 
-let $imageEditor, croppingAreaParams, angleBorderSize, doubleAngleBorderSize, imageCoords, imageData;
+let $imageEditor, croppingAreaParams, angleBorderSize, imageCoords, imageData;
 
 function moveCropImage(newTop, newLeft) {
     const cropImgTop = -newTop + editableAreaBorderSize;
@@ -221,7 +221,6 @@ function init(_imageData) {
     $imageEditor = $('.imcms-image_editor');
 
     angleBorderSize = angles.getBorderSize();
-    doubleAngleBorderSize = angles.getDoubleBorderSize();
 
     imageCoords = cropArea.getImage().offset();
     imageCoords.top -= angleBorderSize;
@@ -239,8 +238,8 @@ function init(_imageData) {
     if (cropRegion) {
         if (cropRegion.cropX1 < 0) cropRegion.cropX1 = 0;
         if (cropRegion.cropY1 < 0) cropRegion.cropY1 = 0;
-        if (cropRegion.cropX2 < 0) cropRegion.cropX2 = originImageWidth;
-        if (cropRegion.cropY2 < 0) cropRegion.cropY2 = originImageHeight;
+        if (cropRegion.cropX2 <= 1) cropRegion.cropX2 = originImageWidth;
+        if (cropRegion.cropY2 <= 1) cropRegion.cropY2 = originImageHeight;
     } else {
         cropRegion = {
             cropX1: 0,
@@ -395,6 +394,10 @@ function destroy() {
 
     removeCroppingListeners();
     angles.hideAll();
+
+    croppingAreaParams = null;
+    imageCoords = null;
+    imageData = null;
 }
 
 function setCropAreaX(newX) {
@@ -410,6 +413,8 @@ function setCropAreaX(newX) {
 }
 
 function setCropX(newX) {
+    if (!croppingAreaParams) return;
+
     angles.topLeft.setNewX(newX + editableAreaBorderSize - angleBorderSize);
     angles.bottomLeft.setNewX(newX + editableAreaBorderSize - angleBorderSize);
 
@@ -433,6 +438,8 @@ function setCropAreaX1(newX1) {
 }
 
 function setCropX1(newX1) {
+    if (!croppingAreaParams) return;
+
     angles.topRight.setNewX(newX1 - angles.getWidth() + editableAreaBorderSize);
     angles.bottomRight.setNewX(newX1 - angles.getWidth() + editableAreaBorderSize);
 
@@ -455,6 +462,8 @@ function setCropAreaY(newY) {
 }
 
 function setCropY(newY) {
+    if (!croppingAreaParams) return;
+
     angles.topRight.setNewY(newY + editableAreaBorderSize - angleBorderSize);
     angles.topLeft.setNewY(newY + editableAreaBorderSize - angleBorderSize);
 
@@ -478,6 +487,8 @@ function setCropAreaY1(newY1) {
 }
 
 function setCropY1(newY1) {
+    if (!croppingAreaParams) return;
+
     angles.bottomRight.setNewY(newY1 - angles.getWidth() + editableAreaBorderSize);
     angles.bottomLeft.setNewY(newY1 - angles.getWidth() + editableAreaBorderSize);
 
@@ -506,6 +517,8 @@ module.exports = {
 
         imageResize.setWidthStrict(cropRegion.cropX1, croppedWidth);
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight);
+
+        imageResize.updateSizing();
     },
     destroyImageCropper: destroy
 };
