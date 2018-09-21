@@ -172,7 +172,7 @@ public class ImageFileServiceTest {
             final Image image = imageDataInitializer.createData(1, workingVersion);
 
             image.setName(testImageFileName);
-            image.setLinkUrl(File.separator + testImageFileName);
+            image.setUrl(testImageFileName);
 
             final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -203,7 +203,7 @@ public class ImageFileServiceTest {
             final Image image = imageDataInitializer.createData(1, latestVersion);
 
             image.setName(testImageFileName);
-            image.setLinkUrl(File.separator + testImageFileName);
+            image.setUrl(testImageFileName);
 
             final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -239,10 +239,10 @@ public class ImageFileServiceTest {
             final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
 
             imageLatest.setName(testImageFileName);
-            imageLatest.setLinkUrl(File.separator + testImageFileName);
+            imageLatest.setUrl(testImageFileName);
 
             imageWorking.setName(testImageFileName);
-            imageWorking.setLinkUrl(File.separator + testImageFileName);
+            imageWorking.setUrl(testImageFileName);
 
             final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
             final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
