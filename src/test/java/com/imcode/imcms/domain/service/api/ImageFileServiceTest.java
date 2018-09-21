@@ -218,6 +218,39 @@ public class ImageFileServiceTest {
     }
 
     @Test(expected = ImageReferenceException.class)
+    public void deleteImage_When_ImageAtSubdirectoryUsedAtLatestSingleDocument_Expect_CorrectException() throws IOException {
+        final String testImageFileName = "test.png";
+        final String testSubDirectoryName = "subdiretory";
+        final File testSubdirectory = new File(imagesPath, testSubDirectoryName);
+        final File testImageFile = new File(testSubdirectory, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testSubDirectoryName + File.separator + testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            assertTrue(testSubdirectory.mkdir());
+            assertTrue(testImageFile.createNewFile());
+            assertTrue(testImageFile.exists());
+
+            final Version latestVersion = versionService.getLatestVersion(1001);
+            final Image image = imageDataInitializer.createData(1, latestVersion);
+
+            image.setName(testImageFileName);
+            image.setUrl(testSubDirectoryName + File.separator + testImageFileName);
+
+            final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+            imageService.saveImage(imageDTO);
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertTrue(testImageFile.exists());
+
+        } finally {
+            FileUtils.deleteDirectory(testSubdirectory);
+        }
+    }
+
+    @Test(expected = ImageReferenceException.class)
     public void deleteImage_When_ImageUsedAtWorkingDocumentAndPublishedDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
