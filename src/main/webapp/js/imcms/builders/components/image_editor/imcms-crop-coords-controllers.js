@@ -26,14 +26,6 @@ events.on('crop area position changed', function () {
     getCropCoordY().setValue(y);
     getCropCoordX1().setValue(x1);
     getCropCoordY1().setValue(y1);
-
-    // todo: move this on "apply" in cropping mode
-    // imageData.cropRegion = {
-    //     cropX1: x,
-    //     cropX2: x1,
-    //     cropY1: y,
-    //     cropY2: y1
-    // }
 });
 
 function setValidation(onValid) {
