@@ -3,5 +3,9 @@
  * 01.11.17
  */
 define("imcms-image-folders-rest-api", ["imcms-rest-api"], function (rest) {
-    return new rest.API("/images/folders");
+    const url = '/images/folders';
+    let api = new rest.API(url);
+
+    api.canDelete = rest.ajax.bind({url: url + '/can-delete', type: "POST", json: true});
+    return api;
 });

@@ -157,7 +157,13 @@ define("imcms-image-content-builder",
                 }
             };
 
-            modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
+            imageFoldersREST.canDelete({"path": path})
+                .success(function () {
+                    modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
+                })
+                .error(function () {
+                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {});
+                });
         }
 
         function buildFolderRenamingBlock(folder, level) {

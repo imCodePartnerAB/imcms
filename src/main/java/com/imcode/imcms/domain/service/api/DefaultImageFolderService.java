@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
@@ -17,10 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Transactional
@@ -82,15 +87,34 @@ class DefaultImageFolderService implements ImageFolderService {
     }
 
     @Override
-    public boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException {
-        final String imageFolderRelativePath = deleteMe.getPath();
+    public boolean canBeDeleted(ImageFolderDTO checkMe) throws IOException {
+        final String imageFolderRelativePath = checkMe.getPath();
         final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
-
         if (!folderToDelete.exists() || !folderToDelete.isDirectory()) {
             throw new FolderNotExistException("Folder with path " + imageFolderRelativePath + " not exist!");
         }
 
-        return FileUtility.forceDelete(folderToDelete);
+        List<Path> foundFilesPath = Files.walk(folderToDelete.toPath())
+                .filter(s -> Files.isRegularFile(s) && Format.isImage(FilenameUtils.getExtension(s.getFileName().toString())))
+                .collect(toList());
+
+        if (!foundFilesPath.isEmpty()) {
+            throw new DirectoryNotEmptyException("Folder with path " + imageFolderRelativePath + " not empty!");
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException {
+        if (canBeDeleted(deleteMe)) {
+            final String imageFolderRelativePath = deleteMe.getPath();
+            final File folderToDelete = new File(imagesPath, imageFolderRelativePath);
+
+            return FileUtility.forceDelete(folderToDelete);
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -95,7 +95,7 @@ public abstract class AbstractControllerTest {
             final String message = "Should be " + expectedExceptionClass.getName() + "!! Received: "
                     + exceptionClass.getName();
 
-            assertEquals(message, exceptionClass, expectedExceptionClass);
+            assertEquals(message, expectedExceptionClass, exceptionClass);
             return;
         }
 

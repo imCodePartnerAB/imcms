@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.model.Roles;
@@ -9,6 +10,7 @@ import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +23,7 @@ import java.io.File;
 
 import static java.io.File.separator;
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @Transactional
 public class ImageFolderControllerTest extends AbstractControllerTest {
@@ -43,7 +45,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImageFolder_Expect_Ok() throws Exception {
-        performRequestBuilderExpectedOk(MockMvcRequestBuilders.get(controllerPath()));
+        performRequestBuilderExpectedOk(get(controllerPath()));
     }
 
     @Test
@@ -459,6 +461,163 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         } finally {
             if (folder.exists()) assertTrue(FileUtility.forceDelete(folder));
+        }
+    }
+
+    @Test
+    public void deleteFolder_When_FolderNotEmptyAndFolderExist_Expect_DirectoryNotEmptyExceptionAndFolderNotDeleted() throws Exception {
+        final String testDirectoryName = "testDirectory";
+        final String testImageName = "test.png";
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testImage = new File(testDirectory, testImageName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testDirectoryName);
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(testDirectory.exists());
+
+        final String jsonResponse = getJsonResponse(requestBuilder);
+
+        testImage.createNewFile();
+
+        assertTrue(testImage.exists());
+
+        assertTrue(Boolean.parseBoolean(jsonResponse));
+        assertTrue(testDirectory.exists());
+        assertTrue(testDirectory.isDirectory());
+        assertTrue(testDirectory.canRead());
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            performRequestBuilderExpectException(DirectoryNotEmptyException.class, requestBuilderDelete);
+
+            assertTrue(testDirectory.exists());
+
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test
+    public void deleteFolder_When_SubFolderIsEmptyAndFolderExist_Expect_TrueDAndFolderDeleted() throws Exception {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubdirectory";
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testDirectoryName);
+        final ImageFolderDTO imageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        final MockHttpServletRequestBuilder requestBuilder0 = getPostRequestBuilderWithContent(imageFolderDTO);
+        final MockHttpServletRequestBuilder requestBuilder1 = getPostRequestBuilderWithContent(imageSubFolderDTO);
+
+        assertFalse(testSubdirectory.exists());
+
+        final String jsonResponse0 = getJsonResponse(requestBuilder0);
+        final String jsonResponse1 = getJsonResponse(requestBuilder1);
+
+        assertTrue(Boolean.parseBoolean(jsonResponse0));
+        assertTrue(Boolean.parseBoolean(jsonResponse1));
+
+        assertTrue(testDirectory.exists());
+        assertTrue(testDirectory.isDirectory());
+        assertTrue(testDirectory.canRead());
+
+        assertTrue(testSubdirectory.exists());
+        assertTrue(testSubdirectory.isDirectory());
+        assertTrue(testSubdirectory.canRead());
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilderDelete = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            final String response = getJsonResponse(requestBuilderDelete);
+
+            assertEquals(response, "true");
+            assertFalse(testDirectory.exists());
+
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test
+    public void canBeDeleted_When_FolderNotEmptyAndFolderExist_Expect_DirectoryNotEmptyException() throws Exception {
+        final String testDirectoryName = "testDirectory";
+        final String testImageName = "test.png";
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testImage = new File(testDirectory, testImageName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testDirectoryName);
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
+
+        assertFalse(testDirectory.exists());
+
+        final String jsonResponse = getJsonResponse(requestBuilder);
+
+        testImage.createNewFile();
+
+        assertTrue(testImage.exists());
+
+        assertTrue(Boolean.parseBoolean(jsonResponse));
+        assertTrue(testDirectory.exists());
+        assertTrue(testDirectory.isDirectory());
+        assertTrue(testDirectory.canRead());
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilderGet = post(controllerPath() + "/can-delete")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            performRequestBuilderExpectException(DirectoryNotEmptyException.class, requestBuilderGet);
+
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test
+    public void canBeDeleted_When_SubFolderIsEmptyFolderExist_Expect_True() throws Exception {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubdirectory";
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testDirectoryName);
+        final ImageFolderDTO imageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        final MockHttpServletRequestBuilder requestBuilder0 = getPostRequestBuilderWithContent(imageFolderDTO);
+        final MockHttpServletRequestBuilder requestBuilder1 = getPostRequestBuilderWithContent(imageSubFolderDTO);
+
+        assertFalse(testSubdirectory.exists());
+
+        final String jsonResponse0 = getJsonResponse(requestBuilder0);
+        final String jsonResponse1 = getJsonResponse(requestBuilder1);
+
+        assertTrue(Boolean.parseBoolean(jsonResponse0));
+        assertTrue(Boolean.parseBoolean(jsonResponse1));
+
+        assertTrue(testDirectory.exists());
+        assertTrue(testDirectory.isDirectory());
+        assertTrue(testDirectory.canRead());
+
+        assertTrue(testSubdirectory.exists());
+        assertTrue(testSubdirectory.isDirectory());
+        assertTrue(testSubdirectory.canRead());
+
+        try {
+            final MockHttpServletRequestBuilder requestBuilderDelete = post(controllerPath() + "/can-delete")
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFolderDTO));
+
+            final String response = getJsonResponse(requestBuilderDelete);
+
+            assertEquals(response, "true");
+
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
         }
     }
 }

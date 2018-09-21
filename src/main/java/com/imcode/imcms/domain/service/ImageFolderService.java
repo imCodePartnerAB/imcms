@@ -19,6 +19,8 @@ public interface ImageFolderService {
 
     boolean renameFolder(ImageFolderDTO renameMe);
 
+    boolean canBeDeleted(ImageFolderDTO folderToCheck) throws IOException;
+
     boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException;
 
     ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages);

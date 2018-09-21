@@ -2,11 +2,13 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
 import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +32,6 @@ import static org.junit.Assert.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {TestConfig.class})
 public class ImageFolderServiceTest {
-
-    private static final int SUB_FOLDERS_NUM = 2;
-    private static final int FILES_NUM = 2;
 
     @Autowired
     private ImageFolderService imageFolderService;
@@ -325,6 +324,225 @@ public class ImageFolderServiceTest {
 
         } finally {
             if (newFolder.exists()) assertTrue(FileUtility.forceDelete(newFolder));
+        }
+    }
+
+    @Test
+    public void deleteFolderWithEmptySubdirectory_ExpectTrue() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+
+            final boolean isRemoved = imageFolderService.deleteFolder(testImageSubFolderDTO);
+
+            assertTrue(isRemoved);
+            assertFalse(testSubdirectory.exists());
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test(expected = DirectoryNotEmptyException.class)
+    public void deleteDirectoryWithFiles_Expect_FalseAndDirectoryNotEmptyException() throws Exception {
+        final String testDirectoryName = "testDirectory";
+        final String testImageName = "test.png";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testImage = new File(testDirectory, testImageName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+
+            assertTrue(testDirectory.exists());
+
+            final boolean isTestFileCreated = testImage.createNewFile();
+            assertTrue(isTestFileCreated);
+
+            final boolean isRemoved = imageFolderService.deleteFolder(testImageFolderDTO);
+
+            assertFalse(isRemoved);
+            assertTrue(testDirectory.exists());
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test
+    public void deleteSubdirectoryWithEmptySubdirectoryTree_Expect_True() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final File testSubdirectoryLevel2 = new File(testSubdirectory, testSubdirectoryName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTOLevel2 = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName() + File.separator + testSubdirectoryLevel2.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTOLevel2);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+            assertTrue(testSubdirectoryLevel2.exists());
+
+
+            final boolean isRemoved = imageFolderService.deleteFolder(testImageSubFolderDTO);
+
+            assertTrue(isRemoved);
+            assertFalse(testSubdirectoryLevel2.exists());
+            assertFalse(testSubdirectory.exists());
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test(expected = DirectoryNotEmptyException.class)
+    public void deleteSubdirectoryWithSubdirectoryWithFiles_Expect_FalseAndDirectoryNotEmptyException() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+        final String testImageName = "test.png";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final File testImage1 = new File(testDirectory, testImageName);
+        final File testImage2 = new File(testSubdirectory, testImageName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+
+            final boolean isTestFile1Created = testImage1.createNewFile();
+            final boolean isTestFile2Created = testImage2.createNewFile();
+
+            assertTrue(isTestFile1Created);
+            assertTrue(isTestFile2Created);
+
+            final boolean isRemoved = imageFolderService.deleteFolder(testImageFolderDTO);
+
+            assertFalse(isRemoved);
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test
+    public void canDeleteSubdirectoryWithEmptySubdirectoryTree_Expect_True() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final File testSubdirectoryLevel2 = new File(testSubdirectory, testSubdirectoryName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTOLevel2 = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName() + File.separator + testSubdirectoryLevel2.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTOLevel2);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+            assertTrue(testSubdirectoryLevel2.exists());
+
+            assertTrue(imageFolderService.canBeDeleted(testImageFolderDTO));
+            assertTrue(imageFolderService.canBeDeleted(testImageSubFolderDTO));
+
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test(expected = DirectoryNotEmptyException.class)
+    public void canDeleteSubdirectoryWithSubdirectoryWithFile_Expect_FalseAndDirectoryNotEmptyException() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+        final String testImageName = "test.png";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final File testImage2 = new File(testSubdirectory, testImageName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+
+            final boolean isTestFile2Created = testImage2.createNewFile();
+
+            assertTrue(isTestFile2Created);
+
+            assertFalse(imageFolderService.canBeDeleted(testImageFolderDTO));
+            assertFalse(imageFolderService.canBeDeleted(testImageSubFolderDTO));
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
+        }
+    }
+
+    @Test(expected = DirectoryNotEmptyException.class)
+    public void canDeleteSubdirectoryWithSubdirectoryWithFilesAtAllDirectories_Expect_FalseAndDirectoryNotEmptyException() throws IOException {
+        final String testDirectoryName = "testDirectory";
+        final String testSubdirectoryName = "testSubDirectory";
+        final String testImageName = "test.png";
+
+        final File testDirectory = new File(imagesPath, testDirectoryName);
+        final File testSubdirectory = new File(testDirectory, testSubdirectoryName);
+        final File testImage1 = new File(testDirectory, testImageName);
+        final File testImage2 = new File(testSubdirectory, testImageName);
+
+        final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
+        final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(testDirectory.getName() + File.separator + testSubdirectory.getName());
+
+        try {
+            imageFolderService.createImageFolder(testImageFolderDTO);
+            imageFolderService.createImageFolder(testImageSubFolderDTO);
+
+            assertTrue(testDirectory.exists());
+            assertTrue(testSubdirectory.exists());
+
+            final boolean isTestFile1Created = testImage1.createNewFile();
+            final boolean isTestFile2Created = testImage2.createNewFile();
+
+            assertTrue(isTestFile1Created);
+            assertTrue(isTestFile2Created);
+
+            assertFalse(imageFolderService.canBeDeleted(testImageFolderDTO));
+            assertFalse(imageFolderService.canBeDeleted(testImageSubFolderDTO));
+        } finally {
+            FileUtils.deleteDirectory(testDirectory);
         }
     }
 }
