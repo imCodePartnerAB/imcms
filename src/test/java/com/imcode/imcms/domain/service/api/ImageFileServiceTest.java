@@ -60,7 +60,6 @@ public class ImageFileServiceTest {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
-
     @Value("classpath:img1.jpg")
     private File testImageFile;
 
@@ -230,11 +229,12 @@ public class ImageFileServiceTest {
             testImageFile.createNewFile();
             assertTrue(testImageFile.exists());
 
-            final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+            final int tempDocId = documentDataInitializer.createData().getId();
 
-            final Version latestVersion = versionService.getDocumentWorkingVersion(1001);
-            final Version workingVersion = versionService.getLatestVersion(tempDocId);
+            final Version workingVersion = versionService.getDocumentWorkingVersion(1001);
+            final Version latestVersion = versionService.create(tempDocId, 1);
 
+            versionService.create(tempDocId, 1);
             final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
             final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
 
@@ -260,31 +260,43 @@ public class ImageFileServiceTest {
 
 
     @Test
-    public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_CorrectException() throws IOException {
+    public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_TrueAndImageDeleted() throws IOException {
         final String testImageFileName = "test.png";
+        final String test2ImageFileName = "test2.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
+
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
+
+        final ImageFileDTO imageFile2DTO = new ImageFileDTO();
+        imageFile2DTO.setPath(test2ImageFileName);
 
         try {
             assertFalse(testImageFile.exists());
             testImageFile.createNewFile();
             assertTrue(testImageFile.exists());
 
-            final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+            final int tempDocId = documentDataInitializer.createData().getId();
             final Version intermediateVersion = versionService.create(tempDocId, 1);
-            versionService.create(tempDocId, 1);
-            final Image imageIntermediate = imageDataInitializer.createData(1, intermediateVersion);
 
+            final Image imageIntermediate = imageDataInitializer.createData(1, intermediateVersion);
             imageIntermediate.setName(testImageFileName);
             imageIntermediate.setLinkUrl(File.separator + testImageFileName);
+
+
+            final Version latestVersion = versionService.create(tempDocId, 1);
+            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
+            imageLatest.setName(test2ImageFileName);
+            imageLatest.setLinkUrl(File.separator + test2ImageFileName);
 
             imageFileService.deleteImage(imageFileDTO);
 
             assertFalse(testImageFile.exists());
 
         } finally {
-            assertTrue(testImageFile.delete());
+            if (testImageFile.exists()) {
+                testImageFile.delete();
+            }
         }
     }
 
