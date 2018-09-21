@@ -192,7 +192,7 @@ define("imcms-page-info-builder",
         return {
             build: function (docId, onDocumentSavedCallback, docType, parentDocId) {
                 onDocumentSaved = onDocumentSavedCallback;
-                pageInfoWindowBuilder.buildWindowWithShadow.applyAsync(arguments, pageInfoWindowBuilder);
+                pageInfoWindowBuilder.buildWindowWithShadow.apply(pageInfoWindowBuilder, arguments);
             }
         }
     }

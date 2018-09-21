@@ -957,7 +957,7 @@ define("imcms-document-editor-builder",
             getDocumentStatusText: getDocumentStatusText,
             refreshDocumentInList: refreshDocumentInList,
             build: function () {
-                documentWindowBuilder.buildWindow.applyAsync(arguments, documentWindowBuilder);
+                documentWindowBuilder.buildWindow.apply(documentWindowBuilder, arguments);
             }
         };
     }

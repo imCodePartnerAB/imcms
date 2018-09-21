@@ -40,9 +40,7 @@ define(
             this.dirty = false;
             this.startContent = $textEditor.val();
 
-            this.$editor.on('change keyup paste', function () {
-                this.setDirty(true);
-            }.bind(this));
+            this.$editor.on('change keyup paste', () => this.setDirty(true));
 
             focusEditorOnControlClick($textEditor);
             textEditorUtils.setEditorFocus(this);

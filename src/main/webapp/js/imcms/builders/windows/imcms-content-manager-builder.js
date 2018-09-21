@@ -167,7 +167,7 @@ define(
                 showImageStrategy = imageEditorShowImageStrategy;
                 selectedImagePath = getSelectedImagePath();
 
-                contentManagerWindowBuilder.buildWindow.applyAsync(arguments, contentManagerWindowBuilder);
+                contentManagerWindowBuilder.buildWindow.apply(contentManagerWindowBuilder, arguments);
             }
         };
     }

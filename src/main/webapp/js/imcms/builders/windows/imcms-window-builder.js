@@ -81,7 +81,7 @@ module.exports = class WindowBuilder {
                 this.$editor = this.factory.apply(null, arguments).appendTo("body");
             }
 
-            this.loadDataStrategy && this.loadDataStrategy.applyAsync(arguments);
+            this.loadDataStrategy && setTimeout(() => this.loadDataStrategy.apply(null, arguments));
             this.$editor.css("display", "block");
 
             this.disableKeyBindings || windowKeysController.registerWindow(
@@ -109,7 +109,7 @@ module.exports = class WindowBuilder {
             this.$editor && this.$editor.css("display", "none");
 
             if (this.shadowBuilder) {
-                setTimeout(this.shadowBuilder.closeWindow.bind(this.shadowBuilder, {skipScrollFix: true}));
+                setTimeout(() => this.shadowBuilder.closeWindow({skipScrollFix: true}));
             }
 
             if (this.clearDataStrategy && this.clearDataStrategy.call) {

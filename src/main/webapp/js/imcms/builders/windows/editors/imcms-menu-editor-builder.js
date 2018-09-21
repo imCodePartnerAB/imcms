@@ -732,7 +732,7 @@ define("imcms-menu-editor-builder",
 
             $documentEditor = documentEditorBuilder.buildBody();
             $documentsContainer.append($documentEditor);
-            documentEditorBuilder.loadDocumentEditorContent.applyAsync([$documentEditor, {moveEnable: true}]);
+            documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
         }
 
         function loadMenuEditorContent(opts) {
@@ -782,7 +782,7 @@ define("imcms-menu-editor-builder",
                 return this;
             },
             build: function (opts) {
-                menuWindowBuilder.buildWindow.applyAsync(arguments, menuWindowBuilder);
+                menuWindowBuilder.buildWindow.apply(menuWindowBuilder, arguments);
             }
         };
     }

@@ -241,7 +241,7 @@ define(
         return {
             build: function (onParentSelected, config) {
                 onProfileOrParentSelectedCallback = onParentSelected;
-                windowBuilder.buildWindowWithShadow.applyAsync(arguments, windowBuilder);
+                windowBuilder.buildWindowWithShadow.apply(windowBuilder, arguments);
             }
         };
     }

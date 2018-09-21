@@ -31,37 +31,6 @@ ${"<!--"}<%@ page trimDirectiveWhitespaces="true" %>${"-->"}
         }
     };
 
-    Function.prototype.bindArgs = function () {
-        return this.bind.apply(this, [null].concat(Array.prototype.slice.call(arguments)));
-    };
-    Function.prototype.applyAsync = function (args, context) {
-        setTimeout(this.apply.bind(this, context, args));
-    };
-    if (!String.prototype.endsWith) {
-        Object.defineProperty(String.prototype, 'endsWith', {
-            value: function (searchString, position) {
-                var subjectString = this.toString();
-                if (position === undefined || position > subjectString.length) {
-                    position = subjectString.length;
-                }
-                position -= searchString.length;
-                var lastIndex = subjectString.indexOf(searchString, position);
-                return lastIndex !== -1 && lastIndex === position;
-            }
-        });
-    }
-    if (!String.prototype.startsWith) {
-        Object.defineProperty(String.prototype, 'startsWith', {
-            enumerable: false,
-            configurable: false,
-            writable: false,
-            value: function (searchString, position) {
-                position = position || 0;
-                return this.indexOf(searchString, position) === position;
-            }
-        });
-    }
-
     <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
     <%--@elvariable id="isVersioningAllowed" type="boolean"--%>
     <%--@elvariable id="isEditMode" type="boolean"--%>

@@ -30,9 +30,7 @@ function handleCallback(callbackReceiver) {
 }
 
 function getNamedCallbackHandler(name) {
-    return handleCallback.bind(this, function (callback) {
-        return callback && callback[name];
-    });
+    return () => handleCallback((callback) => callback && callback[name]);
 }
 
 class KeyCallbacks {
