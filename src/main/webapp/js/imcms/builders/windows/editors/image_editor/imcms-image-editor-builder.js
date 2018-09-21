@@ -176,6 +176,7 @@ define(
         }
 
         function clearData() {
+            bodyHeadBuilder.clearData();
             editableImage.clearData();
             imageResize.clearData();
             events.trigger("enable text editor blur");

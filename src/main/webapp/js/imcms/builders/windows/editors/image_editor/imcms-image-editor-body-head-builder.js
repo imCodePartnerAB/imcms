@@ -446,6 +446,25 @@ define(
             },
             getImageUrl: () => $imgUrl,
             getImagePath: () => $imgUrl.attr('data-path'),
+
+            clearData() {
+                [
+                    getCancelChangesButton(),
+                    getProportionsButtonCopy(),
+                    getApplyChangesButton(),
+                    getRotateLeftButton(),
+                    getRotateRightButton(),
+                    getZoomPlusButton(),
+                    getZoomMinusButton(),
+                    getZoomResetButton(),
+
+                ].forEach($elem => $elem.hide());
+
+                getSwitchViewControls().show();
+
+                cropper.destroyImageCropper();
+
+            },
         }
     }
 );
