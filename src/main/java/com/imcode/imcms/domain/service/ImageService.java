@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
 
+import java.util.List;
 import java.util.Set;
 
 public interface ImageService extends VersionedContentService, DeleterByDocumentId {
@@ -13,6 +14,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
     ImageDTO getImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
 
     ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef);
+
+    List<ImageDTO> getUsedImagesInWorkingAndLatestVersions(String imageURL);
 
     void saveImage(ImageDTO imageDTO);
 

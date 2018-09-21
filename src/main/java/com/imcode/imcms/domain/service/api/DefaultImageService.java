@@ -20,9 +20,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.*;
 
 @Transactional
 @Service("imageService")
@@ -72,6 +78,25 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     @Override
     public ImageDTO getPublicImage(int docId, int index, String langCode, LoopEntryRef loopEntryRef) {
         return getImage(docId, index, langCode, loopEntryRef, versionService::getLatestVersion);
+    }
+
+    @Override
+    public List<ImageDTO> getUsedImagesInWorkingAndLatestVersions(String imageURL) {
+        List<Image> plainImageFound = repository.findByURL(imageURL);
+
+        Map<Integer, Optional<Integer>> imageMaxVersions = plainImageFound.stream()
+                .map(Image::getVersion)
+                .filter(image -> image.getNo() > 0)
+                .collect(groupingBy(Version::getDocId,
+                        mapping(Version::getNo, maxBy(Integer::compare))));
+
+        List<Integer> latestDocIds = imageMaxVersions.keySet().stream().filter(docId -> versionService.getLatestVersion(docId).getNo() == imageMaxVersions.get(docId).get()).collect(toList());
+
+        imageMaxVersions.keySet().retainAll(latestDocIds);
+
+        return plainImageFound.stream()
+                .filter(image -> image.getVersion().getNo() == 0 || Objects.nonNull(imageMaxVersions.get(image.getVersion().getDocId())))
+                .map(imageToImageDTO).collect(Collectors.toList());
     }
 
     @Override
