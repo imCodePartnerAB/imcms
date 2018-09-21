@@ -5,45 +5,43 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 13.12.17
  */
-define("imcms-events", [], function () {
 
-    /**
-     * Event name to array of handlers
-     */
-    var eventToHandlers = {};
+/**
+ * Event name to array of handlers
+ */
+const eventToHandlers = {};
 
+/**
+ * Returns callback of event if such exists
+ * @param name event's name
+ * @returns {*|Array}
+ */
+function getEventHandlers(name) {
+    return (eventToHandlers[name] || []);
+}
+
+module.exports = {
     /**
-     * Returns callback of event if such exists
+     * Triggers event handlers by name
      * @param name event's name
-     * @returns {*|Array}
      */
-    function getEventHandlers(name) {
-        return (eventToHandlers[name] || []);
-    }
+    trigger: function (name) {
+        console.log("%c Imcms event " + name + " triggered.", "color: blue;");
 
-    return {
-        /**
-         * Triggers event handlers by name
-         * @param name event's name
-         */
-        trigger: function (name) {
-            console.log("%c Imcms event " + name + " triggered.", "color: blue;");
+        getEventHandlers(name).forEach(setTimeout);
+    },
 
-            getEventHandlers(name).forEach(setTimeout);
-        },
+    /**
+     * Set handler on event by name
+     * @param name event's name
+     * @param handler function that will be called asynchronously when event is triggered
+     */
+    on: function (name, handler) {
 
-        /**
-         * Set handler on event by name
-         * @param name event's name
-         * @param handler function that will be called asynchronously when event is triggered
-         */
-        on: function (name, handler) {
-
-            if (!eventToHandlers[name]) {
-                eventToHandlers[name] = [];
-            }
-
-            eventToHandlers[name].push(handler);
+        if (!eventToHandlers[name]) {
+            eventToHandlers[name] = [];
         }
-    };
-});
+
+        eventToHandlers[name].push(handler);
+    }
+};

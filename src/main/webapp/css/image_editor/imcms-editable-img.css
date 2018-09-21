@@ -1,10 +1,18 @@
 .imcms-editable-img-area {
+    background-color: #9b9b9b;
     display: block;
     overflow: auto;
     position: relative;
+    z-index: 15;
     width: 100%;
     height: 100%;
-    z-index: 15;
+}
+
+.image-cropping-block {
+    background-color: #9b9b9b;
+    overflow: auto;
+    position: absolute;
+    z-index: 10;
 }
 
 .imcms-editable-img {
@@ -14,14 +22,14 @@
     z-index: 20;
 }
 
-.imcms-editable-img-area__layout {
+.image-cropping-wrap__layout {
     background: rgba(37, 34, 34, .5);
     position: absolute;
     min-width: 100%;
     min-height: 100%;
+    z-index: 30;
     top: 0;
     left: 0;
-    z-index: 30;
 }
 
 .imcms-preview-img-area {
@@ -29,29 +37,27 @@
     display: none;
     overflow: auto;
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
     z-index: 10;
 }
 
 .imcms-preview-img-container {
-    overflow: hidden;
     position: absolute;
-    top: 0;
-    left: 0;
+    z-index: 10003;
+}
+
+.image-cropping-block,
+.imcms-preview-img-container,
+.imcms-preview-img-area {
     width: 100%;
     height: 100%;
-    z-index: 10003;
+    top: 0;
+    left: 0;
 }
 
 .imcms-preview-img {
     max-width: none;
     display: block;
     position: absolute;
-    top: 2px;
-    left: 2px;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;

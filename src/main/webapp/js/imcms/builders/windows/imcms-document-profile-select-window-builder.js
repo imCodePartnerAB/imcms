@@ -156,7 +156,7 @@ define(
         }
 
         function buildFooter() {
-            return windowBuilder.buildFooter([
+            return WindowBuilder.buildFooter([
                 components.buttons.positiveButton({
                     text: texts.createDocButton,
                     click: onSubmit
@@ -241,7 +241,7 @@ define(
         return {
             build: function (onParentSelected, config) {
                 onProfileOrParentSelectedCallback = onParentSelected;
-                windowBuilder.buildWindowWithShadow.applyAsync(arguments, windowBuilder);
+                windowBuilder.buildWindowWithShadow.apply(windowBuilder, arguments);
             }
         };
     }

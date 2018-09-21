@@ -15,7 +15,7 @@ define(
         texts = texts.textValidation;
 
         function buildFooter() {
-            return textValidationFailWindowBuilder.buildFooter([
+            return WindowBuilder.buildFooter([
                 components.buttons.saveButton({
                     text: texts.ok,
                     click: closeWindow
@@ -93,8 +93,8 @@ define(
         return {
             buildTextValidationFailWindow: function (validationResult) {
                 events.trigger("disable text editor blur");
-                textValidationFailWindowBuilder.buildWindowWithShadow.applyAsync(
-                    arguments, textValidationFailWindowBuilder
+                textValidationFailWindowBuilder.buildWindowWithShadow.apply(
+                    textValidationFailWindowBuilder, arguments
                 );
             }
         }

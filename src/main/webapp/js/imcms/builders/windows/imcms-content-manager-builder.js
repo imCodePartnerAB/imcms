@@ -109,7 +109,7 @@ define(
                 }
 
                 footerElements$.push($uploadNewImage);
-                return contentManagerWindowBuilder.buildFooter(footerElements$);
+                return WindowBuilder.buildFooter(footerElements$);
             }
 
             return new BEM({
@@ -162,12 +162,12 @@ define(
         var showImageStrategy;
         var selectedImagePath;
 
-        return {
+        module.exports = {
             build: function (imageEditorShowImageStrategy, getSelectedImagePath) {
                 showImageStrategy = imageEditorShowImageStrategy;
                 selectedImagePath = getSelectedImagePath();
 
-                contentManagerWindowBuilder.buildWindow.applyAsync(arguments, contentManagerWindowBuilder);
+                contentManagerWindowBuilder.buildWindow.apply(contentManagerWindowBuilder, arguments);
             }
         };
     }

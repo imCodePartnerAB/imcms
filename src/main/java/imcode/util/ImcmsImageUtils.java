@@ -17,7 +17,12 @@ import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageArchiveImageSource;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.ImagesPathRelativePathImageSource;
+import imcode.server.document.textdocument.NullImageSource;
 import imcode.util.image.Filter;
 import imcode.util.image.Format;
 import imcode.util.image.ImageOp;
@@ -37,10 +42,19 @@ import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class ImcmsImageUtils {
@@ -357,9 +371,9 @@ public class ImcmsImageUtils {
 
         final ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
-        setSize(image, operation);
         setRotateDirection(image, operation);
         setCropRegion(image, operation);
+        setSize(image, operation);
         setFormat(image.getFormat(), operation);
 
         operation.processToFile(destFile);

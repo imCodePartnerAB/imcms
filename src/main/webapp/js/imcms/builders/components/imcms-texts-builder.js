@@ -201,9 +201,8 @@ define("imcms-texts-builder",
                     {"error-msg": $error}
                 ], (attributes["class"] ? {"class": attributes["class"]} : {}));
 
-                block.getInput = function () {
-                    return $input;
-                };
+                block.getInput = () => $input;
+                block.setValue = (val) => $input.val(val);
 
                 return block;
             },

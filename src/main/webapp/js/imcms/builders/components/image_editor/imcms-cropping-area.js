@@ -1,0 +1,182 @@
+/**
+ * @author Serhii Maksymchuk from Ubrainians for imCode
+ * 17.09.18
+ */
+const BEM = require('imcms-bem-builder');
+const $ = require('jquery');
+const events = require('imcms-events');
+
+let isImageProportionsInverted = false;
+
+const editableAreaBorderWidth = 35;
+const editableAreaDoubleBorderWidth = editableAreaBorderWidth * 2;
+
+function getCurrentWidth($element) {
+    return (isImageProportionsInverted) ? $element.height() : $element.width();
+}
+
+function getCurrentHeight($element) {
+    return (isImageProportionsInverted) ? $element.width() : $element.height();
+}
+
+events.on("image proportions inverted", function () {
+    isImageProportionsInverted = true;
+});
+
+events.on("regular image proportions", function () {
+    isImageProportionsInverted = false;
+});
+
+function setFunctionality($element) {
+    $element.getCurrentWidth = function () {
+        return getCurrentWidth($element);
+    };
+
+    $element.getCurrentHeight = function () {
+        return getCurrentHeight($element);
+    };
+
+    $element.getTop = function () {
+        return parseInt($element.css("top"));
+    };
+
+    $element.getLeft = function () {
+        return parseInt($element.css("left"));
+    };
+
+    return $element;
+}
+
+function setPositionListeners($element, eventName) {
+    const oldCss = $element.css;
+    $element.css = function () {
+        const retVal = oldCss.apply($element, arguments);
+
+        if (!((arguments.length === 1) && (arguments[0].constructor === String))) {
+            events.trigger(eventName);
+        }
+
+        return retVal;
+    };
+
+    const oldHeight = $element.height;
+    $element.height = function () {
+        const retVal = oldHeight.apply($element, arguments);
+
+        if (arguments.length >= 1) {
+            events.trigger(eventName);
+        }
+
+        return retVal;
+    };
+
+    const oldWidth = $element.width;
+    $element.width = function () {
+        const retVal = oldWidth.apply($element, arguments);
+
+        if (arguments.length >= 1) {
+            events.trigger(eventName);
+        }
+
+        return retVal;
+    };
+
+    const oldAnimate = $element.animate;
+    $element.animate = function (params, duration, callback) {
+        return oldAnimate.call($element, params, duration, function () {
+            callback && callback.call();
+            events.trigger(eventName);
+        });
+    };
+
+    return $element;
+}
+
+let $croppingBlock;
+let $croppingArea;
+let $cropImage;
+let $image;
+
+function buildCroppingArea() {
+    return new BEM({
+        block: 'imcms-crop-area',
+        elements: {
+            'crop-img': getCroppingImage(),
+        }
+    }).buildBlockStructure('<div>')
+}
+
+function getCroppingArea() {
+    return $croppingArea || ($croppingArea = setPositionListeners(setFunctionality(buildCroppingArea()), 'crop area position changed'))
+}
+
+function getCroppingImage() {
+    return $cropImage || ($cropImage = setFunctionality($("<img>")))
+}
+
+function onImageLoad() {
+    const $img = $(this);
+    const shadowLayout = getShadowLayout();
+
+    setTimeout(() => {
+        const width = $img.width();
+        const height = $img.height();
+        const wholeWidth = width + editableAreaDoubleBorderWidth;
+        const wholeHeight = height + editableAreaDoubleBorderWidth;
+
+        shadowLayout.css({
+            width: wholeWidth,
+            height: wholeHeight,
+        });
+        $croppingWrap.css({
+            width: width,
+            height: height,
+            border: '' + editableAreaBorderWidth + 'px solid gray',
+        });
+    });
+}
+
+function getImage() {
+    return $image || ($image = setFunctionality($("<img>", {
+        "class": "imcms-editable-img",
+        load: onImageLoad,
+    })))
+}
+
+let $shadowLayout;
+
+function getShadowLayout() {
+    return $shadowLayout || ($shadowLayout = $('<div>'))
+}
+
+let $croppingWrap;
+
+function buildCroppingBlock() {
+    const angles = require('imcms-image-crop-angles');
+
+    $croppingWrap = new BEM({
+        block: 'image-cropping-wrap',
+        elements: [
+            {img: getImage()},
+            {layout: getShadowLayout()},
+            {'crop-area': getCroppingArea()},
+            {angle: angles.topLeft.buildAngle()},
+            {angle: angles.topRight.buildAngle()},
+            {angle: angles.bottomRight.buildAngle()},
+            {angle: angles.bottomLeft.buildAngle()},
+        ]
+    }).buildBlockStructure('<div>');
+
+    return $('<div>', {
+        'class': 'image-cropping-block',
+        html: $croppingWrap,
+    })
+}
+
+module.exports = {
+    getEditableAreaBorderWidth: () => editableAreaBorderWidth,
+    getImage: getImage,
+    getCroppingImage: getCroppingImage,
+    getCroppingArea: getCroppingArea,
+    getCroppingBlock: () => $croppingBlock || ($croppingBlock = buildCroppingBlock())
+};

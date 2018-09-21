@@ -255,7 +255,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
             $inputTime = $timePicker.find(CURRENT_TIME__INPUT__CLASS_$),
             mousewheelEvent = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
 
-        $inputTime.click(initTimePicker.bindArgs($timePicker, $inputTime))
+        $inputTime.click(() => initTimePicker($timePicker, $inputTime))
             .keydown(allowNumbersAndColons)
             .on("input", function () {
                 var $inputTime = $(this),

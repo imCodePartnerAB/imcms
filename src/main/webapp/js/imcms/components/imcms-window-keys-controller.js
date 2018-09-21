@@ -2,56 +2,53 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 15.05.18
  */
-define("imcms-window-keys-controller", ["mousetrap"], function (mousetrap) {
+const mousetrap = require('mousetrap');
 
-    var onEscKeyPressedName = 'onEscKeyPressed';
-    var onEnterKeyPressedName = 'onEnterKeyPressed';
+const onEscKeyPressedName = 'onEscKeyPressed';
+const onEnterKeyPressedName = 'onEnterKeyPressed';
 
-    function bindHotKeys() {
-        mousetrap.bind('esc', getNamedCallbackHandler(onEscKeyPressedName));
-        mousetrap.bind('enter', getNamedCallbackHandler(onEnterKeyPressedName));
-    }
+function bindHotKeys() {
+    mousetrap.bind('esc', getNamedCallbackHandler(onEscKeyPressedName));
+    mousetrap.bind('enter', getNamedCallbackHandler(onEnterKeyPressedName));
+}
 
-    function unbindHotKeys() {
-        mousetrap.reset();
-    }
+function unbindHotKeys() {
+    mousetrap.reset();
+}
 
-    function unbindIfNeeds() {
-        if (callbacks.length) return;
-        unbindHotKeys()
-    }
+function unbindIfNeeds() {
+    if (callbacks.length) return;
+    unbindHotKeys()
+}
 
-    function handleCallback(callbackReceiver) {
-        var callback = callbackReceiver(callbacks[callbacks.length - 1]);
-        unbindIfNeeds();
-        callback && callback.call && callback.call();
+function handleCallback(callbackReceiver) {
+    const callback = callbackReceiver(callbacks[callbacks.length - 1]);
+    unbindIfNeeds();
+    callback && callback.call && callback.call();
 
-        return false; // to stop bubbling
-    }
+    return false; // to stop bubbling
+}
 
-    function getNamedCallbackHandler(name) {
-        return handleCallback.bind(this, function (callback) {
-            return callback && callback[name];
-        });
-    }
+function getNamedCallbackHandler(name) {
+    return () => handleCallback((callback) => callback && callback[name]);
+}
 
-    var KeyCallbacks = function (onEscKeyPressed, onEnterKeyPressed) {
+class KeyCallbacks {
+    constructor(onEscKeyPressed, onEnterKeyPressed) {
         this[onEscKeyPressedName] = onEscKeyPressed;
         this[onEnterKeyPressedName] = onEnterKeyPressed;
-    };
+    }
+}
 
-    KeyCallbacks.prototype = {};
+const callbacks = [];
 
-    var callbacks = [];
+module.exports = {
+    unRegister: function () {
+        callbacks.pop();
+    },
+    registerWindow: function (onEscKeyPressed, onEnterKeyPressed) {
+        if (!callbacks.length) bindHotKeys();
 
-    return {
-        unRegister: function () {
-            callbacks.pop();
-        },
-        registerWindow: function (onEscKeyPressed, onEnterKeyPressed) {
-            if (!callbacks.length) bindHotKeys();
-
-            callbacks.push(new KeyCallbacks(onEscKeyPressed, onEnterKeyPressed));
-        }
-    };
-});
+        callbacks.push(new KeyCallbacks(onEscKeyPressed, onEnterKeyPressed));
+    }
+};

@@ -1,12 +1,64 @@
+const originImageHeightBlock = require('imcms-origin-image-height-block');
+const originImageWidthBlock = require('imcms-origin-image-width-block');
+
 define(
     "imcms-image-editor-body-head-builder",
     [
         "imcms-i18n-texts", "imcms-bem-builder", "imcms-components-builder", "jquery", 'imcms-image-edit-size-controls',
-        "imcms-image-rotate", "imcms-image-resize", "imcms-image-crop-angles", "imcms-image-cropping-elements"
+        "imcms-image-rotate", "imcms-image-resize", 'imcms-editable-image', 'imcms-preview-image-area',
+        'imcms-toolbar-view-builder', 'imcms-image-cropper'
     ],
-    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, croppingAngles, cropElements) {
+    function (texts, BEM, components, $, imageEditSizeControls, imageRotate, imageResize, editableImage, previewImage,
+              ToolbarViewBuilder, cropper) {
 
         texts = texts.editors.image;
+
+        const toggleImageAreaToolbarViewBuilder = new ToolbarViewBuilder()
+            .hide(
+                getShowImageRotationControls(),
+                imageEditSizeControls.getEditSizeControls(),
+                getRevertButton(),
+                getCroppingButton(),
+            )
+            .show(
+                getZoomPlusButton(),
+                getZoomMinusButton(),
+                getZoomResetButton(),
+            );
+
+        function toggleImgArea() {
+
+            function initPreviewImageArea() {
+                const $previewImg = previewImage.getPreviewImage();
+                const $editableImg = editableImage.getImage();
+
+                $previewImg.attr('src', $editableImg.attr('src'));
+                $previewImg.attr('style', $editableImg.attr('style'));
+            }
+
+            const $previewImageArea = previewImage.getPreviewImageArea();
+            const $controlTabs = $(".imcms-editable-img-control-tabs__tab");
+
+            if ($(this).data("tab") === "prev") {
+                initPreviewImageArea();
+                toggleImageAreaToolbarViewBuilder.build();
+
+                $previewImageArea.css({
+                    "z-index": "50",
+                    "display": "block"
+                });
+            } else {
+                toggleImageAreaToolbarViewBuilder.cancelChanges();
+
+                $previewImageArea.css({
+                    "z-index": "10",
+                    "display": "none"
+                });
+            }
+
+            $controlTabs.removeClass("imcms-editable-img-control-tabs__tab--active");
+            $(this).addClass("imcms-editable-img-control-tabs__tab--active");
+        }
 
         function showHidePanel(panelOpts) {
             const panelAnimationOpts = {};
@@ -36,12 +88,12 @@ define(
             });
         }
 
-        function buildHeightWidthBlock(imageDataContainers) {
+        function buildHeightWidthBlock() {
             const $heightBlock = new BEM({
                 block: "imcms-img-origin-size",
                 elements: {
                     "height-title": components.texts.titleText("<span>", "H:"),
-                    "height-value": imageDataContainers.$heightValue = components.texts.titleText("<span>")
+                    "height-value": originImageHeightBlock.getContainer(),
                 }
             }).buildBlockStructure("<div>");
 
@@ -49,7 +101,7 @@ define(
                 block: "imcms-img-origin-size",
                 elements: {
                     "width-title": components.texts.titleText("<span>", "W:"),
-                    "width-value": imageDataContainers.$widthValue = components.texts.titleText("<span>")
+                    "width-value": originImageWidthBlock.getContainer(),
                 }
             }).buildBlockStructure("<div>");
 
@@ -61,234 +113,273 @@ define(
             }).buildBlockStructure("<div>", {text: "Orig "});
         }
 
-        function resizeImage(opts) {
-            imageResize.resize(opts, opts.imageDataContainers, opts.isProportionsInverted);
-            opts.imageDataContainers.$heightControlInput.getInput().val(opts.image.height);
-            opts.imageDataContainers.$widthControlInput.getInput().val(opts.image.width);
-        }
+        function zoom(delta) {
+            const $previewArea = previewImage.getPreviewImageArea();
 
-        function zoom(zoomCoefficient, imageDataContainers) {
-            const newHeight = ~~(cropElements.$image.height() * zoomCoefficient);
-            const newWidth = ~~(cropElements.$image.width() * zoomCoefficient);
-            const newCropAreaHeight = ~~(cropElements.$cropArea.height() * zoomCoefficient);
-            const newCropAreaWeight = ~~(cropElements.$cropArea.width() * zoomCoefficient);
-            let newCropAreaLeft = ~~(cropElements.$cropArea.position().left * zoomCoefficient);
-            let newCropAreaTop = ~~(cropElements.$cropArea.position().top * zoomCoefficient);
-            const borderSize = croppingAngles.getBorderSize();
-
-            if (newCropAreaLeft <= borderSize) {
-                newCropAreaLeft = borderSize;
+            if (!delta) {
+                $previewArea.css('zoom', 1);
+                return;
             }
 
-            if (newCropAreaTop <= borderSize) {
-                newCropAreaTop = borderSize;
-            }
-
-            resizeImage({
-                imageDataContainers: imageDataContainers,
-                isProportionsInverted: imageRotate.isProportionsInverted(),
-                image: {
-                    width: newWidth,
-                    height: newHeight
-                },
-                cropArea: {
-                    height: newCropAreaHeight,
-                    width: newCropAreaWeight,
-                    top: newCropAreaTop,
-                    left: newCropAreaLeft
-                }
-            });
+            const currentZoom = +$previewArea.css('zoom');
+            $previewArea.css('zoom', currentZoom + delta);
         }
 
         function zoomPlus() {
-            zoom(1.1, this);
+            zoom(+0.1);
         }
 
         function zoomMinus() {
-            zoom(0.9, this);
+            zoom(-0.1);
         }
 
-        function zoomContain(imageDataContainers, $editableImageArea) {
-            // fixme: save proportions! now image becomes just as editable area
-            // only one side should be as area's side and one as needed to save proportions
-            const proportionsInverted = imageRotate.isProportionsInverted();
-            const newHeight = $editableImageArea.height();
-            const newWidth = $editableImageArea.width();
-            const newCropAreaHeight = (proportionsInverted) ? $editableImageArea.width() : $editableImageArea.height();
-            const newCropAreaWeight = (proportionsInverted) ? $editableImageArea.height() : $editableImageArea.width();
-            const newCropAreaLeft = croppingAngles.getBorderSize();
-            const newCropAreaTop = croppingAngles.getBorderSize();
-            const twiceAngleBorderSize = croppingAngles.getDoubleBorderSize();
-
-            resizeImage({
-                imageDataContainers: imageDataContainers,
-                isProportionsInverted: proportionsInverted,
-                image: {
-                    width: newWidth - twiceAngleBorderSize,
-                    height: newHeight - twiceAngleBorderSize
-                },
-                cropArea: {
-                    height: newCropAreaHeight - twiceAngleBorderSize,
-                    width: newCropAreaWeight - twiceAngleBorderSize,
-                    top: newCropAreaTop,
-                    left: newCropAreaLeft
-                }
-            });
+        function zoomFit() {
+            zoom(0);
         }
 
-        function revertImageChanges(imageDataContainers) {
+        function revertImageChanges() {
             imageRotate.rotateImage("NORTH");
-
-            const newWidth = imageDataContainers.original.width;
-            const newHeight = imageDataContainers.original.height;
-
-            resizeImage({
-                imageDataContainers: imageDataContainers,
-                isProportionsInverted: false,
-                image: {
-                    width: newWidth,
-                    height: newHeight
-                },
-                cropArea: {
-                    height: newHeight,
-                    width: newWidth,
-                    top: croppingAngles.getBorderSize(),
-                    left: croppingAngles.getBorderSize()
-                }
-            });
+            imageResize.resetToOriginal();
+            imageData.cropRegion = {
+                cropX1: -1,
+                cropX2: -1,
+                cropY1: -1,
+                cropY2: -1,
+            };
         }
 
-        function buildSwitchViewControls(toggleImgArea, imageDataContainers) {
+        let $switchViewControls;
+
+        function getSwitchViewControls() {
+            return $switchViewControls || ($switchViewControls = buildSwitchViewControls())
+        }
+
+        let $tabOriginal;
+
+        function buildSwitchViewControls() {
             const $preview = components.texts.titleText("<div>", texts.preview, {
                 "data-tab": "prev",
                 click: toggleImgArea
             });
-            const $origin = components.texts.titleText("<div>", texts.original, {
+            $tabOriginal = components.texts.titleText("<div>", texts.original, {
                 "data-tab": "origin",
                 click: toggleImgArea
             });
-            $origin.modifiers = ["active"];
-
-            imageDataContainers.$tabOriginal = $origin;
+            $tabOriginal.modifiers = ["active"];
 
             return new BEM({
                 block: "imcms-editable-img-control-tabs",
                 elements: {
-                    "tab": [$preview, $origin]
+                    "tab": [$preview, $tabOriginal]
                 }
             }).buildBlockStructure("<div>");
         }
 
-        function buildToolbar(toggleImgArea, imageDataContainers, $editableImageArea) {
-            let sizeControls;
+        function wrapWithNoOpIfNoImageYet(wrapMe) {
+            return function () {
+                if (imageData && imageData.path) wrapMe.apply(this, arguments)
+            }
+        }
 
-            const onCancel = () => {
-                imageRotate.rotateImageByDegrees(previousRotateDegrees);
-                onApply();
-            };
+        function onCancel() {
+            ToolbarViewBuilder.getCurrentToolbarView().cancelChanges();
+        }
 
-            const onApply = () => {
-                $(cancelChangesButton).add(applyChangesButton)
-                    .add(rotateLeftButton)
-                    .add(rotateRightButton)
-                    .slideUp('fast', () => {
-                        $(zoomPlusButton).add(zoomMinusButton)
-                            .add(zoomContainButton)
-                            .add(showImageRotationControls)
-                            .add(sizeControls)
-                            .add(revertButton)
-                            .slideDown();
-                    });
-            };
+        function onApply() {
+            ToolbarViewBuilder.getCurrentToolbarView().applyChanges();
+        }
 
-            let previousRotateDegrees = null;
+        function onRotationActivated() {
+            let previousRotateDegrees = parseInt(
+                editableImage.getImage()[0].style.transform.split(' ')[0].replace(/\D/g, '')
+            );
 
-            const onRotationActivated = () => {
-                previousRotateDegrees = parseInt(cropElements.$image[0].style.transform.split(' ')[0].replace(/\D/g, ''));
+            new ToolbarViewBuilder()
+                .hide(
+                    getShowImageRotationControls(),
+                    imageEditSizeControls.getEditSizeControls(),
+                    getRevertButton(),
+                    getCroppingButton(),
+                    getSwitchViewControls(),
+                )
+                .show(
+                    getCancelChangesButton(),
+                    getApplyChangesButton(),
+                    getRotateLeftButton(),
+                    getRotateRightButton(),
+                )
+                .onCancel(() => imageRotate.rotateImageByDegrees(previousRotateDegrees))
+                .build();
+        }
 
-                $(zoomPlusButton).add(zoomMinusButton)
-                    .add(zoomContainButton)
-                    .add(showImageRotationControls)
-                    .add(sizeControls)
-                    .add(revertButton)
-                    .slideUp('fast', () => {
-                        $(cancelChangesButton).add(applyChangesButton)
-                            .add(rotateLeftButton)
-                            .add(rotateRightButton)
-                            .slideDown();
-                    });
-            };
+        let $cancelChangesButton;
 
-            const cancelChangesButton = components.buttons.negativeButton({
+        function getCancelChangesButton() {
+            return $cancelChangesButton || ($cancelChangesButton = components.buttons.negativeButton({
                 text: 'Cancel', //todo: localize!!!111
                 title: 'Cancel changes', //todo: localize!!!111
                 click: onCancel,
                 style: 'display: none;',
-            });
+            }))
+        }
 
-            const applyChangesButton = components.buttons.saveButton({
+        let $applyChangesButton;
+
+        function getApplyChangesButton() {
+            return $applyChangesButton || ($applyChangesButton = components.buttons.saveButton({
                 text: 'Apply',//todo: localize!!!111
                 title: 'Apply changes', //todo: localize!!!111
                 click: onApply,
                 style: 'display: none;',
-            });
+            }))
+        }
 
-            const showImageRotationControls = components.buttons.rotationButton({
+        let $showImageRotationControls;
+
+        function getShowImageRotationControls() {
+            return $showImageRotationControls || ($showImageRotationControls = components.buttons.rotationButton({
                 title: 'Activate rotation controls',//todo: localize!!!111
                 click: onRotationActivated,
-            });
+            }))
+        }
 
-            // const showImageCropControls = components.buttons.
+        let $proportionsButtonCopy;
 
-            const zoomPlusButton = components.buttons.zoomPlusButton({
+        function getProportionsButtonCopy() {
+            return $proportionsButtonCopy || (
+                $proportionsButtonCopy = imageEditSizeControls.getProportionsButton()
+                    .click(() => {
+                        setTimeout(() => {
+                            let saveProportions = imageResize.isSaveProportionsEnabled();
+                            $proportionsButtonCopy.attr("data-state", saveProportions ? "active" : "passive");
+                        })
+                    })
+                    .clone(true, true)
+                    .hide()
+                    .click(() => {
+                        setTimeout(() => {
+                            let saveProportions = imageResize.isSaveProportionsEnabled();
+                            imageEditSizeControls.getProportionsButton()
+                                .attr("data-state", saveProportions ? "active" : "passive");
+                        })
+                    })
+            )
+        }
+
+        let $zoomPlusButton;
+
+        function getZoomPlusButton() {
+            return $zoomPlusButton || ($zoomPlusButton = components.buttons.zoomPlusButton({
                 title: texts.buttons.zoomIn,
-                click: zoomPlus.bind(imageDataContainers),
-            });
-            const zoomMinusButton = components.buttons.zoomMinusButton({
+                click: wrapWithNoOpIfNoImageYet(zoomPlus),
+                style: 'display: none;',
+            }))
+        }
+
+        let $zoomMinusButton;
+
+        function getZoomMinusButton() {
+            return $zoomMinusButton || ($zoomMinusButton = components.buttons.zoomMinusButton({
                 title: texts.buttons.zoomOut,
-                click: zoomMinus.bind(imageDataContainers),
-            });
-            const zoomContainButton = components.buttons.zoomContainButton({ // change to "unzoom" or smth like that
-                title: texts.buttons.zoomContain,
-                click: function () {
-                    zoomContain(imageDataContainers, $editableImageArea);
-                },
-            });
-            const rotateLeftButton = components.buttons.rotateLeftButton({
+                click: wrapWithNoOpIfNoImageYet(zoomMinus),
+                style: 'display: none;',
+            }))
+        }
+
+        let $zoomResetButton;
+
+        function getZoomResetButton() {
+            return $zoomResetButton || ($zoomResetButton = components.buttons.zoomResetButton({
+                title: texts.buttons.zoomReset,
+                style: 'display: none;',
+                click: wrapWithNoOpIfNoImageYet(zoomFit),
+            }))
+        }
+
+        let $rotateLeftButton;
+
+        function getRotateLeftButton() {
+            return $rotateLeftButton || ($rotateLeftButton = components.buttons.rotateLeftButton({
                 title: texts.buttons.rotateLeft,
-                click: imageRotate.rotateLeft,
+                click: wrapWithNoOpIfNoImageYet(imageRotate.rotateLeft),
                 style: 'display: none;',
-            });
-            const rotateRightButton = components.buttons.rotateRightButton({
+            }))
+        }
+
+        let $rotateRightButton;
+
+        function getRotateRightButton() {
+            return $rotateRightButton || ($rotateRightButton = components.buttons.rotateRightButton({
                 title: texts.buttons.rotateRight,
-                click: imageRotate.rotateRight,
+                click: wrapWithNoOpIfNoImageYet(imageRotate.rotateRight),
                 style: 'display: none;',
-            });
+            }))
+        }
 
-            const revertButton = components.buttons.negativeButton({
-                text: "Revert",
-                click: function () {
-                    revertImageChanges(imageDataContainers);
+        let $revertButton;
+
+        function getRevertButton() {
+            return $revertButton || ($revertButton = components.buttons.revertButton({
+                title: texts.buttons.revert,
+                click: wrapWithNoOpIfNoImageYet(revertImageChanges),
+            }))
+        }
+
+        function showCroppingStuff() {
+            // todo: come up with solution for very small images, when there's nothing to crop
+
+            cropper.initImageCropper(imageData);
+
+            new ToolbarViewBuilder()
+                .hide(
+                    getShowImageRotationControls(),
+                    imageEditSizeControls.getEditSizeControls(),
+                    getRevertButton(),
+                    getCroppingButton(),
+                    getSwitchViewControls(),
+                )
+                .show(
+                    getCancelChangesButton(),
+                    getProportionsButtonCopy(),
+                    getApplyChangesButton(),
+                )
+                .onCancel(cropper.destroyImageCropper)
+                .onApply(() => {
+                    cropper.applyCropping();
+                    cropper.destroyImageCropper();
+                })
+                .build();
+        }
+
+        let $croppingButton;
+
+        function getCroppingButton() {
+            return $croppingButton || ($croppingButton = components.buttons.croppingButton({
+                title: texts.buttons.cropping,
+                click: showCroppingStuff,
+            }))
+        }
+
+        function buildScaleAndRotateControls() {
+            return new BEM({
+                block: "imcms-edit-image",
+                elements: {
+                    "button": [
+                        getProportionsButtonCopy(),
+                        getZoomPlusButton(),
+                        getZoomMinusButton(),
+                        getZoomResetButton(),
+                        getShowImageRotationControls(),
+                        getRotateLeftButton(),
+                        getRotateRightButton(),
+                        getCroppingButton(),
+                        getRevertButton(),
+                    ]
                 }
-            });
+            }).buildBlockStructure("<div>");
+        }
 
-            function buildScaleAndRotateControls(imageDataContainers) {
-                imageRotate.setDataContainers(imageDataContainers);
-
-                return new BEM({
-                    block: "imcms-edit-image",
-                    elements: {
-                        "button": [
-                            zoomPlusButton,
-                            zoomMinusButton,
-                            zoomContainButton,
-                            showImageRotationControls,
-                            rotateLeftButton,
-                            rotateRightButton,
-                        ]
-                    }
-                }).buildBlockStructure("<div>");
-            }
+        function buildToolbar() {
 
             return new BEM({
                 block: "imcms-editable-img-controls",
@@ -299,19 +390,23 @@ define(
                     "control-view": '',
                 }
             }).buildBlock("<div>", [
-                {"control-size": sizeControls = imageEditSizeControls.buildEditSizeControls(imageDataContainers)},
-                {'control-button': cancelChangesButton},
-                {"control-scale-n-rotate": buildScaleAndRotateControls(imageDataContainers)},
-                {"control-button": applyChangesButton},
-                {"control-button": revertButton},
-                {"control-view": buildSwitchViewControls(toggleImgArea, imageDataContainers)}
+                {"control-size": imageEditSizeControls.getEditSizeControls()},
+                {'control-button': getCancelChangesButton()},
+                {"control-scale-n-rotate": buildScaleAndRotateControls()},
+                {"control-button": getApplyChangesButton()},
+                {"control-view": getSwitchViewControls()}
             ]);
         }
 
         let $imgUrl;
+        let imageData;
 
-        return {
-            build: function (opts, $rightSidePanel) {
+        module.exports = {
+            showOriginalImageArea: () => toggleImgArea.call($tabOriginal),
+
+            build: function ($rightSidePanel, _imageData) {
+                imageData = _imageData;
+
                 const bodyHeadBEM = new BEM({
                     block: "imcms-image-toolbar",
                     elements: {
@@ -330,32 +425,46 @@ define(
                     }
                 });
 
-                $imgUrl = bodyHeadBEM.buildElement("img-url", "<div>", {
+                const $imgUrlContainer = bodyHeadBEM.buildElement("img-url", "<div>", {
                     text: "Url: "
-                }).append(opts.imageDataContainers.$imgUrl = $("<a>"));
+                }).append($imgUrl = $("<a>"));
 
-                const $heightWidthBlock = buildHeightWidthBlock(opts.imageDataContainers);
-
-                opts.imageDataContainers.$toolbar = buildToolbar(
-                    opts.toggleImgArea, opts.imageDataContainers, opts.imageDataContainers.$editableImageArea
-                );
+                const $heightWidthBlock = buildHeightWidthBlock();
 
                 return bodyHeadBEM.buildBlock("<div>", [
                     {
-                        "toolbar": opts.imageDataContainers.$toolbar
+                        "toolbar": buildToolbar()
                     }, {
                         "button": $showHideRightPanelBtn,
                         modifiers: ["right-panel"]
                     }, {
-                        "img-url": $imgUrl
+                        "img-url": $imgUrlContainer
                     }, {
                         "img-origin-size": $heightWidthBlock
                     }
                 ]);
             },
-            getImageUrl: function () {
-                return $imgUrl.find("a").attr('data-name')
-            }
+            getImageUrl: () => $imgUrl,
+            getImagePath: () => $imgUrl.attr('data-path'),
+
+            clearData() {
+                [
+                    getCancelChangesButton(),
+                    getProportionsButtonCopy(),
+                    getApplyChangesButton(),
+                    getRotateLeftButton(),
+                    getRotateRightButton(),
+                    getZoomPlusButton(),
+                    getZoomMinusButton(),
+                    getZoomResetButton(),
+
+                ].forEach($elem => $elem.hide());
+
+                getSwitchViewControls().show();
+
+                cropper.destroyImageCropper();
+
+            },
         }
     }
 );

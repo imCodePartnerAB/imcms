@@ -158,7 +158,7 @@ define(
                 .appendTo($("body"));
         }
 
-        return {
+        module.exports = {
             buildModalWindow: buildModalWindow,
             buildConfirmWindow: function (question, onConfirm) {
                 buildModalWindow(question, function (confirm) {

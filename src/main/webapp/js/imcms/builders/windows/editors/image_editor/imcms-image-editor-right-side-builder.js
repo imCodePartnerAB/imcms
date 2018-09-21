@@ -3,13 +3,14 @@ define(
     [
         "imcms-components-builder", "imcms-i18n-texts", "imcms-content-manager-builder", "imcms", "jquery",
         "imcms-images-rest-api", "imcms-bem-builder", "imcms-modal-window-builder", "imcms-events",
-        "imcms-image-cropping-elements", "imcms-image-cropper", "imcms-window-builder", "imcms-image-rotate",
-        "imcms-image-editor-body-head-builder"
+        "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
+        'imcms-crop-coords-controllers'
     ],
-    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, cropElements,
-              imageCropper, WindowBuilder, imageRotate, imageEditorBodyHeadBuilder) {
+    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, WindowBuilder,
+              imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers) {
 
         texts = texts.editors.image;
+
         var $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
         var imgPosition = {
             align: "NONE",
@@ -20,10 +21,6 @@ define(
                 left: 0
             }
         };
-
-        events.on("image data", function () {
-            console.log(imageData);
-        });
 
         var $exifInfoContainer;
 
@@ -62,7 +59,7 @@ define(
             RIGHT: BEM.buildClassSelector(null, "imcms-button", "align-right")
         };
 
-        return {
+        module.exports = {
             updateImageData: function ($newTag, newImageData) {
                 $tag = $newTag;
                 imageData = newImageData;
@@ -89,7 +86,7 @@ define(
                     var $selectImageBtn = components.buttons.neutralButton({
                         text: texts.selectImage,
                         click: contentManager.build.bind(contentManager, fillData, function () {
-                            return imageEditorBodyHeadBuilder.getImageUrl();
+                            return imageEditorBodyHeadBuilder.getImagePath();
                         })
                     });
                     return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
@@ -256,101 +253,14 @@ define(
                         .append(texts.cropCoords);
                 }
 
-                function setValidation(onValid) {
-                    return function () {
-                        var inputField = $(this),
-                            stringFieldValue = inputField.val(),
-                            intFieldValue = +stringFieldValue,
-                            minFieldValue = 0;
-
-                        if (isNaN(intFieldValue)) {
-                            var val = parseInt(stringFieldValue);
-                            inputField.val(isNaN(val) ? 0 : val);
-                            return;
-                        }
-
-                        if (intFieldValue < minFieldValue) {
-                            inputField.val(minFieldValue);
-                            return;
-                        }
-
-                        onValid.call(this, intFieldValue);
-                    }
-                }
-
                 function buildCropCoordinatesContainer() {
-                    var $xCropCoord = components.texts.textNumber("<div>", {
-                        name: "cropX0",
-                        placeholder: "X",
-                        text: "X",
-                        error: "Error",
-                        onValidChange: setValidation(imageCropper.setCropX)
-                    });
-
-                    var $yCropCoord = components.texts.textNumber("<div>", {
-                        name: "cropY0",
-                        placeholder: "Y",
-                        text: "Y",
-                        error: "Error",
-                        onValidChange: setValidation(imageCropper.setCropY)
-                    });
-
-                    var $x1CropCoord = components.texts.textNumber("<div>", {
-                        name: "cropX1",
-                        placeholder: "X1",
-                        text: "X1",
-                        error: "Error",
-                        onValidChange: setValidation(imageCropper.setCropX1)
-                    });
-
-                    var $y1CropCoord = components.texts.textNumber("<div>", {
-                        name: "cropY1",
-                        placeholder: "Y1",
-                        text: "Y1",
-                        error: "Error",
-                        onValidChange: setValidation(imageCropper.setCropY1)
-                    });
-
-                    events.on("clean crop coordinates", function () {
-                        $xCropCoord.getInput().val(0);
-                        $yCropCoord.getInput().val(0);
-                        $x1CropCoord.getInput().val(0);
-                        $y1CropCoord.getInput().val(0);
-
-                        imageData.cropRegion = {
-                            cropX1: 0,
-                            cropX2: 0,
-                            cropY1: 0,
-                            cropY2: 0
-                        }
-                    });
-
-                    events.on("crop area position changed", function () {
-                        var x = cropElements.$cropArea.getLeft() - 2;
-                        var y = cropElements.$cropArea.getTop() - 2;
-                        var x1 = cropElements.$cropArea.width() + x;
-                        var y1 = cropElements.$cropArea.height() + y;
-
-                        $xCropCoord.getInput().val(x);
-                        $yCropCoord.getInput().val(y);
-                        $x1CropCoord.getInput().val(x1);
-                        $y1CropCoord.getInput().val(y1);
-
-                        imageData.cropRegion = {
-                            cropX1: x,
-                            cropX2: x1,
-                            cropY1: y,
-                            cropY2: y1
-                        }
-                    });
-
                     return new BEM({
                         block: "imcms-crop-coordinates",
                         elements: {
-                            "x": $xCropCoord,
-                            "y": $yCropCoord,
-                            "x1": $x1CropCoord,
-                            "y1": $y1CropCoord
+                            "x": cropCoordsControllers.getCropCoordX(),
+                            "y": cropCoordsControllers.getCropCoordY(),
+                            "x1": cropCoordsControllers.getCropCoordX1(),
+                            "y1": cropCoordsControllers.getCropCoordY1(),
                         }
                     }).buildBlockStructure("<div>");
                 }
@@ -395,6 +305,7 @@ define(
                     var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
                     var $cropCoordinatesContainer = buildCropCoordinatesContainer();
                     $fileFormat = buildFileFormatSelect();
+
                     var $showExifBtn = components.buttons.neutralButton({
                         text: texts.exif.button,
                         click: showExif
@@ -447,9 +358,7 @@ define(
 
                     imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
 
-                    imageRestApi.remove(imageData)
-                        .success(onImageSaved)
-                        .error(console.error.bind(console));
+                    imageRestApi.remove(imageData).success(onImageSaved);
                 }
 
                 function getImageRequestData(langCode) {
@@ -581,15 +490,13 @@ define(
 
                     var imageRequestData = getImageRequestData(imcms.language.code);
 
-                    imageRestApi.read(imageRequestData)
-                        .success(reloadImageOnPage)
-                        .error(console.error.bind(console));
+                    imageRestApi.read(imageRequestData).success(reloadImageOnPage);
                 }
 
                 function callBackAltText(continueSaving) {
                     if (continueSaving) {
-                        imageData.width = cropElements.$image.width();
-                        imageData.height = cropElements.$image.height();
+                        imageData.width = imageResize.getWidth();
+                        imageData.height = imageResize.getHeight();
                         var currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
@@ -606,9 +513,7 @@ define(
 
                         imageData.format = $fileFormat.getSelectedValue();
 
-                        imageRestApi.create(imageData)
-                            .success(onImageSaved)
-                            .error(console.error.bind(console));
+                        imageRestApi.create(imageData).success(onImageSaved);
                     }
                 }
 

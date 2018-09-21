@@ -2,83 +2,191 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 27.03.18
  */
-define(
-    "imcms-image-resize",
-    ["imcms-image-crop-angles", "imcms-image-cropping-elements", "imcms-events"],
-    function (croppingAngles, cropElements, events) {
-        return {
-            resize: function (opts, imageDataContainers, isImageProportionsInverted) {
-                var angleHeight = croppingAngles.getHeight();
-                var angleWidth = croppingAngles.getWidth();
-                var angleBorderSize = croppingAngles.getBorderSize();
-                var doubleAngleBorderSize = croppingAngles.getDoubleBorderSize();
-                var newWidth = opts.image.width;
-                var newHeight = opts.image.height;
-                var cropArea = opts.cropArea;
+const originImageHeightBlock = require('imcms-origin-image-height-block');
+const originImageWidthBlock = require('imcms-origin-image-width-block');
+const editableImage = require('imcms-editable-image');
 
-                cropElements.$image.animate(opts.image, 200);
+let saveProportions = true; // by default
+const original = {};
 
-                var displayWidth = ((isImageProportionsInverted) ? newHeight : newWidth) + doubleAngleBorderSize;
-                var displayHeight = ((isImageProportionsInverted) ? newWidth : newHeight) + doubleAngleBorderSize;
+let maxWidth, maxHeight, minWidth, minHeight;
 
-                imageDataContainers.$shadow.animate({
-                    "width": displayWidth,
-                    "height": displayHeight
-                }, 200);
+function trimToMaxMinWidth(newWidth) {
+    if (maxWidth) newWidth = Math.min(newWidth, maxWidth);
+    if (minWidth) newWidth = Math.max(newWidth, minWidth);
 
-                if ((croppingAngles.topRight.getLeft() + angleWidth + angleBorderSize) > displayWidth) {
-                    cropArea.left = angleBorderSize;
-                }
-                if ((croppingAngles.bottomRight.getTop() + angleWidth + angleBorderSize) > displayHeight) {
-                    cropArea.top = angleBorderSize;
-                }
+    return newWidth;
+}
 
-                cropElements.$cropImg.animate({
-                    "left": -cropArea.left + angleBorderSize,
-                    "top": -cropArea.top + angleBorderSize,
-                    "width": newWidth,
-                    "height": newHeight
-                }, 200);
+function trimToMaxMinHeight(newHeight) {
+    if (maxHeight) newHeight = Math.min(newHeight, maxHeight);
+    if (minHeight) newHeight = Math.max(newHeight, minHeight);
 
-                cropElements.$cropArea.animate(cropArea, 200);
+    return newHeight;
+}
 
-                var positionTopForAngelsTop = cropArea.top - angleBorderSize;
-                var positionTopForAngelsBottom = cropArea.top + cropArea.height - angleHeight;
-                var positionLeftForAngelsLeft = cropArea.left - angleBorderSize;
-                var positionLeftForAngelsRight = cropArea.left + cropArea.width - angleWidth;
+function setWidth(newWidth) {
+    const $image = editableImage.getImage();
+    const oldWidth = $image.width();
+    const k = newWidth / oldWidth;
 
-                if (cropArea.left <= angleBorderSize) {
-                    positionLeftForAngelsLeft = 0;
-                }
+    const newImageLeft = k * editableImage.getBackgroundPositionX();
+    const newImageBackgroundWidth = k * editableImage.getBackgroundWidth();
 
-                if (cropArea.top <= angleBorderSize) {
-                    positionTopForAngelsTop = 0;
-                }
+    $image.width(newWidth);
+    editableImage.setBackgroundWidth(newImageBackgroundWidth);
+    editableImage.setBackgroundPositionX(newImageLeft);
 
-                croppingAngles.topRight.animate({
-                    "top": positionTopForAngelsTop,
-                    "left": positionLeftForAngelsRight
-                }, 200);
+    $widthControl.val(newWidth);
+}
 
-                croppingAngles.bottomRight.animate({
-                    "top": positionTopForAngelsBottom,
-                    "left": positionLeftForAngelsRight
-                }, 200);
+function setHeight(newHeight) {
+    const $image = editableImage.getImage();
+    const oldHeight = $image.height();
+    const k = newHeight / oldHeight;
 
-                croppingAngles.topLeft.animate({
-                    "top": positionTopForAngelsTop,
-                    "left": positionLeftForAngelsLeft
-                }, 200);
+    const newImageTop = k * editableImage.getBackgroundPositionY();
+    const newImageBackgroundHeight = k * editableImage.getBackgroundHeight();
 
-                croppingAngles.bottomLeft.animate({
-                    "top": positionTopForAngelsBottom,
-                    "left": positionLeftForAngelsLeft
-                }, 200);
+    $image.height(newHeight);
+    editableImage.setBackgroundHeight(newImageBackgroundHeight);
+    editableImage.setBackgroundPositionY(newImageTop);
 
-                setTimeout(function () {
-                    events.trigger("update cropArea");
-                }, 250);
-            }
-        };
-    }
-);
+    $heightControl.val(newHeight);
+}
+
+function setHeightProportionally(newHeight) {
+    newHeight = trimToMaxMinHeight(newHeight);
+    setHeight(newHeight);
+    saveProportions && updateWidthProportionally(newHeight);
+}
+
+function setWidthProportionally(newWidth) {
+    newWidth = trimToMaxMinWidth(newWidth);
+    setWidth(newWidth);
+    saveProportions && updateHeightProportionally(newWidth);
+}
+
+function updateWidthProportionally(newHeight) {
+    const proportionalWidth = ~~((newHeight * original.width) / original.height);
+    const fixedWidth = trimToMaxMinWidth(proportionalWidth);
+
+    (fixedWidth === proportionalWidth)
+        ? setWidth(proportionalWidth)
+        : setWidthProportionally(proportionalWidth); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
+}
+
+function updateHeightProportionally(newWidth) {
+    const proportionalHeight = ~~((newWidth * original.height) / original.width);
+    const fixedHeight = trimToMaxMinHeight(proportionalHeight);
+
+    (fixedHeight === proportionalHeight)
+        ? setHeight(proportionalHeight)
+        : setHeightProportionally(proportionalHeight); // MAY (or not) APPEAR RECURSIVE!!!11 be careful
+}
+
+let $heightControl, $widthControl;
+
+module.exports = {
+    resetToOriginal() {
+        this.setHeightStrict(0, original.height);
+        this.setWidthStrict(0, original.width);
+
+        this.updateSizing();
+    },
+    getOriginal: () => original,
+    setOriginal(originalWidth, originalHeight) {
+        originImageHeightBlock.setValue(originalHeight);
+        originImageWidthBlock.setValue(originalWidth);
+
+        original.width = originalWidth;
+        original.height = originalHeight;
+    },
+    setWidthControl($control) {
+        $widthControl = $control
+    },
+
+    setHeightControl($control) {
+        $heightControl = $control
+    },
+
+    isSaveProportionsEnabled: () => saveProportions,
+
+    toggleSaveProportions: () => (saveProportions = !saveProportions),
+
+    setHeight(newValue) {
+        setHeight(trimToMaxMinHeight(newValue));
+    },
+
+    setWidth(newValue) {
+        setWidth(trimToMaxMinWidth(newValue));
+    },
+
+    /**
+     * Setting without any proportions or min/max checking
+     * @param padding for cropped images
+     * @param newWidth
+     */
+    setWidthStrict(padding, newWidth) {
+        editableImage.setBackgroundWidth(original.width);
+        editableImage.getImage().width(newWidth);
+
+        if (padding >= 0) editableImage.setBackgroundPositionX(-padding);
+
+        $widthControl.val(newWidth);
+    },
+
+    /**
+     * Setting without any proportions or min/max checking
+     * @param padding for cropped images
+     * @param newHeight
+     */
+    setHeightStrict(padding, newHeight) {
+        editableImage.setBackgroundHeight(original.height);
+        editableImage.getImage().height(newHeight);
+
+        if (padding >= 0) editableImage.setBackgroundPositionY(-padding);
+
+        $heightControl.val(newHeight);
+    },
+
+    setHeightProportionally: setHeightProportionally,
+
+    setWidthProportionally: setWidthProportionally,
+
+    getWidth: () => editableImage.getImage().width(),
+
+    getHeight: () => editableImage.getImage().height(),
+
+    setMaxWidth(maxWidthValue) {
+        maxWidth = maxWidthValue
+    },
+
+    setMaxHeight(maxHeightValue) {
+        maxHeight = maxHeightValue
+    },
+
+    setMinWidth(minWidthValue) {
+        minWidth = minWidthValue
+    },
+
+    setMinHeight(minHeightValue) {
+        minHeight = minHeightValue
+    },
+
+    /**
+     * Can be used after setting strict w/h to update all proportions and min/max restrictions
+     */
+    updateSizing() {
+        setWidthProportionally(editableImage.getImage().width());
+        setHeightProportionally(editableImage.getImage().height());
+    },
+
+    clearData() {
+        maxWidth = null;
+        maxHeight = null;
+        saveProportions = true;
+        original.width = null;
+        original.height = null;
+    },
+};

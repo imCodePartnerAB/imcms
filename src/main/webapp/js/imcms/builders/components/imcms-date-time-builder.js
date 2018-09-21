@@ -142,7 +142,7 @@ define("imcms-date-time-builder",
         function validateDateInput($dateInput, dateValidator) {
             $dateInput
                 .keydown(allowNumbersAndHyphens)
-                .on('input', errorInputIfNotValid.bindArgs($dateInput, dateValidator));
+                .on('input', () => errorInputIfNotValid($dateInput, dateValidator));
 
             function allowNumbersAndHyphens(event) {
                 var pressedButton = event.key,
@@ -155,8 +155,7 @@ define("imcms-date-time-builder",
             }
 
             function errorInputIfNotValid($dateInput, dateValidator) {
-                $dateInput
-                    .toggleClass("imcms-currrent-date__input--error", !dateValidator.isValid());
+                $dateInput.toggleClass("imcms-currrent-date__input--error", !dateValidator.isValid());
             }
         }
 

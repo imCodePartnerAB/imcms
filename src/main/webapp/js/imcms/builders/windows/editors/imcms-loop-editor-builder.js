@@ -65,10 +65,7 @@ define("imcms-loop-editor-builder",
 
         function onSaveAndCloseClicked() {
             var loopElement = getLoopData();
-
-            loopREST.create(loopElement)
-                .success(onLoopSaved)
-                .error(console.error.bind(console));
+            loopREST.create(loopElement).success(onLoopSaved);
         }
 
         function buildEditor() {
@@ -98,7 +95,7 @@ define("imcms-loop-editor-builder",
             var $head = loopWindowBuilder.buildHead(texts.title);
             $title = $head.find(".imcms-title");
 
-            var $footer = loopWindowBuilder.buildFooter([
+            var $footer = WindowBuilder.buildFooter([
                 components.buttons.positiveButton({
                     text: texts.createNew,
                     click: onCreateNewClicked
@@ -225,7 +222,7 @@ define("imcms-loop-editor-builder",
                 return this;
             },
             build: function (opts) {
-                loopWindowBuilder.buildWindow.applyAsync(arguments, loopWindowBuilder);
+                loopWindowBuilder.buildWindow.apply(loopWindowBuilder, arguments);
             }
         }
     }

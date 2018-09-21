@@ -44,9 +44,9 @@ function createBlocKElement(element, elementName) {
 }
 
 function createBlockElements(elements, elementName) {
-    return elements.map(function (element) {
+    return elements.map((element) => {
         return createBlocKElement.call(this, element, elementName);
-    }.bind(this));
+    });
 }
 
 module.exports = class BemBuilder {
@@ -169,7 +169,7 @@ module.exports = class BemBuilder {
     buildElement(elementName, tag, attributes, modifiersArr) {
         const modifiersClass = getElementClassWithModifiers(this.elements[elementName], modifiersArr);
 
-        attributes = $.extend({}, attributes);
+        attributes = {...attributes};
         attributes["class"] = modifiersClass + getOriginClass(attributes);
 
         return $(tag, attributes);
@@ -204,7 +204,7 @@ module.exports = class BemBuilder {
         attributes = attributes || {};
         attributes["class"] = this.block + getOriginClass(attributes);
 
-        elements = (elements || []).map(function (element) {
+        elements = (elements || []).map((element) => {
             let elementName, $element;
 
             if (blockNameForEach) {
@@ -231,7 +231,7 @@ module.exports = class BemBuilder {
 
             return $element.addClass(blockClass);
 
-        }.bind(this));
+        });
 
         return $(tag, attributes).append(elements);
     }
@@ -260,9 +260,9 @@ module.exports = class BemBuilder {
     buildBlockStructure(tag, attributes) {
         const isArrayElements = (this.elements.constructor === Array);
         let blockElements = [];
-        const elements = $.extend({}, this.elements);
+        const elements = {...this.elements};
 
-        (isArrayElements ? this.elements : Object.keys(elements)).forEach(function (elementOrName) {
+        (isArrayElements ? this.elements : Object.keys(elements)).forEach((elementOrName) => {
             let elementName, $element;
 
             if (isArrayElements) {
@@ -291,7 +291,7 @@ module.exports = class BemBuilder {
             const blockElement = createBlocKElement.call(this, $element, elementName);
             blockElements.push(blockElement);
 
-        }.bind(this));
+        });
 
         return this.buildBlock(tag, blockElements, attributes);
     }

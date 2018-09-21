@@ -235,8 +235,8 @@ a[class^="imcms"].imcms-button--neutral:hover {
     height: 35px;
 }
 
-.imcms-button--zoom-contain {
-    background: #fff url("/images_new/image_editor/icon_zoom_contain.png") no-repeat center;
+.imcms-button--zoom-reset {
+    background: #fff url("/images_new/image_editor/icon_zoom_reset.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;
@@ -278,6 +278,26 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--align {
     background: #fff no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--revert {
+    background: #fff url("/images_new/image_editor/icon_revert.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--crop {
+    background: #fff url("/images_new/image_editor/icon_crop.png") no-repeat center;
     border: 1px solid #d3d8de;
     border-radius: 5px;
     display: block;

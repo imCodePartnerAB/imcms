@@ -1,8 +1,5 @@
-define("imcms-validator", [], function () {
-
-    var Validator = function (element, isValid) {
+module.exports = class Validator {
+    constructor(element, isValid) {
         this.isValid = isValid.bind(element);
-    };
-    return Validator;
-
-});
+    }
+};

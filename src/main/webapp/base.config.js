@@ -114,12 +114,20 @@ module.exports = {
                     builders: {
                         components: {
                             image_editor: [
+                                'imcms-preview-image-area',
+                                'imcms-editable-area',
+                                'imcms-editable-image',
                                 'imcms-image-rotate',
                                 'imcms-image-resize',
                                 'imcms-image-edit-size-controls',
                                 'imcms-image-cropper',
-                                'imcms-image-cropping-elements',
                                 'imcms-image-crop-angles',
+                                'imcms-origin-image-width-block',
+                                'imcms-origin-image-height-block',
+                                'imcms-cropping-area',
+                                'imcms-toolbar-view-builder',
+                                'imcms-cropping-angle',
+                                'imcms-crop-coords-controllers',
                             ],
                             page_info_tabs: [
                                 'imcms-page-info-tabs-builder',
@@ -150,6 +158,7 @@ module.exports = {
                                 'imcms-system-properties-tab-builder',
                             ],
                             '': [
+                                'imcms-title-text-builder',
                                 'imcms-buttons-builder',
                                 'imcms-flags-builder',
                                 'imcms-checkboxes-builder',

@@ -2,63 +2,58 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.06.18
  */
-define('imcms-window-tabs-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
+const BEM = require('imcms-bem-builder');
+const $ = require('jquery');
 
-    var WindowTabsBuilder = function (opts) {
+module.exports = class WindowTabsBuilder {
+    constructor(opts) {
         this.tabBuilders = opts.tabBuilders;
-    };
+    }
 
-    WindowTabsBuilder.prototype = {
-        getOnTabClick: function (index) {
-            var context = this;
+    getOnTabClick(index) {
+        const context = this;
+        return function () {
+            var $clickedTab = $(this);
 
-            function showPanel(index) {
-                context.panels$.forEach(function ($panel, number) {
-                    (index === number) ? $panel.slideDown() : $panel.slideUp();
-                });
-            }
+            if ($clickedTab.hasClass('imcms-title--active')) return;
 
-            return function () {
-                var $clickedTab = $(this);
+            context.$tabsContainer.find('.imcms-title--active').removeClass('imcms-title--active');
+            $clickedTab.addClass('imcms-title--active');
 
-                if ($clickedTab.hasClass('imcms-title--active')) return;
-
-                context.$tabsContainer.find('.imcms-title--active').removeClass('imcms-title--active');
-                $clickedTab.addClass('imcms-title--active');
-                showPanel(index);
-            }
-        },
-        buildWindowTabs: function (panels$) {
-            this.panels$ = panels$;
-
-            var $tabs = this.tabBuilders.map(function (tabBuilder, index) {
-                return {
-                    tag: '<div>',
-                    'class': 'imcms-title',
-                    attributes: {
-                        'data-window-id': index,
-                        text: tabBuilder.name,
-                        click: this.getOnTabClick(index)
-                    },
-                    modifiers: (index === 0 ? ['active'] : [])
-                };
-            }.bind(this));
-
-            this.$tabsContainer = new BEM({
-                block: 'imcms-tabs',
-                elements: {
-                    'tab': $tabs
-                }
-            }).buildBlockStructure('<div>');
-
-            return new BEM({
-                block: 'imcms-left-side',
-                elements: {
-                    'tabs': this.$tabsContainer
-                }
-            }).buildBlockStructure('<div>');
+            context.panels$.forEach(($panel, number) => {
+                (index === number) ? $panel.slideDown() : $panel.slideUp();
+            });
         }
-    };
+    }
 
-    return WindowTabsBuilder;
-});
+    buildWindowTabs(panels$) {
+        this.panels$ = panels$;
+
+        const $tabs = this.tabBuilders.map((tabBuilder, index) => {
+            return {
+                tag: '<div>',
+                'class': 'imcms-title',
+                attributes: {
+                    'data-window-id': index,
+                    text: tabBuilder.name,
+                    click: this.getOnTabClick(index)
+                },
+                modifiers: (index === 0 ? ['active'] : [])
+            };
+        });
+
+        this.$tabsContainer = new BEM({
+            block: 'imcms-tabs',
+            elements: {
+                'tab': $tabs
+            }
+        }).buildBlockStructure('<div>');
+
+        return new BEM({
+            block: 'imcms-left-side',
+            elements: {
+                'tabs': this.$tabsContainer
+            }
+        }).buildBlockStructure('<div>');
+    }
+};

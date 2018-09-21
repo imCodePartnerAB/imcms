@@ -37,7 +37,7 @@ define("imcms-text-history-window-builder",
         }
 
         function buildFooter() {
-            return textHistoryWindowBuilder.buildFooter([
+            return WindowBuilder.buildFooter([
                 components.buttons.negativeButton({
                     text: texts.cancel,
                     "class": "imcms-text-history-cancel",
@@ -193,7 +193,7 @@ define("imcms-text-history-window-builder",
         }
 
         function loadData(textDTO) {
-            var dto = $.extend({}, textDTO);
+            var dto = {...textDTO};
 
             delete dto.type;
 
@@ -238,7 +238,7 @@ define("imcms-text-history-window-builder",
             buildTextHistory: function (textData) {
                 textDTO = textData;
                 events.trigger("disable text editor blur");
-                textHistoryWindowBuilder.buildWindowWithShadow.applyAsync(arguments, textHistoryWindowBuilder);
+                textHistoryWindowBuilder.buildWindowWithShadow.apply(textHistoryWindowBuilder, arguments);
             }
         };
     }
