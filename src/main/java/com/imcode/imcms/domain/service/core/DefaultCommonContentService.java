@@ -21,6 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Version.WORKING_VERSION_INDEX;
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.*;
 
 @Service
 @Transactional
@@ -42,7 +44,7 @@ public class DefaultCommonContentService
         return languageService.getAll()
                 .stream()
                 .map(language -> getOrCreate(docId, versionNo, language))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override
@@ -82,6 +84,32 @@ public class DefaultCommonContentService
     @Override
     public void deleteByDocId(Integer docId) {
         repository.deleteByDocId(docId);
+    }
+
+    @Override
+    public List<CommonContent> findCommonContentWhichUsesImage(String imagePath) {
+        List<CommonContentJPA> foundContent = repository.findAllByMenuImageURL(imagePath);
+
+        List<CommonContentJPA> imageMaxVersions = foundContent.stream()
+                .filter(content -> content.getVersionNo() > 0)
+                .collect(groupingBy(CommonContentJPA::getId, maxBy(comparingInt(CommonContentJPA::getVersionNo))))
+                .values().stream()
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(toList());
+
+        List<CommonContentJPA> imageWorkingVersions = foundContent.stream()
+                .filter(content -> content.getVersionNo() == 0)
+                .collect(toList());
+
+        foundContent = foundContent.stream()
+                .filter(item -> imageWorkingVersions.contains(item) || imageMaxVersions.contains(item))
+                .collect(toList());
+
+
+        return foundContent.stream()
+                .map(CommonContentDTO::new)
+                .collect(toList());
     }
 
     @Override
