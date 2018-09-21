@@ -57,6 +57,9 @@ public interface ImageRepository extends JpaRepository<Image, Integer>, Versione
     @Query("SELECT i FROM Image i WHERE i.version = ?1")
     List<Image> findByVersion(Version version);
 
+    @Query("SELECT i FROM Image i WHERE i.url = ?1")
+    List<Image> findByURL(String url);
+
     @Modifying
     @Query("DELETE FROM Image i WHERE i.version = ?1 AND i.language = ?2")
     void deleteByVersionAndLanguage(Version version, LanguageJPA language);
