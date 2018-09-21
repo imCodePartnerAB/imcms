@@ -62,10 +62,6 @@
     right: 5px;
 }
 
-.imcms-editor-area:hover .imcms-editor-area__control-wrap {
-    z-index: 1001;
-}
-
 .imcms-editor-area__control-edit {
     display: none;
     float: right;
