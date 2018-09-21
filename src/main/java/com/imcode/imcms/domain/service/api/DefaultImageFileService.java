@@ -4,8 +4,10 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.exception.ImageReferenceException;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.model.CommonContent;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
@@ -29,6 +31,9 @@ class DefaultImageFileService implements ImageFileService {
 
     @Autowired
     private ImageService imageService;
+
+    @Autowired
+    private CommonContentService commonContentService;
 
     @Value("${ImagePath}")
     private File imagesPath;
@@ -93,7 +98,9 @@ class DefaultImageFileService implements ImageFileService {
 
         List<ImageDTO> foundUsagesInDocumentContent = imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath);
 
-        if (!foundUsagesInDocumentContent.isEmpty()) {
+        List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(File.separator + imageFileDTOPath);
+
+        if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
             throw new ImageReferenceException("Requested image file " + imageFileDTOPath.replaceFirst(File.separator, "") + " is referenced at system");
         }
 
