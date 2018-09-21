@@ -123,6 +123,7 @@ define(
         }
 
         function fillData(image) {
+            clearComponents();
 
             if (!image) return;
 
@@ -175,13 +176,16 @@ define(
             imageRestApi.read(opts).done(fillData);
         }
 
-        function clearData() {
+        function clearComponents() {
             bodyHeadBuilder.clearData();
             editableImage.clearData();
             imageResize.clearData();
-            events.trigger("enable text editor blur");
             imageRotate.destroy();
+        }
 
+        function clearData() {
+            clearComponents();
+            events.trigger("enable text editor blur");
             editSizeControls.getWidthControl().getInput().removeAttr('disabled').val('');
             editSizeControls.getHeightControl().getInput().removeAttr('disabled').val('');
         }
