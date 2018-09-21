@@ -26,4 +26,6 @@ public interface CommonContentRepository extends JpaRepository<CommonContentJPA,
     @Override
     @Query("select t from CommonContentJPA t where t.docId = :#{#version.docId} and t.versionNo = :#{#version.no}")
     List<CommonContentJPA> findByVersion(@Param("version") Version version);
+
+    List<CommonContentJPA> findAllByMenuImageURL(String menuImageURL);
 }
