@@ -1,11 +1,15 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.exception.ImageReferenceException;
 import com.imcode.imcms.domain.service.ImageFileService;
+import com.imcode.imcms.domain.service.ImageService;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +26,9 @@ import java.util.function.Function;
 class DefaultImageFileService implements ImageFileService {
 
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
+
+    @Autowired
+    private ImageService imageService;
 
     @Value("${ImagePath}")
     private File imagesPath;
@@ -83,6 +90,13 @@ class DefaultImageFileService implements ImageFileService {
     @Override
     public boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
+
+        List<ImageDTO> foundUsagesInDocumentContent = imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath);
+
+        if (!foundUsagesInDocumentContent.isEmpty()) {
+            throw new ImageReferenceException("Requested image file " + imageFileDTOPath.replaceFirst(File.separator, "") + " is referenced at system");
+        }
+
         final File imageFile = new File(imagesPath, imageFileDTOPath);
 
         return FileUtility.forceDelete(imageFile);
