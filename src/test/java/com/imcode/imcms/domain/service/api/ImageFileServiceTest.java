@@ -52,6 +52,7 @@ public class ImageFileServiceTest {
 
     @Autowired
     Function<Image, ImageDTO> imageToImageDTO;
+
     @Autowired
     private ImageFileService imageFileService;
     @Autowired
@@ -247,7 +248,7 @@ public class ImageFileServiceTest {
         final File testSubdirectory = new File(imagesPath, testSubDirectoryName);
         final File testImageFile = new File(testSubdirectory, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(testSubDirectoryName + File.separator + testImageFileName);
+        imageFileDTO.setPath(File.separator + testSubDirectoryName + File.separator + testImageFileName);
 
         try {
             assertFalse(testImageFile.exists());
@@ -424,7 +425,7 @@ public class ImageFileServiceTest {
             List<CommonContent> latestCommonContent = commonContentDataInitializer
                     .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
             latestCommonContent
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
 
 
             imageFileService.deleteImage(imageFileDTO);
@@ -453,7 +454,7 @@ public class ImageFileServiceTest {
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData();
 
             tempDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
 
 
@@ -485,7 +486,7 @@ public class ImageFileServiceTest {
             List<CommonContent> latestCommonContent = commonContentDataInitializer
                     .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
             latestCommonContent
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
 
             imageFileService.deleteImage(imageFileDTO);
 
@@ -512,17 +513,17 @@ public class ImageFileServiceTest {
 
             final DocumentDTO tempDocument1DTO = documentDataInitializer.createData();
             tempDocument1DTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocument1DTO.getId(), tempDocument1DTO.getCommonContents());
 
             final DocumentDTO tempDocument2DTO = documentDataInitializer.createData();
             tempDocument2DTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocument2DTO.getId(), tempDocument2DTO.getCommonContents());
 
             final DocumentDTO tempDocument3DTO = documentDataInitializer.createData();
             tempDocument3DTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocument3DTO.getId(), tempDocument3DTO.getCommonContents());
 
             imageFileService.deleteImage(imageFileDTO);

@@ -373,27 +373,32 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
-        final String folderName = File.separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
-        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
+        final String subDirectoryName = "subfolder";
+        final File subDirectory = new File(imagesPath, subDirectoryName);
+        final File imageFile = new File(subDirectory, originalFilename);
 
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
                 .file(file)
-                .param("folder", folderName);
+                .param("folder", File.separator + subDirectoryName);
 
         try {
+            assertFalse(subDirectory.exists());
+            subDirectory.mkdir();
+            assertTrue(subDirectory.exists());
             assertFalse(imageFile.exists());
             performRequestBuilderExpectedOk(fileUploadRequestBuilder);
             assertTrue(imageFile.exists());
 
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            imageFileDTO.setPath(folderName + File.separator + originalFilename);
+            imageFileDTO.setPath(File.separator + subDirectoryName + File.separator + originalFilename);
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
             List<CommonContent> latestCommonContent = commonContentDataInitializer
                     .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
             latestCommonContent
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
 
+            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -403,8 +408,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             assertTrue(imageFile.exists());
         } finally {
-            if (imageFile.exists()) {
-                assertTrue(FileUtility.forceDelete(imageFile));
+            if (subDirectory.exists()) {
+                assertTrue(FileUtility.forceDelete(subDirectory));
             }
         }
     }
@@ -431,7 +436,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
             tempDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
 
             final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
