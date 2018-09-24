@@ -93,9 +93,9 @@ class DefaultImageFileService implements ImageFileService {
     public boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
 
-        List<ImageDTO> foundUsagesInDocumentContent = imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath);
+        List<ImageDTO> foundUsagesInDocumentContent = imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
 
-        List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(File.separator + imageFileDTOPath);
+        List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
 
         if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
             throw new ImageReferenceException("Requested image file " + imageFileDTOPath + " is referenced at system");
