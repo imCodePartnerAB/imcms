@@ -371,9 +371,9 @@ public class ImcmsImageUtils {
 
         final ImageOp operation = new ImageOp(imageMagickPath).input(imageFile);
 
-        setRotateDirection(image, operation);
         setCropRegion(image, operation);
         setSize(image, operation);
+        setRotateDirection(image, operation);
         setFormat(image.getFormat(), operation);
 
         operation.processToFile(destFile);

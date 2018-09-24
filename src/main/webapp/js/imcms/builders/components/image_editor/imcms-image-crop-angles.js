@@ -7,49 +7,41 @@ const Limit = require('imcms-numeric-limiter');
 const cropArea = require('imcms-cropping-area');
 const Angle = require('imcms-cropping-angle');
 
-const editableAreaBorderWidth = cropArea.getEditableAreaBorderWidth();
-
-function getValidTopAngleY(top) {
-    return new Limit().setMin(editableAreaBorderWidth - _this.getBorderSize())
-        .setMax(
-            cropArea.getCroppingArea().getTop()
-            + cropArea.getCroppingArea().getCurrentHeight()
-            - _this.getDoubleHeight()
-            - _this.getBorderSize()
-        )
-        .forValue(top);
-}
-
-function getValidBottomAngleY(top) {
-    return new Limit().setMin(cropArea.getCroppingArea().getTop() + _this.getHeight())
-        .setMax(cropArea.getImage().getCurrentHeight() - _this.getHeight() + editableAreaBorderWidth)
-        .forValue(top);
-}
-
-function getValidLeftAngleX(left) {
-    return new Limit().setMin(editableAreaBorderWidth - _this.getBorderSize())
-        .setMax(
-            cropArea.getCroppingArea().getLeft()
-            + cropArea.getCroppingArea().getCurrentWidth()
-            - _this.getBorderSize()
-            - _this.getDoubleWidth()
-        )
-        .forValue(left);
-}
-
-function getValidRightAngleX(left) {
-    return new Limit().setMin(cropArea.getCroppingArea().getLeft() + _this.getWidth())
-        .setMax(cropArea.getImage().getCurrentWidth() - _this.getWidth() + editableAreaBorderWidth)
-        .forValue(left);
-}
-
-let _this;
-
-module.exports = _this = {
-    topLeft: new Angle("top-left", getValidLeftAngleX, getValidTopAngleY),
-    topRight: new Angle("top-right", getValidRightAngleX, getValidTopAngleY),
-    bottomLeft: new Angle("bottom-left", getValidLeftAngleX, getValidBottomAngleY),
-    bottomRight: new Angle("bottom-right", getValidRightAngleX, getValidBottomAngleY),
+module.exports = {
+    getValidTopAngleY(top) {
+        return new Limit().setMin(-this.getBorderSize())
+            .setMax(
+                cropArea.getCroppingArea().getTop()
+                + cropArea.getCroppingArea().getCurrentHeight()
+                - this.getDoubleHeight()
+                - this.getBorderSize()
+            )
+            .forValue(top);
+    },
+    getValidBottomAngleY(top) {
+        return new Limit().setMin(cropArea.getCroppingArea().getTop() + this.getHeight())
+            .setMax(cropArea.getImage().getCurrentHeight() - this.getHeight())
+            .forValue(top);
+    },
+    getValidLeftAngleX(left) {
+        return new Limit().setMin(-this.getBorderSize())
+            .setMax(
+                cropArea.getCroppingArea().getLeft()
+                + cropArea.getCroppingArea().getCurrentWidth()
+                - this.getBorderSize()
+                - this.getDoubleWidth()
+            )
+            .forValue(left);
+    },
+    getValidRightAngleX(left) {
+        return new Limit().setMin(cropArea.getCroppingArea().getLeft() + this.getWidth())
+            .setMax(cropArea.getImage().getCurrentWidth() - this.getWidth())
+            .forValue(left);
+    },
+    topLeft: new Angle("top-left", this.getValidLeftAngleX, this.getValidTopAngleY),
+    topRight: new Angle("top-right", this.getValidRightAngleX, this.getValidTopAngleY),
+    bottomLeft: new Angle("bottom-left", this.getValidLeftAngleX, this.getValidBottomAngleY),
+    bottomRight: new Angle("bottom-right", this.getValidRightAngleX, this.getValidBottomAngleY),
     forEach: function (func) {
         [
             this.topLeft.$angle,

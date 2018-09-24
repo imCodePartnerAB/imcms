@@ -462,6 +462,8 @@ define(
 
                 getSwitchViewControls().show();
 
+                previewImage.clearData();
+
                 cropper.destroyImageCropper();
 
             },

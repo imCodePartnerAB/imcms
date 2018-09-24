@@ -8,9 +8,6 @@ const events = require('imcms-events');
 
 let isImageProportionsInverted = false;
 
-const editableAreaBorderWidth = 35;
-const editableAreaDoubleBorderWidth = editableAreaBorderWidth * 2;
-
 function getCurrentWidth($element) {
     return (isImageProportionsInverted) ? $element.height() : $element.width();
 }
@@ -121,17 +118,15 @@ function onImageLoad() {
     setTimeout(() => {
         const width = $img.width();
         const height = $img.height();
-        const wholeWidth = width + editableAreaDoubleBorderWidth;
-        const wholeHeight = height + editableAreaDoubleBorderWidth;
 
         shadowLayout.css({
-            width: wholeWidth,
-            height: wholeHeight,
+            width: width,
+            height: height,
         });
+
         $croppingWrap.css({
             width: width,
             height: height,
-            border: '' + editableAreaBorderWidth + 'px solid gray',
         });
     });
 }
@@ -174,7 +169,6 @@ function buildCroppingBlock() {
 }
 
 module.exports = {
-    getEditableAreaBorderWidth: () => editableAreaBorderWidth,
     getImage: getImage,
     getCroppingImage: getCroppingImage,
     getCroppingArea: getCroppingArea,

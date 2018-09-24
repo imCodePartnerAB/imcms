@@ -8,8 +8,6 @@ const components = require('imcms-components-builder');
 const imageCropper = require('imcms-image-cropper');
 const $ = require('jquery');
 
-const editableAreaBorderWidth = cropArea.getEditableAreaBorderWidth();
-
 let $cropCoordX;
 let $cropCoordY;
 let $cropCoordX1;
@@ -17,8 +15,8 @@ let $cropCoordY1;
 
 events.on('crop area position changed', function () {
     const $croppingArea = cropArea.getCroppingArea();
-    const x = $croppingArea.getLeft() - editableAreaBorderWidth;
-    const y = $croppingArea.getTop() - editableAreaBorderWidth;
+    const x = $croppingArea.getLeft();
+    const y = $croppingArea.getTop();
     const x1 = $croppingArea.width() + x;
     const y1 = $croppingArea.height() + y;
 

@@ -22,6 +22,11 @@
     z-index: 20;
 }
 
+.image-cropping-wrap {
+    position: relative;
+    border: 35px solid gray;
+}
+
 .image-cropping-wrap__layout {
     background: rgba(37, 34, 34, .5);
     position: absolute;

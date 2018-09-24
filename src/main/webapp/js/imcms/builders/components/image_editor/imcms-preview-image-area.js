@@ -10,7 +10,7 @@ let $previewImgContainer;
 let $previewImg;
 
 function getPreviewImage() {
-    return $previewImg || ($previewImg = $('<img>', {'class': 'imcms-preview-img'}))
+    return $previewImg || ($previewImg = $('<div>', {'class': 'imcms-preview-img'}))
 }
 
 function getPreviewImageContainer() {
@@ -33,7 +33,12 @@ function getPreviewImageArea() {
     return $previewImageArea || ($previewImageArea = buildPreviewImageArea())
 }
 
+function clear() {
+    getPreviewImage().removeAttr('style');
+}
+
 module.exports = {
     getPreviewImage: getPreviewImage,
     getPreviewImageArea: getPreviewImageArea,
+    clearData: clear,
 };
