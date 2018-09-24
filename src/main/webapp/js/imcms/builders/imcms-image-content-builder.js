@@ -431,9 +431,13 @@ define("imcms-image-content-builder",
         function onImageDelete(element, imageFile) {
             imageFile.path = getFolderPath(activeFolder.$folder) + "/" + imageFile.name;
 
-            imageFilesREST.remove(imageFile).done(function (response) {
-                response && $(element).parent().parent().remove();
-            });
+            imageFilesREST.remove(imageFile)
+                .success(function (response) {
+                    response && $(element).parent().parent().remove();
+                })
+                .error(function () {
+                    modalWindow.buildWarningWindow(texts.imageStillUsed, function () {});
+                });
         }
 
         function buildImageDescription(imageFile) {
