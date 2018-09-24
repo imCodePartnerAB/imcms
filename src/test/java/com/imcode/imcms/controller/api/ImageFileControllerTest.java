@@ -318,6 +318,43 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         }
     }
 
+    @Test
+    public void deleteImage_ImageNotReferencedAtWorkingPublishedDocumentsExpect_True() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final String originalFilename = "img1-test.jpg";
+        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
+        final String folderName = File.separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
+
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", folderName);
+
+        try {
+            assertFalse(imageFile.exists());
+            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+            assertTrue(imageFile.exists());
+
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            imageFileDTO.setPath(folderName + File.separator + originalFilename);
+
+            assertTrue(imageFile.exists());
+
+            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFileDTO));
+
+            final String response = getJsonResponse(requestBuilder);
+
+            assertEquals(response, "true");
+            assertFalse(imageFile.exists());
+        } finally {
+            if (imageFile.exists()) {
+                assertTrue(FileUtility.forceDelete(imageFile));
+            }
+        }
+    }
+
     private void deleteFile(ImageFileDTO imageFileDTO) {
         final File deleteMe = new File(imagesPath, imageFileDTO.getPath());
 
