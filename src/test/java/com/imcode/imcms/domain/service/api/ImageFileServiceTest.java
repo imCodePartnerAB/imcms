@@ -19,6 +19,8 @@ import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,14 +61,28 @@ public class ImageFileServiceTest {
     private ImageDataInitializer imageDataInitializer;
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
+    @Autowired
+    private CommonContentDataInitializer commonContentDataInitializer;
 
     @Value("classpath:img1.jpg")
     private File testImageFile;
 
     @Value("${ImagePath}")
     private File imagesPath;
-    @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
+
+    @Before
+    public void prepareData() {
+        imageDataInitializer.cleanRepositories();
+        commonContentDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
+    }
+
+    @After
+    public void clearTestData() {
+        imageDataInitializer.cleanRepositories();
+        commonContentDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
+    }
 
     @Test
     public void saveNewImageFiles_When_FolderIsNotSet_Expect_CorrectResultSize() throws IOException {

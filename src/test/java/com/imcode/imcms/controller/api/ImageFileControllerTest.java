@@ -20,6 +20,7 @@ import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +71,15 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
+
+        documentDataInitializer.cleanRepositories();
+        imageDataInitializer.cleanRepositories();
+    }
+
+    @After
+    public void clearTestData() {
+        documentDataInitializer.cleanRepositories();
+        imageDataInitializer.cleanRepositories();
     }
 
     @Test
