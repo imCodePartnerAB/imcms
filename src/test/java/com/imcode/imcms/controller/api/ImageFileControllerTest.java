@@ -12,7 +12,6 @@ import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -257,9 +256,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         }
     }
 
-
     @Test
-    public void deleteImage_When_PublishedOrWorkingDocumentImageReferencesImageExpect_CorrectExceptionAndImageNotDeleted() throws Exception {
+    public void deleteImage_When_PublishedOrWorkingDocumentImageReferencesImage_Expect_CorrectExceptionAndImageNotDeleted() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
@@ -280,10 +278,10 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             assertTrue(imageFile.exists());
 
-            final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+            final int tempDocId = documentDataInitializer.createData().getId();
             final int latestDocId = documentDataInitializer.createData().getId();
 
-            final Version workingVersion = versionService.getLatestVersion(tempDocId);
+            final Version workingVersion = versionService.getDocumentWorkingVersion(tempDocId);
 
             versionService.create(latestDocId, 1);
             final Version latestVersion = versionService.getDocumentWorkingVersion(latestDocId);
