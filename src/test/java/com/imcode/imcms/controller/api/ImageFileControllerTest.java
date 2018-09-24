@@ -231,25 +231,30 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .file(file)
                 .param("folder", folderName);
 
-        assertFalse(imageFile.exists());
-        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-        assertTrue(imageFile.exists());
+        try {
+            assertFalse(imageFile.exists());
+            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+            assertTrue(imageFile.exists());
 
-        final UserDomainObject user = new UserDomainObject(2);
-        user.addRoleId(Roles.USER.getId());
-        Imcms.setUser(user); // means current user is not admin now
+            final UserDomainObject user = new UserDomainObject(2);
+            user.addRoleId(Roles.USER.getId());
+            Imcms.setUser(user); // means current user is not admin now
 
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(folderName + File.separator + originalFilename);
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            imageFileDTO.setPath(folderName + File.separator + originalFilename);
 
-        final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(imageFileDTO));
+            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFileDTO));
 
-        assertTrue(imageFile.exists());
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
-        assertTrue(imageFile.exists());
-        assertTrue(FileUtility.forceDelete(imageFile));
+            assertTrue(imageFile.exists());
+            performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
+
+        } finally {
+            if (imageFile.exists()) {
+                assertTrue(FileUtility.forceDelete(imageFile));
+            }
+        }
     }
 
 
@@ -265,50 +270,54 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .file(file)
                 .param("folder", folderName);
 
-        assertFalse(imageFile.exists());
-        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-        assertTrue(imageFile.exists());
+        try {
+            assertFalse(imageFile.exists());
+            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+            assertTrue(imageFile.exists());
 
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            imageFileDTO.setPath(folderName + File.separator + originalFilename);
 
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(folderName + File.separator + originalFilename);
+            assertTrue(imageFile.exists());
 
-        assertTrue(imageFile.exists());
+            final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+            final int latestDocId = documentDataInitializer.createData().getId();
 
-        final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
-        final int latestDocId = documentDataInitializer.createData().getId();
+            final Version workingVersion = versionService.getLatestVersion(tempDocId);
 
-        final Version latestVersion = versionService.getDocumentWorkingVersion(latestDocId);
-        final Version workingVersion = versionService.getLatestVersion(tempDocId);
+            versionService.create(latestDocId, 1);
+            final Version latestVersion = versionService.getDocumentWorkingVersion(latestDocId);
 
-        final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
-        final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
+            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
+            final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
 
-        imageLatest.setName(originalFilename);
-        imageLatest.setLinkUrl(File.separator + originalFilename);
+            imageLatest.setName(originalFilename);
+            imageLatest.setLinkUrl(File.separator + originalFilename);
 
-        imageWorking.setName(originalFilename);
-        imageWorking.setLinkUrl(File.separator + originalFilename);
+            imageWorking.setName(originalFilename);
+            imageWorking.setLinkUrl(File.separator + originalFilename);
 
-        final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
-        final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
+            final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
+            final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
 
-        imageService.saveImage(imageDTOLatest);
-        imageService.saveImage(imageDTOWorking);
+            imageService.saveImage(imageDTOLatest);
+            imageService.saveImage(imageDTOWorking);
 
-        final MockHttpServletRequestBuilder requestLatestBuilder = delete(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(imageDTOLatest));
+            final MockHttpServletRequestBuilder requestLatestBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageDTOLatest));
 
-        final MockHttpServletRequestBuilder requestWorkingBuilder = delete(controllerPath())
-                .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(asJson(imageDTOWorking));
+            final MockHttpServletRequestBuilder requestWorkingBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageDTOWorking));
 
-        performRequestBuilderExpectException(ImageReferenceException.class, requestLatestBuilder);
-        performRequestBuilderExpectException(ImageReferenceException.class, requestWorkingBuilder);
-        assertTrue(imageFile.exists());
-        assertTrue(FileUtility.forceDelete(imageFile));
-
+            performRequestBuilderExpectException(ImageReferenceException.class, requestLatestBuilder);
+            performRequestBuilderExpectException(ImageReferenceException.class, requestWorkingBuilder);
+        } finally {
+            if (imageFile.exists()) {
+                assertTrue(FileUtility.forceDelete(imageFile));
+            }
+        }
     }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {

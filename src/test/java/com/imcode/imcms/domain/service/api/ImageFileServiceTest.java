@@ -253,6 +253,7 @@ public class ImageFileServiceTest {
             assertTrue(testImageFile.exists());
 
             final int latestDocId = documentDataInitializer.createData().getId();
+            versionService.create(latestDocId, 1);
             final Version latestVersion = versionService.getLatestVersion(latestDocId);
             final Image image = imageDataInitializer.createData(1, latestVersion);
 
@@ -309,9 +310,10 @@ public class ImageFileServiceTest {
 
 
             final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
-            final Version latestVersion = versionService.create(latestDocId, 1);
 
             versionService.create(latestDocId, 1);
+            final Version latestVersion = versionService.create(latestDocId, 1);
+
             final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
             final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
 
