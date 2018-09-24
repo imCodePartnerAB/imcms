@@ -38,8 +38,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.fileUpload;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 @Transactional
 public class ImageFileControllerTest extends AbstractControllerTest {
@@ -274,12 +273,12 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(folderName + File.separator + originalFilename);
 
-
         assertTrue(imageFile.exists());
 
         final int tempDocId = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED).getId();
+        final int latestDocId = documentDataInitializer.createData().getId();
 
-        final Version latestVersion = versionService.getDocumentWorkingVersion(1001);
+        final Version latestVersion = versionService.getDocumentWorkingVersion(latestDocId);
         final Version workingVersion = versionService.getLatestVersion(tempDocId);
 
         final Image imageLatest = imageDataInitializer.createData(1, latestVersion);

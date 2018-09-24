@@ -183,7 +183,9 @@ public class ImageFileServiceTest {
             testImageFile.createNewFile();
             assertTrue(testImageFile.exists());
 
-            final Version workingVersion = versionService.getDocumentWorkingVersion(1001);
+            final int workingDocId = documentDataInitializer.createData().getId();
+
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
 
             final Image image = imageDataInitializer.createData(1, workingVersion);
 
@@ -214,7 +216,9 @@ public class ImageFileServiceTest {
             testImageFile.createNewFile();
             assertTrue(testImageFile.exists());
 
-            final Version latestVersion = versionService.getLatestVersion(1001);
+            final int latestDocId = documentDataInitializer.createData().getId();
+
+            final Version latestVersion = versionService.getLatestVersion(latestDocId);
 
             final Image image = imageDataInitializer.createData(1, latestVersion);
 
@@ -248,7 +252,8 @@ public class ImageFileServiceTest {
             assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
-            final Version latestVersion = versionService.getLatestVersion(1001);
+            final int latestDocId = documentDataInitializer.createData().getId();
+            final Version latestVersion = versionService.getLatestVersion(latestDocId);
             final Image image = imageDataInitializer.createData(1, latestVersion);
 
             image.setName(testImageFileName);
@@ -299,12 +304,14 @@ public class ImageFileServiceTest {
             testImageFile.createNewFile();
             assertTrue(testImageFile.exists());
 
-            final int tempDocId = documentDataInitializer.createData().getId();
+            final int latestDocId = documentDataInitializer.createData().getId();
+            final int workingDocId = documentDataInitializer.createData().getId();
 
-            final Version workingVersion = versionService.getDocumentWorkingVersion(1001);
-            final Version latestVersion = versionService.create(tempDocId, 1);
 
-            versionService.create(tempDocId, 1);
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
+            final Version latestVersion = versionService.create(latestDocId, 1);
+
+            versionService.create(latestDocId, 1);
             final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
             final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
 
@@ -407,11 +414,11 @@ public class ImageFileServiceTest {
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
 
-            tempDocumentDTO.getCommonContents().forEach(commonContent -> commonContent.setMenuImageURL(File.separator+imageFileDTO.getPath()));
+            tempDocumentDTO.getCommonContents().forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
 
             List<CommonContent> workingCommonContent = commonContentDataInitializer.createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
 
-            workingCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(File.separator+imageFileDTO.getPath()));
+            workingCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
 
 
             imageFileService.deleteImage(imageFileDTO);
