@@ -434,6 +434,40 @@ public class ImageFileServiceTest {
         }
     }
 
+    @Test
+    public void deleteImage_When_ImageNotUsedAsMenuImage_Expect_TrueAndFileDeleted() throws IOException {
+        final String testImageFileName = "test.png";
+        final String stubImageFileName = "testStub.png";
+        final File testImageFile = new File(imagesPath, testImageFileName);
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        try {
+            assertFalse(testImageFile.exists());
+            testImageFile.createNewFile();
+            assertTrue(testImageFile.exists());
+
+            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
+
+            tempDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + stubImageFileName));
+
+            List<CommonContent> workingCommonContent = commonContentDataInitializer
+                    .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
+
+            workingCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(File.separator + stubImageFileName));
+
+            imageFileService.deleteImage(imageFileDTO);
+
+            assertFalse(testImageFile.exists());
+
+        } finally {
+            if (testImageFile.exists()) {
+                testImageFile.delete();
+            }
+        }
+    }
+
     private void deleteFile(ImageFileDTO imageFileDTO) {
         final File deleteMe = new File(imagesPath, imageFileDTO.getPath());
 
