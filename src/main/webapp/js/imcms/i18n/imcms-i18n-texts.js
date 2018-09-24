@@ -172,7 +172,8 @@ const texts = {
             title: "Bekräfta",
             yes: "Ja",
             no: "Nej",
-        ok: "Ok"},
+            ok: "Ok"
+        },
         editors: {
             document: {
                 title: "Dokumenthanterare",
@@ -247,8 +248,10 @@ const texts = {
                 cancel: 'Avbryt',
                 upload: "Ladda upp",
                 useSelectedImage: "Använd vald bild",
+                removeImageConfirm: "Vill du ta bort bilden ",
+                imageStillUsed: "Bilden används fortfarande",
                 removeFolderMessage: "Vill du ta bort mapp \"",
-                removeImageConfirm: "Vill du ta bort bilden ",folderNotEmptyMessage: "Mappen är inte tom",
+                folderNotEmptyMessage: "Mappen är inte tom",
                 newFolderName: "Nytt mappnamn",
                 add: "LÄGG TILL+"
             },
@@ -571,7 +574,7 @@ const texts = {
             title: "Confirm",
             yes: "Yes",
             no: "No",
-                ok: "Ok"
+            ok: "Ok"
         },
         editors: {
             document: {
@@ -647,8 +650,10 @@ const texts = {
                 cancel: 'Cancel',
                 upload: "Upload",
                 useSelectedImage: "Use selected image",
+                removeImageConfirm: "Do you want to remove image ",
+                imageStillUsed: "Image still used",
                 removeFolderMessage: "Do you want to remove folder \"",
-                removeImageConfirm: "Do you want to remove image ",folderNotEmptyMessage: "Folder not empty",
+                folderNotEmptyMessage: "Folder not empty",
                 newFolderName: "New folder name",
                 add: "ADD+"
             },
