@@ -11,7 +11,6 @@ import com.imcode.imcms.model.CommonContent;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,18 +27,16 @@ import java.util.function.Function;
 class DefaultImageFileService implements ImageFileService {
 
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
-
-    @Autowired
-    private ImageService imageService;
-
-    @Autowired
-    private CommonContentService commonContentService;
+    private final ImageService imageService;
+    private final CommonContentService commonContentService;
 
     @Value("${ImagePath}")
     private File imagesPath;
 
-    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO) {
+    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO, ImageService imageService, CommonContentService commonContentService) {
         this.fileToImageFileDTO = fileToImageFileDTO;
+        this.imageService = imageService;
+        this.commonContentService = commonContentService;
     }
 
     @Override
@@ -101,7 +98,7 @@ class DefaultImageFileService implements ImageFileService {
         List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(File.separator + imageFileDTOPath);
 
         if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
-            throw new ImageReferenceException("Requested image file " + imageFileDTOPath.replaceFirst(File.separator, "") + " is referenced at system");
+            throw new ImageReferenceException("Requested image file " + imageFileDTOPath + " is referenced at system");
         }
 
         final File imageFile = new File(imagesPath, imageFileDTOPath);
