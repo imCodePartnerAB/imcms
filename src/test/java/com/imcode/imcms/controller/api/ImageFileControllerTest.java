@@ -1,17 +1,22 @@
 package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.exception.ImageReferenceException;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -44,10 +49,16 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
     @Autowired
     Function<Image, ImageDTO> imageToImageDTO;
+
     @Autowired
     private ImageService imageService;
     @Autowired
     private VersionService versionService;
+    @Autowired
+    private CommonContentService commonContentService;
+
+    @Autowired
+    private CommonContentDataInitializer commonContentDataInitializer;
     @Autowired
     private ImageDataInitializer imageDataInitializer;
     @Autowired
@@ -72,12 +83,14 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
         documentDataInitializer.cleanRepositories();
         imageDataInitializer.cleanRepositories();
+        commonContentDataInitializer.cleanRepositories();
     }
 
     @After
     public void clearTestData() {
         documentDataInitializer.cleanRepositories();
         imageDataInitializer.cleanRepositories();
+        commonContentDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -319,7 +332,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImage_ImageNotReferencedAtWorkingPublishedDocumentsExpect_True() throws Exception {
+    public void deleteImage_ImageNotReferencedAtWorkingPublishedDocuments_Expect_True() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
@@ -348,6 +361,86 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             assertEquals(response, "true");
             assertFalse(imageFile.exists());
+        } finally {
+            if (imageFile.exists()) {
+                assertTrue(FileUtility.forceDelete(imageFile));
+            }
+        }
+    }
+
+    @Test
+    public void deleteImage_ImageReferencedAtPublishedDocumentMenuIcon_Expect_CorrectExceptionAndImageNotDeleted() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final String originalFilename = "img1-test.jpg";
+        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
+        final String folderName = File.separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
+
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", folderName);
+
+        try {
+            assertFalse(imageFile.exists());
+            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+            assertTrue(imageFile.exists());
+
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            imageFileDTO.setPath(folderName + File.separator + originalFilename);
+
+            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
+            List<CommonContent> latestCommonContent = commonContentDataInitializer
+                    .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
+            latestCommonContent
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+
+
+            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFileDTO));
+
+            performRequestBuilderExpectException(ImageReferenceException.class, requestBuilder);
+
+            assertTrue(imageFile.exists());
+        } finally {
+            if (imageFile.exists()) {
+                assertTrue(FileUtility.forceDelete(imageFile));
+            }
+        }
+    }
+
+    @Test
+    public void deleteImage_ImageReferencedAtWorkingDocumentMenuIcon_Expect_CorrectExceptionAndImageNotDeleted() throws Exception {
+        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
+        final String originalFilename = "img1-test.jpg";
+        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
+        final String folderName = File.separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
+        final File imageFile = new File(imagesPath, folderName + File.separator + originalFilename);
+
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = fileUpload(controllerPath())
+                .file(file)
+                .param("folder", folderName);
+
+        try {
+            assertFalse(imageFile.exists());
+            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+            assertTrue(imageFile.exists());
+
+            final ImageFileDTO imageFileDTO = new ImageFileDTO();
+            imageFileDTO.setPath(folderName + File.separator + originalFilename);
+
+            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
+            tempDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+            commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
+
+            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .content(asJson(imageFileDTO));
+
+            performRequestBuilderExpectException(ImageReferenceException.class, requestBuilder);
+
+            assertTrue(imageFile.exists());
         } finally {
             if (imageFile.exists()) {
                 assertTrue(FileUtility.forceDelete(imageFile));
