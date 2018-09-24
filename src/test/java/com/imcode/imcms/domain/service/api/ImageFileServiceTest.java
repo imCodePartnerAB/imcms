@@ -337,7 +337,6 @@ public class ImageFileServiceTest {
         }
     }
 
-
     @Test
     public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_TrueAndImageDeleted() throws IOException {
         final String testImageFileName = "test.png";
@@ -379,7 +378,6 @@ public class ImageFileServiceTest {
         }
     }
 
-
     @Test
     public void deleteImage_When_ImageNotUsedAtAnyLatestAndWorkingDocument_Expect_TrueAndFileDeleted() throws IOException {
         final String testImageFileName = "test.png";
@@ -416,11 +414,13 @@ public class ImageFileServiceTest {
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
 
-            tempDocumentDTO.getCommonContents().forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+            tempDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
 
-            List<CommonContent> workingCommonContent = commonContentDataInitializer.createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
-
-            workingCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+            List<CommonContent> workingCommonContent = commonContentDataInitializer
+                    .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
+            workingCommonContent
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
 
 
             imageFileService.deleteImage(imageFileDTO);
