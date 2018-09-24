@@ -26,6 +26,13 @@ module.exports = class Angle {
             .append($('<div>', {'class': 'imcms-angle-inner'}));
     }
 
+    setTopRight(top, right) {
+        this.$angle.css({
+            top: top,
+            right: right
+        });
+    }
+
     setTop(newTop) {
         this.$angle.css({top: newTop});
     }
@@ -47,6 +54,28 @@ module.exports = class Angle {
             top: top,
             left: left
         });
+    }
+
+    setBottomLeft(bottom, left) {
+        this.$angle.css({
+            bottom: bottom,
+            left: left
+        });
+    }
+
+    setBottomRight(bottom, right) {
+        this.$angle.css({
+            bottom: bottom,
+            right: right
+        });
+    }
+
+    setBottom(bottom) {
+        this.$angle.css({bottom: bottom});
+    }
+
+    setRight(right) {
+        this.$angle.css({right: right});
     }
 
     _trimToValidLeftValue(newLeft) {
