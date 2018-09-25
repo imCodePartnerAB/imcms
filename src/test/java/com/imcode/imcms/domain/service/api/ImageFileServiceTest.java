@@ -8,7 +8,6 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.exception.ImageReferenceException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
@@ -159,7 +158,7 @@ public class ImageFileServiceTest {
         final File createdImageFile = new File(imagesPath, imageFileDTO.getPath());
 
         assertTrue(createdImageFile.exists());
-        assertTrue(imageFileService.deleteImage(imageFileDTO));
+        assertTrue(imageFileService.deleteImage(imageFileDTO).isEmpty());
         assertFalse(createdImageFile.exists());
     }
 
@@ -175,7 +174,7 @@ public class ImageFileServiceTest {
     }
 
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAtWorkingSingleDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -199,16 +198,15 @@ public class ImageFileServiceTest {
             final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
             imageService.saveImage(imageDTO);
-            imageFileService.deleteImage(imageFileDTO);
 
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
             assertTrue(testImageFile.exists());
-
         } finally {
             assertTrue(testImageFile.delete());
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAtLatestSingleDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -232,16 +230,15 @@ public class ImageFileServiceTest {
             final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
             imageService.saveImage(imageDTO);
-            imageFileService.deleteImage(imageFileDTO);
 
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
             assertTrue(testImageFile.exists());
-
         } finally {
             assertTrue(testImageFile.delete());
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageAtSubdirectoryUsedAtLatestSingleDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final String testSubDirectoryName = "subdiretory";
@@ -267,7 +264,7 @@ public class ImageFileServiceTest {
             final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
             imageService.saveImage(imageDTO);
-            imageFileService.deleteImage(imageFileDTO);
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
 
             assertTrue(testImageFile.exists());
 
@@ -297,7 +294,7 @@ public class ImageFileServiceTest {
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAtWorkingDocumentAndPublishedDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -311,7 +308,6 @@ public class ImageFileServiceTest {
 
             final int latestDocId = documentDataInitializer.createData().getId();
             final int workingDocId = documentDataInitializer.createData().getId();
-
 
             final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
 
@@ -332,10 +328,9 @@ public class ImageFileServiceTest {
 
             imageService.saveImage(imageDTOLatest);
             imageService.saveImage(imageDTOWorking);
-            imageFileService.deleteImage(imageFileDTO);
 
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
             assertTrue(testImageFile.exists());
-
         } finally {
             assertTrue(testImageFile.delete());
         }
@@ -404,7 +399,7 @@ public class ImageFileServiceTest {
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtPublishedOrWorkingDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -428,7 +423,7 @@ public class ImageFileServiceTest {
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
 
 
-            imageFileService.deleteImage(imageFileDTO);
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
 
             assertTrue(testImageFile.exists());
 
@@ -439,7 +434,7 @@ public class ImageFileServiceTest {
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtWorkingDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -457,11 +452,8 @@ public class ImageFileServiceTest {
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
 
-
-            imageFileService.deleteImage(imageFileDTO);
-
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
             assertTrue(testImageFile.exists());
-
         } finally {
             if (testImageFile.exists()) {
                 testImageFile.delete();
@@ -469,7 +461,7 @@ public class ImageFileServiceTest {
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtPublishedDocument_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -488,7 +480,7 @@ public class ImageFileServiceTest {
             latestCommonContent
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
 
-            imageFileService.deleteImage(imageFileDTO);
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
 
             assertTrue(testImageFile.exists());
 
@@ -499,7 +491,7 @@ public class ImageFileServiceTest {
         }
     }
 
-    @Test(expected = ImageReferenceException.class)
+    @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtSeveralWorkingDocuments_Expect_CorrectException() throws IOException {
         final String testImageFileName = "test.png";
         final File testImageFile = new File(imagesPath, testImageFileName);
@@ -526,10 +518,8 @@ public class ImageFileServiceTest {
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocument3DTO.getId(), tempDocument3DTO.getCommonContents());
 
-            imageFileService.deleteImage(imageFileDTO);
-
+            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
             assertTrue(testImageFile.exists());
-
         } finally {
             if (testImageFile.exists()) {
                 testImageFile.delete();

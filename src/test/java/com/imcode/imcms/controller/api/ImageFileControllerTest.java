@@ -8,8 +8,8 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.exception.ImageReferenceException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -29,6 +29,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -195,9 +196,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             final String response = getJsonResponse(requestBuilder);
 
-            assertEquals(response, "true");
+            assertEquals("[]", response);
             assertFalse(imageFile.exists());
-
         } finally {
             if (imageFile.exists()) {
                 assertTrue(FileUtility.forceDelete(imageFile));
@@ -322,8 +322,21 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageDTOWorking));
 
-            performRequestBuilderExpectException(ImageReferenceException.class, requestLatestBuilder);
-            performRequestBuilderExpectException(ImageReferenceException.class, requestWorkingBuilder);
+            final String jsonResponseLatest = getJsonResponseWithExpectedStatus(requestLatestBuilder, HttpStatus.METHOD_NOT_ALLOWED.value());
+            final List<ImageFileUsageDTO> imageFileUsagesDTOSLatest = fromJson(jsonResponseLatest, new TypeReference<List<ImageFileUsageDTO>>() {
+            });
+
+            assertNotNull(imageFileUsagesDTOSLatest);
+            assertEquals(imageFileUsagesDTOSLatest.size(), 2);
+
+
+            final String jsonResponseWorking = getJsonResponseWithExpectedStatus(requestWorkingBuilder, HttpStatus.METHOD_NOT_ALLOWED.value());
+            final List<ImageFileUsageDTO> imageFileUsagesDTOSWorking = fromJson(jsonResponseWorking, new TypeReference<List<ImageFileUsageDTO>>() {
+            });
+
+            assertNotNull(imageFileUsagesDTOSWorking);
+            assertEquals(imageFileUsagesDTOSWorking.size(), 2);
+
         } finally {
             if (imageFile.exists()) {
                 assertTrue(FileUtility.forceDelete(imageFile));
@@ -359,7 +372,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             final String response = getJsonResponse(requestBuilder);
 
-            assertEquals(response, "true");
+            assertEquals("[]", response);
             assertFalse(imageFile.exists());
         } finally {
             if (imageFile.exists()) {
@@ -404,7 +417,12 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFileDTO));
 
-            performRequestBuilderExpectException(ImageReferenceException.class, requestBuilder);
+            final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, HttpStatus.METHOD_NOT_ALLOWED.value());
+            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileUsageDTO>>() {
+            });
+
+            assertNotNull(imageFileUsagesDTOS);
+            assertEquals(imageFileUsagesDTOS.size(), 2);
 
             assertTrue(imageFile.exists());
         } finally {
@@ -443,7 +461,12 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                     .contentType(MediaType.APPLICATION_JSON_UTF8)
                     .content(asJson(imageFileDTO));
 
-            performRequestBuilderExpectException(ImageReferenceException.class, requestBuilder);
+            final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, HttpStatus.METHOD_NOT_ALLOWED.value());
+            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileUsageDTO>>() {
+            });
+
+            assertNotNull(imageFileUsagesDTOS);
+            assertEquals(imageFileUsagesDTOS.size(), 2);
 
             assertTrue(imageFile.exists());
         } finally {
