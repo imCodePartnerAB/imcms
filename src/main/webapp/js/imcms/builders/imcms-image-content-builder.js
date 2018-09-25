@@ -435,8 +435,12 @@ define("imcms-image-content-builder",
                 .success(function (response) {
                     response && $(element).parent().parent().remove();
                 })
-                .error(function () {
-                    modalWindow.buildWarningWindow(texts.imageStillUsed, function () {});
+                .error(function (response) {
+                    let usages="\n";
+                    response.responseJSON.forEach(function (usage) {
+                        usages+="Doc: "+ usage.docId+" Version: "+ usage.version + " " +usage.comment+ "\n";
+                    });
+                    modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {});
                 });
         }
 
