@@ -257,7 +257,6 @@ war {
     exclude "node_modules"
     exclude "js"
     exclude ".babelrc"
-    exclude "package.json"
     exclude "package-lock.json"
     exclude "base.config.js"
     exclude "webpack.config.js"

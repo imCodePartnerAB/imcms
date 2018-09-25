@@ -41,6 +41,12 @@ module.exports = {
         new MiniCssExtractPlugin('[name].css'),
         new WebpackOnBuildPlugin(() => {
             fs.readdir(path.resolve(buildDir), (err, files) => {
+
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+
                 const jsPattern = /.js$/;
 
                 files.forEach(file => {
