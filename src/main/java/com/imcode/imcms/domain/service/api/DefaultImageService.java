@@ -81,7 +81,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     }
 
     @Override
-    public List<ImageDTO> getUsedImagesInWorkingAndLatestVersions(String imageURL) {
+    public List<Image> getUsedImagesInWorkingAndLatestVersions(String imageURL) {
         List<Image> plainImageFound = repository.findByURL(imageURL);
 
         Map<Integer, Optional<Integer>> imageMaxVersions = plainImageFound.stream()
@@ -96,7 +96,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
         return plainImageFound.stream()
                 .filter(image -> image.getVersion().getNo() == 0 || Objects.nonNull(imageMaxVersions.get(image.getVersion().getDocId())))
-                .map(imageToImageDTO).collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override
