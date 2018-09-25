@@ -1,11 +1,19 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.security.CheckAccess;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
@@ -35,7 +43,12 @@ public class ImageFileController {
 
     @DeleteMapping
     @CheckAccess
-    public boolean deleteImage(@RequestBody ImageFileDTO imageFileDTO) throws IOException {
-        return imageFileService.deleteImage(imageFileDTO);
+    public List<ImageFileUsageDTO> deleteImage(@RequestBody ImageFileDTO imageFileDTO, HttpServletResponse response) throws IOException {
+        List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
+
+        if (!usages.isEmpty()) {
+            response.setStatus(HttpStatus.METHOD_NOT_ALLOWED.value());
+        }
+        return usages;
     }
 }
