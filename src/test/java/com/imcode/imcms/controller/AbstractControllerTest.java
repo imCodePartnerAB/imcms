@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.config.TestConfig;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -19,11 +20,9 @@ import org.springframework.web.util.NestedServletException;
 import javax.transaction.Transactional;
 import java.io.IOException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebAppConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -43,8 +42,16 @@ public abstract class AbstractControllerTest {
         return mockMvc.perform(builder).andExpect(status().isOk());
     }
 
+    protected ResultActions performRequestBuilderExpectedStatus(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {
+        return mockMvc.perform(builder).andExpect(status().is(statusCode));
+    }
+
     protected String getJsonResponse(MockHttpServletRequestBuilder builder) throws Exception {
-        return performRequestBuilderExpectedOkAndContentJsonUtf8(builder)
+        return getJsonResponseWithExpectedStatus(builder, HttpStatus.OK.value());
+    }
+
+    protected String getJsonResponseWithExpectedStatus(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {
+        return performRequestBuilderExpectedStatusAndContentJsonUtf8(builder, statusCode)
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -52,7 +59,7 @@ public abstract class AbstractControllerTest {
 
     protected void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder,
                                                                        String expectedJson) throws Exception {
-        performRequestBuilderExpectedOkAndContentJsonUtf8(builder).andExpect(content().json(expectedJson));
+        performRequestBuilderExpectedStatusAndContentJsonUtf8(builder, HttpStatus.OK.value()).andExpect(content().json(expectedJson));
     }
 
     protected void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
@@ -130,8 +137,8 @@ public abstract class AbstractControllerTest {
                 .content(asJson(content));
     }
 
-    private ResultActions performRequestBuilderExpectedOkAndContentJsonUtf8(MockHttpServletRequestBuilder builder) throws Exception {
-        return performRequestBuilderExpectedOk(builder)
+    private ResultActions performRequestBuilderExpectedStatusAndContentJsonUtf8(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {
+        return performRequestBuilderExpectedStatus(builder, statusCode)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
