@@ -2,8 +2,8 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.exception.ImageReferenceException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -90,19 +91,23 @@ class DefaultImageFileService implements ImageFileService {
     }
 
     @Override
-    public boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException {
+    public List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
 
         List<ImageDTO> foundUsagesInDocumentContent = imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
-
         List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
 
+        List<ImageFileUsageDTO> usages = new ArrayList<>();
         if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
-            throw new ImageReferenceException("Requested image file " + imageFileDTOPath + " is referenced at system");
+            usages.addAll(foundUsagesInDocumentContent.stream().map(item -> new ImageFileUsageDTO(item.getDocId(), item.getIndex(), "content image")).collect(Collectors.toList()));
+            usages.addAll(foundUsagesInCommonContent.stream().map(item -> new ImageFileUsageDTO(item.getDocId(), item.getVersionNo(), "menu image")).collect(Collectors.toList()));
         }
 
-        final File imageFile = new File(imagesPath, imageFileDTOPath);
-
-        return FileUtility.forceDelete(imageFile);
+        if (usages.isEmpty()) {
+            //No usages found. Can safely remove file
+            final File imageFile = new File(imagesPath, imageFileDTOPath);
+            FileUtility.forceDelete(imageFile);
+        }
+        return usages;
     }
 }

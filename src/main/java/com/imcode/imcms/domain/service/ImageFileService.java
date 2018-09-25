@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -17,6 +18,6 @@ public interface ImageFileService {
 
     List<ImageFileDTO> saveNewImageFiles(String folder, List<MultipartFile> files) throws IOException;
 
-    boolean deleteImage(ImageFileDTO imageFileDTO) throws IOException;
+    List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException;
 
 }
