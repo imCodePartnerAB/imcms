@@ -7,7 +7,9 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
@@ -30,14 +32,15 @@ class DefaultImageFileService implements ImageFileService {
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
     private final ImageService imageService;
     private final CommonContentService commonContentService;
-
+    private final ImageCacheMapper imageCacheMapper;
     @Value("${ImagePath}")
     private File imagesPath;
 
-    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO, ImageService imageService, CommonContentService commonContentService) {
+    DefaultImageFileService(Function<File, ImageFileDTO> fileToImageFileDTO, ImageService imageService, CommonContentService commonContentService, ImageCacheMapper imageCacheMapper) {
         this.fileToImageFileDTO = fileToImageFileDTO;
         this.imageService = imageService;
         this.commonContentService = commonContentService;
+        this.imageCacheMapper = imageCacheMapper;
     }
 
     @Override
@@ -94,8 +97,12 @@ class DefaultImageFileService implements ImageFileService {
     public List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
 
-        List<ImageDTO> foundUsagesInDocumentContent = imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
+        List<ImageDTO> foundUsagesInDocumentContent =
+                imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
         List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
+
+        List<ImageCacheDomainObject> foundImageCache =
+                imageCacheMapper.getAllImageResourcesByResourcePath(File.separator + imagesPath.getName() + imageFileDTOPath);
 
         List<ImageFileUsageDTO> usages = new ArrayList<>();
         if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
@@ -105,6 +112,10 @@ class DefaultImageFileService implements ImageFileService {
             );
             usages.addAll(foundUsagesInCommonContent.stream()
                     .map(item -> new ImageFileUsageDTO(item.getDocId(), item.getVersionNo(), "menu image"))
+                    .collect(Collectors.toList())
+            );
+            usages.addAll(foundImageCache.stream()
+                    .map(item -> new ImageFileUsageDTO(null, null, "image cache content"))
                     .collect(Collectors.toList())
             );
         }
