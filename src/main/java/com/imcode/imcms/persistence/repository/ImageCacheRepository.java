@@ -21,6 +21,8 @@ public interface ImageCacheRepository extends JpaRepository<ImageCacheDomainObje
     @Query("SELECT ic.id FROM ImageCache ic ORDER BY ic.frequency ASC")
     List<String> idsByFrequency();
 
+    List<ImageCacheDomainObject> findAllByResource(String resource);
+
     @Modifying
     @Query("UPDATE ImageCache ic SET ic.frequency = ic.frequency + 1 WHERE ic.id = ?1 AND ic.frequency < ?2")
     void incFrequency(String id, int maxFreq);

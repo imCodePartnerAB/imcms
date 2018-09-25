@@ -104,6 +104,10 @@ public class ImageCacheMapper {
         imageCacheRepository.flush();
     }
 
+    public List<ImageCacheDomainObject> getAllImageResourcesByResourcePath(String resourcePath) {
+        return imageCacheRepository.findAllByResource(resourcePath);
+    }
+
     public void incrementFrequency(String cacheId) {
         imageCacheRepository.incFrequency(cacheId, Integer.MAX_VALUE);
     }
