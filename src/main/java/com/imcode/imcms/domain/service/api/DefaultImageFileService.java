@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
@@ -9,6 +8,7 @@ import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.model.CommonContent;
+import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
@@ -97,7 +97,7 @@ class DefaultImageFileService implements ImageFileService {
     public List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
 
-        List<ImageDTO> foundUsagesInDocumentContent =
+        List<Image> foundUsagesInDocumentContent =
                 imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
         List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
 
@@ -107,7 +107,7 @@ class DefaultImageFileService implements ImageFileService {
         List<ImageFileUsageDTO> usages = new ArrayList<>();
         if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
             usages.addAll(foundUsagesInDocumentContent.stream()
-                    .map(item -> new ImageFileUsageDTO(item.getDocId(), item.getIndex(), "content image"))
+                    .map(item -> new ImageFileUsageDTO(item.getVersion().getDocId(), item.getVersion().getNo(), "content image"))
                     .collect(Collectors.toList())
             );
             usages.addAll(foundUsagesInCommonContent.stream()
