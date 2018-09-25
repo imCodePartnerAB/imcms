@@ -99,8 +99,14 @@ class DefaultImageFileService implements ImageFileService {
 
         List<ImageFileUsageDTO> usages = new ArrayList<>();
         if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
-            usages.addAll(foundUsagesInDocumentContent.stream().map(item -> new ImageFileUsageDTO(item.getDocId(), item.getIndex(), "content image")).collect(Collectors.toList()));
-            usages.addAll(foundUsagesInCommonContent.stream().map(item -> new ImageFileUsageDTO(item.getDocId(), item.getVersionNo(), "menu image")).collect(Collectors.toList()));
+            usages.addAll(foundUsagesInDocumentContent.stream()
+                    .map(item -> new ImageFileUsageDTO(item.getDocId(), item.getIndex(), "content image"))
+                    .collect(Collectors.toList())
+            );
+            usages.addAll(foundUsagesInCommonContent.stream()
+                    .map(item -> new ImageFileUsageDTO(item.getDocId(), item.getVersionNo(), "menu image"))
+                    .collect(Collectors.toList())
+            );
         }
 
         if (usages.isEmpty()) {
