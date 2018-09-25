@@ -171,7 +171,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImage_When_UserIsAdminAndFileExist_Expect_True() throws Exception {
+    public void deleteImage_When_UserIsAdminAndFileExist_Expect_EmptyListAndImageDeleted() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
@@ -270,7 +270,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImage_When_PublishedOrWorkingDocumentImageReferencesImage_Expect_CorrectExceptionAndImageNotDeleted() throws Exception {
+    public void deleteImage_When_PublishedOrWorkingDocumentImageReferencesImage_Expect_ListWithUsagesAndImageNotDeleted() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
@@ -345,7 +345,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImage_ImageNotReferencedAtWorkingPublishedDocuments_Expect_True() throws Exception {
+    public void deleteImage_ImageNotReferencedAtWorkingPublishedDocuments_Expect_EmptyListAndImageDeleted() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
@@ -382,7 +382,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImage_ImageReferencedAtPublishedDocumentMenuIcon_Expect_CorrectExceptionAndImageNotDeleted() throws Exception {
+    public void deleteImage_ImageReferencedAtPublishedDocumentMenuIcon_Expect_ListWithUsagesAndImageNotDeleted() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
@@ -433,7 +433,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteImage_ImageReferencedAtWorkingDocumentMenuIcon_Expect_CorrectExceptionAndImageNotDeleted() throws Exception {
+    public void deleteImage_ImageReferencedAtWorkingDocumentMenuIcon_Expect_ListWithUsagesAndImageNotDeleted() throws Exception {
         final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
         final String originalFilename = "img1-test.jpg";
         final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
