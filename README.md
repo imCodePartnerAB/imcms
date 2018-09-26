@@ -11,12 +11,13 @@ Johan Larsson "johlra" is our responsible project manager.
 
 imCMS is licensed under the AGPL license.
 
+Read the docs: http://docs.imcms.net/en/latest/
 
 All versions is available to download from
 http://repo.imcode.com/maven2/com/imcode/imcms/imcms/
 
-The install instruction could need updating, they are old but should work in most cases
-Newer version of imCMS work on Java 7, Tomcat 8 and MySQL 5.5
+The install instruction could need an update, they are old but should work in most cases
+Newer version of imCMS work on Java 8, Tomcat 8.5 and MySQL 5.7
 
 Installing imCMS:
 
