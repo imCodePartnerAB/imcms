@@ -23,10 +23,11 @@ Installing imCMS:
 
 Prerequisites:
 
-    * Java 8 or later.
+    * Java 8+.
+    
+    * NodeJS 8+
 
-    * Apache Tomcat 8.5+ or later,
-      or another servlet-api 2.3 (or later) compatible servlet engine.
+    * Apache Tomcat 8.5+ or later, or another servlet-api 2.3 (or later) compatible servlet engine.
 
     * Install MySQL 5.7 or later.
 
