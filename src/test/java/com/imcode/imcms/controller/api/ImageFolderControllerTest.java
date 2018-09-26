@@ -50,9 +50,6 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     private ImageDataInitializer imageDataInitializer;
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
-    @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
-
 
     @Value("${ImagePath}")
     private File imagesPath;
@@ -686,15 +683,10 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Test
     public void checkFolderForImagesUsed_When_FolderNotContainsUsedImage_Expect_OkAndEmptyList() throws Exception {
         final String folderPathToCheck = "";
-
-        final String testImageFileName = "test.png";
         final String testStubImageFileName = "testStub.png";
 
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(testImageFileName);
-
         final ImageFileDTO imageFileDTOStub = new ImageFileDTO();
-        imageFileDTO.setPath(testStubImageFileName);
+        imageFileDTOStub.setPath(testStubImageFileName);
 
         final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
