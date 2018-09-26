@@ -436,9 +436,14 @@ define("imcms-image-content-builder",
                     response && $(element).parent().parent().remove();
                 })
                 .error(function (response) {
-                    let usages="\n";
+                    let usages = "";
                     response.responseJSON.forEach(function (usage) {
-                        usages+="Doc: "+ usage.docId+" Version: "+ usage.version + " " +usage.comment+ "\n";
+                        if (usage.docId) {
+                            usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " " + usage.comment + "</div>";
+                        } else {
+                            //Cache usage
+                            usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
+                        }
                     });
                     modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {});
                 });
