@@ -258,12 +258,10 @@ war {
     exclude "node_modules"
     exclude "js"
     exclude ".babelrc"
-    exclude "package.json"
     exclude "package-lock.json"
     exclude "base.config.js"
     exclude "webpack.config.js"
     exclude "prod.config.js"
-    exclude "scss.config.js"
 
     from("src/main/webapp/js/imcms/imcms_admin.js", { into "js/imcms" })
     from("src/main/webapp/js/imcms/imcms_config.js.jsp", { into "js/imcms" })
