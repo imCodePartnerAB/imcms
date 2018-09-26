@@ -9,4 +9,5 @@ Advanced Configuration
     solr
     language
     properties
+            scss
 
