@@ -439,7 +439,10 @@ define("imcms-image-content-builder",
                     let usages = "";
                     response.responseJSON.forEach(function (usage) {
                         if (usage.docId) {
-                            usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " " + usage.comment + "</div>";
+                            usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + "</div>";
+                        } else if (usage.elementIndex) {
+                            //Menu icon
+                            usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " Index:" + usage.elementIndex + "</div>";
                         } else {
                             //Cache usage
                             usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
