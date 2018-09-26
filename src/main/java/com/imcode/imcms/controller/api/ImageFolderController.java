@@ -1,12 +1,20 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.service.ImageFolderService;
 import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Controller for Images Content Manager.
@@ -31,6 +39,12 @@ public class ImageFolderController {
         return folderToGet.getPath() == null
                 ? imageFolderService.getImageFolder()
                 : imageFolderService.getImagesFrom(folderToGet);
+    }
+
+    @GetMapping("/check")
+    @CheckAccess
+    public List<ImageFolderItemUsageDTO> checkImageUsages(ImageFolderDTO folderToCheck) {
+        return imageFolderService.checkFolder(folderToCheck);
     }
 
     @PostMapping("/can-delete")
