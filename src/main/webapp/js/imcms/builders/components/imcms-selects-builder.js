@@ -169,10 +169,6 @@ define("imcms-selects-builder",
                     onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
                     $selectedValInput && $selectedValInput.val(value);
                     return $resultImcmsSelect;
-
-                } else {
-                    console.log("%c Value '" + value + "' for select doesn't exist", "color: red;");
-                    console.log($resultImcmsSelect[0]);
                 }
             }
         }
