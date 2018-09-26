@@ -90,7 +90,9 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
                 .collect(groupingBy(Version::getDocId,
                         mapping(Version::getNo, maxBy(Integer::compare))));
 
-        List<Integer> latestDocIds = imageMaxVersions.keySet().stream().filter(docId -> versionService.getLatestVersion(docId).getNo() == imageMaxVersions.get(docId).get()).collect(toList());
+        List<Integer> latestDocIds = imageMaxVersions.keySet().stream()
+                .filter(docId -> versionService.getLatestVersion(docId).getNo() == imageMaxVersions.get(docId).get())
+                .collect(toList());
 
         imageMaxVersions.keySet().retainAll(latestDocIds);
 
