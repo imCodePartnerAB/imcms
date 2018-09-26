@@ -576,20 +576,20 @@ public class ImageFolderServiceTest {
         final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
         commonDocumentDTO.getCommonContents()
-                .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTOStub.getPath()));
+                .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTOStub.getPath()));
         commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
         final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
         Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
         final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
         imageLatest.setName(testStubImageFileName);
-        imageLatest.setLinkUrl(File.separator + testStubImageFileName);
+        imageLatest.setLinkUrl(testStubImageFileName);
 
         final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
         Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
         final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
         imageWorking.setName(testStubImageFileName);
-        imageWorking.setLinkUrl(File.separator + testStubImageFileName);
+        imageWorking.setLinkUrl(testStubImageFileName);
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
         assertNotNull(usages);
@@ -607,20 +607,20 @@ public class ImageFolderServiceTest {
         final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
         commonDocumentDTO.getCommonContents()
-                .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTOStub.getPath()));
+                .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTOStub.getPath()));
         commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
         final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
         Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
         final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
         imageLatest.setName(testImageFileName);
-        imageLatest.setLinkUrl(File.separator + testImageFileName);
+        imageLatest.setLinkUrl(testImageFileName);
 
         final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
         Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
         final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
         imageWorking.setName(testImageFileName);
-        imageWorking.setLinkUrl(File.separator + testImageFileName);
+        imageWorking.setLinkUrl(testImageFileName);
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
 
@@ -642,21 +642,21 @@ public class ImageFolderServiceTest {
 
         final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
-        commonDocumentDTO.getCommonContents()
-                .forEach(commonContent -> commonContent.setMenuImageURL(imageFile1DTO.getPath()));
-        commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
+            commonDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFile1DTO.getPath()));
+            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
-        final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-        Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-        final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
-        imageLatest.setName(testImage1FileName);
-        imageLatest.setLinkUrl(File.separator + testImage1FileName);
+            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
+            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
+            imageLatest.setName(testImage1FileName);
+            imageLatest.setLinkUrl(testImage1FileName);
 
-        final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-        Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-        final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
-        imageWorking.setName(testImage2FileName);
-        imageWorking.setLinkUrl(File.separator + testImage2FileName);
+            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
+            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
+            imageWorking.setName(testImage2FileName);
+            imageWorking.setLinkUrl(testImage2FileName);
 
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -676,25 +676,25 @@ public class ImageFolderServiceTest {
         final ImageFolderDTO imageFolderDTO = imageFolderService.getImageFolder();
 
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(subDirectoryName + File.separator + testImageFileName);
+        imageFileDTO.setPath(File.separator + subDirectoryName + File.separator + testImageFileName);
 
         final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
         commonDocumentDTO.getCommonContents()
-                .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
+                .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
         commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
         final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
         Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
         final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
         imageLatest.setName(testImageFileName);
-        imageLatest.setLinkUrl(File.separator + subDirectoryName + File.separator + testImageFileName);
+        imageLatest.setLinkUrl(subDirectoryName + File.separator + testImageFileName);
 
         final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
         Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
         final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
         imageWorking.setName(testImageFileName);
-        imageWorking.setLinkUrl(File.separator + subDirectoryName + File.separator + testImageFileName);
+        imageWorking.setLinkUrl(subDirectoryName + File.separator + testImageFileName);
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
 
