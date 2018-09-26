@@ -65,11 +65,20 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildBody(question) {
+        function buildBody(text) {
             return new BEM({
                 block: "imcms-modal-body",
                 elements: {
-                    "text": components.texts.infoText("<div>", question)
+                    "text": components.texts.infoText("<div>", text)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildHTMLBody(htmlText) {
+            return new BEM({
+                block: "imcms-modal-body",
+                elements: {
+                    "text": components.texts.infoHtml("<div>", htmlText)
                 }
             }).buildBlockStructure("<div>");
         }
@@ -90,7 +99,7 @@ define(
                 block: "imcms-modal-window",
                 elements: {
                     "modal-head": buildHead(),
-                    "modal-body": buildBody(message),
+                    "modal-body": buildHTMLBody(message),
                     "modal-footer": buildWarningFooter(onConfirmed)
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-modal-window--warning"},);

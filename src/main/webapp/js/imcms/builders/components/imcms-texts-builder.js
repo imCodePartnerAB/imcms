@@ -234,6 +234,9 @@ define("imcms-texts-builder",
             infoText: function (tag, text, attributes) {
                 return $(tag, (attributes || {})).addClass("imcms-info-msg").text(text || "");
             },
+            infoHtml: function (tag, text, attributes) {
+                return $(tag, (attributes || {})).addClass("imcms-info-msg").html(text || "");
+            },
             titleText: function (tag, text, attributes) {
                 return $(tag, (attributes || {})).addClass("imcms-title").text(text || "");
             }
