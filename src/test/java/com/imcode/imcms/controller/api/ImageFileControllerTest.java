@@ -105,7 +105,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         });
 
         assertNotNull(imageFileDTOS);
-        assertEquals(imageFileDTOS.size(), 1);
+        assertEquals(1, imageFileDTOS.size());
 
         imageFileDTOS.forEach(this::deleteFile);
     }
@@ -123,7 +123,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         });
 
         assertNotNull(imageFileDTOS);
-        assertEquals(imageFileDTOS.size(), 2);
+        assertEquals(2, imageFileDTOS.size());
 
         imageFileDTOS.forEach(this::deleteFile);
     }
@@ -154,7 +154,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         });
 
         assertNotNull(imageFileDTOS);
-        assertEquals(imageFileDTOS.size(), 1);
+        assertEquals(1, imageFileDTOS.size());
 
         imageFileDTOS.forEach(this::deleteFile);
     }
@@ -327,7 +327,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             });
 
             assertNotNull(imageFileUsagesDTOSLatest);
-            assertEquals(imageFileUsagesDTOSLatest.size(), 2);
+            assertEquals(2, imageFileUsagesDTOSLatest.size());
 
 
             final String jsonResponseWorking = getJsonResponseWithExpectedStatus(requestWorkingBuilder, HttpStatus.METHOD_NOT_ALLOWED.value());
@@ -335,7 +335,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             });
 
             assertNotNull(imageFileUsagesDTOSWorking);
-            assertEquals(imageFileUsagesDTOSWorking.size(), 2);
+            assertEquals(2, imageFileUsagesDTOSWorking.size());
 
         } finally {
             if (imageFile.exists()) {
@@ -422,7 +422,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             });
 
             assertNotNull(imageFileUsagesDTOS);
-            assertEquals(imageFileUsagesDTOS.size(), 2);
+            assertEquals(2, imageFileUsagesDTOS.size());
 
             assertTrue(imageFile.exists());
         } finally {
@@ -466,7 +466,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             });
 
             assertNotNull(imageFileUsagesDTOS);
-            assertEquals(imageFileUsagesDTOS.size(), 2);
+            assertEquals(2, imageFileUsagesDTOS.size());
 
             assertTrue(imageFile.exists());
         } finally {
