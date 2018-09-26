@@ -2,6 +2,8 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 25.07.17.
  */
+const logger = require('imcms-logger');
+
 define("imcms-selects-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-buttons-builder", "jquery", "imcms-checkboxes-builder"],
     function (BEM, primitives, buttons, $, checkboxesBuilder) {
@@ -169,6 +171,10 @@ define("imcms-selects-builder",
                     onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
                     $selectedValInput && $selectedValInput.val(value);
                     return $resultImcmsSelect;
+
+                } else {
+                    logger.log("%c Value '" + value + "' for select doesn't exist", "color: red;");
+                    logger.log($resultImcmsSelect[0]);
                 }
             }
         }
@@ -183,8 +189,8 @@ define("imcms-selects-builder",
                     return $resultImcmsSelect;
 
                 } else {
-                    console.log("%c Select is empty, nothing to choose", "color: red;");
-                    console.log($resultImcmsSelect[0]);
+                    logger.log("%c Select is empty, nothing to choose", "color: red;");
+                    logger.log($resultImcmsSelect[0]);
                 }
             }
         }

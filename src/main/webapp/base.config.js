@@ -75,6 +75,7 @@ module.exports = {
                             'imcms-text-editor-initializer',
                         ],
                         '': [
+                            'imcms-logger',
                             'imcms-authentication',
                             'imcms-document-types',
                             'imcms-calendar',

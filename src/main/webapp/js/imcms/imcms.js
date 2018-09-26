@@ -2,6 +2,10 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 28.08.18
  */
+Imcms.enableLogging = function () {
+    require('imcms-logger').enableLogging();
+};
+
 Imcms.initSiteSpecific = function (addEventsToSpecialAdmin) {
     require("imcms-site-specific-admin-panel").init(addEventsToSpecialAdmin);
 };

@@ -1,6 +1,7 @@
 const imcms = require('imcms');
 const sessionTimeoutManagement = require('imcms-session-timeout-management');
 const $ = require('jquery');
+const logger = require('imcms-logger');
 
 const API_PREFIX = "/api";
 let counter = 0;
@@ -8,17 +9,25 @@ let counter = 0;
 function logAjaxRequest(type, url, count, data) {
     const withData = (data !== null && data !== undefined);
 
-    console.time(url + count);
-    console.log(`%c AJAX ${type} call: ${url}${withData ? ' with request: ' : ''}`, 'color: blue;');
-    withData && console.log(data);
+    const groupLogger = logger.group(`${type} ${url}`);
+
+    groupLogger.start();
+
+    groupLogger.log(`%c AJAX ${type} call: ${url}${withData ? ' with request: ' : ''}`, 'color: blue;');
+    withData && groupLogger.log(data);
+    groupLogger.time(`${count} : ${url}`);
 }
 
 function logAjaxResponse(type, url, count, response) {
-    const hasResponse = (response !== null && response !== undefined);
+    const hasResponse = (response !== null) && (response !== undefined) && (response !== ''); // false and 0 is legal
 
-    console.timeEnd(url + count);
-    console.log(`%c AJAX ${type} call done: ${url}${hasResponse ? ' response: ' : ''}`, 'color: green;');
-    hasResponse && console.log(response);
+    const groupLogger = logger.group(`${type} ${url}`);
+
+    groupLogger.timeEnd(`${count} : ${url}`);
+    groupLogger.log(`%c AJAX ${type} call done: ${url}${hasResponse ? ' response: ' : ''}`, 'color: green;');
+    hasResponse && groupLogger.log(response);
+
+    groupLogger.finish();
 }
 
 function ajax(data, callback) {
@@ -29,9 +38,8 @@ function ajax(data, callback) {
         : this.contentType;
 
     const count = ++counter;
-    logAjaxRequest(type, url, count, data);
 
-    return $.ajax({
+    const ajaxObj = {
         url: url,
         type: type,
         contentType: contentType,
@@ -45,9 +53,14 @@ function ajax(data, callback) {
         },
 
         error: function (response) {
+            console.groupEnd();
             console.error(response);
         }
-    });
+    };
+
+    logAjaxRequest(type, url, count, data);
+
+    return $.ajax(ajaxObj);
 }
 
 function get(path) {

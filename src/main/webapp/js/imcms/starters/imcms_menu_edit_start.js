@@ -25,8 +25,6 @@ $(function () {
     var editorData = $editedTag.data();
     menuEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
 
-    console.log('texts', texts);
-
     const toolbarContent = [
         {
             type: 'id',

@@ -4,6 +4,7 @@
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.05.18
  */
+const logger = require('imcms-logger');
 const DisplacingList = require('imcms-displacing-array');
 
 class Subscriber {
@@ -34,7 +35,7 @@ class Topic {
     }
 
     _logHowManyPublicationsSavedYed() {
-        console.log(
+        logger.log(
             `%c Topic "${this.name}" has ${this.publications.length} publications so far.`,
             "color: orange"
         );
