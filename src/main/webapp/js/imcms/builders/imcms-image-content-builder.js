@@ -436,17 +436,24 @@ define("imcms-image-content-builder",
                     response && $(element).parent().parent().remove();
                 })
                 .error(function (response) {
-                    let usages = "";
-                    response.responseJSON.forEach(function (usage) {
-                        if (usage.docId) {
-                            usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " " + usage.comment + "</div>";
-                        } else {
-                            //Cache usage
-                            usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
-                        }
-                    });
-                    modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {});
-                });
+                        let usages = "";
+                        response.responseJSON.forEach(function (usage) {
+                            if (usage.docId) {
+                                if (usage.elementIndex) {
+                                    usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " Index:" + usage.elementIndex + "</div>";
+                                } else {
+                                    //Menu icon
+                                    usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + "</div>";
+                                }
+                            } else {
+                                //Cache usage
+                                usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
+                            }
+                        });
+                        modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {
+                        });
+                    }
+                );
         }
 
         function buildImageDescription(imageFile) {
@@ -640,4 +647,5 @@ define("imcms-image-content-builder",
             }
         };
     }
-);
+)
+;

@@ -20,9 +20,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
@@ -90,12 +90,17 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
                 .collect(groupingBy(Version::getDocId,
                         mapping(Version::getNo, maxBy(Integer::compare))));
 
-        List<Integer> latestDocIds = imageMaxVersions.keySet().stream().filter(docId -> versionService.getLatestVersion(docId).getNo() == imageMaxVersions.get(docId).get()).collect(toList());
+        List<Integer> latestDocIds = imageMaxVersions.keySet().stream()
+                .filter(docId -> versionService.getLatestVersion(docId).getNo() == imageMaxVersions.get(docId).get())
+                .collect(toList());
 
         imageMaxVersions.keySet().retainAll(latestDocIds);
 
         return plainImageFound.stream()
-                .filter(image -> image.getVersion().getNo() == 0 || Objects.nonNull(imageMaxVersions.get(image.getVersion().getDocId())))
+                .filter(image -> {
+                    @NotNull final Version version = image.getVersion();
+                    return version.getNo() == 0 || version.getNo() == (imageMaxVersions.get(version.getDocId()).get());
+                })
                 .collect(Collectors.toList());
     }
 

@@ -10,5 +10,6 @@ import lombok.NoArgsConstructor;
 public class ImageFileUsageDTO {
     private Integer docId;
     private Integer version;
+    private Integer elementIndex;
     private String comment;
 }
