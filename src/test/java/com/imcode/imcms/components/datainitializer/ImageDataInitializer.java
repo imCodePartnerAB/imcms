@@ -39,6 +39,12 @@ public class ImageDataInitializer extends TestDataCleaner {
         return generateImage(imageIndex, language, version, null);
     }
 
+    public Image createData(Integer imageIndex, String fileName, String imgUrl, Version version) {
+        final LanguageJPA language = languageRepository.findByCode("en");
+
+        return generateImage(imageIndex, fileName, imgUrl, language, version, null);
+    }
+
     public Image createData(int imageIndex, int docId, int versionIndex, LoopEntryRefJPA loopEntryRef) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
         final LanguageJPA language = languageRepository.findByCode("en");
@@ -53,6 +59,18 @@ public class ImageDataInitializer extends TestDataCleaner {
             image.setVersion(version);
             image.setLoopEntryRef(loopEntryRef);
             image.setFormat(Format.JPEG);
+            imageRepository.save(image);
+        });
+    }
+
+    public Image generateImage(int index, String fileName, String imgUrl, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef) {
+        return Value.with(new Image(), image -> {
+            image.setIndex(index);
+            image.setLanguage(language);
+            image.setVersion(version);
+            image.setLoopEntryRef(loopEntryRef);
+            image.setFormat(Format.JPEG);
+            image.setUrl(imgUrl);
             imageRepository.save(image);
         });
     }
