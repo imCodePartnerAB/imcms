@@ -177,7 +177,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAtWorkingSingleDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -209,7 +209,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAtLatestSingleDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -241,7 +241,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageAtSubdirectoryUsedAtLatestSingleDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final String testSubDirectoryName = "subdiretory";
         final File testSubdirectory = new File(imagesPath, testSubDirectoryName);
         final File testImageFile = new File(testSubdirectory, testImageFileName);
@@ -276,7 +276,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageAtSubdirectoryUsedAtLatestSingleDocument_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final String testSubDirectoryName = "subdiretory";
         final File testSubdirectory = new File(imagesPath, testSubDirectoryName);
         final File testImageFile = new File(testSubdirectory, testImageFileName);
@@ -297,7 +297,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAtWorkingDocumentAndPublishedDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -339,8 +339,8 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_TrueAndImageDeleted() throws IOException {
-        final String testImageFileName = "test.png";
-        final String test2ImageFileName = "test2.png";
+        final String testImageFileName = "test.jpg";
+        final String test2ImageFileName = "test2.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
 
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
@@ -357,15 +357,11 @@ public class ImageFileServiceTest {
             final int tempDocId = documentDataInitializer.createData().getId();
             final Version intermediateVersion = versionService.create(tempDocId, 1);
 
-            final Image imageIntermediate = imageDataInitializer.createData(1, intermediateVersion);
-            imageIntermediate.setName(testImageFileName);
-            imageIntermediate.setLinkUrl(File.separator + testImageFileName);
+            final Image imageIntermediate = imageDataInitializer.createData(1, testImageFileName, File.separator + testImageFileName, intermediateVersion);
 
 
             final Version latestVersion = versionService.create(tempDocId, 1);
-            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
-            imageLatest.setName(test2ImageFileName);
-            imageLatest.setLinkUrl(File.separator + test2ImageFileName);
+            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, File.separator + test2ImageFileName, latestVersion);
 
             imageFileService.deleteImage(imageFileDTO);
 
@@ -380,7 +376,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageNotUsedAtAnyLatestAndWorkingDocument_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -402,7 +398,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtPublishedOrWorkingDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -437,7 +433,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtWorkingDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -464,7 +460,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtPublishedDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -494,7 +490,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtSeveralWorkingDocuments_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -530,8 +526,8 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageNotUsedAsMenuImage_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.png";
-        final String stubImageFileName = "testStub.png";
+        final String testImageFileName = "test.jpg";
+        final String stubImageFileName = "testStub.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
