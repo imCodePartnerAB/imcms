@@ -35,8 +35,8 @@ function setWidth(newWidth) {
     const newImageBackgroundWidth = k * editableImage.getBackgroundWidth();
 
     $image.width(newWidth);
-    editableImage.setBackgroundWidth(~~newImageBackgroundWidth);
-    editableImage.setBackgroundPositionX(~~newImageLeft);
+    editableImage.setBackgroundWidth(newImageBackgroundWidth);
+    editableImage.setBackgroundPositionX(newImageLeft);
 
     $widthControl.val(newWidth);
 }
@@ -50,8 +50,8 @@ function setHeight(newHeight) {
     const newImageBackgroundHeight = k * editableImage.getBackgroundHeight();
 
     $image.height(newHeight);
-    editableImage.setBackgroundHeight(~~newImageBackgroundHeight);
-    editableImage.setBackgroundPositionY(~~newImageTop);
+    editableImage.setBackgroundHeight(newImageBackgroundHeight);
+    editableImage.setBackgroundPositionY(newImageTop);
 
     $heightControl.val(newHeight);
 }
