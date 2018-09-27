@@ -464,6 +464,8 @@ define(
 
                 previewImage.clearData();
 
+                imageEditSizeControls.enableProportionsLock();
+
                 cropper.destroyImageCropper();
 
             },

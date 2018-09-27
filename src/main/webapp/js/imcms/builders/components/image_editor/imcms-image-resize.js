@@ -119,6 +119,10 @@ module.exports = {
 
     toggleSaveProportions: () => (saveProportions = !saveProportions),
 
+    enableSaveProportions() {
+        saveProportions = true;
+    },
+
     setHeight(newValue) {
         setHeight(trimToMaxMinHeight(newValue));
     },
@@ -183,8 +187,8 @@ module.exports = {
      * Can be used after setting strict w/h to update all proportions and min/max restrictions
      */
     updateSizing() {
-        setWidthProportionally(currentSize.width);//editableImage.getImage().width());
-        setHeightProportionally(currentSize.height);//editableImage.getImage().height());
+        setWidthProportionally(currentSize.width);
+        setHeightProportionally(currentSize.height);
     },
 
     clearData() {
