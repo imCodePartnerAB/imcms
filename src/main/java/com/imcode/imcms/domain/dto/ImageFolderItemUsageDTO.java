@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class ImageFolderItemUsageDTO {
     private String filePath;
-    private String folderName;
+    private String imageName;
     private List<ImageFileUsageDTO> usages;
 
 }

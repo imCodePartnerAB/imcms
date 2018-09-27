@@ -157,7 +157,7 @@ class DefaultImageFolderService implements ImageFolderService {
         for (ImageFileDTO image : imagesToCheck) {
             List<ImageFileUsageDTO> imageUsages = imageFileService.getImageFileUsages(image.getPath());
             if (!imageUsages.isEmpty()) {
-                usages.add(new ImageFolderItemUsageDTO(folderWithImages.getPath(), folderWithImages.getName(), imageUsages));
+                usages.add(new ImageFolderItemUsageDTO(folderWithImages.getPath(), image.getName(), imageUsages));
             }
         }
 
