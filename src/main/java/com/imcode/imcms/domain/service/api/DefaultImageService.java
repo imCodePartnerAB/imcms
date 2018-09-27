@@ -82,7 +82,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
     @Override
     public List<Image> getUsedImagesInWorkingAndLatestVersions(String imageURL) {
-        List<Image> plainImageFound = repository.findByURL(imageURL);
+        List<Image> plainImageFound = repository.findByUrl(imageURL);
 
         Map<Integer, Optional<Integer>> imageMaxVersions = plainImageFound.stream()
                 .map(Image::getVersion)
