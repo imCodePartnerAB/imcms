@@ -110,14 +110,14 @@ class DefaultImageFileService implements ImageFileService {
     @Override
     public List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath) {
         List<Image> foundUsagesInDocumentContent =
-                imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
+                imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.startsWith(File.separator) ? imageFileDTOPath.substring(1) : imageFileDTOPath);
         List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
 
         List<ImageCacheDomainObject> foundImageCache =
                 imageCacheMapper.getAllImageResourcesByResourcePath(File.separator + imagesPath.getName() + imageFileDTOPath);
 
         List<ImageFileUsageDTO> usages = new ArrayList<>();
-        if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
+        if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty() || !foundImageCache.isEmpty()) {
             usages.addAll(foundUsagesInDocumentContent.stream()
                     .map(item -> new ImageFileUsageDTO(item.getVersion().getDocId(), item.getVersion().getNo(), item.getIndex(), "content image"))
                     .collect(Collectors.toList())
