@@ -34,6 +34,9 @@ define("imcms-controls-builder", ["imcms-bem-builder"], function (BEM) {
         check: function (onClick) {
             return buildControl("check", onClick)
         },
+        warning: function (onClick) {
+            return buildControl("warning", onClick)
+        },
         buildControlsBlock: function (tag, controls) {
             return controlsBEM.buildBlock(tag, controls, {}, "control");
         }
