@@ -216,6 +216,7 @@ define("imcms-image-content-builder",
             return function checkFolder() {
                 imageFoldersREST.check({"path": folder.path})
                     .success(function (response) {
+                        $imagesContainer.find('.imcms-control--warning').remove();
                         folder.files.forEach(function (file, index) {
                             response.forEach(function (usedImage) {
                                 if (file.name === usedImage.imageName) {
