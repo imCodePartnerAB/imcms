@@ -89,19 +89,22 @@ define("imcms-image-content-builder",
             },
             create: function (folder, level) {
                 return components.controls.create(setCreateFolder(folder, level));
+            },
+            check: function (folder) {
+                return components.controls.check(setCheckFolder(folder));
             }
         };
 
         function buildRootControls(rootFile) {
+            var elements = {};
+            elements.name = $("<div>", {
+                "class": "imcms-title",
+                text: rootFile.name
+            });
+            elements.controls = buildRootFolderControlElements(rootFile);
             return new BEM({
                 block: "imcms-main-folders-controls",
-                elements: {
-                    "name": $("<div>", {
-                        "class": "imcms-title",
-                        text: rootFile.name
-                    }),
-                    "control": folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL)
-                }
+                elements: elements
             }).buildBlockStructure("<div>", {
                 click: function () {
                     onFolderClick.call(this, rootFile)
@@ -162,7 +165,8 @@ define("imcms-image-content-builder",
                     modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
                 })
                 .error(function () {
-                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {});
+                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {
+                    });
                 });
         }
 
@@ -206,6 +210,29 @@ define("imcms-image-content-builder",
 
                 openSubFolders.call($openFolderBtn[0]);
             }
+        }
+
+        function setCheckFolder(folder) {
+            return function checkFolder() {
+                imageFoldersREST.check({"path": folder.path})
+                    .success(function (response) {
+                        $imagesContainer.find('.imcms-control--warning').remove();
+                        folder.files.forEach(function (file, index) {
+                            response.forEach(function (usedImage) {
+                                if (file.name === usedImage.imageName) {
+                                    buildImageUsageInfoIcon(folder.$images[index], usedImage.usages);
+                                }
+                            });
+                        });
+                    });
+            }
+        }
+
+        function buildImageUsageInfoIcon($image, usages) {
+            var warningButton = components.controls.warning(function () {
+                buildImageUsagesModal(usages);
+            });
+            $image.find('.imcms-choose-img-description').append(warningButton);
         }
 
         function getFolderPath($folder) {
@@ -311,7 +338,17 @@ define("imcms-image-content-builder",
             var controlsElements = [
                 folderControlsBuilder.remove(subfolder),
                 folderControlsBuilder.edit(subfolder, level),
-                folderControlsBuilder.create(subfolder, level)
+                folderControlsBuilder.create(subfolder, level),
+                folderControlsBuilder.check(subfolder)
+            ];
+
+            return components.controls.buildControlsBlock("<div>", controlsElements);
+        }
+
+        function buildRootFolderControlElements(rootFile) {
+            const controlsElements = [
+                folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL),
+                folderControlsBuilder.check(rootFile)
             ];
 
             return components.controls.buildControlsBlock("<div>", controlsElements);
@@ -436,24 +473,28 @@ define("imcms-image-content-builder",
                     response && $(element).parent().parent().remove();
                 })
                 .error(function (response) {
-                        let usages = "";
-                        response.responseJSON.forEach(function (usage) {
-                            if (usage.docId) {
-                                if (usage.elementIndex) {
-                                    usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " Index:" + usage.elementIndex + "</div>";
-                                } else {
-                                    //Menu icon
-                                    usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + "</div>";
-                                }
-                            } else {
-                                //Cache usage
-                                usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
-                            }
-                        });
-                        modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {
-                        });
+                        buildImageUsagesModal(response.responseJSON);
                     }
                 );
+        }
+
+        function buildImageUsagesModal(usagesList) {
+            let usages = "";
+            usagesList.forEach(function (usage) {
+                if (usage.docId) {
+                    if (usage.elementIndex) {
+                        usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + " Index:" + usage.elementIndex + "</div>";
+                    } else {
+                        //Menu icon
+                        usages += "<div>" + "Doc: " + usage.docId + " Version: " + usage.version + "</div>";
+                    }
+                } else {
+                    //Cache usage
+                    usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
+                }
+            });
+            modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {
+            });
         }
 
         function buildImageDescription(imageFile) {

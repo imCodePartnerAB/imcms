@@ -7,5 +7,8 @@ define("imcms-image-folders-rest-api", ["imcms-rest-api"], function (rest) {
     let api = new rest.API(url);
 
     api.canDelete = rest.ajax.bind({url: url + '/can-delete', type: "POST", json: true});
+
+    api.check = rest.ajax.bind({url: url + '/check', type: "GET", json: false});
+
     return api;
 });
