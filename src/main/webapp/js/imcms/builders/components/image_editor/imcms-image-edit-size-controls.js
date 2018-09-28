@@ -69,19 +69,6 @@ function getWidthControl() {
     return $widthControl ? $widthControl : buildWidthControl()
 }
 
-let $proportionsBtn;
-
-function getProportionsButton() {
-    return $proportionsBtn || ($proportionsBtn = components.buttons.proportionsButton({
-        "data-state": "active",
-        title: texts.proportionsButtonTitle,
-        click: function () {
-            let saveProportions = imageResize.toggleSaveProportions();
-            $(this).attr("data-state", saveProportions ? "active" : "passive");
-        }
-    }))
-}
-
 let $title;
 
 function getTitle() {
@@ -95,7 +82,6 @@ function buildEditSizeControls() {
         elements: [
             {"title": getTitle()},
             {"number": getWidthControl()},
-            {"button": getProportionsButton()},
             {"number": getHeightControl()}
         ]
     }).buildBlockStructure("<div>");
@@ -115,13 +101,6 @@ module.exports = {
     setHeight: (newHeight) => getHeightControl().getInput().val(newHeight),
 
     setWidth: (newWidth) => getWidthControl().getInput().val(newWidth),
-
-    getProportionsButton: getProportionsButton,
-
-    enableProportionsLock() {
-        getProportionsButton().attr("data-state", "active");
-        imageResize.enableSaveProportions();
-    },
 
     getEditSizeControls: () => $sizeControls || ($sizeControls = buildEditSizeControls()),
 };

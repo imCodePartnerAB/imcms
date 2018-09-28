@@ -22,6 +22,10 @@
     width: 25%;
 }
 
+.imcms-editable-img-controls__control-size .imcms-edit-size__number {
+    padding-right: 10px;
+}
+
 .imcms-editable-img-controls__control-scale-n-rotate {
     width: 35%;
 }

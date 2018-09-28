@@ -129,6 +129,7 @@ module.exports = {
                                 'imcms-toolbar-view-builder',
                                 'imcms-cropping-angle',
                                 'imcms-crop-coords-controllers',
+                                'imcms-image-proportions-locker-button',
                             ],
                             page_info_tabs: [
                                 'imcms-page-info-tabs-builder',

@@ -1,5 +1,6 @@
 const originImageHeightBlock = require('imcms-origin-image-height-block');
 const originImageWidthBlock = require('imcms-origin-image-width-block');
+const imageProportionsLocker = require('imcms-image-proportions-locker-button');
 
 define(
     "imcms-image-editor-body-head-builder",
@@ -243,29 +244,6 @@ define(
             }))
         }
 
-        let $proportionsButtonCopy;
-
-        function getProportionsButtonCopy() {
-            return $proportionsButtonCopy || (
-                $proportionsButtonCopy = imageEditSizeControls.getProportionsButton()
-                    .click(() => {
-                        setTimeout(() => {
-                            let saveProportions = imageResize.isSaveProportionsEnabled();
-                            $proportionsButtonCopy.attr("data-state", saveProportions ? "active" : "passive");
-                        })
-                    })
-                    .clone(true, true)
-                    .hide()
-                    .click(() => {
-                        setTimeout(() => {
-                            let saveProportions = imageResize.isSaveProportionsEnabled();
-                            imageEditSizeControls.getProportionsButton()
-                                .attr("data-state", saveProportions ? "active" : "passive");
-                        })
-                    })
-            )
-        }
-
         let $zoomPlusButton;
 
         function getZoomPlusButton() {
@@ -340,7 +318,7 @@ define(
                 )
                 .show(
                     getCancelChangesButton(),
-                    getProportionsButtonCopy(),
+                    imageProportionsLocker.getProportionsButton(),
                     getApplyChangesButton(),
                 )
                 .onCancel(cropper.destroyImageCropper)
@@ -365,7 +343,7 @@ define(
                 block: "imcms-edit-image",
                 elements: {
                     "button": [
-                        getProportionsButtonCopy(),
+                        imageProportionsLocker.getProportionsButton(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getZoomResetButton(),
@@ -450,7 +428,7 @@ define(
             clearData() {
                 [
                     getCancelChangesButton(),
-                    getProportionsButtonCopy(),
+                    imageProportionsLocker.getProportionsButton(),
                     getApplyChangesButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
@@ -464,7 +442,7 @@ define(
 
                 previewImage.clearData();
 
-                imageEditSizeControls.enableProportionsLock();
+                imageProportionsLocker.enableProportionsLock();
 
                 cropper.destroyImageCropper();
 
