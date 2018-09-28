@@ -31,6 +31,9 @@ define("imcms-controls-builder", ["imcms-bem-builder"], function (BEM) {
         archive: function (onClick) {
             return buildControl("archive", onClick)
         },
+        check: function (onClick) {
+            return buildControl("check", onClick)
+        },
         buildControlsBlock: function (tag, controls) {
             return controlsBEM.buildBlock(tag, controls, {}, "control");
         }

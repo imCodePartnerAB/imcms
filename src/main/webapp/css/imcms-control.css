@@ -22,6 +22,14 @@
     background-image: url("/images_new/controls/icon_control_save_archive.png");
 }
 
+.imcms-control--check {
+    background-image: url("/images_new/controls/icon_folder_controll_check.svg");
+}
+
+.imcms-control--check:hover {
+    background-image: url("/images_new/controls/icon_folder_controll_check_hover.svg");
+}
+
 .imcms-control--edit.imcms-control--menu {
     background-image: url("/images_new/controls/icon_menu_edit.png");
     background-size: contain;
