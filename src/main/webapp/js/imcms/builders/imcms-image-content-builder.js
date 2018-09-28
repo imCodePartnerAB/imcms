@@ -78,33 +78,27 @@ define("imcms-image-content-builder",
         }
 
         var folderControlsBuilder = {
-            move: function (folder) {
-                return components.controls.move(moveFolder.bind(folder));
-            },
-            remove: function (folder) {
-                return components.controls.remove(removeFolder.bind(folder));
-            },
-            edit: function (folder, level) {
-                return components.controls.edit(setRenameFolder(folder, level));
-            },
-            create: function (folder, level) {
-                return components.controls.create(setCreateFolder(folder, level));
-            },
-            check: function (folder) {
-                return components.controls.check(setCheckFolder(folder));
-            }
+            move: folder => components.controls.move(moveFolder.bind(folder)),
+
+            remove: folder => components.controls.remove(removeFolder.bind(folder)),
+
+            edit: (folder, level) => components.controls.edit(setRenameFolder(folder, level)),
+
+            create: (folder, level) => components.controls.create(setCreateFolder(folder, level)),
+
+            check: folder => components.controls.check(setCheckFolder(folder))
         };
 
         function buildRootControls(rootFile) {
-            var elements = {};
-            elements.name = $("<div>", {
-                "class": "imcms-title",
-                text: rootFile.name
-            });
-            elements.controls = buildRootFolderControlElements(rootFile);
             return new BEM({
                 block: "imcms-main-folders-controls",
-                elements: elements
+                elements: {
+                    name: $("<div>", {
+                        "class": "imcms-title",
+                        text: rootFile.name
+                    }),
+                    controls: buildRootFolderControlElements(rootFile)
+                }
             }).buildBlockStructure("<div>", {
                 click: function () {
                     onFolderClick.call(this, rootFile)
@@ -145,29 +139,18 @@ define("imcms-image-content-builder",
             var path = getFolderPath($folder);
             var name = this.name;
 
-            var onRemoveResponse = function (response) {
-                if (response) {
-                    onDoneRemoveFolder($folder);
-
-                } else {
-                    console.error("Folder " + name + " was not removed!");
-                }
+            var onRemoveResponse = response => {
+                if (response) onDoneRemoveFolder($folder);
+                else console.error("Folder " + name + " was not removed!");
             };
 
-            var onAnswer = function (answer) {
-                if (answer) {
-                    imageFoldersREST.remove({"path": path}).done(onRemoveResponse);
-                }
+            var onAnswer = answer => {
+                if (answer) imageFoldersREST.remove({"path": path}).done(onRemoveResponse);
             };
 
             imageFoldersREST.canDelete({"path": path})
-                .success(function () {
-                    modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
-                })
-                .error(function () {
-                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {
-                    });
-                });
+                .success(() => modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer))
+                .error(() => modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, new Function()));
         }
 
         function buildFolderRenamingBlock(folder, level) {
@@ -213,12 +196,12 @@ define("imcms-image-content-builder",
         }
 
         function setCheckFolder(folder) {
-            return function checkFolder() {
+            return () => {
                 imageFoldersREST.check({"path": folder.path})
-                    .success(function (response) {
+                    .success(response => {
                         $imagesContainer.find('.imcms-control--warning').remove();
-                        folder.files.forEach(function (file, index) {
-                            response.forEach(function (usedImage) {
+                        folder.files.forEach((file, index) => {
+                            response.forEach(usedImage => {
                                 if (file.name === usedImage.imageName) {
                                     buildImageUsageInfoIcon(folder.$images[index], usedImage.usages);
                                 }
@@ -229,9 +212,7 @@ define("imcms-image-content-builder",
         }
 
         function buildImageUsageInfoIcon($image, usages) {
-            var warningButton = components.controls.warning(function () {
-                buildImageUsagesModal(usages);
-            });
+            var warningButton = components.controls.warning(() => buildImageUsagesModal(usages));
             $image.find('.imcms-choose-img-description').append(warningButton);
         }
 
@@ -469,13 +450,8 @@ define("imcms-image-content-builder",
             imageFile.path = getFolderPath(activeFolder.$folder) + "/" + imageFile.name;
 
             imageFilesREST.remove(imageFile)
-                .success(function (response) {
-                    response && $(element).parent().parent().remove();
-                })
-                .error(function (response) {
-                        buildImageUsagesModal(response.responseJSON);
-                    }
-                );
+                .success(response => response && $(element).parent().parent().remove())
+                .error(response => buildImageUsagesModal(response.responseJSON));
         }
 
         function buildImageUsagesModal(usagesList) {
@@ -493,8 +469,7 @@ define("imcms-image-content-builder",
                     usages += "<div>" + "Doc: undefined " + usage.comment + "</div>";
                 }
             });
-            modalWindow.buildWarningWindow(texts.imageStillUsed + usages, function () {
-            });
+            modalWindow.buildWarningWindow(texts.imageStillUsed + usages, new Function());
         }
 
         function buildImageDescription(imageFile) {
