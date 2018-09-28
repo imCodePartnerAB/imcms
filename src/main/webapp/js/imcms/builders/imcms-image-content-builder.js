@@ -89,19 +89,22 @@ define("imcms-image-content-builder",
             },
             create: function (folder, level) {
                 return components.controls.create(setCreateFolder(folder, level));
+            },
+            check: function (folder) {
+                return components.controls.check(setCheckFolder(folder));
             }
         };
 
         function buildRootControls(rootFile) {
+            var elements = {};
+            elements.name = $("<div>", {
+                "class": "imcms-title",
+                text: rootFile.name
+            });
+            elements.controls = buildRootFolderControlElements(rootFile);
             return new BEM({
                 block: "imcms-main-folders-controls",
-                elements: {
-                    "name": $("<div>", {
-                        "class": "imcms-title",
-                        text: rootFile.name
-                    }),
-                    "control": folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL)
-                }
+                elements: elements
             }).buildBlockStructure("<div>", {
                 click: function () {
                     onFolderClick.call(this, rootFile)
@@ -162,7 +165,8 @@ define("imcms-image-content-builder",
                     modalWindow.buildModalWindow(texts.removeFolderMessage + name + "\"?", onAnswer);
                 })
                 .error(function () {
-                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {});
+                    modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, function () {
+                    });
                 });
         }
 
@@ -205,6 +209,15 @@ define("imcms-image-content-builder",
                 }
 
                 openSubFolders.call($openFolderBtn[0]);
+            }
+        }
+
+        function setCheckFolder(folder) {
+            return function checkFolder() {
+                imageFoldersREST.check({"path": folder.path})
+                    .success(function (response) {
+                        console.log('DATA', response);
+                    });
             }
         }
 
@@ -311,7 +324,17 @@ define("imcms-image-content-builder",
             var controlsElements = [
                 folderControlsBuilder.remove(subfolder),
                 folderControlsBuilder.edit(subfolder, level),
-                folderControlsBuilder.create(subfolder, level)
+                folderControlsBuilder.create(subfolder, level),
+                folderControlsBuilder.check(subfolder)
+            ];
+
+            return components.controls.buildControlsBlock("<div>", controlsElements);
+        }
+
+        function buildRootFolderControlElements(rootFile) {
+            const controlsElements = [
+                folderControlsBuilder.create(rootFile, ROOT_FOLDER_LEVEL),
+                folderControlsBuilder.check(rootFile)
             ];
 
             return components.controls.buildControlsBlock("<div>", controlsElements);
