@@ -8,8 +8,7 @@ define("imcms-image-folders-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.canDelete = rest.ajax.bind({url: url + '/can-delete', type: "POST", json: true});
 
-    api.check = function (folderName) {
-        return rest.ajax.bind({url: url + '/check', type: "GET", json: false}, folderName);
-    };
+    api.check = rest.ajax.bind({url: url + '/check', type: "GET", json: false});
+
     return api;
 });
