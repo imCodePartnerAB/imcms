@@ -223,7 +223,6 @@ define("imcms-image-content-builder",
                                 }
                             });
                         });
-                        console.log('DATA', response);
                     });
             }
         }
