@@ -30,11 +30,11 @@ repositories {
 }
 
 ext {
-    springframeworkVersion = '5.0.8.RELEASE'
+    springframeworkVersion = '5.+'
     hibernateVersion = '5.2.13.Final'
     solrVersion = '7.2.1'
     slf4jVersion = '1.7.25'
-    junitVersion = '5.2.0'
+    junitVersion = '5.+'
     lombokVersion = '1.18.2'
 
     sharedManifest = manifest {
@@ -121,8 +121,8 @@ dependencies {
     testCompile "org.dbunit:dbunit:2.5.1"
     testCompile "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
     testCompile "org.junit.vintage:junit-vintage-engine:${junitVersion}"
-    testCompile "org.mockito:mockito-core:2.19.0"
-    testCompile "org.mockito:mockito-junit-jupiter:2.19.0"
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile "org.mockito:mockito-junit-jupiter:2.+"
     testCompile "org.skyscreamer:jsonassert:1.5.0"
     testCompile "org.springframework:spring-test:${springframeworkVersion}"
 
