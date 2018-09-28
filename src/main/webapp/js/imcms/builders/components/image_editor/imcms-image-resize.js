@@ -9,6 +9,7 @@ const editableImage = require('imcms-editable-image');
 let saveProportions = true; // by default
 const original = {};
 const currentSize = {};
+let proportionsCoefficient;
 
 let maxWidth, maxHeight, minWidth, minHeight;
 
@@ -69,7 +70,7 @@ function setWidthProportionally(newWidth) {
 }
 
 function updateWidthProportionally(newHeight) {
-    const proportionalWidth = ~~((newHeight * currentSize.width) / currentSize.height);
+    const proportionalWidth = ~~(newHeight * proportionsCoefficient);
     const fixedWidth = trimToMaxMinWidth(proportionalWidth);
 
     (fixedWidth === proportionalWidth)
@@ -78,7 +79,7 @@ function updateWidthProportionally(newHeight) {
 }
 
 function updateHeightProportionally(newWidth) {
-    const proportionalHeight = ~~((newWidth * currentSize.height) / currentSize.width);
+    const proportionalHeight = ~~(newWidth / proportionsCoefficient);
     const fixedHeight = trimToMaxMinHeight(proportionalHeight);
 
     (fixedHeight === proportionalHeight)
@@ -98,14 +99,17 @@ module.exports = {
     setCurrentSize(width, height) {
         currentSize.width = width;
         currentSize.height = height;
+        proportionsCoefficient = currentSize.width / currentSize.height;
     },
     getOriginal: () => original,
     setOriginal(originalWidth, originalHeight) {
         originImageHeightBlock.setValue(originalHeight);
         originImageWidthBlock.setValue(originalWidth);
 
-        original.width = currentSize.width = originalWidth;
-        original.height = currentSize.height = originalHeight;
+        original.width = originalWidth;
+        original.height = originalHeight;
+
+        this.setCurrentSize(originalWidth, originalHeight);
     },
     setWidthControl($control) {
         $widthControl = $control

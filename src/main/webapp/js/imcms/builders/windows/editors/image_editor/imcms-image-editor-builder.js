@@ -114,8 +114,8 @@ define(
                     imageResize.setWidthStrict(0, original.width);
                     imageResize.setHeightStrict(0, original.height);
 
-                    imageResize.setWidthProportionally(imageData.width);
-                    imageResize.setHeightProportionally(imageData.height);
+                    imageResize.setCurrentSize(imageData.width, imageData.height);
+                    imageResize.updateSizing();
                 }
 
                 imageRotate.rotateImage(imageData.rotateDirection);
