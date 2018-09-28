@@ -216,9 +216,23 @@ define("imcms-image-content-builder",
             return function checkFolder() {
                 imageFoldersREST.check({"path": folder.path})
                     .success(function (response) {
+                        folder.files.forEach(function (file, index) {
+                            response.forEach(function (usedImage) {
+                                if (file.name === usedImage.imageName) {
+                                    buildImageUsageInfoIcon(folder.$images[index], usedImage.usages);
+                                }
+                            });
+                        });
                         console.log('DATA', response);
                     });
             }
+        }
+
+        function buildImageUsageInfoIcon($image, usages) {
+            var warningButton = components.controls.warning(function () {
+                buildImageUsagesModal(usages);
+            });
+            $image.find('.imcms-choose-img-description').append(warningButton);
         }
 
         function getFolderPath($folder) {
