@@ -42,6 +42,11 @@
     right: -5px;
 }
 
+.imcms-choose-img-description .imcms-control--warning {
+    right: -5px;
+    position: absolute;
+}
+
 .imcms-choose-img-description__img-title {
     font-size: 17px;
     text-overflow: ellipsis;
