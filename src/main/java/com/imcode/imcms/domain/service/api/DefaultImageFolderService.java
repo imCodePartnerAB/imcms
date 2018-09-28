@@ -1,10 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageFolderService;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
@@ -33,16 +36,18 @@ class DefaultImageFolderService implements ImageFolderService {
 
     private final BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO;
     private final Function<File, ImageFileDTO> fileToImageFileDTO;
+    private final ImageFileService imageFileService;
     private File imagesPath;
 
     @SneakyThrows
     DefaultImageFolderService(BiFunction<File, Boolean, ImageFolderDTO> fileToImageFolderDTO,
                               Function<File, ImageFileDTO> fileToImageFileDTO,
-                              @Value("${ImagePath}") Resource imagesPath) {
+                              @Value("${ImagePath}") Resource imagesPath, ImageFileService imageFileService) {
 
         this.fileToImageFolderDTO = fileToImageFolderDTO;
         this.fileToImageFileDTO = fileToImageFileDTO;
         this.imagesPath = imagesPath.getFile();
+        this.imageFileService = imageFileService;
     }
 
     @Override
@@ -139,5 +144,23 @@ class DefaultImageFolderService implements ImageFolderService {
         folderToGetImages.setFiles(folderFiles);
 
         return folderToGetImages;
+    }
+
+    @Override
+    public List<ImageFolderItemUsageDTO> checkFolder(ImageFolderDTO folderToCheck) {
+        List<ImageFolderItemUsageDTO> usages = new ArrayList<>();
+
+        final ImageFolderDTO folderWithImages = getImagesFrom(folderToCheck);
+
+        final List<ImageFileDTO> imagesToCheck = folderWithImages.getFiles();
+
+        for (ImageFileDTO image : imagesToCheck) {
+            List<ImageFileUsageDTO> imageUsages = imageFileService.getImageFileUsages(image.getPath());
+            if (!imageUsages.isEmpty()) {
+                usages.add(new ImageFolderItemUsageDTO(folderWithImages.getPath(), image.getName(), imageUsages));
+            }
+        }
+
+        return usages;
     }
 }

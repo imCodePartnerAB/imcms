@@ -1,18 +1,30 @@
 package com.imcode.imcms.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -20,6 +32,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import static java.io.File.separator;
 import static org.junit.Assert.*;
@@ -28,8 +43,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @Transactional
 public class ImageFolderControllerTest extends AbstractControllerTest {
 
+    @Autowired
+    private CommonContentService commonContentService;
+    @Autowired
+    private VersionService versionService;
+
+    @Autowired
+    private ImageDataInitializer imageDataInitializer;
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
     @Value("${ImagePath}")
     private File imagesPath;
+    @Value("classpath:img1.jpg")
+    private File testFile;
 
     @Override
     protected String controllerPath() {
@@ -37,10 +64,19 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     }
 
     @Before
-    public void setAdminAsCurrentUser() {
+    public void setAdminAsCurrentUserAndPrepareData() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
+
+        imageDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
+    }
+
+    @After
+    public void clearTestData() {
+        imageDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -467,7 +503,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Test
     public void deleteFolder_When_FolderNotEmptyAndFolderExist_Expect_DirectoryNotEmptyExceptionAndFolderNotDeleted() throws Exception {
         final String testDirectoryName = "testDirectory";
-        final String testImageName = "test.png";
+        final String testImageName = "test.jpg";
         final File testDirectory = new File(imagesPath, testDirectoryName);
         final File testImage = new File(testDirectory, testImageName);
         final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testDirectoryName);
@@ -547,7 +583,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Test
     public void canBeDeleted_When_FolderNotEmptyAndFolderExist_Expect_DirectoryNotEmptyException() throws Exception {
         final String testDirectoryName = "testDirectory";
-        final String testImageName = "test.png";
+        final String testImageName = "test.jpg";
         final File testDirectory = new File(imagesPath, testDirectoryName);
         final File testImage = new File(testDirectory, testImageName);
         final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testDirectoryName);
@@ -620,4 +656,190 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             FileUtils.deleteDirectory(testDirectory);
         }
     }
+
+    @Test
+    public void checkFolderForImagesUsed_When_FolderContainsUsedImage_Expect_OkAndListWithUsageForImage() throws Exception {
+        final String testImageFileName = "test.jpg";
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        imageFileDTO.setPath(testImageFileName);
+
+        File testImageFile = new File(imagesPath, testImageFileName);
+
+        try {
+            Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+
+            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
+
+            commonDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
+            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
+
+            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
+            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, testImageFileName, latestVersion);
+
+            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
+            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testImageFileName, testImageFileName, workingVersion);
+
+            final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
+                    .param("path", "");
+
+            final String jsonResponse = getJsonResponse(requestBuilderGet);
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
+            });
+
+            assertNotNull(imageFileUsagesDTOS);
+            assertEquals(1, imageFileUsagesDTOS.size());
+            assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
+        } finally {
+            testImageFile.delete();
+        }
+    }
+
+    @Test
+    public void checkFolderForImagesUsed_When_FolderNotContainsUsedImage_Expect_OkAndEmptyList() throws Exception {
+        final String folderPathToCheck = "";
+        final String testStubImageFileName = "testStub.jpg";
+
+        final String testDirectory = "subDirectory";
+        final File testDirectoryFile = new File(imagesPath, testDirectory);
+
+        File testImageFile = new File(testDirectoryFile, testStubImageFileName);
+
+        try {
+            testDirectoryFile.mkdirs();
+            Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+
+            final ImageFileDTO imageFileDTOStub = new ImageFileDTO();
+            imageFileDTOStub.setPath(File.separator + testDirectory + File.separator + testStubImageFileName);
+
+            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
+
+            commonDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTOStub.getPath()));
+            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
+
+            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
+            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testStubImageFileName, testDirectory + File.separator + testStubImageFileName, latestVersion);
+
+            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
+            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testStubImageFileName, testDirectory + File.separator + testStubImageFileName, workingVersion);
+
+            final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
+                    .param("path", folderPathToCheck);
+
+            final String jsonResponse = getJsonResponse(requestBuilderGet);
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
+            });
+
+            assertTrue(imageFileUsagesDTOS.isEmpty());
+        } finally {
+            FileUtils.deleteDirectory(testDirectoryFile);
+        }
+    }
+
+    @Test
+    public void checkSubFolderForImagesUsed_When_SubFolderContainsUsedImage_Expect_OkAndListListWithUsageForImage() throws Exception {
+        final String testDirectory = "subDirectory";
+        final File testDirectoryFile = new File(imagesPath, testDirectory);
+
+        final String testImageFileName = "test.jpg";
+        File testImageFile = new File(testDirectoryFile, testImageFileName);
+
+        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+
+        try {
+            testDirectoryFile.mkdirs();
+            Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+
+            imageFileDTO.setPath(File.separator + testDirectory + File.separator + testImageFileName);
+
+            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
+
+            commonDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
+            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
+
+            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
+            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, testDirectory + File.separator + testImageFileName, latestVersion);
+
+            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
+            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testImageFileName, testDirectory + File.separator + testImageFileName, workingVersion);
+
+            final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
+                    .param("path", File.separator + testDirectory);
+
+            final String jsonResponse = getJsonResponse(requestBuilderGet);
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
+            });
+
+            assertNotNull(imageFileUsagesDTOS);
+            assertEquals(1, imageFileUsagesDTOS.size());
+            assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
+
+
+        } finally {
+            FileUtils.deleteDirectory(testDirectoryFile);
+        }
+
+    }
+
+    @Test
+    public void checkSubFolderForImagesUsed_When_FolderContainsSeveralUsedImages_Expect_OkAndListListWithUsageForImages() throws Exception {
+        final String folderPathToCheck = "subDirectory";
+        final File testFolder = new File(imagesPath, folderPathToCheck);
+
+        final String testImage1FileName = "test1.jpg";
+        final String testImage2FileName = "test2.jpg";
+        final File testFile1 = new File(testFolder, testImage1FileName);
+        final File testFile2 = new File(testFolder, testImage2FileName);
+
+        try {
+            testFolder.mkdirs();
+            Files.copy(testFile.toPath(), testFile1.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            Files.copy(testFile.toPath(), testFile2.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+
+
+            final ImageFileDTO imageFile1DTO = new ImageFileDTO();
+            imageFile1DTO.setPath(File.separator + testFolder + File.separator + testImage1FileName);
+
+            final ImageFileDTO imageFile2DTO = new ImageFileDTO();
+            imageFile2DTO.setPath(File.separator + folderPathToCheck + File.separator + testImage2FileName);
+
+            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
+
+            commonDocumentDTO.getCommonContents()
+                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFile2DTO.getPath()));
+            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
+
+            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
+            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testImage1FileName, folderPathToCheck + File.separator + testImage1FileName, latestVersion);
+
+            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
+            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testImage2FileName, folderPathToCheck + File.separator + testImage2FileName, workingVersion);
+
+
+            final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
+                    .param("path", File.separator + folderPathToCheck);
+            final String jsonResponse = getJsonResponse(requestBuilderGet);
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
+            });
+
+            assertFalse(imageFileUsagesDTOS.isEmpty());
+            assertEquals(2, imageFileUsagesDTOS.size());
+            // TODO: 26.09.18 Make better check of returned data
+            assertEquals(1, imageFileUsagesDTOS.get(0).getUsages().size());
+            assertEquals(3, imageFileUsagesDTOS.get(1).getUsages().size());
+        } finally {
+            FileUtils.deleteDirectory(testFolder);
+        }
+    }
+
 }

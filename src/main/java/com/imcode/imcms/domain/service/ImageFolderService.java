@@ -1,8 +1,10 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Service for Images Content Manager.
@@ -24,4 +26,6 @@ public interface ImageFolderService {
     boolean deleteFolder(ImageFolderDTO deleteMe) throws IOException;
 
     ImageFolderDTO getImagesFrom(ImageFolderDTO folderToGetImages);
+
+    List<ImageFolderItemUsageDTO> checkFolder(ImageFolderDTO folderToCheck);
 }

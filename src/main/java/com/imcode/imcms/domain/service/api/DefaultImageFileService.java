@@ -97,15 +97,27 @@ class DefaultImageFileService implements ImageFileService {
     public List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException {
         final String imageFileDTOPath = imageFileDTO.getPath();
 
+        List<ImageFileUsageDTO> usages = getImageFileUsages(imageFileDTOPath);
+
+        if (usages.isEmpty()) {
+            //No usages found. Can safely remove file
+            final File imageFile = new File(imagesPath, imageFileDTOPath);
+            FileUtility.forceDelete(imageFile);
+        }
+        return usages;
+    }
+
+    @Override
+    public List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath) {
         List<Image> foundUsagesInDocumentContent =
-                imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.replaceFirst(File.separator, ""));
+                imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.startsWith(File.separator) ? imageFileDTOPath.substring(1) : imageFileDTOPath);
         List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
 
         List<ImageCacheDomainObject> foundImageCache =
                 imageCacheMapper.getAllImageResourcesByResourcePath(File.separator + imagesPath.getName() + imageFileDTOPath);
 
         List<ImageFileUsageDTO> usages = new ArrayList<>();
-        if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty()) {
+        if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty() || !foundImageCache.isEmpty()) {
             usages.addAll(foundUsagesInDocumentContent.stream()
                     .map(item -> new ImageFileUsageDTO(item.getVersion().getDocId(), item.getVersion().getNo(), item.getIndex(), "content image"))
                     .collect(Collectors.toList())
@@ -118,12 +130,6 @@ class DefaultImageFileService implements ImageFileService {
                     .map(item -> new ImageFileUsageDTO(null, null, null, "image cache content"))
                     .collect(Collectors.toList())
             );
-        }
-
-        if (usages.isEmpty()) {
-            //No usages found. Can safely remove file
-            final File imageFile = new File(imagesPath, imageFileDTOPath);
-            FileUtility.forceDelete(imageFile);
         }
         return usages;
     }

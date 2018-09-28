@@ -177,7 +177,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAtWorkingSingleDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -209,7 +209,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAtLatestSingleDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -241,7 +241,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageAtSubdirectoryUsedAtLatestSingleDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final String testSubDirectoryName = "subdiretory";
         final File testSubdirectory = new File(imagesPath, testSubDirectoryName);
         final File testImageFile = new File(testSubdirectory, testImageFileName);
@@ -276,7 +276,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageAtSubdirectoryUsedAtLatestSingleDocument_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final String testSubDirectoryName = "subdiretory";
         final File testSubdirectory = new File(imagesPath, testSubDirectoryName);
         final File testImageFile = new File(testSubdirectory, testImageFileName);
@@ -297,7 +297,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAtWorkingDocumentAndPublishedDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -339,8 +339,8 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_TrueAndImageDeleted() throws IOException {
-        final String testImageFileName = "test.png";
-        final String test2ImageFileName = "test2.png";
+        final String testImageFileName = "test.jpg";
+        final String test2ImageFileName = "test2.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
 
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
@@ -357,15 +357,11 @@ public class ImageFileServiceTest {
             final int tempDocId = documentDataInitializer.createData().getId();
             final Version intermediateVersion = versionService.create(tempDocId, 1);
 
-            final Image imageIntermediate = imageDataInitializer.createData(1, intermediateVersion);
-            imageIntermediate.setName(testImageFileName);
-            imageIntermediate.setLinkUrl(File.separator + testImageFileName);
+            final Image imageIntermediate = imageDataInitializer.createData(1, testImageFileName, File.separator + testImageFileName, intermediateVersion);
 
 
             final Version latestVersion = versionService.create(tempDocId, 1);
-            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
-            imageLatest.setName(test2ImageFileName);
-            imageLatest.setLinkUrl(File.separator + test2ImageFileName);
+            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, File.separator + test2ImageFileName, latestVersion);
 
             imageFileService.deleteImage(imageFileDTO);
 
@@ -380,7 +376,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageNotUsedAtAnyLatestAndWorkingDocument_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -402,7 +398,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtPublishedOrWorkingDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -437,7 +433,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtWorkingDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -464,7 +460,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtPublishedDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -494,7 +490,7 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageUsedAsMenuImageAtSeveralWorkingDocuments_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.png";
+        final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -530,8 +526,8 @@ public class ImageFileServiceTest {
 
     @Test
     public void deleteImage_When_ImageNotUsedAsMenuImage_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.png";
-        final String stubImageFileName = "testStub.png";
+        final String testImageFileName = "test.jpg";
+        final String stubImageFileName = "testStub.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
         imageFileDTO.setPath(testImageFileName);
@@ -562,104 +558,6 @@ public class ImageFileServiceTest {
             }
         }
     }
-
-//    @Test
-//    public void deleteImage_When_ImageUsedAtImageCache_Expect_ListWithUsages() throws IOException {
-//        final String testImageFileName = "test.png";
-//        final File testImageFile = new File(imagesPath, testImageFileName);
-//        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-//        imageFileDTO.setPath(testImageFileName);
-//
-//        try {
-//            ImageCacheDomainObject tempImageCacheObject = new ImageCacheDomainObject();
-//            Format format = Format.findFormat("png");
-//            ImageData.RotateDirection rotateDirection = ImageData.RotateDirection.fromAngle(0);
-//            ImageCropRegion cropRegion = new ImageCropRegionDTO(0, 0, 10, 10);
-//
-//            tempImageCacheObject.setResource("test.png");
-//            tempImageCacheObject.setFormat(format);
-//            tempImageCacheObject.setWidth(10);
-//            tempImageCacheObject.setHeight(10);
-//            tempImageCacheObject.setCropRegion(cropRegion);
-//            tempImageCacheObject.setRotateDirection(rotateDirection);
-//            tempImageCacheObject.setType(ImageCacheDomainObject.TYPE_PATH);
-//            tempImageCacheObject.setFrequency(1);
-//            tempImageCacheObject.generateId();
-//
-//
-////            String desiredFilename = getDesiredFilename(request);
-//
-////            String path = StringUtils.trimToNull(request.getParameter("path"));
-////            String url = StringUtils.trimToNull(request.getParameter("url"));
-////            int fileId = NumberUtils.toInt(request.getParameter("file_id"));
-//
-////            String formatParam = StringUtils.trimToEmpty(request.getParameter("format")).toLowerCase();
-//
-////            int width = NumberUtils.toInt(request.getParameter("width"));
-////            int height = NumberUtils.toInt(request.getParameter("height"));
-//
-//            // cutting dimensions to prevent generating too big images
-////            width = Math.min(IMAGE_MAX_DIMENSION, width);
-////            height = Math.min(IMAGE_MAX_DIMENSION, height);
-////
-////            width = Math.max(width, 0);
-////            height = Math.max(height, 0);
-//
-////            if ((path == null && url == null && fileId <= 0) || (format != null && !format.isWritable())) {
-////                sendNotFound(response);
-////                return;
-////            }
-//
-////            int cropX1 = NumberUtils.toInt(request.getParameter("crop_x1"), -1);
-////            int cropY1 = NumberUtils.toInt(request.getParameter("crop_y1"), -1);
-////            int cropX2 = NumberUtils.toInt(request.getParameter("crop_x2"), -1);
-////            int cropY2 = NumberUtils.toInt(request.getParameter("crop_y2"), -1);
-//
-////            ImageCropRegion cropRegion = new ImageCropRegionDTO(cropX1, cropY1, cropX2, cropY2);
-//
-////            int rotateAngle = NumberUtils.toInt(request.getParameter("rangle"));
-//
-//
-////            if (path != null) {
-////                imageCache.setResource(path);
-////                imageCache.setType(ImageCacheDomainObject.TYPE_PATH);
-////            } else if (fileId > 0) {
-////                imageCache.setResource(Integer.toString(fileId));
-////                imageCache.setType(ImageCacheDomainObject.TYPE_FILE_DOCUMENT);
-////            } else if (url != null) {
-////                imageCache.setResource(url);
-////                imageCache.setType(ImageCacheDomainObject.TYPE_URL);
-////            } else {
-////                throw new RuntimeException("path, url or fileId must be valid");
-////            }
-//
-//
-////            ImageCacheDomainObject imageCache = createImageCacheObject(path, url, fileId, format, width,
-////                    height, cropRegion, rotateDirection);
-////            String cacheId = imageCache.getId();
-//
-////            String etag = null;
-////            File cacheFile = ImageCacheManager.getCacheFile(imageCache);
-//
-//
-//            imageCacheMapper.addImageCache(tempImageCacheObject);
-//
-//
-//            File receivedFile = ImageCacheManager.getCacheFile(tempImageCacheObject);
-//
-//            System.out.println(receivedFile);
-//
-//        } finally {
-//            if (testImageFile.exists()) {
-//                testImageFile.delete();
-//            }
-//        }
-//    }
-//
-//    @Test
-//    public void deleteImage_When_ImageUsedNotAtImageCache_Expect_TrueAndFileDeleted() throws IOException {
-//
-//    }
 
     private void deleteFile(ImageFileDTO imageFileDTO) {
         final File deleteMe = new File(imagesPath, imageFileDTO.getPath());

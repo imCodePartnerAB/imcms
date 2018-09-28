@@ -20,4 +20,5 @@ public interface ImageFileService {
 
     List<ImageFileUsageDTO> deleteImage(ImageFileDTO imageFileDTO) throws IOException;
 
+    List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath);
 }
