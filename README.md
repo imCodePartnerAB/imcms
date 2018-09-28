@@ -11,24 +11,26 @@ Johan Larsson "johlra" is our responsible project manager.
 
 imCMS is licensed under the AGPL license.
 
+Read the docs: http://docs.imcms.net/en/latest/
 
 All versions is available to download from
 http://repo.imcode.com/maven2/com/imcode/imcms/imcms/
 
-The install instruction could need updating, they are old but should work in most cases
-Newer version of imCMS work on Java 7, Tomcat 8 and MySQL 5.5
+The install instruction could need an update, they are old but should work in most cases
+Newer version of imCMS work on Java 8, Tomcat 8.5 and MySQL 5.7
 
 Installing imCMS:
 
 
 Prerequisites:
 
-    * Install the Java Development Kit version 1.5 or later.
+    * Java 8+.
+    
+    * NodeJS 8+
 
-    * Install Apache Tomcat 4 or later,
-      or another servlet-api 2.3 (or later) compatible servlet engine.
+    * Apache Tomcat 8.5+ or later, or another servlet-api 2.3 (or later) compatible servlet engine.
 
-    * Install MySQL 4.1 or later.
+    * Install MySQL 5.7 or later.
 
 
 Installing imCMS:

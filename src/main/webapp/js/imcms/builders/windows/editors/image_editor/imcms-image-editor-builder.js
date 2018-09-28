@@ -102,6 +102,7 @@ define(
                     const width = cropRegion.cropX2 - cropRegion.cropX1;
                     const height = cropRegion.cropY2 - cropRegion.cropY1;
 
+                    imageResize.setCurrentSize(width, height);
                     imageResize.setWidthStrict(cropRegion.cropX1, width);
                     imageResize.setHeightStrict(cropRegion.cropY1, height);
 

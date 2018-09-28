@@ -118,5 +118,10 @@ module.exports = {
 
     getProportionsButton: getProportionsButton,
 
+    enableProportionsLock() {
+        getProportionsButton().attr("data-state", "active");
+        imageResize.enableSaveProportions();
+    },
+
     getEditSizeControls: () => $sizeControls || ($sizeControls = buildEditSizeControls()),
 };

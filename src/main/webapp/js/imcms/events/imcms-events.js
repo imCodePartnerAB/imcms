@@ -6,6 +6,8 @@
  * 13.12.17
  */
 
+const logger = require('imcms-logger');
+
 /**
  * Event name to array of handlers
  */
@@ -26,7 +28,7 @@ module.exports = {
      * @param name event's name
      */
     trigger: function (name) {
-        console.log("%c Imcms event " + name + " triggered.", "color: blue;");
+        logger.log("%c Imcms event " + name + " triggered.", "color: blue;");
 
         getEventHandlers(name).forEach(setTimeout);
     },
