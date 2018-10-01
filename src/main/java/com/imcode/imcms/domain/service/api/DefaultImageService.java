@@ -99,7 +99,8 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
         return plainImageFound.stream()
                 .filter(image -> {
                     @NotNull final Version version = image.getVersion();
-                    return version.getNo() == 0 || version.getNo() == (imageMaxVersions.get(version.getDocId()).get());
+                    return version.getNo() == 0
+                            || version.getNo() == (imageMaxVersions.getOrDefault(version.getDocId(), Optional.of(0)).get());
                 })
                 .collect(Collectors.toList());
     }
