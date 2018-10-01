@@ -29,6 +29,8 @@ function getProportionsButton() {
 
             const $proportionsText = getProportionsText();
             $proportionsText.toggle(saveProportions);
+
+            $('.imcms-image-crop-proportions-info').css('display', saveProportions ? 'inline-block' : 'none');
         }
     }))
 }

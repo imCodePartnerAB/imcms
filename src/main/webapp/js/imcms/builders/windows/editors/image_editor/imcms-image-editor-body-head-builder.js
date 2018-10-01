@@ -213,6 +213,17 @@ define(
                 .build();
         }
 
+        function getCroppingProportionsInfo() {
+            return components.texts.infoText(
+                '<div>',
+                `${imageResize.isProportionsLockedByStyle() ? 'Preset crop' : 'Crop'} format: ${imageResize.getWidth()} x ${imageResize.getHeight()}`,
+                {
+                    'class': 'imcms-image-crop-proportions-info',
+                    style: 'display: block;'
+                }
+            )
+        }
+
         let $cancelChangesButton;
 
         function getCancelChangesButton() {
@@ -304,9 +315,9 @@ define(
         }
 
         function showCroppingStuff() {
-            // todo: come up with solution for very small images, when there's nothing to crop
-
             cropper.initImageCropper(imageData);
+            const $croppingProportionsInfo = getCroppingProportionsInfo();
+            $croppingProportionsInfo.insertAfter(getApplyChangesButton());
 
             new ToolbarViewBuilder()
                 .hide(
@@ -322,12 +333,18 @@ define(
                     imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
                 )
-                .onCancel(cropper.destroyImageCropper)
+                .onCancel(() => {
+                    cropper.destroyImageCropper();
+                    $croppingProportionsInfo.remove();
+                })
                 .onApply(() => {
+                    $croppingProportionsInfo.remove();
                     cropper.applyCropping();
                     cropper.destroyImageCropper();
                 })
                 .build();
+
+            $croppingProportionsInfo.css('display', 'inline-block');
         }
 
         let $croppingButton;
@@ -339,8 +356,10 @@ define(
             }))
         }
 
-        function buildScaleAndRotateControls() {
-            return new BEM({
+        let $scaleAndRotateControls;
+
+        function getScaleAndRotateControls() {
+            return $scaleAndRotateControls || ($scaleAndRotateControls = new BEM({
                 block: "imcms-edit-image",
                 elements: {
                     "button": [
@@ -356,7 +375,7 @@ define(
                         getRevertButton(),
                     ]
                 }
-            }).buildBlockStructure("<div>");
+            }).buildBlockStructure("<div>"))
         }
 
         function buildToolbar() {
@@ -372,7 +391,7 @@ define(
             }).buildBlock("<div>", [
                 {"control-size": imageEditSizeControls.getEditSizeControls()},
                 {'control-button': getCancelChangesButton()},
-                {"control-scale-n-rotate": buildScaleAndRotateControls()},
+                {"control-scale-n-rotate": getScaleAndRotateControls()},
                 {"control-button": getApplyChangesButton()},
                 {"control-view": getSwitchViewControls()}
             ]);
