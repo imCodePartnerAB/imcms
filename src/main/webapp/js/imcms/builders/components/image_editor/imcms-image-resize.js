@@ -93,7 +93,19 @@ module.exports = {
     resetToOriginal(imageData) {
         this.setHeightStrict(0, original.height);
         this.setWidthStrict(0, original.width);
-        this.setCurrentSize(original.width, original.height);
+
+        let width, height;
+
+        if (minWidth && minHeight) {
+            width = minWidth;
+            height = minHeight;
+
+        } else {
+            width = original.width;
+            height = original.height;
+        }
+
+        this.setCurrentSize(width, height);
         this.updateSizing(imageData);
     },
     setCurrentSize(width, height) {
@@ -120,10 +132,12 @@ module.exports = {
     },
 
     isProportionsLockedByStyle() {
-        return minWidth && minHeight || maxWidth && maxHeight;
+        return minWidth && minHeight
     },
 
     isSaveProportionsEnabled: () => saveProportions,
+
+    getProportionsCoefficient: () => proportionsCoefficient,
 
     toggleSaveProportions: () => (saveProportions = !saveProportions),
 
@@ -194,49 +208,55 @@ module.exports = {
     /**
      * Can be used after setting strict w/h to update all proportions and min/max restrictions
      */
-    updateSizing(imageData) {
+    updateSizing(imageData, ignoreCropping) {
         const originalProportionsK = original.width / original.height;
 
-        let width, height;
-
         if (minWidth && minHeight && (originalProportionsK !== (minWidth / minHeight))) {
-            width = minWidth;
-            height = minHeight;
+            const width = minWidth;
+            const height = minHeight;
+            const restrictedProportionsK = minWidth / minHeight;
 
-        } else if (maxWidth && maxHeight && (originalProportionsK !== (maxWidth / maxHeight))) {
-            width = maxWidth;
-            height = maxHeight;
-        }
-
-        if (width && height) {
             const dX = width / original.width;
             const dY = height / original.height;
 
-            let newWidth, newHeight;
+            let newWidth, newHeight, cropHeight, cropWidth;
+
+            const cropRegion = imageData.cropRegion || (imageData.cropRegion = {
+                cropX1: 0,
+                cropX2: 0,
+                cropY1: 0,
+                cropY2: 0,
+            });
 
             if (dX > dY) {
-                newWidth = Math.max(width, original.width);
-                newWidth = Math.min(newWidth, original.width);
+                const croppedWidth = Math.max(0, cropRegion.cropX2 - cropRegion.cropX1);
+
+                newWidth = Math.max(width, ignoreCropping ? croppedWidth : original.width);
+                newWidth = Math.min(newWidth, ignoreCropping ? croppedWidth : original.width);
                 newHeight = ~~(newWidth / proportionsCoefficient);
+                cropHeight = ~~(newWidth / restrictedProportionsK);
+                cropWidth = newWidth;
             } else {
-                newHeight = Math.max(height, original.height);
-                newHeight = Math.min(newHeight, original.height);
+                const croppedHeight = Math.max(0, cropRegion.cropY2 - cropRegion.cropY1);
+
+                newHeight = Math.max(height, ignoreCropping ? croppedHeight : original.height);
+                newHeight = Math.min(newHeight, ignoreCropping ? croppedHeight : original.height);
                 newWidth = ~~(newHeight * proportionsCoefficient);
+                cropWidth = ~~(newHeight * restrictedProportionsK);
+                cropHeight = newHeight;
             }
 
-            this.setWidthStrict(0, newWidth);
-            this.setHeightStrict(0, newHeight);
+            this.setWidthStrict(cropRegion.cropX1, newWidth);
+            this.setHeightStrict(cropRegion.cropY1, newHeight);
 
-            imageData.cropRegion = {
-                cropX1: 0,
-                cropX2: newWidth,
-                cropY1: 0,
-                cropY2: newHeight,
-            };
+            if (!ignoreCropping) {
+                cropRegion.cropX2 = cropWidth;
+                cropRegion.cropY2 = cropHeight;
+            }
         }
 
-        setWidthProportionally(currentSize.width);
         setHeightProportionally(currentSize.height);
+        setWidthProportionally(currentSize.width);
     },
 
     clearData() {

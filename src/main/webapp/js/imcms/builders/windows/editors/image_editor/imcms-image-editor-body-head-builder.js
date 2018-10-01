@@ -139,14 +139,14 @@ define(
         }
 
         function revertImageChanges() {
+            imageData.cropRegion = {
+                cropX1: 0,
+                cropX2: 0,
+                cropY1: 0,
+                cropY2: 0,
+            };
             imageRotate.rotateImage("NORTH");
             imageResize.resetToOriginal(imageData);
-            imageData.cropRegion = {
-                cropX1: -1,
-                cropX2: -1,
-                cropY1: -1,
-                cropY2: -1,
-            };
         }
 
         let $switchViewControls;

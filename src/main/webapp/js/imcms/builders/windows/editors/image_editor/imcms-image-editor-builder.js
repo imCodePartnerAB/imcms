@@ -89,6 +89,10 @@ define(
                         imageResize.setMinHeight(height);
                         editSizeControls.getHeightControl().getInput().attr('disabled', 'disabled');
                     }
+
+                    if (imageResize.isProportionsLockedByStyle()) {
+                        imageResize.setCurrentSize(imageData.width, imageData.height);
+                    }
                 }
 
                 const cropRegion = imageData.cropRegion;
@@ -113,8 +117,6 @@ define(
                     const original = imageResize.getOriginal();
                     imageResize.setWidthStrict(0, original.width);
                     imageResize.setHeightStrict(0, original.height);
-
-                    imageResize.setCurrentSize(imageData.width, imageData.height);
                     imageResize.updateSizing(imageData);
                 }
 
