@@ -657,7 +657,7 @@ define("imcms-image-content-builder",
                     root: {},
                     $folder: [],
                     $images: []
-                }
+                };
             }
         };
     }
