@@ -239,31 +239,31 @@ define("imcms-image-content-builder",
                 "class": "imcms-button",
                 text: texts.add,
                 click: function () {
-                    var folderName = $folderNameInput.val();
+                    let folderName = $folderNameInput.val();
 
                     if (!folderName) {
                         return;
                     }
 
-                    var isNewFolder = !opts.previousFolderName;
+                    let isNewFolder = !opts.previousFolderName;
 
-                    var dataOnConfirm = {
+                    const dataOnConfirm = {
                         name: folderName
                     };
 
-                    var contextOnSuccess = {
+                    const contextOnSuccess = {
                         name: folderName,
                         parentLevel: opts.level,
                         $block: $folderCreationBlock
                     };
 
-                    var path = getFolderPath(opts.folder.$folder);
+                    const path = getFolderPath(opts.folder.$folder);
 
                     if (isNewFolder) {
                         dataOnConfirm.path = contextOnSuccess.path = path + "/" + folderName;
 
                     } else {
-                        var pathSplitBySeparator = path.split("/");
+                        const pathSplitBySeparator = path.split("/");
                         pathSplitBySeparator[pathSplitBySeparator.length - 1] = folderName;
 
                         dataOnConfirm.path = path;
@@ -281,7 +281,7 @@ define("imcms-image-content-builder",
                 }
             });
 
-            var $folderCreationBlock = new BEM({
+            const $folderCreationBlock = new BEM({
                 block: "imcms-panel-named",
                 elements: {
                     "input": $folderNameInput,
