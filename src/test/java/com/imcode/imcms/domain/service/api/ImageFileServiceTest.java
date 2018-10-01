@@ -357,11 +357,11 @@ public class ImageFileServiceTest {
             final int tempDocId = documentDataInitializer.createData().getId();
             final Version intermediateVersion = versionService.create(tempDocId, 1);
 
-            final Image imageIntermediate = imageDataInitializer.createData(1, testImageFileName, File.separator + testImageFileName, intermediateVersion);
+            final Image imageIntermediate = imageDataInitializer.createData(1, testImageFileName, testImageFileName, intermediateVersion);
 
 
             final Version latestVersion = versionService.create(tempDocId, 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, File.separator + test2ImageFileName, latestVersion);
+            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, test2ImageFileName, latestVersion);
 
             imageFileService.deleteImage(imageFileDTO);
 
