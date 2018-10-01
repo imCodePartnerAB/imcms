@@ -115,23 +115,23 @@ define(
         }
 
         function zoom(delta) {
-            const $previewArea = previewImage.getPreviewImageArea();
+            const $previewArea = previewImage.getPreviewImage();
 
             if (!delta) {
                 $previewArea.css('zoom', 1);
                 return;
             }
 
-            const currentZoom = +$previewArea.css('zoom');
+            const currentZoom = parseFloat($previewArea.css('zoom'));
             $previewArea.css('zoom', currentZoom + delta);
         }
 
         function zoomPlus() {
-            zoom(+0.1);
+            zoom(+0.5);
         }
 
         function zoomMinus() {
-            zoom(-0.1);
+            zoom(-0.5);
         }
 
         function zoomFit() {
