@@ -133,6 +133,10 @@ function moveCropArea(top, left) {
     angles.bottomLeft.setBottomLeft(angleBottom, angleLeft);
 }
 
+function isOversize(width, height) {
+    return (height >= imageResize.getOriginal().height) || (width >= imageResize.getOriginal().width)
+}
+
 function resizeCroppingTopLeft(deltaX, deltaY) {
     if ((deltaX === 0) && (deltaY === 0)) return;
 
@@ -146,7 +150,7 @@ function resizeCroppingTopLeft(deltaX, deltaY) {
     newHeight = getValidCropHeightTop(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getOriginal().width / imageResize.getOriginal().height;
+        const proportionsK = imageResize.getProportionsCoefficient();
         const newProportionsK = newWidth / newHeight;
 
         if (proportionsK !== newProportionsK) {
@@ -154,6 +158,8 @@ function resizeCroppingTopLeft(deltaX, deltaY) {
             else newWidth = ~~(proportionsK * newHeight);
             deltaX = newWidth - oldWidth;
             deltaY = newHeight - oldHeight;
+
+            if (isOversize(newWidth, newHeight)) return;
         }
     }
 
@@ -201,13 +207,15 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     newHeight = getValidCropHeightTop(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getOriginal().width / imageResize.getOriginal().height;
+        const proportionsK = imageResize.getProportionsCoefficient();
         const newProportionsK = newWidth / newHeight;
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
             else newWidth = ~~(proportionsK * newHeight);
             deltaY = newHeight - oldHeight;
+
+            if (isOversize(newWidth, newHeight)) return;
         }
     }
 
@@ -219,8 +227,8 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     if (allWidth > imageResize.getOriginal().width) {
         const deltaW = allWidth - imageResize.getOriginal().width;
 
-        cropArea.getCroppingArea().css('left', cropArea.getCroppingArea().getLeft() - deltaW);
-        cropArea.getCroppingImage().css('left', cropArea.getCroppingImage().getLeft() + deltaW);
+        cropArea.getCroppingArea().setLeft(cropArea.getCroppingArea().getLeft() - deltaW);
+        cropArea.getCroppingImage().setLeft(cropArea.getCroppingImage().getLeft() + deltaW);
 
         angles.topLeft.setLeft(angles.topLeft.getLeft() - deltaW);
         angles.bottomLeft.setLeft(angles.bottomLeft.getLeft() - deltaW);
@@ -230,8 +238,8 @@ function resizeCroppingTopRight(deltaX, deltaY) {
     newTop = getValidTopOnResize(newTop);
 
     setElementWidthHeight(cropArea.getCroppingArea(), newWidth, newHeight);
-    cropArea.getCroppingImage().css("top", -newTop);
-    cropArea.getCroppingArea().css("top", newTop);
+    cropArea.getCroppingImage().setTop(-newTop);
+    cropArea.getCroppingArea().setTop(newTop);
 
     const angleTop = newTop - angleBorderSize;
     const angleRight = imageResize.getOriginal().width
@@ -263,12 +271,14 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getOriginal().width / imageResize.getOriginal().height;
+        const proportionsK = imageResize.getProportionsCoefficient();
         const newProportionsK = newWidth / newHeight;
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
             else newWidth = ~~(proportionsK * newHeight);
+
+            if (isOversize(newWidth, newHeight)) return;
         }
     }
 
@@ -280,8 +290,8 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
     if (allHeight > imageResize.getOriginal().height) {
         const deltaH = allHeight - imageResize.getOriginal().height;
 
-        cropArea.getCroppingArea().css('top', cropArea.getCroppingArea().getTop() - deltaH);
-        cropArea.getCroppingImage().css('top', cropArea.getCroppingImage().getTop() + deltaH);
+        cropArea.getCroppingArea().setTop(cropArea.getCroppingArea().getTop() - deltaH);
+        cropArea.getCroppingImage().setTop(cropArea.getCroppingImage().getTop() + deltaH);
 
         angles.topLeft.setTop(angles.topLeft.getTop() - deltaH);
         angles.topRight.setTop(angles.topRight.getTop() - deltaH);
@@ -292,8 +302,8 @@ function resizeCroppingBottomRight(deltaX, deltaY) {
     if (allWidth > imageResize.getOriginal().width) {
         const deltaW = allWidth - imageResize.getOriginal().width;
 
-        cropArea.getCroppingArea().css('left', cropArea.getCroppingArea().getLeft() - deltaW);
-        cropArea.getCroppingImage().css('left', cropArea.getCroppingImage().getLeft() + deltaW);
+        cropArea.getCroppingArea().setLeft(cropArea.getCroppingArea().getLeft() - deltaW);
+        cropArea.getCroppingImage().setLeft(cropArea.getCroppingImage().getLeft() + deltaW);
 
         angles.topLeft.setLeft(angles.topLeft.getLeft() - deltaW);
         angles.bottomLeft.setLeft(angles.bottomLeft.getLeft() - deltaW);
@@ -329,13 +339,15 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
     newHeight = getValidCropHeightBottom(newHeight);
 
     if (imageResize.isSaveProportionsEnabled()) {
-        const proportionsK = imageResize.getOriginal().width / imageResize.getOriginal().height;
+        const proportionsK = imageResize.getProportionsCoefficient();
         const newProportionsK = newWidth / newHeight;
 
         if (proportionsK !== newProportionsK) {
             if (deltaY === 0) newHeight = ~~(newWidth / proportionsK);
             else newWidth = ~~(proportionsK * newHeight);
             deltaX = newWidth - oldWidth;
+
+            if (isOversize(newWidth, newHeight)) return;
         }
     }
 
@@ -350,16 +362,16 @@ function resizeCroppingBottomLeft(deltaX, deltaY) {
     if (allHeight > imageResize.getOriginal().height) {
         const deltaH = allHeight - imageResize.getOriginal().height;
 
-        cropArea.getCroppingArea().css('top', cropArea.getCroppingArea().getTop() - deltaH);
-        cropArea.getCroppingImage().css('top', cropArea.getCroppingImage().getTop() + deltaH);
+        cropArea.getCroppingArea().setTop(cropArea.getCroppingArea().getTop() - deltaH);
+        cropArea.getCroppingImage().setTop(cropArea.getCroppingImage().getTop() + deltaH);
 
         angles.topLeft.setTop(angles.topLeft.getTop() - deltaH);
         angles.topRight.setTop(angles.topRight.getTop() - deltaH);
     }
 
     setElementWidthHeight(cropArea.getCroppingArea(), newWidth, newHeight);
-    cropArea.getCroppingImage().css("left", -newLeft);
-    cropArea.getCroppingArea().css("left", newLeft);
+    cropArea.getCroppingImage().setLeft(-newLeft);
+    cropArea.getCroppingArea().setLeft(newLeft);
 
     const angleBottom = imageResize.getOriginal().height
         - cropArea.getCroppingArea().getTop()
@@ -651,7 +663,7 @@ module.exports = {
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight);
         imageResize.setCurrentSize(croppedWidth, croppedHeight);
 
-        imageResize.updateSizing();
+        imageResize.updateSizing(imageData, true);
     },
     destroyImageCropper: destroy
 };

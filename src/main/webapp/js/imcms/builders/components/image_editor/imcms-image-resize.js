@@ -90,11 +90,23 @@ function updateHeightProportionally(newWidth) {
 let $heightControl, $widthControl;
 
 module.exports = {
-    resetToOriginal() {
+    resetToOriginal(imageData) {
         this.setHeightStrict(0, original.height);
         this.setWidthStrict(0, original.width);
-        this.setCurrentSize(original.width, original.height);
-        this.updateSizing();
+
+        let width, height;
+
+        if (minWidth && minHeight) {
+            width = minWidth;
+            height = minHeight;
+
+        } else {
+            width = original.width;
+            height = original.height;
+        }
+
+        this.setCurrentSize(width, height);
+        this.updateSizing(imageData);
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
@@ -119,7 +131,13 @@ module.exports = {
         $heightControl = $control
     },
 
+    isProportionsLockedByStyle() {
+        return minWidth && minHeight
+    },
+
     isSaveProportionsEnabled: () => saveProportions,
+
+    getProportionsCoefficient: () => proportionsCoefficient,
 
     toggleSaveProportions: () => (saveProportions = !saveProportions),
 
@@ -190,15 +208,64 @@ module.exports = {
     /**
      * Can be used after setting strict w/h to update all proportions and min/max restrictions
      */
-    updateSizing() {
-        setWidthProportionally(currentSize.width);
+    updateSizing(imageData, ignoreCropping) {
+        const originalProportionsK = original.width / original.height;
+
+        if (minWidth && minHeight && (originalProportionsK !== (minWidth / minHeight))) {
+            const width = minWidth;
+            const height = minHeight;
+            const restrictedProportionsK = minWidth / minHeight;
+
+            const dX = width / original.width;
+            const dY = height / original.height;
+
+            let newWidth, newHeight, cropHeight, cropWidth;
+
+            const cropRegion = imageData.cropRegion || (imageData.cropRegion = {
+                cropX1: 0,
+                cropX2: 0,
+                cropY1: 0,
+                cropY2: 0,
+            });
+
+            if (dX > dY) {
+                const croppedWidth = Math.max(0, cropRegion.cropX2 - cropRegion.cropX1);
+
+                newWidth = Math.max(width, ignoreCropping ? croppedWidth : original.width);
+                newWidth = Math.min(newWidth, ignoreCropping ? croppedWidth : original.width);
+                newHeight = ~~(newWidth / proportionsCoefficient);
+                cropHeight = ~~(newWidth / restrictedProportionsK);
+                cropWidth = newWidth;
+            } else {
+                const croppedHeight = Math.max(0, cropRegion.cropY2 - cropRegion.cropY1);
+
+                newHeight = Math.max(height, ignoreCropping ? croppedHeight : original.height);
+                newHeight = Math.min(newHeight, ignoreCropping ? croppedHeight : original.height);
+                newWidth = ~~(newHeight * proportionsCoefficient);
+                cropWidth = ~~(newHeight * restrictedProportionsK);
+                cropHeight = newHeight;
+            }
+
+            this.setWidthStrict(cropRegion.cropX1, newWidth);
+            this.setHeightStrict(cropRegion.cropY1, newHeight);
+
+            if (!ignoreCropping) {
+                cropRegion.cropX2 = cropWidth;
+                cropRegion.cropY2 = cropHeight;
+            }
+        }
+
         setHeightProportionally(currentSize.height);
+        setWidthProportionally(currentSize.width);
     },
 
     clearData() {
         maxWidth = null;
         maxHeight = null;
+        minWidth = null;
+        minHeight = null;
         saveProportions = true;
+        proportionsCoefficient = 1;
         original.width = null;
         original.height = null;
     },

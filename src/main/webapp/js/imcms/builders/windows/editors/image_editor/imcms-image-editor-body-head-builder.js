@@ -115,23 +115,23 @@ define(
         }
 
         function zoom(delta) {
-            const $previewArea = previewImage.getPreviewImageArea();
+            const $previewArea = previewImage.getPreviewImage();
 
             if (!delta) {
                 $previewArea.css('zoom', 1);
                 return;
             }
 
-            const currentZoom = +$previewArea.css('zoom');
+            const currentZoom = parseFloat($previewArea.css('zoom'));
             $previewArea.css('zoom', currentZoom + delta);
         }
 
         function zoomPlus() {
-            zoom(+0.1);
+            zoom(+0.5);
         }
 
         function zoomMinus() {
-            zoom(-0.1);
+            zoom(-0.5);
         }
 
         function zoomFit() {
@@ -139,14 +139,14 @@ define(
         }
 
         function revertImageChanges() {
-            imageRotate.rotateImage("NORTH");
-            imageResize.resetToOriginal();
             imageData.cropRegion = {
-                cropX1: -1,
-                cropX2: -1,
-                cropY1: -1,
-                cropY2: -1,
+                cropX1: 0,
+                cropX2: 0,
+                cropY1: 0,
+                cropY2: 0,
             };
+            imageRotate.rotateImage("NORTH");
+            imageResize.resetToOriginal(imageData);
         }
 
         let $switchViewControls;
@@ -319,6 +319,7 @@ define(
                 .show(
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
+                    imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
                 )
                 .onCancel(cropper.destroyImageCropper)
@@ -344,6 +345,7 @@ define(
                 elements: {
                     "button": [
                         imageProportionsLocker.getProportionsButton(),
+                        imageProportionsLocker.getProportionsText(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getZoomResetButton(),
@@ -429,6 +431,7 @@ define(
                 [
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
+                    imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),

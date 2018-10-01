@@ -41,6 +41,10 @@ function setFunctionality($element) {
         return parseInt($element.css("left"));
     };
 
+    $element.setLeft = (left) => $element.css('left', left);
+
+    $element.setTop = (top) => $element.css('top', top);
+
     return $element;
 }
 
