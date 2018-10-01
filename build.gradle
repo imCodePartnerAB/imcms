@@ -30,11 +30,11 @@ repositories {
 }
 
 ext {
-    springframeworkVersion = '5.+'
+    springframeworkVersion = '5.1.0.RELEASE'
     hibernateVersion = '5.2.13.Final'
     solrVersion = '7.2.1'
     slf4jVersion = '1.7.25'
-    junitVersion = '5.+'
+    junitVersion = '5.3.1'
     lombokVersion = '1.18.2'
 
     sharedManifest = manifest {
