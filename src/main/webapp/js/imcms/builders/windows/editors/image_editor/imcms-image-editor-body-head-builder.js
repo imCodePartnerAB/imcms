@@ -319,6 +319,7 @@ define(
                 .show(
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
+                    imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
                 )
                 .onCancel(cropper.destroyImageCropper)
@@ -344,6 +345,7 @@ define(
                 elements: {
                     "button": [
                         imageProportionsLocker.getProportionsButton(),
+                        imageProportionsLocker.getProportionsText(),
                         getZoomPlusButton(),
                         getZoomMinusButton(),
                         getZoomResetButton(),
@@ -429,6 +431,7 @@ define(
                 [
                     getCancelChangesButton(),
                     imageProportionsLocker.getProportionsButton(),
+                    imageProportionsLocker.getProportionsText(),
                     getApplyChangesButton(),
                     getRotateLeftButton(),
                     getRotateRightButton(),
