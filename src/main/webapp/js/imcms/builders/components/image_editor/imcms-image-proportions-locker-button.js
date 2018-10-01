@@ -22,6 +22,8 @@ function getProportionsButton() {
         'data-state': 'active',
         title: texts.proportionsButtonTitle,
         click: function () {
+            if (imageResize.isProportionsLockedByStyle()) return;
+
             let saveProportions = imageResize.toggleSaveProportions();
             $(this).attr('data-state', saveProportions ? 'active' : 'passive');
 

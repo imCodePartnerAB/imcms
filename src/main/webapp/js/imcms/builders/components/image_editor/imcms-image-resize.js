@@ -119,6 +119,10 @@ module.exports = {
         $heightControl = $control
     },
 
+    isProportionsLockedByStyle() {
+        return minWidth && minHeight || maxWidth && maxHeight;
+    },
+
     isSaveProportionsEnabled: () => saveProportions,
 
     toggleSaveProportions: () => (saveProportions = !saveProportions),
