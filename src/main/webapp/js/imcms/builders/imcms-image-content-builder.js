@@ -86,7 +86,11 @@ define("imcms-image-content-builder",
 
             create: (folder, level) => components.controls.create(setCreateFolder(folder, level)),
 
-            check: folder => components.controls.check(setCheckFolder(folder))
+            check: folder => {
+                return components.controls
+                    .check(setCheckFolder(folder))
+                    .attr("title", texts.checkFolderImagesUsage);
+            }
         };
 
         function buildRootControls(rootFile) {
