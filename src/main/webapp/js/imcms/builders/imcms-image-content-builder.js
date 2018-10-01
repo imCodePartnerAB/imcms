@@ -200,12 +200,9 @@ define("imcms-image-content-builder",
                 imageFoldersREST.check({"path": folder.path})
                     .success(response => {
                         $imagesContainer.find('.imcms-control--warning').remove();
-                        folder.files.forEach((file, index) => {
-                            response.forEach(usedImage => {
-                                if (file.name === usedImage.imageName) {
-                                    buildImageUsageInfoIcon(folder.$images[index], usedImage.usages);
-                                }
-                            });
+                        response.forEach(usedImage => {
+                            let $image = $imagesContainer.children('[data-image-name="' + usedImage.imageName + '"]');
+                            buildImageUsageInfoIcon($image, usedImage.usages);
                         });
                     });
             }
@@ -519,6 +516,7 @@ define("imcms-image-content-builder",
                     "description": buildImageDescription(imageFile)
                 }
             }).buildBlockStructure("<div>", {
+                "data-image-name": imageFile.name,
                 style: "display: none",
                 click: function () {
                     selectImage.call(this, imageFile);
