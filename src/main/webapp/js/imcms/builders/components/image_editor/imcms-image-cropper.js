@@ -651,7 +651,7 @@ module.exports = {
         imageResize.setHeightStrict(cropRegion.cropY1, croppedHeight);
         imageResize.setCurrentSize(croppedWidth, croppedHeight);
 
-        imageResize.updateSizing();
+        imageResize.updateSizing(imageData);
     },
     destroyImageCropper: destroy
 };

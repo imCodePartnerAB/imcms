@@ -90,11 +90,11 @@ function updateHeightProportionally(newWidth) {
 let $heightControl, $widthControl;
 
 module.exports = {
-    resetToOriginal() {
+    resetToOriginal(imageData) {
         this.setHeightStrict(0, original.height);
         this.setWidthStrict(0, original.width);
         this.setCurrentSize(original.width, original.height);
-        this.updateSizing();
+        this.updateSizing(imageData);
     },
     setCurrentSize(width, height) {
         currentSize.width = width;
@@ -190,7 +190,47 @@ module.exports = {
     /**
      * Can be used after setting strict w/h to update all proportions and min/max restrictions
      */
-    updateSizing() {
+    updateSizing(imageData) {
+        const originalProportionsK = original.width / original.height;
+
+        let width, height;
+
+        if (minWidth && minHeight && (originalProportionsK !== (minWidth / minHeight))) {
+            width = minWidth;
+            height = minHeight;
+
+        } else if (maxWidth && maxHeight && (originalProportionsK !== (maxWidth / maxHeight))) {
+            width = maxWidth;
+            height = maxHeight;
+        }
+
+        if (width && height) {
+            const dX = width / original.width;
+            const dY = height / original.height;
+
+            let newWidth, newHeight;
+
+            if (dX > dY) {
+                newWidth = Math.max(width, original.width);
+                newWidth = Math.min(newWidth, original.width);
+                newHeight = ~~(newWidth / proportionsCoefficient);
+            } else {
+                newHeight = Math.max(height, original.height);
+                newHeight = Math.min(newHeight, original.height);
+                newWidth = ~~(newHeight * proportionsCoefficient);
+            }
+
+            this.setWidthStrict(0, newWidth);
+            this.setHeightStrict(0, newHeight);
+
+            imageData.cropRegion = {
+                cropX1: 0,
+                cropX2: newWidth,
+                cropY1: 0,
+                cropY2: newHeight,
+            };
+        }
+
         setWidthProportionally(currentSize.width);
         setHeightProportionally(currentSize.height);
     },
@@ -198,7 +238,10 @@ module.exports = {
     clearData() {
         maxWidth = null;
         maxHeight = null;
+        minWidth = null;
+        minHeight = null;
         saveProportions = true;
+        proportionsCoefficient = 1;
         original.width = null;
         original.height = null;
     },

@@ -140,7 +140,7 @@ define(
 
         function revertImageChanges() {
             imageRotate.rotateImage("NORTH");
-            imageResize.resetToOriginal();
+            imageResize.resetToOriginal(imageData);
             imageData.cropRegion = {
                 cropX1: -1,
                 cropX2: -1,

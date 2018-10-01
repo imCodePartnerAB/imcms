@@ -115,7 +115,7 @@ define(
                     imageResize.setHeightStrict(0, original.height);
 
                     imageResize.setCurrentSize(imageData.width, imageData.height);
-                    imageResize.updateSizing();
+                    imageResize.updateSizing(imageData);
                 }
 
                 imageRotate.rotateImage(imageData.rotateDirection);
