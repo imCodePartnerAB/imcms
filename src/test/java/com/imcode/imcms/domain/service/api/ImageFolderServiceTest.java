@@ -617,7 +617,9 @@ public class ImageFolderServiceTest {
         final File testImage = new File(imagesPath, testImageFileName);
 
         try {
-            testImage.createNewFile();
+            assertFalse(testImage.exists());
+            assertTrue(testImage.createNewFile());
+            assertTrue(testImage.exists());
 
             final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
@@ -659,8 +661,12 @@ public class ImageFolderServiceTest {
         final File test2Image = new File(imagesPath, testImage2FileName);
 
         try {
-            test1Image.createNewFile();
-            test2Image.createNewFile();
+            assertFalse(test1Image.exists());
+            assertTrue(test1Image.createNewFile());
+            assertTrue(test1Image.exists());
+            assertFalse(test2Image.exists());
+            assertTrue(test2Image.createNewFile());
+            assertTrue(test2Image.exists());
 
             final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
@@ -671,7 +677,6 @@ public class ImageFolderServiceTest {
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
             Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
             final Image imageLatest = imageDataInitializer.createData(1, testImage1FileName, testImage1FileName, latestVersion);
-
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
             Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
@@ -699,8 +704,11 @@ public class ImageFolderServiceTest {
         final File testFile = new File(testFolder, testImageFileName);
 
         try {
-            testFile.mkdirs();
-            testFile.createNewFile();
+            assertTrue(testFolder.mkdirs());
+
+            assertFalse(testFile.exists());
+            assertTrue(testFile.createNewFile());
+            assertTrue(testFile.exists());
 
             final ImageFolderDTO imageFolderDTO = imageFolderService.getImageFolder();
             imageFolderDTO.setPath(File.separator + subDirectoryName + File.separator);

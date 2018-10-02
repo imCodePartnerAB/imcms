@@ -708,8 +708,12 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         File testImageFile = new File(testDirectoryFile, testStubImageFileName);
 
         try {
-            testDirectoryFile.mkdirs();
+            assertTrue(testFile.exists());
+            assertTrue(testDirectoryFile.mkdirs());
+
+            assertFalse(testImageFile.exists());
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            assertTrue(testImageFile.exists());
 
             final ImageFileDTO imageFileDTOStub = new ImageFileDTO();
             imageFileDTOStub.setPath(File.separator + testDirectory + File.separator + testStubImageFileName);
@@ -752,8 +756,12 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
 
         try {
-            testDirectoryFile.mkdirs();
+            assertTrue(testFile.exists());
+            assertTrue(testDirectoryFile.mkdirs());
+
+            assertFalse(testImageFile.exists());
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            assertTrue(testImageFile.exists());
 
             imageFileDTO.setPath(File.separator + testDirectory + File.separator + testImageFileName);
 
@@ -800,10 +808,15 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final File testFile2 = new File(testFolder, testImage2FileName);
 
         try {
-            testFolder.mkdirs();
+            assertTrue(testFile.exists());
+            assertTrue(testFolder.mkdirs());
+
+            assertFalse(testFile1.exists());
+            assertFalse(testFile2.exists());
             Files.copy(testFile.toPath(), testFile1.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
             Files.copy(testFile.toPath(), testFile2.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-
+            assertTrue(testFile1.exists());
+            assertTrue(testFile2.exists());
 
             final ImageFileDTO imageFile1DTO = new ImageFileDTO();
             imageFile1DTO.setPath(File.separator + testFolder + File.separator + testImage1FileName);
