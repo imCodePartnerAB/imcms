@@ -348,7 +348,7 @@ public class ImageFileServiceTest {
     }
 
     @Test
-    public void deleteImage_When_ImageUsedNotAtPublicOrWorkingDocument_Expect_TrueAndImageDeleted() throws IOException {
+    public void deleteImage_When_ImageUsedAtIntermediateDocumentVersion_Expect_TrueAndImageDeleted() throws IOException {
         final String testImageFileName = "test.jpg";
         final String test2ImageFileName = "test2.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
