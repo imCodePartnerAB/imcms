@@ -1,5 +1,8 @@
 package com.imcode.imcms.components.datainitializer;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -13,17 +16,24 @@ import org.springframework.stereotype.Component;
 @Component
 public class ImageDataInitializer extends TestDataCleaner {
 
+    private final CommonContentService commonContentService;
+    private final VersionService versionService;
+
     private final LanguageRepository languageRepository;
     private final ImageRepository imageRepository;
     private final VersionDataInitializer versionDataInitializer;
+    private final DocumentDataInitializer documentDataInitializer;
 
-    public ImageDataInitializer(LanguageRepository languageRepository,
+    public ImageDataInitializer(CommonContentService commonContentService, VersionService versionService, LanguageRepository languageRepository,
                                 ImageRepository imageRepository,
-                                VersionDataInitializer versionDataInitializer) {
+                                VersionDataInitializer versionDataInitializer, DocumentDataInitializer documentDataInitializer) {
         super(imageRepository);
+        this.commonContentService = commonContentService;
+        this.versionService = versionService;
         this.languageRepository = languageRepository;
         this.imageRepository = imageRepository;
         this.versionDataInitializer = versionDataInitializer;
+        this.documentDataInitializer = documentDataInitializer;
     }
 
     public Image createData(Integer imageIndex, Integer docId, Integer versionIndex) {
@@ -73,5 +83,20 @@ public class ImageDataInitializer extends TestDataCleaner {
             image.setUrl(imgUrl);
             imageRepository.save(image);
         });
+    }
+
+    public void createAllAvailableImageContent(boolean sameDoc, String menuImageUrl, String workingImageURL, String publishedImageURL) {
+        final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
+        commonDocumentDTO.getCommonContents()
+                .forEach(commonContent -> commonContent.setMenuImageURL(menuImageUrl));
+        commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
+
+        final Integer latestDocumentId = sameDoc ? commonDocumentDTO.getId() : documentDataInitializer.createData().getId();
+        final Version latestVersion = versionService.create(latestDocumentId, 1);
+        final Image imageLatest = createData(1, "", publishedImageURL, latestVersion);
+
+        final Integer workingDocumentId = sameDoc ? commonDocumentDTO.getId() : documentDataInitializer.createData().getId();
+        final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentId);
+        final Image imageWorking = createData(1, "", workingImageURL, workingVersion);
     }
 }
