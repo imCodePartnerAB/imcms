@@ -700,12 +700,13 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
     @Test
     public void checkFolderForImagesUsed_When_FolderNotContainsUsedImage_Expect_OkAndEmptyList() throws Exception {
         final String folderPathToCheck = "";
-        final String testStubImageFileName = "testStub.jpg";
+        final String testStubImageName = "testStub.jpg";
 
         final String testDirectory = "subDirectory";
-        final File testDirectoryFile = new File(imagesPath, testDirectory);
+        final String testStubImageUrl = testDirectory + File.separator + testStubImageName;
 
-        File testImageFile = new File(testDirectoryFile, testStubImageFileName);
+        final File testDirectoryFile = new File(imagesPath, testDirectory);
+        final File testImageFile = new File(testDirectoryFile, testStubImageName);
 
         try {
             assertTrue(testFile.exists());
@@ -715,22 +716,19 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
             assertTrue(testImageFile.exists());
 
-            final ImageFileDTO imageFileDTOStub = new ImageFileDTO();
-            imageFileDTOStub.setPath(File.separator + testDirectory + File.separator + testStubImageFileName);
-
             final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
             commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTOStub.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testStubImageUrl));
             commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testStubImageFileName, testDirectory + File.separator + testStubImageFileName, latestVersion);
+            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testStubImageName, testStubImageUrl, latestVersion);
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testStubImageFileName, testDirectory + File.separator + testStubImageFileName, workingVersion);
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testStubImageName, testStubImageUrl, workingVersion);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", folderPathToCheck);
@@ -750,10 +748,10 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final String testDirectory = "subDirectory";
         final File testDirectoryFile = new File(imagesPath, testDirectory);
 
-        final String testImageFileName = "test.jpg";
-        File testImageFile = new File(testDirectoryFile, testImageFileName);
+        final String testImageName = "test.jpg";
+        final String testImgUrl = testDirectory + File.separator + testImageName;
 
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
+        File testImageFile = new File(testDirectoryFile, testImageName);
 
         try {
             assertTrue(testFile.exists());
@@ -763,21 +761,19 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
             assertTrue(testImageFile.exists());
 
-            imageFileDTO.setPath(File.separator + testDirectory + File.separator + testImageFileName);
-
             final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
             commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImgUrl));
             commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, testDirectory + File.separator + testImageFileName, latestVersion);
+            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testImageName, testImgUrl, latestVersion);
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImageFileName, testDirectory + File.separator + testImageFileName, workingVersion);
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testImageName, testImgUrl, workingVersion);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", File.separator + testDirectory);
@@ -789,8 +785,6 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertNotNull(imageFileUsagesDTOS);
             assertEquals(1, imageFileUsagesDTOS.size());
             assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
-
-
         } finally {
             FileUtils.deleteDirectory(testDirectoryFile);
         }
@@ -802,41 +796,38 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final String folderPathToCheck = "subDirectory";
         final File testFolder = new File(imagesPath, folderPathToCheck);
 
-        final String testImage1FileName = "test1.jpg";
-        final String testImage2FileName = "test2.jpg";
-        final File testFile1 = new File(testFolder, testImage1FileName);
-        final File testFile2 = new File(testFolder, testImage2FileName);
+        final String testImage1Name = "test1.jpg";
+        final String testImage2Name = "test2.jpg";
+        final String testImage1Url = folderPathToCheck + File.separator + testImage1Name;
+        final String testImage2Url = folderPathToCheck + File.separator + testImage2Name;
+
+        final File testImage1File = new File(testFolder, testImage1Name);
+        final File testImage2File = new File(testFolder, testImage2Name);
 
         try {
             assertTrue(testFile.exists());
             assertTrue(testFolder.mkdirs());
 
-            assertFalse(testFile1.exists());
-            assertFalse(testFile2.exists());
-            Files.copy(testFile.toPath(), testFile1.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-            Files.copy(testFile.toPath(), testFile2.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
-            assertTrue(testFile1.exists());
-            assertTrue(testFile2.exists());
-
-            final ImageFileDTO imageFile1DTO = new ImageFileDTO();
-            imageFile1DTO.setPath(File.separator + testFolder + File.separator + testImage1FileName);
-
-            final ImageFileDTO imageFile2DTO = new ImageFileDTO();
-            imageFile2DTO.setPath(File.separator + folderPathToCheck + File.separator + testImage2FileName);
+            assertFalse(testImage1File.exists());
+            assertFalse(testImage2File.exists());
+            Files.copy(testFile.toPath(), testImage1File.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            Files.copy(testFile.toPath(), testImage2File.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
+            assertTrue(testImage1File.exists());
+            assertTrue(testImage2File.exists());
 
             final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
 
             commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFile2DTO.getPath()));
+                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImage2Url));
             commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImage1FileName, folderPathToCheck + File.separator + testImage1FileName, latestVersion);
+            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Image imageLatest = imageDataInitializer.createData(1, testImage1Name, testImage1Url, latestVersion);
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImage2FileName, folderPathToCheck + File.separator + testImage2FileName, workingVersion);
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Image imageWorking = imageDataInitializer.createData(1, testImage2Name, testImage2Url, workingVersion);
 
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
