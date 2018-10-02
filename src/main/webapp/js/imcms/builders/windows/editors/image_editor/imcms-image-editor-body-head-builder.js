@@ -460,6 +460,8 @@ define(
 
                 ].forEach($elem => $elem.hide());
 
+                $('.imcms-image-crop-proportions-info').remove();
+
                 getSwitchViewControls().show();
 
                 previewImage.clearData();
