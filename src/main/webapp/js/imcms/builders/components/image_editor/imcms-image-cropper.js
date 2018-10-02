@@ -134,7 +134,7 @@ function moveCropArea(top, left) {
 }
 
 function isOversize(width, height) {
-    return (height >= imageResize.getOriginal().height) || (width >= imageResize.getOriginal().width)
+    return (height > imageResize.getOriginal().height) || (width > imageResize.getOriginal().width)
 }
 
 function resizeCroppingTopLeft(deltaX, deltaY) {
@@ -645,6 +645,13 @@ module.exports = {
     setCropX1: setCropX1,
     setCropY: setCropY,
     setCropY1: setCropY1,
+    refreshCropping() {
+        resizeCroppingTopLeft(-1, 0);
+        resizeCroppingTopLeft(1, 0);
+
+        resizeCroppingBottomRight(0, -1);
+        resizeCroppingBottomRight(0, 1);
+    },
     applyCropping() {
 
         if (!imageData || !imageData.path) return;
