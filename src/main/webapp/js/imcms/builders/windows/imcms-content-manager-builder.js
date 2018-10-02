@@ -165,7 +165,8 @@ define(
         module.exports = {
             build: function (imageEditorShowImageStrategy, getSelectedImagePath) {
                 showImageStrategy = imageEditorShowImageStrategy;
-                selectedImagePath = getSelectedImagePath();
+
+                selectedImagePath = (getSelectedImagePath) ? getSelectedImagePath() : '';
 
                 contentManagerWindowBuilder.buildWindow.apply(contentManagerWindowBuilder, arguments);
             }
