@@ -4,7 +4,6 @@ import com.imcode.util.ImageSize;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.ImageInfo;
 import imcode.util.image.ImageOp;
-import lombok.EqualsAndHashCode;
 
 import java.io.IOException;
 import java.util.Date;

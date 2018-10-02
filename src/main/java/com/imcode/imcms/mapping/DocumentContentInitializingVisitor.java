@@ -12,7 +12,6 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.util.io.FileInputStreamSource;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 
@@ -24,11 +23,14 @@ import java.util.Collection;
 @Service
 public class DocumentContentInitializingVisitor extends DocumentVisitor {
 
-    @Inject
-    private TextDocumentContentInitializer textDocumentContentInitializer;
+    private final TextDocumentContentInitializer textDocumentContentInitializer;
 
-    @Inject
-    private DocRepository docRepository;
+    private final DocRepository docRepository;
+
+    public DocumentContentInitializingVisitor(TextDocumentContentInitializer textDocumentContentInitializer, DocRepository docRepository) {
+        this.textDocumentContentInitializer = textDocumentContentInitializer;
+        this.docRepository = docRepository;
+    }
 
     /**
      * Initializes file document.

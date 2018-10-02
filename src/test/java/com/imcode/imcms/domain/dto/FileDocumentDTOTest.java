@@ -32,8 +32,8 @@ public class FileDocumentDTOTest {
         final FileDocumentDTO originalFileDocument = fileDocumentDataInitializer.createFileDocument();
         final FileDocumentDTO cloneFileDocument = originalFileDocument.clone();
 
-        assertTrue(cloneFileDocument.getClass() == originalFileDocument.getClass());
-        assertFalse(cloneFileDocument == originalFileDocument);
+        assertSame(cloneFileDocument.getClass(), originalFileDocument.getClass());
+        assertNotSame(cloneFileDocument, originalFileDocument);
 
         assertNull(cloneFileDocument.getId());
         assertThat(cloneFileDocument.getPublicationStatus(), is(Meta.PublicationStatus.NEW));
@@ -53,14 +53,14 @@ public class FileDocumentDTOTest {
         final List<DocumentFileDTO> originalFiles = originalFileDocument.getFiles();
         final List<DocumentFileDTO> cloneFiles = cloneFileDocument.getFiles();
 
-        assertFalse(originalFiles == cloneFiles);
+        assertNotSame(originalFiles, cloneFiles);
 
         IntStream.range(0, originalFiles.size())
                 .forEach(i -> {
                     final DocumentFileDTO originalDocumentFileDTO = originalFiles.get(i);
                     final DocumentFileDTO cloneDocumentFileDTO = cloneFiles.get(i);
 
-                    assertFalse(originalDocumentFileDTO == cloneDocumentFileDTO);
+                    assertNotSame(originalDocumentFileDTO, cloneDocumentFileDTO);
 
                     assertNotNull(originalDocumentFileDTO.getId());
                     assertNotNull(originalDocumentFileDTO.getDocId());

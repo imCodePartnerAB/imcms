@@ -359,7 +359,6 @@ public class ImageFileServiceTest {
 
             final Image imageIntermediate = imageDataInitializer.createData(1, testImageFileName, testImageFileName, intermediateVersion);
 
-
             final Version latestVersion = versionService.create(tempDocId, 1);
             final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, test2ImageFileName, latestVersion);
 

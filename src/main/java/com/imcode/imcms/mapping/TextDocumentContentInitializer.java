@@ -5,14 +5,16 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import org.springframework.stereotype.Service;
 
-import javax.inject.Inject;
 import java.util.Map;
 
 @Service
 public class TextDocumentContentInitializer {
 
-    @Inject
-    private TextDocumentContentLoader contentLoader;
+    private final TextDocumentContentLoader contentLoader;
+
+    public TextDocumentContentInitializer(TextDocumentContentLoader contentLoader) {
+        this.contentLoader = contentLoader;
+    }
 
     /**
      * Initializes text document.

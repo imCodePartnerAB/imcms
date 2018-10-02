@@ -29,8 +29,8 @@ public class TextDocumentDTOTest {
         final TextDocumentDTO textDocumentDTO = documentDataInitializer.createTextDocument();
         final TextDocumentDTO cloneTextDocumentDTO = textDocumentDTO.clone();
 
-        assertTrue(cloneTextDocumentDTO.getClass() == textDocumentDTO.getClass());
-        assertFalse(cloneTextDocumentDTO == textDocumentDTO);
+        assertSame(cloneTextDocumentDTO.getClass(), textDocumentDTO.getClass());
+        assertNotSame(cloneTextDocumentDTO, textDocumentDTO);
 
         assertNull(cloneTextDocumentDTO.getId());
         assertThat(cloneTextDocumentDTO.getPublicationStatus(), is(Meta.PublicationStatus.NEW));

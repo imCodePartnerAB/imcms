@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
 
 import static com.imcode.imcms.controller.api.RequestExternalIdentifierController.*;
 import static imcode.server.ImcmsConstants.API_PREFIX;
