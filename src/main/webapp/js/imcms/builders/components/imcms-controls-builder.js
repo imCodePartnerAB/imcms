@@ -2,43 +2,33 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 19.08.17.
  */
-define("imcms-controls-builder", ["imcms-bem-builder"], function (BEM) {
-    var controlsBEM = new BEM({
-        block: "imcms-controls",
-        elements: {"control": "imcms-control"}
-    });
+const BEM = require('imcms-bem-builder');
 
-    function buildControl(modifier, onClick) {
-        return controlsBEM.buildElement("control", "<div>", {click: onClick}, [modifier]);
-    }
-
-    return {
-        move: function (onClick) {
-            return buildControl("move", onClick);
-        },
-        remove: function (onClick) {
-            return buildControl("remove", onClick);
-        },
-        edit: function (onClick) {
-            return buildControl("edit", onClick);
-        },
-        create: function (onClick) {
-            return buildControl("create", onClick);
-        },
-        copy: function (onClick) {
-            return buildControl("copy", onClick)
-        },
-        archive: function (onClick) {
-            return buildControl("archive", onClick)
-        },
-        check: function (onClick) {
-            return buildControl("check", onClick)
-        },
-        warning: function (onClick) {
-            return buildControl("warning", onClick)
-        },
-        buildControlsBlock: function (tag, controls) {
-            return controlsBEM.buildBlock(tag, controls, {}, "control");
-        }
-    };
+const controlsBEM = new BEM({
+    block: "imcms-controls",
+    elements: {"control": "imcms-control"}
 });
+
+function buildControl(modifier, onClick) {
+    return controlsBEM.buildElement("control", "<div>", {click: onClick}, [modifier]);
+}
+
+module.exports = {
+    move: onClick => buildControl("move", onClick),
+
+    remove: onClick => buildControl("remove", onClick),
+
+    edit: onClick => buildControl("edit", onClick),
+
+    create: onClick => buildControl("create", onClick),
+
+    copy: onClick => buildControl("copy", onClick),
+
+    archive: onClick => buildControl("archive", onClick),
+
+    check: onClick => buildControl("check", onClick),
+
+    warning: onClick => buildControl("warning", onClick),
+
+    buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
+};
