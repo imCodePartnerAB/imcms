@@ -164,7 +164,7 @@ public class UrlDocumentServiceTest {
         final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
         final boolean published = urlDocumentService.publishDocument(savedDocId, 1);
 
-        assertEquals(true, published);
+        assertTrue(published);
     }
 
     @Test
@@ -177,7 +177,7 @@ public class UrlDocumentServiceTest {
 
         final boolean published = urlDocumentService.publishDocument(savedDocId, superAdminId);
 
-        assertEquals(false, published);
+        assertFalse(published);
     }
 
     @Test

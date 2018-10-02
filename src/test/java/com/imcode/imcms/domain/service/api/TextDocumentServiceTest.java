@@ -168,8 +168,8 @@ public class TextDocumentServiceTest {
             assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
             assertEquals(childCommonContent.getMenuImageURL(), commonContent.getMenuImageURL());
 
-            assertEquals(childCommonContent.getId(), null);
-            assertEquals(childCommonContent.getDocId(), null);
+            assertNull(childCommonContent.getId());
+            assertNull(childCommonContent.getDocId());
             assertEquals(childCommonContent.getVersionNo(), Integer.valueOf(Version.WORKING_VERSION_INDEX));
         }
     }

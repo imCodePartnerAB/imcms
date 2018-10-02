@@ -29,8 +29,8 @@ public class UrlDocumentDTOTest {
         final UrlDocumentDTO originalUrlDocument = urlDocumentDataInitializer.createUrlDocument();
         final UrlDocumentDTO clonedUrlDocument = originalUrlDocument.clone();
 
-        assertTrue(clonedUrlDocument.getClass() == originalUrlDocument.getClass());
-        assertFalse(clonedUrlDocument == originalUrlDocument);
+        assertSame(clonedUrlDocument.getClass(), originalUrlDocument.getClass());
+        assertNotSame(clonedUrlDocument, originalUrlDocument);
 
         assertNull(clonedUrlDocument.getId());
         assertThat(clonedUrlDocument.getPublicationStatus(), is(Meta.PublicationStatus.NEW));
@@ -50,7 +50,7 @@ public class UrlDocumentDTOTest {
         final DocumentUrlDTO documentURL = originalUrlDocument.getDocumentURL();
         final DocumentUrlDTO clonedDocumentUrl = clonedUrlDocument.getDocumentURL();
 
-        assertFalse(documentURL == clonedDocumentUrl);
+        assertNotSame(documentURL, clonedDocumentUrl);
 
         assertNull(clonedDocumentUrl.getId());
         assertNull(clonedDocumentUrl.getDocId());
