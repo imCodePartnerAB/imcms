@@ -671,7 +671,9 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertEquals(1, imageFileUsagesDTOS.size());
             assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
         } finally {
-            testImageFile.delete();
+            if (testImageFile.exists()) {
+                assertTrue(testImageFile.delete());
+            }
         }
     }
 
