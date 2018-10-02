@@ -304,7 +304,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final int latestDocId = documentDataInitializer.createData().getId();
@@ -351,7 +351,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final int tempDocId = documentDataInitializer.createData().getId();
@@ -368,7 +368,7 @@ public class ImageFileServiceTest {
 
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
@@ -382,7 +382,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             imageFileService.deleteImage(imageFileDTO);
@@ -390,7 +390,7 @@ public class ImageFileServiceTest {
             assertFalse(testImageFile.exists());
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
@@ -404,7 +404,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
@@ -425,7 +425,7 @@ public class ImageFileServiceTest {
 
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
@@ -439,7 +439,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData();
@@ -452,7 +452,7 @@ public class ImageFileServiceTest {
             assertTrue(testImageFile.exists());
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
@@ -466,7 +466,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
@@ -482,7 +482,7 @@ public class ImageFileServiceTest {
 
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
@@ -496,7 +496,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final DocumentDTO tempDocument1DTO = documentDataInitializer.createData();
@@ -518,7 +518,7 @@ public class ImageFileServiceTest {
             assertTrue(testImageFile.exists());
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
@@ -533,7 +533,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
@@ -553,7 +553,7 @@ public class ImageFileServiceTest {
 
         } finally {
             if (testImageFile.exists()) {
-                testImageFile.delete();
+                assertTrue(testImageFile.delete());
             }
         }
     }
