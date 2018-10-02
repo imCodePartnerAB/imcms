@@ -1,18 +1,20 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.UserAdminRole;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UserAdminRolesRepositoryTest extends TransactionalWebAppSpringTestConfig {
+@Transactional
+class UserAdminRolesRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private RoleRepository roleRepository;

@@ -1,21 +1,22 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.persistence.entity.PhoneTypeJPA;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-public class PhoneTypeRepositoryTest extends TransactionalWebAppSpringTestConfig {
+@Transactional
+class PhoneTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private PhoneTypeRepository phoneTypeRepository;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         phoneTypeRepository.deleteAll();
         assertTrue(phoneTypeRepository.findAll().isEmpty());
     }

@@ -1,15 +1,15 @@
 package com.imcode.imcms.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imcode.imcms.config.TestConfig;
-import org.junit.runner.RunWith;
+import lombok.SneakyThrows;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -17,17 +17,15 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.NestedServletException;
 
-import javax.transaction.Transactional;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
+@ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {TestConfig.class})
-@Transactional
 public abstract class AbstractControllerTest {
 
     @Autowired
@@ -66,7 +64,8 @@ public abstract class AbstractControllerTest {
         performRequestBuilderExpectedOkAndJsonContentEquals(get(controllerPath()), expectedJson);
     }
 
-    protected String asJson(Object object) throws JsonProcessingException {
+    @SneakyThrows
+    protected String asJson(Object object) {
         return objectMapper.writeValueAsString(object);
     }
 
@@ -102,7 +101,7 @@ public abstract class AbstractControllerTest {
             final String message = "Should be " + expectedExceptionClass.getName() + "!! Received: "
                     + exceptionClass.getName();
 
-            assertEquals(message, expectedExceptionClass, exceptionClass);
+            assertEquals(expectedExceptionClass, exceptionClass, message);
             return;
         }
 
@@ -119,19 +118,19 @@ public abstract class AbstractControllerTest {
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(response));
     }
 
-    protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) throws Exception {
+    protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.post(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(content));
     }
 
-    protected MockHttpServletRequestBuilder getDeleteRequestBuilderWithContent(Object content) throws Exception {
+    protected MockHttpServletRequestBuilder getDeleteRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.delete(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(content));
     }
 
-    protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content) throws Exception {
+    protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content) {
         return MockMvcRequestBuilders.put(controllerPath())
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(asJson(content));

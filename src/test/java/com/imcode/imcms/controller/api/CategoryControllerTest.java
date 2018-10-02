@@ -2,8 +2,8 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +12,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
 
-    @After
+    @AfterEach
     public void cleanRepos() {
         categoryDataInitializer.cleanRepositories();
     }

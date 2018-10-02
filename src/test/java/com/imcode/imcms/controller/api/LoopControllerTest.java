@@ -14,8 +14,8 @@ import com.imcode.imcms.persistence.repository.LoopRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -39,7 +39,7 @@ public class LoopControllerTest extends AbstractControllerTest {
     @Autowired
     private VersionRepository versionRepository;
 
-    @Before
+    @BeforeEach
     public void createData() {
         loopDataInitializer.createData(TEST_LOOP);
 

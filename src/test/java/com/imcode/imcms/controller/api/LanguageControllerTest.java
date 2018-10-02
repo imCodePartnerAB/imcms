@@ -2,9 +2,11 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 public class LanguageControllerTest extends AbstractControllerTest {
 
     @Autowired

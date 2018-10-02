@@ -1,20 +1,22 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.persistence.entity.PhoneJPA;
 import com.imcode.imcms.persistence.entity.PhoneTypeJPA;
 import com.imcode.imcms.persistence.entity.User;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class PhoneRepositoryTest extends TransactionalWebAppSpringTestConfig {
+@Transactional
+class PhoneRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private PhoneRepository phoneRepository;
@@ -25,8 +27,8 @@ public class PhoneRepositoryTest extends TransactionalWebAppSpringTestConfig {
     @Autowired
     private UserDataInitializer userDataInitializer;
 
-    @Before
-    public void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() {
         phoneRepository.deleteAll();
         phoneTypeRepository.deleteAll();
         assertTrue(phoneRepository.findAll().isEmpty());

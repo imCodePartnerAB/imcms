@@ -1,22 +1,24 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.persistence.entity.ExternalToLocalRoleLinkJPA;
 import com.imcode.imcms.persistence.entity.RoleJPA;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 01.08.18.
  */
-public class ExternalToLocalRoleLinkRepositoryTest extends TransactionalWebAppSpringTestConfig {
+@Transactional
+class ExternalToLocalRoleLinkRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private ExternalToLocalRoleLinkRepository repository;

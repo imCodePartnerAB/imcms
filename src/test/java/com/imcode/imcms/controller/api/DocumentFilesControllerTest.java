@@ -13,9 +13,9 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -58,7 +58,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
     @Autowired
     private DocumentService<FileDocumentDTO> fileDocumentService;
 
-    @AfterClass
+    @AfterAll
     public static void shutDownSolr() {
         try {
             FileUtility.forceDelete(testSolrFolder);
@@ -76,7 +76,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         createdDocId = documentDataInitializer.createFileDocument().getId();
         filesPath.getFile().mkdirs();

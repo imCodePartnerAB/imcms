@@ -15,10 +15,9 @@ import com.imcode.imcms.util.Value;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.imcode.imcms.model.Text.Type.TEXT;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 @Transactional
@@ -59,7 +59,7 @@ public class TextControllerTest extends AbstractControllerTest {
         return "/texts";
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         clearRepos();
 
@@ -72,7 +72,7 @@ public class TextControllerTest extends AbstractControllerTest {
         Imcms.setUser(user);
     }
 
-    @After
+    @AfterEach
     public void clearRepos() {
         textRepository.deleteAll();
         textRepository.flush();
@@ -109,7 +109,7 @@ public class TextControllerTest extends AbstractControllerTest {
             performRequestBuilderExpectedOk(requestBuilder);
 
             final Text savedText = textService.getText(text);
-            Assert.assertEquals(savedText, text);
+            assertEquals(savedText, text);
         }
 
     }
@@ -149,7 +149,7 @@ public class TextControllerTest extends AbstractControllerTest {
             performRequestBuilderExpectedOk(requestBuilder);
 
             final Text savedText = textService.getText(textDTO);
-            Assert.assertEquals(savedText, textDTO);
+            assertEquals(savedText, textDTO);
         }
 
     }

@@ -1,14 +1,14 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.TransactionalWebAppSpringTestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.UserRoleId;
 import com.imcode.imcms.persistence.entity.UserRoles;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,10 +16,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig {
+@Transactional
+class UserRolesRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private UserRolesRepository userRolesRepository;
@@ -37,7 +37,7 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
     public void findAll_When_TwoRecordsExist_Expect_TwoRecordReturned() {
         final List<UserRoles> userRoles = userRolesRepository.findAll();
 
-        assertThat(userRoles, hasSize(2));
+        assertEquals(2, userRoles.size());
     }
 
     @Test
@@ -47,11 +47,11 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
 
         final UserRoles actual = userRolesRepository.getOne(existingId);
 
-        assertThat(actual, notNullValue());
-        assertThat(actual, is(expected));
+        assertNotNull(actual);
+        assertEquals(expected, actual);
 
-        assertThat(actual.getUser(), is(expected.getUser()));
-        assertThat(actual.getRole(), is(expected.getRole()));
+        assertEquals(expected.getUser(), actual.getUser());
+        assertEquals(expected.getRole(), actual.getRole());
     }
 
     @Test
@@ -59,11 +59,11 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
         User user = new User("test", "test", "test@imcode.com");
         userRepository.saveAndFlush(user);
 
-        assertThat(user, notNullValue());
+        assertNotNull(user);
 
         RoleJPA role = Collections.max(roleRepository.findAll(), Comparator.comparing(RoleJPA::getId));
 
-        assertThat(role, notNullValue());
+        assertNotNull(role);
 
         final int expectedSize = userRolesRepository.findAll().size() + 1;
         userRolesRepository.save(new UserRoles(user, role));
@@ -73,9 +73,9 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
         final UserRoles actualUserRole = Collections.max(afterSaved,
                 Comparator.comparing(userRole -> userRole.getUser().getId()));
 
-        assertThat(afterSaved, hasSize(expectedSize));
-        assertThat(actualUserRole.getUser(), is(user));
-        assertThat(actualUserRole.getRole(), is(role));
+        assertEquals(expectedSize, afterSaved.size());
+        assertEquals(user, actualUserRole.getUser());
+        assertEquals(role, actualUserRole.getRole());
     }
 
     @Test
@@ -96,7 +96,7 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
 
         final List<UserRoles> afterDeleting = userRolesRepository.findAll();
 
-        assertThat(afterDeleting, hasSize(beforeDeleting.size() - 1));
+        assertEquals(beforeDeleting.size() - 1, afterDeleting.size());
     }
 
     @Test
@@ -114,8 +114,9 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
                 .map(UserRoles::getRole)
                 .collect(Collectors.toList());
 
-        assertThat(userRolesByUserId, hasSize(roles.size()));
-        assertThat(roles, is(actualRoles));
+        assertEquals(roles.size(), userRolesByUserId.size());
+        assertTrue(roles.containsAll(actualRoles));
+        assertTrue(actualRoles.containsAll(roles));
     }
 
     @Test
@@ -136,8 +137,8 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
                 .map(UserRoles::getUser)
                 .collect(Collectors.toList());
 
-        assertThat(actualUsers, hasSize(userListSize));
-        assertThat(actualUsers, is(users));
+        assertEquals(userListSize, actualUsers.size());
+        assertEquals(users, actualUsers);
     }
 
     @Test
@@ -163,8 +164,8 @@ public class UserRolesRepositoryTest extends TransactionalWebAppSpringTestConfig
 
         final List<UserRoles> userRolesByUserId = userRolesRepository.findUserRolesByUserId(user.getId());
 
-        Assertions.assertTrue(userRolesByUserId.containsAll(userRoles));
-        Assertions.assertTrue(userRoles.containsAll(userRolesByUserId));
+        assertTrue(userRolesByUserId.containsAll(userRoles));
+        assertTrue(userRoles.containsAll(userRolesByUserId));
 
         userRolesRepository.deleteUserRolesByUserId(user.getId());
 

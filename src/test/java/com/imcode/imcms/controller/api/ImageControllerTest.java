@@ -17,18 +17,20 @@ import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 public class ImageControllerTest extends AbstractControllerTest {
 
     private static final int TEST_IMAGE_INDEX = 1;
@@ -62,7 +64,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         return "/images";
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         documentDataInitializer.cleanRepositories();
         versionDataInitializer.cleanRepositories();
@@ -78,7 +80,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         Imcms.setUser(user);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Imcms.removeUser();
         documentDataInitializer.cleanRepositories();

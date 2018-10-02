@@ -9,16 +9,18 @@ import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
+@Transactional
 public class MenuControllerTest extends AbstractControllerTest {
 
     @Autowired
@@ -32,14 +34,14 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user);
     }
 
-    @After
+    @AfterEach
     public void cleanRepos() {
         menuDataInitializer.cleanRepositories();
         Imcms.removeUser();
