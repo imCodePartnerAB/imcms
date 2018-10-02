@@ -7,6 +7,7 @@ import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
@@ -216,7 +217,7 @@ public class ImageFileServiceTest {
 
         try {
             assertFalse(testImageFile.exists());
-            testImageFile.createNewFile();
+            assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
             final int latestDocId = documentDataInitializer.createData().getId();
@@ -417,12 +418,10 @@ public class ImageFileServiceTest {
                     .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
             latestCommonContent
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-
+            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
 
             assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
-
             assertTrue(testImageFile.exists());
-
         } finally {
             if (testImageFile.exists()) {
                 assertTrue(testImageFile.delete());
@@ -475,11 +474,10 @@ public class ImageFileServiceTest {
                     .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
             latestCommonContent
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
+            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
 
             assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
-
             assertTrue(testImageFile.exists());
-
         } finally {
             if (testImageFile.exists()) {
                 assertTrue(testImageFile.delete());
@@ -514,7 +512,10 @@ public class ImageFileServiceTest {
                     .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
             commonContentService.save(tempDocument3DTO.getId(), tempDocument3DTO.getCommonContents());
 
-            assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
+            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
+
+            assertFalse(usages.isEmpty());
+            assertEquals(6, usages.size());
             assertTrue(testImageFile.exists());
         } finally {
             if (testImageFile.exists()) {
@@ -546,11 +547,12 @@ public class ImageFileServiceTest {
                     .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
 
             latestCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(File.separator + stubImageFileName));
+            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
 
-            imageFileService.deleteImage(imageFileDTO);
+            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
 
+            assertTrue(usages.isEmpty());
             assertFalse(testImageFile.exists());
-
         } finally {
             if (testImageFile.exists()) {
                 assertTrue(testImageFile.delete());
