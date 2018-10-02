@@ -215,6 +215,16 @@ a[class^="imcms"].imcms-button--neutral:hover {
     border-color: #0b94d8;
 }
 
+.imcms-button--open-in-new-window {
+    background: #fff url("/images_new/image_editor/icon_open_in_new.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
 .imcms-button--zoom-plus {
     background: #fff url("/images_new/image_editor/icon_zoom_plus.png") no-repeat center;
     border: 1px solid #d3d8de;
