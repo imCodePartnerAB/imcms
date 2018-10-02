@@ -38,6 +38,7 @@ module.exports = {
     rotateRight: getButtonBuilder('rotate-right'),
     revert: getButtonBuilder('revert'),
     cropping: getButtonBuilder('crop'),
+    openInNewWindow: getButtonBuilder('open-in-new-window'),
     negativeButton: function (attributes) {
         return this.negative('<button>', attributes);
     },
@@ -100,6 +101,9 @@ module.exports = {
     },
     croppingButton: function (attributes) {
         return this.cropping('<button>', attributes);
+    },
+    openInNewWindowButton: function (attributes) {
+        return this.openInNewWindow('<button>', attributes);
     },
     buttonsContainer: (tag, elements, attributes) => buttonsBEM.buildBlock(tag, elements, attributes, 'button'),
 };

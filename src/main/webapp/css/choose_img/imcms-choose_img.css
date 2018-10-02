@@ -113,3 +113,12 @@
 .imcms-choose-img-wrap--active .imcms-choose-img-description__button {
     display: block;
 }
+
+.imcms-choose-img-description .imcms-choose-img-description__open-image {
+    height: 18px;
+    width: 18px;
+    background-size: 18px;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+}
