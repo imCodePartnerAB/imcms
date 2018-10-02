@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
@@ -8,6 +9,9 @@ import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -39,9 +43,13 @@ public class ImageFolderServiceTest {
 
     @Autowired
     private ImageFolderService imageFolderService;
+    @Autowired
+    private VersionService versionService;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
 
     @Value("${ImagePath}")
     private File imagesPath;
@@ -49,11 +57,13 @@ public class ImageFolderServiceTest {
     @Before
     public void prepareData() {
         imageDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
     }
 
     @After
     public void clearTestData() {
         imageDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -673,5 +683,26 @@ public class ImageFolderServiceTest {
         } finally {
             FileUtils.deleteDirectory(testSubDirectory);
         }
+    }
+
+    @Test
+    public void checkFolderForImagesUsed_When_ImageUsedAtIntermediateDocumentVersion_Expect_ExpectedEmptyList() throws IOException {
+        final String testImageName = "test.jpg";
+        final ImageFolderDTO imageFolderDTO = imageFolderService.getImageFolder();
+
+        final String testStubImageName = "testStub.jpg";
+        final String subDirectoryName = "subDirectory";
+
+        final Integer testDocumentId = documentDataInitializer.createData().getId();
+        final Version intermediateVersion = versionService.create(testDocumentId, 1);
+        final Image imageIntermediate = imageDataInitializer.createData(1, "", testImageName, intermediateVersion);
+
+        final Version latestVersion = versionService.create(testDocumentId, 1);
+        final Image imageLatest = imageDataInitializer.createData(1, "", subDirectoryName + File.separator + testStubImageName, latestVersion);
+
+        List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
+
+        assertNotNull(usages);
+        assertTrue(usages.isEmpty());
     }
 }
