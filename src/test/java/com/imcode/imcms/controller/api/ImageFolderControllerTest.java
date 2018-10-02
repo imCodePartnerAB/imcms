@@ -4,18 +4,13 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
@@ -42,11 +37,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 @Transactional
 public class ImageFolderControllerTest extends AbstractControllerTest {
-
-    @Autowired
-    private CommonContentService commonContentService;
-    @Autowired
-    private VersionService versionService;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
@@ -668,19 +658,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         try {
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + imageFileDTO.getPath()));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, testImageFileName, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImageFileName, testImageFileName, workingVersion);
+            imageDataInitializer.createAllAvailableImageContent(true, File.separator + testImageFileName, testImageFileName, testImageFileName);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", "");
@@ -693,7 +671,9 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertEquals(1, imageFileUsagesDTOS.size());
             assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
         } finally {
-            testImageFile.delete();
+            if (testImageFile.exists()) {
+                assertTrue(testImageFile.delete());
+            }
         }
     }
 
@@ -716,19 +696,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
             assertTrue(testImageFile.exists());
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testStubImageUrl));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testStubImageName, testStubImageUrl, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testStubImageName, testStubImageUrl, workingVersion);
+            imageDataInitializer.createAllAvailableImageContent(true, File.separator + testStubImageUrl, testStubImageUrl, testStubImageUrl);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", folderPathToCheck);
@@ -749,7 +717,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final File testDirectoryFile = new File(imagesPath, testDirectory);
 
         final String testImageName = "test.jpg";
-        final String testImgUrl = testDirectory + File.separator + testImageName;
+        final String testImageUrl = testDirectory + File.separator + testImageName;
 
         File testImageFile = new File(testDirectoryFile, testImageName);
 
@@ -761,19 +729,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
             assertTrue(testImageFile.exists());
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImgUrl));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImageName, testImgUrl, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImageName, testImgUrl, workingVersion);
+            imageDataInitializer.createAllAvailableImageContent(true, File.separator + testImageUrl, testImageUrl, testImageUrl);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", File.separator + testDirectory);
@@ -815,20 +771,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testImage1File.exists());
             assertTrue(testImage2File.exists());
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImage2Url));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImage1Name, testImage1Url, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImage2Name, testImage2Url, workingVersion);
-
+            imageDataInitializer.createAllAvailableImageContent(false, File.separator + testImage2Url, testImage1Url, testImage2Url);
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", File.separator + folderPathToCheck);
