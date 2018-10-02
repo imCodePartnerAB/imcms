@@ -497,7 +497,7 @@ define("imcms-image-content-builder",
                             title: imageFile.name
                         }
                     ),
-                    "img-size": $("<div>", {text: imageFile.resolution + " " + imageFile.size})
+                    "img-size": $("<div>", {text: `${imageFile.resolution} ${imageFile.size}`}),
                 }
             }).buildBlockStructure("<div>");
         }
