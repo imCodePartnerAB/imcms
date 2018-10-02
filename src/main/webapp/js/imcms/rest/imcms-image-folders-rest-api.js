@@ -2,13 +2,13 @@
  * Created by Serhii Maksymchuk from Ubrainians for imCode
  * 01.11.17
  */
-define("imcms-image-folders-rest-api", ["imcms-rest-api"], function (rest) {
-    const url = '/images/folders';
-    let api = new rest.API(url);
+const rest = require('imcms-rest-api');
 
-    api.canDelete = rest.ajax.bind({url: url + '/can-delete', type: "POST", json: true});
+const url = '/images/folders';
+let api = new rest.API(url);
 
-    api.check = rest.ajax.bind({url: url + '/check', type: "GET", json: false});
+api.canDelete = rest.ajax.bind({url: url + '/can-delete', type: "POST", json: true});
 
-    return api;
-});
+api.check = rest.ajax.bind({url: url + '/check', type: "GET", json: false});
+
+module.exports = api;

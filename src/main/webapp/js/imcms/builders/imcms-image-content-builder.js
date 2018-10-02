@@ -515,7 +515,7 @@ define("imcms-image-content-builder",
                 elements: {
                     "img": $("<div>", {
                         "class": "imcms-choose-img",
-                        style: "background-image: url('" + imcms.contextPath + "/" + imcms.imagesPath + imageFile.path + "')"
+                        style: `background-image: url('${imcms.contextPath}/${imcms.imagesPath}${imageFile.path}')`
                     }),
                     "description": buildImageDescription(imageFile)
                 }
