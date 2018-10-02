@@ -498,6 +498,11 @@ define("imcms-image-content-builder",
                         }
                     ),
                     "img-size": $("<div>", {text: `${imageFile.resolution} ${imageFile.size}`}),
+                    'open-image': components.buttons.openInNewWindow('<a>', {
+                        href: `${imcms.contextPath}/${imcms.imagesPath}${imageFile.path}`,
+                        title: texts.openImage,
+                        target: '_blank',
+                    }),
                 }
             }).buildBlockStructure("<div>");
         }

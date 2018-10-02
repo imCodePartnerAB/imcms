@@ -254,7 +254,8 @@ const texts = {
                 removeFolderMessage: "Vill du ta bort mapp \"",
                 folderNotEmptyMessage: "Mappen är inte tom",
                 newFolderName: "Nytt mappnamn",
-                add: "LÄGG TILL+"
+                add: "LÄGG TILL+",
+                openImage: "Öppna bild i nytt fönster",
             },
             image: {
                 title: "Bild-redigerare",
@@ -657,7 +658,8 @@ const texts = {
                 removeFolderMessage: "Do you want to remove folder \"",
                 folderNotEmptyMessage: "Folder not empty",
                 newFolderName: "New folder name",
-                add: "ADD+"
+                add: "ADD+",
+                openImage: "Open image in new window",
             },
             image: {
                 title: "Image Editor",
