@@ -5,6 +5,7 @@
 const texts = require('imcms-i18n-texts').editors.image;
 const components = require('imcms-components-builder');
 const imageResize = require('imcms-image-resize');
+const imageCropper = require('imcms-image-cropper');
 const $ = require('jquery');
 
 let $proportionsText;
@@ -31,6 +32,8 @@ function getProportionsButton() {
             $proportionsText.toggle(saveProportions);
 
             $('.imcms-image-crop-proportions-info').css('display', saveProportions ? 'inline-block' : 'none');
+
+            if (saveProportions) imageCropper.refreshCropping();
         }
     }))
 }
