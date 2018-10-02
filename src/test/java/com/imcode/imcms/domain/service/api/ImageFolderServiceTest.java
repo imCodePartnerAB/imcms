@@ -1,19 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.config.TestConfig;
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
 import com.imcode.imcms.domain.dto.ImageFolderItemUsageDTO;
 import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFolderService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.ImcmsConstants;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
@@ -45,16 +39,9 @@ public class ImageFolderServiceTest {
 
     @Autowired
     private ImageFolderService imageFolderService;
-    @Autowired
-    private CommonContentService commonContentService;
-    @Autowired
-    private VersionService versionService;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
-    @Autowired
-    private DocumentDataInitializer documentDataInitializer;
-
 
     @Value("${ImagePath}")
     private File imagesPath;
@@ -62,13 +49,11 @@ public class ImageFolderServiceTest {
     @Before
     public void prepareData() {
         imageDataInitializer.cleanRepositories();
-        documentDataInitializer.cleanRepositories();
     }
 
     @After
     public void clearTestData() {
         imageDataInitializer.cleanRepositories();
-        documentDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -584,19 +569,7 @@ public class ImageFolderServiceTest {
 
         final String testStubImageName = "testStub.jpg";
 
-        final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-        commonDocumentDTO.getCommonContents()
-                .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testStubImageName));
-        commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-        final Integer latestDocumentId = documentDataInitializer.createData().getId();
-        final Version latestVersion = versionService.create(latestDocumentId, 1);
-        final Image imageLatest = imageDataInitializer.createData(1, testStubImageName, testStubImageName, latestVersion);
-
-        final Integer workingDocumentId = documentDataInitializer.createData().getId();
-        final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentId);
-        final Image imageWorking = imageDataInitializer.createData(1, testStubImageName, testStubImageName, workingVersion);
+        imageDataInitializer.createAllAvailableImageContent(true, File.separator + testStubImageName, testStubImageName, testStubImageName);
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
         assertNotNull(usages);
@@ -616,19 +589,7 @@ public class ImageFolderServiceTest {
             assertTrue(testImage.createNewFile());
             assertTrue(testImage.exists());
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImageName));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImageName, testImageName, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImageName, testImageName, workingVersion);
+            imageDataInitializer.createAllAvailableImageContent(false, File.separator + testImageName, testImageName, testImageName);
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
 
@@ -662,19 +623,7 @@ public class ImageFolderServiceTest {
             assertTrue(testImage2File.createNewFile());
             assertTrue(testImage2File.exists());
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImage1Name));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImage1Name, testImage1Name, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImage2Name, testImage2Name, workingVersion);
+            imageDataInitializer.createAllAvailableImageContent(false, File.separator + testImage1Name, testImage1Name, testImage2Name);
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
 
@@ -709,19 +658,7 @@ public class ImageFolderServiceTest {
             assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
 
-            final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-
-            commonDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + testImageUrl));
-            commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
-
-            final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
-            final Image imageLatest = imageDataInitializer.createData(1, testImageName, testImageUrl, latestVersion);
-
-            final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
-            final Image imageWorking = imageDataInitializer.createData(1, testImageName, testImageUrl, workingVersion);
+            imageDataInitializer.createAllAvailableImageContent(true, File.separator + testImageUrl, testImageUrl, testImageUrl);
 
             final ImageFolderDTO imageFolderDTO = imageFolderService.getImageFolder();
             imageFolderDTO.setPath(File.separator + subDirectoryName + File.separator);
