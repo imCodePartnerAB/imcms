@@ -461,7 +461,7 @@ public class ImageFileServiceTest {
         final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(testImageFileName);
+        imageFileDTO.setPath(File.separator + testImageFileName);
 
         try {
             assertFalse(testImageFile.exists());
@@ -490,7 +490,7 @@ public class ImageFileServiceTest {
         final String testImageFileName = "test.jpg";
         final File testImageFile = new File(imagesPath, testImageFileName);
         final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(testImageFileName);
+        imageFileDTO.setPath(File.separator + testImageFileName);
 
         try {
             assertFalse(testImageFile.exists());
