@@ -594,11 +594,11 @@ public class ImageFolderServiceTest {
         commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
         final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-        Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+        final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
         final Image imageLatest = imageDataInitializer.createData(1, testStubImageFileName, testStubImageFileName, latestVersion);
 
         final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-        Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+        final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
         final Image imageWorking = imageDataInitializer.createData(1, testStubImageFileName, testStubImageFileName, workingVersion);
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -628,11 +628,11 @@ public class ImageFolderServiceTest {
             commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
             final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, testImageFileName, latestVersion);
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
             final Image imageWorking = imageDataInitializer.createData(1, testImageFileName, testImageFileName, workingVersion);
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -675,11 +675,11 @@ public class ImageFolderServiceTest {
             commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
             final Image imageLatest = imageDataInitializer.createData(1, testImage1FileName, testImage1FileName, latestVersion);
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
             final Image imageWorking = imageDataInitializer.createData(1, testImage2FileName, testImage2FileName, workingVersion);
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -723,11 +723,11 @@ public class ImageFolderServiceTest {
             commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
             final DocumentDTO latestDocumentDTO = documentDataInitializer.createData();
-            Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
+            final Version latestVersion = versionService.create(latestDocumentDTO.getId(), 1);
             final Image imageLatest = imageDataInitializer.createData(1, testImageFileName, subDirectoryName + File.separator + testImageFileName, latestVersion);
 
             final DocumentDTO workingDocumentDTO = documentDataInitializer.createData();
-            Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
+            final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentDTO.getId());
             final Image imageWorking = imageDataInitializer.createData(1, testImageFileName, subDirectoryName + File.separator + testImageFileName, workingVersion);
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
