@@ -503,7 +503,7 @@ define("imcms-image-content-builder",
         }
 
         function selectImage(imageFile) {
-            $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
+            $saveAndCloseBtn && $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
             $(".image-chosen").removeClass("image-chosen");
             $(this).addClass("image-chosen");
             selectedImage = imageFile;
@@ -622,7 +622,7 @@ define("imcms-image-content-builder",
 
                 if (selectedImageName === $image.find(".imcms-title").text()) {
                     $image.addClass("image-chosen");
-                    $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
+                    $saveAndCloseBtn && $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
                 }
             });
         }

@@ -142,7 +142,7 @@ define(
         }
 
         function clearData() {
-            $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
+            $saveAndCloseBtn && $saveAndCloseBtn.attr('disabled', 'disabled').addClass('imcms-button--disabled');
             events.trigger("content manager closed");
             imageContentBuilder.clearContent();
         }
