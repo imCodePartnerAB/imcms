@@ -52,4 +52,6 @@ $(function () {
     }
 
     auth.getAuthProviders().done(onAuthProvidersLoaded);
+
+    $('#Username').focus();
 });
