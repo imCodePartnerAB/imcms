@@ -823,7 +823,7 @@ public class DocumentServiceTest {
     }
 
     @Test
-    public void publishNewDocVersion_When_PublishDateIsInPast_Expect_CurrentDateSet() {
+    public void publishNewDocVersion_When_PublishDateIsInPast_Expect_DateNotChanged() {
         assertNull(createdDoc.getPublished().getFormattedDate());
 
         final AuditDTO auditDTO = new AuditDTO();
@@ -839,7 +839,7 @@ public class DocumentServiceTest {
         final DocumentDTO publishedDoc = documentService.get(docId);
 
         assertTrue(isPublished);
-        assertTrue(publishedDoc.getPublished().getFormattedDate().after(dateInPast));
+        assertEquals(dateInPast, publishedDoc.getPublished().getFormattedDate());
     }
 
     @Test
