@@ -499,7 +499,7 @@ define("imcms-image-content-builder",
                     ),
                     "img-size": $("<div>", {text: `${imageFile.resolution} ${imageFile.size}`}),
                     'open-image': components.buttons.openInNewWindow('<a>', {
-                        href: `${imcms.contextPath}/${imcms.imagesPath}${imageFile.path}`,
+                        href: `${imcms.contextPath}/${imcms.imagesPath}/${imageFile.path}`,
                         title: texts.openImage,
                         target: '_blank',
                     }),
@@ -520,7 +520,7 @@ define("imcms-image-content-builder",
                 elements: {
                     "img": $("<div>", {
                         "class": "imcms-choose-img",
-                        style: `background-image: url('${imcms.contextPath}/${imcms.imagesPath}${imageFile.path}')`
+                        style: `background-image: url('${imcms.contextPath}/${imcms.imagesPath}/${imageFile.path}')`
                     }),
                     "description": buildImageDescription(imageFile)
                 }

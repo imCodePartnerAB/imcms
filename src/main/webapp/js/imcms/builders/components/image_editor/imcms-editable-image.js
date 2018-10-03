@@ -14,7 +14,7 @@ function getImage() {
 
 module.exports = {
     setImageSource: (path, onLoad) => {
-        const src = imcms.contextPath + '/' + imcms.imagesPath + path;
+        const src = `${imcms.contextPath}/${imcms.imagesPath}/${path}`;
 
         $image.attr('data-src', src);
         $image.removeAttr('style'); // not sure
