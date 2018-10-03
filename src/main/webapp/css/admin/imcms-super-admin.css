@@ -208,3 +208,7 @@
 .delete-document-row .imcms-number__error-msg {
     position: absolute;
 }
+
+.roles-editor__role-permissions {
+    padding-left: 40px;
+}

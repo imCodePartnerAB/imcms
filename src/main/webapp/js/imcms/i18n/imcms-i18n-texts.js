@@ -356,8 +356,8 @@ const texts = {
                 createNewUser: 'Create new user'
             },
             roles: {
-                name: 'Vält',
-                title: 'Roller administrering',
+                name: 'Roller',
+                title: 'Roller: administration',
                 createNewRole: 'Skapa ny roll',
                 roleName: 'Rollnamn',
                 save: 'Spara',
