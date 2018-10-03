@@ -17,3 +17,15 @@ examples): ``https://imcode.com/login``. You should see next page
     .. image:: images/imcms-login-page.png
 
 By default login and password is the same - ``admin``.
+
+There is possibility to set next url after login:
+
+``next_meta`` - id of desired document
+``next_url`` - URL that user will be redirected to after successful logging in.
+Can be taken from current page URL before redirect, so user will be returned back.
+
+Examples:
+
+http://imcms.dev.imcode.com/login?next_meta=1003
+
+http://imcms.dev.imcode.com/login?next_url=http://imcms.dev.imcode.com/test-page-one-headline
