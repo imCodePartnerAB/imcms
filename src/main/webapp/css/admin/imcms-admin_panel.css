@@ -357,7 +357,7 @@
 /* panel "visible" */
 
 .imcms-panel-visible {
-    position: relative;
+    position: sticky;
 }
 
 .imcms-panel-visible .imcms-admin-panel {
