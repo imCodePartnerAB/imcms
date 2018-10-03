@@ -103,7 +103,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
         final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath()).file(file);
 
         final String jsonResponse = getJsonResponse(fileUploadRequestBuilder);
-        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<>() {
+        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileDTO>>() {
         });
 
         assertNotNull(imageFileDTOS);
@@ -121,7 +121,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .file(file);
 
         final String jsonResponse = getJsonResponse(fileUploadRequestBuilder);
-        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<>() {
+        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileDTO>>() {
         });
 
         assertNotNull(imageFileDTOS);
@@ -152,7 +152,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                 .param("folder", separator + ImcmsConstants.IMAGE_GENERATED_FOLDER);
 
         final String jsonResponse = getJsonResponse(fileUploadRequestBuilder);
-        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<>() {
+        final List<ImageFileDTO> imageFileDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileDTO>>() {
         });
 
         assertNotNull(imageFileDTOS);
@@ -310,7 +310,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                     .content(asJson(imageDTOWorking));
 
             final String jsonResponseLatest = getJsonResponseWithExpectedStatus(requestLatestBuilder, METHOD_NOT_ALLOWED.value());
-            final List<ImageFileUsageDTO> imageFileUsagesDTOSLatest = fromJson(jsonResponseLatest, new TypeReference<>() {
+            final List<ImageFileUsageDTO> imageFileUsagesDTOSLatest = fromJson(jsonResponseLatest, new TypeReference<List<ImageFileUsageDTO>>() {
             });
 
             assertNotNull(imageFileUsagesDTOSLatest);
@@ -318,7 +318,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
 
             final String jsonResponseWorking = getJsonResponseWithExpectedStatus(requestWorkingBuilder, METHOD_NOT_ALLOWED.value());
-            final List<ImageFileUsageDTO> imageFileUsagesDTOSWorking = fromJson(jsonResponseWorking, new TypeReference<>() {
+            final List<ImageFileUsageDTO> imageFileUsagesDTOSWorking = fromJson(jsonResponseWorking, new TypeReference<List<ImageFileUsageDTO>>() {
             });
 
             assertNotNull(imageFileUsagesDTOSWorking);
@@ -399,7 +399,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                     .content(asJson(imageFileDTO));
 
             final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, METHOD_NOT_ALLOWED.value());
-            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<>() {
+            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileUsageDTO>>() {
             });
 
             assertNotNull(imageFileUsagesDTOS);
@@ -439,7 +439,7 @@ public class ImageFileControllerTest extends AbstractControllerTest {
                     .content(asJson(imageFileDTO));
 
             final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, METHOD_NOT_ALLOWED.value());
-            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<>() {
+            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileUsageDTO>>() {
             });
 
             assertNotNull(imageFileUsagesDTOS);

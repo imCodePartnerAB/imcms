@@ -619,7 +619,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .param("path", "");
 
             final String jsonResponse = getJsonResponse(requestBuilderGet);
-            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<>() {
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
             });
 
             assertNotNull(imageFileUsagesDTOS);
@@ -655,7 +655,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .param("path", folderPathToCheck);
 
             final String jsonResponse = getJsonResponse(requestBuilderGet);
-            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<>() {
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
             });
 
             assertTrue(imageFileUsagesDTOS.isEmpty());
@@ -688,7 +688,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
                     .param("path", separator + testDirectory);
 
             final String jsonResponse = getJsonResponse(requestBuilderGet);
-            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<>() {
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
             });
 
             assertNotNull(imageFileUsagesDTOS);
@@ -728,7 +728,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
                     .param("path", separator + folderPathToCheck);
             final String jsonResponse = getJsonResponse(requestBuilderGet);
-            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<>() {
+            final List<ImageFolderItemUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFolderItemUsageDTO>>() {
             });
 
             assertFalse(imageFileUsagesDTOS.isEmpty());
