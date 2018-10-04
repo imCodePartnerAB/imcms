@@ -322,6 +322,10 @@
         <servlet-name>com.imcode.imcms.servlet.VerifyUser</servlet-name>
         <servlet-class>com.imcode.imcms.servlet.VerifyUser</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>com.imcode.imcms.servlet.SessionsInfo</servlet-name>
+        <servlet-class>com.imcode.imcms.servlet.SessionsInfo</servlet-class>
+    </servlet>
 
     <servlet>
         <servlet-name>com.imcode.imcms.servlet.Version</servlet-name>
@@ -606,6 +610,11 @@
     <servlet-mapping>
         <servlet-name>com.imcode.imcms.servlet.VerifyUser</servlet-name>
         <url-pattern>/servlet/VerifyUser</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>com.imcode.imcms.servlet.SessionsInfo</servlet-name>
+        <url-pattern>/servlet/SessionsInfo</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

@@ -3,21 +3,31 @@ package imcode.util;
 import com.imcode.db.handlers.SingleObjectHandler;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.DefaultContentManagementSystem;
-import com.imcode.imcms.db.*;
+import com.imcode.imcms.db.IntegerListResultSetHandler;
+import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
+import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.db.StringFromRowFactory;
+import com.imcode.imcms.db.StringListResultSetHandler;
 import com.imcode.imcms.servlet.VerifyUser;
+import com.imcode.imcms.servlet.beans.SessionInfoDTO;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
-import org.apache.commons.collections.*;
+import org.apache.commons.collections.Factory;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.collections.SetUtils;
+import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.iterators.ObjectArrayIterator;
 import org.apache.commons.collections.iterators.TransformIterator;
 import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
@@ -30,6 +40,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
+import javax.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -49,9 +60,25 @@ import java.security.cert.Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class Utility {
 
@@ -67,6 +94,7 @@ public class Utility {
     private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
+    private static final Map<Integer, SessionInfoDTO> sessions = new HashMap<>();
 
     private Utility() {
 
@@ -417,6 +445,19 @@ public class Utility {
             return;
         }
         req.getSession().setAttribute(LOGGED_IN_USER, user);
+        final HttpSession currentSession = req.getSession();
+        final Date loginDate = null != user.getLastLoginDate() ? user.getLastLoginDate() : new Date();
+
+        SessionInfoDTO sessionInfoDTO = new SessionInfoDTO();
+        sessionInfoDTO.setUserId(user.getId());
+        sessionInfoDTO.setSessionId(currentSession.getId());
+        sessionInfoDTO.setUserAgent(req.getHeader("User-Agent"));
+        sessionInfoDTO.setIp(req.getRemoteAddr());
+        sessionInfoDTO.setLoginDate(loginDate);
+        sessionInfoDTO.setExpireDate(DateUtils.addSeconds(loginDate, req.getSession().getMaxInactiveInterval()));
+
+        sessions.put(user.getId(), sessionInfoDTO);
+
         if (null != user) {
             // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
             user.setCurrentContextPath(req.getContextPath());
@@ -424,7 +465,10 @@ public class Utility {
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {
-        req.getSession().removeAttribute(LOGGED_IN_USER);
+        HttpSession session = req.getSession();
+        sessions.remove(((UserDomainObject) session.getAttribute(LOGGED_IN_USER)).getId());
+
+        session.removeAttribute(LOGGED_IN_USER);
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
@@ -517,6 +561,12 @@ public class Utility {
 
             throw new RuntimeException(ex.getMessage(), ex);
         }
+    }
+
+    public static List<SessionInfoDTO> getActiveSessions() {
+        return sessions.values().stream()
+                .filter(info -> info.getExpireDate().after(new Date()))
+                .collect(Collectors.toList());
     }
 
     private static class ObjectPairToMapEntryTransformer implements Transformer {
