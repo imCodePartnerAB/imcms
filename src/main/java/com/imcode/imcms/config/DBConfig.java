@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -122,6 +123,7 @@ class DBConfig {
         config.setUsername(imcmsProperties.getProperty("User"));
         config.setPassword(imcmsProperties.getProperty("Password"));
         config.setConnectionTestQuery("select 1");
+        config.setConnectionTimeout(Duration.ofSeconds(40).toMillis());
         config.setAutoCommit(false);
         config.setMaximumPoolSize(Integer.parseInt(StringUtils.defaultString(
                 imcmsProperties.getProperty("MaxConnectionCount"),
