@@ -4,24 +4,32 @@
  */
 
 const nodePath = require('path');
-const jsDirectory = './js';
 const separator = '/';
-const tail = '.js';
 
 module.exports = {
-    resolvePaths: function (structure) {
-        function resolveObj(resource, destination, path) {
-            Object.keys(resource).forEach(key => {
-                const value = resource[key];
+    resolvePaths(jsDirectory, structure) {
+        return (function resolveObj(resource, destination, path) {
+            Object.keys(resource).forEach(dir => {
+                const value = resource[dir];
 
-                if (value.constructor === Object) resolveObj(value, destination, path + key + separator);
-                if (value.constructor === Array) value.forEach(x => destination[x] = nodePath.resolve(__dirname, path + (key ? (key + '/') : '') + x + tail));
-                if (value.constructor === String) destination[value] = nodePath.resolve(__dirname, path + key + '/' + value + tail);
+                switch (value.constructor) {
+                    case Object:
+                        resolveObj(value, destination, path + separator + dir);
+                        return;
+
+                    case Array:
+                        value.forEach(module => destination[module] = nodePath.resolve(
+                            __dirname, path + separator + (dir ? (dir + separator) : '') + module
+                        ));
+                        return;
+
+                    case String :
+                        destination[value] = nodePath.resolve(__dirname, [path, dir, value].join(separator));
+                }
             });
 
-            return destination;
-        }
+            return destination
 
-        return resolveObj(structure, {}, jsDirectory + separator);
+        })(structure, {}, jsDirectory)
     }
 };

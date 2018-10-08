@@ -49,7 +49,7 @@ module.exports = {
     },
     resolve: {
         extensions: [".js", ".jsx"],
-        alias: pathResolver.resolvePaths({
+        alias: pathResolver.resolvePaths('./js', {
                 imcms: {
                     '': ['imcms'],
                     events: 'imcms-events',
