@@ -5,7 +5,9 @@ import com.imcode.db.Database;
 import com.imcode.imcms.api.DatabaseService;
 import com.imcode.imcms.db.DB;
 import com.imcode.imcms.db.Schema;
-import org.apache.commons.dbcp2.BasicDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,21 +53,18 @@ class DBConfig {
     }
 
     @Bean
-    public BasicDataSource dataSource() {
-        final BasicDataSource basicDataSource = new BasicDataSource();
-        setImcmsDataSourceProperties(basicDataSource);
-        return basicDataSource;
+    public DataSource dataSource() {
+        HikariConfig config = new HikariConfig();
+        setImcmsDataSourceProperties(config);
+        return new HikariDataSource(config);
     }
 
-    //    Wasn't in previous config
     @Bean
-    public BasicDataSource dataSourceWithAutoCommit() {
-        final BasicDataSource basicDataSource = new BasicDataSource();
-
-        setImcmsDataSourceProperties(basicDataSource);
-        basicDataSource.setDefaultAutoCommit(true);
-
-        return basicDataSource;
+    public DataSource dataSourceWithAutoCommit() {
+        HikariConfig config = new HikariConfig();
+        setImcmsDataSourceProperties(config);
+        config.setAutoCommit(true);
+        return new HikariDataSource(config);
     }
 
     @Bean
@@ -117,16 +116,28 @@ class DBConfig {
         return new DataSourceDatabase(dataSource);
     }
 
-    private void setImcmsDataSourceProperties(BasicDataSource basicDataSource) {
-        basicDataSource.setDriverClassName(imcmsProperties.getProperty("JdbcDriver"));
-        basicDataSource.setUrl(imcmsProperties.getProperty("JdbcUrl"));
-        basicDataSource.setUsername(imcmsProperties.getProperty("User"));
-        basicDataSource.setPassword(imcmsProperties.getProperty("Password"));
-        basicDataSource.setTestOnBorrow(true);
-        basicDataSource.setValidationQuery("select 1");
-        basicDataSource.setDefaultAutoCommit(false);
-        basicDataSource.setMaxTotal(20);
-        basicDataSource.setMaxTotal(Integer.parseInt(imcmsProperties.getProperty("MaxConnectionCount")));
+    private void setImcmsDataSourceProperties(HikariConfig config) {
+        config.setDriverClassName(imcmsProperties.getProperty("JdbcDriver"));
+        config.setJdbcUrl(imcmsProperties.getProperty("JdbcUrl"));
+        config.setUsername(imcmsProperties.getProperty("User"));
+        config.setPassword(imcmsProperties.getProperty("Password"));
+        config.setConnectionTestQuery("select 1");
+        config.setAutoCommit(false);
+        config.setMaximumPoolSize(Integer.parseInt(StringUtils.defaultString(
+                imcmsProperties.getProperty("MaxConnectionCount"),
+                "20"
+        )));
+
+        config.addDataSourceProperty("cachePrepStmts", true);
+        config.addDataSourceProperty("prepStmtCacheSize", 250);
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", 2048);
+        config.addDataSourceProperty("useServerPrepStmts", true);
+        config.addDataSourceProperty("useLocalSessionState", true);
+        config.addDataSourceProperty("rewriteBatchedStatements", true);
+        config.addDataSourceProperty("cacheResultSetMetadata", true);
+        config.addDataSourceProperty("cacheServerConfiguration", true);
+        config.addDataSourceProperty("elideSetAutoCommits", true);
+        config.addDataSourceProperty("maintainTimeStats", false);
     }
 
     private Map<String, String> createHibernateJpaProperties() {
