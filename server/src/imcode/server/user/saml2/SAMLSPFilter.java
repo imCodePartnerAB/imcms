@@ -13,10 +13,16 @@ import org.opensaml.saml2.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__NEXT_URL;
 
 /**
  * This class provide filtering all request, which reference to CGI-IDP
@@ -79,6 +85,11 @@ public class SAMLSPFilter implements Filter {
             } catch (Exception e) {
                 throw new ServletException(e);
             }
+        }
+
+        String nextUrl = request.getParameter(REQUEST_PARAMETER__NEXT_URL);
+        if (null != nextUrl && !nextUrl.isEmpty()) {
+            request.getSession().setAttribute(REQUEST_PARAMETER__NEXT_URL, nextUrl);
         }
         /*
          * Check if request is logout request

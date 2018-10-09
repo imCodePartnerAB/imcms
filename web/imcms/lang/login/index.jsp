@@ -211,8 +211,8 @@
 						break;
 					case "imcms-bankid-tab":
 					{
-						location.href = location.protocol + '//' + location.host + "<%=request.getContextPath()+"/VerifyUserViaBankId" %>";
-					}
+                        location.href = location.protocol + '//' + location.host + "<%=request.getContextPath()+"/VerifyUserViaBankId" +( null != next_url?"?next_url="+next_url:"") %>";
+                    }
 						break;
 				}
 			});
