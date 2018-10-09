@@ -1,17 +1,33 @@
 package imcode.server.document.textdocument;
 
+import imcode.server.document.DocumentComparator;
+import imcode.server.document.textdocument.MenuItemComparator.MenuItemDocumentComparator;
 import imcode.server.user.UserDomainObject;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.collections.Transformer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MenuDomainObject implements Cloneable, Serializable {
+
+    private static final MenuItemComparator ID = new MenuItemDocumentComparator(DocumentComparator.ID);
+    private static final MenuItemComparator HEADLINE = new MenuItemDocumentComparator(DocumentComparator.HEADLINE);
+    private static final MenuItemComparator MODIFIED_DATETIME = new MenuItemDocumentComparator(DocumentComparator.MODIFIED_DATETIME);
+    private static final MenuItemComparator PUBLISHED_DATETIME = new MenuItemDocumentComparator(DocumentComparator.PUBLICATION_START_DATETIME);
+    private static final MenuItemComparator SORT_KEY = new MenuItemComparator.SortKeyComparator();
+    private static final MenuItemComparator TREE_SORT_KEY = new MenuItemComparator.TreeSortKeyComparator();
 
     public final static int MENU_SORT_ORDER__BY_HEADLINE = 1;
     public final static int MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED = 2;
@@ -23,7 +39,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
     private static final int DEFAULT_SORT_KEY_INCREMENT = 10;
     private int id;
     private int sortOrder;
-    private HashMap menuItems;
+    private HashMap<Integer, MenuItemDomainObject> menuItems;
 
     public MenuDomainObject() {
         this(0, MENU_SORT_ORDER__DEFAULT);
@@ -32,17 +48,16 @@ public class MenuDomainObject implements Cloneable, Serializable {
     public MenuDomainObject(int id, int sortOrder) {
         this.id = id;
         this.sortOrder = sortOrder;
-        menuItems = new HashMap();
+        menuItems = new HashMap<>();
     }
 
-    public Object clone() throws CloneNotSupportedException {
+    public MenuDomainObject clone() {
         try {
             MenuDomainObject clone = (MenuDomainObject) super.clone();
-            clone.menuItems = new HashMap();
-            for (Iterator iterator = menuItems.entrySet().iterator(); iterator.hasNext(); ) {
-                Map.Entry entry = (Map.Entry) iterator.next();
-                Integer documentId = (Integer) entry.getKey();
-                MenuItemDomainObject menuItem = (MenuItemDomainObject) entry.getValue();
+            clone.menuItems = new HashMap<>();
+            for (Map.Entry<Integer, MenuItemDomainObject> entry : menuItems.entrySet()) {
+                Integer documentId = entry.getKey();
+                MenuItemDomainObject menuItem = entry.getValue();
                 clone.menuItems.put(documentId, menuItem.clone());
             }
             return clone;
@@ -79,43 +94,37 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     public MenuItemDomainObject[] getMenuItemsUserCanSee(UserDomainObject user) {
         List menuItemsUserCanSee = getMenuItemsVisibleToUser(user);
-        return (MenuItemDomainObject[]) menuItemsUserCanSee.toArray(new MenuItemDomainObject[menuItemsUserCanSee.size()]);
+        return (MenuItemDomainObject[]) menuItemsUserCanSee.toArray(new MenuItemDomainObject[0]);
     }
 
-    List getMenuItemsVisibleToUser(UserDomainObject user) {
+    List<MenuItemDomainObject> getMenuItemsVisibleToUser(UserDomainObject user) {
         MenuItemDomainObject[] menuItemsArray = getMenuItems();
-        List menuItemsUserCanSee = new ArrayList(this.menuItems.size());
-        for (int i = 0; i < menuItemsArray.length; i++) {
-            MenuItemDomainObject menuItem = menuItemsArray[i];
+        List<MenuItemDomainObject> menuItemsUserCanSee = new ArrayList<>(this.menuItems.size());
+        for (MenuItemDomainObject menuItem : menuItemsArray) {
             if (user.canSeeDocumentWhenEditingMenus(menuItem.getDocument())) {
                 menuItemsUserCanSee.add(menuItem);
             }
         }
-        Collections.sort(menuItemsUserCanSee, getMenuItemComparatorForSortOrder(sortOrder));
+        menuItemsUserCanSee.sort(getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsUserCanSee;
     }
 
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
-        List menuItems = getMenuItemsVisibleToUser(user);
-        CollectionUtils.filter(menuItems, new Predicate() {
-            public boolean evaluate(Object object) {
-                return ((MenuItemDomainObject) object).getDocument().isActive();
-            }
-        });
-        return (MenuItemDomainObject[]) menuItems.toArray(new MenuItemDomainObject[menuItems.size()]);
+        List<MenuItemDomainObject> menuItems = getMenuItemsVisibleToUser(user);
+        CollectionUtils.filter(menuItems, object -> object.getDocument().isActive());
+        return menuItems.toArray(new MenuItemDomainObject[0]);
     }
 
     public MenuItemDomainObject[] getMenuItems() {
         Set menuItemsUnsorted = getMenuItemsUnsorted();
-        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[]) menuItemsUnsorted.toArray(new MenuItemDomainObject[menuItemsUnsorted.size()]);
+        MenuItemDomainObject[] menuItemsArray = (MenuItemDomainObject[]) menuItemsUnsorted.toArray(new MenuItemDomainObject[0]);
         Arrays.sort(menuItemsArray, getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsArray;
     }
 
     public Set getMenuItemsUnsorted() {
-        HashSet set = new HashSet();
-        for (Iterator iterator = menuItems.values().iterator(); iterator.hasNext(); ) {
-            MenuItemDomainObject menuItem = (MenuItemDomainObject) iterator.next();
+        HashSet<MenuItemDomainObject> set = new HashSet<>();
+        for (MenuItemDomainObject menuItem : menuItems.values()) {
             if (null != menuItem.getDocument()) {
                 set.add(menuItem);
             }
@@ -133,49 +142,44 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
-        menuItems.put(new Integer(menuItem.getDocumentId()), menuItem);
+        menuItems.put(menuItem.getDocumentId(), menuItem);
     }
 
     private void generateSortKey(MenuItemDomainObject menuItem) {
         Integer maxSortKey = getMaxSortKey();
-        Integer sortKey;
+        int sortKey;
         if (null != maxSortKey) {
-            sortKey = new Integer(maxSortKey.intValue() + DEFAULT_SORT_KEY_INCREMENT);
+            sortKey = maxSortKey + DEFAULT_SORT_KEY_INCREMENT;
         } else {
-            sortKey = new Integer(DEFAULT_SORT_KEY);
+            sortKey = DEFAULT_SORT_KEY;
         }
         menuItem.setSortKey(sortKey);
     }
 
     private Integer getMaxSortKey() {
-        Collection menuItemSortKeys = CollectionUtils.collect(menuItems.values(), new Transformer() {
-            public Object transform(Object o) {
-                return ((MenuItemDomainObject) o).getSortKey();
-            }
-        });
+        Collection<Integer> menuItemSortKeys = CollectionUtils.collect(menuItems.values(), MenuItemDomainObject::getSortKey);
         if (menuItemSortKeys.isEmpty()) {
             return null;
         }
-        return (Integer) Collections.max(menuItemSortKeys);
+        return Collections.max(menuItemSortKeys);
     }
 
-    private Comparator getMenuItemComparatorForSortOrder(int sortOrder) {
-
-        Comparator comparator = MenuItemComparator.HEADLINE.chain(MenuItemComparator.ID);
+    private Comparator<MenuItemDomainObject> getMenuItemComparatorForSortOrder(int sortOrder) {
+        Comparator<MenuItemDomainObject> comparator = HEADLINE.chain(ID);
         if (sortOrder == MENU_SORT_ORDER__BY_MANUAL_TREE_ORDER) {
-            comparator = MenuItemComparator.TREE_SORT_KEY.chain(comparator);
+            comparator = TREE_SORT_KEY.chain(comparator);
         } else if (sortOrder == MENU_SORT_ORDER__BY_MANUAL_ORDER_REVERSED) {
-            comparator = MenuItemComparator.SORT_KEY.reversed().chain(comparator);
+            comparator = SORT_KEY.reversed().chain(comparator);
         } else if (sortOrder == MENU_SORT_ORDER__BY_MODIFIED_DATETIME_REVERSED) {
-            comparator = MenuItemComparator.MODIFIED_DATETIME.reversed().chain(comparator);
+            comparator = MODIFIED_DATETIME.reversed().chain(comparator);
         } else if (sortOrder == MENU_SORT_ORDER__BY_PUBLISHED_DATETIME_REVERSED) {
-            comparator = MenuItemComparator.PUBLISHED_DATETIME.reversed().chain(comparator);
+            comparator = PUBLISHED_DATETIME.reversed().chain(comparator);
         }
         return comparator;
     }
 
     public void removeMenuItemByDocumentId(int childId) {
-        menuItems.remove(new Integer(childId));
+        menuItems.remove(childId);
     }
 
     public boolean equals(Object obj) {
