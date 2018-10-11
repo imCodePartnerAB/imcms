@@ -13,7 +13,7 @@ public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implem
         this.loader = loader;
     }
 
-    public Object get() {
+    public E get() {
         load();
         return object;
     }
@@ -30,8 +30,8 @@ public class LazilyLoadedObject<E extends LazilyLoadedObject.Copyable<E>> implem
         return null == loader;
     }
 
-    public Object clone() throws CloneNotSupportedException {
-        LazilyLoadedObject clone = (LazilyLoadedObject) super.clone();
+    public LazilyLoadedObject<E> clone() throws CloneNotSupportedException {
+        LazilyLoadedObject<E> clone = (LazilyLoadedObject<E>) super.clone();
         if (null != object) {
             clone.object = object.copy();
         }

@@ -3,7 +3,7 @@ package imcode.server.document;
 import com.imcode.util.ChainableReversibleNullComparator;
 import org.apache.commons.lang.NullArgumentException;
 
-public abstract class DocumentComparator extends ChainableReversibleNullComparator {
+public abstract class DocumentComparator extends ChainableReversibleNullComparator<DocumentDomainObject> {
 
     public final static DocumentComparator ID = new DocumentComparator("ID") {
         protected int compareDocuments(DocumentDomainObject d1, DocumentDomainObject d2) {
@@ -45,12 +45,10 @@ public abstract class DocumentComparator extends ChainableReversibleNullComparat
         return name;
     }
 
-    public int compare(Object o1, Object o2) {
-        if (null == o1 || null == o2) {
+    public int compare(DocumentDomainObject d1, DocumentDomainObject d2) {
+        if (null == d1 || null == d2) {
             throw new NullArgumentException("o1 and o2");
         }
-        final DocumentDomainObject d1 = (DocumentDomainObject) o1;
-        final DocumentDomainObject d2 = (DocumentDomainObject) o2;
         try {
             return compareDocuments(d1, d2);
         } catch (NullPointerException npe) {

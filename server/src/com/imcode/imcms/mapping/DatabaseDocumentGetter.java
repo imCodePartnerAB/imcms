@@ -51,33 +51,33 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
         this.services = services;
     }
 
-    public List getDocuments(final Collection documentIds) {
+    public List<DocumentDomainObject> getDocuments(final Collection<Integer> documentIds) {
         if (documentIds.isEmpty()) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
-        LinkedHashMap documentMap = new LinkedHashMap();
-        DocumentInitializer.executeWithAppendedIntegerInClause(database, SQL_GET_DOCUMENTS, documentIds, new CollectionHandler(new DocumentMapSet(documentMap), new DocumentFromRowFactory()));
+        LinkedHashMap<Integer, DocumentDomainObject> documentMap = new LinkedHashMap<>();
+        DocumentInitializer.executeWithAppendedIntegerInClause(database, SQL_GET_DOCUMENTS, documentIds, new CollectionHandler<>(new DocumentMapSet(documentMap), new DocumentFromRowFactory()));
 
         DocumentList documentList = new DocumentList(documentMap);
 
         DocumentInitializer initializer = new DocumentInitializer(services.getDocumentMapper());
         initializer.initDocuments(documentList);
 
-        LinkedHashMap retMap = new LinkedHashMap();
+        LinkedHashMap<Integer, DocumentDomainObject> retMap = new LinkedHashMap<>();
 
-        for (Iterator it = documentIds.iterator(); it.hasNext(); ) {
-            Integer id = (Integer) it.next();
+        for (Object documentId : documentIds) {
+            Integer id = (Integer) documentId;
             retMap.put(id, documentMap.get(id));
         }
 
         return new DocumentList(retMap);
     }
 
-    private class DocumentMapSet extends AbstractSet {
+    private class DocumentMapSet extends AbstractSet<DocumentDomainObject> {
 
-        private Map map;
+        private Map<Integer, DocumentDomainObject> map;
 
-        DocumentMapSet(Map map) {
+        DocumentMapSet(Map<Integer, DocumentDomainObject> map) {
             this.map = map;
         }
 
@@ -85,20 +85,20 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             return map.size();
         }
 
-        public boolean add(Object o) {
-            DocumentDomainObject document = (DocumentDomainObject) o;
+        public boolean add(DocumentDomainObject document) {
             return null == map.put(document.getId(), document);
         }
 
-        public Iterator iterator() {
+        @Override
+        public Iterator<DocumentDomainObject> iterator() {
             return map.values().iterator();
         }
 
     }
 
-    private class DocumentFromRowFactory implements RowTransformer {
+    private class DocumentFromRowFactory implements RowTransformer<DocumentDomainObject> {
 
-        public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
+        public DocumentDomainObject createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
             final int documentTypeId = resultSet.getInt(2);
             DocumentDomainObject document = DocumentDomainObject.fromDocumentTypeId(documentTypeId);
 
@@ -131,7 +131,7 @@ public class DatabaseDocumentGetter extends AbstractDocumentGetter {
             return document;
         }
 
-        public Class getClassOfCreatedObjects() {
+        public Class<DocumentDomainObject> getClassOfCreatedObjects() {
             return DocumentDomainObject.class;
         }
     }
