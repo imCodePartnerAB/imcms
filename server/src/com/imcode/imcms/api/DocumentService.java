@@ -14,6 +14,7 @@ import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.document.SectionDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.XmlDocumentBuilder;
+import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 
@@ -360,7 +361,7 @@ public class DocumentService {
     }
 
     public SearchResult<Document> getDocuments(final SearchQuery query, int startPosition, int maxResults) throws SearchException {
-        return getDocuments(query, startPosition, maxResults, document -> true);
+        return getDocuments(query, startPosition, maxResults, null);
     }
 
     public SearchResult<Document> getDocuments(final SearchQuery query,
@@ -368,12 +369,21 @@ public class DocumentService {
                                                int maxResults,
                                                Predicate<Document> filterPredicate) throws SearchException {
         try {
-            return getDocumentMapper()
-                    .getDocumentIndex()
-                    .search(query, getInternalUser(), startPosition, maxResults, new ApiDocumentWrappingPredicate(
-                            filterPredicate, contentManagementSystem
-                    ))
-                    .mapResult(document -> wrapDocumentDomainObject(document, contentManagementSystem));
+            final DocumentIndex documentIndex = getDocumentMapper().getDocumentIndex();
+            final SearchResult<DocumentDomainObject> searchResult;
+
+            if (filterPredicate == null) {
+                searchResult = documentIndex.search(query, getInternalUser(), startPosition, maxResults);
+
+            } else {
+                searchResult = documentIndex.search(
+                        query, getInternalUser(), startPosition, maxResults, new ApiDocumentWrappingPredicate(
+                                filterPredicate, contentManagementSystem
+                        )
+                );
+            }
+
+            return searchResult.mapResult(document -> wrapDocumentDomainObject(document, contentManagementSystem));
 
         } catch (RuntimeException e) {
             throw new SearchException(e);

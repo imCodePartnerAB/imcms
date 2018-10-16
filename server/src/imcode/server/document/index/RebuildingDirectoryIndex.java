@@ -220,7 +220,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
                                                      int startPosition,
                                                      int maxResults) {
 
-        return search(query, searchingUser, startPosition, maxResults, documentDomainObject -> true);
+        return index.search(query, searchingUser, startPosition, maxResults);
     }
 
     @Override

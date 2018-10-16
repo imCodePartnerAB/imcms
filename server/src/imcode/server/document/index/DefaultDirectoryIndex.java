@@ -31,6 +31,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -68,7 +69,7 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
     }
 
     public SearchResult<DocumentDomainObject> search(DocumentQuery query, UserDomainObject searchingUser, int startPosition, int maxResults) throws IndexException {
-        return search(query, searchingUser, startPosition, maxResults, documentDomainObject -> true);
+        return search(query, searchingUser, startPosition, maxResults, null);
     }
 
     @Override
@@ -82,7 +83,10 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         try (ClosableIndexSearcher indexSearcher = new ClosableIndexSearcher(directory.toString())) {
 
             final Hits hits = indexSearcher.search(query.getQuery(), query.getSort());
-            filterPredicate = ((Predicate<DocumentDomainObject>) searchingUser::canSearchFor).and(filterPredicate);
+
+            filterPredicate = Optional.ofNullable(filterPredicate)
+                    .map(predicate -> predicate.and(searchingUser::canSearchFor))
+                    .orElse(searchingUser::canSearchFor);
 
             return getDocumentListForHits(hits, filterPredicate, startPosition, maxResults);
 
@@ -134,34 +138,27 @@ public class DefaultDirectoryIndex implements DirectoryIndex {
         }
 
         documentIds = documentIds.subList(startPosition, totalCount);
-        final List<DocumentDomainObject> documentList;
+        final List<DocumentDomainObject> documentList = new ArrayList<>();
         final int cutResultSize = documentIds.size();
 
         if ((maxResults <= 0) || (maxResults >= cutResultSize)) { // no limit
             nextSkip = totalCount;
 
-            documentList = new ArrayList<>();
             for (DocumentDomainObject documentDomainObject : documentGetter.getDocuments(documentIds)) {
                 if (searchingPredicate.test(documentDomainObject)) {
                     documentList.add(documentDomainObject);
                 }
             }
         } else {
-            documentList = new ArrayList<>();
-
             for (Integer documentId : documentIds) {
 
-                if (documentList.size() == maxResults) {
-                    break;
-                }
+                if (documentList.size() == maxResults) break;
 
                 nextSkip++;
 
                 final DocumentDomainObject document = documentGetter.getDocument(documentId);
 
-                if (searchingPredicate.test(document)) {
-                    documentList.add(document);
-                }
+                if (searchingPredicate.test(document)) documentList.add(document);
             }
         }
 
