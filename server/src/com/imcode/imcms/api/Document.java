@@ -42,6 +42,10 @@ public class Document implements Serializable {
         this.contentManagementSystem = contentManagementSystem;
     }
 
+    public ContentManagementSystem getCMS() {
+        return contentManagementSystem;
+    }
+
     private static Map<Role, DocumentPermissionSet> wrapDomainObjectsInMap(Map<RoleDomainObject, DocumentPermissionSetDomainObject> rolesMappedToPermissionsIds) {
         Map<Role, DocumentPermissionSet> result = new HashMap<>();
 
