@@ -358,7 +358,11 @@ public class Document implements Serializable {
      * @param category a category to add
      */
     public void addCategory(Category category) {
-        internalDocument.addCategoryId(category.getId());
+        addCategory(category.getId());
+    }
+
+    public void addCategory(int categoryId) {
+        internalDocument.addCategoryId(categoryId);
     }
 
     /**
@@ -367,7 +371,11 @@ public class Document implements Serializable {
      * @param category a category to remove
      */
     public void removeCategory(Category category) {
-        internalDocument.removeCategoryId(category.getId());
+        removeCategory(category.getId());
+    }
+
+    public void removeCategory(int categoryId) {
+        internalDocument.removeCategoryId(categoryId);
     }
 
     /**
