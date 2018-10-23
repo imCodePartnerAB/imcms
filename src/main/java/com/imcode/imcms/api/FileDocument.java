@@ -36,11 +36,7 @@ public class FileDocument extends Document {
 
     public FileDocumentFile[] getFiles() {
         Map filesMap = getInternalFileDocument().getFiles();
-        List files = TransformedList.decorate(new ArrayList(filesMap.size()), new Transformer() {
-            public Object transform(Object input) {
-                return new FileDocumentFile((FileDocumentDomainObject.FileDocumentFile) input);
-            }
-        });
+        List files = TransformedList.decorate(new ArrayList(filesMap.size()), input -> new FileDocumentFile((FileDocumentDomainObject.FileDocumentFile) input));
         files.addAll(filesMap.values());
         return (FileDocumentFile[]) files.toArray(new FileDocumentFile[files.size()]);
     }
