@@ -21,11 +21,7 @@ public class SearchDocuments extends HttpServlet {
             DocumentFinder documentFinder = new DocumentFinder(searchDocumentsPage);
             documentFinder.setLogged(true);
             documentFinder.addExtraSearchResultColumn(new AdminManager.DatesSummarySearchResultColumn());
-            documentFinder.setCancelCommand(new DispatchCommand() {
-                public void dispatch(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-                    request.getRequestDispatcher("BackDoc").forward(request, response);
-                }
-            });
+            documentFinder.setCancelCommand((DispatchCommand) (request1, response1) -> request1.getRequestDispatcher("BackDoc").forward(request1, response1));
             searchDocumentsPage.updateFromRequest(request);
             documentFinder.forward(request, response);
         }
