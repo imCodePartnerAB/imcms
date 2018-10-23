@@ -59,14 +59,15 @@ public class MailService {
         final String accountMailPassword = getServerProperty("mail.password");
 
         if ((encryptionProtocol != null) && (accountMail != null) && (accountMailPassword != null)) {
-            if (encryptionProtocol.toLowerCase().equals("tls")) {
-                mail.setStartTLSEnabled(true);
-
-            } else if (encryptionProtocol.toLowerCase().equals("ssl")) {
-                mail.setSSLOnConnect(true);
-
-            } else {
-                return;
+            switch (encryptionProtocol.toLowerCase()) {
+                case "tls":
+                    mail.setStartTLSEnabled(true);
+                    break;
+                case "ssl":
+                    mail.setSSLOnConnect(true);
+                    break;
+                default:
+                    return;
             }
 
             mail.setAuthenticator(new Authenticator() {

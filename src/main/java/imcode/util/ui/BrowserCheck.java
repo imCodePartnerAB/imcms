@@ -67,14 +67,19 @@ public class BrowserCheck {
     }
 
     private void setName() {
-        if (this.company.equals("Microsoft")) {
-            this.name = "Microsoft Internet Explorer";
-        } else if (this.company.equals("Netscape Communications")) {
-            this.name = "Netscape Navigator";
-        } else if (this.company.equals("Operasoftware")) {
-            this.name = "Operasoftware Opera";
-        } else {
-            this.name = "unknown";
+        switch (this.company) {
+            case "Microsoft":
+                this.name = "Microsoft Internet Explorer";
+                break;
+            case "Netscape Communications":
+                this.name = "Netscape Navigator";
+                break;
+            case "Operasoftware":
+                this.name = "Operasoftware Opera";
+                break;
+            default:
+                this.name = "unknown";
+                break;
         }
     }
 
