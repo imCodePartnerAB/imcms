@@ -1,5 +1,7 @@
 package com.imcode.imcms.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.imcode.imcms.domain.service.ImageService;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
@@ -59,5 +61,12 @@ class WebConfig {
                        Properties imcmsProperties) {
 
         return new Imcms(servletContext, imcmsServices, imcmsProperties, imageService);
+    }
+
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper mapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule()); // new module, NOT JSR310Module
+        return mapper;
     }
 }
