@@ -23,8 +23,7 @@ public interface DocumentGetter {
     /**
      * Returns default document
      *
-     * @param docId
-     * @return
+     * @param docId document's id.
      */
     <T extends DocumentDomainObject> T getDefaultDocument(int docId, DocumentLanguage language);
 
