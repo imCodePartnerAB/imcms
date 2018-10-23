@@ -80,9 +80,12 @@ public class Utility {
     public static final ResultSetHandler<Boolean> SINGLE_BOOLEAN_HANDLER = new SingleObjectHandler<>(new BooleanFromRowFactory());
     public static final ResultSetHandler<String[]> STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler<String[][]> STRING_ARRAY_ARRAY_HANDLER = new StringArrayArrayResultSetHandler();
-    private final static Logger log = Logger.getLogger(Utility.class.getName());
-    private final static String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
-    private final static LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
+    public static final Predicate<Date> isDateInFutureOrNull = date -> (date == null) || new Date().before(date);
+    public static final Predicate<Date> isDateInFuture = date -> (date != null) && new Date().before(date);
+    public static final Predicate<Date> isDateInPast = date -> (date != null) && new Date().after(date);
+    private static final Logger log = Logger.getLogger(Utility.class.getName());
+    private static final String CONTENT_MANAGEMENT_SYSTEM_REQUEST_ATTRIBUTE = "com.imcode.imcms.ImcmsSystem";
+    private static final LocalizedMessage ERROR__NO_PERMISSION = new LocalizedMessage("templates/login/no_permission.html/4");
     private static final String LOGGED_IN_USER = "logon.isDone";
     private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
@@ -90,10 +93,6 @@ public class Utility {
     private static final Map<String, SessionInfoDTO> sessions = new HashMap<>();
     private static TextContentFilter textContentFilter;
     private static ImcmsServices services;
-
-    public static final Predicate<Date> isDateInFutureOrNull = date -> (date == null) || new Date().before(date);
-    public static final Predicate<Date> isDateInFuture = date -> (date != null) && new Date().before(date);
-    public static final Predicate<Date> isDateInPast = date -> (date != null) && new Date().after(date);
 
     public Utility(TextContentFilter textContentFilter, ImcmsServices services) {
         Utility.textContentFilter = textContentFilter;
