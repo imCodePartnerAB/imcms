@@ -59,7 +59,7 @@ public class HttpSessionUtils {
         HttpSession session = request.getSession();
         Map<String, Object> sessionMap = (Map<String, Object>) session.getAttribute(SESSION_ATTRIBUTE_NAME__SESSION_MAP);
         if (null == sessionMap) {
-            sessionMap = Collections.synchronizedMap(new LRUMap<String, Object>(MAX_COUNT__SESSION_OBJECTS));
+            sessionMap = Collections.synchronizedMap(new LRUMap<>(MAX_COUNT__SESSION_OBJECTS));
             session.setAttribute(SESSION_ATTRIBUTE_NAME__SESSION_MAP, sessionMap);
         }
         return sessionMap;
