@@ -7,6 +7,7 @@ import com.imcode.imcms.db.StringArrayArrayResultSetHandler;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.db.StringFromRowFactory;
 import com.imcode.imcms.domain.component.TextContentFilter;
+import com.imcode.imcms.domain.dto.SessionInfoDTO;
 import com.imcode.imcms.servlet.VerifyUser;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
@@ -53,12 +54,14 @@ import java.security.KeyStoreException;
 import java.security.cert.Certificate;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -68,6 +71,7 @@ import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Component
 public class Utility {
@@ -83,7 +87,7 @@ public class Utility {
     private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
-
+    private static final Map<String, SessionInfoDTO> sessions = new HashMap<>();
     private static TextContentFilter textContentFilter;
     private static ImcmsServices services;
 
@@ -442,13 +446,40 @@ public class Utility {
         if (null != user && !user.isDefaultUser() && !req.isSecure() && Imcms.getServices().getConfig().getSecureLoginRequired()) {
             return;
         }
+
+        final HttpSession currentSession = req.getSession();
+        final LocalDateTime loginDateTime = LocalDateTime.now();
+
+        SessionInfoDTO sessionInfoDTO = new SessionInfoDTO();
+        sessionInfoDTO.setUserId(user.getId());
+        sessionInfoDTO.setSessionId(currentSession.getId());
+        sessionInfoDTO.setUserAgent(req.getHeader("User-Agent"));
+        sessionInfoDTO.setIp(req.getRemoteAddr());
+        sessionInfoDTO.setLoginDate(loginDateTime);
+        sessionInfoDTO.setExpireDate(loginDateTime.plusSeconds(req.getSession().getMaxInactiveInterval()));
+
+        sessions.put(currentSession.getId(), sessionInfoDTO);
+
         req.getSession().setAttribute(LOGGED_IN_USER, user);
     }
 
     public static void makeUserLoggedOut(HttpServletRequest req) {
-        // req.getSession().removeAttribute(LOGGED_IN_USER);
         HttpSession session = req.getSession(false);
-        if (session != null) session.invalidate();
+        if (session != null) {
+            sessions.remove(session.getId());
+            session.invalidate();
+        }
+    }
+
+    public static List<SessionInfoDTO> getActiveSessions() {
+        final LocalDateTime currentDateTime = LocalDateTime.now();
+        return sessions.values().stream()
+                .filter(info -> info.getExpireDate().isAfter(currentDateTime))
+                .collect(Collectors.toList());
+    }
+
+    public static void clearActiveSessionsData() {
+        sessions.clear();
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
