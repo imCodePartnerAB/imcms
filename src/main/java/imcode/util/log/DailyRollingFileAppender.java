@@ -82,8 +82,6 @@ public class DailyRollingFileAppender extends FileAppender {
             out.flush();
             out.close();
             return true;
-        } catch (FileNotFoundException e) {
-            return false;
         } catch (IOException e) {
             return false;
         }
