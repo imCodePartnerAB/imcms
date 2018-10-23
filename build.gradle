@@ -50,6 +50,7 @@ dependencies {
     compile "org.projectlombok:lombok:${lombokVersion}"
     compile "com.drewnoakes:metadata-extractor:2.11.0"
     compile "com.fasterxml.jackson.core:jackson-databind:2.9.5"
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.9.7'
 
     compile "com.zaxxer:HikariCP:3.1.0"
 

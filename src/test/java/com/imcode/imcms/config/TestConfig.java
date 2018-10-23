@@ -1,6 +1,7 @@
 package com.imcode.imcms.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import imcode.server.Config;
@@ -45,7 +46,9 @@ public class TestConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule());
+        return mapper;
     }
 
     @Bean
