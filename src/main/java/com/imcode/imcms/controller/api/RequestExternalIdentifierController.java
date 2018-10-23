@@ -79,7 +79,7 @@ class RequestExternalIdentifierController {
     }
 
     @RequestMapping(EXTERNAL_IDENTIFIER_REDIRECT_URI + "/{identifierId}")
-    public ModelAndView processExternalAuthResponse(@PathVariable("identifierId") String identifierId,
+    public ModelAndView processExternalAuthResponse(@PathVariable String identifierId,
                                                     HttpServletRequest request) {
 
         final AuthenticationProvider provider = authenticationProvidersService.getAuthenticationProvider(
