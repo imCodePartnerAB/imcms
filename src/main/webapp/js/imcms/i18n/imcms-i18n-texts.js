@@ -13,14 +13,14 @@ const texts = {
             settingsList: {
                 size: {
                     name: "Panelstorlek",
-                    small: "Små",
+                    small: "Liten",
                     smallTitle: "Panelen blir mindre med färre texter",
                     large: "Stor",
                     largeTitle: "Panelen blir större med ytterligare texter"
                 },
                 appearance: {
                     name: "Panel Utseende",
-                    auto: "Bil",
+                    auto: "Auto",
                     autoTitle: "Visas automatiskt när du flyttar musen nära sidans topp, döljer på att klicka på musen utanför",
                     hidden: "Dold",
                     hiddenTitle: "Panelen är dold som standard, du kan öppna den genom att klicka på den lilla ikonen längst upp på sidan",
