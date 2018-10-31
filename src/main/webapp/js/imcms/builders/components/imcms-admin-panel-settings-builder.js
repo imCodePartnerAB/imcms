@@ -179,7 +179,7 @@ define(
                     $setting.addClass(settingEnabledClass);
 
                     setting.onSettingClick.call();
-                    cookies.setCookie(section.id, setting.id, {path: "/"});
+                    cookies.setCookie(section.id, setting.id, {path: "/"}, {expires: 30});
                 };
 
                 if ((setting.id && (savedSetting === setting.id))
