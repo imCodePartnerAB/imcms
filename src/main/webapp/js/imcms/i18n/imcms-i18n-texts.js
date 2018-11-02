@@ -407,7 +407,38 @@ const texts = {
                 name: 'Profiler'
             },
             systemProperties: {
-                name: 'Systemegenskaper'
+                name: 'Systemegenskaper',
+                sections: {
+                    startPage: {
+                        name: "Startsida",
+                        description: "Sidonummer",
+                        input: "Inmatningssida sida"
+                    },
+                    systemMessage: {
+                        name: "Systemmeddelande",
+                        description: "Meddelande",
+                        inputBox: "Box Meddelande"
+                    },
+                    serverMaster: {
+                        name: "Server Master",
+                        descriptionName: "Server mästar namn",
+                        descriptionEmail: "Servermaster-e-post",
+                        descriptionByName: "Server mästare Namnbeskrivning",
+                        descriptionByEmail: "Server mästare E-postbeskrivning",
+                        inputName: "Inmatning av servermästarnamn",
+                        inputEmail: "Inmatning av servermästare-post"
+                    },
+                    webMaster: {
+                        name: "WebMaster",
+                        descriptionName: "Webmaster namn",
+                        descriptionEmail: "Webmaster e-post",
+                        descriptionByName: "Webmasters namnbeskrivning",
+                        descriptionByEmail: "Webmaster E-postbeskrivning",
+                        inputName: "Inmatning av webbnamn",
+                        inputEmail: "Webmaster e-postinmatning"
+                    },
+                },
+                changeButton: "Byta"
             }
         }
     },
@@ -811,7 +842,38 @@ const texts = {
                 name: 'Profiles'
             },
             systemProperties: {
-                name: 'System Properties'
+                name: 'System Properties',
+                sections: {
+                    startPage: {
+                        name: "Start page",
+                        description: "Page number",
+                        input: "Number page"
+                    },
+                    systemMessage: {
+                        name: "System Message",
+                        description: "Message",
+                        inputBox: "Box Message"
+                    },
+                    serverMaster: {
+                        name: "Server Master",
+                        descriptionName: "Server master name",
+                        descriptionEmail: "Server master email",
+                        descriptionByName: "Server master Name description",
+                        descriptionByEmail: "Server master Email description",
+                        inputName: "Server master name input",
+                        inputEmail: "Server master name email"
+                    },
+                    webMaster: {
+                        name: "Web Master",
+                        descriptionName: "Web master name",
+                        descriptionEmail: "Web master email",
+                        descriptionByName: "Web master Name description",
+                        descriptionByEmail: "Web master Email description",
+                        inputName: "Web master name input",
+                        inputEmail: "Web master email input"
+                    },
+                },
+                changeButton: "Change"
             }
         }
     }
