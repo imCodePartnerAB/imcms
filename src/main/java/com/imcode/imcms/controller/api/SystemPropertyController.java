@@ -21,11 +21,6 @@ public class SystemPropertyController {
         return systemPropertyService.findAll();
     }
 
-    @GetMapping("/{id}")
-    public SystemProperty getById(@PathVariable Integer id) {
-        return systemPropertyService.findById(id);
-    }
-
     @GetMapping("/{name}")
     public SystemProperty findByName(@PathVariable String name) {
         return systemPropertyService.findByName(name);
