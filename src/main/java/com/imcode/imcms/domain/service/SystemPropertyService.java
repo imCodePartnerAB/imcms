@@ -12,8 +12,8 @@ public interface SystemPropertyService {
 
     SystemProperty update(SystemProperty systemProperty);
 
-    void deleteById(int id);
+    void deleteById(Integer id);
 
-    SystemProperty findById(int id);
+    SystemProperty findById(Integer id);
 
 }

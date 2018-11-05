@@ -19,7 +19,7 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
     }
 
     @Override
-    public SystemProperty findById(int id) {
+    public SystemProperty findById(Integer id) {
         return systemPropertyRepository.findOne(id);
     }
 
@@ -39,7 +39,7 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
     }
 
     @Override
-    public void deleteById(int id) {
+    public void deleteById(Integer id) {
         systemPropertyRepository.delete(id);
     }
 }
