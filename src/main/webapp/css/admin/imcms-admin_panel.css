@@ -213,7 +213,7 @@
 .imcms-panel__item--settings {
     background-image: url("/images_new/admin_panel/icon_settings.png");
     min-width: 25px;
-    background-position-y: 0;
+    background-position-y: center;
 }
 
 .imcms-panel__item--admin {
