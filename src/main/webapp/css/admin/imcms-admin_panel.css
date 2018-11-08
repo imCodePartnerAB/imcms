@@ -468,12 +468,18 @@
         background-position: 50% 0;
         background-size: 15px;
         padding-top: 23px;
-        min-width: 80px;
+        min-width: 60px;
+        font-size: 10px;
     }
 
     .imcms-panel__item--logout {
         width: 100px;
         padding-top: 0;
+    }
+
+    .imcms-panel__item--settings {
+        min-width: 25px;
+        background-position-y: 0;
     }
 
     .imcms-admin-panel__item:last-of-type {
@@ -483,18 +489,7 @@
     .imcms-panel__item--logout button {
         margin: 0 0 0 5px;
         padding: 10px 20px;
-    }
-}
-
-@media screen and (max-width: 1800px) {
-    .imcms-panel__item {
         font-size: 10px;
-        min-width: 60px;
-    }
-
-    .imcms-panel__item--settings {
-        min-width: 25px;
-        background-position-y: 0;
     }
 }
 
