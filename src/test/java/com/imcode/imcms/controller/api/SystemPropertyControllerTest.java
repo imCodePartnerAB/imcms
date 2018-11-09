@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @Transactional
@@ -45,6 +46,7 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
         String name = "StartDocument";
         int firstProperty = 0;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + name);
+        assertEquals("StartDocument", properties.get(firstProperty).getName());
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(properties.get(firstProperty)));
     }
 
@@ -52,7 +54,6 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     public void findByName_When_PropertyNotExist_Expect_ResultEmpty() throws Exception {
         String notExistingName = "DocumentStart";
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + notExistingName);
-
         performRequestBuilderExpectedOk(requestBuilder);
 
     }
