@@ -4,22 +4,32 @@
  */
 define(
     'imcms-system-properties-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-components-builder'],
-    function (SuperAdminTab, BEM, texts, components) {
+    ['imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-settings-rest-api',
+        'imcms-components-builder', 'jquery', 'imcms-modal-window-builder'],
+    function (SuperAdminTab, BEM, texts, propertyRestApi, components, $, modal) {
 
         texts = texts.superAdmin.systemProperties;
 
+        let inputNumberPage;
+        //let propertyArchiveClass = 'imcms-settings-row--startPage';
+        let serverMasterName;
+        let serverMasterEmail;
+        let webMasterFieldName;
+        let webMasterFieldEmail;
+        let localProperties = {};
+
+
         function buildPageRow() {
-            let inputNumberPage;
 
             function buildTitleTextStartPage() {
                 return components.texts.titleText('<div>', texts.sections.startPage.name, {})
             }
 
             function buildCreateFiledInputNumberPage() {
-                let $pageNumberBox = components.texts.textBox('<div>', texts.sections.startPage.input);
+                let $pageNumberBox = components.texts.textBox('<div>', {
+                    name: 'startDocument'
+                });
                 inputNumberPage = $pageNumberBox.$input;
-
                 return $pageNumberBox;
             }
 
@@ -27,13 +37,15 @@ define(
                 let $button = components.buttons.positiveButton({
                     text: texts.changeButton,
                     click: function () {
-
+                        let propertyId = inputNumberPage.data('id');
+                        let propertyValue = inputNumberPage.val();
+                        console.log(propertyName);
+                        changeClickHandler({id: propertyId, value: propertyValue});
                     }
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
-
 
             return new BEM({
                 block: 'imcms-settings-row',
@@ -42,10 +54,43 @@ define(
                     'settings-input': buildCreateFiledInputNumberPage(),
                     'settings-button': buildPageNumberButton(),
                 }
-            }).buildBlockStructure('<div>', {
-                'class': 'imcms-field'
-            });
+            }).buildBlockStructure('<div>');
         }
+
+        function changeClickHandler(property) {
+            propertyRestApi.update({id: property.id, value: property.value});
+        }
+
+        //fix it
+        propertyRestApi.getAllProperties().done(function (properties) {
+            localProperties = properties;
+            properties.forEach(function (property) {
+                if (property.name === 'StartDocument') {
+                    inputNumberPage.val(property.value);
+                    inputNumberPage.data('id', property.id);
+                }
+
+                if (property.name === 'ServerMaster') {
+                    serverMasterName.val(property.value);
+                    serverMasterName.data('id', property.id);
+                }
+
+                if (property.name === 'ServerMasterAddress') {
+                    serverMasterEmail.val(property.value);
+                    serverMasterEmail.data('id', property.id);
+                }
+
+                if (property.name === 'WebMaster') {
+                    webMasterFieldName.val(property.value);
+                    webMasterFieldName.data('id', property.id);
+                }
+
+                if (property.name === 'WebMasterAddress') {
+                    webMasterFieldEmail.val(property.value);
+                    webMasterFieldEmail.data('id', property.id);
+                }
+            })
+        });
 
         function buildSystemMessageRow() {
             let messageSystem;
@@ -64,18 +109,20 @@ define(
 
 
             function buildCreateSystemMessageButton() {
-                function setStartDocument() {
-
-                }
 
                 let $button = components.buttons.positiveButton({
                     text: texts.changeButton,
-                    click: setStartDocument()
+                    click: function (property) {
+                        changeClickHandler(property.value);
+                    }
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
+            propertyRestApi.findByName('SystemMessage').done(function (property) {
+                messageSystem.val(property.value)
+            });
 
             return new BEM({
                 block: 'imcms-settings-row',
@@ -84,14 +131,11 @@ define(
                     'settings-input': buildCreateSystemMessageInput(),
                     'settings-button': buildCreateSystemMessageButton(),
                 }
-            }).buildBlockStructure('<div>', {
-                'class': 'imcms-field'
-            });
+            }).buildBlockStructure('<div>');
         }
 
         function buildServerMasterRow() {
-            let serverMasterName;
-            let serverMasterEmail;
+
 
             function buildCreateTitleServerMaster() {
                 return components.texts.titleText('<div>', texts.sections.serverMaster.name, {})
@@ -131,14 +175,10 @@ define(
                     'settings-input-email': buildServerMasterEmailInput(),
                     'settings-button': buildCreateServerMasterButton(),
                 }
-            }).buildBlockStructure('<div>', {
-                'class': 'imcms-field'
-            });
+            }).buildBlockStructure('<div>');
         }
 
         function buildWebMasterRow() {
-            let webMasterFieldName;
-            let webMasterFieldEmail;
 
             function buildCreateTilteWebMaster() {
                 return components.texts.titleText('<div>', texts.sections.webMaster.name, {})
@@ -179,9 +219,7 @@ define(
                     'settings-input-email': buildCreateInputWebMasterEmail(),
                     'settings-button': buildCreateMasterWebButton(),
                 }
-            }).buildBlockStructure('<div>', {
-                'class': 'imcms-field'
-            });
+            }).buildBlockStructure('<div>');
         }
 
         return new SuperAdminTab(texts.name, [
