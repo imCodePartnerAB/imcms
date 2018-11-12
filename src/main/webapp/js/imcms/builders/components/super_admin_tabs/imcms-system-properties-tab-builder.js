@@ -33,6 +33,7 @@ define(
 
             function buildPageNumberButton() {
                 let $button = components.buttons.positiveButton({
+                    'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
                     click: function () {
                         let propertyId = inputNumberPage.data('id');
@@ -107,6 +108,7 @@ define(
 
             function buildCreateSystemMessageButton() {
                 let $button = components.buttons.positiveButton({
+                    'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
                     click: function () {
                         let propertyId = systemMessage.data('id');
@@ -154,6 +156,7 @@ define(
 
             function buildCreateServerMasterButton() {
                 let $button = components.buttons.positiveButton({
+                    'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
                     click: function () {
                         let propertyIdForName = serverMasterName.data('id');
@@ -210,6 +213,7 @@ define(
 
             function buildCreateMasterWebButton() {
                 let $button = components.buttons.positiveButton({
+                    'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
                     click: function () {
                         let propertyIdForWebName = webMasterFieldName.data('id');
