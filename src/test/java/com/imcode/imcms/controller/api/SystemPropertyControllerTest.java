@@ -3,11 +3,9 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.service.SystemPropertyService;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
-import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,16 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 @Transactional
 public class SystemPropertyControllerTest extends AbstractControllerTest {
 
     @Autowired
     private SystemPropertyService systemPropertyService;
-
-    @Autowired
-    private SystemPropertyRepository systemPropertyRepository;
 
     @Override
     protected String controllerPath() {
@@ -121,15 +115,4 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
 
     }
 
-    // TODO fix test
-//    @Test
-    public void findAll_When_PropertiesNotExist_Expect_EmptyResultAndCorrectException() throws Exception {
-        assertFalse(systemPropertyService.findAll().isEmpty());
-        systemPropertyRepository.deleteAll();
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
-
-        // assertTrue(systemPropertyService.findAll().isEmpty());
-        performRequestBuilderExpectException(InvalidDataAccessResourceUsageException.class, requestBuilder);
-
-    }
 }
