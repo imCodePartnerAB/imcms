@@ -5,19 +5,17 @@
 define(
     'imcms-system-properties-tab-builder',
     ['imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-settings-rest-api',
-        'imcms-components-builder', 'jquery', 'imcms-modal-window-builder'],
-    function (SuperAdminTab, BEM, texts, propertyRestApi, components, $, modal) {
+        'imcms-components-builder'],
+    function (SuperAdminTab, BEM, texts, propertyRestApi, components) {
 
         texts = texts.superAdmin.systemProperties;
 
         let inputNumberPage;
-        //let propertyArchiveClass = 'imcms-settings-row--startPage';
         let serverMasterName;
         let serverMasterEmail;
         let webMasterFieldName;
         let webMasterFieldEmail;
-        let localProperties = {};
-
+        let systemMessage;
 
         function buildPageRow() {
 
@@ -39,8 +37,7 @@ define(
                     click: function () {
                         let propertyId = inputNumberPage.data('id');
                         let propertyValue = inputNumberPage.val();
-                        console.log(propertyName);
-                        changeClickHandler({id: propertyId, value: propertyValue});
+                        updateProperty({id: propertyId, value: propertyValue});
                     }
                 });
 
@@ -57,72 +54,69 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        function changeClickHandler(property) {
+        function updateProperty(property) {
             propertyRestApi.update({id: property.id, value: property.value});
         }
 
-        //fix it
         propertyRestApi.getAllProperties().done(function (properties) {
-            localProperties = properties;
             properties.forEach(function (property) {
-                if (property.name === 'StartDocument') {
-                    inputNumberPage.val(property.value);
-                    inputNumberPage.data('id', property.id);
-                }
-
-                if (property.name === 'ServerMaster') {
-                    serverMasterName.val(property.value);
-                    serverMasterName.data('id', property.id);
-                }
-
-                if (property.name === 'ServerMasterAddress') {
-                    serverMasterEmail.val(property.value);
-                    serverMasterEmail.data('id', property.id);
-                }
-
-                if (property.name === 'WebMaster') {
-                    webMasterFieldName.val(property.value);
-                    webMasterFieldName.data('id', property.id);
-                }
-
-                if (property.name === 'WebMasterAddress') {
-                    webMasterFieldEmail.val(property.value);
-                    webMasterFieldEmail.data('id', property.id);
+                switch (property.name) {
+                    case 'StartDocument':
+                        inputNumberPage.val(property.value);
+                        inputNumberPage.data('id', property.id);
+                        break;
+                    case 'SystemMessage':
+                        systemMessage.val(property.value);
+                        systemMessage.data('id', property.id);
+                        break;
+                    case 'ServerMaster':
+                        serverMasterName.val(property.value);
+                        serverMasterName.data('id', property.id);
+                        break;
+                    case 'ServerMasterAddress':
+                        serverMasterEmail.val(property.value);
+                        serverMasterEmail.data('id', property.id);
+                        break;
+                    case 'WebMaster':
+                        webMasterFieldName.val(property.value);
+                        webMasterFieldName.data('id', property.id);
+                        break;
+                    case 'WebMasterAddress':
+                        webMasterFieldEmail.val(property.value);
+                        webMasterFieldEmail.data('id', property.id);
+                        break;
                 }
             })
         });
 
         function buildSystemMessageRow() {
-            let messageSystem;
-
             function buildCreateTitleSystemMessage() {
                 return components.texts.titleText('<div>', texts.sections.systemMessage.name, {})
 
             }
 
             function buildCreateSystemMessageInput() {
-                let $fieldForSystemMessage = components.texts.textBox('<div>', texts.sections.systemMessage.inputBox);
-                messageSystem = $fieldForSystemMessage.$input;
+                let $fieldForSystemMessage = components.texts.textBox('<div>', {
+                    name: 'systemMessage'
+                });
+                systemMessage = $fieldForSystemMessage.$input;
 
                 return $fieldForSystemMessage;
             }
 
 
             function buildCreateSystemMessageButton() {
-
                 let $button = components.buttons.positiveButton({
                     text: texts.changeButton,
-                    click: function (property) {
-                        changeClickHandler(property.value);
+                    click: function () {
+                        let propertyId = systemMessage.data('id');
+                        let propertyValue = systemMessage.val();
+                        updateProperty({id: propertyId, value: propertyValue});
                     }
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
-
-            propertyRestApi.findByName('SystemMessage').done(function (property) {
-                messageSystem.val(property.value)
-            });
 
             return new BEM({
                 block: 'imcms-settings-row',
@@ -135,22 +129,24 @@ define(
         }
 
         function buildServerMasterRow() {
-
-
             function buildCreateTitleServerMaster() {
                 return components.texts.titleText('<div>', texts.sections.serverMaster.name, {})
 
             }
 
             function buildServerMasterNameInput() {
-                let $serverMasterName = components.texts.textBox('<div>', texts.sections.serverMaster.inputName);
+                let $serverMasterName = components.texts.textBox('<div>', {
+                    name: 'ServerMaster'
+                });
                 serverMasterName = $serverMasterName.$input;
 
                 return $serverMasterName;
             }
 
             function buildServerMasterEmailInput() {
-                let $serverMasterEmailInput = components.texts.textBox('<div>', texts.sections.serverMaster.inputEmail);
+                let $serverMasterEmailInput = components.texts.textBox('<div>', {
+                    name: 'ServerMasterAddress'
+                });
                 serverMasterEmail = $serverMasterEmailInput.$input;
 
                 return serverMasterEmail;
@@ -159,8 +155,17 @@ define(
             function buildCreateServerMasterButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.changeButton,
-                    click: function setServerMasterbyNameAndEmail() {
+                    click: function () {
+                        let propertyIdForName = serverMasterName.data('id');
+                        let propertyValueForName = serverMasterName.val();
+                        let propertyIdForEmail = serverMasterEmail.data('id');
+                        let propertyValueForEmail = serverMasterEmail.val();
 
+                        let serverMasterNameProperty = {id: propertyIdForName, value: propertyValueForName};
+                        let serverMasterEmailProperty = {id: propertyIdForEmail, value: propertyValueForEmail};
+
+                        updateProperty(serverMasterNameProperty);
+                        updateProperty(serverMasterEmailProperty);
                     }
                 });
 
@@ -179,21 +184,24 @@ define(
         }
 
         function buildWebMasterRow() {
-
             function buildCreateTilteWebMaster() {
                 return components.texts.titleText('<div>', texts.sections.webMaster.name, {})
 
             }
 
             function buildCreateInputWebMasterName() {
-                let $nameWebMasterInput = components.texts.textBox('<div>', texts.sections.webMaster.inputName);
+                let $nameWebMasterInput = components.texts.textBox('<div>', {
+                    name: 'WebMaster'
+                });
                 webMasterFieldName = $nameWebMasterInput.$input;
 
                 return $nameWebMasterInput;
             }
 
             function buildCreateInputWebMasterEmail() {
-                let $emailWebMasterInput = components.texts.textBox('<div>', texts.sections.webMaster.inputEmail);
+                let $emailWebMasterInput = components.texts.textBox('<div>', {
+                    name: 'WebMasterAddress'
+                });
                 webMasterFieldEmail = $emailWebMasterInput.$input;
 
                 return $emailWebMasterInput;
@@ -204,7 +212,16 @@ define(
                 let $button = components.buttons.positiveButton({
                     text: texts.changeButton,
                     click: function () {
+                        let propertyIdForWebName = webMasterFieldName.data('id');
+                        let propertyValueForWebName = webMasterFieldName.val();
+                        let propertyIdForWebEmail = webMasterFieldEmail.data('id');
+                        let propertyValueForWebEmail = webMasterFieldEmail.val();
 
+                        let webMasterNameProperty = {id: propertyIdForWebName, value: propertyValueForWebName};
+                        let webMasterEmailProperty = {id: propertyIdForWebEmail, value: propertyValueForWebEmail};
+
+                        updateProperty(webMasterNameProperty);
+                        updateProperty(webMasterEmailProperty);
                     }
                 });
 
