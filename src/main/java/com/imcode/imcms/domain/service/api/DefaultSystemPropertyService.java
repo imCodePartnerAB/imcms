@@ -35,7 +35,12 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
 
     @Override
     public SystemProperty update(SystemProperty systemProperty) {
-        return systemPropertyRepository.save(systemProperty);
+        final Integer id = systemProperty.getId();
+
+        SystemProperty propertyGetById = findById(id);
+        propertyGetById.setValue(systemProperty.getValue());
+
+        return systemPropertyRepository.save(propertyGetById);
     }
 
     @Override
