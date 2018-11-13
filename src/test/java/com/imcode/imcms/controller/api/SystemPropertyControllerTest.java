@@ -27,7 +27,7 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
 
 
     @Test
-    public void findByName_When_PropertyExist_Expect_OK() throws Exception {
+    public void findByName_When_PropertyExist_Expect_Ok() throws Exception {
         String name = "StartDocument";
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + name);
 
@@ -53,7 +53,7 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void update_When_PropertyExist_Expect_OK() throws Exception {
+    public void update_When_PropertyExist_Expect_Ok() throws Exception {
         List<SystemProperty> properties = systemPropertyService.findAll();
         int firstProperty = 0;
         SystemProperty systemProperty = systemPropertyService.update(properties.get(firstProperty));
@@ -62,7 +62,7 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void update_When_PropertyExist_Expect_OKAndCorrectEntity() throws Exception {
+    public void update_When_PropertyExist_Expect_OkAndCorrectEntity() throws Exception {
         List<SystemProperty> properties = systemPropertyService.findAll();
         int firstProperty = 0;
         SystemProperty systemProperty = systemPropertyService.update(properties.get(firstProperty));
