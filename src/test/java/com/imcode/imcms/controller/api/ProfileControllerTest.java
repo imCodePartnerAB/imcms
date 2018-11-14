@@ -29,12 +29,6 @@ public class ProfileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getAll_When_ProfilesExist_Excpected_Ok() throws Exception {
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
-        performRequestBuilderExpectedOk(requestBuilder);
-    }
-
-    @Test
     public void getAll_When_ProfilesExist_Excpected_OkAndCorrectEntites() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
@@ -50,42 +44,16 @@ public class ProfileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void createProfile_When_ProfileNotExist_Expected_Ok() throws Exception {
-        assertTrue(profileService.getAll().isEmpty());
-
-        ProfileDTO profileDTO = new ProfileDTO("1002", "name1", 1);
-        profileService.create(profileDTO);
-
-        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
-
-        assertFalse(profileService.getAll().isEmpty());
-
-        performRequestBuilderExpectedOk(requestBuilder);
-    }
-
-    @Test
-    public void createProfile_When_ProfileNotExist_Expected_OkAndCreatedProfile() throws Exception {
+    public void createEntity_When_ProfileNotExist_Expected_OkAndCreatedEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
 
         Profile profileDTO = profileService.create(new ProfileDTO("1002", "name1", 1));
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
 
-        assertFalse(profileService.getAll().isEmpty());
+        assertEquals(1, profileService.getAll().size());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(profileDTO));
-    }
-
-    @Test
-    public void getById_When_ProfileExist_Expected_Ok() throws Exception {
-        assertTrue(profileService.getAll().isEmpty());
-        List<ProfileDTO> profiles = createTestProfiles();
-        int id = profiles.get(0).getId();
-
-        assertTrue(profileService.getById(id).isPresent());
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + id);
-        performRequestBuilderExpectedOk(requestBuilder);
     }
 
     @Test
@@ -93,8 +61,6 @@ public class ProfileControllerTest extends AbstractControllerTest {
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
         int id = profiles.get(0).getId();
-
-        assertTrue(profileService.getById(id).isPresent());
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/" + id);
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(profiles.get(0)));
@@ -108,25 +74,16 @@ public class ProfileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void deleteById_When_ProfileExist_Expected_Ok() throws Exception {
+    public void deleteById_When_ProfileExist_Expected_OkAndDeletedEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
         int id = profiles.get(0).getId();
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + id);
+        final MockHttpServletRequestBuilder requestBuilder1 = MockMvcRequestBuilders.delete(controllerPath() + "/" + id);
 
-        performRequestBuilderExpectedOk(requestBuilder);
-    }
+        performRequestBuilderExpectedOk(requestBuilder1);
 
-    @Test
-    public void deleteById_When_ProfileExist_Expected_OkAndDeletedEntity() {
-        assertTrue(profileService.getAll().isEmpty());
-        List<ProfileDTO> profiles = createTestProfiles();
-        int id = profiles.get(0).getId();
-
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + id);
-
-        getDeleteRequestBuilderWithContent(requestBuilder);
+        assertEquals(profiles.size() - 1, profileService.getAll().size());
     }
 
     @Test
@@ -134,19 +91,6 @@ public class ProfileControllerTest extends AbstractControllerTest {
         int fakeId = -1;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + fakeId);
         performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
-    }
-
-    @Test
-    public void update_When_ProfileExist_Expected_Ok() throws Exception {
-        List<ProfileDTO> profiles = createTestProfiles();
-
-        ProfileDTO profileDTO = profiles.get(0);
-        profileDTO.setName("anotherName");
-        profileDTO.setDocumentName("anotherDocName");
-
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profileDTO);
-
-        performRequestBuilderExpectedOk(requestBuilder);
     }
 
     @Test
