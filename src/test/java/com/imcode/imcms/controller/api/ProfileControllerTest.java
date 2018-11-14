@@ -47,13 +47,17 @@ public class ProfileControllerTest extends AbstractControllerTest {
     public void createEntity_When_ProfileNotExist_Expected_OkAndCreatedEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
 
-        Profile profileDTO = profileService.create(new ProfileDTO("1002", "name1", 1));
+        Profile profileDTO = new ProfileDTO("1002", "name1", null);
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
 
-        assertEquals(1, profileService.getAll().size());
+        performRequestBuilderExpectedOk(requestBuilder);
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(profileDTO));
+        List<Profile> savedProfiles = profileService.getAll();
+
+        assertEquals(1, savedProfiles.size());
+        profileDTO.setId(savedProfiles.get(0).getId());
+        assertEquals(profileDTO, savedProfiles.get(0));
     }
 
     @Test
