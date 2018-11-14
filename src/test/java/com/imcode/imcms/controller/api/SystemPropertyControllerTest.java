@@ -25,7 +25,6 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
         return "/properties";
     }
 
-
     @Test
     public void findByName_When_PropertyExist_Expect_Ok() throws Exception {
         String name = "StartDocument";
@@ -94,7 +93,6 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     public void deleteById_When_PropertyNotExist_Expect_CorrectException() throws Exception {
         int fakeId = 40;
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + fakeId);
-        // performDeleteWithContentExpectException(requestBuilder, Exception.class);
         performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
 
     }
