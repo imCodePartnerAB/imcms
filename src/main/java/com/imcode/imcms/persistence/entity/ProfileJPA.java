@@ -3,7 +3,6 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.Profile;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -20,7 +19,6 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "profiles")
-@EqualsAndHashCode(callSuper=false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class ProfileJPA extends Profile {
 
