@@ -1,0 +1,109 @@
+package com.imcode.imcms.domain.service.api;
+
+import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.domain.dto.ProfileDTO;
+import com.imcode.imcms.domain.service.ProfileService;
+import com.imcode.imcms.model.Profile;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@Transactional
+public class ProfileServiceTest extends WebAppSpringTestConfig {
+
+    @Autowired
+    private ProfileService profileService;
+
+    @Test
+    public void findAll_When_ProfilesExist_Expected_CorrectEntities() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        assertFalse(profileService.getAll().isEmpty());
+        assertEquals(profiles, profileService.getAll());
+    }
+
+    @Test
+    public void findAll_When_ProfilesNotExist_Expected_EmptyList() {
+        assertTrue(profileService.getAll().isEmpty());
+    }
+
+    @Test
+    public void createProfile_When_ProfileNotExist_Expected_CreatedProfile() {
+        assertTrue(profileService.getAll().isEmpty());
+        ProfileDTO profile = new ProfileDTO("1002", "name1", 1);
+        profileService.create(profile);
+
+        assertNotNull(profileService.getAll());
+        assertEquals(1, profileService.getAll().size());
+    }
+
+    @Test
+    public void getById_When_ProfileExist_Expected_CorrectEntity() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        int idFirstProfile = profiles.get(0).getId();
+
+        assertTrue(profileService.getById(idFirstProfile).isPresent());
+    }
+
+    @Test
+    public void getById_When_ProfileNotExist_Expected_EmptyOptional() {
+        int fakeId = -1;
+        Optional<Profile> profileDTO = profileService.getById(fakeId);
+        assertFalse(profileDTO.isPresent());
+    }
+
+    @Test
+    public void update_When_ProfileExist_Expected_UpdateEntity() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profileDTO = profiles.get(0);
+        profileDTO.setName("1003");
+
+        assertEquals(profileDTO, profileService.update(profileDTO));
+    }
+
+    @Test
+    public void deleteById_When_ProfileExist_Expected_EntityDeleted() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        int id = profiles.get(0).getId();
+        profileService.deleteById(id);
+
+        assertEquals(profiles.size() - 1, profileService.getAll().size());
+        assertFalse(profileService.getById(id).isPresent());
+    }
+
+    @Test
+    public void deleteById_When_ProfilesNotExist_Expected_CorrectException() {
+        int fakeId = -1;
+        assertThrows(EmptyResultDataAccessException.class, () -> profileService.deleteById(fakeId));
+    }
+
+    private List<ProfileDTO> createTestProfiles() {
+        List<ProfileDTO> profiles = Arrays.asList(
+                new ProfileDTO("1002", "name1", 1),
+                new ProfileDTO("alias", "name2", 2),
+                new ProfileDTO("alias2", "name3", 3)
+        );
+        profiles = profiles.stream()
+                .map(profileService::create)
+                .map(ProfileDTO::new)
+                .collect(Collectors.toList());
+
+        return profiles;
+    }
+
+}
