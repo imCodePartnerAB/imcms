@@ -160,6 +160,32 @@
     vertical-align: top;
 }
 
+.profiles-table {
+    width: 40%;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    display: inline-block;
+}
+
+.profiles-table__role-row {
+    padding: 5px;
+    cursor: pointer;
+}
+
+.profiles-table__role-row:hover {
+    background-color: #dfedff;
+}
+
+.profiles-table__profile-row.profiles-table__profile-row--active {
+    background-color: #c3d9f5;
+}
+
+.profile-editor {
+    width: 40%;
+    margin-left: 2%;
+    vertical-align: top;
+}
+
 .auth-provider-icon {
     width: 30px;
     padding-left: 10px;
