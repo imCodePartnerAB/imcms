@@ -1,4 +1,3 @@
-
 define(
     'imcms-profiles-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-bem-builder', 'imcms-field-wrapper',
