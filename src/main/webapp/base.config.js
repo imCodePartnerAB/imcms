@@ -181,6 +181,8 @@ module.exports = {
                                 'imcms-super-admin-tab',
                                 'imcms-role-editor',
                                 'imcms-role-to-row-transformer',
+                                'imcms-profile-editor',
+                                'imcms-profile-to-row-transformer',
                                 'imcms-field-wrapper',
                             ]
                         },
