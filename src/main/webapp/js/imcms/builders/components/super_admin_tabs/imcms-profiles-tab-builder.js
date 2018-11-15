@@ -4,11 +4,78 @@
  */
 define(
     'imcms-profiles-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
-    function (SuperAdminTab, texts) {
+    ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-bem-builder', 'imcms-field-wrapper',
+        'jquery', 'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer'],
+    function (SuperAdminTab, texts, components, BEM, fieldWrapper, $, profileRestApi, profileToRow) {
 
         texts = texts.superAdmin.profiles;
 
-        return new SuperAdminTab(texts.name, []);
+        var profilesLoader = {
+            profiles: false,
+            callback: [],
+            whenProfilesLoaded: function (callback) {
+                (this.profiles) ? callback(this.profiles) : this.callback.push(callback);
+
+            },
+            runCallbacks: function (profiles) {
+                this.profiles = profiles;
+                this.callback.forEach(function (callback) {
+                    callback(profiles)
+                })
+            }
+        };
+
+        profileRestApi.getAllProfiles().done(function (profiles) {
+            profilesLoader.runCallbacks(profiles);
+        });
+
+        function buildBlockProfiles() {
+
+            function createTitleText() {
+                return components.texts.titleText('<div>', texts.title, {})
+            }
+
+            function createButtonCreate() {
+                return fieldWrapper.wrap(components.buttons.positiveButton({
+                    text: texts.createButton,
+                    click: onCreateNewProfile()
+                }));
+            }
+
+            return new BEM({
+                block: 'imcms-profiles-block',
+                elements: {
+                    'profile-title': createTitleText(),
+                    'create-button': createButtonCreate(),
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        let $profileContainer;
+
+
+        function onCreateNewProfile() {
+
+        }
+
+        function buildProfileContainer() {
+
+            $profileContainer = $('<div>', {
+                'class': 'profiles-table'
+            });
+
+            profilesLoader.whenProfilesLoaded(function (profiles) {
+                $profileContainer.append(profiles.map(function (profile) {
+                    return profileToRow.transform(profile)
+                }))
+            });
+
+            return fieldWrapper.wrap([$profileContainer]);
+        }
+
+        return new SuperAdminTab(texts.name, [
+            buildBlockProfiles(),
+            buildProfileContainer(),
+        ]);
     }
 );
