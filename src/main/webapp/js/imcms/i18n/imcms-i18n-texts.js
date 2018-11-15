@@ -406,12 +406,8 @@ const texts = {
             profiles: {
                 name: 'Profiler',
                 title: 'Profiler',
-                backButton: "Back",
-                helpButton: 'Hjälp',
                 createButton: "Skapa ny profil",
                 createNewProfile: {
-                    backButton: "Back",
-                    helpButton: 'Hjälp',
                     titleTextName: 'Namn',
                     textFieldName: 'Textnamn',
                     titleTextDocName: 'Dokumentnamn',
@@ -854,12 +850,8 @@ const texts = {
             profiles: {
                 name: 'Profiles',
                 title: 'Profiles',
-                backButton: 'Back',
-                helpButton: 'Help',
                 createButton: 'Create new profile',
                 createNewProfile: {
-                    backButton: 'Back',
-                    helpButton: 'Help',
                     titleTextName: 'Name',
                     textFieldName: 'Text name',
                     titleTextDocName: 'Document name',
