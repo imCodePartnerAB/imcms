@@ -25,6 +25,16 @@ define(
             return $profileDocNameRow;
         }
 
+        function onCancelChanges($profileRowElement, profile) {
+
+            getOnDiscardChanges(function () {
+                onProfileView = onProfileSimpleView;
+                currentProfile = profile;
+                $profileRow = $profileRowElement;
+                prepareProfileView();
+            }).call();
+        }
+
         function onEditProfile() {
             onProfileView = onCancelChanges;
 
@@ -33,6 +43,21 @@ define(
 
             $profileNameRow.$input.removeAttr('disabled').focus();
             $profileDocNameRow.$input.removeAttr('disabled').focus();
+
+
+        }
+
+        function onDeleteRole() {
+            modal.buildModalWindow(texts.warnDelete, function (confirmed) {
+                if (!confirmed) return;
+
+                profileRestApi.remove(currentProfile).done(function () {
+                    $profileRow.remove();
+                    currentProfile = null;
+                    onEditDelegate = onSimpleEdit;
+                    $container.slideUp();
+                })
+            });
         }
 
 
@@ -40,17 +65,22 @@ define(
             return $profileViewButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.positiveButton({
                     text: texts.editProfile.buttonEdit,
-                    click: function () {
-
-                    }
+                    click: onEditProfile
                 }),
                 components.buttons.negativeButton({
                     text: texts.editProfile.buttonDelete,
-                    click: function () {
-
-                    }
+                    click: onDeleteRole
                 })
             ]);
+        }
+
+        function getOnDiscardChanges(onConfirm) {
+            return function () {
+                modal.buildModalWindow(texts.warnChangeMessage, function (confirmed) {
+                    if (!confirmed) return;
+                    onConfirm.call();
+                });
+            }
         }
 
         function prepareProfileView() {
