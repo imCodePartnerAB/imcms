@@ -8,11 +8,22 @@ define(
             }
         });
 
+        function getOnProfileClicked(profile, profileEditor) {
+            return function () {
+                var $this = $(this);
+
+                if ($this.hasClass('profile-table__profile-row--active')) return;
+
+                profileEditor.viewProfile($this, profile);
+            }
+        }
+
         return {
-            transform: function (profile) {
+            transform: function (profile, profileEditor) {
                 return profilesTableBEM.makeBlockElement('profile-row', $('<div>', {
                     id: 'profile-id-' + profile.id,
-                    text: profile.name + ' ' + profile.documentName
+                    text: profile.name + ' ' + profile.documentName,
+                    click: getOnProfileClicked(profile, profileEditor)
                 }))
             }
         };
