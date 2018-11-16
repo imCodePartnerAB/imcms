@@ -414,6 +414,12 @@ const texts = {
                     textFieldDocName: 'Text doc namn',
                     buttonSave: 'Save'
                 },
+                editProfile: {
+                    namn: "namn",
+                    docName: 'Dokumentnamn',
+                    buttonEdit: 'Redigera profil',
+                    buttonDelete: 'Ta bort profil'
+                },
             },
             systemProperties: {
                 name: 'Systemegenskaper',
@@ -857,6 +863,12 @@ const texts = {
                     titleTextDocName: 'Document name',
                     textFieldDocName: 'Text doc name',
                     buttonSave: 'Save'
+                },
+                editProfile: {
+                    name: 'Name',
+                    docName: 'Document Name',
+                    buttonEdit: 'Edit profile',
+                    buttonDelete: 'Delete profile'
                 },
             },
             systemProperties: {
