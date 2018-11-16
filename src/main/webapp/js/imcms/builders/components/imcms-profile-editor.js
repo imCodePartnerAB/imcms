@@ -43,8 +43,6 @@ define(
 
             $profileNameRow.$input.removeAttr('disabled').focus();
             $profileDocNameRow.$input.removeAttr('disabled').focus();
-
-
         }
 
         function onDeleteRole() {
@@ -84,7 +82,21 @@ define(
         }
 
         function prepareProfileView() {
+            onEditDelegate = onSimpleEdit;
 
+            $profileRow.parent()
+                .find('.profile-table__profile-row--active')
+                .removeClass('profile-table__profile-row--active');
+
+            $profileRow.addClass('profile-table__profile-row--active');
+
+            $profileNameRow.$input.attr('disabled', 'disabled');
+            $profileNameRow.setValue(currentProfile.name);
+
+            $profileDocNameRow.$input.attr('disabled', 'disabled');
+            $profileDocNameRow.setValue(currentProfile.documentName);
+
+            $container.css('display', 'inline-block');
         }
 
         function onProfileSimpleView($profileRowElement, profile) {
