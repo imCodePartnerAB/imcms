@@ -1,8 +1,8 @@
 define(
     'imcms-profiles-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-bem-builder', 'imcms-field-wrapper',
-        'jquery', 'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer'],
-    function (SuperAdminTab, texts, components, BEM, fieldWrapper, $, profileRestApi, profileToRow) {
+        'jquery', 'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer', 'imcms-profile-editor'],
+    function (SuperAdminTab, texts, components, BEM, fieldWrapper, $, profileRestApi, profileToRow, profileEditor) {
 
         texts = texts.superAdmin.profiles;
 
@@ -15,6 +15,7 @@ define(
             },
             runCallbacks: function (profiles) {
                 this.profiles = profiles;
+
                 this.callback.forEach(function (callback) {
                     callback(profiles)
                 })
@@ -38,11 +39,17 @@ define(
                 }));
             }
 
+            function buildCreateTitlesForProfiles() {
+                return components.texts.titleText('<div>',
+                    texts.createNewProfile.titleTextName + '|' + texts.createNewProfile.titleTextDocName, {})
+            }
+
             return new BEM({
                 block: 'imcms-profiles-block',
                 elements: {
                     'profile-title': createTitleText(),
                     'create-button': createButtonCreate(),
+                    'title-table-profiles': buildCreateTitlesForProfiles()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -62,7 +69,7 @@ define(
 
             profilesLoader.whenProfilesLoaded(function (profiles) {
                 $profileContainer.append(profiles.map(function (profile) {
-                    return profileToRow.transform(profile)
+                    return profileToRow.transform(profile);
                 }))
             });
 
