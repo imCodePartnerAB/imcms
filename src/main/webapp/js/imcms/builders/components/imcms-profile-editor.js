@@ -22,7 +22,7 @@ define(
         function buildProfileDocNameRow() {
             $profileDocNameRow = components.texts.textBox('<div>', {text: texts.editProfile.docName});
             $profileDocNameRow.$input.attr('disabled', 'disabled');
-            return $profileNameRow;
+            return $profileDocNameRow;
         }
 
         function onEditProfile() {
@@ -32,6 +32,25 @@ define(
             $profileEditButtons.slideDown();
 
             $profileNameRow.$input.removeAttr('disabled').focus();
+            $profileDocNameRow.$input.removeAttr('disabled').focus();
+        }
+
+
+        function buildProfileViewButtons() {
+            return $profileViewButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.positiveButton({
+                    text: texts.editProfile.buttonEdit,
+                    click: function () {
+
+                    }
+                }),
+                components.buttons.negativeButton({
+                    text: texts.editProfile.buttonDelete,
+                    click: function () {
+
+                    }
+                })
+            ]);
         }
 
         function prepareProfileView() {
@@ -57,7 +76,8 @@ define(
                 block: 'profiles-editor',
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
-                    'profile-docName-row': buildProfileDocNameRow()
+                    'profile-docName-row': buildProfileDocNameRow(),
+                    'profile-button-view': buildProfileViewButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
