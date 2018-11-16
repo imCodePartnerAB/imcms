@@ -16,7 +16,11 @@ define(
             return $profileNameRow;
         }
 
-        function prepareRoleView() {
+        function onEditProfile() {
+
+        }
+
+        function prepareProfileView() {
 
         }
 
@@ -25,13 +29,28 @@ define(
             currentProfile = profile;
             $profileRow = $profileRowElement;
 
-            prepareRoleView();
+            prepareProfileView();
         }
 
         var $container;
         var currentProfile;
         var $profileRow;
         var onProfileView = onProfileSimpleView;
+
+
+        function viewProfile($profileRow, profile) {
+            $container.slideDown();
+            onProfileView($profileRow, profile);
+        }
+
+        function onSimpleEdit($profileRow, profile) {
+            viewProfile($profileRow, profile);
+            onEditProfile();
+        }
+
+
+        var onEditDelegate = onSimpleEdit;
+
 
 
     }
