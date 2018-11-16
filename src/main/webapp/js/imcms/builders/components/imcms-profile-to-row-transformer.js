@@ -12,7 +12,7 @@ define(
             transform: function (profile) {
                 return profilesTableBEM.makeBlockElement('profile-row', $('<div>', {
                     id: 'profile-id-' + profile.id,
-                    text: profile.name
+                    text: profile.name + ' ' + profile.documentName
                 }))
             }
         };
