@@ -52,6 +52,5 @@ define(
         var onEditDelegate = onSimpleEdit;
 
 
-
     }
 );
