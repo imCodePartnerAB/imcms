@@ -69,11 +69,11 @@ define(
 
             profilesLoader.whenProfilesLoaded(function (profiles) {
                 $profileContainer.append(profiles.map(function (profile) {
-                    return profileToRow.transform(profile);
+                    return profileToRow.transform(profile, profileEditor);
                 }))
             });
 
-            return fieldWrapper.wrap([$profileContainer]);
+            return fieldWrapper.wrap([$profileContainer, profileEditor.buildProfilesContainer()]);
         }
 
         return new SuperAdminTab(texts.name, [
