@@ -81,6 +81,34 @@ define(
             }
         }
 
+        function buildProfileEditButtons() {
+            return $profileEditButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.saveButton({
+                    text: texts.createNewProfile.buttonSave,
+                    click: function () {
+
+                    }
+                }),
+                components.buttons.negativeButton({
+                    text: texts.cancel,
+                    click: getOnDiscardChanges(function () {
+                        onProfileView = onProfileSimpleView;
+
+                        if (currentProfile.id) {
+                            prepareProfileView();
+
+                        } else {
+                            currentProfile = null;
+                            onEditDelegate = onSimpleEdit;
+                            $container.slideUp();
+                        }
+                    })
+                })
+            ], {
+                style: 'display: none;'
+            });
+        }
+
         function prepareProfileView() {
             onEditDelegate = onSimpleEdit;
 
@@ -119,7 +147,8 @@ define(
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
                     'profile-docName-row': buildProfileDocNameRow(),
-                    'profile-button-view': buildProfileViewButtons()
+                    'profile-button-view': buildProfileViewButtons(),
+                    'profile-button-edir': buildProfileEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
