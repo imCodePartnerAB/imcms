@@ -9,15 +9,29 @@ define(
         texts = texts.superAdmin.profiles;
 
         let $profileNameRow;
+        let $profileDocNameRow;
+        let $profileViewButtons;
+        let $profileEditButtons;
 
         function buildProfileNameRow() {
-            $profileNameRow = components.texts.textBox('<div>', {text: texts.title});
+            $profileNameRow = components.texts.textBox('<div>', {text: texts.editProfile.name});
             $profileNameRow.$input.attr('disabled', 'disabled');
             return $profileNameRow;
         }
 
-        function onEditProfile() {
+        function buildProfileDocNameRow() {
+            $profileDocNameRow = components.texts.textBox('<div>', {text: texts.editProfile.docName});
+            $profileDocNameRow.$input.attr('disabled', 'disabled');
+            return $profileNameRow;
+        }
 
+        function onEditProfile() {
+            onProfileView = onCancelChanges;
+
+            $profileViewButtons.slideUp();
+            $profileEditButtons.slideDown();
+
+            $profileNameRow.$input.removeAttr('disabled').focus();
         }
 
         function prepareProfileView() {
@@ -38,6 +52,16 @@ define(
         var onProfileView = onProfileSimpleView;
 
 
+        function buildProfilesContainer() {
+            return $container || ($container = new BEM({
+                block: 'profiles-editor',
+                elements: {
+                    'profile-name-row': buildProfileNameRow(),
+                    'profile-docName-row': buildProfileDocNameRow()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'}));
+        }
+
         function viewProfile($profileRow, profile) {
             $container.slideDown();
             onProfileView($profileRow, profile);
@@ -50,6 +74,20 @@ define(
 
 
         var onEditDelegate = onSimpleEdit;
+
+        function editProfile($profileRow, profile) {
+            onEditDelegate($profileRow, profile);
+            onEditDelegate = function () {
+            }
+        }
+
+        var profileEditor = {
+            buildProfilesContainer: buildProfilesContainer,
+            viewProfile: viewProfile,
+            editProfile: editProfile
+        };
+
+        return profileEditor;
 
 
     }
