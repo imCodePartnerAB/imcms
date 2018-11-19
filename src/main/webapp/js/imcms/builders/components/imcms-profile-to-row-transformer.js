@@ -5,11 +5,8 @@ define(
             block: 'profiles-table',
             elements: {
                 'profile-row': '',
-                'profile-delete-button': ''
             }
         });
-
-        let $profileDeleteButtons;
 
         function getOnProfileClicked(profile, profileEditor) {
             return function () {
@@ -19,25 +16,6 @@ define(
 
                 profileEditor.viewProfile($this, profile);
             }
-        }
-
-        function getOnDeleteClicked(profile, profileEditor) {
-            return function () {
-                var $this = $(this);
-
-                if ($this.hasClass('profile-table__profile-row--active')) return;
-
-                profileEditor.deleteButton($this, profile);
-            }
-        }
-
-        function buildProfileDeleteButtons() {
-            return $profileDeleteButtons = components.buttons.closeButton({
-                name: 'delete',
-                click: function () {
-
-                }
-            });
         }
 
         return {
@@ -58,15 +36,14 @@ define(
 
                 let $buttonDelete = components.buttons.closeButton({
                     id: 'profile-id-' + profile.id,
-                    click: function () {
-                    }
+                    click: profileEditor.deleteButton
                 });
                 $buttonDelete.modifiers = ["buttonDelete"];
 
                 return new BEM({
                     block: "imcms-profiles-list",
                     elements: {
-                        'profile-name-docName':
+                        'profiles-row':
                             [
                                 $profileName,
                                 $profileDocName,
