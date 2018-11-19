@@ -10,18 +10,18 @@ define(
 
         let $profileNameRow;
         let $profileDocNameRow;
-        let $profileViewButtons;
+        let $profileDeleteButtons;
         let $profileEditButtons;
 
         function buildProfileNameRow() {
             $profileNameRow = components.texts.textBox('<div>', {text: texts.editProfile.name});
-            $profileNameRow.$input.attr('disabled', 'disabled');
+            $profileNameRow.$input.attr('enable', 'enable');
             return $profileNameRow;
         }
 
         function buildProfileDocNameRow() {
             $profileDocNameRow = components.texts.textBox('<div>', {text: texts.editProfile.docName});
-            $profileDocNameRow.$input.attr('disabled', 'disabled');
+            $profileDocNameRow.$input.attr('enable', 'enable');
             return $profileDocNameRow;
         }
 
@@ -38,14 +38,13 @@ define(
         function onEditProfile() {
             onProfileView = onCancelChanges;
 
-            $profileViewButtons.slideUp();
             $profileEditButtons.slideDown();
 
-            $profileNameRow.$input.removeAttr('disabled').focus();
-            $profileDocNameRow.$input.removeAttr('disabled').focus();
+            $profileNameRow.$input.focus();
+            $profileDocNameRow.$input.focus();
         }
 
-        function onDeleteRole() {
+        function onDeleteProfile() {
             modal.buildModalWindow(texts.warnDelete, function (confirmed) {
                 if (!confirmed) return;
 
@@ -56,20 +55,6 @@ define(
                     $container.slideUp();
                 })
             });
-        }
-
-
-        function buildProfileViewButtons() {
-            return $profileViewButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: texts.editProfile.buttonEdit,
-                    click: onEditProfile
-                }),
-                components.buttons.negativeButton({
-                    text: texts.editProfile.buttonDelete,
-                    click: onDeleteRole
-                })
-            ]);
         }
 
         function getOnDiscardChanges(onConfirm) {
@@ -118,10 +103,10 @@ define(
 
             $profileRow.addClass('profile-table__profile-row--active');
 
-            $profileNameRow.$input.attr('disabled', 'disabled');
+            $profileNameRow.$input.attr('enable', 'enable');
             $profileNameRow.setValue(currentProfile.name);
 
-            $profileDocNameRow.$input.attr('disabled', 'disabled');
+            $profileDocNameRow.$input.attr('enable', 'enable');
             $profileDocNameRow.setValue(currentProfile.documentName);
 
             $container.css('display', 'inline-block');
@@ -147,8 +132,8 @@ define(
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
                     'profile-docName-row': buildProfileDocNameRow(),
-                    'profile-button-view': buildProfileViewButtons(),
-                    'profile-button-edir': buildProfileEditButtons()
+                    //'profile-button-delete': buildProfileDeleteButtons(),
+                    'profile-button-edit': buildProfileEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
@@ -175,11 +160,10 @@ define(
         var profileEditor = {
             buildProfilesContainer: buildProfilesContainer,
             viewProfile: viewProfile,
-            editProfile: editProfile
+            editProfile: editProfile,
+            deleteButton: onDeleteProfile
         };
 
         return profileEditor;
-
-
     }
 );
