@@ -4,13 +4,12 @@ define(
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
         'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer'
     ],
-    function (BEM, components, texts, modal, profileRestApi, profileToRow) {
+    function (BEM, components, texts, modal, profileRestApi) {
 
         texts = texts.superAdmin.profiles;
 
         let $profileNameRow;
         let $profileDocNameRow;
-        let $profileDeleteButtons;
         let $profileEditButtons;
 
         function buildProfileNameRow() {
@@ -132,7 +131,6 @@ define(
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
                     'profile-docName-row': buildProfileDocNameRow(),
-                    //'profile-button-delete': buildProfileDeleteButtons(),
                     'profile-button-edit': buildProfileEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
