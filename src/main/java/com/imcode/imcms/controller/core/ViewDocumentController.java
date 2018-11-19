@@ -10,7 +10,6 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
@@ -76,7 +75,7 @@ public class ViewDocumentController {
     public ModelAndView goToStartPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav)
             throws ServletException, IOException {
 
-        final String docId = String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
+        final String docId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
         final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
 
         return processDocView(textDocument, request, response, mav);
