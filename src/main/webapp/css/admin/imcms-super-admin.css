@@ -167,22 +167,26 @@
     display: inline-block;
 }
 
-.profiles-table__role-row {
+.imcms-profile-row {
     padding: 5px;
     cursor: pointer;
 }
 
-.profiles-table__role-row:hover {
+.imcms-profile-row:hover {
     background-color: #dfedff;
 }
 
-.profiles-table__profile-row.profiles-table__profile-row--active {
+.imcms-profile-row.profile-table__profile-row--active {
     background-color: #c3d9f5;
 }
 
-.profile-editor {
-    width: 40%;
-    margin-left: 2%;
+.imcms-profile-row__item--profile-name {
+    margin-right: 10px;
+}
+
+.profiles-editor {
+    width: 25%;
+    margin-left: 10%;
     vertical-align: top;
 }
 
