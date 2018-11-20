@@ -20,29 +20,29 @@ define(
 
         return {
             transform: function (profile, profileEditor) {
-                let $profileName = profilesTableBEM.makeBlockElement('profile-row-item', $("<div>", {
+
+                let infoRowAttributes = {
                     id: 'profile-id-' + profile.id,
-                    text: profile.name,
                     click: getOnProfileClicked(profile, profileEditor)
+                };
+
+                let $profileName = profilesTableBEM.makeBlockElement('profile-row-item', $("<span>", {
+                    text: profile.name
                 }));
                 $profileName.modifiers = ["profile-name"];
 
-                let $profileDocName = profilesTableBEM.makeBlockElement('profile-row-item', $("<div>", {
-                    id: 'profile-id-' + profile.id,
-                    text: profile.documentName,
-                    click: getOnProfileClicked(profile, profileEditor)
+                let $profileDocName = profilesTableBEM.makeBlockElement('profile-row-item', $("<span>", {
+                    text: profile.documentName
                 }));
                 $profileDocName.modifiers = ["profile-doc-name"];
 
                 let $buttonDelete = components.buttons.closeButton({
-                    id: 'profile-id-' + profile.id,
                     click: profileEditor.deleteButton
                 });
                 $buttonDelete.modifiers = ["button-delete"];
 
                 return new BEM({
                     block: "imcms-profile-row",
-                    //click: getOnProfileClicked(profile, profileEditor)
                     elements: {
                         'profile-table-row':
                             [
@@ -51,7 +51,7 @@ define(
                                 $buttonDelete
                             ]
                     }
-                }).buildBlockStructure("<div>");
+                }).buildBlockStructure("<div>", infoRowAttributes);
             }
         }
     }
