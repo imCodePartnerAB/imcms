@@ -26,6 +26,8 @@ define(
             profilesLoader.runCallbacks(profiles);
         });
 
+        let $profileContainer;
+
         function buildBlockProfiles() {
 
             function createTitleText() {
@@ -35,7 +37,7 @@ define(
             function createButtonCreate() {
                 return fieldWrapper.wrap(components.buttons.positiveButton({
                     text: texts.createButton,
-                    click: onCreateNewProfile()
+                    click: onCreateNewProfile
                 }));
             }
 
@@ -54,11 +56,15 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        let $profileContainer;
-
-
         function onCreateNewProfile() {
+            $profileContainer.find('.profile-table__profile-row--active')
+                .removeClass('profile-table__profile-row--active');
 
+            profileEditor.editProfile($('<div>'), {
+                id: null,
+                name: '',
+                documentName: ''
+            });
         }
 
         function buildProfileContainer() {
