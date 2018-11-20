@@ -26,12 +26,12 @@ define(
                     click: getOnProfileClicked(profile, profileEditor)
                 };
 
-                let $profileName = profilesTableBEM.makeBlockElement('profile-row-item', $("<span>", {
+                let $profileName = profilesTableBEM.makeBlockElement('', $("<span>", {
                     text: profile.name
                 }));
                 $profileName.modifiers = ["profile-name"];
 
-                let $profileDocName = profilesTableBEM.makeBlockElement('profile-row-item', $("<span>", {
+                let $profileDocName = profilesTableBEM.makeBlockElement('', $("<span>", {
                     text: profile.documentName
                 }));
                 $profileDocName.modifiers = ["profile-doc-name"];
@@ -44,7 +44,7 @@ define(
                 return new BEM({
                     block: "imcms-profile-row",
                     elements: {
-                        'profile-table-row':
+                        'item':
                             [
                                 $profileName,
                                 $profileDocName,
