@@ -100,6 +100,15 @@ define(
             }
         }
 
+        function getOnWarnCancel(onConfirm) {
+            return function () {
+                modal.buildModalWindow(texts.warnCancelMessage, function (confirmed) {
+                    if (!confirmed) return;
+                    onConfirm.call();
+                })
+            }
+        }
+
         function buildProfileEditButtons() {
             return $profileEditButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
@@ -108,7 +117,7 @@ define(
                 }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
-                    click: getOnDiscardChanges(function () {
+                    click: getOnWarnCancel(function () {
                         onProfileView = onProfileSimpleView;
 
                         if (currentProfile.id) {
