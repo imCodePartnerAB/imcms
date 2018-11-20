@@ -47,7 +47,7 @@ define(
             modal.buildModalWindow(texts.warnDelete, function (confirmed) {
                 if (!confirmed) return;
 
-                profileRestApi.remove(currentProfile).done(function () {
+                profileRestApi.deleteById(currentProfile).done(function () {
                     $profileRow.remove();
                     currentProfile = null;
                     onEditDelegate = onSimpleEdit;
