@@ -1,5 +1,5 @@
 /**
- * @author Serhii Maksymchuk from Ubrainians for imCode
+ * @author Victor Pavlenko from Ubrainians for imCode
  * 21.02.18
  */
 define("imcms-profiles-rest-api", ["imcms-rest-api"], function (rest) {
@@ -18,12 +18,12 @@ define("imcms-profiles-rest-api", ["imcms-rest-api"], function (rest) {
         return rest.ajax.call({url: url, type: 'POST', json: true}, profile);
     };
 
-    api.deleteById = function (id) {
-        return rest.ajax.call({url: url + '/' + id, type: 'DELETE', json: true});
+    api.deleteById = function (profile) {
+        return rest.ajax.call({url: url + '/' + profile.id, type: 'DELETE', json: true});
     };
 
-    api.getById = function (id) {
-        return rest.ajax.call({url: url + '/' + id, type: 'GET', json: true});
+    api.getById = function (profile) {
+        return rest.ajax.call({url: url + '/' + profile.id, type: 'GET', json: true});
     };
 
     return api;
