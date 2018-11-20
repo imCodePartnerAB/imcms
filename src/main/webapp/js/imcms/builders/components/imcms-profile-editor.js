@@ -4,7 +4,7 @@ define(
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
         'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer'
     ],
-    function (BEM, components, texts, modal, profileRestApi) {
+    function (BEM, components, texts, modal, profileRestApi, profileToRow) {
 
         texts = texts.superAdmin.profiles;
 
