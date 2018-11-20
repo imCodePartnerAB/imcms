@@ -89,7 +89,7 @@ define(
                     })
                 })
             ], {
-                style: 'display: none;'
+
             });
         }
 
@@ -107,6 +107,8 @@ define(
 
             $profileDocNameRow.$input.attr('enable', 'enable');
             $profileDocNameRow.setValue(currentProfile.documentName);
+
+            $profileEditButtons.slideDown('fast');
 
             $container.css('display', 'inline-block');
         }
@@ -141,13 +143,12 @@ define(
             onProfileView($profileRow, profile);
         }
 
+        var onEditDelegate = onSimpleEdit;
+
         function onSimpleEdit($profileRow, profile) {
             viewProfile($profileRow, profile);
             onEditProfile();
         }
-
-
-        var onEditDelegate = onSimpleEdit;
 
         function editProfile($profileRow, profile) {
             onEditDelegate($profileRow, profile);
