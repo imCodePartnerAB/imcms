@@ -56,6 +56,41 @@ define(
             });
         }
 
+        function onSaveProfile() {
+            let name = $profileNameRow.getValue();
+            let docName = $profileDocNameRow.getValue();
+
+            if (!name && !docName) {
+                $profileNameRow.$input.focus();
+                $profileDocNameRow.$input.focus();
+                return;
+            }
+
+            let saveEntity = {
+                id: currentProfile.id,
+                name: name,
+                documentName: docName
+            };
+
+            if (saveEntity.id) {
+                profileRestApi.update(saveEntity).done(function (savedProfile) {
+                    currentProfile.id = savedProfile.id;
+                    $profileRow.textBox(currentProfile.name = savedProfile.name,
+                        currentProfile.documentName = savedProfile.documentName);
+                    onProfileView = onProfileSimpleView;
+                    prepareProfileView();
+                });
+            } else {
+                profileRestApi.create(saveEntity).done(function (profile) {
+                    $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
+                    $container.parent().find('.profile-table').append($profileRow);
+
+                    onProfileView = onProfileSimpleView;
+                    prepareProfileView();
+                });
+            }
+        }
+
         function getOnDiscardChanges(onConfirm) {
             return function () {
                 modal.buildModalWindow(texts.warnChangeMessage, function (confirmed) {
@@ -69,9 +104,7 @@ define(
             return $profileEditButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
                     text: texts.createNewProfile.buttonSave,
-                    click: function () {
-
-                    }
+                    click: onSaveProfile
                 }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
@@ -88,9 +121,7 @@ define(
                         }
                     })
                 })
-            ], {
-
-            });
+            ], {});
         }
 
         function prepareProfileView() {
@@ -132,7 +163,7 @@ define(
                 block: 'profiles-editor',
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
-                    'profile-docName-row': buildProfileDocNameRow(),
+                    'profile-doc-name-row': buildProfileDocNameRow(),
                     'profile-button-edit': buildProfileEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
