@@ -857,8 +857,9 @@ const texts = {
                 name: 'Profiles',
                 title: 'Profiles',
                 createButton: 'Create new profile',
-                warnChangeMessage: 'Do you want to change this?',
-                warnDelete: 'Do you really delete this ?',
+                warnChangeMessage: 'Do you want to change this profile?',
+                warnDelete: 'Do you really delete this profile?',
+                warnCancelMessage: 'Do you want to really cancel?',
                 cancel: 'Cancel',
                 createNewProfile: {
                     titleTextName: 'Name',
