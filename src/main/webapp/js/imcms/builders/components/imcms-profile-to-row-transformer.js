@@ -12,7 +12,7 @@ define(
             return function () {
                 var $this = $(this);
 
-                if ($this.hasClass('profile-table__profile-row--active')) return;
+                if ($this.hasClass('profiles-table__profile-row--active')) return;
 
                 profileEditor.viewProfile($this, profile);
             }

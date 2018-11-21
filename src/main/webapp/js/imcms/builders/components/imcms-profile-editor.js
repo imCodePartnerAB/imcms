@@ -83,7 +83,7 @@ define(
             } else {
                 profileRestApi.create(saveEntity).done(function (profile) {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
-                    $container.parent().find('.profile-table').append($profileRow);
+                    $container.parent().find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
@@ -137,10 +137,10 @@ define(
             onEditDelegate = onSimpleEdit;
 
             $profileRow.parent()
-                .find('.profile-table__profile-row--active')
-                .removeClass('profile-table__profile-row--active');
+                .find('.profiles-table__profile-row--active')
+                .removeClass('profiles-table__profile-row--active');
 
-            $profileRow.addClass('profile-table__profile-row--active');
+            $profileRow.addClass('profiles-table__profile-row--active');
 
             $profileNameRow.$input.attr('enable', 'enable');
             $profileNameRow.setValue(currentProfile.name);
