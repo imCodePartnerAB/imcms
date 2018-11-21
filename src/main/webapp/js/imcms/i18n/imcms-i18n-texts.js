@@ -860,6 +860,7 @@ const texts = {
                 warnChangeMessage: 'Do you want to change this profile?',
                 warnDelete: 'Do you really delete this profile?',
                 warnCancelMessage: 'Do you want to really cancel?',
+                mistake: 'Sorry, but this a document is not exist',
                 cancel: 'Cancel',
                 createNewProfile: {
                     titleTextName: 'Name',
