@@ -76,6 +76,7 @@ public class ViewDocumentController {
             throws ServletException, IOException {
 
         final String docId = String.valueOf(Imcms.getServices().getSystemData().getStartDocument());
+
         final TextDocumentDomainObject textDocument = getTextDocument(docId, getLanguageCode(), request);
 
         return processDocView(textDocument, request, response, mav);
@@ -86,7 +87,9 @@ public class ViewDocumentController {
             throws ServletException, IOException {
 
         final String urlPattern = (String) request.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
-        final String docIdentifier = pathMatcher.extractPathWithinPattern(urlPattern, request.getPathInfo());
+        final String docIdentifier = pathMatcher.extractPathWithinPattern(urlPattern,
+                request.getPathInfo().replaceFirst("1001",
+                        String.valueOf(Imcms.getServices().getSystemData().getStartDocument())));
 
         final TextDocumentDomainObject textDocument = getTextDocument(docIdentifier, getLanguageCode(), request);
 
