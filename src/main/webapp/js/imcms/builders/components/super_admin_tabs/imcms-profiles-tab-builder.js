@@ -57,8 +57,8 @@ define(
         }
 
         function onCreateNewProfile() {
-            $profileContainer.find('.profile-table__profile-row--active')
-                .removeClass('profile-table__profile-row--active');
+            $profileContainer.find('.profiles-table__profile-row--active')
+                .removeClass('profiles-table__profile-row--active');
 
             profileEditor.editProfile($('<div>'), {
                 id: null,
