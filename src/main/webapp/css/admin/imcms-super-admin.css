@@ -167,20 +167,20 @@
     display: inline-block;
 }
 
-.imcms-profile-row {
+.field-profile-row {
     padding: 5px;
     cursor: pointer;
 }
 
-.imcms-profile-row:hover {
+.field-profile-row:hover {
     background-color: #dfedff;
 }
 
-.imcms-profile-row.profiles-table__profile-row--active {
+.field-profile-row.profiles-table__profile-row--active {
     background-color: #c3d9f5;
 }
 
-.imcms-profile-row__item--profile-name {
+.field-profile-row__ {
     margin-right: 10px;
 }
 
