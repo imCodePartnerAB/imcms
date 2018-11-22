@@ -3,7 +3,6 @@ package com.imcode.imcms.filters;
 import com.imcode.imcms.servlet.GetDoc;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.FallbackDecoder;
@@ -54,7 +53,7 @@ public class UrlHandlerFilter implements Filter {
         String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
         path = StringUtils.substringAfter(path, request.getContextPath());
 
-        if ("/".equals(path)) path = "/" + String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
+        if ("/".equals(path)) path = "/" + String.valueOf(services.getSystemData().getStartDocument());
 
         final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 

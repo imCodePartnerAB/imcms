@@ -3,7 +3,6 @@ package com.imcode.imcms.filters;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
-import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.document.DocumentDomainObject;
 import imcode.util.FallbackDecoder;
@@ -62,7 +61,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
             String path = Utility.fallbackUrlDecode(request.getRequestURI(), fallbackDecoder);
             path = StringUtils.substringAfter(path, request.getContextPath());
 
-            if ("/".equals(path)) path = "/" + String.valueOf(ImcmsConstants.DEFAULT_START_DOC_ID);
+            if ("/".equals(path)) path = "/" + String.valueOf(services.getSystemData().getStartDocument());
 
             final Set resourcePaths = request.getSession().getServletContext().getResourcePaths(path);
 
@@ -151,8 +150,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
             if ("Last-Modified".equalsIgnoreCase(name)
                     || "Expires".equalsIgnoreCase(name)
                     || "Cache-Control".equalsIgnoreCase(name)
-                    || "ETag".equalsIgnoreCase(name))
-            {
+                    || "ETag".equalsIgnoreCase(name)) {
                 headerItr.remove();
             }
         }
