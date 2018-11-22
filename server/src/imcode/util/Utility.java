@@ -94,7 +94,7 @@ public class Utility {
     private static final Pattern DOMAIN_PATTERN = Pattern.compile("^.*?([^.]+?\\.[^.]+)$");
     private static final Pattern IP_PATTERN = Pattern.compile("^\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}$");
     private static final int STATIC_FINAL_MODIFIER_MASK = Modifier.STATIC | Modifier.FINAL;
-    private static final Map<Integer, SessionInfoDTO> sessions = new HashMap<>();
+    private static final Map<String, SessionInfoDTO> sessions = new HashMap<>();
 
     private Utility() {
 
@@ -456,7 +456,7 @@ public class Utility {
         sessionInfoDTO.setLoginDate(loginDate);
         sessionInfoDTO.setExpireDate(DateUtils.addSeconds(loginDate, req.getSession().getMaxInactiveInterval()));
 
-        sessions.put(user.getId(), sessionInfoDTO);
+        sessions.put(currentSession.getId(), sessionInfoDTO);
 
         if (null != user) {
             // FIXME: Ugly hack to get the contextpath into DefaultImcmsServices.getVelocityContext()
@@ -466,8 +466,7 @@ public class Utility {
 
     public static void makeUserLoggedOut(HttpServletRequest req) {
         HttpSession session = req.getSession();
-        sessions.remove(((UserDomainObject) session.getAttribute(LOGGED_IN_USER)).getId());
-
+        sessions.remove(session.getId());
         session.removeAttribute(LOGGED_IN_USER);
     }
 
@@ -564,8 +563,9 @@ public class Utility {
     }
 
     public static List<SessionInfoDTO> getActiveSessions() {
+        Date currentDate = new Date();
         return sessions.values().stream()
-                .filter(info -> info.getExpireDate().after(new Date()))
+                .filter(info -> info.getExpireDate().after(currentDate))
                 .collect(Collectors.toList());
     }
 
