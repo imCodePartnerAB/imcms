@@ -37,7 +37,7 @@ public class DefaultSystemPropertyService implements SystemPropertyService {
     public SystemProperty update(SystemProperty systemProperty) {
         final Integer id = systemProperty.getId();
 
-        SystemProperty propertyGetById = findById(id);
+        SystemProperty propertyGetById = systemPropertyRepository.findOne(id);
         propertyGetById.setValue(systemProperty.getValue());
 
         return systemPropertyRepository.save(propertyGetById);
