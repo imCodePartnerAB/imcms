@@ -26,25 +26,23 @@ define(
                     click: getOnProfileClicked(profile, profileEditor)
                 };
 
-                let $profileName = profilesTableBEM.makeBlockElement('', $("<span>", {
+                let $profileName = profilesTableBEM.makeBlockElement('profile-name', $("<span>", {
                     text: profile.name
                 }));
-                $profileName.modifiers = ["profile-name"];
 
-                let $profileDocName = profilesTableBEM.makeBlockElement('', $("<span>", {
+                let $profileDocName = profilesTableBEM.makeBlockElement('profile-doc-name', $("<span>", {
                     text: profile.documentName
                 }));
-                $profileDocName.modifiers = ["profile-doc-name"];
 
                 let $buttonDelete = components.buttons.closeButton({
                     click: profileEditor.deleteButton
                 });
-                $buttonDelete.modifiers = ["button-delete"];
+                $buttonDelete.modifiers = ["delete"];
 
                 return new BEM({
-                    block: "imcms-profile-row",
+                    block: "field-profile-row",
                     elements: {
-                        'item':
+                        '':
                             [
                                 $profileName,
                                 $profileDocName,
