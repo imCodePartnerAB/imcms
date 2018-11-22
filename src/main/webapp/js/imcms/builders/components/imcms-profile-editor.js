@@ -66,24 +66,24 @@ define(
                 return;
             }
 
-            let saveEntity = {
+            let currentProfileToSave = {
                 id: currentProfile.id,
                 name: name,
                 documentName: docName
             };
 
-            if (saveEntity.id) {
-                profileRestApi.update(saveEntity).done(function (savedProfile) {
+            if (currentProfileToSave.id) {
+                profileRestApi.update(currentProfileToSave).done(function (savedProfile) {
                     currentProfile.id = savedProfile.id;
-                    $profileRow.textBox(currentProfile.name = savedProfile.name,
-                        currentProfile.documentName = savedProfile.documentName);
+                    currentProfile.name = savedProfile.name;
+                    currentProfile.documentName = savedProfile.documentName; // todo add callback
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
                 });
             } else {
-                profileRestApi.create(saveEntity).done(function (profile) {
+                profileRestApi.create(currentProfileToSave).done(function (profile) {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
-                    $container.parent().find('.profiles-table').append($profileRow);
+                    $container.find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
