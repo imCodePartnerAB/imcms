@@ -47,9 +47,9 @@ public class ProfileControllerTest extends AbstractControllerTest {
     public void createEntity_When_ProfileNotExist_Expected_OkAndCreatedEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
 
-        Profile profileDTO = new ProfileDTO("1002", "name1", null);
+        Profile profileDTO = new ProfileDTO("1001", "name1", null);
 
-        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profileDTO);
 
         performRequestBuilderExpectedOk(requestBuilder);
 
@@ -103,18 +103,18 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         ProfileDTO profileDTO = profiles.get(0);
         profileDTO.setName("anotherName");
-        profileDTO.setDocumentName("anotherDocName");
+        profileDTO.setDocumentName("1001");
 
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profileDTO);
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(profileDTO));
     }
 
     private List<ProfileDTO> createTestProfiles() {
         List<ProfileDTO> profiles = Arrays.asList(
-                new ProfileDTO("1002", "name1", 1),
-                new ProfileDTO("alias", "name2", 2),
-                new ProfileDTO("alias2", "name3", 3)
+                new ProfileDTO("1001", "name1", 1),
+                new ProfileDTO("1001", "name2", 2),
+                new ProfileDTO("1001", "name3", 3)
         );
 
         profiles = profiles.stream()
