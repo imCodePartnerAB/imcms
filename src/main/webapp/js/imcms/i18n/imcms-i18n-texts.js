@@ -869,9 +869,9 @@ const texts = {
                 cancel: 'Cancel',
                 createNewProfile: {
                     titleTextName: 'Name',
-                    textFieldName: 'Text name',
+                    textFieldName: 'Input name',
                     titleTextDocName: 'Document name',
-                    textFieldDocName: 'Text doc name',
+                    textFieldDocName: 'Input document name',
                     buttonSave: 'Save'
                 },
                 editProfile: {
