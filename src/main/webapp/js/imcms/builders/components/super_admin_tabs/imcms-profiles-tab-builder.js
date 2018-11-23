@@ -22,13 +22,13 @@ define(
             }
         };
 
-        profileRestApi.getAllProfiles().done(function (profiles) {
+        profileRestApi.read().done(function (profiles) {
             profilesLoader.runCallbacks(profiles);
         });
 
         let $profileContainer;
 
-        function buildBlockProfiles() {
+        function buildBlockCreateProfiles() {
 
             function createTitleText() {
                 return components.texts.titleText('<div>', texts.title, {})
@@ -83,7 +83,7 @@ define(
         }
 
         return new SuperAdminTab(texts.name, [
-            buildBlockProfiles(),
+            buildBlockCreateProfiles(),
             buildProfileContainer(),
         ]);
     }
