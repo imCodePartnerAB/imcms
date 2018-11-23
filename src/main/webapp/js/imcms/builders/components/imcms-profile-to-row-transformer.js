@@ -1,10 +1,10 @@
 define(
-    'imcms-profile-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder'], function (BEM, $, components) {
+    'imcms-profile-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder'],
+    function (BEM, $, components) {
 
         var profilesTableBEM = new BEM({
             block: 'profiles-table',
             elements: {
-                'profile-row': '',
             }
         });
 
@@ -40,9 +40,9 @@ define(
                 $buttonDelete.modifiers = ["delete"];
 
                 return new BEM({
-                    block: "field-profile-row",
+                    block: "block-items",
                     elements: {
-                        '':
+                        'item':
                             [
                                 $profileName,
                                 $profileDocName,
