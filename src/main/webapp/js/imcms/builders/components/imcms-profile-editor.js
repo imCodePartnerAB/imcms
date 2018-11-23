@@ -13,15 +13,26 @@ define(
         let $profileEditButtons;
 
         function buildProfileNameRow() {
-            $profileNameRow = components.texts.textBox('<div>', {text: texts.editProfile.name});
+            $profileNameRow = components.texts.textBox('<div>', {
+                text: texts.editProfile.name
+            });
             $profileNameRow.$input.attr('enable', 'enable');
             return $profileNameRow;
         }
 
         function buildProfileDocNameRow() {
-            $profileDocNameRow = components.texts.textBox('<div>', {text: texts.editProfile.docName});
+            $profileDocNameRow = components.texts.textBox('<div>', {
+                text: texts.editProfile.docName,
+            });
             $profileDocNameRow.$input.attr('enable', 'enable');
             return $profileDocNameRow;
+        }
+
+        let errorMsg;
+
+        function buildErrorBlock() {
+            errorMsg = components.texts.errorText("<div>", texts.error, {style: 'display: none;'});
+            return errorMsg;
         }
 
         function onCancelChanges($profileRowElement, profile) {
@@ -73,20 +84,24 @@ define(
             };
 
             if (currentProfileToSave.id) {
-                profileRestApi.update(currentProfileToSave).done(function (savedProfile) {
+                profileRestApi.update(currentProfileToSave).success(function (savedProfile) {
                     currentProfile.id = savedProfile.id;
                     currentProfile.name = savedProfile.name;
                     currentProfile.documentName = savedProfile.documentName; // todo add callback
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
+                }).error(function () {
+                    errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
-                profileRestApi.create(currentProfileToSave).done(function (profile) {
+                profileRestApi.create(currentProfileToSave).success(function (profile) {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
                     $container.find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
+                }).error(function () {
+                    errorMsg.css('display', 'inline-block').slideDown();
                 });
             }
         }
@@ -130,7 +145,7 @@ define(
                         }
                     })
                 })
-            ], {});
+            ]);
         }
 
         function prepareProfileView() {
@@ -173,6 +188,7 @@ define(
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
                     'profile-doc-name-row': buildProfileDocNameRow(),
+                    'error-row': buildErrorBlock(),
                     'profile-button-edit': buildProfileEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
