@@ -11,7 +11,6 @@ define(
             callback: [],
             whenProfilesLoaded: function (callback) {
                 (this.profiles) ? callback(this.profiles) : this.callback.push(callback);
-
             },
             runCallbacks: function (profiles) {
                 this.profiles = profiles;
@@ -28,10 +27,8 @@ define(
 
         let $profileContainer;
 
-        function buildBlockCreateProfiles() {
-
-            function createTitleText() {
-                return components.texts.titleText('<div>', texts.title, {})
+        function buildTitleText() {
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
             }
 
             function createButtonCreate() {
@@ -42,19 +39,10 @@ define(
             }
 
             function buildCreateTitlesForProfiles() {
-                return components.texts.titleText('<div>',
-                    texts.createNewProfile.titleTextName + '|' + texts.createNewProfile.titleTextDocName, {})
+                return fieldWrapper.wrap(components.texts.titleText('<div>',
+                    texts.createNewProfile.titleTextName + '|' + texts.createNewProfile.titleTextDocName, {}))
             }
 
-            return new BEM({
-                block: 'imcms-profiles-block',
-                elements: {
-                    'profile-title': createTitleText(),
-                    'create-button': createButtonCreate(),
-                    'title-table-profiles': buildCreateTitlesForProfiles()
-                }
-            }).buildBlockStructure('<div>');
-        }
 
         function onCreateNewProfile() {
             $profileContainer.find('.profiles-table__profile-row--active')
@@ -83,8 +71,10 @@ define(
         }
 
         return new SuperAdminTab(texts.name, [
-            buildBlockCreateProfiles(),
-            buildProfileContainer(),
+            buildTitleText(),
+            createButtonCreate(),
+            buildCreateTitlesForProfiles(),
+            buildProfileContainer()
         ]);
     }
 );
