@@ -35,12 +35,12 @@ public class ProfilesController {
         return profileService.getById(id).orElseThrow(() -> new EmptyResultDataAccessException(id));
     }
 
-    @PutMapping
+    @PostMapping
     public Profile create(@RequestBody ProfileDTO profile) {
         return profileService.create(profile);
     }
 
-    @PostMapping
+    @PutMapping
     public Profile update(@RequestBody ProfileDTO profile) {
         return profileService.update(profile);
     }
