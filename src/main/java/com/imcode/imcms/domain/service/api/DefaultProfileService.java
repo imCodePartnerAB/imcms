@@ -17,9 +17,11 @@ import java.util.stream.Collectors;
 public class DefaultProfileService implements ProfileService {
 
     private final ProfileRepository profileRepository;
+    private DefaultDelegatingByTypeDocumentService byTypeDocumentService;
 
-    public DefaultProfileService(ProfileRepository profileRepository) {
+    public DefaultProfileService(ProfileRepository profileRepository, DefaultDelegatingByTypeDocumentService byTypeDocumentService) {
         this.profileRepository = profileRepository;
+        this.byTypeDocumentService = byTypeDocumentService;
     }
 
     @Override
@@ -32,16 +34,25 @@ public class DefaultProfileService implements ProfileService {
 
     @Override
     public Profile create(Profile profile) {
+        String alias = profile.getDocumentName();
+
+        if (!(byTypeDocumentService.get(Integer.parseInt(alias)).getId().equals(Integer.parseInt(alias)))) {
+            return null;
+        }
         return new ProfileDTO(profileRepository.save(new ProfileJPA(profile)));
     }
 
     @Override
     public Profile update(Profile profile) {
         Integer id = profile.getId();
-
+        String alias = profile.getDocumentName();
         Profile receivedProfile = profileRepository.findOne(id);
-        receivedProfile.setName(profile.getName());
-        receivedProfile.setDocumentName(profile.getDocumentName());
+        if (!(byTypeDocumentService.get(Integer.parseInt(alias)).getId().equals(Integer.parseInt(alias)))) {
+            return null;
+        } else {
+            receivedProfile.setName(profile.getName());
+            receivedProfile.setDocumentName(profile.getDocumentName());
+        }
 
         return new ProfileDTO(profileRepository.save(new ProfileJPA(receivedProfile)));
     }
