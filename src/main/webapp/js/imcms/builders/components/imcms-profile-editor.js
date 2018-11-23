@@ -58,7 +58,7 @@ define(
             modal.buildModalWindow(texts.warnDelete, function (confirmed) {
                 if (!confirmed) return;
 
-                profileRestApi.deleteById(currentProfile).done(function () {
+                profileRestApi.remove(currentProfile).done(function () {
                     $profileRow.remove();
                     currentProfile = null;
                     onEditDelegate = onSimpleEdit;
@@ -68,6 +68,7 @@ define(
         }
 
         function onSaveProfile() {
+
             let name = $profileNameRow.getValue();
             let docName = $profileDocNameRow.getValue();
 
@@ -84,10 +85,12 @@ define(
             };
 
             if (currentProfileToSave.id) {
-                profileRestApi.update(currentProfileToSave).success(function (savedProfile) {
+                profileRestApi.replace(currentProfileToSave).success(function (savedProfile) {
                     currentProfile.id = savedProfile.id;
                     currentProfile.name = savedProfile.name;
-                    currentProfile.documentName = savedProfile.documentName; // todo add callback
+                    currentProfile.documentName = savedProfile.documentName;
+                    $profileRow.find('.profiles-table__profile-name').text(currentProfile.name);
+                    $profileRow.find('.profiles-table__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
                 }).error(function () {
@@ -166,6 +169,7 @@ define(
             $profileEditButtons.slideDown('fast');
 
             $container.css('display', 'inline-block');
+            errorMsg.css('display', 'none').slideUp();
         }
 
         function onProfileSimpleView($profileRowElement, profile) {
