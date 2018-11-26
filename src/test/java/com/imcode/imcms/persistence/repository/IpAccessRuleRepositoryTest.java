@@ -130,7 +130,7 @@ public class IpAccessRuleRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete_WhenEntityNotExist_ExpectEntityDeleted() {
+    public void delete_WhenEntityNotExist_ExpectCorrectException() {
         final int fakeId = -1;
         assertNull(ipAccessRuleRepository.findOne(fakeId));
         assertThrows(EmptyResultDataAccessException.class, () -> ipAccessRuleRepository.delete(fakeId));
