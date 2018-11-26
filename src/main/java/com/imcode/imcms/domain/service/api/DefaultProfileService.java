@@ -57,7 +57,7 @@ public class DefaultProfileService implements ProfileService {
         if (profile.getName().isEmpty()) {
             throw new IllegalArgumentException();
         }
-        if (null == documentMapper.getDocument(alias)) {
+        if (alias.isEmpty() && null == documentMapper.getDocument(alias)) {
             throw new NullPointerException();
         } else {
             receivedProfile.setName(profile.getName());
