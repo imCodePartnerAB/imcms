@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
 import com.imcode.imcms.model.Profile;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,11 +36,14 @@ public class ProfilesController {
         return profileService.getById(id).orElseThrow(() -> new EmptyResultDataAccessException(id));
     }
 
+
+    @CheckAccess
     @PostMapping
     public Profile create(@RequestBody ProfileDTO profile) {
         return profileService.create(profile);
     }
 
+    @CheckAccess
     @PutMapping
     public Profile update(@RequestBody ProfileDTO profile) {
         return profileService.update(profile);
