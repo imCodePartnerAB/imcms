@@ -16,7 +16,7 @@ define(
             $profileNameRow = components.texts.textBox('<div>', {
                 text: texts.editProfile.name
             });
-            $profileNameRow.$input.attr('enable', 'enable');
+            $profileNameRow.$input.attr('enabled', 'enabled');
             return $profileNameRow;
         }
 
@@ -24,7 +24,7 @@ define(
             $profileDocNameRow = components.texts.textBox('<div>', {
                 text: texts.editProfile.docName,
             });
-            $profileDocNameRow.$input.attr('enable', 'enable');
+            $profileDocNameRow.$input.attr('enabled', 'enabled');
             return $profileDocNameRow;
         }
 
@@ -162,10 +162,10 @@ define(
 
             $profileRow.addClass('profiles-table__profile-row--active');
 
-            $profileNameRow.$input.attr('enable', 'enable');
+            $profileNameRow.$input.attr('enabled', 'enabled');
             $profileNameRow.setValue(currentProfile.name);
 
-            $profileDocNameRow.$input.attr('enable', 'enable');
+            $profileDocNameRow.$input.attr('enabled', 'enabled');
             $profileDocNameRow.setValue(currentProfile.documentName);
 
             $profileEditButtons.slideDown('fast');
