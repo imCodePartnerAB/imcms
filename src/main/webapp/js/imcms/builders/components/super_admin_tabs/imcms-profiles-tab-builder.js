@@ -29,20 +29,14 @@ define(
 
         function buildTitleText() {
             return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
-            }
+        }
 
-            function createButtonCreate() {
-                return fieldWrapper.wrap(components.buttons.positiveButton({
-                    text: texts.createButton,
-                    click: onCreateNewProfile
-                }));
-            }
-
-            function buildCreateTitlesForProfiles() {
-                return fieldWrapper.wrap(components.texts.titleText('<div>',
-                    texts.createNewProfile.titleTextName + '|' + texts.createNewProfile.titleTextDocName, {}))
-            }
-
+        function createButtonCreate() {
+            return fieldWrapper.wrap(components.buttons.positiveButton({
+                text: texts.createButton,
+                click: onCreateNewProfile
+            }));
+        }
 
         function onCreateNewProfile() {
             $profileContainer.find('.profiles-table__profile-row--active')
@@ -58,10 +52,11 @@ define(
         function buildProfileContainer() {
 
             $profileContainer = $('<div>', {
-                'class': 'profiles-table'
+                'class': 'profiles-table',
             });
 
             profilesLoader.whenProfilesLoaded(function (profiles) {
+                $profileContainer.append(buildTitleRow());
                 $profileContainer.append(profiles.map(function (profile) {
                     return profileToRow.transform(profile, profileEditor);
                 }))
@@ -70,10 +65,22 @@ define(
             return fieldWrapper.wrap([$profileContainer, profileEditor.buildProfilesContainer()]);
         }
 
+        function buildTitleRow() {
+            let $titleRow = new BEM({
+                block: 'title-profile-row',
+                elements: {
+                    'name': $('<div>', {text: texts.createNewProfile.titleTextName}),
+                    'doc-name': $('<div>', {text: texts.createNewProfile.titleTextDocName})
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'table-title'
+            });
+            return $titleRow;
+        }
+
         return new SuperAdminTab(texts.name, [
             buildTitleText(),
             createButtonCreate(),
-            buildCreateTitlesForProfiles(),
             buildProfileContainer()
         ]);
     }
