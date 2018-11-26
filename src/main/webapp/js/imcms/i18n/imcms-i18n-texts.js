@@ -865,7 +865,7 @@ const texts = {
                 warnChangeMessage: 'Do you want to change this profile?',
                 warnDelete: 'Do you really delete this profile?',
                 warnCancelMessage: 'Do you want to really cancel?',
-                error: 'Sorry, but this a document is not exist',
+                error: 'Sorry, but you have mistake!',
                 cancel: 'Cancel',
                 createNewProfile: {
                     titleTextName: 'Name',
