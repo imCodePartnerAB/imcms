@@ -9,6 +9,7 @@ import com.imcode.imcms.persistence.repository.ProfileRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.BadRequestException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,11 +39,11 @@ public class DefaultProfileService implements ProfileService {
     public Profile create(Profile profile) {
         String alias = profile.getDocumentName();
 
-        if (profile.getName().equals("")) {
+        if (profile.getName().isEmpty()) {
             throw new IllegalArgumentException();
         }
-        if (!(documentMapper.getDocument(alias).isPublished())) {
-            throw new NullPointerException();
+        if (null == documentMapper.getDocument(alias)) {
+            throw new BadRequestException();
         }
         return new ProfileDTO(profileRepository.save(new ProfileJPA(profile)));
     }
@@ -53,10 +54,10 @@ public class DefaultProfileService implements ProfileService {
         String alias = profile.getDocumentName();
         Profile receivedProfile = profileRepository.findOne(id);
 
-        if (profile.getName().equals("")) {
+        if (profile.getName().isEmpty()) {
             throw new IllegalArgumentException();
         }
-        if (!(documentMapper.getDocument(alias).isPublished())) {
+        if (null == documentMapper.getDocument(alias)) {
             throw new NullPointerException();
         } else {
             receivedProfile.setName(profile.getName());
