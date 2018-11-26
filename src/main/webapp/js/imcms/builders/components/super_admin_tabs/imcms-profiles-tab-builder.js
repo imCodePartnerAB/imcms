@@ -31,7 +31,7 @@ define(
             return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
         }
 
-        function createButtonCreate() {
+        function buildCreateButton() {
             return fieldWrapper.wrap(components.buttons.positiveButton({
                 text: texts.createButton,
                 click: onCreateNewProfile
@@ -52,7 +52,7 @@ define(
         function buildProfileContainer() {
 
             $profileContainer = $('<div>', {
-                'class': 'profiles-table',
+                'class': 'profiles-table'
             });
 
             profilesLoader.whenProfilesLoaded(function (profiles) {
@@ -69,8 +69,8 @@ define(
             let $titleRow = new BEM({
                 block: 'title-profile-row',
                 elements: {
-                    'name': $('<div>', {text: texts.createNewProfile.titleTextName}),
-                    'doc-name': $('<div>', {text: texts.createNewProfile.titleTextDocName})
+                    'name': $('<div>', {text: texts.titleTextName}),
+                    'doc-name': $('<div>', {text: texts.titleTextDocName})
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'table-title'
@@ -80,7 +80,7 @@ define(
 
         return new SuperAdminTab(texts.name, [
             buildTitleText(),
-            createButtonCreate(),
+            buildCreateButton(),
             buildProfileContainer()
         ]);
     }
