@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.BadRequestException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,7 +68,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
 
-        performRequestBuilderExpectException(RuntimeException.class, requestBuilder);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
 
         List<Profile> savedProfile = profileService.getAll();
 
@@ -76,12 +77,12 @@ public class ProfileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void createProfile_When_ProfileDocNameNotExist_Excpected_CorrectException() throws Exception {
+    public void createProfile_When_DocumentNameNotExist_Excpected_CorrectException() throws Exception {
         ProfileDTO profile = new ProfileDTO("100", "name1", null);
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
 
-        performRequestBuilderExpectException(NullPointerException.class, requestBuilder);
+        performRequestBuilderExpectException(BadRequestException.class, requestBuilder);
     }
 
     @Test
@@ -132,6 +133,43 @@ public class ProfileControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(profileDTO));
+    }
+
+    @Test
+    public void update_When_ProfileNameEmpty_Excpected_CorrectException() throws Exception {
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profileDTO = profiles.get(0);
+        profileDTO.setName("");
+        profileDTO.setDocumentName("1001");
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
+    }
+
+    @Test
+    public void update_When_DocumentNameEmpty_Excpected_CorrectException() throws Exception {
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profileDTO = profiles.get(0);
+        profileDTO.setName("anotherName");
+        profileDTO.setDocumentName("");
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
+
+        performRequestBuilderExpectException(NullPointerException.class, requestBuilder);
+    }
+
+    @Test
+    public void update_When_DocumentNameNotExist_Excpected_CorrectException() throws Exception {
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profileDTO = profiles.get(0);
+        profileDTO.setName("anotherName");
+        profileDTO.setDocumentName("999");
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
+        performRequestBuilderExpectException(NullPointerException.class, requestBuilder);
     }
 
     private List<ProfileDTO> createTestProfiles() {
