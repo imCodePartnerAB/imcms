@@ -50,7 +50,7 @@ public class TextDocumentDTOTest {
         final TextDocumentTemplateDTO originalTemplate = textDocumentDTO.getTemplate();
         final TextDocumentTemplateDTO clonedTemplate = cloneTextDocumentDTO.getTemplate();
 
-        assertFalse(originalTemplate == clonedTemplate);
+        assertNotSame(originalTemplate, clonedTemplate);
         assertNull(clonedTemplate.getDocId());
     }
 
