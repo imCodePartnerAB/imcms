@@ -160,6 +160,20 @@
     vertical-align: top;
 }
 
+.title-profile-row.table-title {
+    display: flex;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.title-profile-row__name {
+    width: 45%;
+}
+
+.title-profile-row__doc-name {
+    width: 45%;
+}
+
 .profiles-table {
     width: 40%;
     background-color: ghostwhite;
@@ -188,15 +202,9 @@
 .profile-info-row__profile-doc-name {
     width: 45%;
 }
-
 .imcms-control.imcms-control--remove.profile-info-row__delete {
     width: 10%;
 }
-
-.block-items__item {
-    margin-right: 10px;
-}
-
 .profiles-editor {
     width: 25%;
     margin-left: 10%;
