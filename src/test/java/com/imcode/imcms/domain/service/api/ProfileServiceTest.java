@@ -37,9 +37,20 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void createProfile_When_ProfileNameEmpty_Expected_CorrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+        ProfileDTO profile = new ProfileDTO("1001", "", 1);
+
+        assertThrows(RuntimeException.class, () -> profileService.create(profile));
+        assertTrue(profileService.getAll().isEmpty());
+
+
+    }
+
+    @Test
     public void createProfile_When_ProfileNotExist_Expected_CreatedProfile() {
         assertTrue(profileService.getAll().isEmpty());
-        ProfileDTO profile = new ProfileDTO("1002", "name1", 1);
+        ProfileDTO profile = new ProfileDTO("1001", "name1", 1);
         profileService.create(profile);
 
         assertNotNull(profileService.getAll());
@@ -54,6 +65,14 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         int idFirstProfile = profiles.get(0).getId();
 
         assertTrue(profileService.getById(idFirstProfile).isPresent());
+    }
+
+    @Test
+    public void createProfile_When_ProfileAliasNotExist_Expected_CorrrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+
+        ProfileDTO profile = new ProfileDTO("100", "name1", 1);
+        assertThrows(NullPointerException.class, () -> profileService.create(profile));
     }
 
     @Test
@@ -94,9 +113,9 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
 
     private List<ProfileDTO> createTestProfiles() {
         List<ProfileDTO> profiles = Arrays.asList(
-                new ProfileDTO("1002", "name1", 1),
-                new ProfileDTO("alias", "name2", 2),
-                new ProfileDTO("alias2", "name3", 3)
+                new ProfileDTO("1001", "name1", 1),
+                new ProfileDTO("1001", "name2", 2),
+                new ProfileDTO("1001", "name3", 3)
         );
         profiles = profiles.stream()
                 .map(profileService::create)

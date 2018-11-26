@@ -61,6 +61,30 @@ public class ProfileControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void createProfile_When_ProfileNameEmpty_Excpected_CorrectException() throws Exception {
+
+        ProfileDTO profile = new ProfileDTO("1001", "", null);
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
+
+        performRequestBuilderExpectException(RuntimeException.class, requestBuilder);
+
+        List<Profile> savedProfile = profileService.getAll();
+
+        assertEquals(0, savedProfile.size());
+
+    }
+
+    @Test
+    public void createProfile_When_ProfileDocNameNotExist_Excpected_CorrectException() throws Exception {
+        ProfileDTO profile = new ProfileDTO("100", "name1", null);
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
+
+        performRequestBuilderExpectException(NullPointerException.class, requestBuilder);
+    }
+
+    @Test
     public void getById_When_ProfileExist_Expected_OkAndCorrectEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
