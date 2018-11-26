@@ -89,8 +89,8 @@ define(
                     currentProfile.id = savedProfile.id;
                     currentProfile.name = savedProfile.name;
                     currentProfile.documentName = savedProfile.documentName;
-                    $profileRow.find('.profiles-table__profile-name').text(currentProfile.name);
-                    $profileRow.find('.profiles-table__profile-doc-name').text(currentProfile.documentName);
+                    $profileRow.find('.profile-info-row__profile-name').text(currentProfile.name);
+                    $profileRow.find('.profile-info-row__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
                 }).error(function () {
