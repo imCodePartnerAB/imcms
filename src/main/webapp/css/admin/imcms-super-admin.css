@@ -167,17 +167,30 @@
     display: inline-block;
 }
 
-.block-items {
+.profile-info-row {
     padding: 5px;
     cursor: pointer;
+    display: flex;
 }
 
-.block-items:hover {
+.profile-info-row:hover {
     background-color: #dfedff;
 }
 
-.block-items.profiles-table__profile-row--active {
+.profile-info-row.profiles-table__profile-row--active {
     background-color: #c3d9f5;
+}
+
+.profile-info-row__profile-name {
+    margin-left: 5px;
+}
+
+.profile-info-row__profile-doc-name {
+    margin-left: 20px;
+}
+
+.imcms-control.imcms-control--remove.profile-info-row__delete {
+    margin-left: auto;
 }
 
 .block-items__item {
