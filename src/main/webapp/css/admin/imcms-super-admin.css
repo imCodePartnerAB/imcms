@@ -164,6 +164,7 @@
     display: flex;
     font-weight: 600;
     margin-bottom: 10px;
+    padding: 5px;
 }
 
 .title-profile-row__name {
