@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Profile;
 import com.imcode.imcms.persistence.entity.ProfileJPA;
 import com.imcode.imcms.persistence.repository.ProfileRepository;
@@ -17,11 +18,12 @@ import java.util.stream.Collectors;
 public class DefaultProfileService implements ProfileService {
 
     private final ProfileRepository profileRepository;
-    private DefaultDelegatingByTypeDocumentService byTypeDocumentService;
+    private DocumentMapper documentMapper;
 
-    public DefaultProfileService(ProfileRepository profileRepository, DefaultDelegatingByTypeDocumentService byTypeDocumentService) {
+    public DefaultProfileService(ProfileRepository profileRepository,
+                                 DocumentMapper documentMapper) {
         this.profileRepository = profileRepository;
-        this.byTypeDocumentService = byTypeDocumentService;
+        this.documentMapper = documentMapper;
     }
 
     @Override
@@ -36,8 +38,11 @@ public class DefaultProfileService implements ProfileService {
     public Profile create(Profile profile) {
         String alias = profile.getDocumentName();
 
-        if (!(byTypeDocumentService.get(Integer.parseInt(alias)).getId().equals(Integer.parseInt(alias)))) {
-            return null;
+        if (profile.getName().equals("")) {
+            throw new IllegalArgumentException();
+        }
+        if (!(documentMapper.getDocument(alias).isPublished())) {
+            throw new NullPointerException();
         }
         return new ProfileDTO(profileRepository.save(new ProfileJPA(profile)));
     }
@@ -47,8 +52,12 @@ public class DefaultProfileService implements ProfileService {
         Integer id = profile.getId();
         String alias = profile.getDocumentName();
         Profile receivedProfile = profileRepository.findOne(id);
-        if (!(byTypeDocumentService.get(Integer.parseInt(alias)).getId().equals(Integer.parseInt(alias)))) {
-            return null;
+
+        if (profile.getName().equals("")) {
+            throw new IllegalArgumentException();
+        }
+        if (!(documentMapper.getDocument(alias).isPublished())) {
+            throw new NullPointerException();
         } else {
             receivedProfile.setName(profile.getName());
             receivedProfile.setDocumentName(profile.getDocumentName());
