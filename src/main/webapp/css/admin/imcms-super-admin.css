@@ -182,15 +182,15 @@
 }
 
 .profile-info-row__profile-name {
-    margin-left: 5px;
+    width: 45%;
 }
 
 .profile-info-row__profile-doc-name {
-    margin-left: 20px;
+    width: 45%;
 }
 
 .imcms-control.imcms-control--remove.profile-info-row__delete {
-    margin-left: auto;
+    width: 10%;
 }
 
 .block-items__item {
