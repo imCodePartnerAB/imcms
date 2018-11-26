@@ -1,13 +1,6 @@
 define(
     'imcms-profile-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder'],
     function (BEM, $, components) {
-
-        var profilesTableBEM = new BEM({
-            block: 'profiles-table',
-            elements: {
-            }
-        });
-
         function getOnProfileClicked(profile, profileEditor) {
             return function () {
                 var $this = $(this);
@@ -26,28 +19,16 @@ define(
                     click: getOnProfileClicked(profile, profileEditor)
                 };
 
-                let $profileName = profilesTableBEM.makeBlockElement('profile-name', $("<span>", {
-                    text: profile.name
-                }));
-
-                let $profileDocName = profilesTableBEM.makeBlockElement('profile-doc-name', $("<span>", {
-                    text: profile.documentName
-                }));
-
-                let $buttonDelete = components.buttons.closeButton({
-                    click: profileEditor.deleteButton
-                });
-                $buttonDelete.modifiers = ["delete"];
-
                 return new BEM({
-                    block: "block-items",
+                    block: "profile-info-row",
                     elements: {
-                        'item':
-                            [
-                                $profileName,
-                                $profileDocName,
-                                $buttonDelete
-                            ]
+                        'profile-name': $('<div>', {
+                            text: profile.name
+                        }),
+                        'profile-doc-name': $('<div>', {
+                            text: profile.documentName
+                        }),
+                        'delete': components.controls.remove(profileEditor.deleteButton)
                     }
                 }).buildBlockStructure("<div>", infoRowAttributes);
             }
