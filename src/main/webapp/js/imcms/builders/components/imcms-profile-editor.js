@@ -141,6 +141,7 @@ define(
 
                         if (currentProfile.id) {
                             prepareProfileView();
+                            $container.slideUp();
 
                         } else {
                             currentProfile = null;
