@@ -410,8 +410,10 @@ const texts = {
                 warnChangeMessage: 'Vill du ändra den här profilen?',
                 warnDelete: 'Ta du verkligen bort den här profilen?',
                 warnCancelMessage: 'Vill du verkligen avbryta?',
-                error: "Tyvärr, men det här finns inget dokument",
+                error: "Tyvärr, men du gjorde fel!",
                 cancel: "Avbryt",
+                titleTextName: 'Namn',
+                titleTextDocName: 'Dokumentnamn',
                 createNewProfile: {
                     titleTextName: 'Namn',
                     textFieldName: 'Textnamn',
@@ -867,10 +869,12 @@ const texts = {
                 warnCancelMessage: 'Do you want to really cancel?',
                 error: 'Sorry, but you did mistake!',
                 cancel: 'Cancel',
+                titleTextName: 'Name',
+                titleTextDocName: 'Document name',
                 createNewProfile: {
                     titleTextName: 'Name',
-                    textFieldName: 'Input name',
                     titleTextDocName: 'Document name',
+                    textFieldName: 'Input name',
                     textFieldDocName: 'Input document name',
                     buttonSave: 'Save'
                 },
