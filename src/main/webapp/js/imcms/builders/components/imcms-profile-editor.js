@@ -99,7 +99,8 @@ define(
             } else {
                 profileRestApi.create(currentProfileToSave).success(function (profile) {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
-                    $container.find('.profiles-table').append($profileRow);
+
+                    $container.parent().find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
