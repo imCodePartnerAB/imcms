@@ -3,7 +3,6 @@ package com.imcode.imcms.api;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.FileDocumentDomainObject;
 import imcode.util.io.InputStreamSource;
-import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.list.TransformedList;
 
 import javax.activation.DataSource;
