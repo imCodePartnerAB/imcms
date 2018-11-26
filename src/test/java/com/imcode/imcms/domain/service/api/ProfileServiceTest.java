@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.ws.rs.BadRequestException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -43,8 +44,6 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
 
         assertThrows(RuntimeException.class, () -> profileService.create(profile));
         assertTrue(profileService.getAll().isEmpty());
-
-
     }
 
     @Test
@@ -68,11 +67,12 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void createProfile_When_ProfileAliasNotExist_Expected_CorrrectException() {
+    public void createProfile_When_DocumentAliasNotExist_Expected_CorrrectException() {
         assertTrue(profileService.getAll().isEmpty());
 
-        ProfileDTO profile = new ProfileDTO("100", "name1", 1);
-        assertThrows(NullPointerException.class, () -> profileService.create(profile));
+        ProfileDTO profile = new ProfileDTO("99999", "name1", 1);
+        assertThrows(BadRequestException.class, () -> profileService.create(profile));
+
     }
 
     @Test
@@ -91,6 +91,42 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         profileDTO.setName("1003");
 
         assertEquals(profileDTO, profileService.update(profileDTO));
+    }
+
+    @Test
+    public void update_When_ProfileNameEmpty_Expected_CorrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profile = profiles.get(0);
+        profile.setName("");
+        profile.setDocumentName("1001");
+
+        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+    }
+
+    @Test
+    public void update_When_DocumentNameEmpty_Expected_CorrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profile = profiles.get(0);
+        profile.setName("name1");
+        profile.setDocumentName("");
+
+        assertThrows(NullPointerException.class, () -> profileService.update(profile));
+    }
+
+    @Test
+    public void update_When_DocumentAliasNotExist_Expected_CorrrectException() {
+        assertTrue(profileService.getAll().isEmpty());
+        List<ProfileDTO> profiles = createTestProfiles();
+
+        ProfileDTO profile = profiles.get(0);
+        profile.setName("name1");
+        profile.setDocumentName("999");
+
+        assertThrows(NullPointerException.class, () -> profileService.update(profile));
     }
 
     @Test
