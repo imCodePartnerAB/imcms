@@ -1,10 +1,10 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
@@ -14,14 +14,10 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -29,13 +25,11 @@ import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class MenuServiceTest {
+public class MenuServiceTest extends WebAppSpringTestConfig {
 
     private static final int WORKING_VERSION_NO = 0;
     private static final int DOC_ID = 1001;
@@ -61,14 +55,14 @@ public class MenuServiceTest {
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user);
     }
 
-    @After
+    @AfterEach
     public void cleanUpData() {
         menuDataInitializer.cleanRepositories();
         Imcms.removeUser();
