@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -30,10 +29,9 @@ public class ProfileJPA extends Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @NotNull
+    // todo : required add new validation on NotNull
     private String name;
 
-    @NotNull
     @Column(name = "document_name")
     private String documentName;
 
