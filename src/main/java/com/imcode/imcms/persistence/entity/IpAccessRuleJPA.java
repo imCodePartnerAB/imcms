@@ -53,4 +53,7 @@ public class IpAccessRuleJPA extends IpAccessRule {
     @JoinColumn(name = "user_id")
     private User user;
 
+    public IpAccessRuleJPA(IpAccessRule from) {
+        super(from);
+    }
 }
