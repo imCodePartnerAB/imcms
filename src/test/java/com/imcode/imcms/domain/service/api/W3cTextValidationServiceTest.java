@@ -1,24 +1,17 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.TextValidationResult;
 import com.imcode.imcms.domain.dto.ValidationData;
 import com.imcode.imcms.domain.service.TextValidationService;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class W3cTextValidationServiceTest {
+public class W3cTextValidationServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private TextValidationService textValidationService;
