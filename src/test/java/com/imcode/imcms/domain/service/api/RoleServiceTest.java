@@ -1,29 +1,23 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.RoleDTO;
 import com.imcode.imcms.domain.dto.RolePermissionsDTO;
 import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.RolePermissions;
 import com.imcode.imcms.model.Roles;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class RoleServiceTest {
+public class RoleServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private RoleService roleService;
