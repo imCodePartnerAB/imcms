@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
@@ -11,13 +11,9 @@ import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -28,12 +24,10 @@ import java.util.stream.IntStream;
 
 import static com.imcode.imcms.components.datainitializer.LoopDataInitializer.TEST_VERSION_NO;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class LoopServiceTest {
+public class LoopServiceTest extends WebAppSpringTestConfig {
 
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_LOOP_INDEX = 1;
@@ -62,7 +56,7 @@ public class LoopServiceTest {
 
     private int lastVersionIndex;
 
-    @Before
+    @BeforeEach
     public void saveData() {
         loopDataInitializer.createData(TEST_LOOP_DTO);
         for (int i = 1; i < TEST_LOOP_COUNT; i++) {
@@ -89,16 +83,18 @@ public class LoopServiceTest {
         assertEquals(TEST_LOOP_DTO_LATEST_VERSION, loop);
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void getLoop_When_DocNotExist_Expect_Exception() {
         final int nonExistingDocId = 42;
-        loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
+        assertThrows(DocumentNotExistException.class,
+                () -> loopService.getLoop(TEST_LOOP_INDEX, nonExistingDocId));
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void getLoopPublic_When_DocNotExist_Expect_Exception() {
         final int nonExistingDocId = 42;
-        loopService.getLoopPublic(TEST_LOOP_INDEX, nonExistingDocId); // should threw exception
+        assertThrows(DocumentNotExistException.class,
+                () -> loopService.getLoopPublic(TEST_LOOP_INDEX, nonExistingDocId));
     }
 
     @Test
