@@ -86,9 +86,7 @@ define(
 
             if (currentProfileToSave.id) {
                 profileRestApi.replace(currentProfileToSave).success(function (savedProfile) {
-                    currentProfile.id = savedProfile.id;
-                    currentProfile.name = savedProfile.name;
-                    currentProfile.documentName = savedProfile.documentName;
+                    currentProfile = savedProfile;
                     $profileRow.find('.profile-info-row__profile-name').text(currentProfile.name);
                     $profileRow.find('.profile-info-row__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
