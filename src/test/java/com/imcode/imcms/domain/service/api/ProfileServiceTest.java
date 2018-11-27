@@ -4,12 +4,12 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
 import com.imcode.imcms.model.Profile;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.BadRequestException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -42,7 +42,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         assertTrue(profileService.getAll().isEmpty());
         ProfileDTO profile = new ProfileDTO("1001", "", 1);
 
-        assertThrows(RuntimeException.class, () -> profileService.create(profile));
+        assertThrows(NoPermissionToEditDocumentException.class, () -> profileService.create(profile));
         assertTrue(profileService.getAll().isEmpty());
     }
 
@@ -71,8 +71,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         assertTrue(profileService.getAll().isEmpty());
 
         ProfileDTO profile = new ProfileDTO("99999", "name1", 1);
-        assertThrows(BadRequestException.class, () -> profileService.create(profile));
-
+        assertThrows(NoPermissionToEditDocumentException.class, () -> profileService.create(profile));
     }
 
     @Test
@@ -102,7 +101,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         profile.setName("");
         profile.setDocumentName("1001");
 
-        assertThrows(IllegalArgumentException.class, () -> profileService.update(profile));
+        assertThrows(NoPermissionToEditDocumentException.class, () -> profileService.update(profile));
     }
 
     @Test
@@ -114,7 +113,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         profile.setName("name1");
         profile.setDocumentName("");
 
-        assertThrows(NullPointerException.class, () -> profileService.update(profile));
+        assertThrows(NoPermissionToEditDocumentException.class, () -> profileService.update(profile));
     }
 
     @Test
@@ -126,7 +125,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
         profile.setName("name1");
         profile.setDocumentName("999");
 
-        assertThrows(NullPointerException.class, () -> profileService.update(profile));
+        assertThrows(NoPermissionToEditDocumentException.class, () -> profileService.update(profile));
     }
 
     @Test
