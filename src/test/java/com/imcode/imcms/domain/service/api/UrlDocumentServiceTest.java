@@ -1,9 +1,9 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
@@ -23,13 +23,9 @@ import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -38,14 +34,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class UrlDocumentServiceTest {
+public class UrlDocumentServiceTest extends WebAppSpringTestConfig {
 
     private static final int superAdminId = 1;
 
@@ -78,7 +72,7 @@ public class UrlDocumentServiceTest {
 
     private UrlDocumentDTO emptyUrlDocumentDTO;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Imcms.setUser(new UserDomainObject(superAdminId));
         this.emptyUrlDocumentDTO = documentDtoFactory.createEmptyUrlDocument();
@@ -136,7 +130,7 @@ public class UrlDocumentServiceTest {
         assertNotNull(actualUrlDocumentDTO);
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void deleteUrlDocument_When_Expect_Deleted() {
         final int savedDocId = urlDocumentService.save(emptyUrlDocumentDTO).getId();
 
@@ -144,7 +138,8 @@ public class UrlDocumentServiceTest {
 
         urlDocumentService.deleteByDocId(savedDocId);
         metaRepository.flush();
-        urlDocumentService.get(savedDocId);
+        assertThrows(DocumentNotExistException.class,
+                () -> urlDocumentService.get(savedDocId));
     }
 
     @Test
