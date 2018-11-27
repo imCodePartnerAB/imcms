@@ -6,10 +6,10 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Profile;
 import com.imcode.imcms.persistence.entity.ProfileJPA;
 import com.imcode.imcms.persistence.repository.ProfileRepository;
+import imcode.server.document.NoPermissionToEditDocumentException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.BadRequestException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,10 +40,10 @@ public class DefaultProfileService implements ProfileService {
         String alias = profile.getDocumentName();
 
         if (profile.getName().isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new NoPermissionToEditDocumentException(profile.getName());
         }
-        if (null == documentMapper.getDocument(alias)) {
-            throw new BadRequestException();
+        if (alias.isEmpty() || null == documentMapper.getDocument(alias)) {
+            throw new NoPermissionToEditDocumentException(alias);
         }
         return new ProfileDTO(profileRepository.save(new ProfileJPA(profile)));
     }
@@ -55,10 +55,10 @@ public class DefaultProfileService implements ProfileService {
         Profile receivedProfile = profileRepository.findOne(id);
 
         if (profile.getName().isEmpty()) {
-            throw new IllegalArgumentException();
+            throw new NoPermissionToEditDocumentException(profile.getName());
         }
-        if (alias.isEmpty() && null == documentMapper.getDocument(alias)) {
-            throw new NullPointerException();
+        if (alias.isEmpty() || null == documentMapper.getDocument(alias)) {
+            throw new NoPermissionToEditDocumentException(alias);
         } else {
             receivedProfile.setName(profile.getName());
             receivedProfile.setDocumentName(profile.getDocumentName());
@@ -76,6 +76,4 @@ public class DefaultProfileService implements ProfileService {
     public void deleteById(Integer id) {
         profileRepository.delete(id);
     }
-
-
 }
