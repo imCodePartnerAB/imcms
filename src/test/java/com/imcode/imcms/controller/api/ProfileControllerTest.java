@@ -1,9 +1,16 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
+import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
+import com.imcode.imcms.model.Roles;
+import imcode.server.Imcms;
+import imcode.server.document.NoPermissionToEditDocumentException;
+import imcode.server.user.UserDomainObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,7 +18,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.ws.rs.BadRequestException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +30,19 @@ public class ProfileControllerTest extends AbstractControllerTest {
     @Autowired
     private ProfileService profileService;
 
+    @BeforeEach
+    public void setUp() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+        DocumentLanguage language = DocumentLanguage.builder()
+                .code("en")
+                .build();
+
+        docGetterCallback.setLanguage(language);
+        Imcms.setUser(user);
+    }
+
     @Override
     protected String controllerPath() {
         return "/profiles";
@@ -31,6 +50,8 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAll_When_ProfilesExist_Excpected_OkAndCorrectEntites() throws Exception {
+        //versionDataInitializer.createData(0, 1001);
+
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
 
@@ -47,12 +68,13 @@ public class ProfileControllerTest extends AbstractControllerTest {
     @Test
     public void createEntity_When_ProfileNotExist_Expected_OkAndCreatedEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
+        //DocumentDTO createdDoc = documentDataInitializer.createData();
+        //versionDataInitializer.createData(0, 1001);
 
-        Profile profileDTO = new ProfileDTO("1001", "name1", null);
 
-        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profileDTO);
+        ProfileDTO profileDTO = new ProfileDTO("1001", "name1", null);
 
-        performRequestBuilderExpectedOk(requestBuilder);
+        performPostWithContentExpectOk(profileDTO);
 
         List<Profile> savedProfiles = profileService.getAll();
 
@@ -68,12 +90,11 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
 
-        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
 
         List<Profile> savedProfile = profileService.getAll();
 
         assertEquals(0, savedProfile.size());
-
     }
 
     @Test
@@ -82,7 +103,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
 
-        performRequestBuilderExpectException(BadRequestException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 
     @Test
@@ -144,7 +165,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
         profileDTO.setDocumentName("1001");
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
-        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 
     @Test
@@ -157,7 +178,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
 
-        performRequestBuilderExpectException(NullPointerException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 
     @Test
@@ -169,7 +190,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
         profileDTO.setDocumentName("999");
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
-        performRequestBuilderExpectException(NullPointerException.class, requestBuilder);
+        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
     }
 
     private List<ProfileDTO> createTestProfiles() {
