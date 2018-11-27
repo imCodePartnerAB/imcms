@@ -8,7 +8,6 @@ import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
-import imcode.server.document.NoPermissionToEditDocumentException;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +49,6 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAll_When_ProfilesExist_Excpected_OkAndCorrectEntites() throws Exception {
-        //versionDataInitializer.createData(0, 1001);
 
         assertTrue(profileService.getAll().isEmpty());
         List<ProfileDTO> profiles = createTestProfiles();
@@ -68,9 +66,6 @@ public class ProfileControllerTest extends AbstractControllerTest {
     @Test
     public void createEntity_When_ProfileNotExist_Expected_OkAndCreatedEntity() throws Exception {
         assertTrue(profileService.getAll().isEmpty());
-        //DocumentDTO createdDoc = documentDataInitializer.createData();
-        //versionDataInitializer.createData(0, 1001);
-
 
         ProfileDTO profileDTO = new ProfileDTO("1001", "name1", null);
 
@@ -90,7 +85,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
 
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
 
         List<Profile> savedProfile = profileService.getAll();
 
@@ -103,7 +98,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(profile);
 
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
     }
 
     @Test
@@ -165,7 +160,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
         profileDTO.setDocumentName("1001");
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
     }
 
     @Test
@@ -178,7 +173,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
 
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
     }
 
     @Test
@@ -190,7 +185,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
         profileDTO.setDocumentName("999");
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(profileDTO);
-        performRequestBuilderExpectException(NoPermissionToEditDocumentException.class, requestBuilder);
+        performRequestBuilderExpectException(IllegalArgumentException.class, requestBuilder);
     }
 
     private List<ProfileDTO> createTestProfiles() {
