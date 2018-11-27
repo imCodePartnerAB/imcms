@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.service.TextService;
@@ -18,14 +18,10 @@ import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -36,13 +32,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.model.Text.Type.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class TextServiceTest {
+public class TextServiceTest extends WebAppSpringTestConfig {
 
     private static final int DOC_ID = 1001;
     private static final int WORKING_VERSION_NO = 0;
@@ -70,14 +63,14 @@ public class TextServiceTest {
     private Version latestVersion;
     private List<LanguageJPA> languages;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUser() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user); // means current user is admin now
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         textRepository.deleteAll();
         textRepository.flush();
