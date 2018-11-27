@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.imcode.imcms.components.datainitializer.LoopDataInitializer.TEST_VERSION_NO;
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class LoopServiceTest extends WebAppSpringTestConfig {
