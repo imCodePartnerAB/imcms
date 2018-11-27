@@ -36,7 +36,6 @@ public class ProfilesController {
         return profileService.getById(id).orElseThrow(() -> new EmptyResultDataAccessException(id));
     }
 
-
     @CheckAccess
     @PostMapping
     public Profile create(@RequestBody ProfileDTO profile) {
