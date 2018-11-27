@@ -1,26 +1,18 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static imcode.server.ImcmsConstants.ENG_CODE;
-import static imcode.server.ImcmsConstants.SWE_CODE;
-import static org.junit.Assert.*;
+import static imcode.server.ImcmsConstants.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class LanguageRepositoryTest {
+public class LanguageRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private LanguageRepository languageRepository;

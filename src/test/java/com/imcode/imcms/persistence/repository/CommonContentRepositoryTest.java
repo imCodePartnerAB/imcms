@@ -1,29 +1,23 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.persistence.entity.CommonContentJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class CommonContentRepositoryTest {
+public class CommonContentRepositoryTest extends WebAppSpringTestConfig {
 
     private static final int DOC_ID = 1001;
     private static final int VERSION_NO = 0;
@@ -39,7 +33,7 @@ public class CommonContentRepositoryTest {
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
 
-    @Before
+    @BeforeEach
     public void recreateCommonContents() {
         commonContentDataInitializer.cleanRepositories();
         commonContentDataInitializer.createData(DOC_ID, VERSION_NO);

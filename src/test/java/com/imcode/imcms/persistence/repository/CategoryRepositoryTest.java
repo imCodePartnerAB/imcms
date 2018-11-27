@@ -1,18 +1,14 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -20,13 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class CategoryRepositoryTest {
+public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -40,7 +34,7 @@ public class CategoryRepositoryTest {
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         categoryDataInitializer.createData(2);
     }

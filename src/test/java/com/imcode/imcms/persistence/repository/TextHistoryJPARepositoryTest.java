@@ -1,8 +1,8 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Text;
@@ -10,26 +10,19 @@ import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextHistoryJPA;
 import com.imcode.imcms.persistence.entity.User;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class TextHistoryJPARepositoryTest {
+public class TextHistoryJPARepositoryTest extends WebAppSpringTestConfig {
 
     private static final int TEST_DOC_ID = 1001;
 
@@ -47,7 +40,7 @@ public class TextHistoryJPARepositoryTest {
 
     private TextHistoryJPA textHistoryJPA;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         textHistoryRepository.deleteAll();
         final Language en = languageDataInitializer.createData().get(0);

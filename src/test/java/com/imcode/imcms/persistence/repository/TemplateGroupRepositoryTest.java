@@ -1,24 +1,17 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.model.TemplateGroup;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class TemplateGroupRepositoryTest {
+public class TemplateGroupRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
@@ -26,7 +19,7 @@ public class TemplateGroupRepositoryTest {
     @Autowired
     private TemplateGroupRepository templateGroupRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         templateDataInitializer.cleanRepositories();
     }

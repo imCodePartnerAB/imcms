@@ -1,8 +1,8 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.DocumentRole;
@@ -11,13 +11,9 @@ import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.User;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
@@ -26,15 +22,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.persistence.entity.Meta.Permission.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class DocumentRoleRepositoryTest {
+public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private DocumentRolesRepository documentRolesRepository;
@@ -51,7 +45,7 @@ public class DocumentRoleRepositoryTest {
     @Autowired
     private RoleRepository roleRepository;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUser() {
         final UserDomainObject user = new UserDomainObject(0);
         Imcms.setUser(user);

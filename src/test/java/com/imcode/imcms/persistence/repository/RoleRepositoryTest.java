@@ -1,26 +1,19 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.persistence.entity.RoleJPA;
 import com.imcode.imcms.persistence.entity.RolePermissionsJPA;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class RoleRepositoryTest {
+public class RoleRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private RoleRepository roleRepository;
