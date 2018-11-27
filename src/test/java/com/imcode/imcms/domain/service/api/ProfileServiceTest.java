@@ -1,9 +1,14 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
+import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.model.Profile;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -21,6 +26,18 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private ProfileService profileService;
+
+    @BeforeEach
+    public void setUp() throws Exception {
+        final UserDomainObject user = new UserDomainObject(1);
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+        DocumentLanguage language = DocumentLanguage.builder()
+                .code("en")
+                .build();
+
+        docGetterCallback.setLanguage(language);
+        Imcms.setUser(user);
+    }
 
     @Test
     public void findAll_When_ProfilesExist_Expected_CorrectEntities() {
