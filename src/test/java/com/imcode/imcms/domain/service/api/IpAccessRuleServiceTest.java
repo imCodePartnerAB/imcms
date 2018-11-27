@@ -16,10 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
-
     private final static String IP_RANGE_TEMPLATE_IP_V4 = "192.168.0.1-192.168.0.2";
-    private final static String IP_RANGE_TEMPLATE_IP_V6_SHORT = "2001:db8::ff00:42:8329-12001:db8::ff00:42:8330";
-    private final static String IP_RANGE_TEMPLATE_IP_V6_FULL = "2001:0db8:0000:0000:0000:ff00:0042:8329-2001:0db8:0000:0000:0000:ff00:0042:8330";
+    private final static String IP_RANGE_TEMPLATE_IP_V6_SHORT = "2001:db8:ac10:fe01::-2001:db8:ac10:fe02::";
+    private final static String IP_RANGE_TEMPLATE_IP_V6_FULL = "2001:0DB8:AC10:FE01:000:0000:0000:0001-2001:0DB8:AC10:FE01:000:0000:0000:0030";
 
     @Autowired
     private IpAccessRuleService accessRuleService;
