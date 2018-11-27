@@ -486,7 +486,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     @Override
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
         return new AbstractList<DocumentDomainObject>() {
-            private List<Integer> documentIds = nativeQueries.getDocumentsWithPermissionsForRole(role.getId().intValue());
+            private List<Integer> documentIds = nativeQueries.getDocumentsWithPermissionsForRole(role.getId());
 
             public DocumentDomainObject get(int index) {
                 return getDocument(documentIds.get(index));
