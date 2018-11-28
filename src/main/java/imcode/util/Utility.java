@@ -149,6 +149,7 @@ public class Utility {
     /**
      * Transforms a long containing an ip into a String.
      */
+    @Deprecated
     public static String ipLongToString(long ip) {
         return (ip >>> 24 & 255) + "." + (ip >>> 16 & 255) + "." + (ip >>> 8 & 255) + "."
                 + (ip & 255);
@@ -159,6 +160,7 @@ public class Utility {
      *
      * @throws IllegalArgumentException if the input is not a valid IPv4 address.
      */
+    @Deprecated
     public static long ipStringToLong(String ip) throws IllegalArgumentException {
         long ipInt = 0;
         StringTokenizer ipTok = new StringTokenizer(ip, ".");
