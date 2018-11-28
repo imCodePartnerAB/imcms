@@ -15,7 +15,9 @@ import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,15 +62,16 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public boolean isAllowedToAccess(InetAddress accessIp, UserDomainObject user) {
-        List<IpAccessRuleJPA> foundRules = ipAccessRuleRepository.findAll().stream()
+        boolean isAllowed = !ipAccessRuleRepository.findAll().stream()
                 .filter(IpAccessRule::isEnabled)
-                .filter(rule -> {
-                    return rule.getUserId().equals(user.getId())
-                            || user.getRoleIds().contains(rule.getRoleId())
-                            || isIpInRange(accessIp, rule.getIpRange());
-                })
-                .collect(Collectors.toList());
-        return false;
+                .filter(rule -> Objects.equals(rule.getUserId(), user.getId())
+                        || user.getRoleIds().contains(rule.getRoleId())
+                        || isIpInRange(accessIp, rule.getIpRange()))
+                .min(Comparator.comparing(IpAccessRuleJPA::isRestricted))
+                .orElseGet(IpAccessRuleJPA::new)
+                .isRestricted();
+
+        return isAllowed;
     }
 
     private boolean isIpInRange(InetAddress ipToCheck, String ipv6Range) {
