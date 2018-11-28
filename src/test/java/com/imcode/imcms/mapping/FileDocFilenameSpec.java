@@ -1,16 +1,14 @@
 package com.imcode.imcms.mapping;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.mapping.container.VersionRef;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.jupiter.api.Test;
 
 import static com.imcode.imcms.api.DocumentVersion.WORKING_VERSION_NO;
 import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFilenameForFileDocumentFile;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@RunWith(BlockJUnit4ClassRunner.class)
-public class FileDocFilenameSpec {
+public class FileDocFilenameSpec extends WebAppSpringTestConfig {
 
     @Test
     public void version_is_working_and_file_id_is_blank() {

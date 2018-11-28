@@ -10,13 +10,13 @@ import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.security.AccessType;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,11 +26,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultAccessServiceTest {
 
     private static final int documentId = 1001;
@@ -43,12 +44,12 @@ public class DefaultAccessServiceTest {
     @InjectMocks
     private DefaultAccessService accessService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         Imcms.setUser(USER);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Imcms.removeUser();
     }

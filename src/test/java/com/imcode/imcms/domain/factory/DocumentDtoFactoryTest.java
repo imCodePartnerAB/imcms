@@ -1,19 +1,31 @@
 package com.imcode.imcms.domain.factory;
 
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.DocumentUrlDTO;
+import com.imcode.imcms.domain.dto.FileDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DocumentDtoFactoryTest {
 
     @Mock
@@ -22,7 +34,7 @@ public class DocumentDtoFactoryTest {
     @InjectMocks
     private DocumentDtoFactory documentDtoFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         Mockito.when(commonContentFactory.createCommonContents()).thenReturn(new ArrayList<>());
