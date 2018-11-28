@@ -41,7 +41,6 @@ public class IpAccessRuleJPA extends IpAccessRule {
     @Column(name = "restricted", columnDefinition = "bit")
     private boolean isRestricted;
 
-    @NotNull
     @Column(name = "ip_range", length = 80)
     private String ipRange;
 

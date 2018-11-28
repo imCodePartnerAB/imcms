@@ -9,7 +9,7 @@ CREATE TABLE ip_access_rules (
   rule_id    INT(11) AUTO_INCREMENT PRIMARY KEY,
   enabled    BIT DEFAULT 0      NOT NULL,
   restricted BIT DEFAULT 0      NOT NULL,
-  ip_range   VARCHAR(80) DEFAULT '' NOT NULL,
+  ip_range   VARCHAR(80) DEFAULT NULL,
   role_id    INT(11) DEFAULT NULL,
   user_id    INT(11) DEFAULT NUll,
   CONSTRAINT imcms_ip_access_rule_fk_role_id FOREIGN KEY (role_id) REFERENCES roles (role_id)
