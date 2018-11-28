@@ -24,6 +24,7 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
     private final static String IP_RANGE_TEMPLATE_IP_V4 = "192.168.0.1-192.168.0.2";
     private final static String IP_RANGE_TEMPLATE_IP_V6_SHORT = "2001:db8:ac10:fe01::-2001:db8:ac10:fe02::";
     private final static String IP_TEMPLATE_V6_SHORT = "2001:db8:ac10:fe01::";
+    private final static String IP_TEMPLATE_V4 = "0.0.0.2";
     private final static String IP_RANGE_TEMPLATE_IP_V6_FULL = "2001:0DB8:AC10:FE01:000:0000:0000:0001-2001:0DB8:AC10:FE01:000:0000:0000:0030";
 
     @Autowired
@@ -177,6 +178,106 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         IpAccessRule savedRule = accessRuleService.create(rule);
 
         assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenRestrictedByIpRangeDisabled_ExpectTrue() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(false);
+        rule.setRestricted(true);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_FULL);
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenAllowedByIpRange_ExpectTrue() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(false);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenAllowedByIpRangeAndRole_ExpectTrue() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(false);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
+        rule.setRoleId(Roles.USER.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user);
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenAllowedByIpRangeAndUserId_ExpectTrue() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(false);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
+        rule.setUserId(user.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenAllowedByIpRangeAndRoleId_ExpectFalse() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(false);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
+        rule.setRoleId(Roles.SUPER_ADMIN.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenRestrictedByUserIdAndAllowedByIp_ExpectFalse() throws UnknownHostException {
+        assertTrue(accessRuleService.getAll().isEmpty());
+
+        UserDomainObject user = Imcms.getUser();
+
+        IpAccessRule allowRule = new IpAccessRuleDTO();
+
+        allowRule.setEnabled(true);
+        allowRule.setRestricted(false);
+        allowRule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
+        allowRule.setRoleId(Roles.SUPER_ADMIN.getId());
+
+        IpAccessRule restrictRule = new IpAccessRuleDTO();
+
+        restrictRule.setEnabled(true);
+        restrictRule.setRestricted(true);
+        restrictRule.setUserId(user.getId());
+
+        accessRuleService.create(allowRule);
+        accessRuleService.create(restrictRule);
+
+        assertEquals(2, accessRuleService.getAll().size());
+
+        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
     }
 
 }
