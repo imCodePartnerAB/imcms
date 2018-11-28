@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.IpAccessRuleDTO;
+import com.imcode.imcms.domain.exception.IpAccessRuleValidationException;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.model.IpAccessRule;
 import com.imcode.imcms.model.Roles;
@@ -48,6 +49,39 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, savedRules.size());
 
         assertEquals(rule.getIpRange(), savedRules.get(0).getIpRange());
+    }
+
+
+    @Test
+    public void create_WhenWrongIpRangeProvided_Expect_CorrectException() {
+        assertTrue(accessRuleService.getAll().isEmpty());
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(true);
+
+        rule.setIpRange("WrongRange");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        rule.setIpRange("1.1.1");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        rule.setIpRange("2.2.2.2-1");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        rule.setIpRange("300.300.11.2-1/2/");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        rule.setIpRange("a:::::");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        rule.setIpRange("125:257:0:2180-");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        rule.setIpRange("a:a:a:a:a--111.1.1.1");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
+        assertTrue(accessRuleService.getAll().isEmpty());
     }
 
     @Test
