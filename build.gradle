@@ -123,7 +123,6 @@ dependencies {
     testCompile "com.jayway.jsonpath:json-path-assert:2.2.0"
     testCompile "org.dbunit:dbunit:2.5.1"
     testCompile "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-    testCompile "org.junit.vintage:junit-vintage-engine:${junitVersion}"
     testCompile "org.mockito:mockito-core:2.+"
     testCompile "org.mockito:mockito-junit-jupiter:2.+"
     testCompile "org.skyscreamer:jsonassert:1.5.0"
