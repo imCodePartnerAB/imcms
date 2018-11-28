@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.AccessRuleValidationActionConsumer;
 import com.imcode.imcms.domain.dto.IpAccessRuleDTO;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.model.IpAccessRule;
@@ -26,9 +27,11 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
     private static final Logger LOG = Logger.getLogger(DefaultIpAccessRuleService.class);
 
     private final IpAccessRuleRepository ipAccessRuleRepository;
+    private final AccessRuleValidationActionConsumer ruleValidation;
 
-    DefaultIpAccessRuleService(IpAccessRuleRepository ipAccessRuleRepository) {
+    DefaultIpAccessRuleService(IpAccessRuleRepository ipAccessRuleRepository, AccessRuleValidationActionConsumer ruleValidation) {
         this.ipAccessRuleRepository = ipAccessRuleRepository;
+        this.ruleValidation = ruleValidation;
     }
 
     @Override
@@ -47,12 +50,20 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public IpAccessRule create(IpAccessRule rule) {
-        return new IpAccessRuleDTO(ipAccessRuleRepository.save(new IpAccessRuleJPA(rule)));
+        return new IpAccessRuleDTO(
+                ruleValidation.doIfValid(rule,
+                        validatedRule -> ipAccessRuleRepository.save(new IpAccessRuleJPA(validatedRule))
+                )
+        );
     }
 
     @Override
     public IpAccessRule update(IpAccessRule rule) {
-        return new IpAccessRuleDTO(ipAccessRuleRepository.save(new IpAccessRuleJPA(rule)));
+        return new IpAccessRuleDTO(
+                ruleValidation.doIfValid(rule,
+                        validatedRule -> ipAccessRuleRepository.save(new IpAccessRuleJPA(validatedRule))
+                )
+        );
     }
 
     @Override
@@ -77,7 +88,7 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
     private boolean isIpInRange(InetAddress ipToCheck, String ipv6Range) {
         List<String> ipRange = Arrays.asList(ipv6Range.split("-"));
         try {
-            InetAddress rangeBottom = null;
+            InetAddress rangeBottom;
             rangeBottom = getInetAddressFromIpString(ipRange.get(0));
 
             InetAddress rangeTop;
