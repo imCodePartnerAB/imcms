@@ -5,13 +5,13 @@ import com.imcode.imcms.domain.dto.IpAccessRuleDTO;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.model.IpAccessRule;
 import com.imcode.imcms.model.Roles;
-import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -21,11 +21,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
-    private final static String IP_RANGE_TEMPLATE_IP_V4 = "192.168.0.1-192.168.0.2";
-    private final static String IP_RANGE_TEMPLATE_IP_V6_SHORT = "2001:db8:ac10:fe01::-2001:db8:ac10:fe02::";
-    private final static String IP_TEMPLATE_V6_SHORT = "2001:db8:ac10:fe01::";
-    private final static String IP_TEMPLATE_V4 = "0.0.0.2";
-    private final static String IP_RANGE_TEMPLATE_IP_V6_FULL = "2001:0DB8:AC10:FE01:000:0000:0000:0001-2001:0DB8:AC10:FE01:000:0000:0000:0030";
+    private final static String IP_TEMPLATE_V4 = "192.168.1.101";
+    private final static String IP_TEMPLATE_V6_SHORT = "2002:c0a8:165::";
+    private final static String IP_RANGE_TEMPLATE_IP_V4 = "192.168.1.1-192.168.2.100";
+    private final static String IP_RANGE_TEMPLATE_IP_V6_SHORT = "2002:c0a8:101::-2002:c0a8:264::";
+    private final static String IP_RANGE_TEMPLATE_IP_V6_FULL = "2002:c0a8:0101:0000:0000:0000:0000:0000-2002:c0a8:0264:0000:0000:0000:0000:0000";
 
     @Autowired
     private IpAccessRuleService accessRuleService;
@@ -37,7 +37,7 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
-        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V4);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
         rule.setRestricted(true);
 
         accessRuleService.create(rule);
@@ -57,7 +57,7 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
-        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V4);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
         rule.setRestricted(true);
 
         IpAccessRule savedRule = accessRuleService.create(rule);
@@ -94,7 +94,7 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
-        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V4);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
         rule.setRestricted(true);
 
         IpAccessRule savedRule = accessRuleService.create(rule);
@@ -115,7 +115,7 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
-        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V4);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
         rule.setRestricted(true);
 
         IpAccessRule savedRule = accessRuleService.create(rule);
@@ -135,26 +135,33 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void isAllowedToAccess_WhenUserNotInRules_ExpectTrue() throws UnknownHostException {
-        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), Imcms.getUser()));
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
+        assertTrue(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenRestrictedByUser_ExpectFalse() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
         rule.setRestricted(true);
-        rule.setUserId(user.getId());
+        rule.setUserId(defaultUser.getId());
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+        assertFalse(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenRestrictedByRole_ExpectFalse() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
@@ -163,12 +170,14 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+        assertFalse(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenRestrictedByIpRange_ExpectFalse() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
@@ -177,12 +186,14 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+        assertFalse(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenRestrictedByIpRangeDisabled_ExpectTrue() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(false);
@@ -191,12 +202,14 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+        assertTrue(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenAllowedByIpRange_ExpectTrue() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
@@ -205,12 +218,14 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), defaultUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenAllowedByIpRangeAndRole_ExpectTrue() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
@@ -220,28 +235,32 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user);
+        accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), defaultUser);
     }
 
     @Test
     public void isAllowedToAccess_WhenAllowedByIpRangeAndUserId_ExpectTrue() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
         IpAccessRule rule = new IpAccessRuleDTO();
 
         rule.setEnabled(true);
         rule.setRestricted(false);
         rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_SHORT);
-        rule.setUserId(user.getId());
+        rule.setUserId(defaultUser.getId());
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), defaultUser));
     }
 
     @Test
-    public void isAllowedToAccess_WhenAllowedByIpRangeAndRoleId_ExpectFalse() throws UnknownHostException {
-        UserDomainObject user = Imcms.getUser();
+    public void isAllowedToAccess_WhenAllowedByIpRangeAndRoleId_ExpectTrue() throws UnknownHostException {
         IpAccessRule rule = new IpAccessRuleDTO();
+
+        UserDomainObject adminUser = new UserDomainObject(1);
+        adminUser.addRoleId(Roles.SUPER_ADMIN.getId());
 
         rule.setEnabled(true);
         rule.setRestricted(false);
@@ -250,14 +269,15 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), adminUser));
     }
 
     @Test
     public void isAllowedToAccess_WhenRestrictedByUserIdAndAllowedByIp_ExpectFalse() throws UnknownHostException {
         assertTrue(accessRuleService.getAll().isEmpty());
 
-        UserDomainObject user = Imcms.getUser();
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
 
         IpAccessRule allowRule = new IpAccessRuleDTO();
 
@@ -270,14 +290,14 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         restrictRule.setEnabled(true);
         restrictRule.setRestricted(true);
-        restrictRule.setUserId(user.getId());
+        restrictRule.setUserId(defaultUser.getId());
 
         accessRuleService.create(allowRule);
         accessRuleService.create(restrictRule);
 
         assertEquals(2, accessRuleService.getAll().size());
 
-        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), user));
+        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), defaultUser));
     }
 
 }
