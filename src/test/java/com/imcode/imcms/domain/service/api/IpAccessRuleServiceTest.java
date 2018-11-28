@@ -4,11 +4,16 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.IpAccessRuleDTO;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.model.IpAccessRule;
+import com.imcode.imcms.model.Roles;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
     private final static String IP_RANGE_TEMPLATE_IP_V4 = "192.168.0.1-192.168.0.2";
     private final static String IP_RANGE_TEMPLATE_IP_V6_SHORT = "2001:db8:ac10:fe01::-2001:db8:ac10:fe02::";
+    private final static String IP_TEMPLATE_V6_SHORT = "2001:db8:ac10:fe01::";
     private final static String IP_RANGE_TEMPLATE_IP_V6_FULL = "2001:0DB8:AC10:FE01:000:0000:0000:0001-2001:0DB8:AC10:FE01:000:0000:0000:0030";
 
     @Autowired
@@ -125,4 +131,52 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         assertNull(accessRuleService.getById(fakeId));
         assertThrows(EmptyResultDataAccessException.class, () -> accessRuleService.delete(fakeId));
     }
+
+    @Test
+    public void isAllowedToAccess_WhenUserNotInRules_ExpectTrue() throws UnknownHostException {
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), Imcms.getUser()));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenRestrictedByUser_ExpectFalse() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(true);
+        rule.setUserId(user.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenRestrictedByRole_ExpectFalse() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(true);
+        rule.setRoleId(Roles.USER.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenRestrictedByIpRange_ExpectFalse() throws UnknownHostException {
+        UserDomainObject user = Imcms.getUser();
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(true);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V6_FULL);
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), user));
+    }
+
 }
