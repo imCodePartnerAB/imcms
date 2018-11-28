@@ -6,9 +6,11 @@ import com.imcode.imcms.model.IpAccessRule;
 import com.imcode.imcms.persistence.entity.IpAccessRuleJPA;
 import com.imcode.imcms.persistence.repository.IpAccessRuleRepository;
 import imcode.server.user.UserDomainObject;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class DefaultIpAccessRuleService implements IpAccessRuleService {
+    private static final Logger LOG = Logger.getLogger(DefaultIpAccessRuleService.class);
 
     private final IpAccessRuleRepository ipAccessRuleRepository;
 
@@ -65,31 +68,30 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
                             || isIpInRange(accessIp, rule.getIpRange());
                 })
                 .collect(Collectors.toList());
-
         return false;
     }
 
     private boolean isIpInRange(InetAddress ipToCheck, String ipv6Range) {
-
         List<String> ipRange = Arrays.asList(ipv6Range.split("-"));
+        try {
+            InetAddress rangeBottom = null;
+            rangeBottom = getInetAddressFromIpString(ipRange.get(0));
 
+            InetAddress rangeTop;
+            if (ipRange.size() > 1) {
+                rangeTop = getInetAddressFromIpString(ipRange.get(1));
+            } else {
+                rangeTop = rangeBottom;
+            }
 
-        Inet6Address rangeBottom = null;
-//        try {
-////            rangeBottom = Inet6Address.getByName(ipRange.get(0));
-////
-////            Inet6Address rangeTop = ipRange.size() > 0 ? Inet6Address.getByName(ipRange.get(0)) : rangeBottom;
-////
-////            long ipLo = ipToLong(rangeBottom);
-////            long ipHi = ipToLong(rangeTop);
-////            long ipToTest = ipToLong(InetAddress.getByName(ipToCheck));
-////            return (ipToTest >= ipLo && ipToTest <= ipHi);
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//            return false;
-//        }
-                    return false;
-
+            long ipTop = ipToLong(rangeBottom);
+            long ipBottom = ipToLong(rangeTop);
+            long ipToTest = ipToLong(ipToCheck);
+            return (ipToTest >= ipTop && ipToTest <= ipBottom);
+        } catch (UnknownHostException e) {
+            LOG.debug("Can't parse IP address", e);
+            return false;
+        }
     }
 
     private long ipToLong(InetAddress ip) {
@@ -100,6 +102,11 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
             result |= octet & 0xff;
         }
         return result;
+    }
+
+    private InetAddress getInetAddressFromIpString(String ipString) throws UnknownHostException {
+        final boolean isIPv4 = ipString.contains(".");
+        return isIPv4 ? Inet4Address.getByName(ipString) : Inet6Address.getByName(ipString);
     }
 
 
