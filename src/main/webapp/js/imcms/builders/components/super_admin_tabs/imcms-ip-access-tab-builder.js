@@ -4,11 +4,84 @@
  */
 define(
     'imcms-ip-access-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-i18n-texts'],
-    function (SuperAdminTab, texts) {
+    [
+        'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-ip-rules-rest-api',
+        'imcms-rule-editor', 'imcms', 'imcms-bem-builder', 'jquery', 'imcms-field-wrapper'
+    ],
+    function (SuperAdminTab, texts, components, rulesApi, ruleEditor, imcms, BEM, $, fieldWrapper) {
 
         texts = texts.superAdmin.ipAccess;
 
-        return new SuperAdminTab(texts.name, []);
+        var ruleLoader = {
+            rules: false,
+            callbacks: [],
+            whenRulesLoaded: function (callback) {
+                (this.rules) ? callback(this.rules) : this.callbacks.push(callback)
+            },
+            runCallbacks: function (rules) {
+                this.rules = rules;
+
+                this.callbacks.forEach(function (callback) {
+                    callback(rules)
+                })
+            }
+        };
+
+        rulesApi.read().success(function (rules) {
+            ruleLoader.runCallbacks(rules);
+        });
+
+        var $rulesContainer;
+
+
+        function buildTabTitle() {
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
+        }
+
+        function onCreateNewRule() {
+            $rulesContainer.find('.rules-table__rule-row--active')
+                .removeClass('rules-table__rule-row--active');
+
+            ruleEditor.editRule($('<div>'), {
+                id: null,
+                isEnabled: false,
+                isRestricted: false,
+                ipRange: null,
+                roleId: null,
+                userId: null,
+            });
+        }
+
+        function buildCreateNewRuleButton() {
+            return fieldWrapper.wrap(components.buttons.positiveButton({
+                text: texts.createNewRule,
+                click: onCreateNewRule
+            }));
+        }
+
+        function buildRulesContainer() {
+            $rulesContainer = $('<div>', {
+                'class': 'rules-table'
+            });
+
+            ruleLoader.whenRulesLoaded(function (rules) {
+                $rulesContainer.append(rules.map(function (rule) {
+                    return ruleToRow.transform(rule, ruleEditor)
+                }))
+            });
+
+            return fieldWrapper.wrap([$rulesContainer, ruleEditor.buildContainer()]);
+        }
+
+
+        //Regex to validate ipv4/6 format
+        // ((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))
+
+
+        return new SuperAdminTab(texts.name, [
+            buildTabTitle(),
+            buildCreateNewRuleButton(),
+            buildRulesContainer()
+        ]);
     }
 );
