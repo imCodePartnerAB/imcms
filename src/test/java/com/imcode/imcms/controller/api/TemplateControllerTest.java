@@ -23,7 +23,7 @@ public class TemplateControllerTest extends AbstractControllerTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         dataInitializer.cleanRepositories();
         templatesExpected = dataInitializer.createData(5);
     }

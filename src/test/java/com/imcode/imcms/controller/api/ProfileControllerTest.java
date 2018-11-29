@@ -30,7 +30,7 @@ public class ProfileControllerTest extends AbstractControllerTest {
     private ProfileService profileService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();

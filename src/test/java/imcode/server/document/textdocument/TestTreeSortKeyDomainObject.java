@@ -16,17 +16,17 @@ public class TestTreeSortKeyDomainObject extends TestCase {
         assertEquals(1, treeSortKeyDomainObject.getLevelCount());
     }
 
-    public void testEmpty() throws Exception {
+    public void testEmpty() {
         treeSortKeyDomainObject = new TreeSortKeyDomainObject("");
         assertEquals(0, treeSortKeyDomainObject.getLevelCount());
     }
 
-    public void testUntrimmed() throws Exception {
+    public void testUntrimmed() {
         treeSortKeyDomainObject = new TreeSortKeyDomainObject(" 1 ");
         assertEquals(1, treeSortKeyDomainObject.getLevelCount());
     }
 
-    public void testWhitespace() throws Exception {
+    public void testWhitespace() {
         treeSortKeyDomainObject = new TreeSortKeyDomainObject("   ");
         assertEquals(0, treeSortKeyDomainObject.getLevelCount());
     }

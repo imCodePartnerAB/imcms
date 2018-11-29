@@ -19,10 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ImcmsPropertyValidatorTest extends WebAppSpringTestConfig {
 
     private Properties properties;
-    private ImcmsPropertyValidator propertyValidator = new ImcmsPropertyValidator();
+    private final ImcmsPropertyValidator propertyValidator = new ImcmsPropertyValidator();
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         properties = new Properties();
     }
 

@@ -20,7 +20,7 @@ public class TemplateGroupRepositoryTest extends WebAppSpringTestConfig {
     private TemplateGroupRepository templateGroupRepository;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         templateDataInitializer.cleanRepositories();
     }
 

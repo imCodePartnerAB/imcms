@@ -35,7 +35,7 @@ public class DocumentDtoFactoryTest {
     private DocumentDtoFactory documentDtoFactory;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         Mockito.when(commonContentFactory.createCommonContents()).thenReturn(new ArrayList<>());
     }

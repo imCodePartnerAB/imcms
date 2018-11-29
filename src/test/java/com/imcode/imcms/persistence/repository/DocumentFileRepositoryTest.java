@@ -31,7 +31,7 @@ public class DocumentFileRepositoryTest extends WebAppSpringTestConfig {
     private DocumentFileJPA createdDocumentFile;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         final DocumentDTO documentDTO = documentDataInitializer.createData();
 
         final DocumentFileJPA documentFileJPA = new DocumentFileJPA();

@@ -33,7 +33,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     private List<Template> templatesExpected;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         dataInitializer.cleanRepositories();
         templatesExpected = dataInitializer.createData(5);
     }

@@ -53,7 +53,7 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
     private Meta meta;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
 
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());

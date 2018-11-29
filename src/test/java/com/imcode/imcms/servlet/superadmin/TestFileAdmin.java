@@ -7,7 +7,7 @@ import java.io.File;
 
 public class TestFileAdmin extends TestCase {
 
-    private File dir = new File("tmp/TestFileAdmin");
+    private final File dir = new File("tmp/TestFileAdmin");
 
     public void setUp() throws Exception {
         super.setUp();

@@ -92,7 +92,7 @@ public class TestUserService extends TestCase {
 
     public static class MockProcedureExecutor implements ProcedureExecutor {
 
-        private MockDatabase database;
+        private final MockDatabase database;
 
         MockProcedureExecutor(MockDatabase database) {
             this.database = database;

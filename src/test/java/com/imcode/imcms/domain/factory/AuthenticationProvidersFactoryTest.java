@@ -16,8 +16,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 class AuthenticationProvidersFactoryTest {
 
-    private Properties properties = new Properties();
-    private AuthenticationProvidersFactory authenticationProvidersFactory = new AuthenticationProvidersFactory(properties);
+    private final Properties properties = new Properties();
+    private final AuthenticationProvidersFactory authenticationProvidersFactory = new AuthenticationProvidersFactory(properties);
 
     @BeforeEach
     void setUp() {

@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 @RunWith(value = Parameterized.class)
 public class LoginPasswordManagerTest {
 
-    private LoginPasswordManager manager;
+    private final LoginPasswordManager manager;
 
     public LoginPasswordManagerTest(String sharedSalt) {
         manager = new LoginPasswordManager(sharedSalt);

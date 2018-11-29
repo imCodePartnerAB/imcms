@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 public class DocumentStoredFieldsDTOTest {
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content
         user.addRoleId(Roles.SUPER_ADMIN.getId());
