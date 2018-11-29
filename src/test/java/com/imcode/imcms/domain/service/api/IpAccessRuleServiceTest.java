@@ -125,6 +125,11 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getAll_WhenNoEntitiesExist_ExpectEmptyList() {
+        assertTrue(accessRuleService.getAll().isEmpty());
+    }
+
+    @Test
     public void update_WhenEntityExist_ExpectUpdatedEntity() {
         assertTrue(accessRuleService.getAll().isEmpty());
 
@@ -366,7 +371,7 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
 
         IpAccessRule savedRule = accessRuleService.create(rule);
 
-        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4),defaultUser));
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), defaultUser));
     }
 
 }
