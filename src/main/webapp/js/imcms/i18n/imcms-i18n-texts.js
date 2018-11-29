@@ -386,7 +386,14 @@ const texts = {
                 cancel: 'Annullera',
                 deleteConfirm: 'Vill du verkligen ta bort den här regel?',
                 saveChanges: 'Spara ändringar',
-                discardChangesMessage: 'Ignorera ändringar?'
+                discardChangesMessage: 'Ignorera ändringar?',
+                fields: {
+                    enabled: 'Aktiverad',
+                    restricted: 'Begränsad',
+                    ipRange: 'IP-område',
+                    role: 'Roll',
+                    user: 'Användare'
+                }
             },
             deleteDocs: {
                 name: 'Radera dokument',
@@ -849,7 +856,14 @@ const texts = {
                 cancel: 'Cancel',
                 deleteConfirm: 'Do you really want to delete this rule?',
                 saveChanges: 'Save changes',
-                discardChangesMessage: 'Discard changes?'
+                discardChangesMessage: 'Discard changes?',
+                fields: {
+                    enabled: 'Enabled',
+                    restricted: 'Restricted',
+                    ipRange: 'IP Range',
+                    role: 'role',
+                    user: 'user'
+                }
             },
             deleteDocs: {
                 name: 'Delete Documents',
