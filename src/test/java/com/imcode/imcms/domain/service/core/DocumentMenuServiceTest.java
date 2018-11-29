@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
@@ -17,14 +17,10 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -32,15 +28,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class DocumentMenuServiceTest {
+public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private DocumentService<DocumentDTO> documentService;
@@ -59,7 +52,7 @@ public class DocumentMenuServiceTest {
 
     private Meta meta;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
 
         final UserDomainObject user = new UserDomainObject(1);
@@ -71,7 +64,7 @@ public class DocumentMenuServiceTest {
         meta = metaRepository.getOne(id);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         documentDataInitializer.cleanRepositories();
     }
@@ -110,9 +103,10 @@ public class DocumentMenuServiceTest {
         assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), Imcms.getUser()));
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void hasUserAccessToDoc_When_DocIsNotExist_Expect_DocumentNotExistException() {
-        assertTrue(documentMenuService.hasUserAccessToDoc(Integer.MAX_VALUE, Imcms.getUser()));
+        assertThrows(DocumentNotExistException.class,
+                () -> documentMenuService.hasUserAccessToDoc(Integer.MAX_VALUE, Imcms.getUser()));
     }
 
     @Test
@@ -130,9 +124,10 @@ public class DocumentMenuServiceTest {
         testMenuItemDTO("");
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void isPublicMenuItem_When_DocIsNotExist_Expect_DocumentNotExistException() {
-        assertTrue(documentMenuService.isPublicMenuItem(Integer.MAX_VALUE));
+        assertThrows(DocumentNotExistException.class,
+                () -> documentMenuService.isPublicMenuItem(Integer.MAX_VALUE));
     }
 
     @Test

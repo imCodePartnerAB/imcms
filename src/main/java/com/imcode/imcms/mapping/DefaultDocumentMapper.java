@@ -214,6 +214,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         return new GetterDocumentReference(childId, this);
     }
 
+    //    TODO  Check is that correct to be able to save empty string alias
     @Override
     @SuppressWarnings("unchecked")
     public <T extends DocumentDomainObject> T saveNewDocument(T doc, UserDomainObject user)

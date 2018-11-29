@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.ProfileDTO;
 import com.imcode.imcms.domain.service.ProfileService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.Profile;
 import com.imcode.imcms.persistence.entity.ProfileJPA;
 import com.imcode.imcms.persistence.repository.ProfileRepository;
@@ -17,9 +18,12 @@ import java.util.stream.Collectors;
 public class DefaultProfileService implements ProfileService {
 
     private final ProfileRepository profileRepository;
+    private DocumentMapper documentMapper;
 
-    public DefaultProfileService(ProfileRepository profileRepository) {
+    public DefaultProfileService(ProfileRepository profileRepository,
+                                 DocumentMapper documentMapper) {
         this.profileRepository = profileRepository;
+        this.documentMapper = documentMapper;
     }
 
     @Override
@@ -32,16 +36,32 @@ public class DefaultProfileService implements ProfileService {
 
     @Override
     public Profile create(Profile profile) {
+        String alias = profile.getDocumentName();
+
+        if (profile.getName().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        if (alias.isEmpty() || null == documentMapper.getDocument(alias)) {
+            throw new IllegalArgumentException();
+        }
         return new ProfileDTO(profileRepository.save(new ProfileJPA(profile)));
     }
 
     @Override
     public Profile update(Profile profile) {
         Integer id = profile.getId();
-
+        String alias = profile.getDocumentName();
         Profile receivedProfile = profileRepository.findOne(id);
-        receivedProfile.setName(profile.getName());
-        receivedProfile.setDocumentName(profile.getDocumentName());
+
+        if (profile.getName().isEmpty()) {
+            throw new IllegalArgumentException();
+        }
+        if (alias.isEmpty() || null == documentMapper.getDocument(alias)) {
+            throw new IllegalArgumentException();
+        } else {
+            receivedProfile.setName(profile.getName());
+            receivedProfile.setDocumentName(profile.getDocumentName());
+        }
 
         return new ProfileDTO(profileRepository.save(new ProfileJPA(receivedProfile)));
     }
@@ -55,6 +75,4 @@ public class DefaultProfileService implements ProfileService {
     public void deleteById(Integer id) {
         profileRepository.delete(id);
     }
-
-
 }

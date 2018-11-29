@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.FileDocumentDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentFileDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
@@ -23,18 +23,14 @@ import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -47,14 +43,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class FileDocumentServiceTest {
+public class FileDocumentServiceTest extends WebAppSpringTestConfig {
 
     private static final int userId = 1;
 
@@ -94,12 +88,12 @@ public class FileDocumentServiceTest {
     @Autowired
     private UserService userService;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpUser() {
         Imcms.setUser(new UserDomainObject(userId));
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutDownSolr() {
         try {
             FileUtility.forceDelete(testSolrFolder);
@@ -117,7 +111,7 @@ public class FileDocumentServiceTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createFileDocument();
         createdDocId = createdDoc.getId();

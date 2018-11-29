@@ -1,28 +1,21 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.TextDocumentTemplate;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class TextDocumentTemplateServiceTest {
+public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
 
     private static final int DOC_ID = 1001;
     @Autowired
@@ -33,7 +26,7 @@ public class TextDocumentTemplateServiceTest {
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         saved = new TextDocumentTemplateDTO(
                 templateDataInitializer.createData(DOC_ID, "demo", "demo")

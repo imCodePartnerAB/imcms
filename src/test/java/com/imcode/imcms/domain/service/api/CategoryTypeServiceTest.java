@@ -1,20 +1,16 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -22,10 +18,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class CategoryTypeServiceTest {
+public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryTypeService categoryTypeService;
@@ -36,12 +29,12 @@ public class CategoryTypeServiceTest {
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;
 
-    @Before
+    @BeforeEach
     public void setUpCategoryDataInitializer() {
         categoryDataInitializer.createData(4);
     }
 
-    @After
+    @AfterEach
     public void clearData() {
         categoryDataInitializer.cleanRepositories();
     }

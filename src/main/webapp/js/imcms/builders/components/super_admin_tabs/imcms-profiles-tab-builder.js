@@ -11,7 +11,6 @@ define(
             callback: [],
             whenProfilesLoaded: function (callback) {
                 (this.profiles) ? callback(this.profiles) : this.callback.push(callback);
-
             },
             runCallbacks: function (profiles) {
                 this.profiles = profiles;
@@ -22,38 +21,21 @@ define(
             }
         };
 
-        profileRestApi.getAllProfiles().done(function (profiles) {
+        profileRestApi.read().done(function (profiles) {
             profilesLoader.runCallbacks(profiles);
         });
 
         let $profileContainer;
 
-        function buildBlockProfiles() {
+        function buildTitleText() {
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
+        }
 
-            function createTitleText() {
-                return components.texts.titleText('<div>', texts.title, {})
-            }
-
-            function createButtonCreate() {
-                return fieldWrapper.wrap(components.buttons.positiveButton({
-                    text: texts.createButton,
-                    click: onCreateNewProfile
-                }));
-            }
-
-            function buildCreateTitlesForProfiles() {
-                return components.texts.titleText('<div>',
-                    texts.createNewProfile.titleTextName + '|' + texts.createNewProfile.titleTextDocName, {})
-            }
-
-            return new BEM({
-                block: 'imcms-profiles-block',
-                elements: {
-                    'profile-title': createTitleText(),
-                    'create-button': createButtonCreate(),
-                    'title-table-profiles': buildCreateTitlesForProfiles()
-                }
-            }).buildBlockStructure('<div>');
+        function buildCreateButton() {
+            return fieldWrapper.wrap(components.buttons.positiveButton({
+                text: texts.createButton,
+                click: onCreateNewProfile
+            }));
         }
 
         function onCreateNewProfile() {
@@ -74,6 +56,7 @@ define(
             });
 
             profilesLoader.whenProfilesLoaded(function (profiles) {
+                $profileContainer.append(buildTitleRow());
                 $profileContainer.append(profiles.map(function (profile) {
                     return profileToRow.transform(profile, profileEditor);
                 }))
@@ -82,9 +65,23 @@ define(
             return fieldWrapper.wrap([$profileContainer, profileEditor.buildProfilesContainer()]);
         }
 
+        function buildTitleRow() {
+            let $titleRow = new BEM({
+                block: 'title-profile-row',
+                elements: {
+                    'name': $('<div>', {text: texts.titleTextName}),
+                    'doc-name': $('<div>', {text: texts.titleTextDocName})
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'table-title'
+            });
+            return $titleRow;
+        }
+
         return new SuperAdminTab(texts.name, [
-            buildBlockProfiles(),
-            buildProfileContainer(),
+            buildTitleText(),
+            buildCreateButton(),
+            buildProfileContainer()
         ]);
     }
 );

@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.component;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.model.Roles;
@@ -8,9 +9,9 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.common.params.CommonParams;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Sort;
 
 import java.util.Arrays;
@@ -19,10 +20,11 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class DocumentSearchQueryConverterTest {
+public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
     private static final int USER_ID = 1;
     private static final String LANG_CODE = "en";
@@ -31,7 +33,7 @@ public class DocumentSearchQueryConverterTest {
 
     private SearchQueryDTO searchQueryDTO;
 
-    @BeforeClass
+    @BeforeAll
     public static void setConverter() {
         documentSearchQueryConverter = new DocumentSearchQueryConverter();
 
@@ -40,7 +42,7 @@ public class DocumentSearchQueryConverterTest {
         Imcms.setUser(user);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         searchQueryDTO = new SearchQueryDTO();
     }

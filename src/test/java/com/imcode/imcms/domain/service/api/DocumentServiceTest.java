@@ -1,12 +1,12 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.UserDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
@@ -59,17 +59,12 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -90,13 +85,11 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.model.Text.Type.TEXT;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.*;
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class DocumentServiceTest {
+public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     private static File testSolrFolder;
 
@@ -198,7 +191,7 @@ public class DocumentServiceTest {
         ((DefaultDocumentService) documentService).init();
     }
 
-    @AfterClass
+    @AfterAll
     public static void shutDownSolr() {
         try {
             FileUtility.forceDelete(testSolrFolder);
@@ -207,7 +200,7 @@ public class DocumentServiceTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         createdDoc = documentDataInitializer.createData();
 
@@ -277,9 +270,10 @@ public class DocumentServiceTest {
         assertEquals(documentDTO, createdDoc);
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void get_When_DocumentNotExist_Expect_CorrectException() {
-        documentService.get(((Long) System.currentTimeMillis()).intValue());
+        assertThrows(DocumentNotExistException.class,
+                () -> documentService.get(((Long) System.currentTimeMillis()).intValue()));
     }
 
     @Test
@@ -588,7 +582,7 @@ public class DocumentServiceTest {
         documentService.deleteByDocId(docId);
         metaRepository.flush();
 
-        Assertions.assertThrows(DocumentNotExistException.class, () -> documentService.get(docId));
+        assertThrows(DocumentNotExistException.class, () -> documentService.get(docId));
     }
 
     @Test
@@ -647,7 +641,7 @@ public class DocumentServiceTest {
         documentService.deleteByDocId(documentDTO.getId());
         metaRepository.flush();
 
-        Assertions.assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
+        assertThrows(DocumentNotExistException.class, () -> documentService.get(createdDocId));
     }
 
     @Test

@@ -1,36 +1,35 @@
 package com.imcode.imcms.components.impl;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.exception.ImcmsPropertiesValidationException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import javax.validation.ValidationException;
 import java.util.Properties;
 
 import static com.imcode.imcms.components.impl.ImcmsPropertyValidator.REQUIRED_PROPERTIES;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 12.04.18.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
-public class ImcmsPropertyValidatorTest {
+
+public class ImcmsPropertyValidatorTest extends WebAppSpringTestConfig {
 
     private Properties properties;
     private ImcmsPropertyValidator propertyValidator = new ImcmsPropertyValidator();
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         properties = new Properties();
     }
 
-    @Test(expected = ImcmsPropertiesValidationException.class)
+    @Test
     public void validate_When_PropertiesEmpty_Expect_Exception() {
-        propertyValidator.validate(properties);
+        assertThrows(ImcmsPropertiesValidationException.class,
+                () -> propertyValidator.validate(properties));
     }
 
     @Test

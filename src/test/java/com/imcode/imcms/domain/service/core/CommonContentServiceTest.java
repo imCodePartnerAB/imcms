@@ -1,9 +1,9 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.CommonContentDTO;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -13,14 +13,10 @@ import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -28,13 +24,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class CommonContentServiceTest {
+public class CommonContentServiceTest extends WebAppSpringTestConfig {
 
     private static final int DOC_ID = 1001;
     private static final int WORKING_VERSION_INDEX = 0;
@@ -58,12 +51,12 @@ public class CommonContentServiceTest {
     @Autowired
     private CommonContentRepository commonContentRepository;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         tearDown();
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         commonContentDataInitializer.cleanRepositories();
     }

@@ -7,7 +7,7 @@
 .imcms-buttons__button {
     text-align: center;
     float: left;
-    margin: 8px;
+    margin-right: 5px;
 }
 
 .buttons__button:last-child {

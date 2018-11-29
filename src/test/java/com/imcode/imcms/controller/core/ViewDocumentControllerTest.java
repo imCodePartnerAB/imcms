@@ -1,9 +1,9 @@
 package com.imcode.imcms.controller.core;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.DocumentLanguageDisabledException;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LanguageDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -14,27 +14,21 @@ import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.LanguageMapper;
 import imcode.server.user.UserDomainObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class ViewDocumentControllerTest {
+public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
 
     private static final String VIEW_DOC = VIEW_DOC_PATH + "/";
 
@@ -56,7 +50,7 @@ public class ViewDocumentControllerTest {
     private List<LanguageDTO> languages;
     private TextDocumentDTO textDocument;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
@@ -84,18 +78,18 @@ public class ViewDocumentControllerTest {
         testWhenAllUsersLanguagesIsEnabled(1);
     }
 
-    @Test(expected = DocumentLanguageDisabledException.class)
-    public void getDocument_WhenEnLanguageSetAndUserHasAllDisabledLanguages_Expect_DisabledException()
-            throws Throwable {
+    @Test
+    public void getDocument_WhenEnLanguageSetAndUserHasAllDisabledLanguages_Expect_DisabledException() {
 
-        testWhenAllUsersLanguagesIsDisabled(0);
+        assertThrows(DocumentLanguageDisabledException.class,
+                () -> testWhenAllUsersLanguagesIsDisabled(0));
     }
 
-    @Test(expected = DocumentLanguageDisabledException.class)
-    public void getDocument_WhenSvLanguageSetAndUserHasAllDisabledLanguages_Expect_DisabledException()
-            throws Throwable {
+    @Test
+    public void getDocument_WhenSvLanguageSetAndUserHasAllDisabledLanguages_Expect_DisabledException() {
 
-        testWhenAllUsersLanguagesIsDisabled(1);
+        assertThrows(DocumentLanguageDisabledException.class,
+                () -> testWhenAllUsersLanguagesIsDisabled(1));
     }
 
     @Test
@@ -127,19 +121,18 @@ public class ViewDocumentControllerTest {
         testWhenUserDoesNotHaveSpecificLanguageAndOptionSHOW_IN_DEFAULT_LANGUAGESet(1);
     }
 
-    @Test(expected = DocumentLanguageDisabledException.class)
-    public void getDocument_whenEnLanguageSetAndUserDoesNotHaveThisLanguage_Expect_DisabledException()
-            throws Throwable {
+    @Test
+    public void getDocument_whenEnLanguageSetAndUserDoesNotHaveThisLanguage_Expect_DisabledException() {
 
-        testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(0);
-
+        assertThrows(DocumentLanguageDisabledException.class,
+                () -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(0));
     }
 
-    @Test(expected = DocumentLanguageDisabledException.class)
-    public void getDocument_whenSvLanguageSetAndUserDoesNotHaveThisLanguage_Expect_DisabledException()
-            throws Throwable {
+    @Test
+    public void getDocument_whenSvLanguageSetAndUserDoesNotHaveThisLanguage_Expect_DisabledException() {
 
-        testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1);
+        assertThrows(DocumentLanguageDisabledException.class,
+                () -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1));
     }
 
     private void testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(int languageIndex)

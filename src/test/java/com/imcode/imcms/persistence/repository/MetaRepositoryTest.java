@@ -1,16 +1,12 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -19,14 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class MetaRepositoryTest {
+public class MetaRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private MetaRepository metaRepository;
@@ -34,7 +27,7 @@ public class MetaRepositoryTest {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
-    @After
+    @AfterEach
     public void tearDown() {
         documentDataInitializer.cleanRepositories();
     }

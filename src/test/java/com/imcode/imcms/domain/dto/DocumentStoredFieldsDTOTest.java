@@ -7,22 +7,22 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.DocumentStoredFields;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.common.SolrDocument;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DocumentStoredFieldsDTOTest {
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng"); // user lang should exist in common content

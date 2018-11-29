@@ -1,8 +1,8 @@
 package com.imcode.imcms.domain.service.core;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.UrlDocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.DocumentUrlDTO;
 import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.VersionedContentService;
@@ -12,24 +12,18 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.DocumentUrlRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class DefaultDocumentUrlServiceTest {
+public class DefaultDocumentUrlServiceTest extends WebAppSpringTestConfig {
 
     private static final int DEFAULT_DOC_ID = 1001;
 
@@ -48,7 +42,7 @@ public class DefaultDocumentUrlServiceTest {
     @Autowired
     private VersionedContentService defaultDocumentUrlService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());

@@ -13,15 +13,26 @@ define(
         let $profileEditButtons;
 
         function buildProfileNameRow() {
-            $profileNameRow = components.texts.textBox('<div>', {text: texts.editProfile.name});
-            $profileNameRow.$input.attr('enable', 'enable');
+            $profileNameRow = components.texts.textBox('<div>', {
+                text: texts.editProfile.name
+            });
+            $profileNameRow.$input.attr('enabled', 'enabled');
             return $profileNameRow;
         }
 
         function buildProfileDocNameRow() {
-            $profileDocNameRow = components.texts.textBox('<div>', {text: texts.editProfile.docName});
-            $profileDocNameRow.$input.attr('enable', 'enable');
+            $profileDocNameRow = components.texts.textBox('<div>', {
+                text: texts.editProfile.docName,
+            });
+            $profileDocNameRow.$input.attr('enabled', 'enabled');
             return $profileDocNameRow;
+        }
+
+        let errorMsg;
+
+        function buildErrorBlock() {
+            errorMsg = components.texts.errorText("<div>", texts.error, {style: 'display: none;'});
+            return errorMsg;
         }
 
         function onCancelChanges($profileRowElement, profile) {
@@ -47,7 +58,7 @@ define(
             modal.buildModalWindow(texts.warnDelete, function (confirmed) {
                 if (!confirmed) return;
 
-                profileRestApi.deleteById(currentProfile).done(function () {
+                profileRestApi.remove(currentProfile).done(function () {
                     $profileRow.remove();
                     currentProfile = null;
                     onEditDelegate = onSimpleEdit;
@@ -57,6 +68,7 @@ define(
         }
 
         function onSaveProfile() {
+
             let name = $profileNameRow.getValue();
             let docName = $profileDocNameRow.getValue();
 
@@ -66,27 +78,32 @@ define(
                 return;
             }
 
-            let saveEntity = {
+            let currentProfileToSave = {
                 id: currentProfile.id,
                 name: name,
                 documentName: docName
             };
 
-            if (saveEntity.id) {
-                profileRestApi.update(saveEntity).done(function (savedProfile) {
-                    currentProfile.id = savedProfile.id;
-                    $profileRow.textBox(currentProfile.name = savedProfile.name,
-                        currentProfile.documentName = savedProfile.documentName);
+            if (currentProfileToSave.id) {
+                profileRestApi.replace(currentProfileToSave).success(function (savedProfile) {
+                    currentProfile = savedProfile;
+                    $profileRow.find('.profile-info-row__profile-name').text(currentProfile.name);
+                    $profileRow.find('.profile-info-row__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
+                }).error(function () {
+                    errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
-                profileRestApi.create(saveEntity).done(function (profile) {
+                profileRestApi.create(currentProfileToSave).success(function (profile) {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
+
                     $container.parent().find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
+                }).error(function () {
+                    errorMsg.css('display', 'inline-block').slideDown();
                 });
             }
         }
@@ -122,6 +139,7 @@ define(
 
                         if (currentProfile.id) {
                             prepareProfileView();
+                            $container.slideUp();
 
                         } else {
                             currentProfile = null;
@@ -130,7 +148,7 @@ define(
                         }
                     })
                 })
-            ], {});
+            ]);
         }
 
         function prepareProfileView() {
@@ -142,15 +160,16 @@ define(
 
             $profileRow.addClass('profiles-table__profile-row--active');
 
-            $profileNameRow.$input.attr('enable', 'enable');
+            $profileNameRow.$input.attr('enabled', 'enabled');
             $profileNameRow.setValue(currentProfile.name);
 
-            $profileDocNameRow.$input.attr('enable', 'enable');
+            $profileDocNameRow.$input.attr('enabled', 'enabled');
             $profileDocNameRow.setValue(currentProfile.documentName);
 
             $profileEditButtons.slideDown('fast');
 
             $container.css('display', 'inline-block');
+            errorMsg.css('display', 'none').slideUp();
         }
 
         function onProfileSimpleView($profileRowElement, profile) {
@@ -173,6 +192,7 @@ define(
                 elements: {
                     'profile-name-row': buildProfileNameRow(),
                     'profile-doc-name-row': buildProfileDocNameRow(),
+                    'error-row': buildErrorBlock(),
                     'profile-button-edit': buildProfileEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));

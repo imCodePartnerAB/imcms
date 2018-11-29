@@ -1,28 +1,20 @@
 package com.imcode.imcms.persistence.repository;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Version;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class VersionRepositoryTest {
+public class VersionRepositoryTest extends WebAppSpringTestConfig {
     private final static int userId = 1;
     private static int docId;
 
@@ -35,7 +27,7 @@ public class VersionRepositoryTest {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
-    @Before
+    @BeforeEach
     public void setUpVersions() {
         versionDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
@@ -49,7 +41,7 @@ public class VersionRepositoryTest {
         versionDataInitializer.createData(5, docId);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         versionDataInitializer.cleanRepositories();
     }

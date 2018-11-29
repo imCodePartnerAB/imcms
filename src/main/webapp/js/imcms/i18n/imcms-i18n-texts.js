@@ -407,6 +407,13 @@ const texts = {
                 name: 'Profiler',
                 title: 'Profiler',
                 createButton: "Skapa ny profil",
+                warnChangeMessage: 'Vill du ändra den här profilen?',
+                warnDelete: 'Ta du verkligen bort den här profilen?',
+                warnCancelMessage: 'Vill du verkligen avbryta?',
+                error: "Tyvärr, men du gjorde fel!",
+                cancel: "Avbryt",
+                titleTextName: 'Namn',
+                titleTextDocName: 'Dokumentnamn',
                 createNewProfile: {
                     titleTextName: 'Namn',
                     textFieldName: 'Textnamn',
@@ -415,7 +422,7 @@ const texts = {
                     buttonSave: 'Save'
                 },
                 editProfile: {
-                    namn: "namn",
+                    name: "Namn",
                     docName: 'Dokumentnamn',
                     buttonEdit: 'Redigera profil',
                     buttonDelete: 'Ta bort profil'
@@ -860,13 +867,15 @@ const texts = {
                 warnChangeMessage: 'Do you want to change this profile?',
                 warnDelete: 'Do you really delete this profile?',
                 warnCancelMessage: 'Do you want to really cancel?',
-                mistake: 'Sorry, but this a document is not exist',
+                error: 'Sorry, but you did mistake!',
                 cancel: 'Cancel',
+                titleTextName: 'Name',
+                titleTextDocName: 'Document name',
                 createNewProfile: {
                     titleTextName: 'Name',
-                    textFieldName: 'Text name',
                     titleTextDocName: 'Document name',
-                    textFieldDocName: 'Text doc name',
+                    textFieldName: 'Input name',
+                    textFieldDocName: 'Input document name',
                     buttonSave: 'Save'
                 },
                 editProfile: {

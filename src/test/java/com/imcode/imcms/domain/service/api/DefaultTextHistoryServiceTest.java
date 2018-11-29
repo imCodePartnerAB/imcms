@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.TextDTO;
 import com.imcode.imcms.domain.dto.TextHistoryDTO;
@@ -13,14 +13,10 @@ import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -28,13 +24,11 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class DefaultTextHistoryServiceTest {
+public class DefaultTextHistoryServiceTest extends WebAppSpringTestConfig {
 
     private final static int DOC_ID = 1001;
 
@@ -51,14 +45,14 @@ public class DefaultTextHistoryServiceTest {
     private Integer index;
     private LoopEntryRef loopEntryRef;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUser() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
         textHistoryRepository.deleteAll();
         this.language = languageDataInitializer.createData().get(0);

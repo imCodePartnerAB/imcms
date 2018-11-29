@@ -29,6 +29,7 @@ public class ProfileJPA extends Profile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // todo : required add new validation on NotNull
     private String name;
 
     @Column(name = "document_name")

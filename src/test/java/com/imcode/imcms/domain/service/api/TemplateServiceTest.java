@@ -1,18 +1,14 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -20,13 +16,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class TemplateServiceTest {
+public class TemplateServiceTest extends WebAppSpringTestConfig {
 
     @Value("WEB-INF/templates/text")
     private File templateDirectory;
@@ -39,7 +32,7 @@ public class TemplateServiceTest {
 
     private List<Template> templatesExpected;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         dataInitializer.cleanRepositories();
         templatesExpected = dataInitializer.createData(5);

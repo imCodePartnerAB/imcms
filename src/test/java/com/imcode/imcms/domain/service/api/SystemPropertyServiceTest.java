@@ -1,26 +1,19 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.config.TestConfig;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.service.SystemPropertyService;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class SystemPropertyServiceTest {
+public class SystemPropertyServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private SystemPropertyService systemPropertyService;
@@ -36,7 +29,7 @@ public class SystemPropertyServiceTest {
 
     @Test
     public void findByName_When_PropertyNotExist_Expect_CorrectException() {
-        assertNull("NullPointerException", systemPropertyService.findByName("NotStartDocument"));
+        assertNull(systemPropertyService.findByName("NotStartDocument"));
     }
 
     @Test
@@ -75,10 +68,11 @@ public class SystemPropertyServiceTest {
 
     }
 
-    @Test(expected = DataAccessException.class)
+    @Test
     public void deleteById_When_PropertyNotExist_Expect_EmptyResult() {
         int idIsNotExist = 10;
-        systemPropertyService.deleteById(idIsNotExist);
+        assertThrows(DataAccessException.class,
+                () -> systemPropertyService.deleteById(idIsNotExist));
     }
 
 }

@@ -1,25 +1,21 @@
 package com.imcode.imcms.persistence.repository;
 
 
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
@@ -28,13 +24,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class MenuRepositoryTest {
+public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private MenuRepository menuRepository;
@@ -51,7 +44,7 @@ public class MenuRepositoryTest {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
-    @Before
+    @BeforeEach
     public void setUpJdbcTemplate() {
         jdbcTemplate = new JdbcTemplate(dataSource);
         jdbcTemplate.execute("DELETE FROM imcms_menu");
@@ -62,7 +55,7 @@ public class MenuRepositoryTest {
         Imcms.setUser(user);
     }
 
-    @After
+    @AfterEach
     public void cleanUpData() {
         menuDataInitializer.cleanRepositories();
         jdbcTemplate.execute("DELETE FROM imcms_menu");

@@ -76,7 +76,7 @@ class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocument
     }
 
     @Transactional
-    public DocumentService<? extends Document> getCorrespondingDocumentService(int docId) {
+    private DocumentService<? extends Document> getCorrespondingDocumentService(int docId) {
         return Optional.ofNullable(metaRepository.findType(docId))
                 .map(this::getCorrespondingDocumentService)
                 .orElseThrow(DocumentNotExistException::new);

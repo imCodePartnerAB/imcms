@@ -5,10 +5,10 @@ import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
-import com.imcode.imcms.config.TestConfig;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopDTO;
@@ -32,14 +32,10 @@ import imcode.server.user.UserDomainObject;
 import imcode.util.ImcmsImageUtils;
 import imcode.util.image.Format;
 import imcode.util.io.FileUtility;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -51,13 +47,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @Transactional
-@WebAppConfiguration
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {TestConfig.class})
-public class ImageServiceTest {
+public class ImageServiceTest extends WebAppSpringTestConfig {
 
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_IMAGE_INDEX = 1;
@@ -93,7 +87,7 @@ public class ImageServiceTest {
     @Autowired
     private LanguageService languageService;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         imageRepository.deleteAll();
         workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
@@ -103,16 +97,18 @@ public class ImageServiceTest {
         Imcms.setUser(user);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         Imcms.removeUser();
     }
 
-    @Test(expected = DocumentNotExistException.class)
+    @Test
     public void getImage_When_DocumentNotExist_Expect_Exception() {
         final int nonExistingDocId = 0;
         final ImageDTO imageDTO = new ImageDTO(TEST_IMAGE_INDEX, nonExistingDocId);
-        imageService.getImage(imageDTO);// should throw exception
+
+        assertThrows(DocumentNotExistException.class,
+                () -> imageService.getImage(imageDTO));
     }
 
     @Test
