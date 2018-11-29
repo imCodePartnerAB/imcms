@@ -377,7 +377,16 @@ const texts = {
                 discardChangesMessage: 'Ignorera ändringar?'
             },
             ipAccess: {
-                name: 'IP-åtkomst'
+                name: 'IP-åtkomst',
+                title: 'IP-åtkomst',
+                createNewRule: 'Ny',
+                editRule: 'Redigera',
+                deleteRule: 'Radera',
+                save: 'Spara',
+                cancel: 'Annullera',
+                deleteConfirm: 'Vill du verkligen ta bort den här regel?',
+                saveChanges: 'Spara ändringar',
+                discardChangesMessage: 'Ignorera ändringar?'
             },
             deleteDocs: {
                 name: 'Radera dokument',
@@ -831,7 +840,16 @@ const texts = {
                 discardChangesMessage: 'Discard changes?'
             },
             ipAccess: {
-                name: 'IP Access'
+                name: 'IP Access',
+                title: 'IP Access',
+                createNewRule: 'New',
+                editRule: 'Edit',
+                deleteRule: 'Remove',
+                save: 'Save',
+                cancel: 'Cancel',
+                deleteConfirm: 'Do you really want to delete this rule?',
+                saveChanges: 'Save changes',
+                discardChangesMessage: 'Discard changes?'
             },
             deleteDocs: {
                 name: 'Delete Documents',
