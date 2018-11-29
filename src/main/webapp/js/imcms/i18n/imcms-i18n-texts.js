@@ -379,9 +379,6 @@ const texts = {
             ipAccess: {
                 name: 'IP-åtkomst'
             },
-            ipWhiteList: {
-                name: 'IP vitlista'
-            },
             deleteDocs: {
                 name: 'Radera dokument',
                 title: 'Ta bort dokument med id',
@@ -835,9 +832,6 @@ const texts = {
             },
             ipAccess: {
                 name: 'IP Access'
-            },
-            ipWhiteList: {
-                name: 'IP White List'
             },
             deleteDocs: {
                 name: 'Delete Documents',

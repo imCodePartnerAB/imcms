@@ -10,7 +10,6 @@ module.exports = new WindowTabsBuilder({
         require('imcms-users-tab-builder'),
         require('imcms-roles-tab-builder'),
         require('imcms-ip-access-tab-builder'),
-        require('imcms-ip-white-list-tab-builder'),
         require('imcms-delete-docs-tab-builder'),
         require('imcms-templates-admin-tab-builder'),
         require('imcms-files-tab-builder'),

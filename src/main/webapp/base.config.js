@@ -149,7 +149,6 @@ module.exports = {
                                 'imcms-users-tab-builder',
                                 'imcms-roles-tab-builder',
                                 'imcms-ip-access-tab-builder',
-                                'imcms-ip-white-list-tab-builder',
                                 'imcms-delete-docs-tab-builder',
                                 'imcms-templates-admin-tab-builder',
                                 'imcms-files-tab-builder',
