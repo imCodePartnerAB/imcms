@@ -182,6 +182,8 @@ module.exports = {
                                 'imcms-role-to-row-transformer',
                                 'imcms-profile-editor',
                                 'imcms-profile-to-row-transformer',
+                                'imcms-rule-editor',
+                                'imcms-rule-to-row-transformer',
                                 'imcms-field-wrapper',
                             ]
                         },
@@ -232,6 +234,7 @@ module.exports = {
                         'imcms-users-rest-api',
                         'imcms-categories-rest-api',
                         'imcms-roles-rest-api',
+                        'imcms-ip-rules-rest-api',
                         'imcms-templates-rest-api',
                         'imcms-category-types-rest-api',
                         'imcms-loops-rest-api',
