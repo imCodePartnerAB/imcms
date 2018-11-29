@@ -119,7 +119,7 @@ public class DocumentFilesControllerTest extends AbstractControllerTest {
                 "files", filename, null, FileUtils.readFileToByteArray(testFile)
         );
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.fileUpload(controllerPath())
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.multipart(controllerPath())
                 .file(mockFile)
                 .param("docId", "" + createdDocId);
 

@@ -6,16 +6,16 @@ import imcode.server.document.index.DocumentIndex;
 import imcode.server.document.index.IndexSearchResult;
 import imcode.server.user.UserDomainObject;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public class DefaultResolvingQueryIndexTest {
 
     @Mock

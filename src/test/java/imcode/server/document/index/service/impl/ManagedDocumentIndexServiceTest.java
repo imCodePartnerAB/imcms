@@ -5,20 +5,22 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+
 public class ManagedDocumentIndexServiceTest {
 
     @Mock
@@ -35,13 +37,13 @@ public class ManagedDocumentIndexServiceTest {
 
     private SolrQuery solrQuery;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         solrQuery = new SolrQuery();
     }
 
     @Test
-    public void query_When_SolrServerIsCorrect_Expect_QueryResponseIsReturned() throws SolrServerException, IOException {
+    void query_When_SolrServerIsCorrect_Expect_QueryResponseIsReturned() throws SolrServerException, IOException {
         when(serviceOps.query(solrClient, solrQuery)).thenReturn(queryResponse);
 
         final QueryResponse actualResponse = managedDocumentIndexService.query(solrQuery);
@@ -49,15 +51,15 @@ public class ManagedDocumentIndexServiceTest {
         assertNotNull(actualResponse);
     }
 
-    @Test(expected = IndexException.class)
-    public void query_When_SolrServerExceptionIsThrown_Expect_IndexException() throws SolrServerException, IOException {
+    @Test()
+    void query_When_SolrServerExceptionIsThrown_Expect_IndexException() throws SolrServerException, IOException {
         when(serviceOps.query(solrClient, solrQuery)).thenThrow(new SolrServerException("test_message"));
 
-        managedDocumentIndexService.query(solrQuery);
+        assertThrows(IndexException.class, () -> managedDocumentIndexService.query(solrQuery));
     }
 
-    @After
-    public void verifyMethodExecution() throws SolrServerException, IOException {
+    @AfterEach
+    void verifyMethodExecution() throws SolrServerException, IOException {
         verify(serviceOps, times(1)).query(solrClient, solrQuery);
     }
 }
