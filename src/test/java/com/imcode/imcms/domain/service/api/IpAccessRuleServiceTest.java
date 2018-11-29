@@ -81,6 +81,9 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         rule.setIpRange("a:a:a:a:a--111.1.1.1");
         assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
 
+        rule.setIpRange("2002:c0a8:101::-2002:c0a8:264:");
+        assertThrows(IpAccessRuleValidationException.class, () -> accessRuleService.create(rule));
+
         assertTrue(accessRuleService.getAll().isEmpty());
     }
 
@@ -332,6 +335,38 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
         assertEquals(2, accessRuleService.getAll().size());
 
         assertFalse(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4), defaultUser));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenAllowedByIp4RangeAndIPv6Passsed_ExpectTrue() throws UnknownHostException {
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
+        rule.setEnabled(true);
+        rule.setRestricted(false);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V4);
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenAllowedByIp4RangeAndIPv4Passsed_ExpectTrue() throws UnknownHostException {
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+
+        rule.setEnabled(true);
+        rule.setRestricted(false);
+        rule.setIpRange(IP_RANGE_TEMPLATE_IP_V4);
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(InetAddress.getByName(IP_TEMPLATE_V4),defaultUser));
     }
 
 }
