@@ -6,9 +6,9 @@ define(
     'imcms-rule-editor',
     [
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
-        'imcms-ip-rules-rest-api', 'imcms-rule-to-row-transformer'
+        'imcms-ip-rules-rest-api', 'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms-rule-to-row-transformer'
     ],
-    function (BEM, components, texts, confirmationBuilder, rulesAPI, ruleToRow) {
+    function (BEM, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
 
         texts = texts.superAdmin.ipAccess;
 
@@ -17,10 +17,73 @@ define(
         var $ruleViewButtons;
         var $ruleEditButtons;
 
-        function buildRuleNameRow() {
-            $ruleNameRow = components.texts.textBox('<div>', {text: texts.ruleName});
+        function buildRuleRangeRow() {
+            $ruleNameRow = components.texts.textBox('<div>', {text: texts.fields.ipRange});
             $ruleNameRow.$input.attr('disabled', 'disabled');
             return $ruleNameRow;
+        }
+
+        function buildRuleModifiers() {
+
+            function createCheckboxWithText(text) {
+                return components.checkboxes.imcmsCheckbox("<div>", {
+                    text: text
+                });
+            }
+
+            modifierCheckboxes$ = [
+                $isEnabled = createCheckboxWithText(texts.fields.enabled),
+                $isRestricted = createCheckboxWithText(texts.fields.restricted),
+            ];
+
+            return components.checkboxes.checkboxContainerField(
+                '<div>', modifierCheckboxes$, {}
+            );
+        }
+
+
+        function buildRuleUserRow() {
+            $userSelect = components.selects.imcmsSelect('<div>', {
+                id: 'users',
+                name: 'users',
+                text: texts.fields.user,
+                emptySelect: true
+            });
+
+            usersRestApi.read().done(function (users) {
+                var usersDataMapped = users.map(function (user) {
+                    return {
+                        text: user.login,
+                        value: user.id
+                    }
+                });
+
+                components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
+            });
+
+            return $userSelect;
+        }
+
+        function buildRuleRoleRow() {
+            $roleSelect = components.selects.imcmsSelect('<div>', {
+                id: 'users-role',
+                name: 'users-role',
+                text: texts.fields.role,
+                emptySelect: true
+            });
+
+            rolesRestApi.read().done(function (roles) {
+                var rolesDataMapped = roles.map(function (role) {
+                    return {
+                        text: role.name,
+                        value: role.id
+                    }
+                });
+
+                components.selects.addOptionsToSelect(rolesDataMapped, $roleSelect);
+            });
+
+            return $roleSelect;
         }
 
         function onCancelChanges($ruleRowElement, rule) {
@@ -173,7 +236,10 @@ define(
             return $container || ($container = new BEM({
                 block: 'rules-editor',
                 elements: {
-                    'rule-name-row': buildRuleNameRow(),
+                    'rule-modifiers': buildRuleModifiers(),
+                    'rule-name-row': buildRuleRangeRow(),
+                    'rule-user-row': buildRuleUserRow(),
+                    'rule-role-row': buildRuleRoleRow(),
                     'rule-view-buttons': buildRuleViewButtons(),
                     'rule-edit-buttons': buildRuleEditButtons()
                 }
