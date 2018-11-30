@@ -10,17 +10,30 @@ define(
     ],
     function (BEM, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
 
+        let onEditDelegate;
+        let onRuleView;
+        let $ruleRow;
+        let currentRule;
+        let $container;
         texts = texts.superAdmin.ipAccess;
 
-        var $ruleNameRow;
+        let $ruleRangeRow;
+        let $enableRuleCheckbox;
+        let $restrictRuleCheckbox;
+        let $userSelect;
+        let $userRoleSelect;
 
-        var $ruleViewButtons;
-        var $ruleEditButtons;
+        let $ruleViewButtons;
+        let $ruleEditButtons;
 
         function buildRuleRangeRow() {
-            $ruleNameRow = components.texts.textBox('<div>', {text: texts.fields.ipRange});
-            $ruleNameRow.$input.attr('disabled', 'disabled');
-            return $ruleNameRow;
+            $ruleRangeRow = components.texts.textBox('<div>',
+                {
+                    text: texts.fields.ipRange,
+                    pattern: '((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))'
+                });
+            $ruleRangeRow.$input.attr('disabled', 'disabled');
+            return $ruleRangeRow;
         }
 
         function buildRuleModifiers() {
@@ -31,9 +44,9 @@ define(
                 });
             }
 
-            modifierCheckboxes$ = [
-                $isEnabled = createCheckboxWithText(texts.fields.enabled),
-                $isRestricted = createCheckboxWithText(texts.fields.restricted),
+            let modifierCheckboxes$ = [
+                $enableRuleCheckbox = createCheckboxWithText(texts.fields.enabled),
+                $restrictRuleCheckbox = createCheckboxWithText(texts.fields.restricted)
             ];
 
             return components.checkboxes.checkboxContainerField(
@@ -51,11 +64,11 @@ define(
             });
 
             usersRestApi.read().done(function (users) {
-                var usersDataMapped = users.map(function (user) {
+                const usersDataMapped = users.map(function (user) {
                     return {
                         text: user.login,
                         value: user.id
-                    }
+                    };
                 });
 
                 components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
@@ -65,7 +78,7 @@ define(
         }
 
         function buildRuleRoleRow() {
-            $roleSelect = components.selects.imcmsSelect('<div>', {
+            $userRoleSelect = components.selects.imcmsSelect('<div>', {
                 id: 'users-role',
                 name: 'users-role',
                 text: texts.fields.role,
@@ -73,17 +86,17 @@ define(
             });
 
             rolesRestApi.read().done(function (roles) {
-                var rolesDataMapped = roles.map(function (role) {
+                const rolesDataMapped = roles.map(function (role) {
                     return {
                         text: role.name,
                         value: role.id
-                    }
+                    };
                 });
 
-                components.selects.addOptionsToSelect(rolesDataMapped, $roleSelect);
+                components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
             });
 
-            return $roleSelect;
+            return $userRoleSelect;
         }
 
         function onCancelChanges($ruleRowElement, rule) {
@@ -101,19 +114,21 @@ define(
             $ruleViewButtons.slideUp();
             $ruleEditButtons.slideDown();
 
-            $ruleNameRow.$input.removeAttr('disabled').focus();
+            $ruleRangeRow.$input.removeAttr('disabled').focus();
         }
 
         function onDeleteRule() {
             confirmationBuilder.buildModalWindow(texts.deleteConfirm, function (confirmed) {
-                if (!confirmed) return;
+                if (!confirmed) {
+                    return;
+                }
 
                 rulesAPI.remove(currentRule).success(function () {
                     $ruleRow.remove();
                     currentRule = null;
                     onEditDelegate = onSimpleEdit;
                     $container.slideUp();
-                })
+                });
             });
         }
 
@@ -131,20 +146,20 @@ define(
         }
 
         function onSaveRule() {
-            var name = $ruleNameRow.getValue();
+            let name = $ruleRangeRow.getValue();
 
             if (!name) {
-                $ruleNameRow.$input.focus();
+                $ruleRangeRow.$input.focus();
                 return;
             }
 
-            var saveMe = {
+            const saveMe = {
                 id: currentRule.id,
-                isEnabled: false,
-                isRestricted: false,
-                ipRange: null,
-                roleId: null,
-                userId: null
+                isEnabled: $enableRuleCheckbox.isChecked(),
+                isRestricted: $restrictRuleCheckbox.isChecked(),
+                ipRange:$ruleRangeRow.getValue(),
+                roleId: $userRoleSelect.getValuel(),
+                userId: $userSelect.getValue()
             };
 
             if (saveMe.id) {
@@ -169,10 +184,12 @@ define(
         function getOnDiscardChanges(onConfirm) {
             return function () {
                 confirmationBuilder.buildModalWindow(texts.discardChangesMessage, function (confirmed) {
-                    if (!confirmed) return;
+                    if (!confirmed) {
+                        return;
+                    }
                     onConfirm.call();
                 });
-            }
+            };
         }
 
         function buildRuleEditButtons() {
@@ -213,24 +230,23 @@ define(
             $ruleEditButtons.slideUp('fast');
             $ruleViewButtons.slideDown('fast');
 
-            $ruleNameRow.$input.attr('disabled', 'disabled');
-            $ruleNameRow.setValue(currentRule.name);
+            $ruleRangeRow.$input.attr('disabled', 'disabled');
+            $ruleRangeRow.setValue(currentRule.name);
 
             $container.css('display', 'inline-block');
         }
 
         function onRuleSimpleView($ruleRowElement, rule) {
-            if (currentRule && currentRule.id === rule.id) return;
+            if (currentRule && currentRule.id === rule.id) {
+                return;
+            }
             currentRule = rule;
             $ruleRow = $ruleRowElement;
 
             prepareRuleView();
         }
 
-        var $container;
-        var currentRule;
-        var $ruleRow;
-        var onRuleView = onRuleSimpleView;
+        onRuleView = onRuleSimpleView;
 
         function buildContainer() {
             return $container || ($container = new BEM({
@@ -256,12 +272,12 @@ define(
             onEditRule();
         }
 
-        var onEditDelegate = onSimpleEdit;
+        onEditDelegate = onSimpleEdit;
 
         function editRule($ruleRow, rule) {
             onEditDelegate($ruleRow, rule);
             onEditDelegate = function () {
-            }
+            };
         }
 
         var ruleEditor = {
