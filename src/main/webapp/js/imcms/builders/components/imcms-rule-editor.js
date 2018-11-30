@@ -230,8 +230,11 @@ define(
             $ruleEditButtons.slideUp('fast');
             $ruleViewButtons.slideDown('fast');
 
-            $ruleRangeRow.$input.attr('disabled', 'disabled');
-            $ruleRangeRow.setValue(currentRule.name);
+            $ruleRangeRow.setValue(currentRule.ipRange);
+            $enableRuleCheckbox.setChecked(currentRule.isEnabled);
+            $restrictRuleCheckbox.setChecked(currentRule.isRestricted);
+            $userSelect.selectValue(currentRule.userId);
+            $userRoleSelect.selectValue(currentRule.roleId);
 
             $container.css('display', 'inline-block');
         }
