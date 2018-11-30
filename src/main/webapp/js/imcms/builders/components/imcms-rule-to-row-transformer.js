@@ -2,32 +2,50 @@
  * @author Dmytro Zemlianslyi from Ubrainians for imCode
  * 29.10.18
  */
-define('imcms-rule-to-row-transformer', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
+define('imcms-rule-to-row-transformer',
+    ['imcms-bem-builder', 'jquery', 'imcms-components-builder'],
+    function (BEM, $, components) {
 
-    var rulesTableBEM = new BEM({
-        block: 'rules-table',
-        elements: {
-            'rule-row': ''
+        function getOnRuleClicked(rule, ruleEditor) {
+            return function () {
+                var $this = $(this);
+
+                if ($this.hasClass('rule-row--active')) {
+                    return;
+                }
+                ruleEditor.viewRule($this, rule);
+            };
         }
+
+        return {
+            transform: function (rule, ruleEditor) {
+
+                let ruleRowAttributes = {
+                    id: `rule-id-${rule.id}`,
+                    click: getOnRuleClicked(rule, ruleEditor)
+                };
+
+                return new BEM({
+                    block: 'rule-row',
+                    elements: {
+                        "rule-enabled": $('<div>', {
+                            text: rule.isEnabled
+                        }),
+                        "rule-restricted": $('<div>', {
+                            text: rule.isRestricted
+                        }),
+                        "rule-ip-range": $('<div>', {
+                            text: rule.ipRange
+                        }),
+                        "rule-role": $('<div>', {
+                            text: rule.roleId
+                        }),
+                        "rule-user": $('<div>', {
+                            text: rule.userId
+                        }),
+                        'rule-delete': components.controls.remove(ruleEditor.deleteRule)
+                    },
+                }).buildBlockStructure('<div>', ruleRowAttributes);
+            }
+        };
     });
-
-    function getOnRuleClicked(rule, ruleEditor) {
-        return function () {
-            var $this = $(this);
-
-            if ($this.hasClass('rules-table__rule-row--active')) return;
-
-            ruleEditor.viewRule($this, rule);
-        }
-    }
-
-    return {
-        transform: function (rule, ruleEditor) {
-            return rulesTableBEM.makeBlockElement('rule-row', $('<div>', {
-                id: 'rule-id-' + rule.id,
-                text: rule.ipRange,
-                click: getOnRuleClicked(rule, ruleEditor)
-            }))
-        }
-    };
-});
