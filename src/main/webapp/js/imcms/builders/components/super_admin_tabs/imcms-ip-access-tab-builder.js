@@ -6,9 +6,9 @@ define(
     'imcms-ip-access-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-ip-rules-rest-api',
-        'imcms-rule-editor', 'imcms', 'imcms-bem-builder', 'jquery', 'imcms-field-wrapper'
+        'imcms-rule-editor', 'imcms-rule-to-row-transformer', 'imcms', 'imcms-bem-builder', 'jquery', 'imcms-field-wrapper'
     ],
-    function (SuperAdminTab, texts, components, rulesApi, ruleEditor, imcms, BEM, $, fieldWrapper) {
+    function (SuperAdminTab, texts, components, rulesApi, ruleEditor, ruleToRow, imcms, BEM, $, fieldWrapper) {
 
         texts = texts.superAdmin.ipAccess;
 
