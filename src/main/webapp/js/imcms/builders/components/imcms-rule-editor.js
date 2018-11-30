@@ -283,7 +283,8 @@ define(
         var ruleEditor = {
             buildContainer: buildContainer,
             viewRule: viewRule,
-            editRule: editRule
+            editRule: editRule,
+            deleteRule: onDeleteRule
         };
 
         return ruleEditor;
