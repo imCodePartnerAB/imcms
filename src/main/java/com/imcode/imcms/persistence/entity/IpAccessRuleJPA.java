@@ -29,7 +29,6 @@ public class IpAccessRuleJPA extends IpAccessRule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     @Column(name = "rule_id")
     private Integer Id;
 
