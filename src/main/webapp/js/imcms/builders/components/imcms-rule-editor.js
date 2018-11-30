@@ -158,8 +158,8 @@ define(
                 isEnabled: $enableRuleCheckbox.isChecked(),
                 isRestricted: $restrictRuleCheckbox.isChecked(),
                 ipRange:$ruleRangeRow.getValue(),
-                roleId: $userRoleSelect.getValuel(),
-                userId: $userSelect.getValue()
+                roleId: $userRoleSelect.val(),
+                userId: $userSelect.val()
             };
 
             if (saveMe.id) {
