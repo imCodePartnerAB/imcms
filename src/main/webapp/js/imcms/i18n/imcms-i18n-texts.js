@@ -861,8 +861,8 @@ const texts = {
                     enabled: 'Enabled',
                     restricted: 'Restricted',
                     ipRange: 'IP Range',
-                    role: 'role',
-                    user: 'user'
+                    role: 'Role',
+                    user: 'User'
                 }
             },
             deleteDocs: {
