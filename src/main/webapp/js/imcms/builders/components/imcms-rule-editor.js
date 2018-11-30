@@ -67,7 +67,7 @@ define(
                 const usersDataMapped = users.map(function (user) {
                     return {
                         text: user.login,
-                        value: user.id
+                        "data-value": user.id
                     };
                 });
 
@@ -89,7 +89,7 @@ define(
                 const rolesDataMapped = roles.map(function (role) {
                     return {
                         text: role.name,
-                        value: role.id
+                        "data-value": role.id
                     };
                 });
 
@@ -157,16 +157,21 @@ define(
                 id: currentRule.id,
                 isEnabled: $enableRuleCheckbox.isChecked(),
                 isRestricted: $restrictRuleCheckbox.isChecked(),
-                ipRange:$ruleRangeRow.getValue(),
-                roleId: $userRoleSelect.val(),
-                userId: $userSelect.val()
+                ipRange: $ruleRangeRow.getValue(),
+                roleId: $userRoleSelect.getSelectedValue(),
+                userId: $userSelect.getSelectedValue()
             };
 
             if (saveMe.id) {
-                rulesAPI.update(saveMe).success(function (savedRule) {
-                    // todo: maybe there is better way to reassign fields' values, not object itself
-                    currentRule.id = savedRule.id;
-                    $ruleRow.text(currentRule.name = savedRule.name);
+                rulesAPI.replace(saveMe).success(function (savedRule) {
+                    currentRule = savedRule;
+
+                    $ruleRow.find('.rule-row__rule-enabled').text(currentRule.isEnabled);
+                    $ruleRow.find('.rule-row__rule-restricted').text(currentRule.isRestricted);
+                    $ruleRow.find('.rule-row__rule-ip-range').text(currentRule.ipRange);
+                    $ruleRow.find('.rule-row__rule-role').text(currentRule.roleId);
+                    $ruleRow.find('.rule-row__rule-user').text(currentRule.userId);
+
                     onRuleView = onRuleSimpleView;
                     prepareRuleView();
                 });
