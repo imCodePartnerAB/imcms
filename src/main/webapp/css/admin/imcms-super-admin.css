@@ -203,9 +203,11 @@
 .profile-info-row__profile-doc-name {
     width: 45%;
 }
+
 .imcms-control.imcms-control--remove.profile-info-row__delete {
     width: 10%;
 }
+
 .profiles-editor {
     width: 25%;
     margin-left: 10%;
@@ -303,6 +305,6 @@
     width: 12%;
 }
 
-.rule-row> * {
+.rule-row > * {
     display: inline-block;
 }
