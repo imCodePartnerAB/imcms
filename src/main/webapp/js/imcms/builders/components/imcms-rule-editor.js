@@ -155,8 +155,8 @@ define(
 
             const saveMe = {
                 id: currentRule.id,
-                isEnabled: $enableRuleCheckbox.isChecked(),
-                isRestricted: $restrictRuleCheckbox.isChecked(),
+                enabled: $enableRuleCheckbox.isChecked(),
+                restricted: $restrictRuleCheckbox.isChecked(),
                 ipRange: $ruleRangeRow.getValue(),
                 roleId: $userRoleSelect.getSelectedValue(),
                 userId: $userSelect.getSelectedValue()
@@ -166,8 +166,8 @@ define(
                 rulesAPI.replace(saveMe).success(function (savedRule) {
                     currentRule = savedRule;
 
-                    $ruleRow.find('.rule-row__rule-enabled').text(currentRule.isEnabled);
-                    $ruleRow.find('.rule-row__rule-restricted').text(currentRule.isRestricted);
+                    $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked",currentRule.enabled);
+                    $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked",currentRule.restricted);
                     $ruleRow.find('.rule-row__rule-ip-range').text(currentRule.ipRange);
                     $ruleRow.find('.rule-row__rule-role').text(currentRule.roleId);
                     $ruleRow.find('.rule-row__rule-user').text(currentRule.userId);
@@ -236,8 +236,8 @@ define(
             $ruleViewButtons.slideDown('fast');
 
             $ruleRangeRow.setValue(currentRule.ipRange);
-            $enableRuleCheckbox.setChecked(currentRule.isEnabled);
-            $restrictRuleCheckbox.setChecked(currentRule.isRestricted);
+            $enableRuleCheckbox.setChecked(currentRule.enabled);
+            $restrictRuleCheckbox.setChecked(currentRule.restricted);
             $userSelect.selectValue(currentRule.userId);
             $userRoleSelect.selectValue(currentRule.roleId);
 

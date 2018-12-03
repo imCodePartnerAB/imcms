@@ -28,11 +28,13 @@ define('imcms-rule-to-row-transformer',
                 return new BEM({
                     block: 'rule-row',
                     elements: {
-                        "rule-enabled": $('<div>', {
-                            text: rule.isEnabled
+                        "rule-enabled": components.checkboxes.imcmsCheckbox("<div>", {
+                            checked: rule.enabled,
+                            disabled: true
                         }),
-                        "rule-restricted": $('<div>', {
-                            text: rule.isRestricted
+                        "rule-restricted": components.checkboxes.imcmsCheckbox("<div>", {
+                            checked: rule.restricted,
+                            disabled: true
                         }),
                         "rule-ip-range": $('<div>', {
                             text: rule.ipRange
