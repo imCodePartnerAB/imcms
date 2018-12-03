@@ -54,4 +54,14 @@ public class IpAccessRuleJPA extends IpAccessRule {
     public IpAccessRuleJPA(IpAccessRule from) {
         super(from);
     }
+
+    @Override
+    public Integer getRoleId() {
+        return null == role ? null : role.getId();
+    }
+
+    @Override
+    public Integer getUserId() {
+        return null == user ? null : user.getId();
+    }
 }

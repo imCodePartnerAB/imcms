@@ -10,12 +10,12 @@ import java.io.Serializable;
 public abstract class IpAccessRule implements Serializable {
     private static final long serialVersionUID = -7136110444914457556L;
 
-    protected Integer id;
-    protected boolean isEnabled;
-    protected boolean isRestricted;
-    protected String ipRange;
-    protected Integer roleId;
-    protected Integer userId;
+    private Integer id;
+    private boolean isEnabled;
+    private boolean isRestricted;
+    private String ipRange;
+    private Integer roleId;
+    private Integer userId;
 
     protected IpAccessRule(IpAccessRule from) {
         setId(from.getId());

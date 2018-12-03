@@ -8,6 +8,7 @@ import com.imcode.imcms.persistence.entity.IpAccessRuleJPA;
 import com.imcode.imcms.persistence.repository.IpAccessRuleRepository;
 import imcode.server.user.UserDomainObject;
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +29,12 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     private final IpAccessRuleRepository ipAccessRuleRepository;
     private final AccessRuleValidationActionConsumer ruleValidation;
+    private final ModelMapper modelMapper;
 
-    DefaultIpAccessRuleService(IpAccessRuleRepository ipAccessRuleRepository, AccessRuleValidationActionConsumer ruleValidation) {
+    DefaultIpAccessRuleService(IpAccessRuleRepository ipAccessRuleRepository, AccessRuleValidationActionConsumer ruleValidation, ModelMapper modelMapper) {
         this.ipAccessRuleRepository = ipAccessRuleRepository;
         this.ruleValidation = ruleValidation;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -50,9 +53,10 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public IpAccessRule create(IpAccessRule rule) {
+
         return new IpAccessRuleDTO(
                 ruleValidation.doIfValid(rule,
-                        validatedRule -> ipAccessRuleRepository.save(new IpAccessRuleJPA(validatedRule))
+                        validatedRule -> ipAccessRuleRepository.save(modelMapper.map(rule, IpAccessRuleJPA.class))
                 )
         );
     }
@@ -61,7 +65,7 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
     public IpAccessRule update(IpAccessRule rule) {
         return new IpAccessRuleDTO(
                 ruleValidation.doIfValid(rule,
-                        validatedRule -> ipAccessRuleRepository.save(new IpAccessRuleJPA(validatedRule))
+                        validatedRule -> ipAccessRuleRepository.save(modelMapper.map(rule, IpAccessRuleJPA.class))
                 )
         );
     }
