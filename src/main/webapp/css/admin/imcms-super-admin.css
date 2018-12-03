@@ -268,3 +268,35 @@
 .roles-editor__role-permissions {
     padding-left: 40px;
 }
+
+.rules-table {
+    height: 600px;
+    overflow-y: auto;
+    background-color: #ececec;
+    border: solid 1px #d1d2c6;
+}
+
+.rule-row__rule-enabled,
+.rule-row__rule-restricted,
+.rule-row__rule-ip-range,
+.rule-row__rule-role,
+.rule-row__rule-user {
+    padding: 5px;
+}
+
+.rule-row__rule-delete .imcms-control .imcms-control--remove {
+    margin: 5px;
+}
+
+.rule-row__rule-ip-range {
+    width: 60%;
+}
+
+.rule-row__rule-role,
+.rule-row__rule-user {
+    width: 15%;
+}
+
+.rule-row> * {
+    display: inline-block;
+}
