@@ -286,6 +286,12 @@
 
 .rule-row__rule-delete .imcms-control .imcms-control--remove {
     margin: 5px;
+    width: 5%;
+}
+
+.rule-row__rule-enabled,
+.rule-row__rule-restricted {
+    width: 3%;
 }
 
 .rule-row__rule-ip-range {
@@ -294,7 +300,7 @@
 
 .rule-row__rule-role,
 .rule-row__rule-user {
-    width: 15%;
+    width: 12%;
 }
 
 .rule-row> * {
