@@ -5,10 +5,10 @@
 define(
     'imcms-rule-editor',
     [
-        'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
+        'imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
         'imcms-ip-rules-rest-api', 'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms-rule-to-row-transformer'
     ],
-    function (BEM, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
+    function (BEM, $, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
 
         const ruleEditor = {
             buildContainer: buildContainer,
@@ -29,13 +29,13 @@ define(
         let currentRule;
         let $container;
 
-        let $ruleRangeRow;
+        let $ruleRange1Row;
+        let $ruleRange2Row;
         let $enableRuleCheckbox;
         let $restrictRuleCheckbox;
         let $userSelect;
         let $userRoleSelect;
 
-        let $ruleViewButtons;
         let $ruleEditButtons;
 
         initRequiredData();
@@ -65,14 +65,32 @@ define(
             });
         }
 
+        function buildRuleRange1Row() {
+            $ruleRange1Row = components.texts.textBox('<div>', {});
+            $ruleRange1Row.$input
+                .attr('pattern', '^$|((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))');
+            return $ruleRange1Row;
+        }
+
+        function buildRuleRange2Row() {
+            $ruleRange2Row = components.texts.textBox('<div>', {});
+            $ruleRange2Row.$input
+                .attr('pattern', '^$|((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))');
+            return $ruleRange2Row;
+        }
+
         function buildRuleRangeRow() {
-            $ruleRangeRow = components.texts.textBox('<div>',
-                {
-                    text: texts.fields.ipRange,
-                    pattern: '((^\\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\\s*$)|(^\\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)(\\.(25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]?\\d)){3}))|:)))(%.+)?\\s*$))'
-                });
-            $ruleRangeRow.$input.attr('disabled', 'disabled');
-            return $ruleRangeRow;
+            return new BEM({
+                block: 'ip-range',
+                title: texts.fields.ipRange,
+                elements: {
+                    'ip-range1': buildRuleRange1Row(),
+                    'ip-range-divider': $('<div>', {
+                        text: '-'
+                    }),
+                    'ip-range2': buildRuleRange2Row()
+                }
+            }).buildBlockStructure("<div>");
         }
 
         function buildRuleModifiers() {
@@ -127,11 +145,7 @@ define(
 
         function onEditRule() {
             onRuleView = onCancelChanges;
-
-            $ruleViewButtons.slideUp();
             $ruleEditButtons.slideDown();
-
-            $ruleRangeRow.$input.removeAttr('disabled').focus();
         }
 
         function onDeleteRule() {
@@ -149,33 +163,15 @@ define(
             });
         }
 
-        function buildRuleViewButtons() {
-            $ruleViewButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: texts.editRule,
-                    click: onEditRule
-                }),
-                components.buttons.negativeButton({
-                    text: texts.deleteRule,
-                    click: onDeleteRule
-                })
-            ]);
-            return $ruleViewButtons;
-        }
-
         function onSaveRule() {
-            let name = $ruleRangeRow.getValue();
-
-            if (!name) {
-                $ruleRangeRow.$input.focus();
-                return;
-            }
+            let ip1 = $ruleRange1Row.getValue();
+            let ip2 = $ruleRange2Row.getValue();
 
             const saveMe = {
                 id: currentRule.id,
                 enabled: $enableRuleCheckbox.isChecked(),
                 restricted: $restrictRuleCheckbox.isChecked(),
-                ipRange: $ruleRangeRow.getValue(),
+                ipRange: ip2 ? `${ip1}-${ip2}` : ip1,
                 roleId: $userRoleSelect.getSelectedValue(),
                 userId: $userSelect.getSelectedValue()
             };
@@ -224,10 +220,9 @@ define(
                     text: texts.cancel,
                     click: getOnDiscardChanges(() => {
                         onRuleView = onRuleSimpleView;
-
                         if (currentRule.id) {
                             prepareRuleView();
-
+                            $container.slideUp();
                         } else {
                             currentRule = null;
                             onEditDelegate = onSimpleEdit;
@@ -251,10 +246,11 @@ define(
 
             $ruleRow.addClass('rules-table__rule-row--active');
 
-            $ruleEditButtons.slideUp('fast');
-            $ruleViewButtons.slideDown('fast');
+            $ruleEditButtons.slideDown();
 
-            $ruleRangeRow.setValue(currentRule.ipRange);
+            let ipRange = currentRule.ipRange.split('-');
+            $ruleRange1Row.setValue(ipRange[0]);
+            $ruleRange2Row.setValue(ipRange[1]);
             $enableRuleCheckbox.setChecked(currentRule.enabled);
             $restrictRuleCheckbox.setChecked(currentRule.restricted);
             $userSelect.selectValue(currentRule.userId);
@@ -280,10 +276,9 @@ define(
                 block: 'rules-editor',
                 elements: {
                     'rule-modifiers': buildRuleModifiers(),
-                    'rule-name-row': buildRuleRangeRow(),
+                    'rule-range-row': buildRuleRangeRow(),
                     'rule-user-row': buildRuleUserRow(),
                     'rule-role-row': buildRuleRoleRow(),
-                    'rule-view-buttons': buildRuleViewButtons(),
                     'rule-edit-buttons': buildRuleEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
