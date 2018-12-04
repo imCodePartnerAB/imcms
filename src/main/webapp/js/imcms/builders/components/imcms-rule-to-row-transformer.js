@@ -27,8 +27,8 @@ define('imcms-rule-to-row-transformer',
                     click: getOnRuleClicked(rule, ruleEditor)
                 };
 
-                let userLogin = users[rule.userId] ? users[rule.userId].login : '';
-                let roleName = roles[rule.roleId] ? roles[rule.roleId].name : '';
+                let userLogin = users.find((user) => user.id === rule.userId);
+                let roleName = roles.find((role) => role.id === rule.roleId);
 
                 return new BEM({
                     block: 'rule-row',
@@ -45,10 +45,10 @@ define('imcms-rule-to-row-transformer',
                             text: rule.ipRange
                         }),
                         "rule-role": $('<div>', {
-                            text: roleName
+                            text: roleName ? roleName.name : ''
                         }),
                         "rule-user": $('<div>', {
-                            text: userLogin
+                            text: userLogin ? userLogin.login : ''
                         }),
                         'rule-delete': components.controls.remove(ruleEditor.deleteRule)
                     },
