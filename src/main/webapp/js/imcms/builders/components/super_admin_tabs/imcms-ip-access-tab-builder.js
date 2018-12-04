@@ -12,30 +12,29 @@ define(
 
         texts = texts.superAdmin.ipAccess;
 
-        var ruleLoader = {
+        const ruleLoader = {
             rules: false,
             callbacks: [],
             whenRulesLoaded: function (callback) {
-                (this.rules) ? callback(this.rules) : this.callbacks.push(callback)
+                this.rules ? callback(this.rules) : this.callbacks.push(callback);
             },
             runCallbacks: function (rules) {
                 this.rules = rules;
 
-                this.callbacks.forEach(function (callback) {
-                    callback(rules)
+                this.callbacks.forEach((callback) => {
+                    callback(rules);
                 })
             }
         };
 
-        rulesApi.read().success(function (rules) {
+        rulesApi.read().success(rules => {
             ruleLoader.runCallbacks(rules);
         });
 
-        var $rulesContainer;
-
+        let $rulesContainer;
 
         function buildTabTitle() {
-            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title));
         }
 
         function onCreateNewRule() {
@@ -64,10 +63,8 @@ define(
                 'class': 'rules-table'
             });
 
-            ruleLoader.whenRulesLoaded(function (rules) {
-                $rulesContainer.append(rules.map(function (rule) {
-                    return ruleToRow.transform(rule, ruleEditor)
-                }))
+            ruleLoader.whenRulesLoaded(rules => {
+                $rulesContainer.append(rules.map(rule => ruleToRow.transform(rule, ruleEditor)));
             });
 
             return fieldWrapper.wrap([$rulesContainer, ruleEditor.buildContainer()]);

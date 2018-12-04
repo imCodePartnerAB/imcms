@@ -10,6 +10,14 @@ define(
     ],
     function (BEM, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
 
+        const ruleEditor = {
+            buildContainer: buildContainer,
+            viewRule: viewRule,
+            editRule: editRule,
+            deleteRule: onDeleteRule,
+            getUserRoles: getRoles,
+            getUsers: getUsers
+        };
         texts = texts.superAdmin.ipAccess;
 
         let receivedRoles = [];
@@ -33,29 +41,25 @@ define(
         initRequiredData();
 
         function initRequiredData() {
-            rolesRestApi.read().success(function (roles) {
+            rolesRestApi.read().success((roles) => {
                 receivedRoles = roles;
 
                 //Init select with data
-                let rolesDataMapped = receivedRoles.map(function (role) {
-                    return {
-                        text: role.name,
-                        "data-value": role.id
-                    };
-                });
+                let rolesDataMapped = receivedRoles.map((role) => ({
+                    text: role.name,
+                    "data-value": role.id
+                }));
                 components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
             });
 
-            usersRestApi.read().success(function (users) {
+            usersRestApi.read().success((users) => {
                 receivedUsers = users;
 
                 //Init select with data
-                let usersDataMapped = receivedUsers.map(function (user) {
-                    return {
-                        text: user.login,
-                        "data-value": user.id
-                    };
-                });
+                let usersDataMapped = receivedUsers.map((user) => ({
+                    text: user.login,
+                    "data-value": user.id
+                }));
 
                 components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
             });
@@ -113,7 +117,7 @@ define(
         }
 
         function onCancelChanges($ruleRowElement, rule) {
-            getOnDiscardChanges(function () {
+            getOnDiscardChanges(() => {
                 onRuleView = onRuleSimpleView;
                 currentRule = rule;
                 $ruleRow = $ruleRowElement;
@@ -131,12 +135,12 @@ define(
         }
 
         function onDeleteRule() {
-            confirmationBuilder.buildModalWindow(texts.deleteConfirm, function (confirmed) {
+            confirmationBuilder.buildModalWindow(texts.deleteConfirm, confirmed => {
                 if (!confirmed) {
                     return;
                 }
 
-                rulesAPI.remove(currentRule).success(function () {
+                rulesAPI.remove(currentRule).success(() => {
                     $ruleRow.remove();
                     currentRule = null;
                     onEditDelegate = onSimpleEdit;
@@ -146,7 +150,7 @@ define(
         }
 
         function buildRuleViewButtons() {
-            return $ruleViewButtons = components.buttons.buttonsContainer('<div>', [
+            $ruleViewButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.positiveButton({
                     text: texts.editRule,
                     click: onEditRule
@@ -156,6 +160,7 @@ define(
                     click: onDeleteRule
                 })
             ]);
+            return $ruleViewButtons;
         }
 
         function onSaveRule() {
@@ -176,7 +181,7 @@ define(
             };
 
             if (saveMe.id) {
-                rulesAPI.replace(saveMe).success(function (savedRule) {
+                rulesAPI.replace(saveMe).success(savedRule => {
                     currentRule = savedRule;
                     $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked", currentRule.enabled);
                     $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked", currentRule.restricted);
@@ -188,7 +193,7 @@ define(
                     prepareRuleView();
                 });
             } else {
-                rulesAPI.create(saveMe).success(function (rule) {
+                rulesAPI.create(saveMe).success(rule => {
                     $ruleRow = ruleToRow.transform((currentRule = rule), ruleEditor);
                     $container.parent().find('.rules-table').append($ruleRow);
 
@@ -199,8 +204,8 @@ define(
         }
 
         function getOnDiscardChanges(onConfirm) {
-            return function () {
-                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, function (confirmed) {
+            return () => {
+                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, confirmed => {
                     if (!confirmed) {
                         return;
                     }
@@ -210,14 +215,14 @@ define(
         }
 
         function buildRuleEditButtons() {
-            return $ruleEditButtons = components.buttons.buttonsContainer('<div>', [
+            $ruleEditButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
                     text: texts.saveChanges,
                     click: onSaveRule
                 }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
-                    click: getOnDiscardChanges(function () {
+                    click: getOnDiscardChanges(() => {
                         onRuleView = onRuleSimpleView;
 
                         if (currentRule.id) {
@@ -233,6 +238,8 @@ define(
             ], {
                 style: 'display: none;'
             });
+
+            return $ruleEditButtons;
         }
 
         function prepareRuleView() {
@@ -307,15 +314,6 @@ define(
         function getUsers() {
             return receivedUsers;
         }
-
-        var ruleEditor = {
-            buildContainer: buildContainer,
-            viewRule: viewRule,
-            editRule: editRule,
-            deleteRule: onDeleteRule,
-            getUserRoles: getRoles,
-            getUsers: getUsers
-        };
 
         return ruleEditor;
     }

@@ -1,5 +1,5 @@
 /**
- * @author Dmytro Zemlianslyi from Ubrainians for imCode
+ * @author Dmytro Zemlianskyi from Ubrainians for imCode
  * 29.10.18
  */
 define('imcms-rule-to-row-transformer',
@@ -18,7 +18,7 @@ define('imcms-rule-to-row-transformer',
         }
 
         return {
-            transform: function (rule, ruleEditor) {
+            transform: (rule, ruleEditor) => {
                 let roles = ruleEditor.getUserRoles();
                 let users = ruleEditor.getUsers();
 
