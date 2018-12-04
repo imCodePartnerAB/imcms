@@ -8,7 +8,7 @@ define('imcms-rule-to-row-transformer',
 
         function getOnRuleClicked(rule, ruleEditor) {
             return function () {
-                var $this = $(this);
+                let $this = $(this);
 
                 if ($this.hasClass('rule-row--active')) {
                     return;
@@ -19,11 +19,16 @@ define('imcms-rule-to-row-transformer',
 
         return {
             transform: function (rule, ruleEditor) {
+                let roles = ruleEditor.getUserRoles();
+                let users = ruleEditor.getUsers();
 
                 let ruleRowAttributes = {
                     id: `rule-id-${rule.id}`,
                     click: getOnRuleClicked(rule, ruleEditor)
                 };
+
+                let userLogin = users[rule.userId] ? users[rule.userId].login : '';
+                let roleName = roles[rule.roleId] ? roles[rule.roleId].name : '';
 
                 return new BEM({
                     block: 'rule-row',
@@ -40,10 +45,10 @@ define('imcms-rule-to-row-transformer',
                             text: rule.ipRange
                         }),
                         "rule-role": $('<div>', {
-                            text: rule.roleId
+                            text: roleName
                         }),
                         "rule-user": $('<div>', {
-                            text: rule.userId
+                            text: userLogin
                         }),
                         'rule-delete': components.controls.remove(ruleEditor.deleteRule)
                     },

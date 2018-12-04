@@ -10,12 +10,16 @@ define(
     ],
     function (BEM, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
 
+        texts = texts.superAdmin.ipAccess;
+
+        let receivedRoles = [];
+        let receivedUsers = [];
+
         let onEditDelegate;
         let onRuleView;
         let $ruleRow;
         let currentRule;
         let $container;
-        texts = texts.superAdmin.ipAccess;
 
         let $ruleRangeRow;
         let $enableRuleCheckbox;
@@ -25,6 +29,37 @@ define(
 
         let $ruleViewButtons;
         let $ruleEditButtons;
+
+        initRequiredData();
+
+        function initRequiredData() {
+            rolesRestApi.read().success(function (roles) {
+                receivedRoles = roles;
+
+                //Init select with data
+                let rolesDataMapped = receivedRoles.map(function (role) {
+                    return {
+                        text: role.name,
+                        "data-value": role.id
+                    };
+                });
+                components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
+            });
+
+            usersRestApi.read().success(function (users) {
+                receivedUsers = users;
+
+                //Init select with data
+                let usersDataMapped = receivedUsers.map(function (user) {
+                    return {
+                        text: user.login,
+                        "data-value": user.id
+                    };
+                });
+
+                components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
+            });
+        }
 
         function buildRuleRangeRow() {
             $ruleRangeRow = components.texts.textBox('<div>',
@@ -63,17 +98,6 @@ define(
                 emptySelect: true
             });
 
-            usersRestApi.read().done(function (users) {
-                const usersDataMapped = users.map(function (user) {
-                    return {
-                        text: user.login,
-                        "data-value": user.id
-                    };
-                });
-
-                components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
-            });
-
             return $userSelect;
         }
 
@@ -83,17 +107,6 @@ define(
                 name: 'users-role',
                 text: texts.fields.role,
                 emptySelect: true
-            });
-
-            rolesRestApi.read().done(function (roles) {
-                const rolesDataMapped = roles.map(function (role) {
-                    return {
-                        text: role.name,
-                        "data-value": role.id
-                    };
-                });
-
-                components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
             });
 
             return $userRoleSelect;
@@ -165,12 +178,11 @@ define(
             if (saveMe.id) {
                 rulesAPI.replace(saveMe).success(function (savedRule) {
                     currentRule = savedRule;
-
-                    $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked",currentRule.enabled);
-                    $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked",currentRule.restricted);
+                    $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked", currentRule.enabled);
+                    $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked", currentRule.restricted);
                     $ruleRow.find('.rule-row__rule-ip-range').text(currentRule.ipRange);
-                    $ruleRow.find('.rule-row__rule-role').text(currentRule.roleId);
-                    $ruleRow.find('.rule-row__rule-user').text(currentRule.userId);
+                    $ruleRow.find('.rule-row__rule-role').text(receivedRoles[currentRule.roleId].name);
+                    $ruleRow.find('.rule-row__rule-user').text(receivedUsers[currentRule.userId].login);
 
                     onRuleView = onRuleSimpleView;
                     prepareRuleView();
@@ -284,15 +296,25 @@ define(
 
         function editRule($ruleRow, rule) {
             onEditDelegate($ruleRow, rule);
-            onEditDelegate = function () {
+            onEditDelegate = () => {
             };
+        }
+
+        function getRoles() {
+            return receivedRoles;
+        }
+
+        function getUsers() {
+            return receivedUsers;
         }
 
         var ruleEditor = {
             buildContainer: buildContainer,
             viewRule: viewRule,
             editRule: editRule,
-            deleteRule: onDeleteRule
+            deleteRule: onDeleteRule,
+            getUserRoles: getRoles,
+            getUsers: getUsers
         };
 
         return ruleEditor;
