@@ -331,3 +331,14 @@
 .rules-editor__rule-range-row > .imcms-text-box {
     width: 45%;
 }
+
+.rules-editor .imcms-error-msg {
+    width: 47%;
+    float: left;
+}
+
+.rules-editor__rule-range-error-row:after {
+    content: "";
+    clear: both;
+    display: table;
+}
