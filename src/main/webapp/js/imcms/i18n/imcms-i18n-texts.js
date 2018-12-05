@@ -393,7 +393,8 @@ const texts = {
                     ipRange: 'IP-område',
                     role: 'Roll',
                     user: 'Användare'
-                }
+                },
+                wrongIpError: 'Ogiltig ipv4/ipv6 adress'
             },
             deleteDocs: {
                 name: 'Radera dokument',
@@ -863,7 +864,8 @@ const texts = {
                     ipRange: 'IP Range',
                     role: 'Role',
                     user: 'User'
-                }
+                },
+                wrongIpError: 'Invalid ipv4/ipv6 address'
             },
             deleteDocs: {
                 name: 'Delete Documents',

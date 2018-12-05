@@ -84,9 +84,9 @@
         <init-param>
             <param-name>cacheMarkers</param-name>
             <param-value>
-                .jsp
-                .js
-                .css
+                <!--.jsp-->
+                <!--.js-->
+                <!--.css-->
             </param-value>
         </init-param>
     </filter>
