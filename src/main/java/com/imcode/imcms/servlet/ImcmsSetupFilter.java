@@ -9,6 +9,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -169,8 +170,11 @@ public class ImcmsSetupFilter implements Filter {
             }
 
             UserDomainObject user = Utility.getLoggedOnUser(request);
+
+            ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
+
             if (null == user) {
-                user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
+                user = userAndRoleMapper.getDefaultUser();
                 assert user.isActive();
                 Utility.makeUserLoggedIn(request, user);
 
@@ -179,77 +183,82 @@ public class ImcmsSetupFilter implements Filter {
                 // -invalidates current session if it does not match to last user's session
                 // -redirects to the login page.
             } else {
-                if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
-                    String sessionId = session.getId();
-                    String lastUserSessionId = service
-                            .getImcmsAuthenticatorAndUserAndRoleMapper()
-                            .getUserSessionId(user);
+                if (userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), user)) {
+                    if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
+                        String sessionId = session.getId();
+                        String lastUserSessionId = service
+                                .getImcmsAuthenticatorAndUserAndRoleMapper()
+                                .getUserSessionId(user);
 
-                    if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
-                        VerifyUser.forwardToLoginPageTooManySessions(request, response);
-                        return;
+                        if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
+                            VerifyUser.forwardToLoginPageTooManySessions(request, response);
+                            return;
+                        }
                     }
-                }
 
-                if (user.isImcmsExternal()) {
-                    service.getAuthenticationProvidersService()
-                            .getAuthenticationProvider(user.getExternalProviderId())
-                            .updateAuthData(request);
-                }
+                    if (user.isImcmsExternal()) {
+                        service.getAuthenticationProvidersService()
+                                .getAuthenticationProvider(user.getExternalProviderId())
+                                .updateAuthData(request);
+                    }
 
-                //Adding cookie to find out is user logged in
-                if (!user.isDefaultUser()) {
-                    Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
-                    cookie.setMaxAge(session.getMaxInactiveInterval());
-                    cookie.setPath("/");
-                    response.addCookie(cookie);
-                }
-            }
+                    //Adding cookie to find out is user logged in
+                    if (!user.isDefaultUser()) {
+                        Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
+                        cookie.setMaxAge(session.getMaxInactiveInterval());
+                        cookie.setPath("/");
+                        response.addCookie(cookie);
+                    }
 
-            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
-            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            Imcms.setUser(user);
+                    ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+                    Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            final LanguageMapper languageMapper = service.getLanguageMapper();
-            final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+                    Imcms.setUser(user);
 
-            if (requestedLangCode != null) {
-                Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
-                final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
-                newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
-                newUserLanguageCookie.setPath("/");
+                    final LanguageMapper languageMapper = service.getLanguageMapper();
+                    final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
-                response.addCookie(newUserLanguageCookie);
-
-            } else {
-                final Cookie[] cookies = request.getCookies();
-
-                if (cookies != null) {
-                    final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
-                            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-                            .findFirst();
-
-                    final String langCode;
-
-                    if (userLanguageCookie.isPresent()) {
-                        langCode = userLanguageCookie.get().getValue();
-
-                    } else {
-                        final String defaultLanguage = service.getConfig().getDefaultLanguage();
-                        langCode = LanguageMapper.convert639_2to639_1(defaultLanguage);
-
-                        final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+                    if (requestedLangCode != null) {
+                        Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
+                        final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
                         newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
                         newUserLanguageCookie.setPath("/");
 
                         response.addCookie(newUserLanguageCookie);
-                    }
 
-                    final Language language = languageMapper.getLanguageByCode(langCode);
-                    Imcms.setLanguage(language);
+                    } else {
+                        final Cookie[] cookies = request.getCookies();
+
+                        if (cookies != null) {
+                            final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+                                    .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+                                    .findFirst();
+
+                            final String langCode;
+
+                            if (userLanguageCookie.isPresent()) {
+                                langCode = userLanguageCookie.get().getValue();
+
+                            } else {
+                                final String defaultLanguage = service.getConfig().getDefaultLanguage();
+                                langCode = LanguageMapper.convert639_2to639_1(defaultLanguage);
+
+                                final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+                                newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                                newUserLanguageCookie.setPath("/");
+
+                                response.addCookie(newUserLanguageCookie);
+                            }
+
+                            final Language language = languageMapper.getLanguageByCode(langCode);
+                            Imcms.setLanguage(language);
+                        } else {
+                            Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+                        }
+                    }
                 } else {
-                    Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+                    Imcms.removeUser();
                 }
             }
 
