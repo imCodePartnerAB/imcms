@@ -180,24 +180,6 @@ public class DefaultImcmsServices implements ImcmsServices {
         setSessionCounterInDb(value);
     }
 
-    public UserDomainObject verifyUserByIpOrDefault(String remoteAddr) {
-        UserDomainObject user = imcmsAuthenticatorAndUserAndRoleMapper.getUserByIpAddress(remoteAddr);
-
-        if (null == user) {
-            user = imcmsAuthenticatorAndUserAndRoleMapper.getDefaultUser();
-        }
-        UserDomainObject result = null;
-
-        if (!user.isActive()) {
-            logUserDeactivated(user);
-
-        } else {
-            result = user;
-            logUserLoggedIn(user);
-        }
-        return result;
-    }
-
     public UserDomainObject verifyUser(String login, String password) {
         UserDomainObject result = null;
 
@@ -460,8 +442,7 @@ public class DefaultImcmsServices implements ImcmsServices {
         // TODO: problem if primary LDAP classes are not instantiated,
         // because of conf error, secondary LDAP also will not be instantiated
         if (externalAuthenticator instanceof LdapUserAndRoleRegistry
-                && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)
-        {
+                && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry) {
 
             ChainedLdapUserAndRoleRegistry chainedLdapUserAndRoleRegistry = new ChainedLdapUserAndRoleRegistry(
                     externalAuthenticator, externalUserAndRoleRegistry
@@ -552,8 +533,7 @@ public class DefaultImcmsServices implements ImcmsServices {
                 log.error("Secondary LDAP configuration ignored. Failed to initialize both authenticator and user-and-role-documentMapper.");
 
             } else if (externalAuthenticator instanceof LdapUserAndRoleRegistry
-                    && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)
-            {
+                    && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry) {
                 chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);
 
             } else {
