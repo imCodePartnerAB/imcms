@@ -61,9 +61,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
         }
     }
 
-    @Override
-    public List<ValidationLink> links(boolean isBrokenLinks, int startId, int endId) {
-        List<Integer> ids = docRepository.getDocumentIdsInRange(startId, endId);
+    public List<ValidationLink> validateDocumentsLinks(boolean onlyBrokenLinks, int startDocumentId, int endDocumentId) {
+        List<Integer> ids = docRepository.getDocumentIdsInRange(startDocumentId, endDocumentId);
         List<Document> documentsToTest = ids
                 .stream()
                 .map(id -> defaultDocumentService.get(id))
@@ -132,7 +131,6 @@ public class DefaultLinkValidationService implements LinkValidationService {
                                     httpConnection.disconnect();
                                 }
                             }
-
                         }
                     }
                 }
