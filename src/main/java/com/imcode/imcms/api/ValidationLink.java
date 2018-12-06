@@ -9,5 +9,6 @@ public class ValidationLink {
     private boolean pageFound;
     private boolean hostFound;
     private boolean hostReachable;
+    private String url;
     private DocumentStoredFieldsDTO documentData;
 }
