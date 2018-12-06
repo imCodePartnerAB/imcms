@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -77,11 +78,27 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
     @Override
     public boolean isAllowedToAccess(InetAddress accessIp, UserDomainObject user) {
+
+        final Predicate<IpAccessRuleJPA> isRuleAppliedPredicate = rule -> {
+            boolean isInRange = null != rule.getIpRange() && isIpInRange(accessIp, rule.getIpRange());
+            boolean isUserRoleRestricted = false;
+            boolean isUserRestricted = false;
+
+            if (null != user) {
+                isUserRoleRestricted = user.getRoleIds().contains(rule.getRoleId());
+                isUserRestricted = Objects.equals(rule.getUserId(), user.getId());
+
+                if (null != rule.getIpRange()) {
+                    isUserRoleRestricted &= isInRange;
+                    isUserRestricted &= isInRange;
+                }
+            }
+            return isUserRestricted || isUserRoleRestricted || isInRange;
+        };
+
         boolean isAllowed = !ipAccessRuleRepository.findAll().stream()
                 .filter(IpAccessRule::isEnabled)
-                .filter(rule -> Objects.equals(rule.getUserId(), user.getId())
-                        || user.getRoleIds().contains(rule.getRoleId())
-                        || isIpInRange(accessIp, rule.getIpRange()))
+                .filter(isRuleAppliedPredicate)
                 .min(Comparator.comparing(IpAccessRuleJPA::isRestricted))
                 .orElseGet(IpAccessRuleJPA::new)
                 .isRestricted();
