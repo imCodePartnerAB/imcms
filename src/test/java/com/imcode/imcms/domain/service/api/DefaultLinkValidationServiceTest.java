@@ -152,7 +152,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         int doc1Id = documentDataInitializer.createData().getId();
         int doc2Id = documentDataInitializer.createData().getId();
         final Version versionDoc1 = versionService.create(doc1Id, 1);
-        final Version versionDoc2 = versionService.create(doc1Id, 1);
+        final Version versionDoc2 = versionService.create(doc2Id, 1);
 
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
 
