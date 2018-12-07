@@ -82,6 +82,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
     private String getLinkFromText(String text) {
         Matcher m = LINK_VALIDATION_PATTERN.matcher(text);
+        m.find();
         String extractedLink = m.group(1);
         return extractedLink;
     }
@@ -90,11 +91,11 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     public void clearTestData() {
         documentDataInitializer.cleanRepositories();
         languageDataInitializer.cleanRepositories();
-        commonContentDataInitializer.cleanRepositories();
         imageDataInitializer.cleanRepositories();
         loopDataInitializer.cleanRepositories();
         urlDocumentDataInitializer.cleanRepositories();
         versionDataInitializer.cleanRepositories();
+        commonContentDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -142,6 +143,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         assertFalse(link.isHostFound());
         assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
+
         assertEquals(getLinkFromText(NOT_FOUND_URL_HTTP_TEXT), link.getUrl());
     }
 
@@ -170,11 +172,12 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         ValidationLink link = links.get(0);
 
+        assertEquals(getLinkFromText(NOT_FOUND_URL_HTTPS_TEXT), link.getUrl());
+
         assertFalse(link.isHostFound());
         assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
 
-        assertEquals(getLinkFromText(NOT_FOUND_URL_HTTPS_TEXT), link.getUrl());
     }
 
     @Test
