@@ -29,7 +29,6 @@ import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,7 +77,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     private CommonContentService commonContentService;
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
-    @Mock
+    @Autowired
     private DefaultLinkValidationService defaultLinkValidationService;
 
     private String getLinkFromText(String text) {
