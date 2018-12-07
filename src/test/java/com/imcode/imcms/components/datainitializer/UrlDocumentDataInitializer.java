@@ -53,6 +53,28 @@ public class UrlDocumentDataInitializer extends DocumentDataInitializer {
         return urlDocumentDTO;
     }
 
+    public UrlDocumentDTO createUrlDocument(String url) {
+        final DocumentDTO documentDTO = createData(Meta.DocumentType.URL);
+        final UrlDocumentDTO urlDocumentDTO = new UrlDocumentDTO(documentDTO);
+
+        DocumentUrlJPA documentUrlJPA = new DocumentUrlJPA();
+        documentUrlJPA.setUrlFrameName("test");
+        documentUrlJPA.setUrl(url);
+        documentUrlJPA.setUrlLanguagePrefix("t");
+        documentUrlJPA.setUrlTarget("test");
+        documentUrlJPA.setUrlText("test");
+
+        final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, documentDTO.getId());
+        documentUrlJPA.setVersion(version);
+
+        final DocumentUrlDTO documentUrlDTO =
+                new DocumentUrlDTO(documentUrlRepository.saveAndFlush(documentUrlJPA));
+
+        urlDocumentDTO.setDocumentURL(documentUrlDTO);
+
+        return urlDocumentDTO;
+    }
+
     @Override
     public void cleanRepositories(int createdDocId) {
         super.cleanRepositories(createdDocId);
