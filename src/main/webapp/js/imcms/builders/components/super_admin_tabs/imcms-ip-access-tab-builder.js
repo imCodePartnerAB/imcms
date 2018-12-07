@@ -64,16 +64,43 @@ define(
             });
 
             ruleLoader.whenRulesLoaded(rules => {
+                $rulesContainer.append(prepareTitleRow());
                 $rulesContainer.append(rules.map(rule => ruleToRow.transform(rule, ruleEditor)));
             });
 
-            return fieldWrapper.wrap([ruleEditor.buildContainer(),$rulesContainer]);
+            return fieldWrapper.wrap([ruleEditor.buildContainer(), $rulesContainer]);
         }
 
 
-        //Regex to validate ipv4/6 format
-        //    ((^\s*((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))\s*$)|(^\s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))(%.+)?\s*$))
+        function prepareTitleRow() {
+            var $titleRow = new BEM({
+                block: 'rule-title-row',
+                elements: {
+                    'rule-enabled': $('<div>', {text: texts.fields.enabled}),
+                    'rule-restricted': $('<div>', {text: texts.fields.restricted}),
+                    'rule-ip-range': $('<div>', {text: texts.fields.ipRange}),
+                    'rule-role': $('<div>', {text: texts.fields.role}),
+                    'rule-user': $('<div>', {text: texts.fields.user}),
+                    'rule-actions': $('<div>', {})
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'imcms-title'
+            });
+            return $titleRow;
+        }
 
+        function buildTitleRow() {
+            let $titleRow = new BEM({
+                block: 'title-profile-row',
+                elements: {
+                    'name': $('<div>', {text: texts.titleTextName}),
+                    'doc-name': $('<div>', {text: texts.titleTextDocName})
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'table-title'
+            });
+            return $titleRow;
+        }
 
         return new SuperAdminTab(texts.name, [
             buildTabTitle(),

@@ -292,20 +292,26 @@
 }
 
 .rule-row__rule-enabled,
-.rule-row__rule-restricted {
-    width: 3%;
+.rule-row__rule-restricted,
+.rule-title-row__rule-enabled,
+.rule-title-row__rule-restricted {
+    width: 7%;
 }
 
-.rule-row__rule-ip-range {
-    width: 60%;
+.rule-row__rule-ip-range,
+.rule-title-row__rule-ip-range {
+    width: 55%;
 }
 
 .rule-row__rule-role,
-.rule-row__rule-user {
+.rule-row__rule-user,
+.rule-title-row__rule-role,
+.rule-title-row__rule-user {
     width: 12%;
 }
 
-.rule-row > * {
+.rule-row > *,
+.rule-title-row > * {
     display: inline-block;
 }
 
