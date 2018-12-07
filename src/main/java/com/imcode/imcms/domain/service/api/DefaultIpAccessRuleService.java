@@ -92,18 +92,21 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
                     isUserRoleRestricted &= isInRange;
                     isUserRestricted &= isInRange;
                 }
+                if (null != rule.getRoleId() || null != rule.getUserId()) {
+                    isInRange = false;
+                }
             }
-            return isUserRestricted || isUserRoleRestricted || isInRange;
+            return (isUserRestricted || isUserRoleRestricted || isInRange);
         };
 
-        boolean isAllowed = !ipAccessRuleRepository.findAll().stream()
+        boolean isAllowed = ipAccessRuleRepository.findAll().stream()
                 .filter(IpAccessRule::isEnabled)
                 .filter(isRuleAppliedPredicate)
-                .min(Comparator.comparing(IpAccessRuleJPA::isRestricted))
+                .max(Comparator.comparing(IpAccessRuleJPA::isRestricted))
                 .orElseGet(IpAccessRuleJPA::new)
                 .isRestricted();
 
-        return isAllowed;
+        return !isAllowed;
     }
 
     private boolean isIpInRange(InetAddress ipToCheck, String ipv6Range) {
