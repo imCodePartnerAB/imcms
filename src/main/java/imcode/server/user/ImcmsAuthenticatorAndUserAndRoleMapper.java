@@ -798,8 +798,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     public boolean isAllowedToAccess(String ipAddress, UserDomainObject user) {
         try {
-            InetAddress address = InetAddress.getByName(ipAddress);
-            return ipAccessRuleService.isAllowedToAccess(address, user);
+            return ipAccessRuleService.isAllowedToAccess(InetAddress.getByName(ipAddress), user);
         } catch (UnknownHostException e) {
             log.error("Unable to parse IP address", e);
             return false;
