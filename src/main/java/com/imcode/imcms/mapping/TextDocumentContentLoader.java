@@ -7,8 +7,17 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.*;
-import com.imcode.imcms.persistence.repository.*;
+import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
+import com.imcode.imcms.persistence.entity.TextJPA;
+import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.ImageRepository;
+import com.imcode.imcms.persistence.repository.LanguageRepository;
+import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
+import com.imcode.imcms.persistence.repository.TextHistoryRepository;
+import com.imcode.imcms.persistence.repository.TextRepository;
 import imcode.server.document.textdocument.ImageDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
@@ -77,7 +86,7 @@ public class TextDocumentContentLoader {
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return textRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
-                .stream().collect(toMap(TextJPA::getIndex, this::toDomainObject));
+                .stream().collect(toMap(TextJPA::getIndex, this::toDomainObject, (textJPA1, textJPA2) -> textJPA1));
     }
 
     public Map<TextDocumentDomainObject.LoopItemRef, TextDomainObject> getLoopTexts(DocRef docRef) {
