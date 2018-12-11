@@ -1,6 +1,6 @@
 /**
  * @author Victor Pavlenko from Ubrainians for imCode
- * 21.02.18
+ * 21.10.18
  */
 define("imcms-profiles-rest-api", ["imcms-rest-api"], function (rest) {
     let url = '/profiles';
