@@ -142,8 +142,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(commonContentDTOS.get(0).getHeadline(), link.getDocumentData().getTitle());
 
-        assertFalse(link.isHostFound());
-        assertFalse(link.isHostReachable());
+        assertTrue(link.isHostFound());
+        assertTrue(link.isHostReachable());
         assertFalse(link.isPageFound());
 
         assertEquals(getLinkFromText(NOT_FOUND_URL_HTTP_TEXT), link.getUrl());
@@ -221,7 +221,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final Version versionDoc = versionService.create(docId, 1);
         final Image image = imageDataInitializer.createData(index, versionDoc);
 
-        image.setUrl(getLinkFromText(TEXT_URL));
+        image.setLinkUrl(getLinkFromText(TEXT_URL));
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -253,7 +253,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         final Image image = imageDataInitializer.createData(index, versionDoc);
 
-        image.setUrl(getLinkFromText(NOT_REACHABLE_URL_IP));
+        image.setLinkUrl((getLinkFromText(NOT_REACHABLE_URL_IP)));
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -270,7 +270,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, links.size());
         ValidationLink link = links.get(0);
 
-        assertFalse(link.isHostFound());
+        assertTrue(link.isHostFound());
         assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
     }
@@ -281,7 +281,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXTS);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-
+        final UserDomainObject user = new UserDomainObject(1);
+        Imcms.setUser(user);
         urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
         urlDocumentService.save(urlDocumentDTO);
 
@@ -308,7 +309,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXT_URL);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-
+        final UserDomainObject user = new UserDomainObject(1);
+        Imcms.setUser(user);
         urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
         urlDocumentService.save(urlDocumentDTO);
 
@@ -333,7 +335,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(NOT_REACHABLE_URL_IP);
         final int docId = urlDocumentDTO.getId();
         final Version version = versionDataInitializer.createData(index, docId);
-
+        final UserDomainObject user = new UserDomainObject(1);
+        Imcms.setUser(user);
         urlDocumentDTO.setLatestVersion(AuditDTO.fromVersion(version));
         urlDocumentService.save(urlDocumentDTO);
 
@@ -363,7 +366,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
         final Image image = imageDataInitializer.createData(index, versionDoc);
 
-        image.setUrl(getLinkFromText(TEXTS));
+        image.setLinkUrl(TEXTS);
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -383,7 +386,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         ValidationLink link = links.get(0);
 
-        assertFalse(link.isHostFound());
+        assertTrue(link.isHostFound());
         assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
     }
@@ -402,7 +405,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LanguageJPA languageJPA = new LanguageJPA(en);
         final Image image = imageDataInitializer.createData(index, versionDoc);
 
-        image.setUrl(getLinkFromText(TEXT_URL));
+        image.setLinkUrl(getLinkFromText(TEXT_URL));
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
@@ -418,7 +421,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
                 docId);
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -436,7 +439,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
         final Image image = imageDataInitializer.createData(index, version);
 
-        image.setUrl(getLinkFromText(NOT_REACHABLE_URL_IP));
+        image.setLinkUrl(getLinkFromText(NOT_REACHABLE_URL_IP));
 
         final ImageDTO imageDTO1 = imageToImageDTO.apply(image);
 
@@ -452,7 +455,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
                 doc1Id);
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -502,14 +505,14 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
         final Image image = imageDataInitializer.createData(index, versionDoc);
 
-        image.setUrl(getLinkFromText(TEXT_URL));
+        image.setLinkUrl((getLinkFromText(TEXT_URL)));
 
         final ImageDTO imageDTO = imageToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
         createText(index, languageJPA, versionDoc, TEXT_URL, loopEntryRef);
-        createText(index, languageJPA, versionDoc, TEXT_URL);
+        createText(index, languageJPA, versionDoc, NOT_FOUND_URL_HTTP_TEXT);
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
@@ -527,7 +530,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         int doc1Id = documentDataInitializer.createData().getId();
         int doc2Id = documentDataInitializer.createData().getId();
         final Version versionDoc1 = versionService.create(doc1Id, 1);
-        final Version versionDoc2 = versionService.create(doc1Id, 1);
+        final Version versionDoc2 = versionService.create(doc2Id, 1);
 
         assertTrue(doc2Id > doc1Id);
 
