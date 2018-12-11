@@ -27,6 +27,8 @@ import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +49,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     private static final String TEXTS = "test";
     private static final String TEXT_URL = "<a href=\"https://www.google.com\">Test</a>";
     private static final String NOT_FOUND_URL_HTTPS_TEXT = "<a href=\"https://aaa.fff.ddd\">Test</a>";
-    private static final String NOT_FOUND_URL_HTTP_TEXT = "<a href=\"http://aaa.fff.ddd\">Test</a>";
+    private static final String NOT_FOUND_URL_HTTP_TEXT = "<a href=\"http://dev.prego.ua\">Test</a>";
     private static final String NOT_REACHABLE_URL_IP = "<a href=\"http://a:0:a0a::\"> Test</a>";
     private static final Pattern LINK_VALIDATION_PATTERN = Pattern.compile("href\\s*=\\s*\"(.*)\"");
 
@@ -115,7 +117,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void validateDocumentLinks_When_UrlValidButNotFoundUrl_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_UrlValidButNotFound_Expected_CorrectLinks() {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version latestVersionDoc = versionService.create(docId, 1);
