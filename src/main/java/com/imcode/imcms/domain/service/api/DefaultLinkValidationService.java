@@ -169,9 +169,51 @@ public class DefaultLinkValidationService implements LinkValidationService {
                             validationLinks.add(link);
                         }
                     }
+                    for (String imageUrlLink : publicImageLinks) {
+                        Matcher m = patternUrl.matcher(imageUrlLink);
+                        if (m.find()) {
+                            String host = m.group(2);
+                            String protocol = m.group(1);
+                            link.setUrl(protocol + host);
+
+                            if (resultHostFound(link, host, protocol)) {
+                                if (resultHostReachable(link, protocol, host)) {
+                                    if (resultPageFound(link, protocol, host)) {
+
+                                    }
+                                }
+                            }
+                            validationLinks.add(link);
+                        }
+                    }
+                    try {
+                        DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
+                        Matcher m = patternUrl.matcher(documentURL.getUrl());
+                        if (m.find()) {
+                            String host = m.group(2);
+                            String protocol = m.group(1);
+                            link.setUrl(protocol + host);
+
+                            if (resultHostFound(link, host, protocol)) {
+                                if (resultHostReachable(link, protocol, host)) {
+                                    if (resultPageFound(link, protocol, host)) {
+
+                                    }
+                                }
+                            }
+                            validationLinks.add(link);
+                        }
+                    } catch (Exception e) {
+                        continue;
+                    }
                 }
             }
         }
-        return null;
+        if (onlyBrokenLinks) {
+            validationLinks = validationLinks.stream()
+                    .filter(link -> !(link.isHostFound() || link.isHostReachable() || link.isPageFound()))
+                    .collect(Collectors.toList());
+        }
+        return validationLinks;
     }
 }
