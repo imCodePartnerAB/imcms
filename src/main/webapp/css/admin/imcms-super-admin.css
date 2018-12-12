@@ -182,6 +182,32 @@
     display: inline-block;
 }
 
+.links-table {
+    width: 100%;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    /*display: inline-block;*/
+}
+
+.table-title-row.table-title {
+    display: flex;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
+.table-title-row__status,
+.table-title-row__type,
+.table-title-row__admin,
+.table-title-row__reference,
+.table-title-row__link,
+.table-title-row__hostFound,
+.table-title-row__hostReachable,
+.table-title-row__pageFound,
+.table-title-row__page-alias {
+    width: 17%;
+}
+
 .profile-info-row {
     padding: 5px;
     cursor: pointer;
