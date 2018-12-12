@@ -1,9 +1,8 @@
-
 define(
     'imcms-link-validator-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder',
-        'imcms-field-wrapper', 'imcms-bem-builder', 'jquery'],
-    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $) {
+        'imcms-field-wrapper', 'imcms-bem-builder', 'jquery', 'imcms-link-validator-rest-api'],
+    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, linksValidatorRestApi) {
 
         texts = texts.superAdmin.linkValidator;
 
@@ -11,11 +10,11 @@ define(
         let fieldEndId;
         let $includeInactiveCheckbox;
 
-        function buildContainerTitleAndFilter() {
+        function buildTitleText() {
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.name))
+        }
 
-            function buildTitleText() {
-                return fieldWrapper.wrap(components.texts.titleText('<div>', texts.name))
-            }
+        function buildContainerTitleAndFilter() {
 
             function buildTitleOnlyBrokenLinks() {
                 return fieldWrapper.wrap(components.texts.titleText('<div>', texts.titleOnlyBrokenLinks))
@@ -32,12 +31,49 @@ define(
             return new BEM({
                 block: 'title-filter-block',
                 elements: {
-                    'title-text': buildTitleText(),
                     'links-only-broken-title': buildTitleOnlyBrokenLinks(),
-                    'links-activity-filter': buildCheckBoxOnlyBrokenLinks(),
+                    'flag-broken-links': buildCheckBoxOnlyBrokenLinks(),
                 }
             }).buildBlockStructure('<div>');
 
+        }
+
+        let titleRow;
+
+        function buildTitleTableRow() {
+            titleRow = new BEM({
+                block: 'table-title-row',
+                elements: {
+                    'page-alias': $('<div>', {text: texts.linkInfoRow.pageAlias}),
+                    'status': $('<div>', {text: texts.linkInfoRow.status}),
+                    'type': $('<div>', {text: texts.linkInfoRow.type}),
+                    'admin': $('<div>', {text: texts.linkInfoRow.admin}),
+                    'reference': $('<div>', {text: texts.linkInfoRow.reference}),
+                    'link': $('<div>', {text: texts.linkInfoRow.link}),
+                    'host-found': $('<div>', {text: texts.linkInfoRow.hostFound}),
+                    'host-reachable': $('<div>', {text: texts.linkInfoRow.hostReachable}),
+                    'page-found': $('<div>', {text: texts.linkInfoRow.pageFound})
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'table-title',
+
+            });
+            return titleRow;
+        }
+
+        let $linkContainer;
+
+        function buildLinksContainer() {
+            $linkContainer = $('<div>', {
+                'class': 'table-links',
+                style: 'display: none;'
+            });
+
+            return fieldWrapper.wrap([$linkContainer]);
+        }
+
+        function showLinksTable() {
+            return $linkContainer.slideDown('fast').append(buildTitleTableRow())
         }
 
         function buildContainerInputIdsValidation() {
@@ -66,7 +102,7 @@ define(
             function buildButtonValidation() {
                 let $button = components.buttons.positiveButton({
                     text: texts.buttonValidation,
-                    click: buildLinksContainer
+                    click: showLinksTable
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
@@ -84,42 +120,8 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        let titleRow;
-
-        function startValidationLinksButton() {
-            titleRow = new BEM({
-                block: 'table-title-row',
-                elements: {
-                    'page-alias': $('<div>', {text: texts.linkInfoRow.pageAlias}),
-                    'status': $('<div>', {text: texts.linkInfoRow.status}),
-                    'type': $('<div>', {text: texts.linkInfoRow.type}),
-                    'admin': $('<div>', {text: texts.linkInfoRow.admin}),
-                    'reference': $('<div>', {text: texts.linkInfoRow.reference}),
-                    'link': $('<div>', {text: texts.linkInfoRow.link}),
-                    'host-found': $('<div>', {text: texts.linkInfoRow.hostFound}),
-                    'host-reachable': $('<div>', {text: texts.linkInfoRow.hostReachable}),
-                    'page-found': $('<div>', {text: texts.linkInfoRow.pageFound})
-                }
-            }).buildBlockStructure('<div>', {
-                'class': 'table-title',
-
-            });
-            return titleRow;
-        }
-
-        let $linkContainer;
-
-        function buildLinksContainer() {
-            $linkContainer = $('<div>', {
-                'class': 'links-table',
-            });
-
-            $linkContainer.append(startValidationLinksButton());
-
-            return fieldWrapper.wrap([$linkContainer]);
-        }
-
         return new SuperAdminTab(texts.name, [
+            buildTitleText(),
             buildContainerTitleAndFilter(),
             buildContainerInputIdsValidation(),
             buildLinksContainer()

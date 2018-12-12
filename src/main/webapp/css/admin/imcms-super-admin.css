@@ -182,11 +182,10 @@
     display: inline-block;
 }
 
-.links-table {
+.table-links {
     width: 100%;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
-    /*display: inline-block;*/
 }
 
 .table-title-row.table-title {
