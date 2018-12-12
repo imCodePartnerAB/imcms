@@ -406,7 +406,7 @@ const texts = {
                 fieldEndId: 'end-id',
                 brokenLinks: "Lista bara brutna länkar",
                 buttonValidation: 'Start validering',
-                titleTableLinks: {
+                linkInfoRow: {
                     pageAlias: 'Sid alias',
                     status: "Status",
                     type: 'Typ',
@@ -882,7 +882,7 @@ const texts = {
                 fieldEndId: 'end-id',
                 brokenLinks: 'List only broken links',
                 buttonValidation: 'Start the validation',
-                titleTableLinks: {
+                linkInfoRow: {
                     pageAlias: 'Page alias',
                     status: 'Status',
                     type: 'Type',
