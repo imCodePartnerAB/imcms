@@ -251,6 +251,7 @@ module.exports = {
                         'imcms-azure-roles-rest-api',
                         'imcms-external-to-local-roles-links-rest-api',
                         'imcms-settings-rest-api',
+                        'imcms-link-validator-rest-api',
                     ]
                 },
             }
