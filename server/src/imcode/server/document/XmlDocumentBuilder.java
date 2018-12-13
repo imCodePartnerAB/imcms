@@ -3,7 +3,11 @@ package imcode.server.document;
 import com.imcode.imcms.mapping.CategoryMapper;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.RoleDomainObject;
 import imcode.server.user.RoleGetter;
@@ -301,7 +305,7 @@ public class XmlDocumentBuilder {
                 }
                 fileElement.setAttribute("size", size + "");
                 fileElement.setAttribute("default",
-                        (docFile.getId() == file.getDefaultFileId()) + "");
+                        (docFile.getId().equals(file.getDefaultFileId())) + "");
                 fileElement.setTextContent(docFile.getFilename());
 
                 contentElement.appendChild(fileElement);
