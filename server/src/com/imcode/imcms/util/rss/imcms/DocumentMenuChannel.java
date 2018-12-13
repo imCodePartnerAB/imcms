@@ -22,7 +22,7 @@ public class DocumentMenuChannel extends DublinCoreChannel {
 
     public Iterable<Item> getItems() {
         TextDocument.MenuItem[] visibleMenuItems = document.getMenu(menuIndex).getVisibleMenuItems();
-        List<Item> result = new ArrayList<Item>();
+        List<Item> result = new ArrayList<>();
         for (TextDocument.MenuItem menuItem : visibleMenuItems) {
             result.add(new MenuItemItem(urlRoot, menuItem));
         }

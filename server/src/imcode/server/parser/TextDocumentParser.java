@@ -16,7 +16,16 @@ import imcode.util.Utility;
 import org.apache.commons.lang.time.StopWatch;
 import org.apache.log4j.Logger;
 import org.apache.log4j.NDC;
-import org.apache.oro.text.regex.*;
+import org.apache.oro.text.regex.MalformedPatternException;
+import org.apache.oro.text.regex.MatchResult;
+import org.apache.oro.text.regex.Pattern;
+import org.apache.oro.text.regex.PatternMatcher;
+import org.apache.oro.text.regex.PatternMatcherInput;
+import org.apache.oro.text.regex.Perl5Compiler;
+import org.apache.oro.text.regex.Perl5Matcher;
+import org.apache.oro.text.regex.Perl5Substitution;
+import org.apache.oro.text.regex.Substitution;
+import org.apache.oro.text.regex.Util;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -80,7 +89,7 @@ public class TextDocumentParser {
             List allowedTemplateGroups = templateMapper.getTemplateGroups(allowedTemplateGroupIds);
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups(allowedTemplateGroups, selectedTemplateGroup);
 
-            List<TemplateDomainObject> templates = new ArrayList<TemplateDomainObject>();
+            List<TemplateDomainObject> templates = new ArrayList<>();
             if (allowedTemplateGroupIds.contains(selectedTemplateGroup.getId())) {
                 templates = templateMapper.getTemplatesInGroup(selectedTemplateGroup);
             }

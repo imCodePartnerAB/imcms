@@ -14,7 +14,7 @@ import java.util.Properties;
  */
 public class Prefs {
 
-    private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<File, Properties>());
+    private final static Map<File, Properties> CACHE = Collections.synchronizedMap(new HashMap<>());
     private static File configPath;
 
     private Prefs() {

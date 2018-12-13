@@ -11,7 +11,7 @@ import java.util.Set;
  */
 final public class SAMLRequestStore {
     private static SAMLRequestStore instance = new SAMLRequestStore();
-    private Set<String> samlRequestStorage = new HashSet<String>();
+    private Set<String> samlRequestStorage = new HashSet<>();
     private IdentifierGenerator identifierGenerator = new RandomIdentifierGenerator();
 
     private SAMLRequestStore() {

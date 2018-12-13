@@ -21,7 +21,7 @@ public class DdlUtilsTable implements Table {
     }
 
     public Collection<ForeignKey> getForeignKeys() {
-        List<ForeignKey> foreignKeys = new ArrayList<ForeignKey>();
+        List<ForeignKey> foreignKeys = new ArrayList<>();
         for (org.apache.ddlutils.model.ForeignKey foreignKey : table.getForeignKeys()) {
             foreignKeys.add(new DdlUtilsForeignKey(getName(), foreignKey));
         }
@@ -29,7 +29,7 @@ public class DdlUtilsTable implements Table {
     }
 
     private List<Column> wrapColumns(org.apache.ddlutils.model.Column[] ddlutilsColumns) {
-        List<Column> columns = new ArrayList<Column>();
+        List<Column> columns = new ArrayList<>();
         for (org.apache.ddlutils.model.Column column : ddlutilsColumns) {
             columns.add(new DdlUtilsColumn(column));
         }

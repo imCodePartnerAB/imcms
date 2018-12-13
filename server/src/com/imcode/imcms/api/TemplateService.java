@@ -65,7 +65,7 @@ public class TemplateService {
     public Template[] getTemplates(TemplateGroup templateGroup) throws NoPermissionException {
         List<TemplateDomainObject> templates = getTemplateMapper().getTemplatesInGroup(templateGroup.getInternal());
 
-        List<Template> result = new ArrayList<Template>(templates.size());
+        List<Template> result = new ArrayList<>(templates.size());
         for (TemplateDomainObject template : templates) {
             result.add(new Template(template));
         }

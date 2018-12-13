@@ -10,14 +10,24 @@ import imcode.server.document.index.DocumentQuery;
 import imcode.server.document.index.IndexException;
 import imcode.server.user.UserDomainObject;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.MultiTermQuery;
+import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class LoggingDocumentIndex extends DocumentIndexWrapper {
 
-    private final static Set<String> LOGGED_FIELDS = new HashSet<String>(Arrays.asList(
+    private final static Set<String> LOGGED_FIELDS = new HashSet<>(Arrays.asList(
             DocumentIndex.FIELD__META_HEADLINE,
             DocumentIndex.FIELD__META_TEXT,
             DocumentIndex.FIELD__TEXT,
@@ -47,7 +57,7 @@ public class LoggingDocumentIndex extends DocumentIndexWrapper {
     }
 
     private Collection<String> getTerms(Query query) {
-        Collection<String> terms = new HashSet<String>();
+        Collection<String> terms = new HashSet<>();
         getTerms(query, terms);
         return terms;
     }

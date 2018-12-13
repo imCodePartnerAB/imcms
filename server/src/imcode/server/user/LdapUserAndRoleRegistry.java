@@ -20,7 +20,17 @@ import org.apache.log4j.Logger;
 import javax.naming.directory.SearchControls;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -183,7 +193,7 @@ public class LdapUserAndRoleRegistry implements Authenticator, UserAndRoleRegist
     }
 
     public String[] getAllRoleNames() {
-        Set<String> names = new HashSet<String>(mappedRoles.roles());
+        Set<String> names = new HashSet<>(mappedRoles.roles());
         names.add(DEFAULT_LDAP_ROLE);
 
         return names.toArray(new String[]{});

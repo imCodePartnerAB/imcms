@@ -82,7 +82,7 @@ import java.util.stream.Collectors;
 
 public class Utility {
 
-    public static final ResultSetHandler<String> SINGLE_STRING_HANDLER = new SingleObjectHandler<String>(new StringFromRowFactory());
+    public static final ResultSetHandler<String> SINGLE_STRING_HANDLER = new SingleObjectHandler<>(new StringFromRowFactory());
     public static final ResultSetHandler<String[]> STRING_ARRAY_HANDLER = new StringArrayResultSetHandler();
     public static final ResultSetHandler<List<String>> STRING_LIST_HANDLER = new StringListResultSetHandler();
     public static final ResultSetHandler<List<Integer>> INTEGER_LIST_HANDLER = new IntegerListResultSetHandler();
@@ -539,7 +539,7 @@ public class Utility {
     // collects a set of "public static final" constants from a class into a map,
     // which then can be exposed to an JSP as a scoped variable
     public static Map<String, Object> getConstants(Class<?> klass) {
-        Map<String, Object> constants = new HashMap<String, Object>();
+        Map<String, Object> constants = new HashMap<>();
         for (Field field : klass.getFields()) {
             if ((field.getModifiers() & STATIC_FINAL_MODIFIER_MASK) == STATIC_FINAL_MODIFIER_MASK) {
                 try {

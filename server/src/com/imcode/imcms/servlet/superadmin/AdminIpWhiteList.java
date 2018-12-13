@@ -73,9 +73,9 @@ public class AdminIpWhiteList extends HttpServlet {
         };
 
         final CollectionHandler<RoleIpRange, List<RoleIpRange>> collectionHandler =
-                new CollectionHandler<RoleIpRange, List<RoleIpRange>>(new ArrayList<RoleIpRange>(), rowTransformer);
+                new CollectionHandler<>(new ArrayList<>(), rowTransformer);
 
-        final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<List<RoleIpRange>>(
+        final DatabaseCommand<List<RoleIpRange>> queryCommand = new SqlQueryDatabaseCommand<>(
                 SELECT_IP_WHITE_LIST_QUERY, new Object[]{}, collectionHandler
         );
 
@@ -85,7 +85,7 @@ public class AdminIpWhiteList extends HttpServlet {
     public static boolean isHttpsRequired() {
         final String isHttpsRequired = Imcms.getServices()
                 .getDatabase()
-                .execute(new SqlQueryCommand<String>(
+                .execute(new SqlQueryCommand<>(
                         SELECT_SETTING_IP_WHITELIST_VIA_HTTPS,
                         new String[]{},
                         Utility.SINGLE_STRING_HANDLER

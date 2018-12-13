@@ -19,10 +19,22 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class TemplateMapper {
 
@@ -154,12 +166,12 @@ public class TemplateMapper {
                 return pathname.isFile() && (fileName.endsWith(".jsp") || fileName.endsWith(".jspx") || fileName.endsWith(".html"));
             }
         });
-        SortedSet<TemplateDomainObject> templates = new TreeSet<TemplateDomainObject>();
+        SortedSet<TemplateDomainObject> templates = new TreeSet<>();
         for (File templateFile : templateFiles) {
             String nameWithoutExtension = StringUtils.substringBeforeLast(templateFile.getName(), ".");
             templates.add(new TemplateDomainObject(nameWithoutExtension, templateFile.getName()));
         }
-        return new ArrayList<TemplateDomainObject>(templates);
+        return new ArrayList<>(templates);
     }
 
     private int getCountOfDocumentsUsingTemplate(TemplateDomainObject template) {
@@ -224,9 +236,9 @@ public class TemplateMapper {
 
     public List<TemplateDomainObject> getTemplatesNotInGroup(TemplateGroupDomainObject templateGroup) {
         List<TemplateDomainObject> templatesInGroup = getTemplatesInGroup(templateGroup);
-        Set<TemplateDomainObject> allTemplates = new HashSet<TemplateDomainObject>(getAllTemplates());
+        Set<TemplateDomainObject> allTemplates = new HashSet<>(getAllTemplates());
         allTemplates.removeAll(templatesInGroup);
-        List<TemplateDomainObject> templatesNotInGroup = new ArrayList<TemplateDomainObject>(allTemplates);
+        List<TemplateDomainObject> templatesNotInGroup = new ArrayList<>(allTemplates);
         Collections.sort(templatesNotInGroup);
         return templatesNotInGroup;
     }

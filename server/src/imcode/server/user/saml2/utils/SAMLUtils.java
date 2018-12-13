@@ -36,7 +36,7 @@ public class SAMLUtils {
     public static SAMLMessageContext<Response, SAMLObject, NameID> decodeSamlMessage(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         SAMLMessageContext<Response, SAMLObject, NameID> samlMessageContext =
-                new BasicSAMLMessageContext<Response, SAMLObject, NameID>();
+                new BasicSAMLMessageContext<>();
 
         HttpServletRequestAdapter httpServletRequestAdapter =
                 new HttpServletRequestAdapter(request);

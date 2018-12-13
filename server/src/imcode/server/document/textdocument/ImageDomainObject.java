@@ -474,7 +474,7 @@ public class ImageDomainObject implements Serializable {
         WEST(-90, 180, 0);
 
         private static final Map<Integer, RotateDirection> ANGLE_MAP =
-                new HashMap<Integer, RotateDirection>(RotateDirection.values().length);
+                new HashMap<>(RotateDirection.values().length);
 
         static {
             for (RotateDirection direction : RotateDirection.values()) {

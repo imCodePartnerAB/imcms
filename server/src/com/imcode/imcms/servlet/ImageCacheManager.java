@@ -4,7 +4,11 @@ import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.FileDocumentImageSource;
+import imcode.server.document.textdocument.ImageCacheDomainObject;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.ImageSource;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -105,7 +109,7 @@ public class ImageCacheManager {
         DocumentMapper docMapper = Imcms.getServices().getDocumentMapper();
 
         int[] docIdsArr = docMapper.getAllDocumentIds();
-        List<Integer> docIds = new ArrayList<Integer>(docIdsArr.length);
+        List<Integer> docIds = new ArrayList<>(docIdsArr.length);
 
 
         for (int docId : docIdsArr) {

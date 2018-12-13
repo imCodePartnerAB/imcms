@@ -3,7 +3,12 @@ package imcode.server.user;
 import com.imcode.db.DatabaseCommand;
 import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.*;
+import com.imcode.db.commands.CompositeDatabaseCommand;
+import com.imcode.db.commands.DeleteWhereColumnsEqualDatabaseCommand;
+import com.imcode.db.commands.InsertIntoTableDatabaseCommand;
+import com.imcode.db.commands.SqlQueryCommand;
+import com.imcode.db.commands.SqlUpdateCommand;
+import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.db.DatabaseUtils;
@@ -35,7 +40,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static javax.servlet.jsp.jstl.core.Config.FMT_LOCALIZATION_CONTEXT;
 
@@ -65,7 +79,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private static final ResultSetHandler<Map<String, String>> USER_PROPERTIES_HANDLER = new ResultSetHandler<Map<String, String>>() {
         public Map<String, String> handle(ResultSet rs) throws SQLException {
-            Map<String, String> userProperties = new HashMap<String, String>();
+            Map<String, String> userProperties = new HashMap<>();
 
             while (rs.next()) {
                 String keyName = rs.getString(1);
@@ -340,7 +354,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private String[][] sqlSelectUsersByEmail(String email) {
-        List<String> whereTests = new ArrayList<String>();
+        List<String> whereTests = new ArrayList<>();
 
         whereTests.add("LOWER(email) = '" + email.trim().toLowerCase() + "'");
 
@@ -513,7 +527,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
     }
 
     private void updateUserRoles(UserDomainObject newUser) {
-        Set<RoleId> newUserRoleIds = new HashSet<RoleId>(Arrays.asList(newUser.getRoleIds()));
+        Set<RoleId> newUserRoleIds = new HashSet<>(Arrays.asList(newUser.getRoleIds()));
         newUserRoleIds.add(RoleId.USERS);
         CompositeDatabaseCommand updateUserRolesCommand = new CompositeDatabaseCommand(new DeleteWhereColumnsEqualDatabaseCommand("user_roles_crossref", "user_id", newUser.getId()));
         for (RoleId roleId : newUserRoleIds) {
@@ -909,7 +923,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         try {
             final String[] parameters = {String.valueOf(loggedOnUser.getId())};
 
-            return services.getDatabase().execute(new SqlQueryCommand<Map<String, String>>(
+            return services.getDatabase().execute(new SqlQueryCommand<>(
                     SQL_GET_USER_PROPERTIES, parameters, USER_PROPERTIES_HANDLER
             ));
 

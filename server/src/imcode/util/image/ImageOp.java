@@ -6,7 +6,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -21,7 +25,7 @@ public class ImageOp {
     private static final Pattern WIDTH_PATTERN = Pattern.compile("width:'([^']+)'");
     private static final Pattern HEIGHT_PATTERN = Pattern.compile("height:'([^']+)'");
 
-    private List<String> args = new ArrayList<String>();
+    private List<String> args = new ArrayList<>();
     private byte[] inputData;
     private InputStream dataStream;
     private Format outputFormat;
@@ -291,7 +295,7 @@ public class ImageOp {
     public byte[] processToByteArray() {
         String out = (outputFormat != null ? outputFormat.getFormat() + ":-" : "-");
 
-        List<String> arguments = new ArrayList<String>(args);
+        List<String> arguments = new ArrayList<>(args);
         arguments.add(addQuotes(out));
 
         try {
@@ -330,7 +334,7 @@ public class ImageOp {
             out = outputFile.getAbsolutePath();
         }
 
-        List<String> arguments = new ArrayList<String>(args);
+        List<String> arguments = new ArrayList<>(args);
         arguments.add(addQuotes(out));
 
         try {

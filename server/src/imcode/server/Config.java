@@ -6,7 +6,15 @@ import org.apache.commons.lang.StringUtils;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 
 public class Config {
 
@@ -57,14 +65,14 @@ public class Config {
     private String indexDisabledFileMimes;
     private Set<String> indexDisabledFileExtensionsSet = Collections.emptySet();
     private Set<String> indexDisabledFileMimesSet = Collections.emptySet();
-    private Map<String, AuthenticationMethodConfiguration> authenticationConfiguration = new HashMap<String, AuthenticationMethodConfiguration>();
+    private Map<String, AuthenticationMethodConfiguration> authenticationConfiguration = new HashMap<>();
     private String cgiUserRoleName;
     private String cgiMetadataUrl;
     private String serverName;
 
     private static List<RoleId> convertRoleIds(String roleIdsString) {
         String[] ids = StringUtils.split(roleIdsString, ',');
-        List<RoleId> roleIds = new ArrayList<RoleId>(ids.length);
+        List<RoleId> roleIds = new ArrayList<>(ids.length);
 
         for (String id : ids) {
             try {
@@ -78,7 +86,7 @@ public class Config {
 
     private static List<String> splitCommaSeparatedString(String string) {
         StringTokenizer st = new StringTokenizer(StringUtils.trimToEmpty(string), " \t\n\r\f,");
-        List<String> tokens = new LinkedList<String>();
+        List<String> tokens = new LinkedList<>();
 
         while (st.hasMoreTokens()) {
             tokens.add(st.nextToken());
@@ -88,7 +96,7 @@ public class Config {
     }
 
     private static Set<String> distinctLowerCased(List<String> strings) {
-        Set<String> distinctStrings = new LinkedHashSet<String>();
+        Set<String> distinctStrings = new LinkedHashSet<>();
 
         for (String string : strings) {
             distinctStrings.add(string.toLowerCase());

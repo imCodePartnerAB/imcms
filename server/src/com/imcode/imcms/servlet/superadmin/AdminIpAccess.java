@@ -16,7 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class AdminIpAccess extends HttpServlet {
 
@@ -51,7 +57,7 @@ public class AdminIpAccess extends HttpServlet {
                 .executeProcedure("IPAccessesGetAll", parameters, new StringArrayArrayResultSetHandler());
 
         // Lets build the variables for each record
-        List<String> tags = new ArrayList<String>();
+        List<String> tags = new ArrayList<>();
         tags.add("IP_ACCESS_ID");
         tags.add("USER_ID");
         tags.add("LOGIN_NAME");
@@ -62,8 +68,8 @@ public class AdminIpAccess extends HttpServlet {
         String recs = "";
         int nbrOfRows = multi.length;
         for (int counter = 0; counter < nbrOfRows; counter++) {
-            List<String> aRecV = new ArrayList<String>(Arrays.asList(multi[counter]));
-            Map<String, String> vmRec = new HashMap<String, String>();
+            List<String> aRecV = new ArrayList<>(Arrays.asList(multi[counter]));
+            Map<String, String> vmRec = new HashMap<>();
             aRecV.set(3, Utility.ipLongToString(Long.parseLong(aRecV.get(3))));
             aRecV.set(4, Utility.ipLongToString(Long.parseLong(aRecV.get(4))));
             for (int i = 0; i < tags.size(); i++) {
@@ -74,7 +80,7 @@ public class AdminIpAccess extends HttpServlet {
         }
 
         // Lets generate the html page
-        Map<String, String> vm = new HashMap<String, String>();
+        Map<String, String> vm = new HashMap<>();
         vm.put("ALL_IP_ACCESSES", recs);
         AdminRoles.sendHtml(req, res, vm, HTML_TEMPLATE);
     }
@@ -94,7 +100,7 @@ public class AdminIpAccess extends HttpServlet {
                 String usersOption = Html.createUsersOptionList(imcmsServices);
 
                 // Lets generate the html page
-                Map<String, String> vm = new HashMap<String, String>();
+                Map<String, String> vm = new HashMap<>();
                 vm.put("USERS_LIST", usersOption);
                 AdminRoles.sendHtml(req, res, vm, ADD_IP_TEMPLATE);
             } else if (req.getParameter("CANCEL_ADD_IP") != null || req.getParameter("IP_CANCEL_DELETE") != null) {

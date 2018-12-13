@@ -15,9 +15,9 @@ public enum Format {
     PICT("PICT", 9, "pct", "image/pict", true);
 
 
-    private static final Map<String, Format> FORMAT_MAP = new HashMap<String, Format>(Format.values().length);
-    private static final Map<String, Format> EXTENSION_MAP = new HashMap<String, Format>(Format.values().length);
-    private static final Map<Integer, Format> ORDINAL_MAP = new HashMap<Integer, Format>(Format.values().length);
+    private static final Map<String, Format> FORMAT_MAP = new HashMap<>(Format.values().length);
+    private static final Map<String, Format> EXTENSION_MAP = new HashMap<>(Format.values().length);
+    private static final Map<Integer, Format> ORDINAL_MAP = new HashMap<>(Format.values().length);
 
     static {
         for (Format format : Format.values()) {

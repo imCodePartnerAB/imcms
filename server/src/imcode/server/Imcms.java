@@ -2,7 +2,11 @@ package imcode.server;
 
 import com.imcode.db.DataSourceDatabase;
 import com.imcode.db.Database;
-import com.imcode.imcms.db.*;
+import com.imcode.imcms.db.DatabaseUpgrade;
+import com.imcode.imcms.db.DatabaseUtils;
+import com.imcode.imcms.db.DefaultProcedureExecutor;
+import com.imcode.imcms.db.ImcmsDatabaseCreator;
+import com.imcode.imcms.db.StartupDatabaseUpgrade;
 import com.imcode.imcms.services.ServerSettings;
 import com.imcode.imcms.services.ServerSettingsChecker;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
@@ -96,7 +100,7 @@ public class Imcms {
     }
 
     public static Map<String, AuthenticationMethodConfiguration> getAuthenticationConfiguration() {
-        Map<String, AuthenticationMethodConfiguration> result = new HashMap<String, AuthenticationMethodConfiguration>();
+        Map<String, AuthenticationMethodConfiguration> result = new HashMap<>();
 
         Properties prop = getServerProperties();
         String authenticationMethodName;

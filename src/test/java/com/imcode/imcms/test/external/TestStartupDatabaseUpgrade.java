@@ -1,13 +1,11 @@
 package com.imcode.imcms.test.external;
 
 import com.imcode.db.DataSourceDatabase;
-import com.imcode.db.DatabaseException;
-import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.db.ImcmsDatabaseCreator;
 import com.imcode.imcms.db.StartupDatabaseUpgrade;
 import com.imcode.imcms.db.refactoring.DatabasePlatform;
-import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.imcms.util.EmptyEnumeration;
+import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.Imcms;
 import imcode.util.ShouldNotBeThrownException;
 import junit.framework.TestCase;
@@ -16,8 +14,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.ddlutils.io.DatabaseIO;
 import org.apache.ddlutils.model.Database;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 
 public class TestStartupDatabaseUpgrade extends TestCase {
 

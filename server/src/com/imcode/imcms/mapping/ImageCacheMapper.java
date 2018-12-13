@@ -16,7 +16,11 @@ import org.apache.log4j.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class ImageCacheMapper {
     private static final Logger log = Logger.getLogger(ImageCacheMapper.class);
@@ -85,8 +89,8 @@ public class ImageCacheMapper {
     public List<String> getImagesCacheIds(Integer metaId, Integer no, String fileNo) {
         StringBuilder builder = new StringBuilder("SELECT id FROM images_cache");
 
-        List<String> restrictions = new ArrayList<String>(3);
-        List<Object> params = new ArrayList<Object>(3);
+        List<String> restrictions = new ArrayList<>(3);
+        List<Object> params = new ArrayList<>(3);
 
         if (metaId != null) {
             restrictions.add("meta_id = ?");
@@ -201,7 +205,7 @@ public class ImageCacheMapper {
     private static class IdResultSetHandler implements ResultSetHandler {
         @Override
         public Object handle(ResultSet rs) throws SQLException {
-            List<String> ids = new ArrayList<String>();
+            List<String> ids = new ArrayList<>();
 
             while (rs.next()) {
                 ids.add(rs.getString(1));

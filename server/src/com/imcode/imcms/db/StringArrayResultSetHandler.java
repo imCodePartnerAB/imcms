@@ -13,7 +13,7 @@ public class StringArrayResultSetHandler implements ResultSetHandler<String[]> {
     public String[] handle(ResultSet resultSet) throws SQLException {
         ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
         int columnCount = resultSetMetaData.getColumnCount();
-        List<String> results = new ArrayList<String>();
+        List<String> results = new ArrayList<>();
         while (resultSet.next()) {
             for (int i = 1; i <= columnCount; i++) {
                 String s = resultSet.getString(i);

@@ -27,11 +27,22 @@ import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -258,7 +269,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         String[] columnNames = new String[]{"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "format", "crop_x1", "crop_y1", "crop_x2", "crop_y2", "rotate_angle", "gen_file", "resize", "meta_id", "name", "modified_datetime", "user_id"};
         ImageDomainObject image = textDocument.getImage(imageIndex);
         final Object[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex);
-        List<Object> param = new ArrayList<Object>(Arrays.asList(parameters));
+        List<Object> param = new ArrayList<>(Arrays.asList(parameters));
         param.add(dateFormat.format(new Date()));
         param.add(user.getId());
         database.execute(new SqlUpdateCommand(makeSqlInsertString("images_history", columnNames), param.toArray(new Object[param.size()])));

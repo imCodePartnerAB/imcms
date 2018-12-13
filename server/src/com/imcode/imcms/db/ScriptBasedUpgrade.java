@@ -19,7 +19,12 @@ import org.w3c.dom.NodeList;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFunction;
+import javax.xml.xpath.XPathFunctionException;
+import javax.xml.xpath.XPathFunctionResolver;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -140,7 +145,7 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                     String.format("/schema-upgrade/diff[imcms:db-version-compare(string(@version), '%s') > 0]/vendor[@name = '%s']/script",
                             currentVersion, vendorName), doc, XPathConstants.NODESET);
 
-            final LinkedHashMap<String, Element> valueToElement = new LinkedHashMap<String, Element>();
+            final LinkedHashMap<String, Element> valueToElement = new LinkedHashMap<>();
 
             for (int i = 0; i < scriptList.getLength(); i++) {
                 final Element item = (Element) scriptList.item(i);
@@ -152,7 +157,7 @@ public class ScriptBasedUpgrade extends DatabaseTypeSpecificUpgrade {
                 }
             }
 
-            final LinkedHashSet<Element> elements = new LinkedHashSet<Element>(valueToElement.values());
+            final LinkedHashSet<Element> elements = new LinkedHashSet<>(valueToElement.values());
             //todo: sort elements with DB version comparing if needs, but I hope it is not required
 
             final int updatesCount = elements.size();

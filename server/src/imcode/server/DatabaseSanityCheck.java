@@ -7,13 +7,38 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ddlutils.Platform;
-import org.apache.ddlutils.alteration.*;
+import org.apache.ddlutils.alteration.AddColumnChange;
+import org.apache.ddlutils.alteration.AddForeignKeyChange;
+import org.apache.ddlutils.alteration.AddIndexChange;
+import org.apache.ddlutils.alteration.AddPrimaryKeyChange;
+import org.apache.ddlutils.alteration.AddTableChange;
+import org.apache.ddlutils.alteration.ColumnAutoIncrementChange;
+import org.apache.ddlutils.alteration.ColumnChange;
+import org.apache.ddlutils.alteration.ColumnDataTypeChange;
+import org.apache.ddlutils.alteration.ColumnDefaultValueChange;
+import org.apache.ddlutils.alteration.ColumnOrderChange;
+import org.apache.ddlutils.alteration.ColumnRequiredChange;
+import org.apache.ddlutils.alteration.ColumnSizeChange;
+import org.apache.ddlutils.alteration.ModelChange;
+import org.apache.ddlutils.alteration.ModelComparator;
+import org.apache.ddlutils.alteration.PrimaryKeyChange;
+import org.apache.ddlutils.alteration.RemoveColumnChange;
+import org.apache.ddlutils.alteration.RemoveForeignKeyChange;
+import org.apache.ddlutils.alteration.RemoveIndexChange;
+import org.apache.ddlutils.alteration.RemovePrimaryKeyChange;
+import org.apache.ddlutils.alteration.RemoveTableChange;
+import org.apache.ddlutils.alteration.TableChange;
 import org.apache.ddlutils.model.ForeignKey;
 import org.apache.ddlutils.model.Index;
 import org.apache.ddlutils.model.IndexColumn;
 import org.apache.ddlutils.model.Reference;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class DatabaseSanityCheck implements SanityCheck {
 
@@ -96,7 +121,7 @@ public class DatabaseSanityCheck implements SanityCheck {
                 org.apache.ddlutils.model.Database actualModel = platform.readModelFromDatabase(null);
                 ModelComparator modelComparator = new ModelComparator(platform.getPlatformInfo(), false);
                 List<ModelChange> changes = modelComparator.compare(actualModel, wantedModel);
-                Set<Class> errorChanges = new HashSet<Class>(Arrays.asList(new Class[]{
+                Set<Class> errorChanges = new HashSet<>(Arrays.asList(new Class[]{
                         AddColumnChange.class,
                         RemoveColumnChange.class,
                         AddTableChange.class,
@@ -107,19 +132,19 @@ public class DatabaseSanityCheck implements SanityCheck {
                         AddIndexChange.class,
                         ColumnDataTypeChange.class,
                 }));
-                Set<Class> warningChanges = new HashSet<Class>(Arrays.asList(new Class[]{
+                Set<Class> warningChanges = new HashSet<>(Arrays.asList(new Class[]{
                         ColumnSizeChange.class,
                         AddForeignKeyChange.class,
                         ColumnOrderChange.class,
                 }));
-                Set<Class> ignoredChanges = new HashSet<Class>(Arrays.asList(new Class[]{
+                Set<Class> ignoredChanges = new HashSet<>(Arrays.asList(new Class[]{
                         RemoveForeignKeyChange.class,
                         RemoveIndexChange.class,
                         RemoveTableChange.class,
                         RemovePrimaryKeyChange.class,
                         ColumnDefaultValueChange.class
                 }));
-                List<Problem> problems = new ArrayList<Problem>();
+                List<Problem> problems = new ArrayList<>();
                 for (ModelChange change : changes) {
                     Class<? extends ModelChange> changeClass = change.getClass();
                     Problem problem = null;

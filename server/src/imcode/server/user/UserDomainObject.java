@@ -1,14 +1,26 @@
 package imcode.server.user;
 
 import imcode.server.Imcms;
-import imcode.server.document.*;
+import imcode.server.document.DocumentDomainObject;
+import imcode.server.document.DocumentPermissionSetDomainObject;
+import imcode.server.document.DocumentPermissionSetTypeDomainObject;
+import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import imcode.server.document.TemplateGroupDomainObject;
+import imcode.server.document.TextDocumentPermissionSetDomainObject;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.functors.NotPredicate;
 import org.apache.commons.lang.UnhandledException;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 public final class UserDomainObject implements Cloneable, Serializable {
 
@@ -39,7 +51,7 @@ public final class UserDomainObject implements Cloneable, Serializable {
 
     private HashSet phoneNumbers = new HashSet();
 
-    private Map<String, String> properties = new HashMap<String, String>();
+    private Map<String, String> properties = new HashMap<>();
 
     private Date lastLogin;
     /**

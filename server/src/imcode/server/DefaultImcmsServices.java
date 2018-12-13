@@ -15,15 +15,35 @@ import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import com.imcode.net.ldap.LdapClientException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.TemplateMapper;
-import imcode.server.document.index.*;
+import imcode.server.document.index.DefaultDirectoryIndex;
+import imcode.server.document.index.DefaultReindexingDocumentRepository;
+import imcode.server.document.index.DocumentIndex;
+import imcode.server.document.index.IndexDocumentFactory;
+import imcode.server.document.index.RebuildingDirectoryIndex;
 import imcode.server.kerberos.KerberosLoginService;
 import imcode.server.parser.ParserParameters;
 import imcode.server.parser.TextDocumentParser;
-import imcode.server.user.*;
-import imcode.util.*;
+import imcode.server.user.Authenticator;
+import imcode.server.user.ChainedLdapUserAndRoleRegistry;
+import imcode.server.user.ExternalizedImcmsAuthenticatorAndUserRegistry;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.LdapUserAndRoleRegistry;
+import imcode.server.user.MissingLoginDataException;
+import imcode.server.user.RoleGetter;
+import imcode.server.user.UserAndRoleRegistry;
+import imcode.server.user.UserDomainObject;
+import imcode.util.CachingFileLoader;
+import imcode.util.DateConstants;
+import imcode.util.ImcmsImageUtils;
+import imcode.util.Parser;
+import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import imcode.util.net.SMTP;
-import org.apache.commons.beanutils.*;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.ConvertUtils;
+import org.apache.commons.beanutils.Converter;
+import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.UnhandledException;
@@ -34,7 +54,11 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
 import java.beans.PropertyDescriptor;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.security.GeneralSecurityException;
 import java.security.KeyStore;
@@ -42,7 +66,15 @@ import java.text.Collator;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
 
 final public class DefaultImcmsServices implements ImcmsServices {
 
@@ -240,7 +272,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         try {
             DateFormat dateFormat = new SimpleDateFormat(DateConstants.DATE_FORMAT_STRING);
             final Object[] parameters = new String[0];
-            return dateFormat.parse(getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 2", parameters, Utility.SINGLE_STRING_HANDLER)));
+            return dateFormat.parse(getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 2", parameters, Utility.SINGLE_STRING_HANDLER)));
         } catch (ParseException ex) {
             log.fatal("Failed to get SessionCounterDate from db.", ex);
             throw new UnhandledException(ex);
@@ -249,7 +281,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
 
     private int getSessionCounterFromDb() {
         final Object[] parameters = new String[0];
-        return Integer.parseInt(getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
+        return Integer.parseInt(getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 1", parameters, Utility.SINGLE_STRING_HANDLER)));
     }
 
     private void initDocumentMapper() {
@@ -311,8 +343,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
         if (externalAuthenticator != null
                 && externalUserAndRoleRegistry != null
                 && externalAuthenticator instanceof LdapUserAndRoleRegistry
-                && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)
-        {
+                && externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry) {
 
             ChainedLdapUserAndRoleRegistry chainedLdapUserAndRoleRegistry
                     = new ChainedLdapUserAndRoleRegistry(externalAuthenticator, externalUserAndRoleRegistry);
@@ -396,8 +427,7 @@ final public class DefaultImcmsServices implements ImcmsServices {
                 if (null == externalAuthenticator || null == externalUserAndRoleRegistry) {
                     log.error("Secondary LDAP configuration ignored. Failed to initialize both authenticator and user-and-role-documentMapper.");
                 } else if (!(externalAuthenticator instanceof LdapUserAndRoleRegistry)
-                        || !(externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry))
-                {
+                        || !(externalUserAndRoleRegistry instanceof LdapUserAndRoleRegistry)) {
                     log.error("Secondary LDAP configuration ignored. Both SecondaryExternalAuthenticator and SecondaryExternalUserAndRoleMapper properties should be set to LDAP.");
                 } else {
                     chainedLdapUserAndRoleRegistry.addLink(externalAuthenticator, externalUserAndRoleRegistry);
@@ -710,31 +740,31 @@ final public class DefaultImcmsServices implements ImcmsServices {
         SystemData sd = new SystemData();
 
         final Object[] parameters5 = new String[0];
-        String startDocument = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
+        String startDocument = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 0", parameters5, Utility.SINGLE_STRING_HANDLER));
         sd.setStartDocument(startDocument == null ? DEFAULT_STARTDOCUMENT : Integer.parseInt(startDocument));
 
         final Object[] parameters4 = new String[0];
-        String systemMessage = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
+        String systemMessage = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 3", parameters4, Utility.SINGLE_STRING_HANDLER));
         sd.setSystemMessage(systemMessage);
 
         final Object[] parameters3 = new String[0];
-        String serverMasterName = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 4", parameters3, Utility.SINGLE_STRING_HANDLER));
+        String serverMasterName = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 4", parameters3, Utility.SINGLE_STRING_HANDLER));
         sd.setServerMaster(serverMasterName);
 
         final Object[] parameters2 = new String[0];
-        String serverMasterAddress = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 5", parameters2, Utility.SINGLE_STRING_HANDLER));
+        String serverMasterAddress = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 5", parameters2, Utility.SINGLE_STRING_HANDLER));
         sd.setServerMasterAddress(serverMasterAddress);
 
         final Object[] parameters1 = new String[0];
-        String webMasterName = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 6", parameters1, Utility.SINGLE_STRING_HANDLER));
+        String webMasterName = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 6", parameters1, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMaster(webMasterName);
 
         final Object[] parameters7 = new String[0];
-        String webMasterAddress = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 7", parameters7, Utility.SINGLE_STRING_HANDLER));
+        String webMasterAddress = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 7", parameters7, Utility.SINGLE_STRING_HANDLER));
         sd.setWebMasterAddress(webMasterAddress);
 
         final Object[] parameter9 = new String[0];
-        String userLoginPasswordExpirationInterval = getDatabase().execute(new SqlQueryCommand<String>("SELECT value FROM sys_data WHERE type_id = 9", parameter9, Utility.SINGLE_STRING_HANDLER));
+        String userLoginPasswordExpirationInterval = getDatabase().execute(new SqlQueryCommand<>("SELECT value FROM sys_data WHERE type_id = 9", parameter9, Utility.SINGLE_STRING_HANDLER));
         if (userLoginPasswordExpirationInterval == null) {
             log.warn("System property userLoginPasswordResetExpirationInterval is not set; using default");
         } else {

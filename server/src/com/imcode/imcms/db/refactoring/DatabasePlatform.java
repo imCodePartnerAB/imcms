@@ -5,7 +5,11 @@ import com.imcode.db.DatabaseConnection;
 import com.imcode.db.DatabaseException;
 import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.imcms.db.DdlUtilsPlatformCommand;
-import com.imcode.imcms.db.refactoring.model.*;
+import com.imcode.imcms.db.refactoring.model.Column;
+import com.imcode.imcms.db.refactoring.model.DdlUtilsDatabaseModel;
+import com.imcode.imcms.db.refactoring.model.DdlUtilsForeignKey;
+import com.imcode.imcms.db.refactoring.model.ForeignKey;
+import com.imcode.imcms.db.refactoring.model.Table;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ddlutils.Platform;
 import org.apache.ddlutils.platform.mssql.MSSqlPlatform;
@@ -137,9 +141,9 @@ public abstract class DatabasePlatform {
     }
 
     private String createTableDefinitionContent(Table table) {
-        List<String> tableDefinition = new ArrayList<String>();
+        List<String> tableDefinition = new ArrayList<>();
         tableDefinition.add(createColumnDefinitions(table.getColumns()));
-        List<String> primaryKeyColumnNames = new ArrayList<String>();
+        List<String> primaryKeyColumnNames = new ArrayList<>();
         for (Column column : table.getColumns()) {
             if (column.isPrimaryKey()) {
                 primaryKeyColumnNames.add(column.getName());
@@ -172,7 +176,7 @@ public abstract class DatabasePlatform {
     }
 
     private String createColumnDefinitions(Collection<Column> columns) {
-        List<String> columnDefinitions = new ArrayList<String>();
+        List<String> columnDefinitions = new ArrayList<>();
         for (Column column : columns) {
             columnDefinitions.add(createColumnDefinition(column));
         }

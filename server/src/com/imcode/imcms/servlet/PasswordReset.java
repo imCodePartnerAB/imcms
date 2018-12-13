@@ -153,7 +153,7 @@ public class PasswordReset extends HttpServlet {
     }
 
     private void setValidationErrors(HttpServletRequest request, String first, String... rest) {
-        List<String> errors = new LinkedList<String>();
+        List<String> errors = new LinkedList<>();
 
         errors.add(first);
 
@@ -165,7 +165,7 @@ public class PasswordReset extends HttpServlet {
     private P.P2<UserDomainObject, String> createPasswordReset(String identity) {
         P.P2<UserDomainObject, String> result = null;
         ImcmsAuthenticatorAndUserAndRoleMapper urm = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
-        Map<Integer, P.P2<UserDomainObject, String>> idToUser = new HashMap<Integer, P.P2<UserDomainObject, String>>();
+        Map<Integer, P.P2<UserDomainObject, String>> idToUser = new HashMap<>();
         boolean identityIsValidEmail = Utility.isValidEmail(identity);
         UserDomainObject userByLogin = identityIsValidEmail
                 ? urm.getUserByLoginIgnoreCase(identity)

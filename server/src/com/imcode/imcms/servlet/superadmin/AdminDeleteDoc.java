@@ -73,7 +73,7 @@ public class AdminDeleteDoc extends HttpServlet {
                 int metaId = Integer.parseInt(params.getProperty("DEL_META_ID"));
                 final Object[] parameters = new String[]{""
                         + metaId};
-                String foundMetaId = (String) imcref.getProcedureExecutor().executeProcedure("FindMetaId", parameters, new SingleObjectHandler<String>(new StringFromRowFactory()));
+                String foundMetaId = (String) imcref.getProcedureExecutor().executeProcedure("FindMetaId", parameters, new SingleObjectHandler<>(new StringFromRowFactory()));
                 log.debug("FoundMetaId: " + foundMetaId);
 
                 if (foundMetaId == null) {

@@ -27,7 +27,7 @@ public class ListDocumentAliasPage extends OkCancelPage {
 
     public String startString;
     public String endString;
-    public Set<String> aliasInSelectedRange = new TreeSet<String>();
+    public Set<String> aliasInSelectedRange = new TreeSet<>();
 
     public ListDocumentAliasPage(DispatchCommand okDispatchCommand, DispatchCommand cancelDispatchCommand, HttpServletRequest request) {
         super(okDispatchCommand, cancelDispatchCommand);

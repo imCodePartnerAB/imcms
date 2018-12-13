@@ -8,8 +8,16 @@ import org.opensaml.common.SAMLObject;
 import org.opensaml.common.SAMLVersion;
 import org.opensaml.common.xml.SAMLConstants;
 import org.opensaml.saml2.binding.encoding.HTTPRedirectDeflateEncoder;
-import org.opensaml.saml2.core.*;
-import org.opensaml.saml2.core.impl.*;
+import org.opensaml.saml2.core.AuthnRequest;
+import org.opensaml.saml2.core.Issuer;
+import org.opensaml.saml2.core.LogoutRequest;
+import org.opensaml.saml2.core.NameID;
+import org.opensaml.saml2.core.SessionIndex;
+import org.opensaml.saml2.core.impl.AuthnRequestBuilder;
+import org.opensaml.saml2.core.impl.IssuerBuilder;
+import org.opensaml.saml2.core.impl.LogoutRequestBuilder;
+import org.opensaml.saml2.core.impl.NameIDBuilder;
+import org.opensaml.saml2.core.impl.SessionIndexBuilder;
 import org.opensaml.util.URLBuilder;
 import org.opensaml.ws.message.encoder.MessageEncodingException;
 import org.opensaml.ws.transport.http.HTTPTransportUtils;
@@ -100,10 +108,10 @@ public class SAMLRequestSender {
             URLBuilder urlBuilder = new URLBuilder(endpointURL);
             List<Pair<String, String>> queryParams = urlBuilder.getQueryParams();
             queryParams.clear();
-            queryParams.add(new Pair<String, String>("mgvhostparam", "0"));
-            queryParams.add(new Pair<String, String>("SAMLRequest", message));
+            queryParams.add(new Pair<>("mgvhostparam", "0"));
+            queryParams.add(new Pair<>("SAMLRequest", message));
             if (checkRelayState(relayState)) {
-                queryParams.add(new Pair<String, String>("RelayState", relayState));
+                queryParams.add(new Pair<>("RelayState", relayState));
             }
             return urlBuilder.buildURL();
         }

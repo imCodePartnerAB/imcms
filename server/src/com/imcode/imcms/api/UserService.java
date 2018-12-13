@@ -58,7 +58,7 @@ public class UserService {
      */
     public List<User> getUsersWithRole(Role role) {
         User[] allUsersWithRole = getAllUsersWithRole(role);
-        return new ArrayList<User>(Arrays.asList(allUsersWithRole));
+        return new ArrayList<>(Arrays.asList(allUsersWithRole));
     }
 
     /**

@@ -1,7 +1,12 @@
 package com.imcode.imcms.db.refactoring;
 
 import com.imcode.db.Database;
-import com.imcode.imcms.db.refactoring.model.*;
+import com.imcode.imcms.db.refactoring.model.Column;
+import com.imcode.imcms.db.refactoring.model.ForeignKey;
+import com.imcode.imcms.db.refactoring.model.ForeignKeyHasLocalColumnName;
+import com.imcode.imcms.db.refactoring.model.Table;
+import com.imcode.imcms.db.refactoring.model.TableWrapper;
+import com.imcode.imcms.db.refactoring.model.Type;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
 import org.apache.commons.collections.functors.NotPredicate;
@@ -63,7 +68,7 @@ public class MssqlDatabasePlatform extends DatabasePlatform {
     }
 
     protected String createColumnDefinition(Column column) {
-        List<String> columnDefinition = new ArrayList<String>();
+        List<String> columnDefinition = new ArrayList<>();
         columnDefinition.add(column.getName());
         columnDefinition.add(getTypeString(column));
         columnDefinition.add(column.isNullable() ? "NULL" : "NOT NULL");

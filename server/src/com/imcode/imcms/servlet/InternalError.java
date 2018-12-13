@@ -204,7 +204,7 @@ public class InternalError extends HttpServlet {
 
     private static class Form {
 
-        private List<NameValuePair> params = new LinkedList<NameValuePair>();
+        private List<NameValuePair> params = new LinkedList<>();
 
         private Form() {
         }

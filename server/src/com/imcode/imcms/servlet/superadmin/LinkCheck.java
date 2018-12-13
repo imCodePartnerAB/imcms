@@ -36,7 +36,13 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 
 public class LinkCheck extends HttpServlet {
@@ -59,7 +65,7 @@ public class LinkCheck extends HttpServlet {
             return;
         }
 
-        List<Link> links = new ArrayList<Link>();
+        List<Link> links = new ArrayList<>();
         ImcmsServices imcref = Imcms.getServices();
         DocumentMapper documentMapper = imcref.getDocumentMapper();
         DocumentIndex reindexingIndex = documentMapper.getDocumentIndex();

@@ -171,7 +171,7 @@ public class AdminSection extends HttpServlet {
             if (!section_id.equals("-1")) {
                 //ok we have a request for delete lets see if there is any docs connected to that section_id
                 final Object[] parameters = new String[]{section_id};
-                String doc_nrs = (String) imcref.getProcedureExecutor().executeProcedure("SectionCount", parameters, new SingleObjectHandler<String>(new StringFromRowFactory()));
+                String doc_nrs = (String) imcref.getProcedureExecutor().executeProcedure("SectionCount", parameters, new SingleObjectHandler<>(new StringFromRowFactory()));
                 int doc_int = 0;
                 if (doc_nrs != null) {
                     try {
