@@ -4,6 +4,7 @@ import com.imcode.db.Database;
 import com.imcode.db.DatabaseException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class CompositeUpgrade implements DatabaseUpgrade {
@@ -11,9 +12,7 @@ public class CompositeUpgrade implements DatabaseUpgrade {
     List<DatabaseUpgrade> upgrades = new ArrayList();
 
     public CompositeUpgrade(DatabaseUpgrade... ups) {
-        for (DatabaseUpgrade upgrade : ups) {
-            upgrades.add(upgrade);
-        }
+        Collections.addAll(upgrades, ups);
     }
 
     public void upgrade(Database database) throws DatabaseException {

@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -156,9 +157,7 @@ public class PasswordReset extends HttpServlet {
 
         errors.add(first);
 
-        for (String error : rest) {
-            errors.add(error);
-        }
+        Collections.addAll(errors, rest);
 
         request.setAttribute(REQUEST_ATTR_VALIDATION_ERRORS, errors);
     }

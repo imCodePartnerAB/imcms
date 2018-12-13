@@ -33,8 +33,8 @@ public class TestEditBrowserDocumentPageFlow extends TestCase {
         request.setupAddParameter( EditBrowserDocumentPageFlow.REQUEST_PARAMETER_PREFIX__DESTINATION
                                    + otherBrowser.getId(), "1002" );
         Map addedBrowsers = editBrowserDocumentPageFlow.getAddedBrowsersFromRequest(request, documentMapper ) ;
-        assertEquals( new Integer( 1002 ), addedBrowsers.get( otherBrowser ) );
-        assertEquals( new Integer( 1001 ), addedBrowsers.get( BrowserDocumentDomainObject.Browser.DEFAULT ));
+        assertEquals(1002, addedBrowsers.get( otherBrowser ) );
+        assertEquals(1001, addedBrowsers.get( BrowserDocumentDomainObject.Browser.DEFAULT ));
     }
 
     public class MockDocumentMapper extends DocumentMapper {

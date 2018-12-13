@@ -53,7 +53,7 @@ public class MenuSaver {
         database.execute(new InsertIntoTableDatabaseCommand("menus_history", new Object[][]{
                 {"menu_id", oldMenu.getId()},
                 {"meta_id", oldTextDocument.getId()},
-                {"menu_index", new Integer(menuIndex)},
+                {"menu_index", menuIndex},
                 {"sort_order", oldMenu.getSortOrder()},
                 {"modified_datetime", dateFormat.format(new Date())},
                 {"user_id", savingUser.getId()}
@@ -71,7 +71,7 @@ public class MenuSaver {
         database.execute(new InsertIntoTableDatabaseCommand("childs_history", new Object[][]{
                 {"menu_id", oldMenu.getId()},
                 {"to_meta_id", menuItem.getDocumentReference().getDocumentId()},
-                {"manual_sort_order", new Integer(menuItem.getSortKey())},
+                {"manual_sort_order", menuItem.getSortKey()},
                 {"tree_sort_index", menuItem.getTreeSortKey().toString()}
         }));
     }

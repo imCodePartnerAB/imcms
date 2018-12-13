@@ -9,7 +9,7 @@ public class TestImcmsAuthenticatorAndUserAndRoleMapper extends TestCase {
 
     public void testAddExternalUser() throws UserAlreadyExistsException {
         MockDatabase database = new MockDatabase();
-        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "Test"), new Integer(1));
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "Test"), 1);
         MockImcmsServices mockImcmsServices = new MockImcmsServices();
         mockImcmsServices.setDatabase(database);
         LoginPasswordManager userLoginPasswordManager = new LoginPasswordManager();

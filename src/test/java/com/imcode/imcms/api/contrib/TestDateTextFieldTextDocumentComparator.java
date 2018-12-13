@@ -29,7 +29,7 @@ public class TestDateTextFieldTextDocumentComparator extends TestCase {
         imcmsServices.setDocumentMapper( new DocumentMapper( imcmsServices, null) {
             public DocumentDomainObject getDocument( Integer metaId ) {
                 TextDocumentDomainObject textDocument = new TextDocumentDomainObject();
-                textDocument.setId( metaId.intValue() );
+                textDocument.setId(metaId);
                 return textDocument;
             }
         });

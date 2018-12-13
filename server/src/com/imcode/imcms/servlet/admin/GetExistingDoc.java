@@ -347,9 +347,7 @@ public class GetExistingDoc extends HttpServlet {
         }
 
         Set selectedIncludeDocs = new HashSet(includeDocs.length);
-        for (String includeDoc : includeDocs) {
-            selectedIncludeDocs.add(includeDoc);
-        }
+        Collections.addAll(selectedIncludeDocs, includeDocs);
 
         // Lets create an array with all possible values.
         // in this case just changed resp. created

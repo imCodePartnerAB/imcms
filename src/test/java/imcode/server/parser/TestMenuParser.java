@@ -59,19 +59,19 @@ public class TestMenuParser extends TestCase {
 
     public void testAdminCantSeeUnpublishedDocumentWhenNotInMenuModeButEditingMenu() {
         user.addRoleId( editRole );
-        parserParameters.setEditingMenuIndex( new Integer( MENU_INDEX ) );
+        parserParameters.setEditingMenuIndex(MENU_INDEX);
         assertCanNotSeeDocumentInMenu();
     }
 
     public void testAdminCanSeeUnpublishedDocumentWhenEditing() {
         user.addRoleId( editRole );
-        parserParameters.setEditingMenuIndex( new Integer( MENU_INDEX ) );
+        parserParameters.setEditingMenuIndex(MENU_INDEX);
         parserParameters.setMenuMode(true) ;
         assertCanSeeDocumentInMenuWhenEditingMenu();
     }
 
     public void testUserCantSeeUnpublishedDocumentInMenuWhenEditing() throws Exception {
-        parserParameters.setEditingMenuIndex( new Integer( MENU_INDEX ) );
+        parserParameters.setEditingMenuIndex(MENU_INDEX);
         parserParameters.setMenuMode( true );
         assertCanNotSeeDocumentInMenu();
     }

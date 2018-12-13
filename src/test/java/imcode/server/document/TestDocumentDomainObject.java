@@ -87,6 +87,6 @@ public class TestDocumentDomainObject extends TestCase {
         assertEquals(document.getProperty("imcms:document:foo"), "baa");
         assertNotSame(document.getProperty("imcms:document:fide"), "hide");
         assertNull(document.getProperty("hej"));
-        assertTrue(document.getProperties().size()==3);
+        assertEquals(3, document.getProperties().size());
     }
 }

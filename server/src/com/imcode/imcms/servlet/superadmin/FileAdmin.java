@@ -609,9 +609,7 @@ public class FileAdmin extends HttpServlet {
             }
             if (files[i].isDirectory()) {
                 File[] sub_list = makeFileTreeList(files[i].listFiles(), dirfirst);
-                for (int j = 0; j < sub_list.length; j++) {
-                    list.add(sub_list[j]);
-                }
+                Collections.addAll(list, sub_list);
             }
             if (!dirfirst) {
                 list.add(files[i]);

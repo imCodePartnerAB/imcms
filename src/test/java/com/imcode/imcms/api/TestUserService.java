@@ -51,7 +51,7 @@ public class TestUserService extends TestCase {
     public void testNewUserCanHaveRoles() throws SaveException, NoPermissionException {
 
         internalUser.addRoleId( RoleId.USERADMIN );
-        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), new Integer(HIGHEST_USER_ID+1)) ;
+        database.addExpectedSqlCall(new MockDatabase.InsertIntoTableWithParameterSqlCallPredicate("users", "test"), HIGHEST_USER_ID + 1) ;
 
         User user = userService.createNewUser( "test", "test" );
         user.addRole( new Role( mockImcmsServices.getRoleGetter().getRole(RoleId.SUPERADMIN) ) );
@@ -93,7 +93,7 @@ public class TestUserService extends TestCase {
 
     public void testCreateNewRole() throws SaveException, NoPermissionException {
         internalUser.addRoleId( RoleId.SUPERADMIN );
-        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES ), new Integer(3) );
+        database.addExpectedSqlCall( new MockDatabase.EqualsSqlCallPredicate( ImcmsAuthenticatorAndUserAndRoleMapper.SQL_INSERT_INTO_ROLES ), 3);
         String roleName = "test role";
         Role newRole = userService.createNewRole( roleName ) ;
         userService.saveRole( newRole );
