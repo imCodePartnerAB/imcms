@@ -184,6 +184,7 @@ module.exports = {
                                 'imcms-profile-editor',
                                 'imcms-profile-to-row-transformer',
                                 'imcms-field-wrapper',
+                                'imcms-link-validation-transform-row'
                             ]
                         },
                         windows: {
