@@ -7,7 +7,6 @@ import com.imcode.imcms.db.refactoring.DatabasePlatform;
 import com.imcode.imcms.util.EmptyEnumeration;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
 import imcode.server.Imcms;
-import imcode.util.ShouldNotBeThrownException;
 import junit.framework.TestCase;
 import org.apache.commons.io.CopyUtils;
 import org.apache.commons.io.FileUtils;
@@ -22,7 +21,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 
@@ -76,11 +75,7 @@ public class TestStartupDatabaseUpgrade extends TestCase {
     }
 
     private Reader getOldDdlXmlReader() {
-        try {
-            return new InputStreamReader(getClass().getResourceAsStream("/com/imcode/imcms/test/external/imcms-ddl-3.0.xml"), "UTF-8") ;
-        } catch ( UnsupportedEncodingException e ) {
-            throw new ShouldNotBeThrownException(e);
-        }
+        return new InputStreamReader(getClass().getResourceAsStream("/com/imcode/imcms/test/external/imcms-ddl-3.0.xml"), StandardCharsets.UTF_8);
     }
 
     private Database getWantedDdl() throws IOException {
@@ -88,16 +83,12 @@ public class TestStartupDatabaseUpgrade extends TestCase {
     }
 
     private ImcmsDatabaseCreator createDatabaseCreator() {
-        try {
-            InputStreamReader initScriptReader = new InputStreamReader(getClass().getResourceAsStream("/com/imcode/imcms/test/external/imcms-init-3.0.sql"), "UTF-8");
-            return new ImcmsDatabaseCreator(initScriptReader, new LocalizedMessageProvider() {
-                public ResourceBundle getResourceBundle(String languageIso639_2) {
-                    return new NullResourceBundle();
-                }
-            });
-        } catch ( UnsupportedEncodingException e ) {
-            throw new ShouldNotBeThrownException(e);
-        }
+        InputStreamReader initScriptReader = new InputStreamReader(getClass().getResourceAsStream("/com/imcode/imcms/test/external/imcms-init-3.0.sql"), StandardCharsets.UTF_8);
+        return new ImcmsDatabaseCreator(initScriptReader, new LocalizedMessageProvider() {
+            public ResourceBundle getResourceBundle(String languageIso639_2) {
+                return new NullResourceBundle();
+            }
+        });
     }
 
     private Database getDdl(Reader reader) {
@@ -120,7 +111,7 @@ public class TestStartupDatabaseUpgrade extends TestCase {
             }
         });
         for ( File tableFile : tableFiles ) {
-            Reader reader = new InputStreamReader(new FileInputStream(tableFile), "iso-8859-1");
+            Reader reader = new InputStreamReader(new FileInputStream(tableFile), StandardCharsets.ISO_8859_1);
             CopyUtils.copy(reader, ddlXmlWriter) ;
         }
         ddlXmlWriter.write("</database>") ;

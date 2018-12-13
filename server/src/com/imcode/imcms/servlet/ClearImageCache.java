@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class ClearImageCache extends HttpServlet {
     private static final long serialVersionUID = -1300585302771072394L;
@@ -76,7 +77,7 @@ public class ClearImageCache extends HttpServlet {
             }
         }
 
-        byte[] data = message.getBytes("UTF-8");
+        byte[] data = message.getBytes(StandardCharsets.UTF_8);
 
         response.setContentType("text/plain");
         response.setCharacterEncoding("UTF-8");

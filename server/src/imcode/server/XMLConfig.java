@@ -4,7 +4,11 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import imcode.server.user.ldap.MappedRole;
 import imcode.server.user.ldap.MappedRoles;
-import imcode.server.user.ldap.jaxb.*;
+import imcode.server.user.ldap.jaxb.LdapElement;
+import imcode.server.user.ldap.jaxb.MappedRolesElement;
+import imcode.server.user.ldap.jaxb.RoleToAdGroupElement;
+import imcode.server.user.ldap.jaxb.RoleToAttributeElement;
+import imcode.server.user.ldap.jaxb.ServerElement;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.log4j.Logger;
 
@@ -15,6 +19,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 public final class XMLConfig {
 
@@ -36,7 +41,7 @@ public final class XMLConfig {
             JAXBContext context = JAXBContext.newInstance(ServerElement.class);
             Unmarshaller um = context.createUnmarshaller();
             serverElement = (ServerElement) um.unmarshal(new InputStreamReader(
-                    new BOMInputStream(new FileInputStream(configFilePath)), "UTF-8"));
+                    new BOMInputStream(new FileInputStream(configFilePath)), StandardCharsets.UTF_8));
         } catch (FileNotFoundException e) {
             String errorMsg = String.format("Configuration file %s can not be found.", configFilePath);
             logger.fatal(errorMsg, e);

@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
@@ -80,7 +81,7 @@ public class Imcms {
         LOG.debug("Creating main DataSource.");
         Database database = createDatabase(serverprops);
         LocalizedMessageProvider localizedMessageProvider = new CachingLocalizedMessageProvider(new ImcmsPrefsLocalizedMessageProvider());
-        InputStreamReader initScriptReader = new InputStreamReader(new FileInputStream(new File(getPath(), "WEB-INF/sql/init.sql")), "UTF-8");
+        InputStreamReader initScriptReader = new InputStreamReader(new FileInputStream(new File(getPath(), "WEB-INF/sql/init.sql")), StandardCharsets.UTF_8);
         org.apache.ddlutils.model.Database wantedDdl = DatabaseUtils.getWantedDdl();
         DatabaseUpgrade upgrade = new StartupDatabaseUpgrade(wantedDdl, new ImcmsDatabaseCreator(initScriptReader, localizedMessageProvider));
         upgrade.upgrade(database);
