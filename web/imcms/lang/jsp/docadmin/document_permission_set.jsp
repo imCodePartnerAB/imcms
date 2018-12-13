@@ -4,17 +4,17 @@
                  imcode.server.Imcms,
                  imcode.server.ImcmsServices,
                  imcode.server.document.DocumentPermissionSetDomainObject,
+                 imcode.server.document.DocumentPermissionSetTypeDomainObject,
                  imcode.server.document.TemplateDomainObject,
                  imcode.server.document.TemplateGroupDomainObject,
                  imcode.server.document.TextDocumentPermissionSetDomainObject,
+                 imcode.server.document.textdocument.TextDocumentDomainObject,
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
-                 org.apache.commons.lang.StringEscapeUtils,
-                 java.util.Iterator,
-                 java.util.Map"%>
-<%@ page import="java.util.Set"%>
-<%@ page import="imcode.server.document.DocumentPermissionSetTypeDomainObject"%>
-<%@ page import="imcode.server.document.textdocument.TextDocumentDomainObject, java.util.List"%>
+                 org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="java.util.Iterator" %>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Map, java.util.Set" %>
 <%@ page contentType="text/html; charset=UTF-8"%><%@taglib uri="imcmsvelocity" prefix="vel"%><%
     DocumentPermissionSetPage documentPermissionSetPage = (DocumentPermissionSetPage)Page.fromRequest(request) ;
     DocumentPermissionSetDomainObject documentPermissionSet = documentPermissionSetPage.getDocumentPermissionSet() ;
@@ -90,7 +90,7 @@
                         Map.Entry entry = (Map.Entry)iterator.next();
                         Integer documentTypeId = (Integer)entry.getKey();
                         String documentTypeName = (String)entry.getValue();
-                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(documentTypeId.intValue()) ;
+                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(documentTypeId);
                         %><option value="<%= documentTypeId %>" <% if( allowedDocumentType ) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( documentTypeName ) %></option><%
                     }
                 %>
