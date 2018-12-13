@@ -53,18 +53,12 @@ public class Prefs {
     private static Properties getProperties(File file) throws IOException {
         Properties properties = CACHE.get(file);
         if (properties == null) {
-            FileInputStream in = null;
-            try {
-                in = new FileInputStream(file);
+            try (FileInputStream in = new FileInputStream(file)) {
                 properties = new Properties();
                 properties.load(in);
                 CACHE.put(file, properties);
             } catch (IOException ex) {
                 throw new IOException("Prefs: File not found: " + file.getAbsolutePath());
-            } finally {
-                if (null != in) {
-                    in.close();
-                }
             }
         }
         return properties;

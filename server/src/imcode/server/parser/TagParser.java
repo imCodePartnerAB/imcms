@@ -355,9 +355,7 @@ public class TagParser {
             if (StringUtils.isBlank(contentEncoding)) {
                 contentEncoding = Imcms.DEFAULT_ENCODING;
             }
-            InputStreamReader urlInput = null;
-            try {
-                urlInput = new InputStreamReader(connectionInputStream, contentEncoding);
+            try (InputStreamReader urlInput = new InputStreamReader(connectionInputStream, contentEncoding)) {
                 int charsRead;
                 final int URL_BUFFER_LEN = 16384;
                 char[] buffer = new char[URL_BUFFER_LEN];
@@ -366,10 +364,6 @@ public class TagParser {
                     urlResult.append(buffer, 0, charsRead);
                 }
                 return urlResult.toString();
-            } finally {
-                if (null != urlInput) {
-                    urlInput.close();
-                }
             }
         } catch (Exception ex) {
             LOG.warn("imcms:include url " + urlStr + " failed.", ex);

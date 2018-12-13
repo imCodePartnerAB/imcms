@@ -27,11 +27,8 @@ public class Version extends HttpServlet {
 
     public static String getImcmsVersion(ServletContext servletContext) {
         try {
-            Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE));
-            try {
+            try (Reader in = new InputStreamReader(servletContext.getResourceAsStream(VERSION_FILE))) {
                 return "imCMS " + IOUtils.toString(in).trim();
-            } finally {
-                in.close();
             }
         } catch (Exception npe) {
             return "imCMS";
