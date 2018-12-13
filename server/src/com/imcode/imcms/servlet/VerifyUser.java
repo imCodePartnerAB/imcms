@@ -3,13 +3,18 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
 import com.imcode.imcms.flow.DispatchCommand;
+import com.imcode.imcms.services.SmsService;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
+import imcode.server.AuthenticationMethodConfiguration;
 import imcode.server.Imcms;
+import imcode.server.ImcmsServices;
 import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
+import imcode.server.user.PhoneNumber;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Map;
 
 public class VerifyUser extends HttpServlet {
 
@@ -29,6 +35,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_PARAMETER__EDIT_USER = "edit_user";
     public static final String REQUEST_PARAMETER__USERNAME = "name";
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
+    public static final String REQUEST_PARAMETER__2FA = "2fa";
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
     private static final Log log = LogFactory.getLog(VerifyUser.class);
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
@@ -39,17 +46,54 @@ public class VerifyUser extends HttpServlet {
     }
 
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+        ContentManagementSystem cms = null;
+
         Utility.setDefaultHtmlContentType(res);
+        final ImcmsServices services = Imcms.getServices();
+        final Map<String, AuthenticationMethodConfiguration> loginConfiguration = services.getConfig().getAuthenticationConfiguration();
 
-        final String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
-        final String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+        final String twoFactorCode = req.getParameter(REQUEST_PARAMETER__2FA);
+        String name = req.getParameter(REQUEST_PARAMETER__USERNAME);
+        String passwd = req.getParameter(REQUEST_PARAMETER__PASSWORD);
 
-        final ContentManagementSystem cms;
-        final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices()
-                .getImcmsAuthenticatorAndUserAndRoleMapper();
+
+        final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = services.getImcmsAuthenticatorAndUserAndRoleMapper();
         try {
-            cms = ContentManagementSystem.login(req, res, name, passwd);
+            final boolean is2FA = loginConfiguration.containsKey("2FA");
+            if (is2FA) {
+                final HttpSession session = req.getSession();
+                if (null == name && null == passwd) {
+                    name = (String) session.getAttribute(REQUEST_PARAMETER__USERNAME);
+                    passwd = (String) session.getAttribute(REQUEST_PARAMETER__PASSWORD);
+                }
+                UserDomainObject user = services.verifyUser(name, passwd);
+                if (null != user && !user.isDefaultUser()) {
+                    if (null != twoFactorCode) {
+                        if (twoFactorCode.equals(req.getSession().getAttribute(REQUEST_PARAMETER__2FA))) {
+                            cms = ContentManagementSystem.login(req, res, name, passwd);
+                        }
+                    } else {
 
+                        final String generatedCode = RandomStringUtils.random(6, false, true);
+                        final PhoneNumber foundNumber = (PhoneNumber) user.getPhoneNumbers().stream()
+                                .filter(number -> null != ((PhoneNumber) number).getNumber())
+                                .findAny()
+                                .orElse(null);
+                        if (null != foundNumber) {
+                            boolean isSmsSend = SmsService.getInstance()
+                                    .sendSms("Authorize code is: " + generatedCode, foundNumber.getNumber());
+
+                            if (isSmsSend) {
+                                session.setAttribute(REQUEST_PARAMETER__USERNAME, name);
+                                session.setAttribute(REQUEST_PARAMETER__PASSWORD, passwd);
+                                session.setAttribute(REQUEST_PARAMETER__2FA, generatedCode);
+                            }
+                        }
+                    }
+                }
+            } else {
+                cms = ContentManagementSystem.login(req, res, name, passwd);
+            }
         } catch (UserIpIsNotAllowedException e) {
             userAndRoleMapper.forwardDeniedUserToMessagePage(e.getUser(), req, res);
             return;
