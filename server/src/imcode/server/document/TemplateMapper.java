@@ -138,7 +138,7 @@ public class TemplateMapper {
     public Set getAllTemplateGroupIds() {
         return (Set) database.execute(new SqlQueryCommand("SELECT group_id FROM templategroups", null, new CollectionHandler(new HashSet(), new RowTransformer() {
             public Object createObjectFromResultSetRow(ResultSet resultSet) throws SQLException {
-                return new Integer(resultSet.getInt(1));
+                return resultSet.getInt(1);
             }
 
             public Class getClassOfCreatedObjects() {
@@ -341,7 +341,7 @@ public class TemplateMapper {
     public List getTemplateGroups(Set<Integer> templateGroupIds) {
         List<TemplateGroupDomainObject> allowedTemplateGroups = new ArrayList(templateGroupIds.size());
         for (Integer allowedTemplateGroupId : templateGroupIds) {
-            TemplateGroupDomainObject templateGroup = getTemplateGroupById(allowedTemplateGroupId.intValue());
+            TemplateGroupDomainObject templateGroup = getTemplateGroupById(allowedTemplateGroupId);
             if (null != templateGroup) {
                 allowedTemplateGroups.add(templateGroup);
             }

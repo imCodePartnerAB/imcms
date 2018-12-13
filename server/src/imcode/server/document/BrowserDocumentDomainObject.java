@@ -24,7 +24,7 @@ public class BrowserDocumentDomainObject extends DocumentDomainObject {
     }
 
     public void setBrowserDocumentId(Browser browser, int documentId) {
-        this.browserDocumentIdMap.put(browser, new Integer(documentId));
+        this.browserDocumentIdMap.put(browser, documentId);
     }
 
     public void setBrowserDocuments(Map browserDocuments) {

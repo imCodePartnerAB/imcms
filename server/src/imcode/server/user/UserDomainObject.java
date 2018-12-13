@@ -587,7 +587,7 @@ public final class UserDomainObject implements Cloneable, Serializable {
     public boolean canCreateDocumentOfTypeIdFromParent(int documentTypeId, DocumentDomainObject parent) {
         TextDocumentPermissionSetDomainObject documentPermissionSet = (TextDocumentPermissionSetDomainObject) getPermissionSetFor(parent);
         Set allowedDocumentTypeIds = documentPermissionSet.getAllowedDocumentTypeIds();
-        return allowedDocumentTypeIds.contains(new Integer(documentTypeId));
+        return allowedDocumentTypeIds.contains(documentTypeId);
     }
 
     public DocumentPermissionSetDomainObject getPermissionSetFor(DocumentDomainObject document) {

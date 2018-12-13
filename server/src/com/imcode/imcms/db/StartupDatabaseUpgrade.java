@@ -52,7 +52,7 @@ public class StartupDatabaseUpgrade extends ImcmsDatabaseUpgrade {
                 protected Object executeSqlBuilder(DatabaseConnection databaseConnection,
                                                    SqlBuilder sqlBuilder) {
                     org.apache.ddlutils.model.Database database = sqlBuilder.getPlatform().readModelFromDatabase(databaseConnection.getConnection(), null);
-                    return new Integer(database.getTableCount());
+                    return database.getTableCount();
                 }
             });
             if (0 == tableCount) {

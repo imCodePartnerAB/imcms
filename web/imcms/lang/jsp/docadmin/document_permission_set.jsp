@@ -90,7 +90,7 @@
                         Map.Entry entry = (Map.Entry)iterator.next();
                         Integer documentTypeId = (Integer)entry.getKey();
                         String documentTypeName = (String)entry.getValue();
-                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(new Integer(documentTypeId.intValue())) ;
+                        boolean allowedDocumentType = allowedDocumentTypeIds.contains(documentTypeId.intValue()) ;
                         %><option value="<%= documentTypeId %>" <% if( allowedDocumentType ) { %>selected<% } %>><%= StringEscapeUtils.escapeHtml( documentTypeName ) %></option><%
                     }
                 %>
@@ -107,7 +107,7 @@
                 Set allowedTemplateGroupIds = textDocumentPermissionSet.getAllowedTemplateGroupIds() ;
                 for ( int i = 0; i < allTemplateGroups.length; i++ ) {
                     TemplateGroupDomainObject templateGroup = allTemplateGroups[i];
-                    boolean allowedTemplateGroup = allowedTemplateGroupIds.contains(new Integer(templateGroup.getId())) ;
+                    boolean allowedTemplateGroup = allowedTemplateGroupIds.contains(templateGroup.getId()) ;
                     %><option value="<%= templateGroup.getId() %>" <% if( allowedTemplateGroup ) { %>selected<% } %>><%= templateGroup.getName() %></option><%
                 }
             %>

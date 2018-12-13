@@ -101,11 +101,11 @@ public class TextDocumentPermissionSetDomainObject extends DocumentPermissionSet
     }
 
     public void addAllowedTemplateGroupId(int templateGroupId) {
-        allowedTemplateGroupIds.add(new Integer(templateGroupId));
+        allowedTemplateGroupIds.add(templateGroupId);
     }
 
     public void addAllowedDocumentTypeId(int documentTypeId) {
-        allowedDocumentTypeIds.add(new Integer(documentTypeId));
+        allowedDocumentTypeIds.add(documentTypeId);
     }
 
     protected Object clone() throws CloneNotSupportedException {

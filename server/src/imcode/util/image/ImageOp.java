@@ -262,7 +262,7 @@ public class ImageOp {
             size = width.toString();
         }
         if (height != null) {
-            size += String.format("x%d", height.intValue());
+            size += String.format("x%d", height);
         }
 
         size += type.getModifier();

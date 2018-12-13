@@ -20,7 +20,7 @@ public class BatchDocumentGetter extends DocumentGetterWrapper {
             List documents = super.getDocuments(documentIds);
             for (Iterator iterator = documents.iterator(); iterator.hasNext(); ) {
                 DocumentDomainObject document = (DocumentDomainObject) iterator.next();
-                documentsMap.put(new Integer(document.getId()), document);
+                documentsMap.put(document.getId(), document);
             }
         }
         DocumentDomainObject document = (DocumentDomainObject) documentsMap.remove(documentId);

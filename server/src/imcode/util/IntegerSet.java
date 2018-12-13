@@ -36,7 +36,7 @@ public class IntegerSet extends AbstractSet {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                return new Integer(ints[arrayIndex++]);
+                return ints[arrayIndex++];
             }
         };
     }

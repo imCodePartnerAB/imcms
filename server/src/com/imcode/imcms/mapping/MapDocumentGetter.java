@@ -13,7 +13,7 @@ public class MapDocumentGetter extends AbstractDocumentGetter {
     public MapDocumentGetter(DocumentDomainObject[] documents) {
         for (int i = 0; null != documents && i < documents.length; i++) {
             DocumentDomainObject document = documents[i];
-            documentsMap.put(new Integer(document.getId()), document);
+            documentsMap.put(document.getId(), document);
         }
     }
 

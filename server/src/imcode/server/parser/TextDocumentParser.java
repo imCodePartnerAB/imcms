@@ -81,7 +81,7 @@ public class TextDocumentParser {
             String templateGroupsHtmlOptionList = templateMapper.createHtmlOptionListOfTemplateGroups(allowedTemplateGroups, selectedTemplateGroup);
 
             List<TemplateDomainObject> templates = new ArrayList<TemplateDomainObject>();
-            if (allowedTemplateGroupIds.contains(new Integer(selectedTemplateGroup.getId()))) {
+            if (allowedTemplateGroupIds.contains(selectedTemplateGroup.getId())) {
                 templates = templateMapper.getTemplatesInGroup(selectedTemplateGroup);
             }
             String templateId = document.getTemplateName();

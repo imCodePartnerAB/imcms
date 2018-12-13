@@ -322,7 +322,7 @@ public class Utility {
         while (null != throwable) {
             String message = throwable.getMessage();
             log.debug(throwable + ": " + message);
-            if (null != message && -1 != message.indexOf(s)) {
+            if (null != message && message.contains(s)) {
                 return true;
             }
             throwable = throwable.getCause();
@@ -402,7 +402,7 @@ public class Utility {
     }
 
     public static Integer getInteger(Object object) {
-        return null == object ? null : new Integer(((Number) object).intValue());
+        return null == object ? null : ((Number) object).intValue();
     }
 
     public static String escapeUrl(String imageUrl) {

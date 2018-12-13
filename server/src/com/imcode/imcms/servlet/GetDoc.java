@@ -82,7 +82,7 @@ public class GetDoc extends HttpServlet {
             req.getSession().setAttribute("history", history);
         }
 
-        Integer meta_int = new Integer(document.getId());
+        Integer meta_int = document.getId();
         if (isTextDocument(document) && (history.empty() || !history.peek().equals(meta_int))) {
             history.push(meta_int);
         }
@@ -172,7 +172,7 @@ public class GetDoc extends HttpServlet {
                 toMetaId = Integer.parseInt(destinationMetaId);
             } else {
                 Map browserDocumentIdMap = ((BrowserDocumentDomainObject) document).getBrowserDocumentIdMap();
-                toMetaId = ((Integer) browserDocumentIdMap.get(BrowserDocumentDomainObject.Browser.DEFAULT)).intValue();
+                toMetaId = (Integer) browserDocumentIdMap.get(BrowserDocumentDomainObject.Browser.DEFAULT);
             }
 
             res.sendRedirect("GetDoc?meta_id=" + toMetaId);

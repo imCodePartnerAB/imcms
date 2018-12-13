@@ -48,7 +48,7 @@ public class DocumentTypeDomainObject extends IdLocalizedNamePair {
         int[] allDocumentTypeIds = getAllDocumentTypeIds();
         for (int i = 0; i < allDocumentTypeIds.length; i++) {
             int documentTypeId = allDocumentTypeIds[i];
-            set.add(new Integer(documentTypeId));
+            set.add(documentTypeId);
         }
         return set;
     }

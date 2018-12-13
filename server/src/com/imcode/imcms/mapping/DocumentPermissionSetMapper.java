@@ -102,7 +102,7 @@ public class DocumentPermissionSetMapper {
             final Object[] parameters = new String[]{
                     "" + document.getId(), "" + textDocumentPermissionSet.getType(),
                     ""
-                            + allowedTemplateGroupId.intValue()
+                            + allowedTemplateGroupId
             };
             database.execute(new SqlUpdateCommand(sqlInsertAllowedTemplateGroupId, parameters));
         }
@@ -133,7 +133,7 @@ public class DocumentPermissionSetMapper {
             final Object[] parameters = new String[]{
                     "" + document.getId(), "" + textDocumentPermissionSet.getType(),
                     ""
-                            + allowedDocumentTypeId.intValue()
+                            + allowedDocumentTypeId
             };
             database.execute(new SqlUpdateCommand(sqlInsertCreatableDocumentTypeId, parameters));
         }

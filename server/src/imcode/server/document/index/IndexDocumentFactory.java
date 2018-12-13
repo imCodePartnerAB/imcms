@@ -78,7 +78,7 @@ public class IndexDocumentFactory {
         Set sectionIds = document.getSectionIds();
         for (Iterator iterator = sectionIds.iterator(); iterator.hasNext(); ) {
             Integer sectionId = (Integer) iterator.next();
-            SectionDomainObject section = Imcms.getServices().getDocumentMapper().getSectionById(sectionId.intValue());
+            SectionDomainObject section = Imcms.getServices().getDocumentMapper().getSectionById(sectionId);
             indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__SECTION, section.getName()));
             indexDocument.add(unStoredKeyword(DocumentIndex.FIELD__SECTION_ID, sectionId.toString()));
         }

@@ -34,7 +34,7 @@ public class MenuSaver {
             Integer menuIndex = (Integer) entry.getKey();
             MenuDomainObject menu = (MenuDomainObject) entry.getValue();
             if (oldTextDocument != null) {
-                MenuDomainObject oldMenu = oldTextDocument.getMenu(menuIndex.intValue());
+                MenuDomainObject oldMenu = oldTextDocument.getMenu(menuIndex);
                 if (oldMenu != null && oldMenu.getMenuItemsUnsorted().size() > 0 && !oldMenu.equals(menu)) {
                     updateTextDocumentMenuHistory(oldTextDocument, menuIndex, oldMenu, savingUser, services);
                 }
@@ -51,12 +51,12 @@ public class MenuSaver {
     private void insertTextDocumentMenuHistory(TextDocumentDomainObject oldTextDocument, Integer menuIndex, MenuDomainObject oldMenu, UserDomainObject savingUser, ImcmsServices services) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
         database.execute(new InsertIntoTableDatabaseCommand("menus_history", new Object[][]{
-                {"menu_id", new Integer(oldMenu.getId())},
-                {"meta_id", new Integer(oldTextDocument.getId())},
+                {"menu_id", oldMenu.getId()},
+                {"meta_id", oldTextDocument.getId()},
                 {"menu_index", new Integer(menuIndex)},
-                {"sort_order", new Integer(oldMenu.getSortOrder())},
+                {"sort_order", oldMenu.getSortOrder()},
                 {"modified_datetime", dateFormat.format(new Date())},
-                {"user_id", new Integer(savingUser.getId())}
+                {"user_id", savingUser.getId()}
         }));
 
         Collection menuItems = oldMenu.getMenuItemsUnsorted();
@@ -69,8 +69,8 @@ public class MenuSaver {
     private void sqlInsertMenuItemHistory(MenuDomainObject oldMenu, MenuItemDomainObject menuItem) {
 
         database.execute(new InsertIntoTableDatabaseCommand("childs_history", new Object[][]{
-                {"menu_id", new Integer(oldMenu.getId())},
-                {"to_meta_id", new Integer(menuItem.getDocumentReference().getDocumentId())},
+                {"menu_id", oldMenu.getId()},
+                {"to_meta_id", menuItem.getDocumentReference().getDocumentId()},
                 {"manual_sort_order", new Integer(menuItem.getSortKey())},
                 {"tree_sort_index", menuItem.getTreeSortKey().toString()}
         }));
@@ -81,7 +81,7 @@ public class MenuSaver {
         if (!menus.isEmpty()) {
             Collection menuIds = CollectionUtils.collect(menus, new Transformer() {
                 public Object transform(Object input) {
-                    return new Integer(((MenuDomainObject) input).getId());
+                    return ((MenuDomainObject) input).getId();
                 }
             });
             String sqlInMenuIds = StringUtils.join(menuIds.iterator(), ",");
@@ -103,7 +103,7 @@ public class MenuSaver {
 
     private void insertTextDocumentMenu(TextDocumentDomainObject textDocument, Integer menuIndex,
                                         MenuDomainObject menu, ImcmsServices services) {
-        sqlInsertMenu(textDocument, menuIndex.intValue(), menu);
+        sqlInsertMenu(textDocument, menuIndex, menu);
         insertTextDocumentMenuItems(menu, services);
     }
 
@@ -134,7 +134,7 @@ public class MenuSaver {
         String[] parameters = new String[]{
                 "" + menu.getId(),
                 "" + menuItem.getDocumentReference().getDocumentId(),
-                "" + menuItem.getSortKey().intValue(),
+                "" + menuItem.getSortKey(),
                 "" + menuItem.getTreeSortKey()
         };
         database.execute(new SqlUpdateDatabaseCommand(sqlInsertMenuItem, parameters));
@@ -143,9 +143,9 @@ public class MenuSaver {
     private void sqlInsertMenu(TextDocumentDomainObject textDocument, int menuIndex,
                                MenuDomainObject menu) {
         Number menuId = (Number) database.execute(new InsertIntoTableDatabaseCommand("menus", new Object[][]{
-                {"meta_id", new Integer(textDocument.getId())},
-                {"menu_index", new Integer(menuIndex)},
-                {"sort_order", new Integer(menu.getSortOrder())}
+                {"meta_id", textDocument.getId()},
+                {"menu_index", menuIndex},
+                {"sort_order", menu.getSortOrder()}
         }));
         menu.setId(menuId.intValue());
     }

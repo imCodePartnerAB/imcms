@@ -51,12 +51,12 @@ public class CachingFileLoader {
     }
 
     private void cacheFile(File file, String contents) {
-        fileCache.put(file, new Object[]{contents, new Long(System.currentTimeMillis())});
+        fileCache.put(file, new Object[]{contents, System.currentTimeMillis()});
     }
 
     public String getCachedFileStringIfRecent(File file) {
         Object[] file_and_date = (Object[]) fileCache.get(file);
-        if (file_and_date != null && file.lastModified() <= ((Long) file_and_date[1]).longValue()) {
+        if (file_and_date != null && file.lastModified() <= (Long) file_and_date[1]) {
             return (String) file_and_date[0];
         }
         return null;

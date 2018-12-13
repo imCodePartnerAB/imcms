@@ -12,6 +12,6 @@ public class SectionFromIdTransformer implements Transformer {
     }
 
     public Object transform(Object input) {
-        return services.getDocumentMapper().getSectionById(((Integer) input).intValue());
+        return services.getDocumentMapper().getSectionById((Integer) input);
     }
 }

@@ -175,14 +175,14 @@
                 <select name="<%= SearchDocumentsPage.REQUEST_PARAMETER__DOCUMENTS_PER_PAGE %>">
                     <%
                         Integer[] ranges = new Integer[] {
-                            new Integer( 5 ),
-                            new Integer( 10 ),
-                            new Integer( 20 ),
-                            new Integer( 100 ),
-                            new Integer( 1000 ),
+                                5,
+                                10,
+                                20,
+                                100,
+                                1000,
                         } ;
                     %>
-                    <%= Html.createOptionList(Arrays.asList(ranges), new Integer( documentsPerPage ), new ToDoubleObjectStringPairTransformer()) %>
+                    <%= Html.createOptionList(Arrays.asList(ranges), documentsPerPage, new ToDoubleObjectStringPairTransformer()) %>
                 </select>
             </td>
         </tr>

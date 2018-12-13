@@ -38,7 +38,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         Object[] parametersAtCorrectIndices = getParametersAtCorrectIndicesForProcedure(procedure, parameters);
         String body = procedure.getBody();
         logProcedureCall(procedureName, body, parametersAtCorrectIndices);
-        return ((Integer) database.execute(new SqlUpdateDatabaseCommand(body, parametersAtCorrectIndices))).intValue();
+        return (Integer) database.execute(new SqlUpdateDatabaseCommand(body, parametersAtCorrectIndices));
     }
 
     private void logProcedureCall(String procedureName, String body, Object[] parametersAtCorrectIndices) {
@@ -116,7 +116,7 @@ public class DefaultProcedureExecutor implements ProcedureExecutor {
         int headerParametersFound = 0;
         while (parametersMatcher.find()) {
             String parameterName = parametersMatcher.group(1);
-            parameterNameToIndexMap.put(parameterName, new Integer(headerParametersFound++));
+            parameterNameToIndexMap.put(parameterName, headerParametersFound++);
         }
         return parameterNameToIndexMap;
     }

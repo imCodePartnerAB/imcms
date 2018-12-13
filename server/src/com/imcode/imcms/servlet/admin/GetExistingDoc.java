@@ -221,7 +221,7 @@ public class GetExistingDoc extends HttpServlet {
     private void addDocumentsFromRequestToMenu(UserDomainObject user, HttpServletRequest req,
                                                ImcmsServices imcref, TextDocumentDomainObject parentDocument,
                                                MenuEditPage menuEditPage) {
-        req.getSession().setAttribute("flags", new Integer(ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS));
+        req.getSession().setAttribute("flags", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_MENUS);
 
         // get the seleced existing docs
         String[] values = req.getParameterValues("existing_meta_id");
@@ -264,7 +264,7 @@ public class GetExistingDoc extends HttpServlet {
                                  DocumentDomainObject document) {
         Set allowedDocumentTypeIds = ((TextDocumentPermissionSetDomainObject) user.getPermissionSetFor(parentDocument)).getAllowedDocumentTypeIds();
         boolean sharePermission = user.canAddDocumentToAnyMenu(document);
-        return sharePermission && (allowedDocumentTypeIds.isEmpty() || allowedDocumentTypeIds.contains(new Integer(document.getDocumentTypeId())));
+        return sharePermission && (allowedDocumentTypeIds.isEmpty() || allowedDocumentTypeIds.contains(document.getDocumentTypeId()));
     }
 
     private void createSearchResultsPage(ImcmsServices imcref, UserDomainObject user,

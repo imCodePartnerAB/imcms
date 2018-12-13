@@ -250,7 +250,7 @@ public class MenuEditPage extends OkCancelPage {
             if (null == parentMenuIndex) {
                 return;
             }
-            MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex.intValue());
+            MenuDomainObject menu = parentDocument.getMenu(parentMenuIndex);
             menu.addMenuItem(new MenuItemDomainObject(documentMapper.getDocumentReference(document)));
             documentMapper.saveDocument(parentDocument, user);
         }

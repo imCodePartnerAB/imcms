@@ -255,7 +255,7 @@ public class TagParser {
                     request.setAttribute("includingDocument", document);
                     request.setAttribute("includedDocumentId", includedDocumentId);
                     request.setAttribute("label", label);
-                    request.setAttribute("includeIndex", new Integer(no));
+                    request.setAttribute("includeIndex", no);
                     return Utility.getContents("/imcms/" + user.getLanguageIso639_2()
                             + "/jsp/docadmin/text/edit_include.jsp", request, response);
                 } catch (Exception e) {
@@ -265,7 +265,7 @@ public class TagParser {
                 if (null == includedDocumentId) {
                     return "";
                 }
-                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, includedDocumentId.intValue(), attributes);
+                ParserParameters includedDocumentParserParameters = createIncludedDocumentParserParameters(parserParameters, includedDocumentId, attributes);
                 StringWriter writer = new StringWriter();
                 textDocParser.untimedParsePage(includedDocumentParserParameters, writer);
                 PatternMatcher patMat = new Perl5Matcher();
@@ -474,7 +474,7 @@ public class TagParser {
             String formatsAttribute = attributes.getProperty("formats", "");
             String[] formats = null != formatsAttribute ? formatsAttribute.split("\\W+") : null;
             request.setAttribute("document", documentRequest.getDocument());
-            request.setAttribute("textIndex", new Integer(no));
+            request.setAttribute("textIndex", no);
             String label = getLabel(attributes);
             request.setAttribute("label", label);
             request.setAttribute("content", result);
@@ -662,7 +662,7 @@ public class TagParser {
             if (null == publisherId) {
                 return "";
             }
-            user = userMapper.getUser(publisherId.intValue());
+            user = userMapper.getUser(publisherId);
         } else {
             user = documentRequest.getUser();
         }

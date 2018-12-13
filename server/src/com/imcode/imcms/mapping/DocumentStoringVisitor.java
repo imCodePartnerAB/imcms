@@ -197,7 +197,7 @@ public class DocumentStoringVisitor extends DocumentVisitor {
             if (oldTextDocument == null) {
                 saveText = true;
             } else {
-                TextDomainObject oldText = oldTextDocument.getText(textIndex.intValue());
+                TextDomainObject oldText = oldTextDocument.getText(textIndex);
                 String oldTextValue = oldText == null ? null : oldText.toString();
 
                 // If this is first time insertion then ignore modified flag
@@ -245,19 +245,19 @@ public class DocumentStoringVisitor extends DocumentVisitor {
         database.execute(new SqlUpdateCommand(sqlDeleteImages, parameters));
         for (Iterator iterator = images.keySet().iterator(); iterator.hasNext(); ) {
             Integer imageIndex = (Integer) iterator.next();
-            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex.intValue());
-            if (oldTextDocument != null && oldTextDocument.getImage(imageIndex.intValue()) != null && !oldTextDocument.getImage(imageIndex.intValue()).getSource().toStorageString().equals("") && !image.equals(oldTextDocument.getImage(imageIndex.intValue()))) {
-                sqlInsertImageHistory(oldTextDocument, imageIndex.intValue(), user);
+            ImageDomainObject image = (ImageDomainObject) images.get(imageIndex);
+            if (oldTextDocument != null && oldTextDocument.getImage(imageIndex) != null && !oldTextDocument.getImage(imageIndex).getSource().toStorageString().equals("") && !image.equals(oldTextDocument.getImage(imageIndex))) {
+                sqlInsertImageHistory(oldTextDocument, imageIndex, user);
             }
-            saveDocumentImage(textDocument.getId(), imageIndex.intValue(), image);
+            saveDocumentImage(textDocument.getId(), imageIndex, image);
         }
     }
 
     private void sqlInsertImageHistory(TextDocumentDomainObject textDocument, Integer imageIndex, UserDomainObject user) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(DateConstants.DATETIME_FORMAT_STRING);
         String[] columnNames = new String[]{"imgurl", "width", "height", "border", "v_space", "h_space", "image_name", "target", "align", "alt_text", "low_scr", "linkurl", "type", "archive_image_id", "format", "crop_x1", "crop_y1", "crop_x2", "crop_y2", "rotate_angle", "gen_file", "resize", "meta_id", "name", "modified_datetime", "user_id"};
-        ImageDomainObject image = textDocument.getImage(imageIndex.intValue());
-        final Object[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex.intValue());
+        ImageDomainObject image = textDocument.getImage(imageIndex);
+        final Object[] parameters = getSqlImageParameters(image, textDocument.getId(), imageIndex);
         List<Object> param = new ArrayList<Object>(Arrays.asList(parameters));
         param.add(dateFormat.format(new Date()));
         param.add(user.getId());

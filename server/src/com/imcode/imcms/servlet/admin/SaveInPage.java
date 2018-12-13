@@ -51,7 +51,7 @@ public class SaveInPage extends HttpServlet {
 
         // Check if user has write rights
         if (!textDocumentPermissionSet.getEditTemplates()
-                || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(new Integer(requestedTemplateGroup.getId())))
+                || null != requestedTemplateGroup && !allowedTemplateGroupIds.contains(requestedTemplateGroup.getId()))
         {
             errorNoPermission(documentId, user, req, res);
             return;
@@ -60,7 +60,7 @@ public class SaveInPage extends HttpServlet {
         if (req.getParameter("update") != null) {
             Writer out = res.getWriter();
 
-            req.getSession().setAttribute("flags", new Integer(0));
+            req.getSession().setAttribute("flags", 0);
 
             if (requestedTemplate == null) {
                 errorNoTemplateSelected(documentId, services, user, out);
@@ -95,7 +95,7 @@ public class SaveInPage extends HttpServlet {
         } else if (req.getParameter("change_group") != null) {
             Utility.setDefaultHtmlContentType(res);
 
-            req.getSession().setAttribute("flags", new Integer(ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE));
+            req.getSession().setAttribute("flags", ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEMPLATE);
 
             if (null != requestedTemplateGroup) {
                 user.setTemplateGroup(requestedTemplateGroup);

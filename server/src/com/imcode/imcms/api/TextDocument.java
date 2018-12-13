@@ -241,7 +241,7 @@ public class TextDocument extends Document {
     public Document getInclude(int includeIndexInDocument) {
         Integer includedDocumentId = getInternalTextDocument().getIncludedDocumentId(includeIndexInDocument);
         if (null != includedDocumentId) {
-            DocumentDomainObject includedDocument = getDocumentGetter().getDocument(new Integer(includedDocumentId.intValue()));
+            DocumentDomainObject includedDocument = getDocumentGetter().getDocument(includedDocumentId.intValue());
             if (null != includedDocument) {
                 return DocumentService.wrapDocumentDomainObject(includedDocument, contentManagementSystem);
             }
@@ -282,7 +282,7 @@ public class TextDocument extends Document {
         Map<Integer, MenuDomainObject> internalMenus = getInternalTextDocument().getMenus();
         SortedMap menus = new TreeMap();
         for (Integer menuIndex : internalMenus.keySet()) {
-            menus.put(menuIndex, new Menu(this, menuIndex.intValue()));
+            menus.put(menuIndex, new Menu(this, menuIndex));
         }
         return menus;
     }
@@ -414,7 +414,7 @@ public class TextDocument extends Document {
             if (null == sortKey) {
                 return 0;
             }
-            return sortKey.intValue();
+            return sortKey;
         }
 
         /**

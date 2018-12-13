@@ -40,7 +40,7 @@ public class AdminDoc extends HttpServlet {
             history = new Stack();
             session.setAttribute("history", history);
         }
-        Integer meta_int = new Integer(meta_id);
+        Integer meta_int = meta_id;
         if (history.empty() || !history.peek().equals(meta_int)) {
             history.push(meta_int);
         }
@@ -55,7 +55,7 @@ public class AdminDoc extends HttpServlet {
 
         Integer userflags = (Integer) session.getAttribute(PARAMETER__DISPATCH_FLAGS);        // Get the flags from the user-object
         session.removeAttribute(PARAMETER__DISPATCH_FLAGS);
-        int flags = userflags == null ? 0 : userflags.intValue();    // Are there flags? Set to 0 if not.
+        int flags = userflags == null ? 0 : userflags;    // Are there flags? Set to 0 if not.
 
 
         try {

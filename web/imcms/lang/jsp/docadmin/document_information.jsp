@@ -455,7 +455,7 @@ function checkFocus() {
 			CategoryDomainObject[] categories = categoryMapper.getAllCategoriesOfType(categoryType);
 			for (int k = 0; k < categories.length; k++) {
 				CategoryDomainObject category = categories[k];
-				boolean checked = documentCategoryIds.contains(new Integer(category.getId()));
+				boolean checked = documentCategoryIds.contains(category.getId());
 				String checkedStr = checked?"checked":"";
 				boolean hasImage = !category.getImageUrl().equals("");
 				String imageStr = hasImage ? "<img style=\"max-width: 10em; max-height: 10em;\" src=\"" + category.getImageUrl() + "\"/>" : ""; %>
@@ -617,7 +617,7 @@ function checkFocus() {
 		<td class="imcmsAdmText"><? global/Publisher ?></td>
 		<td class="imcmsAdmText">
 		<% Integer publisherId = document.getPublisherId();
-            UserDomainObject publisher = null == publisherId ? null : userMapper.getUser(publisherId.intValue()) ; %>
+            UserDomainObject publisher = null == publisherId ? null : userMapper.getUser(publisherId) ; %>
 		<%=
 		null == publisher
 		? "<? install/htdocs/sv/jsp/docadmin/document_information.jsp/no_publisher ?>"
