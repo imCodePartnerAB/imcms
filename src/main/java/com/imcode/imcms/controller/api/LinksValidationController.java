@@ -19,10 +19,10 @@ public class LinksValidationController {
         this.linkValidationService = linkValidationService;
     }
 
-    @GetMapping
-    public List<ValidationLink> validateDocumentsLinks(@RequestParam boolean onlyBrokenLinks,
-                                                       @RequestParam int startDocumentId,
-                                                       @RequestParam int endDocumentId) {
-        return linkValidationService.validateDocumentsLinks(onlyBrokenLinks, startDocumentId, endDocumentId);
+    @GetMapping("/validate")
+    public List<ValidationLink> validateDocumentsLinks(@RequestParam int startDocumentId,
+                                                       @RequestParam int endDocumentId,
+                                                       @RequestParam boolean filterBrokenLinks) {
+        return linkValidationService.validateDocumentsLinks(startDocumentId, endDocumentId, filterBrokenLinks);
     }
 }
