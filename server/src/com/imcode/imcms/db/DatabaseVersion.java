@@ -26,12 +26,12 @@ public class DatabaseVersion implements Comparable<DatabaseVersion> {
     }
 
     public int compareTo(DatabaseVersion other) {
-        int result = Integer.valueOf(majorVersion).compareTo(other.majorVersion);
+        int result = Integer.compare(majorVersion, other.majorVersion);
         if (0 == result) {
-            result = Integer.valueOf(minorVersion).compareTo(other.minorVersion);
+            result = Integer.compare(minorVersion, other.minorVersion);
         }
         if (0 == result) {
-            result = Integer.valueOf(clientVersion).compareTo(other.clientVersion);
+            result = Integer.compare(clientVersion, other.clientVersion);
         }
         return result;
     }

@@ -98,12 +98,6 @@ public class DateTextFieldTextDocumentComparator extends Document.Comparator {
             return result;
         }
 
-        if (textDocument1.getId() > textDocument2.getId()) {
-            return 1;
-        } else if (textDocument1.getId() < textDocument2.getId()) {
-            return -1;
-        } else {
-            return 0;
-        }
+        return Integer.compare(textDocument1.getId(), textDocument2.getId());
     }
 }

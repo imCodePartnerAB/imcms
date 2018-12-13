@@ -118,7 +118,7 @@ public class RebuildingDirectoryIndex implements DocumentIndex {
     private static void sortFilesByLastModifiedWithLatestFirst(File[] indexDirectories) {
         Arrays.sort(indexDirectories, new Comparator<File>() {
             public int compare(File f1, File f2) {
-                return Long.valueOf(f2.lastModified()).compareTo(f1.lastModified());
+                return Long.compare(f2.lastModified(), f1.lastModified());
             }
         });
     }
