@@ -126,7 +126,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return link.isPageFound();
     }
 
-    public List<ValidationLink> validateDocumentsLinks(boolean onlyBrokenLinks, int startDocumentId, int endDocumentId) {
+    public List<ValidationLink> validateDocumentsLinks(int startDocumentId, int endDocumentId, boolean onlyBrokenLinks) {
         List<ValidationLink> validationLinks = new ArrayList<>();
         List<Integer> rangeIds = docRepository.getDocumentIdsInRange(startDocumentId, endDocumentId);
         List<Document> documentsToTest = rangeIds

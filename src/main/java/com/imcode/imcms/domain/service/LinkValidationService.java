@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface LinkValidationService {
 
-    List<ValidationLink> validateDocumentsLinks(boolean onlyBrokenLinks, int startDocumentId, int endDocumentId);
+    List<ValidationLink> validateDocumentsLinks(int startDocumentId, int endDocumentId, boolean onlyBrokenLinks);
 
 }
