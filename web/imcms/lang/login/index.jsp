@@ -5,12 +5,14 @@
 <%@ page import="imcode.server.user.UserDomainObject" %>
 <%@ page import="imcode.util.Utility" %>
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.io.PrintWriter" %>
 <%@ page import="java.io.IOException" %>
+<%@ page import="java.io.PrintWriter" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="im" uri="imcms" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <vel:velocity>
 	<%!
 		void verifyUserViaBankId(HttpSession session, HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -24,6 +26,12 @@
 		Map<String, AuthenticationMethodConfiguration> loginConfiguration = Imcms.getServices().getConfig().getAuthenticationConfiguration();
 		final boolean loginPassword = loginConfiguration.containsKey( "loginPassword" );
 		final boolean cgi = loginConfiguration.containsKey( "cgi" );
+		final boolean is2FA = loginConfiguration.containsKey( "2FA" );
+		final boolean is2FAStep = null != session.getAttribute(REQUEST_PARAMETER__USERNAME);
+
+        pageContext.setAttribute("is2FA", is2FA);
+        pageContext.setAttribute("is2FAStep", is2FAStep);
+
 		final boolean loginPasswordFirst = loginPassword && cgi && loginConfiguration.get( "loginPassword" ).getOrder() < loginConfiguration.get( "cgi" ).getOrder();
 		if (request.getParameter("activeLoginTab") != null) {
 			PrintWriter pw = response.getWriter();
@@ -153,19 +161,37 @@
 								<input type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__NEXT_URL %>"
 									   value="<%=StringEscapeUtils.escapeHtml(next_url)%>">
 								<%}%>
-								<tr>
-									<td><span class="imcmsAdmText"><? templates/login/index.html/5 ?></span></td>
-									<td>&nbsp;</td>
-									<td><input type="text" name="<%= VerifyUser.REQUEST_PARAMETER__USERNAME %>"
-											   size="15"
-											   style="width:180px"></td>
-								</tr>
-								<tr>
-									<td><span class="imcmsAdmText"><? templates/login/index.html/6 ?></span></td>
-									<td>&nbsp;</td>
-									<td><input type="password" name="<%= VerifyUser.REQUEST_PARAMETER__PASSWORD %>"
-											   size="15" style="width:180px"></td>
-								</tr>
+
+                                <c:choose>
+                                    <c:when test="${is2FA and is2FAStep}">
+                                        <tr>
+                                            <td><span class="imcmsAdmText"><? templates/login/index.html/7 ?></span>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                            <td><input type="password" name="<%= VerifyUser.REQUEST_PARAMETER__2FA %>"
+                                                       size="15" style="width:180px"></td>
+                                        </tr>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <tr>
+                                            <td><span class="imcmsAdmText"><? templates/login/index.html/5 ?></span>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                            <td><input type="text" name="<%= VerifyUser.REQUEST_PARAMETER__USERNAME %>"
+                                                       size="15"
+                                                       style="width:180px"></td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="imcmsAdmText"><? templates/login/index.html/6 ?></span>
+                                            </td>
+                                            <td>&nbsp;</td>
+                                            <td><input type="password"
+                                                       name="<%= VerifyUser.REQUEST_PARAMETER__PASSWORD %>"
+                                                       size="15" style="width:180px"></td>
+                                        </tr>
+                                    </c:otherwise>
+                                </c:choose>
+
 								<tr>
 									<td colspan="3">&nbsp;</td>
 								</tr>
