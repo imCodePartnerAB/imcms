@@ -53,6 +53,98 @@ define(
                 });
             }
 
+            var linkListBuilder = function ($searchResultContainer) {
+                this.$searchResultContainer = $searchResultContainer;
+                this.linkAppender = this.appendLinks.bind(this);
+            };
+
+            linkListBuilder.prototype = {
+                isEmpty: true,
+                clearList: function () {
+                    this.$searchResultContainer.empty();
+                    this.isEmpty = true;
+
+                    return this;
+                },
+                linkToRow: function (validationLink) {
+
+                    let infoRowAttributes = {
+                        id: 'link-id-' + validationLink.id,
+                    };
+
+                    return new BEM({
+                        block: "link-info-row",
+                        elements: {
+                            'link-page-alias-': $('<div>', {
+                                text: validationLink.alias
+                            }),
+                            'link-status-': $('<div>', {
+                                text: validationLink.documentStatus
+                            }),
+                            'link-type-': $('<div>', {
+                                text: validationLink.type
+                            }),
+                            // 'link-admin-': $('<div>', {
+                            //     text: validationLink.admin
+                            // }),
+                            // 'link-ref-': $('<div>', {
+                            //     text: validationLink.documentStatus
+                            // }),
+                            'link-name-': $('<div>', {
+                                text: validationLink.title
+                            }),
+                            'link-host-found-': $('<div>', {
+                                text: (validationLink.hostFound) ? "V" : components.controls.remove(),
+                            }),
+                            'link-host-reachable-': $('<div>', {
+                                text: (validationLink.hostReachable) ? "V" : components.controls.remove(),
+                            }),
+                            'link-page-found-': $('<div>', {
+                                text: (validationLink.pageFound) ? "V" : components.controls.remove(),
+                            }),
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                },
+                prepareTitleRow: function () {
+                    let titleRow = new BEM({
+                        block: 'table-title-row',
+                        elements: {
+                            'page-alias': $('<div>', {text: texts.linkInfoRow.pageAlias}),
+                            'status': $('<div>', {text: texts.linkInfoRow.status}),
+                            'type': $('<div>', {text: texts.linkInfoRow.type}),
+                            'admin': $('<div>', {text: texts.linkInfoRow.admin}),
+                            'reference': $('<div>', {text: texts.linkInfoRow.reference}),
+                            'link': $('<div>', {text: texts.linkInfoRow.link}),
+                            'host-found': $('<div>', {text: texts.linkInfoRow.hostFound}),
+                            'host-reachable': $('<div>', {text: texts.linkInfoRow.hostReachable}),
+                            'page-found': $('<div>', {text: texts.linkInfoRow.pageFound})
+                        }
+                    }).buildBlockStructure('<div>', {
+                        'class': 'table-title',
+
+                    });
+                    return titleRow;
+                },
+                addRowsToList: function (linkRows$) {
+                    this.$searchResultContainer.css('display', 'block').append(linkRows$);
+                    return this;
+                },
+                appendLinks: function (validationLinks) {
+                    this.prepareTitleRow()
+                        .addRowsToList(validationLinks.map(this.linkToRow));
+                }
+            };
+
+            function listValidationLinks() {
+                var filterLinks = {
+                    filterBrokenLinks: $filterOnlyBrokenList.isChecked(),
+                    startDocumentId: $inputStartId.getInput().val(),
+                    endDocumentId: $inputEndId.getInput().val()
+                };
+                var tableBuilder = new linkListBuilder($searchResultContainer).clearList();
+                linksValidatorRestApi.validate(filterLinks).done(tableBuilder.linkAppender);
+            }
+
             function buildButtonValidation() {
                 let $button = components.buttons.positiveButton({
                     text: texts.buttonValidation,
