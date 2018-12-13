@@ -468,6 +468,7 @@ public class Utility {
         HttpSession session = req.getSession();
         sessions.remove(session.getId());
         session.removeAttribute(LOGGED_IN_USER);
+        session.invalidate();
     }
 
     public static ContentManagementSystem initRequestWithApi(ServletRequest request, UserDomainObject currentUser) {
