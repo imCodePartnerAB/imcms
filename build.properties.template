@@ -186,3 +186,9 @@ index-disabled-file-extensions =
 
 # Error logger url.
 error-logger-url =
+
+#SMS Gateway settings
+sms.gateway.username =
+sms.gateway.password =
+sms.gateway.url =
+sms.gateway.originAddress =
