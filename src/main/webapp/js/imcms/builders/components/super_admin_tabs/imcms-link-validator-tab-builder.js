@@ -73,7 +73,7 @@ define(
                                 text: validationLink.url
                             }),
                             'link-host-found': validationLink.hostFound
-                                ? components.controls.check().hover()
+                                ? components.controls.check()
                                 : components.controls.remove(),
                             'link-host-reachable': validationLink.hostReachable
                                 ? components.controls.check()
