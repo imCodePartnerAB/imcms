@@ -87,13 +87,14 @@ public class TwoFactorService {
         }
         UserDomainObject user = imcmsServices.verifyUser(login, password);
         if (null != user && !user.isDefaultUser()) {
-            boolean isDisabledByCookie = Arrays.stream(request.getCookies())
+            boolean isDisabled = Boolean.parseBoolean(user.getProperties().getOrDefault(COOKIE_NAME_2FA, "false"));
+            boolean isDisabledByCookie = isDisabled || Arrays.stream(request.getCookies())
                     .filter(cookie -> cookie.getName().equals(COOKIE_NAME_2FA))
                     .findFirst()
                     .map(Cookie::getValue).map(Boolean::parseBoolean)
                     .orElse(false);
 
-            if (isDisabledByCookie || checkCode(request, response)) {
+            if (isDisabled || isDisabledByCookie || checkCode(request, response)) {
                 return ContentManagementSystem.login(request, response, login, password);
             } else {
                 initCode(user, request, login, password);
