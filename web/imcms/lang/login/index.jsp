@@ -9,8 +9,8 @@
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.io.PrintWriter" %>
 <%@ page import="static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME" %>
-<%@ page import="static com.imcode.imcms.services.TwoFactorService.REQUEST_PARAMETER__2FA" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="static com.imcode.imcms.services.TwoFactorService.PROPERTY_NAME_2FA" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="im" uri="imcms" %>
@@ -28,7 +28,7 @@
         Map<String, AuthenticationMethodConfiguration> loginConfiguration = Imcms.getServices().getConfig().getAuthenticationConfiguration();
         final boolean loginPassword = loginConfiguration.containsKey("loginPassword");
         final boolean cgi = loginConfiguration.containsKey("cgi");
-        final boolean is2FA = loginConfiguration.containsKey("2FA");
+        final boolean is2FA = loginConfiguration.containsKey(PROPERTY_NAME_2FA);
         final boolean is2FAStep = null != session.getAttribute(REQUEST_PARAMETER__USERNAME);
 
         pageContext.setAttribute("is2FA", is2FA);
@@ -173,7 +173,7 @@
                                             </td>
                                             <td>&nbsp;</td>
                                             <td><input type="password"
-                                                       name="<%= TwoFactorService.REQUEST_PARAMETER__2FA %>"
+                                                       name="<%= TwoFactorService.REQUEST_PARAMETER_2FA %>"
                                                        size="15" style="width:180px"></td>
                                         </tr>
                                     </c:when>

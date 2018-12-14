@@ -17,8 +17,9 @@ import java.util.Properties;
 import static com.imcode.imcms.servlet.VerifyUser.*;
 
 public class TwoFactorService {
-    public static final String REQUEST_PARAMETER__2FA = "2fa";
-    private static final String COOKIE_NAME_2FA = "2fa";
+    public static final String PROPERTY_NAME_2FA= "2FA";
+    public static final String REQUEST_PARAMETER_2FA = "2fa";
+    private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
     private static TwoFactorService instance = null;
     private final int cookieMaxAge;
     private final ImcmsServices imcmsServices;
@@ -43,10 +44,10 @@ public class TwoFactorService {
 
     private boolean checkCode(HttpServletRequest request, HttpServletResponse response) {
         boolean checkResult = false;
-        final String twoFactorCode = request.getParameter(REQUEST_PARAMETER__2FA);
+        final String twoFactorCode = request.getParameter(REQUEST_PARAMETER_2FA);
 
         if (null != twoFactorCode) {
-            if (twoFactorCode.equals(request.getSession().getAttribute(REQUEST_PARAMETER__2FA))) {
+            if (twoFactorCode.equals(request.getSession().getAttribute(REQUEST_PARAMETER_2FA))) {
                 Cookie cookie2FA = new Cookie(COOKIE_NAME_2FA, "true");
                 cookie2FA.setMaxAge(cookieMaxAge);
 
@@ -73,7 +74,7 @@ public class TwoFactorService {
             if (isSmsSend) {
                 session.setAttribute(REQUEST_PARAMETER__USERNAME, login);
                 session.setAttribute(REQUEST_PARAMETER__PASSWORD, password);
-                session.setAttribute(REQUEST_PARAMETER__2FA, generatedCode);
+                session.setAttribute(REQUEST_PARAMETER_2FA, generatedCode);
             }
         }
     }

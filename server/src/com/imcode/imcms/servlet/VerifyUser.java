@@ -24,6 +24,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
+import static com.imcode.imcms.services.TwoFactorService.PROPERTY_NAME_2FA;
+
 public class VerifyUser extends HttpServlet {
 
     public static final String SESSION_ATTRIBUTE__NEXT_URL = "next_url";
@@ -55,7 +57,7 @@ public class VerifyUser extends HttpServlet {
 
         final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = services.getImcmsAuthenticatorAndUserAndRoleMapper();
         try {
-            final boolean is2FA = loginConfiguration.containsKey("2FA");
+            final boolean is2FA = loginConfiguration.containsKey(PROPERTY_NAME_2FA);
             if (is2FA) {
                 cms = TwoFactorService.getInstance().initOrCheck(req, res, name, passwd);
             } else {
