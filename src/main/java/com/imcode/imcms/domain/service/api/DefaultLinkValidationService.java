@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 public class DefaultLinkValidationService implements LinkValidationService {
 
     private static final String LINK_VALIDATION_REGEX = "(http.?:\\/\\/)?(.*)";
-    private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = ".*href\\s*=\\s*\"" + LINK_VALIDATION_REGEX + "\".*";
+    private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = ".*href\\s*=\\s*\"(http.?:\\/\\/)?(.*?)\"";
     private DocumentService<DocumentDTO> defaultDocumentService;
     private DocRepository docRepository;
     private LanguageService languageService;
@@ -136,27 +136,27 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
-                    Matcher matcher = patternUrl.matcher(documentURL.getUrl());
-                    verifyValidationLink(validationLinks, matcher, link);
+                    Matcher m = patternUrl.matcher(documentURL.getUrl());
+                    verifyValidationLink(validationLinks, m, link);
                 } else {
                     for (Text text : publicTexts) {
                         ValidationLink link = new ValidationLink();
                         link.setDocumentData(dtoFieldsDocument);
-                        Matcher matcher = patternTexts.matcher(text.getText());
-                        verifyValidationLink(validationLinks, matcher, link);
+                        Matcher m = patternTexts.matcher(text.getText());
+                        verifyValidationLink(validationLinks, m, link);
                     }
                     for (String imageUrlLink : publicImageLinks) {
                         ValidationLink link = new ValidationLink();
                         link.setDocumentData(dtoFieldsDocument);
-                        Matcher matcher = patternUrl.matcher(imageUrlLink);
-                        verifyValidationLink(validationLinks, matcher, link);
+                        Matcher m = patternUrl.matcher(imageUrlLink);
+                        verifyValidationLink(validationLinks, m, link);
                     }
                 }
             }
         }
         if (onlyBrokenLinks) {
             validationLinks = validationLinks.stream()
-                    .filter(link -> !(link.isHostFound() || link.isHostReachable() || link.isPageFound()))
+                    .filter(link -> !(link.isHostFound() && link.isHostReachable() && link.isPageFound()))
                     .collect(Collectors.toList());
         }
         return validationLinks;
