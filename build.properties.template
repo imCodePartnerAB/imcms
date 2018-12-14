@@ -34,6 +34,7 @@ db-url-without-db-name = jdbc:mysql://${db-host}:${db-port}/
 db-url = ${db-url-without-db-name}${db-name}?characterEncoding=utf8
 
 cgi-metadata-url = https://m00-mg-local.testidp.funktionstjanster.se/samlv2/idp/metadata/0/0
+#Add '2FA' to enable sms authentication
 authentication-configuration = loginPassword,cgi
 cgi-user-role-name = BankID
 
