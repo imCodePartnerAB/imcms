@@ -1,6 +1,7 @@
 package com.imcode.imcms.services;
 
 import com.imcode.imcms.api.ContentManagementSystem;
+import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.PhoneNumber;
@@ -24,6 +25,8 @@ public class TwoFactorAuthService {
     private final int cookieMaxAge;
     private final ImcmsServices imcmsServices;
     private final SmsService smsService;
+
+    private final LocalizedMessage ERROR_NO_PHONENUMBER_FOUND = new LocalizedMessage("templates/login/access_denied.html/5");
 
     private TwoFactorAuthService() {
         Properties systemProperties = Imcms.getServerProperties();
@@ -76,6 +79,8 @@ public class TwoFactorAuthService {
                 session.setAttribute(REQUEST_PARAMETER__PASSWORD, password);
                 session.setAttribute(REQUEST_PARAMETER_2FA, generatedCode);
             }
+        } else {
+            request.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR_NO_PHONENUMBER_FOUND);
         }
     }
 

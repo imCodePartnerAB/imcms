@@ -81,7 +81,9 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
+        if (null == req.getAttribute(REQUEST_ATTRIBUTE__ERROR)) {
+            req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
+        }
         req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
                 + "/login/index.jsp").forward(req, res);
     }
