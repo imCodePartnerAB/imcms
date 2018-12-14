@@ -72,15 +72,15 @@ define(
                             'link-name': $('<div>', {
                                 text: validationLink.url
                             }),
-                            'link-host-found': $('<div>', {
-                                text: (validationLink.hostFound) ? "V" : "X",
-                            }),
-                            'link-host-reachable': $('<div>', {
-                                text: (validationLink.hostReachable) ? "V" : "X",
-                            }),
-                            'link-page-found': $('<div>', {
-                                text: (validationLink.pageFound) ? "V" : "X",
-                            }),
+                            'link-host-found': validationLink.hostFound
+                                ? components.controls.check().hover()
+                                : components.controls.remove(),
+                            'link-host-reachable': validationLink.hostReachable
+                                ? components.controls.check()
+                                : components.controls.remove(),
+                            'link-page-found': validationLink.pageFound
+                                ? components.controls.check()
+                                : components.controls.remove()
                         }
                     }).buildBlockStructure("<div>");
                 },
@@ -92,7 +92,7 @@ define(
                             'status': $('<div>', {text: texts.linkInfoRow.status}),
                             'type': $('<div>', {text: texts.linkInfoRow.type}),
                             'admin': $('<div>', {text: texts.linkInfoRow.admin}),
-                            'ref': $('<div>', {text: texts.linkInfoRow.reference}),
+                            //'ref': $('<div>', {text: texts.linkInfoRow.reference}),
                             'link': $('<div>', {text: texts.linkInfoRow.link}),
                             'host-found': $('<div>', {text: texts.linkInfoRow.hostFound}),
                             'host-reachable': $('<div>', {text: texts.linkInfoRow.hostReachable}),
