@@ -195,16 +195,37 @@
     padding: 5px;
 }
 
+.link-info-row {
+    display: flex;
+    padding: 5px;
+}
+
+.table-title-row__page-alias,
 .table-title-row__status,
 .table-title-row__type,
 .table-title-row__admin,
-.table-title-row__reference,
+.link-info-row__link-status,
+.link-info-row__link-type,
+.link-info-row__link-admin,
+.link-info-row__link-page-alias {
+    width: 10%;
+}
+
 .table-title-row__link,
+.link-info-row__link-name {
+    width: 40%;
+}
+
 .table-title-row__hostFound,
 .table-title-row__hostReachable,
 .table-title-row__pageFound,
-.table-title-row__page-alias {
-    width: 17%;
+.imcms-control.imcms-control--remove.link-info-row__link-host-reachable,
+.imcms-control.imcms-control--remove.link-info-row__link-page-found,
+.imcms-control.imcms-control--remove.link-info-row__link-host-found,
+.imcms-control.imcms-control--check.link-info-row__link-host-found,
+.imcms-control.imcms-control--check.link-info-row__link-host-reachable,
+.imcms-control.imcms-control--check.link-info-row__link-page-found {
+    width: 7%;
 }
 
 .profile-info-row {
