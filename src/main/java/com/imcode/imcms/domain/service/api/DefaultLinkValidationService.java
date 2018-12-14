@@ -15,13 +15,13 @@ import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.DocumentURL;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Text;
+import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -62,11 +62,27 @@ public class DefaultLinkValidationService implements LinkValidationService {
         this.documentUrlService = documentUrlService;
     }
 
-    private static boolean isReachable(String host, int openPort) {
+    private boolean isHostFound(String protocol, String host) {
+        boolean isHostFound = false;
+        if (protocol == null) {
+            isHostFound = true;
+        } else {
+            try {
+                InetAddress.getByName(host);
+                isHostFound = true;
+            } catch (UnknownHostException e) {
+                isHostFound = false;
+            }
+        }
+        return isHostFound;
+    }
+
+    private boolean isHostReachable(String protocol, String host) {
         final int timeOutMillis = 1000;
         try {
+            URL url = new URL(protocol + host);
             try (Socket soc = new Socket()) {
-                soc.connect(new InetSocketAddress(host, openPort), timeOutMillis);
+                soc.connect(new InetSocketAddress(url.getHost(), url.getDefaultPort()), timeOutMillis);
                 if (soc.isConnected())
                     soc.close();
             }
@@ -76,54 +92,19 @@ public class DefaultLinkValidationService implements LinkValidationService {
         }
     }
 
-    private boolean resultHostFound(ValidationLink link, String host, String protocol) {
-        if (protocol == null) {
-            link.setHostFound(true);
-        } else {
-            try {
-                InetAddress.getByName(host);
-                link.setHostFound(true);
-            } catch (UnknownHostException e) {
-                link.setHostFound(false);
-            }
-        }
-        return link.isHostFound();
-    }
-
-    private boolean resultHostReachable(ValidationLink link, String protocol, String host) {
+    private boolean isPageFound(String protocol, String host) {
         URL url = null;
-        List<String> protocols = new ArrayList<>();
-        protocols.add("http://");
-        protocols.add("https://");
-        if (link.isHostFound()) {
-            for (String protoc : protocols) {
-                try {
-                    if (protocol == null) {
-                        url = new URL(protoc + host);
-                    } else {
-                        url = new URL(protocol + host);
-                    }
-                    link.setHostReachable(isReachable(url.getHost(), url.getDefaultPort()));
-                } catch (MalformedURLException e) {
-                    link.setHostReachable(false);
-                }
-            }
-        }
-        return link.isHostReachable();
-    }
-
-    private boolean resultPageFound(ValidationLink link, String protocol, String host) {
-        URL url = null;
+        boolean isPageFound = false;
         try {
             url = new URL(protocol + host);
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
             try (AutoCloseable autoCloseable = () -> httpConnection.disconnect()) {
-                link.setPageFound(HttpURLConnection.HTTP_OK == httpConnection.getResponseCode());
+                isPageFound = HttpURLConnection.HTTP_OK == httpConnection.getResponseCode();
             }
         } catch (Exception e) {
-            link.setPageFound(false);
+            isPageFound = false;
         }
-        return link.isPageFound();
+        return isPageFound;
     }
 
     public List<ValidationLink> validateDocumentsLinks(int startDocumentId, int endDocumentId, boolean onlyBrokenLinks) {
@@ -138,73 +119,37 @@ public class DefaultLinkValidationService implements LinkValidationService {
         Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
 
         for (Document doc : documentsToTest) {
-            ValidationLink link = new ValidationLink();
             DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
             dtoFieldsDocument.setId(doc.getId());
             dtoFieldsDocument.setAlias(doc.getAlias());
             dtoFieldsDocument.setType(doc.getType());
             dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
+
             dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
-                    doc.getLatestVersion().getId()).get(0).getHeadline());
-            link.setDocumentData(dtoFieldsDocument);
+                    doc.getLatestVersion().getId()).get(0).getHeadline()); // TODO: 14.12.18 check correct language
 
-            if (rangeIds.contains(dtoFieldsDocument.getId())) {
-                for (Language language : languageService.getAll()) {
-                    Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
-                    Set<String> publicImageLinks = imageService.getPublicImageLinks(doc.getId(), language);
+            for (Language language : languageService.getAll()) {
+                Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
+                Set<String> publicImageLinks = imageService.getPublicImageLinks(doc.getId(), language);
+                //if (doc instanceof UrlDocumentDTO)  //todo: found the best solution
+                if (doc.getType().equals(Meta.DocumentType.URL)) {
+                    DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
+                    ValidationLink link = new ValidationLink();
+                    link.setDocumentData(dtoFieldsDocument);
+                    Matcher matcher = patternUrl.matcher(documentURL.getUrl());
+                    verifyValidationLink(validationLinks, matcher, link);
+                } else {
                     for (Text text : publicTexts) {
-                        Matcher m = patternTexts.matcher(text.getText());
-                        if (m.find()) {
-                            String host = m.group(2);
-                            String protocol = m.group(1);
-                            link.setUrl(protocol + host);
-
-                            if (resultHostFound(link, host, protocol)) {
-                                if (resultHostReachable(link, protocol, host)) {
-                                    if (resultPageFound(link, protocol, host)) {
-
-                                    }
-                                }
-                            }
-                            validationLinks.add(link);
-                        }
+                        ValidationLink link = new ValidationLink();
+                        link.setDocumentData(dtoFieldsDocument);
+                        Matcher matcher = patternTexts.matcher(text.getText());
+                        verifyValidationLink(validationLinks, matcher, link);
                     }
                     for (String imageUrlLink : publicImageLinks) {
-                        Matcher m = patternUrl.matcher(imageUrlLink);
-                        if (m.find()) {
-                            String host = m.group(2);
-                            String protocol = m.group(1);
-                            link.setUrl(protocol + host);
-
-                            if (resultHostFound(link, host, protocol)) {
-                                if (resultHostReachable(link, protocol, host)) {
-                                    if (resultPageFound(link, protocol, host)) {
-
-                                    }
-                                }
-                            }
-                            validationLinks.add(link);
-                        }
-                    }
-                    try {
-                        DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
-                        Matcher m = patternUrl.matcher(documentURL.getUrl());
-                        if (m.find()) {
-                            String host = m.group(2);
-                            String protocol = m.group(1);
-                            link.setUrl(protocol + host);
-
-                            if (resultHostFound(link, host, protocol)) {
-                                if (resultHostReachable(link, protocol, host)) {
-                                    if (resultPageFound(link, protocol, host)) {
-
-                                    }
-                                }
-                            }
-                            validationLinks.add(link);
-                        }
-                    } catch (Exception e) {
-                        continue;
+                        ValidationLink link = new ValidationLink();
+                        link.setDocumentData(dtoFieldsDocument);
+                        Matcher matcher = patternUrl.matcher(imageUrlLink);
+                        verifyValidationLink(validationLinks, matcher, link);
                     }
                 }
             }
@@ -215,5 +160,24 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     .collect(Collectors.toList());
         }
         return validationLinks;
+    }
+
+    private void verifyValidationLink(List<ValidationLink> validationLinks, Matcher m, ValidationLink link) {
+        if (m.find()) {
+            String protocol = m.group(1);
+            String host = m.group(2);
+            link.setUrl(protocol + host);
+
+            if (isHostFound(protocol, host)) {
+                link.setHostFound(true);
+                if (isHostReachable(protocol, host)) {
+                    link.setHostReachable(true);
+                    if (isPageFound(protocol, host)) {
+                        link.setPageFound(true);
+                    }
+                }
+            }
+            validationLinks.add(link);
+        }
     }
 }
