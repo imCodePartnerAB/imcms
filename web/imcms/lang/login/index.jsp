@@ -1,3 +1,4 @@
+<%@ page import="com.imcode.imcms.services.TwoFactorService" %>
 <%@ page import="com.imcode.imcms.servlet.VerifyUser" %>
 <%@ page import="com.imcode.imcms.util.l10n.LocalizedMessage" %>
 <%@ page import="imcode.server.AuthenticationMethodConfiguration" %>
@@ -7,8 +8,9 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 <%@ page import="java.io.IOException" %>
 <%@ page import="java.io.PrintWriter" %>
-<%@ page import="java.util.Map" %>
 <%@ page import="static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME" %>
+<%@ page import="static com.imcode.imcms.services.TwoFactorService.REQUEST_PARAMETER__2FA" %>
+<%@ page import="java.util.Map" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%@taglib prefix="vel" uri="imcmsvelocity" %>
 <%@taglib prefix="im" uri="imcms" %>
@@ -170,7 +172,8 @@
                                             <td><span class="imcmsAdmText"><? templates/login/index.html/7 ?></span>
                                             </td>
                                             <td>&nbsp;</td>
-                                            <td><input type="password" name="<%= VerifyUser.REQUEST_PARAMETER__2FA %>"
+                                            <td><input type="password"
+                                                       name="<%= TwoFactorService.REQUEST_PARAMETER__2FA %>"
                                                        size="15" style="width:180px"></td>
                                         </tr>
                                     </c:when>
