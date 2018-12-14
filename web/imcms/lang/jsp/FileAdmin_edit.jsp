@@ -1,28 +1,36 @@
 <%@ page language="java"
-
 	import="com.glaforge.i18n.io.SmartEncodingInputStream,
-	        imcode.util.Utility,
-	        imcode.server.user.UserDomainObject,
 	        imcode.server.Imcms,
-	        java.io.*,
+	        imcode.server.user.UserDomainObject,
+	        imcode.util.Utility,
+	        org.apache.commons.lang.StringUtils,
 	        org.apache.oro.text.perl.Perl5Util,
-	        org.apache.commons.lang.StringUtils, java.net.URLEncoder"
-	
+	        java.io.BufferedReader, java.io.File"
+
 	contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
-
-%><%@taglib prefix="vel" uri="imcmsvelocity"%><%!
+%>
+<%@ page import="java.io.FileInputStream" %>
+<%@ page import="java.io.FileNotFoundException" %>
+<%@ page import="java.io.FileOutputStream" %>
+<%@ page import="java.io.IOException" %>
+<%@ page import="java.io.OutputStreamWriter" %>
+<%@ page import="java.io.Reader" %>
+<%@ page import="java.io.Writer" %>
+<%@ page import="java.nio.charset.StandardCharsets" %>
+<%@taglib prefix="vel" uri="imcmsvelocity" %>
+<%!
 
 private static String convertUtf8ToIso(String string) {
 	try {
-		return new String(string.getBytes(Imcms.UTF_8_ENCODING), Imcms.ISO_8859_1_ENCODING) ;
+        return new String(string.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1);
 	} catch (Exception e) {
 		return string ;
 	}
 }
 private static String convertIsoToUtf8(String string) {
 	try {
-		return new String(string.getBytes(Imcms.ISO_8859_1_ENCODING), Imcms.UTF_8_ENCODING) ;
+        return new String(string.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
 	} catch (Exception e) {
 		return string ;
 	}
@@ -60,8 +68,8 @@ private static String getFileContent(File file, String encoding) {
 %><%
 
 request.setCharacterEncoding("UTF-8");
-    
-UserDomainObject user = Utility.getLoggedOnUser( request );
+
+    UserDomainObject user = Utility.getLoggedOnUser( request );
 if (!user.isSuperAdmin()) {
     return ;
 }
