@@ -6,8 +6,16 @@ import com.imcode.imcms.mapping.NoPermissionInternalException;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
-import imcode.server.user.*;
-import imcode.util.*;
+import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
+import imcode.server.user.RoleDomainObject;
+import imcode.server.user.RoleId;
+import imcode.server.user.UserDomainObject;
+import imcode.util.ArraySet;
+import imcode.util.Html;
+import imcode.util.ShouldHaveCheckedPermissionsEarlierException;
+import imcode.util.ToStringPairTransformer;
+import imcode.util.Utility;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -22,6 +30,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.imcode.imcms.services.TwoFactorAuthService.REQUEST_PARAMETER_2FA;
 
 public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
@@ -105,6 +115,8 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setLanguageIso639_2(request.getParameter(REQUEST_PARAMETER__LANGUAGE));
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
+        editedUser.getProperties()
+                .put(REQUEST_PARAMETER_2FA, String.valueOf(null != request.getParameter(REQUEST_PARAMETER_2FA)));
         updateUserPasswordFromRequest(editedUser, request);
 
         updateUserRolesFromRequest(request);
@@ -198,13 +210,11 @@ public class UserEditorPage extends OkCancelPage {
             editedUser.addPhoneNumber(editedPhoneNumber);
             currentPhoneNumber = new PhoneNumber("", PhoneNumberType.OTHER);
         } else if (null != request.getParameter(REQUEST_PARAMETER__REMOVE_PHONE_NUMBER)
-                && null != selectedPhoneNumber)
-        {
+                && null != selectedPhoneNumber) {
             editedUser.removePhoneNumber(selectedPhoneNumber);
             currentPhoneNumber = selectedPhoneNumber;
         } else if (null != request.getParameter(REQUEST_PARAMETER__EDIT_PHONE_NUMBER)
-                && null != selectedPhoneNumber)
-        {
+                && null != selectedPhoneNumber) {
             currentPhoneNumber = selectedPhoneNumber;
         }
         forward(request, response);
@@ -219,8 +229,7 @@ public class UserEditorPage extends OkCancelPage {
                 boolean editedUserHasOnlyTheUsersRole = 1 == editedUser.getRoleIds().length;
                 UserDomainObject loggedOnUser = Utility.getLoggedOnUser(request);
                 if (editedUserHasOnlyTheUsersRole || loggedOnUser.isUserAdminAndNotSuperAdmin()
-                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser))
-                {
+                        && !loggedOnUser.canEditRolesAccordingToUserAdminRoles(editedUser)) {
                     errorMessage = ERROR__EDITED_USER_MUST_HAVE_AT_LEAST_ONE_ROLE;
                 } else {
                     super.dispatchOk(request, response);
