@@ -18,7 +18,7 @@ import java.util.Properties;
 import static com.imcode.imcms.servlet.VerifyUser.*;
 
 public class TwoFactorAuthService {
-    public static final String PROPERTY_NAME_2FA= "2FA";
+    public static final String PROPERTY_NAME_2FA = "2FA";
     public static final String REQUEST_PARAMETER_2FA = "2fa";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
     private static TwoFactorAuthService instance = null;
@@ -48,13 +48,14 @@ public class TwoFactorAuthService {
     private boolean checkCode(HttpServletRequest request, HttpServletResponse response) {
         boolean checkResult = false;
         final String twoFactorCode = request.getParameter(REQUEST_PARAMETER_2FA);
+        final String login = (String) request.getSession().getAttribute(REQUEST_PARAMETER__USERNAME);
 
         if (null != twoFactorCode) {
             if (twoFactorCode.equals(request.getSession().getAttribute(REQUEST_PARAMETER_2FA))) {
-                Cookie cookie2FA = new Cookie(COOKIE_NAME_2FA, "true");
+                Cookie cookie2FA = new Cookie(COOKIE_NAME_2FA + login, "true");
                 cookie2FA.setMaxAge(cookieMaxAge);
 
-                response.addCookie(new Cookie(COOKIE_NAME_2FA, "true"));
+                response.addCookie(cookie2FA);
                 checkResult = true;
             }
         }
@@ -93,8 +94,9 @@ public class TwoFactorAuthService {
         UserDomainObject user = imcmsServices.verifyUser(login, password);
         if (null != user && !user.isDefaultUser()) {
             boolean isDisabled = Boolean.parseBoolean(user.getProperties().getOrDefault(COOKIE_NAME_2FA, "false"));
+            String finalLogin = login;
             boolean isDisabledByCookie = isDisabled || Arrays.stream(request.getCookies())
-                    .filter(cookie -> cookie.getName().equals(COOKIE_NAME_2FA))
+                    .filter(cookie -> cookie.getName().equals(COOKIE_NAME_2FA + finalLogin))
                     .findFirst()
                     .map(Cookie::getValue).map(Boolean::parseBoolean)
                     .orElse(false);
