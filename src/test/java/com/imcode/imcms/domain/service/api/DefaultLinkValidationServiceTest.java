@@ -49,7 +49,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     private static final String TEXTS = "test";
     private static final String TEXT_URL = "<a href=\"https://www.google.com\">Test</a>";
     private static final String NOT_FOUND_URL_HTTPS_TEXT = "<a href=\"https://aaa.fff.ddd\">Test</a>";
-    private static final String NOT_FOUND_URL_HTTP_TEXT = "<a href=\"http://dev.prego.ua\">Test</a>";
+    private static final String NOT_FOUND_URL_HTTP_TEXT = "<a href=\"http://aaa.fff.ddd\">Test</a>";
     private static final String NOT_REACHABLE_URL_IP = "<a href=\"http://a:0:a0a::\"> Test</a>";
     private static final Pattern LINK_VALIDATION_PATTERN = Pattern.compile("href\\s*=\\s*\"(.*)\"");
 
@@ -140,8 +140,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         ValidationLink link = links.get(0);
 
         assertEquals(commonContentDTOS.get(0).getHeadline(), link.getDocumentData().getTitle());
-        assertTrue(link.isHostFound());
-        assertTrue(link.isHostReachable());
+        assertFalse(link.isHostFound());
+        assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
         assertEquals(getLinkFromText(NOT_FOUND_URL_HTTP_TEXT), link.getUrl());
     }
@@ -439,7 +439,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         assertNotNull(links);
         assertEquals(2, links.size());
 
-        ValidationLink link = links.get(0);
+        ValidationLink link = links.get(1);
 
         assertTrue(link.isHostFound());
         assertFalse(link.isHostReachable());

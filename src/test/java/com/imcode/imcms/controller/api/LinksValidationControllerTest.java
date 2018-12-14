@@ -108,8 +108,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(validationLinks);
         assertTrue(validationLinks.isEmpty());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -128,8 +128,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         List<ValidationLink> validationLinks = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
         assertNotNull(validationLinks);
         assertEquals(1, validationLinks.size());
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -155,8 +155,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
 
         assertEquals(1, validationLinks.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -180,8 +180,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         List<ValidationLink> validationLinks = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
         assertNotNull(validationLinks);
         assertEquals(1, validationLinks.size());
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -208,8 +208,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertEquals(1, links.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + doc1Id)
                 .param("endDocumentId", "" + doc2Id);
 
@@ -234,8 +234,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertEquals(2, links.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -261,8 +261,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertEquals(2, links.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -294,8 +294,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertEquals(1, links.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -328,8 +328,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertEquals(2, links.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
                 .param("endDocumentId", "" + docId);
 
@@ -337,7 +337,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void validateDocumentLinks_When_DocumentIdsAreThisRange_Expected_OkAndCorrectLinks() throws Exception {
+    public void validateDocumentLinks_When_DocumentIdsInRange_Expected_OkAndCorrectLinks() throws Exception {
         final int index = 1;
         int doc1Id = documentDataInitializer.createData().getId();
         int doc2Id = documentDataInitializer.createData().getId();
@@ -359,8 +359,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertEquals(3, links.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + doc1Id)
                 .param("endDocumentId", "" + doc3Id);
 
@@ -389,8 +389,8 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         assertNotNull(links);
         assertTrue(links.isEmpty());
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath())
-                .param("onlyBrokenLinks", "" + displayOnlyBrokenLinks)
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
+                .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + doc2Id)
                 .param("endDocumentId", "" + doc1Id);
 
