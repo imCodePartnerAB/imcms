@@ -6,10 +6,10 @@ define(
 
         texts = texts.superAdmin.linkValidator;
 
-        let $inputStartId;
-        let $inputEndId;
-        let $filterOnlyBrokenList;
-        let $searchResultContainer;
+        let $startIdInput;
+        let $endIdInput;
+        let $filterBrokenLinks;
+        let $resultContainer;
 
         function showOnlyBrokenLinks() {
 
@@ -20,35 +20,22 @@ define(
         }
 
         function buildFilterOnlyBrokenLinks() {
-            return $filterOnlyBrokenList = components.checkboxes.imcmsCheckbox('<div>', {
+            return $filterBrokenLinks = components.checkboxes.imcmsCheckbox('<div>', {
                 text: texts.titleOnlyBrokenLinks,
                 click: showOnlyBrokenLinks
             });
         }
 
-
-
-        function buildLinksContainer() {
-            let $linkContainer = $('<div>', {
-                'class': 'table-links',
-                style: 'display: none;'
-            });
-
-            return fieldWrapper.wrap([$linkContainer]);
-        }
-
         function buildContainerInputIdsValidation() {
 
             function buildFieldStartId() {
-                return $inputStartId = components.texts.textNumber('<div>', {
-                    placeholder: '1001',
+                return $startIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleStartId,
                 });
             }
 
             function buildFieldEndId() {
-                return $inputEndId = components.texts.textNumber('<div>', {
-                    placeholder: '1001',
+                return $endIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleEndId,
                 });
             }
@@ -67,43 +54,35 @@ define(
                     return this;
                 },
                 linkToRow: function (validationLink) {
-
-                    let infoRowAttributes = {
-                        id: 'link-id-' + validationLink.id,
-                    };
-
                     return new BEM({
                         block: "link-info-row",
                         elements: {
-                            'link-page-alias-': $('<div>', {
-                                text: validationLink.alias
+                            'link-page-alias': $('<div>', {
+                                text: validationLink.documentData.alias
                             }),
-                            'link-status-': $('<div>', {
-                                text: validationLink.documentStatus
+                            'link-status': $('<div>', {
+                                text: validationLink.documentData.documentStatus
                             }),
-                            'link-type-': $('<div>', {
-                                text: validationLink.type
+                            'link-type': $('<div>', {
+                                text: validationLink.documentData.type
                             }),
-                            // 'link-admin-': $('<div>', {
-                            //     text: validationLink.admin
-                            // }),
-                            // 'link-ref-': $('<div>', {
-                            //     text: validationLink.documentStatus
-                            // }),
-                            'link-name-': $('<div>', {
-                                text: validationLink.title
+                            'link-admin': $('<div>', {
+                                text: validationLink.documentData.title
                             }),
-                            'link-host-found-': $('<div>', {
-                                text: (validationLink.hostFound) ? "V" : components.controls.remove(),
+                            'link-name': $('<div>', {
+                                text: validationLink.url
                             }),
-                            'link-host-reachable-': $('<div>', {
-                                text: (validationLink.hostReachable) ? "V" : components.controls.remove(),
+                            'link-host-found': $('<div>', {
+                                text: (validationLink.hostFound) ? "V" : "X",
                             }),
-                            'link-page-found-': $('<div>', {
-                                text: (validationLink.pageFound) ? "V" : components.controls.remove(),
+                            'link-host-reachable': $('<div>', {
+                                text: (validationLink.hostReachable) ? "V" : "X",
+                            }),
+                            'link-page-found': $('<div>', {
+                                text: (validationLink.pageFound) ? "V" : "X",
                             }),
                         }
-                    }).buildBlockStructure("<div>", infoRowAttributes);
+                    }).buildBlockStructure("<div>");
                 },
                 prepareTitleRow: function () {
                     let titleRow = new BEM({
@@ -113,36 +92,36 @@ define(
                             'status': $('<div>', {text: texts.linkInfoRow.status}),
                             'type': $('<div>', {text: texts.linkInfoRow.type}),
                             'admin': $('<div>', {text: texts.linkInfoRow.admin}),
-                            'reference': $('<div>', {text: texts.linkInfoRow.reference}),
+                            'ref': $('<div>', {text: texts.linkInfoRow.reference}),
                             'link': $('<div>', {text: texts.linkInfoRow.link}),
                             'host-found': $('<div>', {text: texts.linkInfoRow.hostFound}),
                             'host-reachable': $('<div>', {text: texts.linkInfoRow.hostReachable}),
                             'page-found': $('<div>', {text: texts.linkInfoRow.pageFound})
                         }
                     }).buildBlockStructure('<div>', {
-                        'class': 'table-title',
-
+                        'class': 'table-title'
                     });
-                    return titleRow;
+                    this.$searchResultContainer.append(titleRow);
+                    return this;
                 },
-                addRowsToList: function (linkRows$) {
-                    this.$searchResultContainer.css('display', 'block').append(linkRows$);
+                rowsAddToList: function (linkRows) {
+                    this.$searchResultContainer.css('display', 'inline-block').append(linkRows);
                     return this;
                 },
                 appendLinks: function (validationLinks) {
                     this.prepareTitleRow()
-                        .addRowsToList(validationLinks.map(this.linkToRow));
+                        .rowsAddToList(validationLinks.map(this.linkToRow));
                 }
             };
 
             function listValidationLinks() {
-                var filterLinks = {
-                    filterBrokenLinks: $filterOnlyBrokenList.isChecked(),
-                    startDocumentId: $inputStartId.getInput().val(),
-                    endDocumentId: $inputEndId.getInput().val()
+                var linksValidationParams = {
+                    filterBrokenLinks: $filterBrokenLinks.isChecked(),
+                    startDocumentId: $startIdInput.getInput().val(),
+                    endDocumentId: $endIdInput.getInput().val()
                 };
-                var tableBuilder = new linkListBuilder($searchResultContainer).clearList();
-                linksValidatorRestApi.validate(filterLinks).done(tableBuilder.linkAppender);
+                var tableBuilder = new linkListBuilder($resultContainer).clearList();
+                linksValidatorRestApi.validate(linksValidationParams).done(tableBuilder.linkAppender);
             }
 
             function buildButtonValidation() {
@@ -155,7 +134,7 @@ define(
             }
 
             return new BEM({
-                block: 'imcms-field-ids-block', // change this name if need!! =)
+                block: 'link-params-block',
                 elements: {
                     'links-field-start': buildFieldStartId(),
                     'links-field-end': buildFieldEndId(),
@@ -164,11 +143,18 @@ define(
             }).buildBlockStructure('<div>');
         }
 
+        function buildLinksContainer() {
+            return $('<div>', {
+                'class': 'table-links',
+                style: 'display: none;'
+            });
+        }
+
         return new SuperAdminTab(texts.name, [
             buildTitleText(),
             buildFilterOnlyBrokenLinks(),
             buildContainerInputIdsValidation(),
-            $searchResultContainer = buildLinksContainer()
+            $resultContainer = buildLinksContainer()
         ]);
     }
 );
