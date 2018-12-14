@@ -192,3 +192,6 @@ sms.gateway.username =
 sms.gateway.password =
 sms.gateway.url =
 sms.gateway.originAddress =
+
+#2FA settings
+2fa.cookie.lifetime =
