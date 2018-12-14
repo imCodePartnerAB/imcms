@@ -16,16 +16,16 @@ import java.util.Properties;
 
 import static com.imcode.imcms.servlet.VerifyUser.*;
 
-public class TwoFactorService {
+public class TwoFactorAuthService {
     public static final String PROPERTY_NAME_2FA= "2FA";
     public static final String REQUEST_PARAMETER_2FA = "2fa";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
-    private static TwoFactorService instance = null;
+    private static TwoFactorAuthService instance = null;
     private final int cookieMaxAge;
     private final ImcmsServices imcmsServices;
     private final SmsService smsService;
 
-    private TwoFactorService() {
+    private TwoFactorAuthService() {
         Properties systemProperties = Imcms.getServerProperties();
         imcmsServices = Imcms.getServices();
         smsService = SmsService.getInstance();
@@ -35,9 +35,9 @@ public class TwoFactorService {
     }
 
 
-    public static TwoFactorService getInstance() {
+    public static TwoFactorAuthService getInstance() {
         if (null == instance) {
-            instance = new TwoFactorService();
+            instance = new TwoFactorAuthService();
         }
         return instance;
     }

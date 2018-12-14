@@ -3,7 +3,7 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.api.ContentManagementSystem;
 import com.imcode.imcms.api.User;
 import com.imcode.imcms.flow.DispatchCommand;
-import com.imcode.imcms.services.TwoFactorService;
+import com.imcode.imcms.services.TwoFactorAuthService;
 import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.imcode.imcms.services.TwoFactorService.PROPERTY_NAME_2FA;
+import static com.imcode.imcms.services.TwoFactorAuthService.PROPERTY_NAME_2FA;
 
 public class VerifyUser extends HttpServlet {
 
@@ -59,7 +59,7 @@ public class VerifyUser extends HttpServlet {
         try {
             final boolean is2FA = loginConfiguration.containsKey(PROPERTY_NAME_2FA);
             if (is2FA) {
-                cms = TwoFactorService.getInstance().initOrCheck(req, res, name, passwd);
+                cms = TwoFactorAuthService.getInstance().initOrCheck(req, res, name, passwd);
             } else {
                 cms = ContentManagementSystem.login(req, res, name, passwd);
             }
