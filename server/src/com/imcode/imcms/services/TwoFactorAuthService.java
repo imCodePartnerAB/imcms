@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 
 import static com.imcode.imcms.servlet.VerifyUser.*;
@@ -22,6 +23,7 @@ public class TwoFactorAuthService {
     public static final String PROPERTY_NAME_2FA = "2FA";
     public static final String REQUEST_PARAMETER_2FA = "2fa";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
+    private static final String USER_2FA_CODE_PROPERTY = "2faCookieCode";
     private static TwoFactorAuthService instance = null;
     private final int cookieMaxAge;
     private final ImcmsServices imcmsServices;
@@ -47,14 +49,23 @@ public class TwoFactorAuthService {
         return instance;
     }
 
-    private boolean checkCode(HttpServletRequest request, HttpServletResponse response) {
+    private boolean checkCode(HttpServletRequest request, HttpServletResponse response, UserDomainObject user) {
         boolean checkResult = false;
         final String twoFactorCode = request.getParameter(REQUEST_PARAMETER_2FA);
         final String login = (String) request.getSession().getAttribute(REQUEST_PARAMETER__USERNAME);
 
         if (null != twoFactorCode) {
             if (twoFactorCode.equals(request.getSession().getAttribute(REQUEST_PARAMETER_2FA))) {
-                Cookie cookie2FA = new Cookie(COOKIE_NAME_2FA + login, "true");
+                final Map<String, String> userProperties = user.getProperties();
+                String code = userProperties.get(USER_2FA_CODE_PROPERTY);
+                if (null == code) {
+                    code = RandomStringUtils.randomAlphanumeric(6);
+                    userProperties.put(USER_2FA_CODE_PROPERTY, code);
+                    Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().saveUser(user);
+                }
+
+                final String cookieName = COOKIE_NAME_2FA + login + request.getRemoteHost().replaceAll("\\D", "");
+                Cookie cookie2FA = new Cookie(cookieName, code);
                 cookie2FA.setMaxAge(cookieMaxAge);
 
                 response.addCookie(cookie2FA);
@@ -96,12 +107,13 @@ public class TwoFactorAuthService {
             boolean isDisabled = Boolean.parseBoolean(user.getProperties().getOrDefault(COOKIE_NAME_2FA, "false"));
             String finalLogin = login;
             boolean isDisabledByCookie = isDisabled || Arrays.stream(request.getCookies())
-                    .filter(cookie -> cookie.getName().equals(COOKIE_NAME_2FA + finalLogin))
+                    .filter(cookie -> cookie.getName().equals(COOKIE_NAME_2FA + finalLogin + request.getRemoteHost().replaceAll("\\D", "")))
                     .findFirst()
-                    .map(Cookie::getValue).map(Boolean::parseBoolean)
-                    .orElse(false);
+                    .map(Cookie::getValue)
+                    .filter(code -> code.equals(user.getProperties().get(USER_2FA_CODE_PROPERTY)))
+                    .isPresent();
 
-            if (isDisabled || isDisabledByCookie || checkCode(request, response)) {
+            if (isDisabled || isDisabledByCookie || checkCode(request, response, user)) {
                 return ContentManagementSystem.login(request, response, login, password);
             } else {
                 initCode(user, request, login, password);
