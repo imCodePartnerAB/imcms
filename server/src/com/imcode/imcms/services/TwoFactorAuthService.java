@@ -30,6 +30,7 @@ public class TwoFactorAuthService {
     private final SmsService smsService;
 
     private final LocalizedMessage ERROR_NO_PHONENUMBER_FOUND = new LocalizedMessage("templates/login/access_denied.html/5");
+    private final LocalizedMessage ERROR_WRONG_CODE = new LocalizedMessage("templates/login/access_denied.html/6");
     private final LocalizedMessage SMS_AUTHORIZE_CODE_MESSAGE = new LocalizedMessage("sms/authorize_code/message");
 
     private TwoFactorAuthService() {
@@ -70,6 +71,8 @@ public class TwoFactorAuthService {
 
                 response.addCookie(cookie2FA);
                 checkResult = true;
+            } else {
+                request.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR_WRONG_CODE);
             }
         }
         return checkResult;
