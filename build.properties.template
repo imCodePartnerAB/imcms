@@ -193,6 +193,7 @@ sms.gateway.username =
 sms.gateway.password =
 sms.gateway.url =
 sms.gateway.originAddress =
+sms.gateway.defaultCountryCode =
 
 #2FA settings
 2fa.cookie.lifetime =
