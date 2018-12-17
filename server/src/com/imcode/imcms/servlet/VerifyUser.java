@@ -81,7 +81,7 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        if (!(null == req.getAttribute(REQUEST_ATTRIBUTE__ERROR) && null != req.getSession().getAttribute(REQUEST_PARAMETER_2FA))) {
+        if (!(null != req.getSession().getAttribute(REQUEST_PARAMETER_2FA)) && null == req.getAttribute(REQUEST_ATTRIBUTE__ERROR)) {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         }
         req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
