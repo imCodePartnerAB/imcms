@@ -62,7 +62,7 @@ public class SmsService {
             smsRequestBuilder.addParameter("destination", recipient);
             smsRequestBuilder.addParameter("username", username);
             smsRequestBuilder.addParameter("password", password);
-            smsRequestBuilder.addParameter("message", URLEncoder.encode(message, "UTF-8"));
+            smsRequestBuilder.addParameter("message", message);
 
             addOriginAddressIfPresent(smsRequestBuilder);
 
