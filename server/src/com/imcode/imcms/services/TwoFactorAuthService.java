@@ -28,6 +28,7 @@ public class TwoFactorAuthService {
     private final SmsService smsService;
 
     private final LocalizedMessage ERROR_NO_PHONENUMBER_FOUND = new LocalizedMessage("templates/login/access_denied.html/5");
+    private final LocalizedMessage SMS_AUTHORIZE_CODE_MESSAGE = new LocalizedMessage("sms/authorize_code/message");
 
     private TwoFactorAuthService() {
         Properties systemProperties = Imcms.getServerProperties();
@@ -72,10 +73,8 @@ public class TwoFactorAuthService {
                 .findFirst()
                 .orElse(null);
         if (null != foundNumber) {
-            boolean isSmsSend = smsService.sendSms("Authorize code is: " + generatedCode, foundNumber.getNumber());
+            boolean isSmsSend = smsService.sendSms(SMS_AUTHORIZE_CODE_MESSAGE.toLocalizedString(request) + generatedCode, foundNumber.getNumber());
 
-
-            System.out.println("CODE:" + generatedCode);
             if (isSmsSend) {
                 session.setAttribute(REQUEST_PARAMETER__USERNAME, login);
                 session.setAttribute(REQUEST_PARAMETER__PASSWORD, password);
