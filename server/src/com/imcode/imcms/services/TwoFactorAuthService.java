@@ -5,6 +5,7 @@ import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
 import imcode.server.ImcmsServices;
 import imcode.server.user.PhoneNumber;
+import imcode.server.user.PhoneNumberType;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -66,7 +67,7 @@ public class TwoFactorAuthService {
         final HttpSession session = request.getSession();
 
         final String generatedCode = RandomStringUtils.random(6, false, true);
-        final PhoneNumber foundNumber = (PhoneNumber) user.getPhoneNumbers().stream()
+        final PhoneNumber foundNumber = (PhoneNumber) user.getPhoneNumbersOfType(PhoneNumberType.MOBILE).stream()
                 .filter(number -> null != ((PhoneNumber) number).getNumber())
                 .findFirst()
                 .orElse(null);
