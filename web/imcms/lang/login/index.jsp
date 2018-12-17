@@ -146,7 +146,14 @@
 					</b></p><%
                         }
                     %>
-                        <? templates/login/index.html/4 ?>
+                        <c:choose>
+                            <c:when test="${is2FA and is2FAStep}">
+                                <? templates/login/index.html/8 ?>
+                            </c:when>
+                            <c:otherwise>
+                                <? templates/login/index.html/4 ?>
+                            </c:otherwise>
+                        </c:choose>
                         <img alt=""
                              src="<%= request.getContextPath() %>/imcms/<%= user.getLanguageIso639_2() %>/images/admin/1x1.gif"
                              width="1" height="5"><? templates/login/index.html/1001 ?></span></td>
