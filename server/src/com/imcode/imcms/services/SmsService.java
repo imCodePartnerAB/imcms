@@ -22,6 +22,7 @@ public class SmsService {
     public static final String SMS_GATEWAY_PASSWORD = "sms.gateway.password";
     public static final String SMS_GATEWAY_URL = "sms.gateway.url";
     public static final String SMS_GATEWAY_ORIGIN_ADDRESS = "sms.gateway.originAddress";
+    public static final String SMS_GATEWAY_DEFAULT_COUNTRY_CODE = "sms.gateway.defaultCountryCode";
 
     private static final Log log = LogFactory.getLog(SmsService.class);
 
@@ -30,6 +31,7 @@ public class SmsService {
     private final String password;
     private final String gatewayURL;
     private final String originAddress;
+    private final String defaultCountryCode;
 
     private SmsService() {
         Properties systemProperties = Imcms.getServerProperties();
@@ -38,6 +40,7 @@ public class SmsService {
         password = systemProperties.getProperty(SMS_GATEWAY_PASSWORD, "");
         gatewayURL = systemProperties.getProperty(SMS_GATEWAY_URL, "");
         originAddress = systemProperties.getProperty(SMS_GATEWAY_ORIGIN_ADDRESS, "");
+        defaultCountryCode = systemProperties.getProperty(SMS_GATEWAY_DEFAULT_COUNTRY_CODE, "0");
     }
 
     public static SmsService getInstance() {
@@ -50,6 +53,12 @@ public class SmsService {
     public boolean sendSms(String message, String recipient) {
         try {
             URIBuilder smsRequestBuilder = new URIBuilder(gatewayURL);
+
+            recipient = recipient.replaceAll("\\D", "");
+            if (recipient.startsWith("0")) {
+                recipient = recipient.replaceFirst("0", defaultCountryCode);
+            }
+
             smsRequestBuilder.addParameter("destination", recipient);
             smsRequestBuilder.addParameter("username", username);
             smsRequestBuilder.addParameter("password", password);
