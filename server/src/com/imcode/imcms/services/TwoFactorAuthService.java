@@ -22,6 +22,7 @@ import static com.imcode.imcms.servlet.VerifyUser.*;
 public class TwoFactorAuthService {
     public static final String PROPERTY_NAME_2FA = "2FA";
     public static final String REQUEST_PARAMETER_2FA = "2fa";
+    public final static String SESSION_2FA_ATTEMPTS_COUNT = "2fa_count";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
     private static final String USER_2FA_CODE_PROPERTY = "2faCookieCode";
     private static TwoFactorAuthService instance = null;
@@ -56,6 +57,8 @@ public class TwoFactorAuthService {
         final String login = (String) request.getSession().getAttribute(REQUEST_PARAMETER__USERNAME);
 
         if (null != twoFactorCode) {
+            final HttpSession session = request.getSession();
+
             if (twoFactorCode.equals(request.getSession().getAttribute(REQUEST_PARAMETER_2FA))) {
                 final Map<String, String> userProperties = user.getProperties();
                 String code = userProperties.get(USER_2FA_CODE_PROPERTY);
@@ -70,9 +73,15 @@ public class TwoFactorAuthService {
                 cookie2FA.setMaxAge(cookieMaxAge);
 
                 response.addCookie(cookie2FA);
+                session.removeAttribute(SESSION_2FA_ATTEMPTS_COUNT);
                 checkResult = true;
             } else {
                 request.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR_WRONG_CODE);
+                Integer attemptsCounter = (Integer) session.getAttribute(SESSION_2FA_ATTEMPTS_COUNT);
+                if (null == attemptsCounter) {
+                    attemptsCounter = 0;
+                }
+                session.setAttribute(SESSION_2FA_ATTEMPTS_COUNT, attemptsCounter + 1);
             }
         }
         return checkResult;
@@ -83,8 +92,8 @@ public class TwoFactorAuthService {
 
         final String generatedCode = RandomStringUtils.random(6, false, true);
         final PhoneNumber foundNumber = (PhoneNumber) user.getPhoneNumbersOfType(PhoneNumberType.MOBILE).stream()
-                .filter(number -> null != ((PhoneNumber) number).getNumber())
                 .findFirst()
+                .filter(number -> null != ((PhoneNumber) number).getNumber())
                 .orElse(null);
         if (null != foundNumber) {
             boolean isSmsSend = smsService.sendSms(SMS_AUTHORIZE_CODE_MESSAGE.toLocalizedString(request) + generatedCode, foundNumber.getNumber());

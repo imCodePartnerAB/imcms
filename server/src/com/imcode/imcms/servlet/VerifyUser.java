@@ -36,6 +36,7 @@ public class VerifyUser extends HttpServlet {
     public static final String REQUEST_PARAMETER__USERNAME = "name";
     public static final String REQUEST_PARAMETER__PASSWORD = "passwd";
     public static final String REQUEST_ATTRIBUTE__ERROR = "error";
+
     private static final Log log = LogFactory.getLog(VerifyUser.class);
     private static final String SESSION_ATTRIBUTE__LOGIN_TARGET = "login.target";
     private final static LocalizedMessage ERROR__LOGIN_FAILED = new LocalizedMessage("templates/login/access_denied.html/4");
@@ -60,9 +61,19 @@ public class VerifyUser extends HttpServlet {
             final boolean is2FA = loginConfiguration.containsKey(PROPERTY_NAME_2FA);
             if (is2FA) {
                 cms = TwoFactorAuthService.getInstance().initOrCheck(req, res, name, passwd);
+                Integer attemptsCounter = (Integer) req.getSession().getAttribute(SESSION_2FA_ATTEMPTS_COUNT);
+                if (null != attemptsCounter && attemptsCounter > 3) {
+                    HttpSession session = req.getSession();
+                    session.removeAttribute(REQUEST_PARAMETER__USERNAME);
+                    session.removeAttribute(REQUEST_PARAMETER__PASSWORD);
+                    session.removeAttribute(SESSION_2FA_ATTEMPTS_COUNT);
+                    session.removeAttribute(REQUEST_PARAMETER_2FA);
+                    req.removeAttribute(REQUEST_ATTRIBUTE__ERROR);
+                }
             } else {
                 cms = ContentManagementSystem.login(req, res, name, passwd);
             }
+
         } catch (UserIpIsNotAllowedException e) {
             userAndRoleMapper.forwardDeniedUserToMessagePage(e.getUser(), req, res);
             return;
