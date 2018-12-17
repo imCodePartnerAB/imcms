@@ -40,7 +40,8 @@ public class SmsService {
         password = systemProperties.getProperty(SMS_GATEWAY_PASSWORD, "");
         gatewayURL = systemProperties.getProperty(SMS_GATEWAY_URL, "");
         originAddress = systemProperties.getProperty(SMS_GATEWAY_ORIGIN_ADDRESS, "");
-        defaultCountryCode = systemProperties.getProperty(SMS_GATEWAY_DEFAULT_COUNTRY_CODE, "0");
+        // Default country code for sweden
+        defaultCountryCode = systemProperties.getProperty(SMS_GATEWAY_DEFAULT_COUNTRY_CODE, "46");
     }
 
     public static SmsService getInstance() {
