@@ -24,7 +24,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.imcode.imcms.services.TwoFactorAuthService.PROPERTY_NAME_2FA;
+import static com.imcode.imcms.services.TwoFactorAuthService.*;
 
 public class VerifyUser extends HttpServlet {
 
@@ -81,7 +81,7 @@ public class VerifyUser extends HttpServlet {
     }
 
     private void goToLoginFailedPage(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
-        if (null == req.getAttribute(REQUEST_ATTRIBUTE__ERROR)) {
+        if (!(null == req.getAttribute(REQUEST_ATTRIBUTE__ERROR) && null != req.getSession().getAttribute(REQUEST_PARAMETER_2FA))) {
             req.setAttribute(REQUEST_ATTRIBUTE__ERROR, ERROR__LOGIN_FAILED);
         }
         req.getRequestDispatcher("/imcms/" + Utility.getLoggedOnUser(req).getLanguageIso639_2()
