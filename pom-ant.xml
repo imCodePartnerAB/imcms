@@ -247,5 +247,13 @@
         <filter token="index-disabled-file-extensions" value="${index-disabled-file-extensions}"/>
 
         <filter token="error-logger-url" value="${error-logger-url}"/>
+
+        <filter token="sms.gateway.username" value="${sms.gateway.username}"/>
+        <filter token="sms.gateway.password" value="${sms.gateway.password}"/>
+        <filter token="sms.gateway.url" value="${sms.gateway.url}"/>
+        <filter token="sms.gateway.originAddress" value="${sms.gateway.originAddress}"/>
+        <filter token="sms.gateway.defaultCountryCode" value="${sms.gateway.defaultCountryCode}"/>
+
+        <filter token="2fa.cookie.lifetime" value="${2fa.cookie.lifetime}"/>
     </target>
 </project>
