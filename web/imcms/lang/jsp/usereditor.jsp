@@ -9,6 +9,7 @@
 <%@ page import="org.apache.commons.lang.StringEscapeUtils, java.text.SimpleDateFormat" %>
 <%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.REQUEST_PARAMETER_2FA" %>
 <%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.PROPERTY_NAME_2FA" %>
+<%@ page import="static com.imcode.imcms.services.TwoFactorAuthService.*" %>
 <%@ page contentType="text/html; charset=UTF-8" %>
 <%
     UserEditorPage userEditorPage = (UserEditorPage) Page.fromRequest(request);
@@ -266,8 +267,8 @@
                 <td>
                     <table border="0" cellspacing="0" cellpadding="0">
                         <tr>
-                            <td><input type="checkbox" name="2fa" value="1"
-                                       <% if (Boolean.parseBoolean(editedUser.getProperties().getOrDefault(REQUEST_PARAMETER_2FA, "false"))) { %>checked<% } %>/>
+                            <td><input type="checkbox" name="<%= REQUEST_PARAMETER_2FA %>" value="1"
+                                       <% if (Boolean.parseBoolean(editedUser.getProperties().getOrDefault(USER_2FA_DISABLED_PROPERTY, "false"))) { %>checked<% } %>/>
                             </td>
                         </tr>
                     </table>
