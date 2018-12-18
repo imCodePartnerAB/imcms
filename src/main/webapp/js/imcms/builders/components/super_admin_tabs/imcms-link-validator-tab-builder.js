@@ -8,25 +8,23 @@ define(
 
         let $startIdInput;
         let $endIdInput;
-        let $filterBrokenLinks;
+        let $filterBrokenLinksCheckbox;
         let $resultContainer;
 
         function showOnlyBrokenLinks() {
-
         }
-
         function buildTitleText() {
             return fieldWrapper.wrap(components.texts.titleText('<div>', texts.name))
         }
 
         function buildFilterOnlyBrokenLinks() {
-            return $filterBrokenLinks = components.checkboxes.imcmsCheckbox('<div>', {
+            return $filterBrokenLinksCheckbox = components.checkboxes.imcmsCheckbox('<div>', {
                 text: texts.titleOnlyBrokenLinks,
                 click: showOnlyBrokenLinks
             });
         }
 
-        function buildContainerInputIdsValidation() {
+        function buildLinkParamsContainer() {
 
             function buildFieldStartId() {
                 return $startIdInput = components.texts.textNumber('<div>', {
@@ -41,7 +39,7 @@ define(
             }
 
             var linkListBuilder = function ($searchResultContainer) {
-                this.$searchResultContainer = $searchResultContainer;
+                this.$searchResultContainer = $searchResultContainer; // rename search
                 this.linkAppender = this.appendLinks.bind(this);
             };
 
@@ -69,8 +67,9 @@ define(
                             'link-admin': $('<div>', {
                                 text: validationLink.documentData.title
                             }),
-                            'link-name': $('<div>', {
-                                text: validationLink.url
+                            'link-name': $('<a>', {
+                                text: validationLink.url,
+                                href: validationLink.url
                             }),
                             'link-host-found': validationLink.hostFound
                                 ? components.controls.check()
@@ -86,20 +85,19 @@ define(
                 },
                 prepareTitleRow: function () {
                     let titleRow = new BEM({
-                        block: 'table-title-row',
+                        block: 'link-title-row',
                         elements: {
                             'page-alias': $('<div>', {text: texts.linkInfoRow.pageAlias}),
                             'status': $('<div>', {text: texts.linkInfoRow.status}),
                             'type': $('<div>', {text: texts.linkInfoRow.type}),
                             'admin': $('<div>', {text: texts.linkInfoRow.admin}),
-                            //'ref': $('<div>', {text: texts.linkInfoRow.reference}),
                             'link': $('<div>', {text: texts.linkInfoRow.link}),
                             'host-found': $('<div>', {text: texts.linkInfoRow.hostFound}),
                             'host-reachable': $('<div>', {text: texts.linkInfoRow.hostReachable}),
                             'page-found': $('<div>', {text: texts.linkInfoRow.pageFound})
                         }
                     }).buildBlockStructure('<div>', {
-                        'class': 'table-title'
+                        'class': 'link-title'
                     });
                     this.$searchResultContainer.append(titleRow);
                     return this;
@@ -116,7 +114,7 @@ define(
 
             function listValidationLinks() {
                 var linksValidationParams = {
-                    filterBrokenLinks: $filterBrokenLinks.isChecked(),
+                    filterBrokenLinks: $filterBrokenLinksCheckbox.isChecked(),
                     startDocumentId: $startIdInput.getInput().val(),
                     endDocumentId: $endIdInput.getInput().val()
                 };
@@ -124,7 +122,7 @@ define(
                 linksValidatorRestApi.validate(linksValidationParams).done(tableBuilder.linkAppender);
             }
 
-            function buildButtonValidation() {
+            function buildValidationButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.buttonValidation,
                     click: listValidationLinks
@@ -138,7 +136,7 @@ define(
                 elements: {
                     'links-field-start': buildFieldStartId(),
                     'links-field-end': buildFieldEndId(),
-                    'button-validation': buildButtonValidation()
+                    'button-validation': buildValidationButton()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -153,7 +151,7 @@ define(
         return new SuperAdminTab(texts.name, [
             buildTitleText(),
             buildFilterOnlyBrokenLinks(),
-            buildContainerInputIdsValidation(),
+            buildLinkParamsContainer(),
             $resultContainer = buildLinksContainer()
         ]);
     }
