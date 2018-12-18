@@ -202,8 +202,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
 
         final boolean displayOnlyBrokenLinks = true;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc2Id, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc2Id, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertEquals(1, links.size());
@@ -228,8 +227,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertEquals(2, links.size());
@@ -255,8 +253,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertEquals(2, links.size());
@@ -288,8 +285,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertEquals(1, links.size());
@@ -322,8 +318,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertEquals(2, links.size());
@@ -353,8 +348,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         createText(index, languageJPA, versionDoc3, TEXT_URL);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc3Id, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc3Id, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertEquals(3, links.size());
@@ -383,8 +377,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc2Id, doc1Id, displayOnlyBrokenLinks
-        );
+        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc2Id, doc1Id, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertTrue(links.isEmpty());

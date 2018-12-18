@@ -17,6 +17,7 @@ import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LinkValidationService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
@@ -80,7 +81,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
     @Autowired
-    private DefaultLinkValidationService defaultLinkValidationService;
+    private LinkValidationService linkValidationService;
 
     private String getLinkFromText(String text) {
         Matcher m = LINK_VALIDATION_PATTERN.matcher(text);
@@ -110,7 +111,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         createText(index, languageJPA, latestVersionDoc, TEXTS);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
         assertTrue(links.isEmpty());
@@ -131,7 +132,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         createText(index, languageJPA, latestVersionDoc, NOT_FOUND_URL_HTTP_TEXT);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
+                docId, docId, displayOnlyBrokenLinks
         );
 
         assertNotNull(links);
@@ -160,7 +162,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
 
         final boolean displayOnlyBrokenLinks = true;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc2Id, displayOnlyBrokenLinks
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
+                doc1Id, doc2Id, displayOnlyBrokenLinks
         );
 
         assertNotNull(links);
@@ -188,7 +191,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         createText(index, languageJPA, version, TEXT_URL);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -218,7 +221,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageService.saveImage(imageDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -249,7 +252,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageService.saveImage(imageDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 doc1Id, doc1Id, displayOnlyBrokenLinks
         );
 
@@ -276,7 +279,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -302,7 +305,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -327,7 +330,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         urlDocumentService.save(urlDocumentDTO);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -361,7 +364,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -399,7 +402,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 docId, docId, displayOnlyBrokenLinks
         );
 
@@ -432,7 +435,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageDataInitializer.generateImage(imageDTO1.getIndex(), languageJPA, version, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
                 doc1Id, doc1Id, displayOnlyBrokenLinks
         );
 
@@ -463,7 +466,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         createText(index, languageJPA, versionDoc3, TEXT_URL);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc1Id, doc3Id, displayOnlyBrokenLinks
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
+                doc1Id, doc3Id, displayOnlyBrokenLinks
         );
 
         assertNotNull(links);
@@ -497,7 +501,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
+                docId, docId, displayOnlyBrokenLinks
         );
 
         assertNotNull(links);
@@ -520,7 +525,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         createText(index, languageJPA, versionDoc2, NOT_FOUND_URL_HTTPS_TEXT);
 
         final boolean displayOnlyBrokenLinks = false;
-        List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(doc2Id, doc1Id, displayOnlyBrokenLinks
+        List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
+                doc2Id, doc1Id, displayOnlyBrokenLinks
         );
 
         assertNotNull(links);
