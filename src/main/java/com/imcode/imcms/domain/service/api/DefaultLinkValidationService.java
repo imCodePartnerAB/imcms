@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.EditLink;
 import com.imcode.imcms.api.ValidationLink;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
@@ -116,48 +117,62 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 .collect(Collectors.toList());
 
         for (Document doc : documentsToTest) {
+
             DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
             dtoFieldsDocument.setId(doc.getId());
             dtoFieldsDocument.setAlias(doc.getAlias());
             dtoFieldsDocument.setType(doc.getType());
             dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
+            dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
+                    doc.getLatestVersion().getId()).get(doc.getCurrentVersion().getId()).getHeadline());
+
+            if (doc.getType().equals(Meta.DocumentType.URL)) {
+                DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
+                EditLink editLink = new EditLink();
+                editLink.setMetaId(documentURL.getDocId());
+                editLink.setTitle(dtoFieldsDocument.getTitle());
+                ValidationLink link = new ValidationLink();
+                link.setDocumentData(dtoFieldsDocument);
+                link.setEditLink(editLink);
+                ValidationLink validationLink = verifyValidationLinkForUrl(documentURL.getUrl(), link, patternUrl);
+                if (null == validationLink) {
+                    continue;
+                } else {
+                    validationLinks.add(validationLink);
+                }
+            }
 
             for (Language language : languageService.getAll()) {
                 Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
                 Set<String> publicImageLinks = imageService.getPublicImageLinks(doc.getId(), language);
-                //if (doc instanceof UrlDocumentDTO)  //todo: found the best solution
-                dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
-                        doc.getLatestVersion().getId()).get(0).getHeadline());
-                if (doc.getType().equals(Meta.DocumentType.URL)) {
-                    DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
+                //if (doc instanceof UrlDocumentDTO) //todo: found the best solution
+                for (Text text : publicTexts) {
+                    EditLink editLink = new EditLink();
+                    editLink.setMetaId(dtoFieldsDocument.getId());
+                    editLink.setTitle(dtoFieldsDocument.getTitle());
+                    editLink.setIndex(text.getIndex());
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
-                    ValidationLink validationLink = verifyValidationLinkForUrl(documentURL.getUrl(), link);
+                    link.setEditLink(editLink);
+                    ValidationLink validationLink = verifyValidationLinkForUrl(text.getText(), link, patternTexts);
                     if (null == validationLink) {
                         continue;
                     } else {
                         validationLinks.add(validationLink);
                     }
-                } else {
-                    for (Text text : publicTexts) {
-                        ValidationLink link = new ValidationLink();
-                        link.setDocumentData(dtoFieldsDocument);
-                        ValidationLink validationLink = verifyValidationLinkForText(text.getText(), link);
-                        if (null == validationLink) {
-                            continue;
-                        } else {
-                            validationLinks.add(validationLink);
-                        }
-                    }
-                    for (String imageUrlLink : publicImageLinks) {
-                        ValidationLink link = new ValidationLink();
-                        link.setDocumentData(dtoFieldsDocument);
-                        ValidationLink validationLink = verifyValidationLinkForUrl(imageUrlLink, link);
-                        if (null == validationLink) {
-                            continue;
-                        } else {
-                            validationLinks.add(validationLink);
-                        }
+                }
+                for (String imageUrlLink : publicImageLinks) {
+                    EditLink editLink = new EditLink();
+                    editLink.setMetaId(dtoFieldsDocument.getId());
+                    editLink.setTitle(dtoFieldsDocument.getTitle());
+                    ValidationLink link = new ValidationLink();
+                    link.setDocumentData(dtoFieldsDocument);
+                    link.setEditLink(editLink);
+                    ValidationLink validationLink = verifyValidationLinkForUrl(imageUrlLink, link, patternUrl);
+                    if (null == validationLink) {
+                        continue;
+                    } else {
+                        validationLinks.add(validationLink);
                     }
                 }
             }
@@ -170,36 +185,11 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return validationLinks;
     }
 
-    private ValidationLink verifyValidationLinkForUrl(String textUrl, ValidationLink link) {
-        Matcher matcherUrl = patternUrl.matcher(textUrl);
+    private ValidationLink verifyValidationLinkForUrl(String textUrl, ValidationLink link, Pattern pattern) {
+        Matcher matcherUrl = pattern.matcher(textUrl);
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
             String host = matcherUrl.group(2);
-            link.setUrl(protocol + host);
-            try {
-                if (isHostFound(protocol, host)) {
-                    link.setHostFound(true);
-                    URL url = new URL(protocol + host);
-                    if (isHostReachable(url)) {
-                        link.setHostReachable(true);
-                        if (isPageFound(url)) {
-                            link.setPageFound(true);
-                        }
-                    }
-                }
-            } catch (MalformedURLException e) {
-                e.getMessage();
-            }
-            return link;
-        }
-        return null;
-    }
-
-    private ValidationLink verifyValidationLinkForText(String textUrl, ValidationLink link) {
-        Matcher matcherText = patternTexts.matcher(textUrl);
-        if (matcherText.find()) {
-            String protocol = matcherText.group(1);
-            String host = matcherText.group(2);
             link.setUrl(protocol + host);
             try {
                 if (isHostFound(protocol, host)) {
