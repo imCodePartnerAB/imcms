@@ -31,7 +31,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.imcode.imcms.services.TwoFactorAuthService.REQUEST_PARAMETER_2FA;
+import static com.imcode.imcms.services.TwoFactorAuthService.*;
 
 public class UserEditorPage extends OkCancelPage {
     public static final String REQUEST_PARAMETER__LOGIN_NAME = "login_name";
@@ -116,7 +116,7 @@ public class UserEditorPage extends OkCancelPage {
         editedUser.setActive(null != request.getParameter(REQUEST_PARAMETER__ACTIVE));
 
         editedUser.getProperties()
-                .put(REQUEST_PARAMETER_2FA, String.valueOf(null != request.getParameter(REQUEST_PARAMETER_2FA)));
+                .put(USER_2FA_DISABLED_PROPERTY, String.valueOf(null != request.getParameter(REQUEST_PARAMETER_2FA)));
         updateUserPasswordFromRequest(editedUser, request);
 
         updateUserRolesFromRequest(request);

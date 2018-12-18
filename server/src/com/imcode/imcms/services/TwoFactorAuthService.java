@@ -22,9 +22,10 @@ import static com.imcode.imcms.servlet.VerifyUser.*;
 public class TwoFactorAuthService {
     public static final String PROPERTY_NAME_2FA = "2FA";
     public static final String REQUEST_PARAMETER_2FA = "2fa";
-    public final static String SESSION_2FA_ATTEMPTS_COUNT = "2fa_count";
+    public static final String SESSION_2FA_ATTEMPTS_COUNT = "2fa_count";
+    public static final String USER_2FA_DISABLED_PROPERTY = "2fa_disabled";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
-    private static final String USER_2FA_CODE_PROPERTY = "2faCookieCode";
+    private static final String USER_2FA_CODE_PROPERTY = "2fa_cookie_code";
     private static TwoFactorAuthService instance = null;
     private final int cookieMaxAge;
     private final ImcmsServices imcmsServices;
@@ -116,7 +117,7 @@ public class TwoFactorAuthService {
         }
         UserDomainObject user = imcmsServices.verifyUser(login, password);
         if (null != user && !user.isDefaultUser()) {
-            boolean isDisabled = Boolean.parseBoolean(user.getProperties().getOrDefault(COOKIE_NAME_2FA, "false"));
+            boolean isDisabled = Boolean.parseBoolean(user.getProperties().getOrDefault(USER_2FA_DISABLED_PROPERTY, "false"));
             String finalLogin = login;
             boolean isDisabledByCookie = isDisabled || Arrays.stream(request.getCookies())
                     .filter(cookie -> cookie.getName().equals(COOKIE_NAME_2FA + finalLogin + request.getRemoteHost().replaceAll("\\D", "")))
