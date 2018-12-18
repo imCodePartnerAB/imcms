@@ -65,7 +65,9 @@ define(
                                 text: validationLink.documentData.type
                             }),
                             'link-admin': $('<div>', {
-                                text: validationLink.documentData.title
+                                text: validationLink.editLink.metaId +
+                                    validationLink.editLink.title +
+                                    validationLink.editLink.index
                             }),
                             'link-name': $('<a>', {
                                 text: validationLink.url,
