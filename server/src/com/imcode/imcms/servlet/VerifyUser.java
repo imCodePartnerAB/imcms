@@ -62,7 +62,8 @@ public class VerifyUser extends HttpServlet {
             if (is2FA) {
                 cms = TwoFactorAuthService.getInstance().initOrCheck(req, res, name, passwd);
                 Integer attemptsCounter = (Integer) req.getSession().getAttribute(SESSION_2FA_ATTEMPTS_COUNT);
-                if (null != attemptsCounter && attemptsCounter > 3) {
+                final boolean cancelVerification = Boolean.parseBoolean(req.getParameter("cancelVerification"));
+                if (null != attemptsCounter && attemptsCounter > 3 || cancelVerification) {
                     HttpSession session = req.getSession();
                     session.removeAttribute(REQUEST_PARAMETER__USERNAME);
                     session.removeAttribute(REQUEST_PARAMETER__PASSWORD);

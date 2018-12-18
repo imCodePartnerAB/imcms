@@ -80,6 +80,14 @@
                             <td><input type="button" value="<? templates/login/index.html/2003 ?>"
                                        title="<? templates/login/index.html/2004 ?>" class="imcmsFormBtn"
                                        onClick="openHelpW('LogIn')"></td>
+
+                            <c:if test="${is2FA and is2FAStep}">
+                                <td>&nbsp;</td>
+                                <td><input type="button" value="<? web/imcms/login/back ?>"
+                                           class="imcmsFormBtn"
+                                           onClick="goToLoginPage()">
+                                </td>
+                            </c:if>
                         </tr>
                     </table>
                 </td>
@@ -206,6 +214,10 @@
                                     </c:otherwise>
                                 </c:choose>
 
+                                <c:if test="${is2FA}">
+                                    <input name="cancelVerification" type="hidden"/>
+                                </c:if>
+
                                 <tr>
                                     <td colspan="3">&nbsp;</td>
                                 </tr>
@@ -242,6 +254,7 @@
         <input id="nextUrl" type="hidden" name="<%= VerifyUser.REQUEST_PARAMETER__NEXT_URL %>"
                value="<%=StringEscapeUtils.escapeHtml(next_url)%>">
         <%}%>
+
         <script>
             $(".imcms-tab").click(function (e) {
                 switch ($(this).attr('id')) {
@@ -254,6 +267,13 @@
                         break;
                 }
             });
+
+            function goToLoginPage() {
+                $('[name=cancelVerification]').val(true);
+
+                var inputs = $('input.imcmsFormBtn');
+                $(inputs[inputs.size()-1]).click();
+            }
         </script>
     </div>
     #gui_bottom()
