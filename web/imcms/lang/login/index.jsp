@@ -148,7 +148,9 @@
                     %>
                         <c:choose>
                             <c:when test="${is2FA and is2FAStep}">
-                                <? templates/login/index.html/8 ?>
+                                <b>
+                                    <? templates/login/index.html/8 ?>
+                                </b>
                             </c:when>
                             <c:otherwise>
                                 <? templates/login/index.html/4 ?>
