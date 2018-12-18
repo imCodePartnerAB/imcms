@@ -25,6 +25,7 @@ public class TwoFactorAuthService {
     public static final String SESSION_2FA_ATTEMPTS_COUNT = "2fa_count";
     public static final String USER_2FA_DISABLED_PROPERTY = "2fa_disabled";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;
+    private static final String COOKIE_MAX_AGE_PROPERTY = "2fa.cookie.lifetime";
     private static final String USER_2FA_CODE_PROPERTY = "2fa_cookie_code";
     private static TwoFactorAuthService instance = null;
     private final int cookieMaxAge;
@@ -41,7 +42,7 @@ public class TwoFactorAuthService {
         smsService = SmsService.getInstance();
 
         //Default is 10 days
-        cookieMaxAge = Integer.parseInt(systemProperties.getProperty(COOKIE_NAME_2FA, "864000"));
+        cookieMaxAge = Integer.parseInt(systemProperties.getProperty(COOKIE_MAX_AGE_PROPERTY, "864000"));
     }
 
 
