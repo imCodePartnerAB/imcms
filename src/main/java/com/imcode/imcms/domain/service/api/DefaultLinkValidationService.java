@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -37,6 +38,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
     private static final String LINK_VALIDATION_REGEX = "(http.?:\\/\\/)?(.*)";
     private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = ".*href\\s*=\\s*\"(http.?:\\/\\/)?(.*?)\"";
+    private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX); // need add in methods?
+    private final Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
     private DocumentService<DocumentDTO> defaultDocumentService;
     private DocRepository docRepository;
     private LanguageService languageService;
@@ -77,10 +80,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return isHostFound;
     }
 
-    private boolean isHostReachable(String protocol, String host) {
+    private boolean isHostReachable(URL url) {
         final int timeOutMillis = 1000;
         try {
-            URL url = new URL(protocol + host);
             try (Socket soc = new Socket()) {
                 soc.connect(new InetSocketAddress(url.getHost(), url.getDefaultPort()), timeOutMillis);
                 if (soc.isConnected())
@@ -92,11 +94,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
         }
     }
 
-    private boolean isPageFound(String protocol, String host) {
-        URL url = null;
+    private boolean isPageFound(URL url) {
         boolean isPageFound = false;
         try {
-            url = new URL(protocol + host);
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
             try (AutoCloseable autoCloseable = () -> httpConnection.disconnect()) {
                 isPageFound = HttpURLConnection.HTTP_OK == httpConnection.getResponseCode();
@@ -115,9 +115,6 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 .map(id -> defaultDocumentService.get(id))
                 .collect(Collectors.toList());
 
-        Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
-        Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
-
         for (Document doc : documentsToTest) {
             DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
             dtoFieldsDocument.setId(doc.getId());
@@ -125,31 +122,42 @@ public class DefaultLinkValidationService implements LinkValidationService {
             dtoFieldsDocument.setType(doc.getType());
             dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
 
-            dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
-                    doc.getLatestVersion().getId()).get(0).getHeadline()); // TODO: 14.12.18 check correct language
-
             for (Language language : languageService.getAll()) {
                 Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
                 Set<String> publicImageLinks = imageService.getPublicImageLinks(doc.getId(), language);
                 //if (doc instanceof UrlDocumentDTO)  //todo: found the best solution
+                dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
+                        doc.getLatestVersion().getId()).get(0).getHeadline());
                 if (doc.getType().equals(Meta.DocumentType.URL)) {
                     DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
-                    Matcher m = patternUrl.matcher(documentURL.getUrl());
-                    verifyValidationLink(validationLinks, m, link);
+                    ValidationLink validationLink = verifyValidationLinkForUrl(documentURL.getUrl(), link);
+                    if (null == validationLink) {
+                        continue;
+                    } else {
+                        validationLinks.add(validationLink);
+                    }
                 } else {
                     for (Text text : publicTexts) {
                         ValidationLink link = new ValidationLink();
                         link.setDocumentData(dtoFieldsDocument);
-                        Matcher m = patternTexts.matcher(text.getText());
-                        verifyValidationLink(validationLinks, m, link);
+                        ValidationLink validationLink = verifyValidationLinkForText(text.getText(), link);
+                        if (null == validationLink) {
+                            continue;
+                        } else {
+                            validationLinks.add(validationLink);
+                        }
                     }
                     for (String imageUrlLink : publicImageLinks) {
                         ValidationLink link = new ValidationLink();
                         link.setDocumentData(dtoFieldsDocument);
-                        Matcher m = patternUrl.matcher(imageUrlLink);
-                        verifyValidationLink(validationLinks, m, link);
+                        ValidationLink validationLink = verifyValidationLinkForUrl(imageUrlLink, link);
+                        if (null == validationLink) {
+                            continue;
+                        } else {
+                            validationLinks.add(validationLink);
+                        }
                     }
                 }
             }
@@ -162,22 +170,53 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return validationLinks;
     }
 
-    private void verifyValidationLink(List<ValidationLink> validationLinks, Matcher m, ValidationLink link) {
-        if (m.find()) {
-            String protocol = m.group(1);
-            String host = m.group(2);
+    private ValidationLink verifyValidationLinkForUrl(String textUrl, ValidationLink link) {
+        Matcher matcherUrl = patternUrl.matcher(textUrl);
+        if (matcherUrl.find()) {
+            String protocol = matcherUrl.group(1);
+            String host = matcherUrl.group(2);
             link.setUrl(protocol + host);
-
-            if (isHostFound(protocol, host)) {
-                link.setHostFound(true);
-                if (isHostReachable(protocol, host)) {
-                    link.setHostReachable(true);
-                    if (isPageFound(protocol, host)) {
-                        link.setPageFound(true);
+            try {
+                if (isHostFound(protocol, host)) {
+                    link.setHostFound(true);
+                    URL url = new URL(protocol + host);
+                    if (isHostReachable(url)) {
+                        link.setHostReachable(true);
+                        if (isPageFound(url)) {
+                            link.setPageFound(true);
+                        }
                     }
                 }
+            } catch (MalformedURLException e) {
+                e.getMessage();
             }
-            validationLinks.add(link);
+            return link;
         }
+        return null;
+    }
+
+    private ValidationLink verifyValidationLinkForText(String textUrl, ValidationLink link) {
+        Matcher matcherText = patternTexts.matcher(textUrl);
+        if (matcherText.find()) {
+            String protocol = matcherText.group(1);
+            String host = matcherText.group(2);
+            link.setUrl(protocol + host);
+            try {
+                if (isHostFound(protocol, host)) {
+                    link.setHostFound(true);
+                    URL url = new URL(protocol + host);
+                    if (isHostReachable(url)) {
+                        link.setHostReachable(true);
+                        if (isPageFound(url)) {
+                            link.setPageFound(true);
+                        }
+                    }
+                }
+            } catch (MalformedURLException e) {
+                e.getMessage();
+            }
+            return link;
+        }
+        return null;
     }
 }
