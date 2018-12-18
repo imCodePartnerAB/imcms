@@ -31,7 +31,7 @@ public class SmsService {
     private final String password;
     private final String gatewayURL;
     private final String originAddress;
-    private final String defaultCountryCode;
+    private String defaultCountryCode;
 
     private SmsService() {
         Properties systemProperties = Imcms.getServerProperties();
@@ -42,6 +42,9 @@ public class SmsService {
         originAddress = systemProperties.getProperty(SMS_GATEWAY_ORIGIN_ADDRESS, "");
         // Default country code for sweden
         defaultCountryCode = systemProperties.getProperty(SMS_GATEWAY_DEFAULT_COUNTRY_CODE, "46");
+        if (defaultCountryCode.isEmpty()) {
+            defaultCountryCode = "46";
+        }
     }
 
     public static SmsService getInstance() {
