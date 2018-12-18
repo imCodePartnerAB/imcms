@@ -267,7 +267,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void validateDocumentLinks_When_UrlDocNotValidUrlOnAllLanguages_Expected_CorrectEntities() {
+    public void validateDocumentLinks_When_UrlDocNotValidUrl_Expected_CorrectEntities() {
 
         final int index = 1;
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(TEXTS);
@@ -284,7 +284,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -310,7 +310,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
         assertTrue(link.isHostFound());
@@ -319,7 +319,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void validateDocumentLinks_When_UrlDocValidUrlNotReachableOnAllLanguages_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_UrlDocValidUrl_Expected_CorrectLinks() {
         final int index = 1;
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(getLinkFromText(NOT_REACHABLE_URL_IP));
         final int docId = urlDocumentDTO.getId();
@@ -335,7 +335,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
