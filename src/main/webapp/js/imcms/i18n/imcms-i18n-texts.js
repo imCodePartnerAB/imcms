@@ -411,7 +411,6 @@ const texts = {
                     status: "Status",
                     type: 'Typ',
                     admin: "Admin",
-                    reference: "Ref.",
                     link: "Link",
                     hostFound: "Host Found",
                     hostReachable: "Host reachable",
