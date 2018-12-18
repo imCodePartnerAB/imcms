@@ -10,5 +10,6 @@ public class ValidationLink {
     private boolean hostFound;
     private boolean hostReachable;
     private String url;
+    private EditLink editLink;
     private DocumentStoredFieldsDTO documentData;
 }
