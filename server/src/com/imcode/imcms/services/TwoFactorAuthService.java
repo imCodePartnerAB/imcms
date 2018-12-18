@@ -21,7 +21,7 @@ import static com.imcode.imcms.servlet.VerifyUser.*;
 
 public class TwoFactorAuthService {
     public static final String PROPERTY_NAME_2FA = "2FA";
-    public static final String REQUEST_PARAMETER_2FA = "2fa";
+    public static final String REQUEST_PARAMETER_2FA = "two_fa";
     public static final String SESSION_2FA_ATTEMPTS_COUNT = "2fa_count";
     public static final String USER_2FA_DISABLED_PROPERTY = "2fa_disabled";
     private static final String COOKIE_NAME_2FA = REQUEST_PARAMETER_2FA;

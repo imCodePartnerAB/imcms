@@ -59,7 +59,7 @@
                 type="text/javascript"></script>
 
     </head>
-    <body bgcolor="#FFFFFF" onLoad="focusField(1,'name')">
+    <body bgcolor="#FFFFFF" onLoad="${(is2FA and is2FAStep) ? "focusField(1,'two_fa')" : "focusField(1,'name')"}">
     #gui_outer_start()
     #gui_head( "<? templates/login/index.html/2 ?>" )
     <table border="0" cellspacing="0" cellpadding="0" width="700">
