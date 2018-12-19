@@ -216,6 +216,40 @@ public class IpAccessRuleServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void isAllowedToAccess_WhenSuperAdminHasDefaultUserRestrictedRole_ExpectTrue() throws UnknownHostException {
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+        defaultUser.addRoleId(Roles.SUPER_ADMIN.getId());
+
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(true);
+        rule.setRoleId(Roles.USER.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
+    }
+
+    @Test
+    public void isAllowedToAccess_WhenUserAdminHasDefaultUserRestrictedRole_ExpectTrue() throws UnknownHostException {
+        UserDomainObject defaultUser = new UserDomainObject(2);
+        defaultUser.addRoleId(Roles.USER.getId());
+        defaultUser.addRoleId(Roles.USER_ADMIN.getId());
+
+        IpAccessRule rule = new IpAccessRuleDTO();
+
+        rule.setEnabled(true);
+        rule.setRestricted(true);
+        rule.setRoleId(Roles.USER.getId());
+
+        IpAccessRule savedRule = accessRuleService.create(rule);
+
+        assertTrue(accessRuleService.isAllowedToAccess(Inet6Address.getByName(IP_TEMPLATE_V6_SHORT), defaultUser));
+    }
+
+    @Test
     public void isAllowedToAccess_WhenRestrictedByIpRange_ExpectFalse() throws UnknownHostException {
         UserDomainObject defaultUser = new UserDomainObject(2);
         defaultUser.addRoleId(Roles.USER.getId());
