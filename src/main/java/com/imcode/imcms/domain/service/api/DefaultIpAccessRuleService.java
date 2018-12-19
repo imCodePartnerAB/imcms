@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.component.AccessRuleValidationActionConsumer;
 import com.imcode.imcms.domain.dto.IpAccessRuleDTO;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.model.IpAccessRule;
+import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.IpAccessRuleJPA;
 import com.imcode.imcms.persistence.repository.IpAccessRuleRepository;
 import imcode.server.user.UserDomainObject;
@@ -85,7 +86,11 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
             boolean isUserRestricted = false;
 
             if (null != user) {
-                isUserRoleRestricted = user.getRoleIds().contains(rule.getRoleId());
+                final boolean hasMorePrivilegedSuperAdminRole = user.isSuperAdmin() && rule.getRoleId() > Roles.SUPER_ADMIN.getId();
+                final boolean hasMorePrivilegedUserAdminRole = user.isUserAdmin() && rule.getRoleId() > Roles.USER_ADMIN.getId();
+                isUserRoleRestricted = (user.hasRoleId(rule.getRoleId()))
+                        && (!(hasMorePrivilegedSuperAdminRole || hasMorePrivilegedUserAdminRole));
+
                 isUserRestricted = Objects.equals(rule.getUserId(), user.getId());
 
                 if (null != rule.getIpRange()) {
