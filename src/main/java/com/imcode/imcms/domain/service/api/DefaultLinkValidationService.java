@@ -203,16 +203,15 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
     private ValidationLink verifyValidationLinkOnOppositeProtocol(ValidationLink link, String textUrl, Pattern pattern) {
         Matcher matcherUrl = pattern.matcher(textUrl);
-        List<String> protocols = new ArrayList<>();
-        protocols.add("http://");
-        protocols.add("https://");
+        String httpProtocol = "http://";
+        String httpsProtocol = "https://";
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
             String host = matcherUrl.group(2);
             link.setUrl(protocol == null ? host : protocol + host);
             try {
-                if (null != protocol && protocol.equals(protocols.get(0))) {
-                    protocol = protocols.get(1);
+                if (null != protocol && protocol.equals(httpProtocol)) {
+                    protocol = httpsProtocol;
                     link.setUrl(protocol + host);
                     if (isHostFound(protocol, host)) {
                         link.setHostFound(true);
@@ -225,8 +224,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
                         }
                     }
-                } else if (null != protocol && protocol.equals(protocols.get(1))) {
-                    protocol = protocols.get(0);
+                } else if (null != protocol && protocol.equals(httpsProtocol)) {
+                    protocol = httpProtocol;
                     link.setUrl(protocol + host);
                     if (isHostFound(protocol, host)) {
                         link.setHostFound(true);
