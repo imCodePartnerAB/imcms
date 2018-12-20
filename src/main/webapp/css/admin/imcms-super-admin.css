@@ -188,38 +188,49 @@
     border: 1px solid gainsboro;
 }
 
+
 .link-title-row.link-title {
     display: flex;
     font-weight: 600;
     margin-bottom: 5px;
     padding: 5px;
+    text-align: center;
 }
 
 .link-info-row {
     display: flex;
+    margin-bottom: 5px;
     padding: 5px;
     text-align: center;
 }
 
 .link-title-row__page-alias,
+.link-info-row__link-page-alias {
+    width: 10%;
+}
 .link-title-row__status,
 .link-title-row__admin {
     width: 10%;
-    text-align: left;
+}
+
+.link-title-row__status,
+.link-info-row__link-status {
+    width: 10%;
 }
 
 .link-title-row__type,
-.link-info-row__link-status,
-.link-info-row__link-type,
-.link-info-row__link-admin,
-.link-info-row__link-page-alias {
+.link-info-row__link-type {
+    width: 10%;
+}
+
+.link-title-row__admin,
+.link-info-row__link-admin {
     width: 10%;
 }
 
 .link-title-row__link,
 .link-info-row__link-name {
-    width: 40%;
-    text-align: center;
+    width: 30%;
 }
 
 .link-params-block__button-validation {
@@ -227,17 +238,22 @@
     margin-top: 15px;
 }
 
-.link-title-row__hostFound,
-.link-title-row__hostReachable,
-.link-title-row__pageFound,
-.imcms-control.imcms-control--remove.link-info-row__link-host-reachable,
-.imcms-control.imcms-control--remove.link-info-row__link-page-found,
+.link-title-row__host-found,
 .imcms-control.imcms-control--remove.link-info-row__link-host-found,
-.imcms-control.imcms-control--check.link-info-row__link-host-found,
-.imcms-control.imcms-control--check.link-info-row__link-host-reachable,
+.imcms-control.imcms-control--check.link-info-row__link-host-found {
+    width: 10%;
+}
+
+.link-title-row__host-reachable,
+.imcms-control.imcms-control--remove.link-info-row__link-host-reachable,
+.imcms-control.imcms-control--check.link-info-row__link-host-reachable {
+    width: 10%;
+}
+
+.link-title-row__page-found,
+.imcms-control.imcms-control--remove.link-info-row__link-page-found,
 .imcms-control.imcms-control--check.link-info-row__link-page-found {
     width: 10%;
-    text-align: center;
 }
 
 .imcms-control.imcms-control--check.link-info-row__link-host-found,
