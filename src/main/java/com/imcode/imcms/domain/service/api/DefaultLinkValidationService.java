@@ -16,6 +16,7 @@ import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.DocumentURL;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Text;
+import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.stereotype.Service;
 
@@ -144,8 +145,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
             for (Language language : languageService.getAll()) {
                 Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
-                Set<String> publicImageLinks = imageService.getPublicImageLinks(doc.getId(), language);
-                //if (doc instanceof UrlDocumentDTO) //todo: found the best solution
+                Set<Image> images = imageService.getImagesAllVersionAndLanguages(doc.getId(), language);
                 for (Text text : publicTexts) {
                     EditLink editLink = new EditLink();
                     editLink.setMetaId(dtoFieldsDocument.getId());
@@ -161,14 +161,15 @@ public class DefaultLinkValidationService implements LinkValidationService {
                         validationLinks.add(validationLink);
                     }
                 }
-                for (String imageUrlLink : publicImageLinks) {
+                for (Image image : images) {
                     EditLink editLink = new EditLink();
                     editLink.setMetaId(dtoFieldsDocument.getId());
                     editLink.setTitle(dtoFieldsDocument.getTitle());
+                    editLink.setIndex(image.getIndex());
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
-                    ValidationLink validationLink = verifyValidationLinkForUrl(imageUrlLink, link, patternUrl);
+                    ValidationLink validationLink = verifyValidationLinkForUrl(image.getLinkUrl(), link, patternUrl);
                     if (null == validationLink) {
                         continue;
                     } else {
