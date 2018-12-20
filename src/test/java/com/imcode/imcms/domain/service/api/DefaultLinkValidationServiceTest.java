@@ -137,7 +137,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -167,7 +167,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -196,7 +196,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -226,7 +226,9 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
+
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
 
@@ -257,7 +259,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -284,7 +286,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -310,7 +312,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
         assertTrue(link.isHostFound());
@@ -335,7 +337,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(2, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -369,7 +371,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(4, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -407,7 +409,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
+        assertEquals(6, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -440,9 +442,9 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
+        assertEquals(6, links.size());
 
-        ValidationLink link = links.get(1);
+        ValidationLink link = links.get(2);
 
         assertTrue(link.isHostFound());
         assertFalse(link.isHostReachable());
@@ -471,7 +473,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(3, links.size());
+        assertEquals(6, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -506,7 +508,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(3, links.size());
+        assertEquals(8, links.size()); // because text - 2 links, image - 2 links, so 2 text and 2 images
     }
 
     @Test
