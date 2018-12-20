@@ -369,6 +369,53 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void findByVersionAndLanguageImage() {
+        assertTrue(imageRepository.findAll().isEmpty());
+
+        final Version newVersion = versionDataInitializer.createData(VERSION_INDEX + 1, DOC_ID);
+        final LanguageJPA[] languages = {english, swedish};
+        final Version[] versions = {version, newVersion};
+        final int imagesPerVersionPerLanguage = 20;
+        final String testLinkUrl = "link_url";
+
+        for (Version version : versions) {
+            for (LanguageJPA language : languages) {
+                IntStream.range(IMAGE_INDEX, IMAGE_INDEX + imagesPerVersionPerLanguage)
+                        .forEach(index -> {
+                            final Image image = new Image();
+                            image.setIndex(index);
+                            image.setLanguage(language);
+                            image.setVersion(version);
+                            image.setFormat(Format.JPEG);
+                            image.setLinkUrl(testLinkUrl + index);
+                            imageRepository.save(image);
+                        });
+                IntStream.range(IMAGE_INDEX + imagesPerVersionPerLanguage, IMAGE_INDEX + (2 * imagesPerVersionPerLanguage))
+                        .forEach(index -> {
+                            final Image image = new Image();
+                            image.setIndex(index);
+                            image.setLanguage(language);
+                            image.setVersion(version);
+                            image.setFormat(Format.JPEG);
+                            image.setLinkUrl("");
+                            imageRepository.save(image);
+                        });
+            }
+
+        }
+
+        assertFalse(imageRepository.findAll().isEmpty());
+
+        for (Version version : versions) {
+            for (LanguageJPA language : languages) {
+                Set<Image> images = imageRepository.findByVersionAndLanguage(version, language);
+
+                assertFalse(images.isEmpty());
+            }
+        }
+    }
+
+    @Test
     public void findMinIndexByVersion_When_SomeRegularImagesExist_Expect_MinReturned() {
         final int minIndex = IMAGE_INDEX;
 
