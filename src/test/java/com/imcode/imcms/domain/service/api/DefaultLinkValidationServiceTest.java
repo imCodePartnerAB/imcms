@@ -138,6 +138,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
 
@@ -168,6 +169,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
 
@@ -197,6 +199,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
 
@@ -227,7 +230,6 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
-
         assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
@@ -260,6 +262,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
 
@@ -313,6 +316,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
         assertTrue(link.isHostFound());
@@ -338,6 +342,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(links);
         assertEquals(2, links.size());
+        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
 
         ValidationLink link = links.get(0);
 
