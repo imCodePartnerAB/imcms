@@ -133,13 +133,18 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 editLink.setMetaId(documentURL.getDocId());
                 editLink.setTitle(dtoFieldsDocument.getTitle());
                 ValidationLink link = new ValidationLink();
+                ValidationLink link2 = new ValidationLink();
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
+                link2.setDocumentData(dtoFieldsDocument);
+                link2.setEditLink(editLink);
                 ValidationLink validationLink = verifyValidationLinkForUrl(documentURL.getUrl(), link, patternUrl);
-                if (null == validationLink) {
+                ValidationLink validationLink2 = list(link2, documentURL.getUrl(), patternUrl);
+                if (null == validationLink || null == validationLink2) {
                     continue;
                 } else {
                     validationLinks.add(validationLink);
+                    validationLinks.add(validationLink2);
                 }
             }
 
@@ -152,13 +157,18 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(text.getIndex());
                     ValidationLink link = new ValidationLink();
+                    ValidationLink link2 = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
+                    link2.setDocumentData(dtoFieldsDocument);
+                    link2.setEditLink(editLink);
                     ValidationLink validationLink = verifyValidationLinkForUrl(text.getText(), link, patternTexts);
-                    if (null == validationLink) {
+                    ValidationLink validationLink2 = list(link2, text.getText(), patternTexts);
+                    if (null == validationLink || null == validationLink2) {
                         continue;
                     } else {
                         validationLinks.add(validationLink);
+                        validationLinks.add(validationLink2);
                     }
                 }
                 for (Image image : images) {
@@ -167,13 +177,18 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(image.getIndex());
                     ValidationLink link = new ValidationLink();
+                    ValidationLink link2 = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
+                    link2.setDocumentData(dtoFieldsDocument);
+                    link2.setEditLink(editLink);
                     ValidationLink validationLink = verifyValidationLinkForUrl(image.getLinkUrl(), link, patternUrl);
-                    if (null == validationLink) {
+                    ValidationLink validationLink2 = list(link2, image.getLinkUrl(), patternUrl);
+                    if (null == validationLink || null == validationLink2) {
                         continue;
                     } else {
                         validationLinks.add(validationLink);
+                        validationLinks.add(validationLink2);
                     }
                 }
             }
@@ -186,12 +201,57 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return validationLinks;
     }
 
+    private ValidationLink list(ValidationLink link, String textUrl, Pattern pattern) {
+        Matcher matcherUrl = pattern.matcher(textUrl);
+        List<String> protocols = new ArrayList<>();
+        protocols.add("http://");
+        protocols.add("https://");
+        if (matcherUrl.find()) {
+            String protocol = matcherUrl.group(1);
+            String host = matcherUrl.group(2);
+            link.setUrl(protocol == null ? host : protocol + host);
+            try {
+                if (isHostFound(protocol, host)) {
+                    link.setHostFound(true);
+                    if (null != protocol && protocol.equals(protocols.get(0))) {
+                        protocol = protocols.get(1);
+                        link.setUrl(protocol + host);
+                        URL url = new URL(protocol + host);
+                        if (isHostReachable(url)) {
+                            link.setHostReachable(true);
+                            if (isPageFound(url)) {
+                                link.setPageFound(true);
+                            }
+
+                        }
+
+                    } else if (null != protocol && protocol.equals(protocols.get(1))) {
+                        protocol = protocols.get(0);
+                        link.setUrl(protocol + host);
+                        URL url = new URL(protocol + host);
+                        if (isHostReachable(url)) {
+                            link.setHostReachable(true);
+                            if (isPageFound(url)) {
+                                link.setPageFound(true);
+                            }
+
+                        }
+                    }
+                }
+            } catch (MalformedURLException e) {
+                e.getMessage();
+            }
+            return link;
+        }
+        return null;
+    }
+
     private ValidationLink verifyValidationLinkForUrl(String textUrl, ValidationLink link, Pattern pattern) {
         Matcher matcherUrl = pattern.matcher(textUrl);
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
             String host = matcherUrl.group(2);
-            link.setUrl(protocol + host);
+            link.setUrl(protocol == null ? host : protocol + host);
             try {
                 if (isHostFound(protocol, host)) {
                     link.setHostFound(true);
