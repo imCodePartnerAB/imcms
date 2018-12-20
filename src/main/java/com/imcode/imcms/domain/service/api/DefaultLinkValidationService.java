@@ -216,14 +216,14 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 if (null != protocol && protocol.equals(httpProtocol)) {
                     protocol = httpsProtocol;
                     link.setUrl(protocol + host);
-                        URL url = new URL(protocol + host);
-                        if (isHostReachable(url)) {
-                            link.setHostReachable(true);
-                            if (isPageFound(url)) {
-                                link.setPageFound(true);
-                            }
-
+                    URL url = new URL(protocol + host);
+                    if (isHostReachable(url)) {
+                        link.setHostReachable(true);
+                        if (isPageFound(url)) {
+                            link.setPageFound(true);
                         }
+
+                    }
                 } else if (null != protocol && protocol.equals(httpsProtocol)) {
                     protocol = httpProtocol;
                     link.setUrl(protocol + host);
