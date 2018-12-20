@@ -64,8 +64,11 @@ define(
                             'link-type': $('<div>', {
                                 text: validationLink.documentData.type
                             }),
-                            'link-admin': $('<div>', {
+                            'link-admin': $('<a>', {
                                 text: validationLink.editLink.metaId +
+                                    validationLink.editLink.title +
+                                    validationLink.editLink.index,
+                                href: validationLink.editLink.metaId +
                                     validationLink.editLink.title +
                                     validationLink.editLink.index
                             }),
