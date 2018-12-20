@@ -213,19 +213,19 @@ public class DefaultLinkValidationService implements LinkValidationService {
             try {
                 if (isHostFound(protocol, host)) {
                     link.setHostFound(true);
-                    if (null != protocol && protocol.equals(protocols.get(0))) {
-                        protocol = protocols.get(1);
-                        link.setUrl(protocol + host);
-                        URL url = new URL(protocol + host);
-                        if (isHostReachable(url)) {
-                            link.setHostReachable(true);
-                            if (isPageFound(url)) {
-                                link.setPageFound(true);
-                            }
-
+                }
+                if (null != protocol && protocol.equals(protocols.get(0))) {
+                    protocol = protocols.get(1);
+                    link.setUrl(protocol + host);
+                    URL url = new URL(protocol + host);
+                    if (isHostReachable(url)) {
+                        link.setHostReachable(true);
+                        if (isPageFound(url)) {
+                            link.setPageFound(true);
                         }
 
-                    } else if (null != protocol && protocol.equals(protocols.get(1))) {
+                    }
+                } else if (null != protocol && protocol.equals(protocols.get(1))) {
                         protocol = protocols.get(0);
                         link.setUrl(protocol + host);
                         URL url = new URL(protocol + host);
@@ -237,7 +237,6 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
                         }
                     }
-                }
             } catch (MalformedURLException e) {
                 e.getMessage();
             }
