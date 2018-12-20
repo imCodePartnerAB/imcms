@@ -67,10 +67,13 @@ define(
                             'link-admin': $('<a>', {
                                 text: validationLink.editLink.metaId +
                                     validationLink.editLink.title +
-                                    validationLink.editLink.index,
-                                href: validationLink.editLink.metaId +
-                                    validationLink.editLink.title +
-                                    validationLink.editLink.index
+                                    (validationLink.editLink.index === null
+                                        ? ''
+                                        : validationLink.editLink.index),
+                                href: validationLink.documentData.type === "TEXT"
+                                    ? "text?meta-id=" + validationLink.editLink.metaId
+                                    + "&index=" + validationLink.editLink.index
+                                    : 'page-info?meta-id=' + validationLink.editLink.metaId,
                             }),
                             'link-name': $('<a>', {
                                 text: validationLink.url,
