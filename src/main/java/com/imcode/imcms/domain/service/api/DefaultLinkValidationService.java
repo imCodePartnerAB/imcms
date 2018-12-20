@@ -138,7 +138,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 link.setEditLink(editLink);
                 link2.setDocumentData(dtoFieldsDocument);
                 link2.setEditLink(editLink);
-                ValidationLink validationLink = verifyValidationLinkForUrl(documentURL.getUrl(), link, patternUrl);
+                ValidationLink validationLink = verifyValidationLink(documentURL.getUrl(), link, patternUrl);
                 ValidationLink validationLink2 = verifyValidationLinkOnOppositeProtocol(link2, documentURL.getUrl(), patternUrl);
                 if (null == validationLink || null == validationLink2) {
                     continue;
@@ -162,7 +162,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setEditLink(editLink);
                     link2.setDocumentData(dtoFieldsDocument);
                     link2.setEditLink(editLink);
-                    ValidationLink validationLink = verifyValidationLinkForUrl(text.getText(), link, patternTexts);
+                    ValidationLink validationLink = verifyValidationLink(text.getText(), link, patternTexts);
                     ValidationLink validationLink2 = verifyValidationLinkOnOppositeProtocol(link2, text.getText(), patternTexts);
                     if (null == validationLink || null == validationLink2) {
                         continue;
@@ -182,7 +182,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setEditLink(editLink);
                     link2.setDocumentData(dtoFieldsDocument);
                     link2.setEditLink(editLink);
-                    ValidationLink validationLink = verifyValidationLinkForUrl(image.getLinkUrl(), link, patternUrl);
+                    ValidationLink validationLink = verifyValidationLink(image.getLinkUrl(), link, patternUrl);
                     ValidationLink validationLink2 = verifyValidationLinkOnOppositeProtocol(link2, image.getLinkUrl(), patternUrl);
                     if (null == validationLink || null == validationLink2) {
                         continue;
@@ -248,7 +248,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return null;
     }
 
-    private ValidationLink verifyValidationLinkForUrl(String textUrl, ValidationLink link, Pattern pattern) {
+    private ValidationLink verifyValidationLink(String textUrl, ValidationLink link, Pattern pattern) {
         Matcher matcherUrl = pattern.matcher(textUrl);
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
