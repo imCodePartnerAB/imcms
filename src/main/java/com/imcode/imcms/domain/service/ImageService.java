@@ -18,6 +18,8 @@ public interface ImageService extends VersionedContentService, DeleterByDocument
 
     List<Image> getUsedImagesInWorkingAndLatestVersions(String imageURL);
 
+    Set<Image> getImagesAllVersionAndLanguages(int docId, Language language);
+
     void saveImage(ImageDTO imageDTO);
 
     void regenerateImages();
