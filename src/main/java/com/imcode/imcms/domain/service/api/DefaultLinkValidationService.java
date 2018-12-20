@@ -210,11 +210,12 @@ public class DefaultLinkValidationService implements LinkValidationService {
             String host = matcherUrl.group(2);
             link.setUrl(protocol == null ? host : protocol + host);
             try {
+                if (isHostFound(protocol, host)) {
+                    link.setHostFound(true);
+                }
                 if (null != protocol && protocol.equals(httpProtocol)) {
                     protocol = httpsProtocol;
                     link.setUrl(protocol + host);
-                    if (isHostFound(protocol, host)) {
-                        link.setHostFound(true);
                         URL url = new URL(protocol + host);
                         if (isHostReachable(url)) {
                             link.setHostReachable(true);
@@ -223,7 +224,6 @@ public class DefaultLinkValidationService implements LinkValidationService {
                             }
 
                         }
-                    }
                 } else if (null != protocol && protocol.equals(httpsProtocol)) {
                     protocol = httpProtocol;
                     link.setUrl(protocol + host);
