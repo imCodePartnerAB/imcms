@@ -179,6 +179,8 @@ public class ImcmsSetupFilter implements Filter {
                 assert user.isActive();
                 Utility.makeUserLoggedIn(request, user);
 
+                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, user)) return;
+
                 // todo: optimize;
                 // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
                 // -invalidates current session if it does not match to last user's session
@@ -195,14 +197,8 @@ public class ImcmsSetupFilter implements Filter {
                     userToCheckAccess = user;
                 }
 
-                //Ugly resource filter.... to show at least login page
-                //auth-providers is allowed api call
-                if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
-                    if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
-                        Utility.forwardToLogin(request, response);
-                        return;
-                    }
-                }
+
+                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, userToCheckAccess)) return;
 
                 if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
                     String sessionId = session.getId();
@@ -287,6 +283,22 @@ public class ImcmsSetupFilter implements Filter {
         } finally {
             Imcms.removeUser();
         }
+    }
+
+    private boolean redirectToLoginIfRestricted(HttpServletRequest request,
+                                                HttpServletResponse response,
+                                                ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper,
+                                                UserDomainObject userToCheckAccess) throws ServletException, IOException {
+
+        //Ugly resource filter.... to show at least login page
+        //auth-providers is allowed api call
+        if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
+            if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
+                Utility.forwardToLogin(request, response);
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isRemoteAddressInvalid(final HttpServletRequest request, final HttpServletResponse response) {
