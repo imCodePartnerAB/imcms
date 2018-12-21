@@ -412,7 +412,25 @@ const texts = {
                 name: 'Sök'
             },
             linkValidator: {
-                name: 'Länk Validator'
+                name: 'Länk Validator',
+                titleOnlyBrokenLinks: "Lista endast brutna länkar",
+                titleStartId: 'From id',
+                titleEndId: 'Till id',
+                fieldStartId: 'start-id',
+                fieldEndId: 'end-id',
+                brokenLinks: "Lista bara brutna länkar",
+                buttonValidation: 'Start validering',
+                linkInfoRow: {
+                    pageAlias: 'Sid alias',
+                    status: "Status",
+                    type: 'Typ',
+                    admin: "Admin",
+                    link: "Link",
+                    hostFound: "Host Found",
+                    hostReachable: "Host reachable",
+                    pageFound: 'Sidan hittades'
+                }
+
             },
             categories: {
                 name: 'Kategorier'
@@ -883,7 +901,26 @@ const texts = {
                 name: 'Search'
             },
             linkValidator: {
-                name: 'Link Validator'
+                name: 'Link Validator',
+                titleOnlyBrokenLinks: 'List only broken links',
+                titleStartId: 'From id',
+                titleEndId: 'To id',
+                fieldStartId: 'start-id',
+                fieldEndId: 'end-id',
+                brokenLinks: 'List only broken links',
+                buttonValidation: 'Start the validation',
+                linkInfoRow: {
+                    pageAlias: 'Page alias',
+                    status: 'Status',
+                    type: 'Type',
+                    admin: 'Admin',
+                    reference: "Ref.",
+                    link: 'Link',
+                    hostFound: 'Host found',
+                    hostReachable: 'Host reachable',
+                    pageFound: 'Page found'
+                }
+
             },
             categories: {
                 name: 'Categories'
