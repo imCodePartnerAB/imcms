@@ -369,7 +369,8 @@
 .rule-row__rule-ip-range,
 .rule-row__rule-role,
 .rule-row__rule-user {
-    padding: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .rule-row__rule-delete .imcms-control .imcms-control--remove {
