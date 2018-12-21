@@ -8,6 +8,7 @@ import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.IpAccessRuleJPA;
 import com.imcode.imcms.persistence.repository.IpAccessRuleRepository;
 import imcode.server.user.UserDomainObject;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -93,7 +94,7 @@ public class DefaultIpAccessRuleService implements IpAccessRuleService {
 
                 isUserRestricted = Objects.equals(rule.getUserId(), user.getId());
 
-                if (null != rule.getIpRange()) {
+                if (StringUtils.isNotBlank(rule.getIpRange())) {
                     isUserRoleRestricted &= isInRange;
                     isUserRestricted &= isInRange;
                 }
