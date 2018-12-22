@@ -288,13 +288,13 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         ValidationLink link = links.get(0);
 
-        assertFalse(link.isHostFound());
-        assertFalse(link.isHostReachable());
+        assertTrue(link.isHostFound());
+        assertTrue(link.isHostReachable());
         assertFalse(link.isPageFound());
     }
 
     @Test
-    public void validateDocumentLinks_When_UrlDocHasValidUrlOnAllLanguages_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_UrlDocHasValidUrl_Expected_CorrectLinks() {
         final int index = 1;
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(getLinkFromText(TEXT_URL));
         final int docId = urlDocumentDTO.getId();
@@ -374,8 +374,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         ValidationLink link = links.get(0);
 
-        assertFalse(link.isHostFound());
-        assertFalse(link.isHostReachable());
+        assertTrue(link.isHostFound());
+        assertTrue(link.isHostReachable());
         assertFalse(link.isPageFound());
     }
 

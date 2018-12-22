@@ -191,6 +191,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
             if (null == protocol) {
+                link.setHostFound(true);
+                link.setHostReachable(true);
                 links.addAll(checkRelativeLink(link));
             } else {
                 links.add(verifyValidationLink(link));
