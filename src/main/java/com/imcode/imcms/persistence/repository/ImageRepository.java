@@ -26,7 +26,6 @@ public interface ImageRepository extends JpaRepository<Image, Integer>, Versione
     @Query("select i.linkUrl from Image i where i.version = ?1 and i.language = ?2 and i.linkUrl > ''")
     Set<String> findNonEmptyImageLinkUrlByVersionAndLanguage(Version version, LanguageJPA language);
 
-
     Set<Image> findByVersionAndLanguage(Version version, LanguageJPA language);
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef IS NULL")
@@ -35,13 +34,11 @@ public interface ImageRepository extends JpaRepository<Image, Integer>, Versione
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef = ?3")
     List<Image> findByVersionAndIndexAndLoopEntryRef(Version version, int index, LoopEntryRefJPA loopEntryRef);
 
-
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
     Image findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, LanguageJPA language, int index);
 
     @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
     Image findByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, LanguageJPA language, int index, LoopEntryRefJPA loopEntryRef);
-
 
     @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
     Integer findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, LanguageJPA language, int index);
