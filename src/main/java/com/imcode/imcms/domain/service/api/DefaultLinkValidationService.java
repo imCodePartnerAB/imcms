@@ -140,8 +140,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 ValidationLink link = new ValidationLink();
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
-                boolean check = checkValidUrl(link, documentURL.getUrl(), patternUrl);
-                if (check) {
+                boolean isValidUrl = checkValidUrl(link, documentURL.getUrl(), patternUrl);
+                if (isValidUrl) {
                     validationLinks.addAll(validationLinksChecked(link, documentURL.getUrl(), patternUrl));
                 }
             }
@@ -157,8 +157,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
-                    boolean check = checkValidUrl(link, text.getText(), patternTexts);
-                    if (check) {
+                    boolean isValidUrl = checkValidUrl(link, text.getText(), patternTexts);
+                    if (isValidUrl) {
                         validationLinks.addAll(validationLinksChecked(link, text.getText(), patternTexts));
                     }
                 }
@@ -170,8 +170,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
-                    boolean check = checkValidUrl(link, image.getLinkUrl(), patternUrl);
-                    if (check) {
+                    boolean isValidUrl = checkValidUrl(link, image.getLinkUrl(), patternUrl);
+                    if (isValidUrl) {
+                        //todo link set url
                         validationLinks.addAll(validationLinksChecked(link, image.getLinkUrl(), patternUrl));
                     }
                 }
