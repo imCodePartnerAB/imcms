@@ -36,15 +36,17 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static ucar.httpservices.HTTPAuthStore.log;
+
 @Service
 public class DefaultLinkValidationService implements LinkValidationService {
 
     private static final String LINK_VALIDATION_REGEX = "(http.?:\\/\\/)?(.*)";
-    private static final String PROTOCOL_VALIDATION_REGEX = "(http[s]?)?(:\\/\\/)?(.*)";
     private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = ".*href\\s*=\\s*\"(http.?:\\/\\/)?(.*?)\"";
+    private static final String PROTOCOL_HTTP = "http://";
+    private static final String PROTOCOL_HTTPS = "https://";
     private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
     private final Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
-    private final Pattern patternProtocol = Pattern.compile(PROTOCOL_VALIDATION_REGEX);
     private DocumentService<DocumentDTO> defaultDocumentService;
     private DocRepository docRepository;
     private LanguageService languageService;
@@ -214,13 +216,13 @@ public class DefaultLinkValidationService implements LinkValidationService {
         try {
             ValidationLink cloneLink = (ValidationLink) link.clone();
 
-            link.setUrl("http://" + link.getUrl());
+            link.setUrl(PROTOCOL_HTTP + link.getUrl());
             links.add(verifyValidationLink(link));
 
-            cloneLink.setUrl("https://" + cloneLink.getUrl());
+            cloneLink.setUrl(PROTOCOL_HTTPS + cloneLink.getUrl());
             links.add(verifyValidationLink(cloneLink));
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
         }
         return links;
     }
@@ -238,7 +240,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     }
                 }
             } catch (MalformedURLException e) {
-                e.getMessage();
+            log.info(e.getMessage());
             }
         return link;
     }
