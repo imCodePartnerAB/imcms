@@ -51,7 +51,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     private static final String TEXT_URL = "<a href=\"https://www.google.com\">Test</a>";
     private static final String NOT_FOUND_URL_HTTPS_TEXT = "<a href=\"https://aaa.fff.ddd\">Test</a>";
     private static final String NOT_FOUND_URL_HTTP_TEXT = "<a href=\"http://aaa.fff.ddd\">Test</a>";
-    private static final String NOT_REACHABLE_URL_IP = "<a href=\"http://a:0:a0a::\"> Test</a>";
+    private static final String NOT_REACHABLE_URL_IP = "<a href=\"http://[a:0:a0a::]\"> Test</a>";
     private static final Pattern LINK_VALIDATION_PATTERN = Pattern.compile("href\\s*=\\s*\"(.*)\"");
 
     @Autowired
@@ -137,8 +137,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -168,8 +167,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -198,8 +196,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -229,8 +226,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -261,8 +257,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -293,7 +288,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         ValidationLink link = links.get(0);
 
-        assertTrue(link.isHostFound());
+        assertFalse(link.isHostFound());
         assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
     }
@@ -315,8 +310,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
 
         ValidationLink link = links.get(0);
         assertTrue(link.isHostFound());
@@ -325,7 +319,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void validateDocumentLinks_When_UrlDocValidUrl_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_UrlDocValidUrlNotReachable_Expected_CorrectLinks() {
         final int index = 1;
         final UrlDocumentDTO urlDocumentDTO = urlDocumentDataInitializer.createUrlDocument(getLinkFromText(NOT_REACHABLE_URL_IP));
         final int docId = urlDocumentDTO.getId();
@@ -341,8 +335,8 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(2, links.size());
-        assertNotEquals(links.get(0).getUrl(), links.get(1).getUrl());
+        assertEquals(1, links.size());
+
 
         ValidationLink link = links.get(0);
 
@@ -380,13 +374,13 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         ValidationLink link = links.get(0);
 
-        assertTrue(link.isHostFound());
+        assertFalse(link.isHostFound());
         assertFalse(link.isHostReachable());
         assertFalse(link.isPageFound());
     }
 
     @Test
-    public void validateDocumentLinks_When_LoopHasValidUrlAndImageText_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_LoopHasValidUrlAndEmptyUrlImageAndText_Expected_CorrectLinks() {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version versionDoc = versionService.create(docId, 1);
@@ -414,7 +408,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(6, links.size());
+        assertEquals(4, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -424,7 +418,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void validateDocumentLinks_When_LoopHasNotReachableUrlText_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_LoopHasTwoImagesNotReachableUrlAndEmptyAndUrlNotFoundText_Expected_CorrectLinks() {
         final int index = 1;
         int doc1Id = documentDataInitializer.createData().getId();
         final Version version = versionService.create(doc1Id, 1);
@@ -447,9 +441,9 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(6, links.size());
+        assertEquals(4, links.size());
 
-        ValidationLink link = links.get(2);
+        ValidationLink link = links.get(1);
 
         assertTrue(link.isHostFound());
         assertFalse(link.isHostReachable());
@@ -478,7 +472,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(6, links.size());
+        assertEquals(3, links.size());
 
         ValidationLink link = links.get(0);
 
@@ -488,7 +482,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void validateDocumentLinks_When_DocumentHasTextImageAndLoopWithValidUrl_Expected_CorrectLinks() {
+    public void validateDocumentLinks_When_DocumentHasTextImageAndLoopWithValidUrlAndImageWithEmptyUrl_Expected_CorrectLinks() {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version versionDoc = versionService.create(docId, 1);
@@ -513,7 +507,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         );
 
         assertNotNull(links);
-        assertEquals(8, links.size()); // because text - 2 links, image - 2 links, so 2 text and 2 images
+        assertEquals(5, links.size());
     }
 
     @Test

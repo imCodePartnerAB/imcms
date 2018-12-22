@@ -390,16 +390,6 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
                             image.setLinkUrl(testLinkUrl + index);
                             imageRepository.save(image);
                         });
-                IntStream.range(IMAGE_INDEX + imagesPerVersionPerLanguage, IMAGE_INDEX + (2 * imagesPerVersionPerLanguage))
-                        .forEach(index -> {
-                            final Image image = new Image();
-                            image.setIndex(index);
-                            image.setLanguage(language);
-                            image.setVersion(version);
-                            image.setFormat(Format.JPEG);
-                            image.setLinkUrl("");
-                            imageRepository.save(image);
-                        });
             }
 
         }
@@ -411,6 +401,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
                 Set<Image> images = imageRepository.findByVersionAndLanguage(version, language);
 
                 assertFalse(images.isEmpty());
+                images.forEach(image -> assertTrue(image.getLinkUrl().startsWith(testLinkUrl)));
             }
         }
     }
