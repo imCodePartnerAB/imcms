@@ -137,6 +137,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 EditLink editLink = new EditLink();
                 editLink.setMetaId(documentURL.getDocId());
                 editLink.setTitle(dtoFieldsDocument.getTitle());
+
                 ValidationLink link = new ValidationLink();
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
@@ -154,6 +155,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setMetaId(dtoFieldsDocument.getId());
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(text.getIndex());
+
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
@@ -167,6 +169,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setMetaId(dtoFieldsDocument.getId());
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(image.getIndex());
+
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
@@ -191,7 +194,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         Matcher matcherUrl = pattern.matcher(textUrl);
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
-            if (null == protocol) {
+            if (null == protocol) {  // if protocol null its mean that url is on current host
                 link.setHostFound(true);
                 link.setHostReachable(true);
                 links.addAll(checkRelativeLink(link));
@@ -203,7 +206,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return links;
     }
 
-    private boolean checkValidUrl(ValidationLink link, String textUrl, Pattern pattern) {
+    private boolean checkValidUrl(ValidationLink link, String textUrl, Pattern pattern) { // TODO: 22.12.18 refactor return String
         Matcher matcherUrl = pattern.matcher(textUrl);
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
@@ -225,7 +228,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
             cloneLink.setUrl(PROTOCOL_HTTPS + cloneLink.getUrl());
             links.add(verifyValidationLink(cloneLink));
         } catch (CloneNotSupportedException e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage());
         }
         return links;
     }
@@ -234,17 +237,17 @@ public class DefaultLinkValidationService implements LinkValidationService {
         try {
             URL url = new URL(link.getUrl());
             if (isHostFound(url)) {
-                    link.setHostFound(true);
-                    if (isHostReachable(url)) {
-                        link.setHostReachable(true);
-                        if (isPageFound(url)) {
-                            link.setPageFound(true);
-                        }
+                link.setHostFound(true);
+                if (isHostReachable(url)) {
+                    link.setHostReachable(true);
+                    if (isPageFound(url)) {
+                        link.setPageFound(true);
                     }
                 }
-            } catch (MalformedURLException e) {
-            log.info(e.getMessage());
             }
+        } catch (MalformedURLException e) {
+            log.error(e.getMessage());
+        }
         return link;
     }
 }
