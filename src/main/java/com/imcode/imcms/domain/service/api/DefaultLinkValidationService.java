@@ -29,6 +29,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -39,9 +40,11 @@ import java.util.stream.Collectors;
 public class DefaultLinkValidationService implements LinkValidationService {
 
     private static final String LINK_VALIDATION_REGEX = "(http.?:\\/\\/)?(.*)";
+    private static final String PROTOCOL_VALIDATION_REGEX = "(http[s]?)?(:\\/\\/)?(.*)";
     private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = ".*href\\s*=\\s*\"(http.?:\\/\\/)?(.*?)\"";
-    private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX); // need add in methods?
+    private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
     private final Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
+    private final Pattern patternProtocol = Pattern.compile(PROTOCOL_VALIDATION_REGEX);
     private DocumentService<DocumentDTO> defaultDocumentService;
     private DocRepository docRepository;
     private LanguageService languageService;
@@ -67,13 +70,13 @@ public class DefaultLinkValidationService implements LinkValidationService {
         this.documentUrlService = documentUrlService;
     }
 
-    private boolean isHostFound(String protocol, String host) {
+    private boolean isHostFound(URL url) {
         boolean isHostFound = false;
-        if (protocol == null) {
+        if (url.getProtocol() == null) {
             isHostFound = true;
         } else {
             try {
-                InetAddress.getByName(host);
+                InetAddress.getByName(url.getHost());
                 isHostFound = true;
             } catch (UnknownHostException e) {
                 isHostFound = false;
@@ -133,18 +136,11 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 editLink.setMetaId(documentURL.getDocId());
                 editLink.setTitle(dtoFieldsDocument.getTitle());
                 ValidationLink link = new ValidationLink();
-                ValidationLink link2 = new ValidationLink();
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
-                link2.setDocumentData(dtoFieldsDocument);
-                link2.setEditLink(editLink);
-                ValidationLink validationLink = verifyValidationLink(documentURL.getUrl(), link, patternUrl);
-                ValidationLink validationLink2 = verifyValidationLinkOnOppositeProtocol(link2, documentURL.getUrl(), patternUrl);
-                if (null == validationLink || null == validationLink2) {
-                    continue;
-                } else {
-                    validationLinks.add(validationLink);
-                    validationLinks.add(validationLink2);
+                boolean check = checkValidUrl(link, documentURL.getUrl(), patternUrl);
+                if (check) {
+                    validationLinks.addAll(validationLinksChecked(link, documentURL.getUrl(), patternUrl));
                 }
             }
 
@@ -157,18 +153,11 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(text.getIndex());
                     ValidationLink link = new ValidationLink();
-                    ValidationLink link2 = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
-                    link2.setDocumentData(dtoFieldsDocument);
-                    link2.setEditLink(editLink);
-                    ValidationLink validationLink = verifyValidationLink(text.getText(), link, patternTexts);
-                    ValidationLink validationLink2 = verifyValidationLinkOnOppositeProtocol(link2, text.getText(), patternTexts);
-                    if (null == validationLink || null == validationLink2) {
-                        continue;
-                    } else {
-                        validationLinks.add(validationLink);
-                        validationLinks.add(validationLink2);
+                    boolean check = checkValidUrl(link, text.getText(), patternTexts);
+                    if (check) {
+                        validationLinks.addAll(validationLinksChecked(link, text.getText(), patternTexts));
                     }
                 }
                 for (Image image : images) {
@@ -177,18 +166,11 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(image.getIndex());
                     ValidationLink link = new ValidationLink();
-                    ValidationLink link2 = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
-                    link2.setDocumentData(dtoFieldsDocument);
-                    link2.setEditLink(editLink);
-                    ValidationLink validationLink = verifyValidationLink(image.getLinkUrl(), link, patternUrl);
-                    ValidationLink validationLink2 = verifyValidationLinkOnOppositeProtocol(link2, image.getLinkUrl(), patternUrl);
-                    if (null == validationLink || null == validationLink2) {
-                        continue;
-                    } else {
-                        validationLinks.add(validationLink);
-                        validationLinks.add(validationLink2);
+                    boolean check = checkValidUrl(link, image.getLinkUrl(), patternUrl);
+                    if (check) {
+                        validationLinks.addAll(validationLinksChecked(link, image.getLinkUrl(), patternUrl));
                     }
                 }
             }
@@ -201,62 +183,53 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return validationLinks;
     }
 
-    private ValidationLink verifyValidationLinkOnOppositeProtocol(ValidationLink link, String textUrl, Pattern pattern) {
+    private List<ValidationLink> validationLinksChecked(ValidationLink link, String textUrl, Pattern pattern) {
+        List<ValidationLink> links = new ArrayList<>();
         Matcher matcherUrl = pattern.matcher(textUrl);
-        String httpProtocol = "http://";
-        String httpsProtocol = "https://";
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
-            String host = matcherUrl.group(2);
-            link.setUrl(protocol == null ? host : protocol + host);
-            try {
-                if (isHostFound(protocol, host)) {
-                    link.setHostFound(true);
-                }
-                if (null != protocol && protocol.equals(httpProtocol)) {
-                    protocol = httpsProtocol;
-                    link.setUrl(protocol + host);
-                    URL url = new URL(protocol + host);
-                    if (isHostReachable(url)) {
-                        link.setHostReachable(true);
-                        if (isPageFound(url)) {
-                            link.setPageFound(true);
-                        }
-
-                    }
-                } else if (null != protocol && protocol.equals(httpsProtocol)) {
-                    protocol = httpProtocol;
-                    link.setUrl(protocol + host);
-                    if (isHostFound(protocol, host)) {
-                        link.setHostFound(true);
-                        URL url = new URL(protocol + host);
-                        if (isHostReachable(url)) {
-                            link.setHostReachable(true);
-                            if (isPageFound(url)) {
-                                link.setPageFound(true);
-                            }
-
-                        }
-                    }
-                }
-            } catch (MalformedURLException e) {
-                e.getMessage();
+            if (null == protocol) {
+                links.addAll(checkRelativeLink(link));
+            } else {
+                links.add(verifyValidationLink(link));
             }
-            return link;
+
         }
-        return null;
+        return links;
     }
 
-    private ValidationLink verifyValidationLink(String textUrl, ValidationLink link, Pattern pattern) {
+    private boolean checkValidUrl(ValidationLink link, String textUrl, Pattern pattern) {
         Matcher matcherUrl = pattern.matcher(textUrl);
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
             String host = matcherUrl.group(2);
             link.setUrl(protocol == null ? host : protocol + host);
-            try {
-                if (isHostFound(protocol, host)) {
+            return true;
+        }
+        return false;
+    }
+
+    private Set<ValidationLink> checkRelativeLink(ValidationLink link) {
+        Set<ValidationLink> links = new HashSet<>();
+        try {
+            ValidationLink cloneLink = (ValidationLink) link.clone();
+
+            link.setUrl("http://" + link.getUrl());
+            links.add(verifyValidationLink(link));
+
+            cloneLink.setUrl("https://" + cloneLink.getUrl());
+            links.add(verifyValidationLink(cloneLink));
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return links;
+    }
+
+    private ValidationLink verifyValidationLink(ValidationLink link) {
+        try {
+            URL url = new URL(link.getUrl());
+            if (isHostFound(url)) {
                     link.setHostFound(true);
-                    URL url = new URL(protocol + host);
                     if (isHostReachable(url)) {
                         link.setHostReachable(true);
                         if (isPageFound(url)) {
@@ -267,8 +240,6 @@ public class DefaultLinkValidationService implements LinkValidationService {
             } catch (MalformedURLException e) {
                 e.getMessage();
             }
-            return link;
-        }
-        return null;
+        return link;
     }
 }
