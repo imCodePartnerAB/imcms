@@ -4,7 +4,7 @@ import com.imcode.imcms.domain.dto.DocumentStoredFieldsDTO;
 import lombok.Data;
 
 @Data
-public class ValidationLink {
+public class ValidationLink implements Cloneable {
 
     private boolean pageFound;
     private boolean hostFound;
@@ -12,4 +12,8 @@ public class ValidationLink {
     private String url;
     private EditLink editLink;
     private DocumentStoredFieldsDTO documentData;
+
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
