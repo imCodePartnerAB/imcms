@@ -179,7 +179,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> validationLinks = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
         assertNotNull(validationLinks);
-        assertEquals(1, validationLinks.size());
+        assertEquals(2, validationLinks.size());
         final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
                 .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
                 .param("startDocumentId", "" + docId)
@@ -288,7 +288,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
-        assertEquals(1, links.size());
+        assertEquals(4, links.size());
 
         final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
                 .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
@@ -321,7 +321,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         List<ValidationLink> links = defaultLinkValidationService.validateDocumentsLinks(docId, docId, displayOnlyBrokenLinks);
 
         assertNotNull(links);
-        assertEquals(2, links.size());
+        assertEquals(4, links.size());
 
         final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/validate")
                 .param("filterBrokenLinks", "" + displayOnlyBrokenLinks)
