@@ -44,15 +44,15 @@ define(
                 this.linkAppender = this.appendLinks.bind(this);
             };
 
-            function buildUrl(type, metaId, index) {
+            function buildLinkUrl(type, metaId, index) { //todo add loopEntry and check type for image on old admin
                 return (type === "TEXT"
-                    ? "text?meta-id=" + metaId + "&index=" + index
-                    : 'page-info?meta-id=' + metaId);
+                    ? `text?meta-id=${metaId}&index=${index}`
+                    : `page-info?meta-id=${metaId}`);
             }
 
 
-            function buildUrlText(metaId, title, index) {
-                return metaId + title + (index === null ? '' : index);
+            function buildLinkText(metaId, title, index) {
+                return `${metaId}-${title}${index === null ? '' : +'-' + index}`;
             }
 
             linkListBuilder.prototype = {
@@ -64,10 +64,10 @@ define(
                     return this;
                 },
                 linkToRow: function (validationLink) {
-                    let textUrl = buildUrlText(validationLink.editLink.metaId,
+                    let textUrl = buildLinkText(validationLink.editLink.metaId,
                         validationLink.editLink.title,
                         validationLink.editLink.index);
-                    let urlBuild = buildUrl(validationLink.documentData.type,
+                    let urlBuild = buildLinkUrl(validationLink.documentData.type,
                         validationLink.editLink.metaId,
                         validationLink.editLink.index);
                     return new BEM({
