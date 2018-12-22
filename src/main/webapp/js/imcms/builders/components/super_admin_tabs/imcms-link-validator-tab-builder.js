@@ -13,6 +13,7 @@ define(
 
         function showOnlyBrokenLinks() {
         }
+
         function buildTitleText() {
             return fieldWrapper.wrap(components.texts.titleText('<div>', texts.name))
         }
@@ -38,20 +39,37 @@ define(
                 });
             }
 
-            var linkListBuilder = function ($searchResultContainer) {
-                this.$searchResultContainer = $searchResultContainer; // rename search
+            var linkListBuilder = function ($containerResult) {
+                this.$containerResult = $containerResult;
                 this.linkAppender = this.appendLinks.bind(this);
             };
+
+            function buildUrl(type, metaId, index) {
+                return (type === "TEXT"
+                    ? "text?meta-id=" + metaId + "&index=" + index
+                    : 'page-info?meta-id=' + metaId);
+            }
+
+
+            function buildUrlText(metaId, title, index) {
+                return metaId + title + (index === null ? '' : index);
+            }
 
             linkListBuilder.prototype = {
                 isEmpty: true,
                 clearList: function () {
-                    this.$searchResultContainer.empty();
+                    this.$containerResult.empty();
                     this.isEmpty = true;
 
                     return this;
                 },
                 linkToRow: function (validationLink) {
+                    let textUrl = buildUrlText(validationLink.editLink.metaId,
+                        validationLink.editLink.title,
+                        validationLink.editLink.index);
+                    let urlBuild = buildUrl(validationLink.documentData.type,
+                        validationLink.editLink.metaId,
+                        validationLink.editLink.index);
                     return new BEM({
                         block: "link-info-row",
                         elements: {
@@ -65,29 +83,26 @@ define(
                                 text: validationLink.documentData.type
                             }),
                             'link-admin': $('<a>', {
-                                text: validationLink.editLink.metaId +
-                                    validationLink.editLink.title +
-                                    (validationLink.editLink.index === null
-                                        ? ''
-                                        : validationLink.editLink.index),
-                                href: validationLink.documentData.type === "TEXT"
-                                    ? "text?meta-id=" + validationLink.editLink.metaId
-                                    + "&index=" + validationLink.editLink.index
-                                    : 'page-info?meta-id=' + validationLink.editLink.metaId,
+                                text: textUrl,
+                                href: urlBuild
                             }),
-                            'link-name': $('<a>', {
-                                text: validationLink.url,
-                                href: validationLink.url
-                            }),
-                            'link-host-found': validationLink.hostFound
-                                ? components.controls.check()
-                                : components.controls.remove(),
-                            'link-host-reachable': validationLink.hostReachable
-                                ? components.controls.check()
-                                : components.controls.remove(),
-                            'link-page-found': validationLink.pageFound
-                                ? components.controls.check()
-                                : components.controls.remove()
+                            'link-name':
+                                $('<a>', {
+                                    text: validationLink.url,
+                                    href: validationLink.url
+                                }),
+                            'link-host-found':
+                                validationLink.hostFound
+                                    ? components.controls.check()
+                                    : components.controls.remove(),
+                            'link-host-reachable':
+                                validationLink.hostReachable
+                                    ? components.controls.check()
+                                    : components.controls.remove(),
+                            'link-page-found':
+                                validationLink.pageFound
+                                    ? components.controls.check()
+                                    : components.controls.remove()
                         }
                     }).buildBlockStructure("<div>");
                 },
@@ -107,11 +122,11 @@ define(
                     }).buildBlockStructure('<div>', {
                         'class': 'link-title'
                     });
-                    this.$searchResultContainer.append(titleRow);
+                    this.$containerResult.append(titleRow);
                     return this;
                 },
                 rowsAddToList: function (linkRows) {
-                    this.$searchResultContainer.css('display', 'inline-block').append(linkRows);
+                    this.$containerResult.css('display', 'inline-block').append(linkRows);
                     return this;
                 },
                 appendLinks: function (validationLinks) {
