@@ -32,7 +32,7 @@ public class MockImcmsServices implements ImcmsServices {
     private LanguageMapper languageMapper = new LanguageMapper(null, null);
     private RoleGetter roleGetter;
     private ProcedureExecutor procedureExecutor;
-    private Config config = new Config();
+    private final Config config = new Config();
 
     @Override
     public <T> T getManagedBean(Class<T> requiredType) {

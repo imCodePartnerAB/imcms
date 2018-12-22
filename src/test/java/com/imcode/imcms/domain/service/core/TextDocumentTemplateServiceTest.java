@@ -27,7 +27,7 @@ public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
     private TemplateDataInitializer templateDataInitializer;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         saved = new TextDocumentTemplateDTO(
                 templateDataInitializer.createData(DOC_ID, "demo", "demo")
         );

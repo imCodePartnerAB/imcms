@@ -1,14 +1,38 @@
 package com.imcode.imcms.config;
 
-import com.imcode.imcms.domain.dto.*;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
+import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.ImageData;
+import com.imcode.imcms.domain.dto.ImageFileDTO;
+import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
+import com.imcode.imcms.domain.dto.MenuDTO;
+import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.dto.TextHistoryDTO;
+import com.imcode.imcms.domain.dto.UserDTO;
+import com.imcode.imcms.domain.service.CategoryService;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DocumentMenuService;
+import com.imcode.imcms.domain.service.LanguageService;
+import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.*;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
+import com.imcode.imcms.persistence.entity.TextHistoryJPA;
+import com.imcode.imcms.persistence.entity.User;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -19,6 +43,7 @@ import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,8 +51,14 @@ import org.springframework.core.io.Resource;
 
 import java.awt.*;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -502,6 +533,11 @@ class MappingConfig {
 
             return textHistoryDTO;
         };
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
 }

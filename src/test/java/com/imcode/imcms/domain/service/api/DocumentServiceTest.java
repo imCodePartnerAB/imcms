@@ -160,7 +160,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private Function<DocumentDTO, Meta> documentDtoToMeta;
 
-    private DocumentsCache documentsCache = mock(DocumentsCache.class);
+    private final DocumentsCache documentsCache = mock(DocumentsCache.class);
 
     @Autowired
     @Qualifier("versionedContentServices")

@@ -377,10 +377,24 @@ const texts = {
                 discardChangesMessage: 'Ignorera ändringar?'
             },
             ipAccess: {
-                name: 'IP-åtkomst'
-            },
-            ipWhiteList: {
-                name: 'IP vitlista'
+                name: 'IP-åtkomst',
+                title: 'IP-åtkomst',
+                createNewRule: 'Ny',
+                editRule: 'Redigera',
+                deleteRule: 'Radera',
+                save: 'Spara',
+                cancel: 'Annullera',
+                deleteConfirm: 'Vill du verkligen ta bort den här regel?',
+                saveChanges: 'Spara ändringar',
+                discardChangesMessage: 'Ignorera ändringar?',
+                fields: {
+                    enabled: 'Aktiverad',
+                    restricted: 'Begränsad',
+                    ipRange: 'IP-område',
+                    role: 'Roll',
+                    user: 'Användare'
+                },
+                wrongIpError: 'Ogiltig ipv4/ipv6 adress'
             },
             deleteDocs: {
                 name: 'Radera dokument',
@@ -852,10 +866,24 @@ const texts = {
                 discardChangesMessage: 'Discard changes?'
             },
             ipAccess: {
-                name: 'IP Access'
-            },
-            ipWhiteList: {
-                name: 'IP White List'
+                name: 'IP Access',
+                title: 'IP Access',
+                createNewRule: 'New',
+                editRule: 'Edit',
+                deleteRule: 'Remove',
+                save: 'Save',
+                cancel: 'Cancel',
+                deleteConfirm: 'Do you really want to delete this rule?',
+                saveChanges: 'Save changes',
+                discardChangesMessage: 'Discard changes?',
+                fields: {
+                    enabled: 'Enabled',
+                    restricted: 'Restricted',
+                    ipRange: 'IP Range',
+                    role: 'Role',
+                    user: 'User'
+                },
+                wrongIpError: 'Invalid ipv4/ipv6 address'
             },
             deleteDocs: {
                 name: 'Delete Documents',

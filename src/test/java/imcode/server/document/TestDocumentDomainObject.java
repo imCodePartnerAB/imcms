@@ -21,7 +21,7 @@ public class TestDocumentDomainObject extends TestCase {
         };
     }
 
-    public void testGetLifeCyclePhaseAtTime() throws Exception {
+    public void testGetLifeCyclePhaseAtTime() {
 
         assertLifeCyclePhase(LifeCyclePhase.NEW);
 
@@ -54,7 +54,7 @@ public class TestDocumentDomainObject extends TestCase {
         assertEquals(lifeCyclePhase, DocumentDomainObject.getLifeCyclePhaseAtTime(document, new Date(1)));
     }
 
-    public void testGetDocumentProperties() throws Exception {
+    public void testGetDocumentProperties() {
 
         document.setProperty("imcms:document:alias", "test");
         document.setProperty("imcms:document:foo", "baa");

@@ -52,7 +52,7 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
     private CommonContentRepository commonContentRepository;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         tearDown();
     }
 

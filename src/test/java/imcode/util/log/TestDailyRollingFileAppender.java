@@ -15,8 +15,8 @@ public class TestDailyRollingFileAppender extends TestCase {
 
     private static final String DATE_PATTERN = ".yyyy-MM-dd-HH-mm";
 
-    private File tmpDir = new File("tmp");
-    private File tempFile = new File(tmpDir, TestDailyRollingFileAppender.class.getName() + ".test");
+    private final File tmpDir = new File("tmp");
+    private final File tempFile = new File(tmpDir, TestDailyRollingFileAppender.class.getName() + ".test");
 
     public TestDailyRollingFileAppender(String name) {
         super(name);

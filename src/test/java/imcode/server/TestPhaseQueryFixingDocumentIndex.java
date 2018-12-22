@@ -8,9 +8,9 @@ import org.apache.lucene.search.TermQuery;
 
 public class TestPhaseQueryFixingDocumentIndex extends TestCase {
 
-    PhaseQueryFixingDocumentIndex index = new PhaseQueryFixingDocumentIndex(null);
+    final PhaseQueryFixingDocumentIndex index = new PhaseQueryFixingDocumentIndex(null);
 
-    public void testFixQuery() throws Exception {
+    public void testFixQuery() {
         for (LifeCyclePhase lifeCyclePhase : LifeCyclePhase.ALL) {
             assertNotNull(index.fixQuery(new TermQuery(new Term(DocumentIndex.FIELD__PHASE, lifeCyclePhase.toString()))));
         }

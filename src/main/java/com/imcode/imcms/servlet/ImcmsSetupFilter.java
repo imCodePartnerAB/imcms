@@ -9,6 +9,7 @@ import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import imcode.server.ImcmsServices;
 import imcode.server.LanguageMapper;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.FallbackDecoder;
 import imcode.util.Utility;
@@ -33,6 +34,7 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
+import static com.imcode.imcms.servlet.VerifyUser.*;
 import static imcode.server.ImcmsConstants.*;
 
 /**
@@ -169,21 +171,38 @@ public class ImcmsSetupFilter implements Filter {
             }
 
             UserDomainObject user = Utility.getLoggedOnUser(request);
+
+            ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
+
             if (null == user) {
-                user = service.verifyUserByIpOrDefault(request.getRemoteAddr());
+                user = userAndRoleMapper.getDefaultUser();
                 assert user.isActive();
                 Utility.makeUserLoggedIn(request, user);
+
+                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, user)) return;
 
                 // todo: optimize;
                 // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
                 // -invalidates current session if it does not match to last user's session
                 // -redirects to the login page.
             } else {
+                final String login = req.getParameter(REQUEST_PARAMETER__USERNAME);
+                final String password = req.getParameter(REQUEST_PARAMETER__PASSWORD);
+
+
+                final UserDomainObject userToCheckAccess;
+                if (null != login && null != password) {
+                    userToCheckAccess = service.verifyUser(login, password);
+                } else {
+                    userToCheckAccess = user;
+                }
+
+
+                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, userToCheckAccess)) return;
+
                 if (!user.isDefaultUser() && !user.isAuthenticatedByIp() && service.getConfig().isDenyMultipleUserLogin()) {
                     String sessionId = session.getId();
-                    String lastUserSessionId = service
-                            .getImcmsAuthenticatorAndUserAndRoleMapper()
-                            .getUserSessionId(user);
+                    String lastUserSessionId = userAndRoleMapper.getUserSessionId(user);
 
                     if (lastUserSessionId != null && !lastUserSessionId.equals(sessionId)) {
                         VerifyUser.forwardToLoginPageTooManySessions(request, response);
@@ -197,6 +216,7 @@ public class ImcmsSetupFilter implements Filter {
                             .updateAuthData(request);
                 }
 
+
                 //Adding cookie to find out is user logged in
                 if (!user.isDefaultUser()) {
                     Cookie cookie = new Cookie(USER_LOGGED_IN_COOKIE_NAME, Boolean.toString(true));
@@ -204,52 +224,54 @@ public class ImcmsSetupFilter implements Filter {
                     cookie.setPath("/");
                     response.addCookie(cookie);
                 }
-            }
 
-            ResourceBundle resourceBundle = Utility.getResourceBundle(request);
-            Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            Imcms.setUser(user);
+                ResourceBundle resourceBundle = Utility.getResourceBundle(request);
+                Config.set(request, Config.FMT_LOCALIZATION_CONTEXT, new LocalizationContext(resourceBundle));
 
-            final LanguageMapper languageMapper = service.getLanguageMapper();
-            final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
+                Imcms.setUser(user);
 
-            if (requestedLangCode != null) {
-                Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
-                final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
-                newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
-                newUserLanguageCookie.setPath("/");
 
-                response.addCookie(newUserLanguageCookie);
+                final LanguageMapper languageMapper = service.getLanguageMapper();
+                final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
-            } else {
-                final Cookie[] cookies = request.getCookies();
+                if (requestedLangCode != null) {
+                    Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
+                    final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
+                    newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                    newUserLanguageCookie.setPath("/");
 
-                if (cookies != null) {
-                    final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
-                            .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
-                            .findFirst();
+                    response.addCookie(newUserLanguageCookie);
 
-                    final String langCode;
-
-                    if (userLanguageCookie.isPresent()) {
-                        langCode = userLanguageCookie.get().getValue();
-
-                    } else {
-                        final String defaultLanguage = service.getConfig().getDefaultLanguage();
-                        langCode = LanguageMapper.convert639_2to639_1(defaultLanguage);
-
-                        final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
-                        newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
-                        newUserLanguageCookie.setPath("/");
-
-                        response.addCookie(newUserLanguageCookie);
-                    }
-
-                    final Language language = languageMapper.getLanguageByCode(langCode);
-                    Imcms.setLanguage(language);
                 } else {
-                    Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+                    final Cookie[] cookies = request.getCookies();
+
+                    if (cookies != null) {
+                        final Optional<Cookie> userLanguageCookie = Arrays.stream(cookies)
+                                .filter(cookie -> cookie.getName().equals(USER_LANGUAGE_IN_COOKIE_NAME))
+                                .findFirst();
+
+                        final String langCode;
+
+                        if (userLanguageCookie.isPresent()) {
+                            langCode = userLanguageCookie.get().getValue();
+
+                        } else {
+                            final String defaultLanguage = service.getConfig().getDefaultLanguage();
+                            langCode = LanguageMapper.convert639_2to639_1(defaultLanguage);
+
+                            final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, langCode);
+                            newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
+                            newUserLanguageCookie.setPath("/");
+
+                            response.addCookie(newUserLanguageCookie);
+                        }
+
+                        final Language language = languageMapper.getLanguageByCode(langCode);
+                        Imcms.setLanguage(language);
+                    } else {
+                        Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
+                    }
                 }
             }
 
@@ -261,6 +283,22 @@ public class ImcmsSetupFilter implements Filter {
         } finally {
             Imcms.removeUser();
         }
+    }
+
+    private boolean redirectToLoginIfRestricted(HttpServletRequest request,
+                                                HttpServletResponse response,
+                                                ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper,
+                                                UserDomainObject userToCheckAccess) throws ServletException, IOException {
+
+        //Ugly resource filter.... to show at least login page
+        //auth-providers is allowed api call
+        if (!request.getRequestURI().matches(".*(css|jpg|png|gif|js|ico|ttf|auth-providers)$")) {
+            if (!userAndRoleMapper.isAllowedToAccess(request.getRemoteAddr(), userToCheckAccess)) {
+                Utility.forwardToLogin(request, response);
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean isRemoteAddressInvalid(final HttpServletRequest request, final HttpServletResponse response) {

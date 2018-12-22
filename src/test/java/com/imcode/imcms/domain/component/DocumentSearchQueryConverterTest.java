@@ -145,8 +145,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
-        final boolean isUserFilter = Arrays.stream(solrQuery.getFilterQueries())
-                .anyMatch(filterQueryValue -> filterQueryValue.equals(DocumentIndex.FIELD__CREATOR_ID + ":" + USER_ID));
+        final boolean isUserFilter = Arrays.asList(solrQuery.getFilterQueries()).contains(DocumentIndex.FIELD__CREATOR_ID + ":" + USER_ID);
 
         assertTrue(isUserFilter);
     }

@@ -83,8 +83,6 @@ public interface ImcmsServices {
 
     ProcedureExecutor getProcedureExecutor();
 
-    UserDomainObject verifyUserByIpOrDefault(String remoteAddr);
-
     LocalizedMessageProvider getLocalizedMessageProvider();
 
     KerberosLoginService getKerberosLoginService();

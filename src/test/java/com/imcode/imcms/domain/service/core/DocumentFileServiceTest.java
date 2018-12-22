@@ -42,7 +42,7 @@ public class DocumentFileServiceTest extends WebAppSpringTestConfig {
     private VersionDataInitializer versionDataInitializer;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         documentFileRepository.deleteAll();
         docId = documentDataInitializer.createFileDocument().getId();
         documentFiles = IntStream.rangeClosed(0, 10)

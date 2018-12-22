@@ -19,7 +19,7 @@ public class UserDomainObjectTest {
     private Meta meta;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         meta = new Meta();
         meta.setId(0);
 

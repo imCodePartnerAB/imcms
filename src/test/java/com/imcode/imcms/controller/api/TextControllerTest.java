@@ -60,7 +60,7 @@ public class TextControllerTest extends AbstractControllerTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         clearRepos();
 
         versionDataInitializer.createData(VERSION_NO, DOC_ID);

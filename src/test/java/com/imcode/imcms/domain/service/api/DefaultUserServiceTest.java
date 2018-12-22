@@ -152,7 +152,7 @@ class DefaultUserServiceTest {
 
     @Test
     void collectRoles_When_ValuesPresent_Expect_EmptyList() {
-        final Integer roleId = 42;
+        final int roleId = 42;
         final String roleName = "name";
         final Role role = new RoleDTO(roleId, roleName);
 

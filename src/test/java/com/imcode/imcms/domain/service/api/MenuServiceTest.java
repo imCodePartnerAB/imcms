@@ -56,7 +56,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     private CommonContentDataInitializer commonContentDataInitializer;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         Imcms.setUser(user);

@@ -28,7 +28,7 @@ public class ProfileServiceTest extends WebAppSpringTestConfig {
     private ProfileService profileService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
         DocGetterCallback docGetterCallback = user.getDocGetterCallback();
         DocumentLanguage language = DocumentLanguage.builder()

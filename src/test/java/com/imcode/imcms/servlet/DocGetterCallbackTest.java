@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 @Transactional
 public class DocGetterCallbackTest extends WebAppSpringTestConfig {
 
-    ImcmsServices services = mock(ImcmsServices.class);
+    final ImcmsServices services = mock(ImcmsServices.class);
 
     @Autowired
     private DocumentLanguages dls;

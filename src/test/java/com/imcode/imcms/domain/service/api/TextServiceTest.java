@@ -71,7 +71,7 @@ public class TextServiceTest extends WebAppSpringTestConfig {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         textRepository.deleteAll();
         textRepository.flush();
         textHistoryRepository.deleteAll();

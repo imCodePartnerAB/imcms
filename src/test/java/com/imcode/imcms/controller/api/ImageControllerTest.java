@@ -65,7 +65,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     }
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         documentDataInitializer.cleanRepositories();
         versionDataInitializer.cleanRepositories();
         imageDataInitializer.cleanRepositories();

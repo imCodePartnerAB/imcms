@@ -88,7 +88,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     private LanguageService languageService;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    public void setUp() {
         imageRepository.deleteAll();
         workingVersion = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 

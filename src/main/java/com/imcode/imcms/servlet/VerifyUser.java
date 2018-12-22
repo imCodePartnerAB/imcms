@@ -7,6 +7,7 @@ import com.imcode.imcms.servlet.superadmin.AdminUser;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;
 import imcode.server.Imcms;
+import imcode.server.user.ImcmsAuthenticatorAndUserAndRoleMapper;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
 
@@ -62,7 +63,14 @@ public class VerifyUser extends HttpServlet {
             return;
         }
 
-        ContentManagementSystem cms = ContentManagementSystem.login(req, name, passwd);
+        ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper();
+        ContentManagementSystem cms = null;
+        UserDomainObject userToCheck = Imcms.getServices().verifyUser(name, passwd);
+        boolean isAllowed = userAndRoleMapper.isAllowedToAccess(req.getRemoteAddr(), userToCheck);
+
+        if (isAllowed) {
+            cms = ContentManagementSystem.login(req, name, passwd);
+        }
 
         if (null != cms) {
             User currentUser = cms.getCurrentUser();

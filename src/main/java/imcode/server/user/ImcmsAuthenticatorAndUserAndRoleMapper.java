@@ -13,6 +13,7 @@ import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
 import com.imcode.imcms.api.UserAlreadyExistsException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
+import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.User;
@@ -28,6 +29,8 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,6 +60,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
     private final ImcmsServices services;
     private final UserService userService;
+    private final IpAccessRuleService ipAccessRuleService;
 
     private UserRepository userRepository;
 
@@ -70,6 +74,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         this.loginPasswordManager = userLoginPasswordManager;
         this.userRepository = services.getManagedBean(UserRepository.class);
         this.userService = services.getManagedBean(UserService.class);
+        this.ipAccessRuleService = services.getManagedBean(IpAccessRuleService.class);
     }
 
     /**
@@ -764,7 +769,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
 
             String[] roleIds = services.getDatabase().execute(new SqlQueryCommand<>(
                     "SELECT role_id\n"
-                    + "FROM useradmin_role_crossref\n"
+                            + "FROM useradmin_role_crossref\n"
                             + "WHERE user_id = ?",
                     parameters,
                     Utility.STRING_ARRAY_HANDLER
@@ -791,36 +796,13 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         return getRoleById(roleId);
     }
 
-    public UserDomainObject getUserByIpAddress(String ipAddress) {
-        long ip;
+    public boolean isAllowedToAccess(String ipAddress, UserDomainObject user) {
         try {
-            ip = Utility.ipStringToLong(ipAddress);
-
-        } catch (IllegalArgumentException nfe) {
-            log.debug("Failed to parse ip address " + ipAddress);
-            return null;
+            return ipAccessRuleService.isAllowedToAccess(InetAddress.getByName(ipAddress), user);
+        } catch (UnknownHostException e) {
+            log.error("Unable to parse IP address", e);
+            return false;
         }
-
-        String sqlStr = "select users.user_id from users,ip_accesses"
-                + " where users.user_id = ip_accesses.user_id"
-                + " and ip_accesses.ip_start <= ?"
-                + " and ip_accesses.ip_end >= ?";
-
-        final Object[] parameters = new String[]{"" + ip, "" + ip};
-        String userIdString = services.getDatabase().execute(new SqlQueryCommand<>(
-                sqlStr, parameters, Utility.SINGLE_STRING_HANDLER
-        ));
-
-        if (null != userIdString) {
-            UserDomainObject user = getUser(Integer.parseInt(userIdString));
-
-            if (user != null) {
-                user.setAuthenticatedByIp(true);
-            }
-
-            return user;
-        }
-        return null;
     }
 
     /**
