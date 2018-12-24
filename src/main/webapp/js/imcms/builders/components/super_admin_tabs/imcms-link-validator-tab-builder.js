@@ -30,12 +30,14 @@ define(
             function buildFieldStartId() {
                 return $startIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleStartId,
+                    placeholder: 1001
                 });
             }
 
             function buildFieldEndId() {
                 return $endIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleEndId,
+                    placeholder: 1001
                 });
             }
 
@@ -52,7 +54,7 @@ define(
 
 
             function buildLinkText(metaId, title, index) {
-                return `${metaId}-${title}${index === null ? '' : +'-' + index}`;
+                return `${metaId}-${title}${index === null ? '' : +-+index}`;
             }
 
             linkListBuilder.prototype = {
