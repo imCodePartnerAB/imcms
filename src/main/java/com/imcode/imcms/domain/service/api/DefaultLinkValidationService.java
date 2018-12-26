@@ -127,7 +127,6 @@ public class DefaultLinkValidationService implements LinkValidationService {
             DocumentStoredFieldsDTO dtoFieldsDocument = new DocumentStoredFieldsDTO();
             dtoFieldsDocument.setId(doc.getId());
             dtoFieldsDocument.setAlias(doc.getAlias());
-            dtoFieldsDocument.setType(doc.getType());
             dtoFieldsDocument.setDocumentStatus(doc.getDocumentStatus());
             dtoFieldsDocument.setTitle(commonContentService.getOrCreateCommonContents(doc.getId(),
                     doc.getLatestVersion().getId()).get(doc.getCurrentVersion().getId()).getHeadline());
@@ -142,6 +141,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
                 link.setUrl(documentURL.getUrl());
+                link.setLinkType("URL");
                 String isValidUrl = checkValidUrl(link, patternUrl);
 
                 if (!isValidUrl.isEmpty()) {
@@ -158,11 +158,13 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setMetaId(dtoFieldsDocument.getId());
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(text.getIndex());
+                    editLink.setLoopEntryRef(text.getLoopEntryRef());
 
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(text.getText());
+                    link.setLinkType("TEXT"); //
                     String isValidUrl = checkValidUrl(link, patternTexts);
                     if (!isValidUrl.isEmpty()) {
                         link.setUrl(isValidUrl);
@@ -174,11 +176,13 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     editLink.setMetaId(dtoFieldsDocument.getId());
                     editLink.setTitle(dtoFieldsDocument.getTitle());
                     editLink.setIndex(image.getIndex());
+                    editLink.setLoopEntryRef(image.getLoopEntryRef());
 
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(image.getLinkUrl());
+                    link.setLinkType("IMAGE");
                     String isValidUrl = checkValidUrl(link, patternUrl);
 
                     if (!isValidUrl.isEmpty()) {
