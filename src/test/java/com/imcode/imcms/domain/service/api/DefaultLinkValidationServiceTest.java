@@ -364,7 +364,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         imageService.saveImage(imageDTO);
 
-        createText(index, languageJPA, versionDoc, TEXTS, loopEntryRef); //todo check logic in images
+        createText(index, languageJPA, versionDoc, TEXTS, loopEntryRef);
         imageDataInitializer.createData(imageDTO.getIndex(), docId, index, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
