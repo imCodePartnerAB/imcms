@@ -46,15 +46,40 @@ define(
                 this.linkAppender = this.appendLinks.bind(this);
             };
 
-            function buildLinkUrl(type, metaId, index) { //todo add loopEntry and check type for image on old admin
-                return (type === "TEXT"
-                    ? `text?meta-id=${metaId}&index=${index}`
-                    : `page-info?meta-id=${metaId}`);
+            function buildLinkUrl(validationLink) {
+                let reference;
+                let type = validationLink.linkType;
+                let loop = validationLink.editLink.loopEntryRef;
+                let indexLoop = null;
+                let entryIndexLoop = null;
+                let metaId = validationLink.editLink.metaId;
+                let index = validationLink.editLink.index;
+                if (loop !== null) {
+                    indexLoop = loop.loopIndex;
+                    entryIndexLoop = loop.loopEntryIndex;
+                }
+
+                if (type === "TEXT") {
+                    if (indexLoop === null) {
+                        reference = `text?meta-id=${metaId}&index=${index}`
+                    } else {
+                        reference = `text?meta-id=${metaId}&index=${index}&loop-index=${indexLoop}&loop-entry-index=${entryIndexLoop}`
+                    }
+                }
+                else if (type === "IMAGE") {
+                    if (indexLoop === null) {
+                        reference = `image?meta-id=${metaId}&index=${index}`
+                    } else {
+                        reference = `image?meta-id=${metaId}&index=${index}&loop-index=${indexLoop}&loop-entry-index=${entryIndexLoop}`
+                    }
+                } else {
+                    reference = `page-info?meta-id=${metaId}`
+                }
+                return reference;
             }
 
-
             function buildLinkText(metaId, title, index) {
-                return `${metaId}-${title}${index === null ? '' : +-+index}`;
+                return `${metaId}-${title}${index === null ? '' : -index}`;
             }
 
             linkListBuilder.prototype = {
@@ -69,9 +94,7 @@ define(
                     let textUrl = buildLinkText(validationLink.editLink.metaId,
                         validationLink.editLink.title,
                         validationLink.editLink.index);
-                    let urlBuild = buildLinkUrl(validationLink.documentData.type,
-                        validationLink.editLink.metaId,
-                        validationLink.editLink.index);
+                    let urlBuild = buildLinkUrl(validationLink);
                     return new BEM({
                         block: "link-info-row",
                         elements: {
@@ -82,7 +105,7 @@ define(
                                 text: validationLink.documentData.documentStatus
                             }),
                             'link-type': $('<div>', {
-                                text: validationLink.documentData.type
+                                text: validationLink.linkType
                             }),
                             'link-admin': $('<a>', {
                                 text: textUrl,
@@ -180,4 +203,5 @@ define(
             $resultContainer = buildLinksContainer()
         ]);
     }
-);
+)
+;
