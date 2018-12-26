@@ -351,9 +351,12 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version versionDoc = versionService.create(docId, 1);
+        final LoopDTO loopDTO = new LoopDTO(docId, index, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
         final Image image = imageDataInitializer.createData(index, versionDoc);
+
+        loopDataInitializer.createData(loopDTO, versionDoc);
 
         image.setLinkUrl(TEXTS);
 
@@ -362,7 +365,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageService.saveImage(imageDTO);
 
         createText(index, languageJPA, versionDoc, TEXTS, loopEntryRef); //todo check logic in images
-        imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
+        imageDataInitializer.createData(imageDTO.getIndex(), docId, index, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
@@ -387,7 +390,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LoopDTO loopDTO = new LoopDTO(docId, index, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
-        loopDataInitializer.createData(loopDTO);
+        loopDataInitializer.createData(loopDTO, versionDoc);
 
         final Language en = languageDataInitializer.createData().get(0);
         final LanguageJPA languageJPA = new LanguageJPA(en);
@@ -400,7 +403,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         imageService.saveImage(imageDTO);
 
         createText(index, languageJPA, versionDoc, TEXT_URL, loopEntryRef);
-        imageDataInitializer.generateImage(imageDTO.getIndex(), languageJPA, versionDoc, loopEntryRef);
+        imageDataInitializer.createData(imageDTO.getIndex(), docId, index, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
@@ -420,11 +423,14 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     @Test
     public void validateDocumentLinks_When_LoopHasTwoImagesNotReachableUrlAndEmptyAndUrlNotFoundText_Expected_CorrectLinks() {
         final int index = 1;
-        int doc1Id = documentDataInitializer.createData().getId();
-        final Version version = versionService.create(doc1Id, 1);
+        int docId = documentDataInitializer.createData().getId();
+        final Version versionDoc = versionService.create(docId, 1);
+        final LoopDTO loopDTO = new LoopDTO(docId, index, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final Image image = imageDataInitializer.createData(index, version);
+        final Image image = imageDataInitializer.createData(index, versionDoc);
+
+        loopDataInitializer.createData(loopDTO, versionDoc);
 
         image.setLinkUrl(getLinkFromText(NOT_REACHABLE_URL_IP));
 
@@ -432,12 +438,12 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         imageService.saveImage(imageDTO1);
 
-        createText(index, languageJPA, version, NOT_FOUND_URL_HTTP_TEXT, loopEntryRef);
-        imageDataInitializer.generateImage(imageDTO1.getIndex(), languageJPA, version, loopEntryRef);
+        createText(index, languageJPA, versionDoc, NOT_FOUND_URL_HTTP_TEXT, loopEntryRef);
+        imageDataInitializer.generateImage(imageDTO1.getIndex(), languageJPA, versionDoc, loopEntryRef);
 
         final boolean displayOnlyBrokenLinks = false;
         List<ValidationLink> links = linkValidationService.validateDocumentsLinks(
-                doc1Id, doc1Id, displayOnlyBrokenLinks
+                docId, docId, displayOnlyBrokenLinks
         );
 
         assertNotNull(links);
