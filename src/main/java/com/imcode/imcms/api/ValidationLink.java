@@ -12,7 +12,7 @@ public class ValidationLink implements Cloneable {
     private String url;
     private EditLink editLink;
     private DocumentStoredFieldsDTO documentData;
-    private String linkType; // explicit assignment instead
+    private String linkType;
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
