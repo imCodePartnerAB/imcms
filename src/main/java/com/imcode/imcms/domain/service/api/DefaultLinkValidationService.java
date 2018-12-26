@@ -45,6 +45,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
     private static final String LINK_ATTRIBUTE_VALIDATION_REGEX = ".*href\\s*=\\s*\"(http.?:\\/\\/)?(.*?)\"";
     private static final String PROTOCOL_HTTP = "http://";
     private static final String PROTOCOL_HTTPS = "https://";
+    private static final String TYPE_TEXT = "TEXT";
+    private static final String TYPE_IMAGE = "IMAGE";
+    private static final String TYPE_URL = "URL";
     private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
     private final Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
     private DocumentService<DocumentDTO> defaultDocumentService;
@@ -141,7 +144,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
                 link.setUrl(documentURL.getUrl());
-                link.setLinkType("URL");
+                link.setLinkType(TYPE_URL);
                 String isValidUrl = checkValidUrl(link, patternUrl);
 
                 if (!isValidUrl.isEmpty()) {
@@ -164,7 +167,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(text.getText());
-                    link.setLinkType("TEXT"); //
+                    link.setLinkType(TYPE_TEXT);
                     String isValidUrl = checkValidUrl(link, patternTexts);
                     if (!isValidUrl.isEmpty()) {
                         link.setUrl(isValidUrl);
@@ -182,7 +185,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(image.getLinkUrl());
-                    link.setLinkType("IMAGE");
+                    link.setLinkType(TYPE_IMAGE);
                     String isValidUrl = checkValidUrl(link, patternUrl);
 
                     if (!isValidUrl.isEmpty()) {
