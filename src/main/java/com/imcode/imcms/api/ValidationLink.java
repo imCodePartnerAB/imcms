@@ -12,8 +12,14 @@ public class ValidationLink implements Cloneable {
     private String url;
     private EditLink editLink;
     private DocumentStoredFieldsDTO documentData;
-    private String linkType;
+    private LinkType linkType;
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    public enum LinkType {
+        TEXT(),
+        IMAGE(),
+        URL()
     }
 }
