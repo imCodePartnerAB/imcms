@@ -147,7 +147,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setUrl(validateUrl);
                     link.setLinkType(ValidationLink.LinkType.URL);
 
-                    validationLinks.addAll(validationLinksChecked(link, documentURL.getUrl(), patternUrl));
+                    validationLinks.addAll(validationLinksChecked(link, patternUrl));
                 }
             }
 
@@ -165,13 +165,14 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(text.getText());
-                    String validateUrl = getValidUrl(link, patternTexts);
+                    List<String> validateUrls = getListValidUrls(link, patternTexts);
+                    if (null != validateUrls) {
+                        for (String url : validateUrls) {
+                            link.setUrl(url);
+                            link.setLinkType(ValidationLink.LinkType.TEXT);
 
-                    if (!validateUrl.isEmpty()) {
-                        link.setUrl(validateUrl);
-                        link.setLinkType(ValidationLink.LinkType.TEXT);
-
-                        validationLinks.addAll(validationLinksChecked(link, text.getText(), patternTexts));
+                            validationLinks.addAll(validationLinksChecked(link, patternTexts));
+                        }
                     }
                 }
                 for (Image image : images) {
@@ -191,7 +192,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                         link.setUrl(validateUrl);
                         link.setLinkType(ValidationLink.LinkType.IMAGE);
 
-                        validationLinks.addAll(validationLinksChecked(link, image.getLinkUrl(), patternUrl));
+                        validationLinks.addAll(validationLinksChecked(link, patternUrl));
                     }
                 }
             }
@@ -204,9 +205,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return validationLinks;
     }
 
-    private List<ValidationLink> validationLinksChecked(ValidationLink link, String textUrl, Pattern pattern) {
+    private List<ValidationLink> validationLinksChecked(ValidationLink link, Pattern pattern) {
         List<ValidationLink> links = new ArrayList<>();
-        Matcher matcherUrl = pattern.matcher(textUrl);
+        Matcher matcherUrl = pattern.matcher(link.getUrl());
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(2);
             if (null == protocol) {  // if protocol null its mean that url is on current host
@@ -219,6 +220,17 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
         }
         return links;
+    }
+
+    private List<String> getListValidUrls(ValidationLink link, Pattern pattern) {
+        List<String> list = new ArrayList<>();
+        Matcher matcherUrl = pattern.matcher(link.getUrl());
+        while (matcherUrl.find()) {
+            String protocol = matcherUrl.group(2);
+            String host = matcherUrl.group(3);
+            list.add(protocol == null ? host : protocol + host);
+        }
+        return list;
     }
 
     private String getValidUrl(ValidationLink link, Pattern pattern) {
