@@ -144,11 +144,12 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 link.setDocumentData(dtoFieldsDocument);
                 link.setEditLink(editLink);
                 link.setUrl(documentURL.getUrl());
-                link.setLinkType(TYPE_URL);
                 String isValidUrl = checkValidUrl(link, patternUrl);
 
                 if (!isValidUrl.isEmpty()) {
                     link.setUrl(isValidUrl);
+                    link.setLinkType(TYPE_URL);
+
                     validationLinks.addAll(validationLinksChecked(link, documentURL.getUrl(), patternUrl));
                 }
             }
@@ -167,10 +168,12 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(text.getText());
-                    link.setLinkType(TYPE_TEXT);
                     String isValidUrl = checkValidUrl(link, patternTexts);
+
                     if (!isValidUrl.isEmpty()) {
                         link.setUrl(isValidUrl);
+                        link.setLinkType(TYPE_TEXT);
+
                         validationLinks.addAll(validationLinksChecked(link, text.getText(), patternTexts));
                     }
                 }
@@ -185,11 +188,12 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(image.getLinkUrl());
-                    link.setLinkType(TYPE_IMAGE);
                     String isValidUrl = checkValidUrl(link, patternUrl);
 
                     if (!isValidUrl.isEmpty()) {
                         link.setUrl(isValidUrl);
+                        link.setLinkType(TYPE_IMAGE);
+
                         validationLinks.addAll(validationLinksChecked(link, image.getLinkUrl(), patternUrl));
                     }
                 }
@@ -222,14 +226,14 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
     private String checkValidUrl(ValidationLink link, Pattern pattern) {
         Matcher matcherUrl = pattern.matcher(link.getUrl());
-        String empty = "";
+        String emptyResult = "";
         if (matcherUrl.find()) {
             String protocol = matcherUrl.group(1);
             String host = matcherUrl.group(2);
 
             return protocol == null ? host : protocol + host;
         }
-        return empty;
+        return emptyResult;
     }
 
     private Set<ValidationLink> checkRelativeLink(ValidationLink link) {
