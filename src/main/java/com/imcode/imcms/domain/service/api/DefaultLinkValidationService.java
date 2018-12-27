@@ -166,12 +166,15 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setEditLink(editLink);
                     link.setUrl(text.getText());
                     List<String> validateUrls = getListValidUrls(link, patternTexts);
-                    if (null != validateUrls) {
+                    if (validateUrls.size() > 0) {
                         for (String url : validateUrls) {
-                            link.setUrl(url);
-                            link.setLinkType(ValidationLink.LinkType.TEXT);
+                            ValidationLink validateTextLink = new ValidationLink();
+                            validateTextLink.setDocumentData(dtoFieldsDocument);
+                            validateTextLink.setEditLink(editLink);
+                            validateTextLink.setUrl(url);
+                            validateTextLink.setLinkType(ValidationLink.LinkType.TEXT);
 
-                            validationLinks.addAll(validationLinksChecked(link, patternTexts));
+                            validationLinks.addAll(validationLinksChecked(validateTextLink, patternUrl));
                         }
                     }
                 }
@@ -223,14 +226,14 @@ public class DefaultLinkValidationService implements LinkValidationService {
     }
 
     private List<String> getListValidUrls(ValidationLink link, Pattern pattern) {
-        List<String> list = new ArrayList<>();
+        List<String> urls = new ArrayList<>();
         Matcher matcherUrl = pattern.matcher(link.getUrl());
         while (matcherUrl.find()) {
             String protocol = matcherUrl.group(2);
             String host = matcherUrl.group(3);
-            list.add(protocol == null ? host : protocol + host);
+            urls.add(protocol == null ? host : protocol + host);
         }
-        return list;
+        return urls;
     }
 
     private String getValidUrl(ValidationLink link, Pattern pattern) {
