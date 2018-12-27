@@ -30,14 +30,14 @@ define(
             function buildFieldStartId() {
                 return $startIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleStartId,
-                    placeholder: 1001
+                    placeholder: '1001'
                 });
             }
 
             function buildFieldEndId() {
                 return $endIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleEndId,
-                    placeholder: 1001
+                    placeholder: '1001'
                 });
             }
 
@@ -49,28 +49,24 @@ define(
             function buildLinkUrl(validationLink) {
                 let reference;
                 let type = validationLink.linkType;
-                let loop = validationLink.editLink.loopEntryRef;
-                let indexLoop = null;
-                let entryIndexLoop = null;
+                let loopEntry = validationLink.editLink.loopEntryRef;
                 let metaId = validationLink.editLink.metaId;
                 let index = validationLink.editLink.index;
-                if (loop !== null) {
-                    indexLoop = loop.loopIndex;
-                    entryIndexLoop = loop.loopEntryIndex;
-                }
 
                 if (type === "TEXT") {
-                    if (indexLoop === null) {
+                    if (loopEntry === null) {
                         reference = `text?meta-id=${metaId}&index=${index}`
                     } else {
-                        reference = `text?meta-id=${metaId}&index=${index}&loop-index=${indexLoop}&loop-entry-index=${entryIndexLoop}`
+                        reference = `text?meta-id=${metaId}&index=${index}
+                        &loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
                     }
                 }
                 else if (type === "IMAGE") {
-                    if (indexLoop === null) {
+                    if (loopEntry === null) {
                         reference = `image?meta-id=${metaId}&index=${index}`
                     } else {
-                        reference = `image?meta-id=${metaId}&index=${index}&loop-index=${indexLoop}&loop-entry-index=${entryIndexLoop}`
+                        reference = `image?meta-id=${metaId}&index=${index}
+                        &loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
                     }
                 } else {
                     reference = `page-info?meta-id=${metaId}`
