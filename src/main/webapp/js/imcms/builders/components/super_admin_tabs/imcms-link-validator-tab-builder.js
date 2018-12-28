@@ -194,8 +194,8 @@ define(
 
         return new SuperAdminTab(texts.name, [
             buildTitleText(),
-            buildFilterOnlyBrokenLinks(),
             buildLinkParamsContainer(),
+            buildFilterOnlyBrokenLinks(),
             $resultContainer = buildLinksContainer()
         ]);
     }
