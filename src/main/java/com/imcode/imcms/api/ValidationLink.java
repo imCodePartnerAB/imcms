@@ -18,8 +18,8 @@ public class ValidationLink implements Cloneable {
     }
 
     public enum LinkType {
-        TEXT(),
-        IMAGE(),
-        URL()
+        TEXT,
+        IMAGE,
+        URL
     }
 }
