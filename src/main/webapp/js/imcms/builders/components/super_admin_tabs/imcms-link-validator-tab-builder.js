@@ -30,14 +30,16 @@ define(
             function buildFieldStartId() {
                 return $startIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleStartId,
-                    placeholder: '1001'
+                    placeholder: texts.startDocumentId,
+                    min: 0
                 });
             }
 
             function buildFieldEndId() {
                 return $endIdInput = components.texts.textNumber('<div>', {
                     text: texts.titleEndId,
-                    placeholder: '1001'
+                    placeholder: texts.endDocumentId,
+                    min: 0
                 });
             }
 
