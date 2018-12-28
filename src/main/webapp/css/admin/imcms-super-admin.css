@@ -204,6 +204,15 @@
     text-align: center;
 }
 
+.link-params-block.imcms-form__field {
+    display: inline-flex;
+}
+
+.imcms-number.link-params-block__links-field-end,
+.imcms-number.link-params-block__links-field-start {
+    padding-right: 10px;
+}
+
 .link-title-row__page-alias,
 .link-info-row__link-page-alias {
     width: 10%;
@@ -235,7 +244,11 @@
 
 .link-params-block__button-validation {
     margin-bottom: 15px;
-    margin-top: 15px;
+    margin-top: 35px;
+}
+
+.imcms-checkbox {
+    margin-top: 10px;
 }
 
 .link-title-row__host-found,
