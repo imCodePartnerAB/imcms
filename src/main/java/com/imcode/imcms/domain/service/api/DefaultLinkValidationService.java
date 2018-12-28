@@ -133,9 +133,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
             if (doc.getType().equals(Meta.DocumentType.URL)) {
                 DocumentURL documentURL = documentUrlService.getByDocId(doc.getId());
-                String validateUrl = getValidUrl(documentURL.getUrl(), patternUrl);
+                String validUrl = getValidUrl(documentURL.getUrl(), patternUrl);
 
-                if (!validateUrl.isEmpty()) {
+                if (!validUrl.isEmpty()) {
                     EditLink editLink = new EditLink();
                     editLink.setMetaId(documentURL.getDocId());
                     editLink.setTitle(dtoFieldsDocument.getTitle());
@@ -143,7 +143,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     ValidationLink link = new ValidationLink();
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
-                    link.setUrl(validateUrl);
+                    link.setUrl(validUrl);
                     link.setLinkType(ValidationLink.LinkType.URL);
 
                     validationLinks.addAll(validationLinksChecked(link, patternUrl));
@@ -164,8 +164,8 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     link.setDocumentData(dtoFieldsDocument);
                     link.setEditLink(editLink);
                     link.setUrl(text.getText());
-                    List<String> validateUrls = getListValidUrls(link, patternTexts);
-                    for (String url : validateUrls) {
+                    List<String> validUrls = getValidUrls(link, patternTexts);
+                    for (String url : validUrls) {
                         ValidationLink validateTextLink = new ValidationLink();
                         validateTextLink.setDocumentData(dtoFieldsDocument);
                         validateTextLink.setEditLink(editLink);
@@ -176,9 +176,9 @@ public class DefaultLinkValidationService implements LinkValidationService {
                     }
                 }
                 for (Image image : images) {
-                    String validateUrl = getValidUrl(image.getLinkUrl(), patternUrl);
+                    String validUrl = getValidUrl(image.getLinkUrl(), patternUrl);
 
-                    if (!validateUrl.isEmpty()) {
+                    if (!validUrl.isEmpty()) {
                         EditLink editLink = new EditLink();
                         editLink.setMetaId(dtoFieldsDocument.getId());
                         editLink.setTitle(dtoFieldsDocument.getTitle());
@@ -188,7 +188,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                         ValidationLink link = new ValidationLink();
                         link.setDocumentData(dtoFieldsDocument);
                         link.setEditLink(editLink);
-                        link.setUrl(validateUrl);
+                        link.setUrl(validUrl);
                         link.setLinkType(ValidationLink.LinkType.IMAGE);
 
                         validationLinks.addAll(validationLinksChecked(link, patternUrl));
@@ -221,7 +221,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         return links;
     }
 
-    private List<String> getListValidUrls(ValidationLink link, Pattern pattern) {
+    private List<String> getValidUrls(ValidationLink link, Pattern pattern) {
         List<String> urls = new ArrayList<>();
         Matcher matcherUrl = pattern.matcher(link.getUrl());
         while (matcherUrl.find()) {
