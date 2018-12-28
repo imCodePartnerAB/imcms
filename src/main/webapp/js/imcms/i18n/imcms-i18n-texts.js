@@ -414,22 +414,18 @@ const texts = {
             linkValidator: {
                 name: 'Länk Validator',
                 titleOnlyBrokenLinks: "Lista endast brutna länkar",
-                titleStartId: 'From id',
-                titleEndId: 'Till id',
-                numberStartId: 'Start id',
-                numberEndId: 'End id',
                 brokenLinks: "Lista bara brutna länkar",
                 buttonValidation: 'Start validering',
-                startDocumentId: '1001',
-                endDocumentId: '1001',
+                startDocumentId: 'Starta id',
+                endDocumentId: 'Avsluta id',
                 linkInfoRow: {
                     pageAlias: 'Sid alias',
                     status: "Status",
                     type: 'Typ',
                     admin: "Admin",
                     link: "Link",
-                    hostFound: "Host Found",
-                    hostReachable: "Host reachable",
+                    hostFound: "Värd hittades",
+                    hostReachable: "Värden kan nås",
                     pageFound: 'Sidan hittades'
                 }
 
@@ -905,14 +901,10 @@ const texts = {
             linkValidator: {
                 name: 'Link Validator',
                 titleOnlyBrokenLinks: 'List only broken links',
-                titleStartId: 'From id',
-                titleEndId: 'To id',
-                numberStartId: 'Start id',
-                numberEndId: 'End id',
                 brokenLinks: 'List only broken links',
                 buttonValidation: 'Start the validation',
-                startDocumentId: '1001',
-                endDocumentId: '1001',
+                startDocumentId: 'Start id',
+                endDocumentId: 'End id',
                 linkInfoRow: {
                     pageAlias: 'Page alias',
                     status: 'Status',
