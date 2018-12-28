@@ -29,7 +29,7 @@ define(
 
             function buildFieldStartId() {
                 return $startIdInput = components.texts.textNumber('<div>', {
-                    text: texts.titleStartId,
+                    text: texts.startDocumentId,
                     placeholder: texts.startDocumentId,
                     min: 0
                 });
@@ -37,7 +37,7 @@ define(
 
             function buildFieldEndId() {
                 return $endIdInput = components.texts.textNumber('<div>', {
-                    text: texts.titleEndId,
+                    text: texts.endDocumentId,
                     placeholder: texts.endDocumentId,
                     min: 0
                 });
