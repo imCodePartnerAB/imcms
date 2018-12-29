@@ -164,8 +164,10 @@ define(
                     startDocumentId: $startIdInput.getInput().val(),
                     endDocumentId: $endIdInput.getInput().val()
                 };
-                var tableBuilder = new linkListBuilder($resultContainer).clearList();
-                linksValidatorRestApi.validate(linksValidationParams).done(tableBuilder.linkAppender);
+                if (linksValidationParams.startDocumentId !== '' && linksValidationParams.endDocumentId !== '') {
+                    var tableBuilder = new linkListBuilder($resultContainer).clearList();
+                    linksValidatorRestApi.validate(linksValidationParams).done(tableBuilder.linkAppender);
+                }
             }
 
             function buildValidationButton() {
