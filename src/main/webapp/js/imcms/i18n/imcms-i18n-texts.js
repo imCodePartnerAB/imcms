@@ -415,15 +415,15 @@ const texts = {
                 name: 'Länk Validator',
                 titleOnlyBrokenLinks: "Lista endast brutna länkar",
                 brokenLinks: "Lista bara brutna länkar",
-                buttonValidation: 'Start validering',
+                buttonValidation: 'Starta validering',
                 startDocumentId: 'Starta id',
                 endDocumentId: 'Avsluta id',
                 linkInfoRow: {
                     pageAlias: 'Sid alias',
                     status: "Status",
                     type: 'Typ',
-                    admin: "Admin",
-                    link: "Link",
+                    admin: "Administration",
+                    link: "Länk",
                     hostFound: "Värd hittades",
                     hostReachable: "Värden kan nås",
                     pageFound: 'Sidan hittades'
