@@ -3,7 +3,9 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
+import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
+import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -28,6 +31,9 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;
+
+    @Autowired
+    private CategoryService categoryService;
 
     @BeforeEach
     public void setUpCategoryDataInitializer() {
@@ -114,6 +120,12 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         Optional<CategoryType> oFound = categoryTypeService.get(savedId);
 
         assertTrue(oFound.isPresent());
+
+        List<Category> categoryDTOS = categoryService.getAll();
+
+        categoryDTOS.clear();
+
+        assertTrue(categoryDTOS.isEmpty());
 
         categoryTypeService.delete(savedId);
 
