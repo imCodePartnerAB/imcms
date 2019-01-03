@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
@@ -132,5 +133,25 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         oFound = categoryTypeService.get(savedId);
 
         assertFalse(oFound.isPresent());
+    }
+
+    @Test
+    public void delete_When_CategoriesExist_Expect_CorrectException() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryType saved = categoryTypeService.save(categoryType);
+
+        final Integer savedId = saved.getId();
+        Optional<CategoryType> oFound = categoryTypeService.get(savedId);
+
+        assertTrue(oFound.isPresent());
+
+        List<Category> categories = categoryService.getAll();
+
+        assertFalse(categories.isEmpty());
+
+        assertThrows(RuntimeException.class, () -> categoryTypeService.delete(savedId)); //todo change on correct exception
     }
 }
