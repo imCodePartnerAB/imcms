@@ -109,7 +109,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
 
     @Test
-    public void delete_When_Exist_Expect_Deleted() {
+    public void delete_When_CategoriesAllDeleted_Expect_Deleted() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
