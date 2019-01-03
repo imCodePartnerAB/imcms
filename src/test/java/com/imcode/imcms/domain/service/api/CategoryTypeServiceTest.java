@@ -94,9 +94,10 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType2 = new CategoryTypeJPA(
                 null, testTypeName, 0, true, false
         );
-        final CategoryType firstSavedType = categoryTypeService.save(categoryType);
 
-        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.save(categoryType2)); //todo change exception
+        categoryTypeService.save(categoryType);
+
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.save(categoryType2));
     }
 
     @Test
