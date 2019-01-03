@@ -6,7 +6,6 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +39,6 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         categoryDataInitializer.createData(2);
     }
 
-    @AfterEach
-    public void cleanData() {
-        categoryDataInitializer.cleanRepositories();
-    }
-
     @Test
     public void createCategory_When_CategoryNotExist_Expected_CorrectCategory() {
         final String testTypeName = "test_type_name";
@@ -63,6 +57,8 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(savedCategory);
         assertEquals(category, savedCategory);
+
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -95,6 +91,8 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotEquals(testNameCategory, editCategory.getName());
         assertEquals(savedCategory, editCategory); //
+
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -104,6 +102,9 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertEquals(1, categories.size());
         assertEquals("Category0Name", categories.get(0).getName());
+
+
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -115,6 +116,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         assertNotNull(category);
         assertEquals("Category0Name", category.getName());
         assertEquals("CategoryType0Name", category.getType().getName());
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -124,6 +126,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         final CategoryJPA category = categoryRepository.findByNameAndType("Category0Name", types.get(1));
 
         assertNull(category);
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -137,7 +140,6 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         final String testCategoryName = "test_category_name" + System.currentTimeMillis();
         final CategoryJPA category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
         final Category saved = categoryRepository.save(category);
-
         final List<Meta> allMetas = metaRepository.findAll();
 
         assertFalse(allMetas.isEmpty()); // at least one doc with id=1001 should exist
@@ -195,6 +197,8 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(categoryDocIds);
         assertFalse(categoryDocIds.contains(docId));
+
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -226,5 +230,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(categoryDocIds);
         assertTrue(categoryDocIds.isEmpty());
+
+        categoryDataInitializer.cleanRepositories();
     }
 }
