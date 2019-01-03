@@ -85,13 +85,16 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(savedType);
 
-        savedType.setName(testEditTypeName);
+        CategoryTypeJPA getCategoryType = categoryTypeRepository.findOne(savedType.getId());
 
-        CategoryTypeJPA editSavedType = categoryTypeRepository.save(savedType);
+        getCategoryType.setName(testEditTypeName);
+
+        CategoryTypeJPA editSavedType = categoryTypeRepository.save(getCategoryType);
 
         assertNotNull(editSavedType);
-        assertNotEquals(testTypeName, editSavedType);
-        assertEquals(categoryType, editSavedType);
+        assertEquals(savedType.getId(), editSavedType.getId());
+        assertNotEquals(testTypeName, editSavedType.getName());
+        assertEquals(savedType.getName(), editSavedType.getName());
     }
 
     @Test
