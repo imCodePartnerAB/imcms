@@ -86,6 +86,20 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void create_When_CategoryNameExist_Expect_CorrectException() {
+        final String testTypeName = "test_type_name";
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryType categoryType2 = new CategoryTypeJPA(
+                null, testTypeName, 0, true, false
+        );
+        final CategoryType firstSavedType = categoryTypeService.save(categoryType);
+
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.save(categoryType2)); //todo change exception
+    }
+
+    @Test
     public void update_When_Exist_Expect_CorrectUpdateEntity() {
         final String testTypeName = "test_type_name";
         final CategoryType categoryType = new CategoryTypeJPA(
