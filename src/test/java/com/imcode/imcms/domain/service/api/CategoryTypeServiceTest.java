@@ -79,6 +79,30 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void update_When_Exist_Expect_CorrectUpdateEntity() {
+        final String testTypeName = "test_type_name";
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryType saved = categoryTypeService.save(categoryType);
+
+        final Optional<CategoryType> oFound = categoryTypeService.get(saved.getId());
+
+        assertTrue(oFound.isPresent());
+
+        CategoryType categoryType1 = oFound.get();
+
+        categoryType1.setName("Other Test Name");
+
+        final CategoryType updated = categoryTypeService.save(categoryType1);
+
+        assertEquals(saved.getId(), updated.getId());
+        assertNotNull(updated);
+        assertNotEquals(oFound, categoryType1);
+    }
+
+
+    @Test
     public void delete_When_Exist_Expect_Deleted() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
