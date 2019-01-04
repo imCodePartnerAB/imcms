@@ -13,6 +13,8 @@ public interface CategoryTypeService {
 
     CategoryType save(CategoryType saveMe);
 
+    CategoryType update(CategoryType updateMe);
+
     void delete(int id);
 
 }
