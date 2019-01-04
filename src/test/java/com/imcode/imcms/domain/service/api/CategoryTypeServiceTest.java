@@ -7,7 +7,9 @@ import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,9 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @BeforeEach
     public void setUpCategoryDataInitializer() {
@@ -69,7 +74,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void save_When_NotExitBefore_Expect_Saved() {
+    public void create_When_NotExitBefore_Expect_Saved() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
@@ -101,6 +106,14 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void create_When_CategoryNameEmpty_Expect_CorrectException() {
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, "", 0, false, false
+        );
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.save(categoryType));
+    }
+
+    @Test
     public void update_When_Exist_Expect_CorrectUpdateEntity() {
         final String testTypeName = "test_type_name";
         final CategoryType categoryType = new CategoryTypeJPA(
@@ -112,21 +125,51 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         assertTrue(oFound.isPresent());
 
-        CategoryType categoryType1 = oFound.get();
+        CategoryType getCategoryType = oFound.get();
 
-        categoryType1.setName("Other Test Name");
+        getCategoryType.setName("Other Test Name");
 
-        final CategoryType updated = categoryTypeService.save(categoryType1);
+        final CategoryType updated = categoryTypeService.update(getCategoryType);
 
         assertEquals(saved.getId(), updated.getId());
         assertNotNull(updated);
-        assertNotEquals(oFound, categoryType1);
+        assertNotEquals(oFound, getCategoryType);
     }
 
+    @Test
+    public void update_When_CategoryTypeNameExist_Expect_CorrectException() {
+        final String testTypeName = "test_type_name";
+        final String testTypeName2 = "test_type_second";
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryType categoryType2 = new CategoryTypeJPA(
+                null, testTypeName2, 0, true, false
+        );
+        final CategoryType saved1 = categoryTypeService.save(categoryType);
+        final CategoryType saved2 = categoryTypeService.save(categoryType2);
+
+        final Optional<CategoryType> firstFound = categoryTypeService.get(saved1.getId());
+        final Optional<CategoryType> secondFound = categoryTypeService.get(saved2.getId());
+
+        assertTrue(firstFound.isPresent());
+        assertTrue(secondFound.isPresent());
+
+        CategoryType getCategoryType1 = firstFound.get();
+        CategoryType getCategoryType2 = secondFound.get();
+
+        getCategoryType2.setName(getCategoryType1.getName());
+
+        assertNotEquals(firstFound, secondFound);
+
+        assertEquals(getCategoryType1.getName(), getCategoryType2.getName());
+
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.update(getCategoryType2));
+    }
 
     @Test
     public void delete_When_CategoriesAllDeleted_Expect_Deleted() {
-        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final String testTypeName = "test_type_name";
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
@@ -137,13 +180,15 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         assertTrue(oFound.isPresent());
 
-        List<Category> categoryDTOS = categoryService.getAll();
+        List<CategoryJPA> categories = categoryRepository.findAll();
 
-        categoryDTOS.clear();
+        CategoryType geCategoryType = oFound.get();
 
-        assertTrue(categoryDTOS.isEmpty());
+        categories.removeIf(
+                categoryJPA -> categoryJPA.getType().equals(geCategoryType)
+        );
 
-        categoryTypeService.delete(savedId);
+        categoryTypeService.delete(oFound.get().getId());
 
         oFound = categoryTypeService.get(savedId);
 
@@ -158,15 +203,28 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         );
         final CategoryType saved = categoryTypeService.save(categoryType);
 
-        final Integer savedId = saved.getId();
-        Optional<CategoryType> oFound = categoryTypeService.get(savedId);
+        CategoryTypeJPA categoryTypeJPA = new CategoryTypeJPA();
+        categoryTypeJPA.setId(saved.getId());
+        categoryTypeJPA.setName(saved.getName());
+        categoryTypeJPA.setMultiSelect(saved.isMultiSelect());
+        categoryTypeJPA.setInherited(saved.isInherited());
+        categoryTypeJPA.setImageArchive(saved.isImageArchive());
 
-        assertTrue(oFound.isPresent());
+        Category category = new CategoryJPA(
+                "some name", "some desc", "", categoryTypeJPA
+        );
 
-        List<Category> categories = categoryService.getAll();
+        assertNotNull(category);
 
-        assertFalse(categories.isEmpty());
+        categoryService.save(category);
 
-        assertThrows(RuntimeException.class, () -> categoryTypeService.delete(savedId)); //todo change on correct exception
+        final Integer savedCategoryTypeId = categoryTypeJPA.getId();
+        CategoryType oFound = categoryTypeRepository.findOne(savedCategoryTypeId);
+
+        assertNotNull(oFound);
+
+        assertEquals(category.getType(), oFound);
+
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.delete(oFound.getId())); //todo change on correct exception
     }
 }
