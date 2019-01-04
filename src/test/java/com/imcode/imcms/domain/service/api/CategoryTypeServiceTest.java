@@ -133,7 +133,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(saved.getId(), updated.getId());
         assertNotNull(updated);
-        assertNotEquals(oFound, getCategoryType);
+        assertNotEquals(oFound, updated);
     }
 
     @Test
