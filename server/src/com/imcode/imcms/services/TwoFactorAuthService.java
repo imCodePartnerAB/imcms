@@ -119,6 +119,9 @@ public class TwoFactorAuthService {
             password = (String) session.getAttribute(REQUEST_PARAMETER__PASSWORD);
         }
         UserDomainObject user = imcmsServices.verifyUser(login, password);
+
+        Imcms.getServices().getImcmsAuthenticatorAndUserAndRoleMapper().checkUserIpAllowed(user, request);
+
         if (null != user && !user.isDefaultUser()) {
             boolean isDisabled = Boolean.parseBoolean(user.getProperties().getOrDefault(USER_2FA_DISABLED_PROPERTY, "false"));
             String finalLogin = login;
