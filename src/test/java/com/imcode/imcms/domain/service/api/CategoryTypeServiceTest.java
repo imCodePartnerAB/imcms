@@ -50,7 +50,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getAllExpectedContainSavedCategoryType() {
+    public void getAll_Expected_ContainSavedCategoryType() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
