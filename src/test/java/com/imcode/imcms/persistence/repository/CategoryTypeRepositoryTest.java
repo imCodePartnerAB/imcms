@@ -1,12 +1,9 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,20 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
-    private CategoryDataInitializer categoryDataInitializer;
-
-    @Autowired
     private CategoryTypeRepository categoryTypeRepository;
-
-    @BeforeEach
-    public void initData() {
-        categoryDataInitializer.createData(4);
-    }
-
-    @AfterEach
-    public void cleanData() {
-        categoryDataInitializer.cleanRepositories();
-    }
 
     @Test
     public void invertCaseTest() {
@@ -42,7 +26,19 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNameIgnoreCase_When_CategoriesExist_ExpectedNotNullTest() {
-        final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final String testTypeName2 = "test_type_name2" + System.currentTimeMillis();
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+
+        final CategoryTypeJPA categoryType2 = new CategoryTypeJPA(
+                null, testTypeName2, 0, false, false
+        );
+        categoryTypeRepository.save(categoryType);
+        categoryTypeRepository.save(categoryType2);
+
+        final List<CategoryTypeJPA> types = categoryTypeRepository.findAll();
 
         types.stream()
                 .map(CategoryTypeJPA::getName)
