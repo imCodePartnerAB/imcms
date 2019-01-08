@@ -8,6 +8,7 @@ import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,12 +45,17 @@ class DefaultCategoryTypeService implements CategoryTypeService {
     }
 
     @Override
-    public CategoryType save(CategoryType saveMe) {
+    public CategoryType create(CategoryType saveMe) {
         String categoryTypeName = saveMe.getName();
         if (categoryTypeName.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        for (CategoryType categoryTypes : getAll()) {
+        List<CategoryType> categoriesTypeDTO = categoryTypeRepository.findAll()
+                .stream()
+                .map(CategoryTypeDTO::new)
+                .collect(Collectors.toList());
+
+        for (CategoryType categoryTypes : categoriesTypeDTO) {
             if (categoryTypes.getName().equals(categoryTypeName)) {
                 throw new IllegalArgumentException();
             }
@@ -87,7 +93,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         List<CategoryJPA> categories = categoryRepository.findAll();
         for (CategoryJPA category : categories) {
             if (category.getType().equals(categoryTypeRepository.findOne(id))) {
-                throw new IllegalArgumentException();
+                throw new EmptyResultDataAccessException(id);
             }
         }
         categoryTypeRepository.delete(id);
