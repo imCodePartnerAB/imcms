@@ -7,10 +7,17 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.persistence.repository.CategoryRepository;
+import com.imcode.imcms.persistence.repository.MetaRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,6 +33,12 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryTypeService categoryTypeService;
+
+    @Autowired
+    private MetaRepository metaRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Test
     public void getAll_Expected_categoryServiceContainSavedCategory() {
@@ -170,7 +183,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete_When_Exist_Expect_Deleted() {
+    public void delete_When_CategoryHasNotDocument_Expect_Deleted() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
@@ -187,5 +200,37 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         categoryService.delete(savedCategoryId);
 
         assertFalse(categoryService.getById(savedCategoryId).isPresent());
+    }
+
+    @Test
+    public void delete_When_CategoryHasDocument_Expect_CorrectException() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
+
+        final String testCategoryName = "test_category_name" + System.currentTimeMillis();
+        final Category category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
+        final Category savedCategory = categoryService.save(category);
+
+        final List<Meta> allMetas = metaRepository.findAll();
+
+        assertFalse(allMetas.isEmpty()); // at least one doc with id=1001 should exist
+
+        final Meta firstDoc = allMetas.get(0);
+        final Integer docId = firstDoc.getId();
+        final Integer categoryId = savedCategory.getId();
+
+        firstDoc.setCategories(new HashSet<>(Collections.singleton(savedCategory)));
+        metaRepository.save(firstDoc);
+
+        final List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(categoryId);
+
+        assertNotNull(categoryDocIds);
+        assertFalse(categoryDocIds.isEmpty());
+        assertTrue(categoryDocIds.contains(docId));
+
+        assertThrows(EmptyResultDataAccessException.class, () -> categoryService.delete(categoryId));
     }
 }
