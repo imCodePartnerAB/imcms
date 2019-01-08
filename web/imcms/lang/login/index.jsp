@@ -103,6 +103,12 @@
             <div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
             <div style="clear:both"></div>
         </div>
+        <% } else if (is2FAStep && is2FA) {%>
+        <div id="imcms-login-container-tabs">
+            <div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
+            <div class="imcms-tab imcms-tab-active" id="imcms-default-tab"><? templates/login/index.html/2008 ?></div>
+            <div style="clear:both"></div>
+        </div>
         <% } else if (request.getParameter("fromCgi") != null) {%>
         <div id="imcms-login-container-tabs">
             <div class="imcms-tab" id="imcms-bankid-tab"><? templates/login/index.html/2009 ?></div>
