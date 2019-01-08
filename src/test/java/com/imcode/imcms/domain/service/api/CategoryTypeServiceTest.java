@@ -8,10 +8,7 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
-import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -34,19 +31,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CategoryService categoryService;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @BeforeEach
-    public void setUpCategoryDataInitializer() {
-        //categoryDataInitializer.createData(4);
-    }
-
-    @AfterEach
-    public void clearData() {
-        //categoryDataInitializer.cleanRepositories();
-    }
 
     @Test
     public void get_When_Exist_Expect_Found() {
@@ -182,12 +166,12 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         assertTrue(oFound.isPresent());
 
-        List<CategoryJPA> categories = categoryRepository.findAll();
+        List<Category> categories = categoryService.getAll();
 
-        CategoryType geCategoryType = oFound.get();
+        CategoryType getCategoryType = oFound.get();
 
         categories.removeIf(
-                categoryJPA -> categoryJPA.getType().equals(geCategoryType)
+                categoryJPA -> categoryJPA.getType().equals(getCategoryType)
         );
 
         categoryTypeService.delete(oFound.get().getId());
@@ -227,6 +211,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(category.getType(), oFound);
 
-        assertThrows(EmptyResultDataAccessException.class, () -> categoryTypeService.delete(oFound.getId())); //todo change on correct exception
+        assertThrows(EmptyResultDataAccessException.class, () -> categoryTypeService.delete(oFound.getId()));
     }
 }
