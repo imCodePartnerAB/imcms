@@ -105,8 +105,8 @@ public class SAMLSPFilter implements Filter {
                     e.printStackTrace();
                 }
                 Utility.removeRememberCdCookie(request, response);
-                Utility.makeUserLoggedOut(request);
                 SAMLSessionManager.getInstance().destroySAMLSession(request.getSession(true));
+                Utility.makeUserLoggedOut(request);
             } else {
                 chain.doFilter(servletRequest, servletResponse);
             }
