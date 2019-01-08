@@ -1,12 +1,10 @@
 package com.imcode.imcms.persistence.repository;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,14 +29,6 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
     @Autowired
     private MetaRepository metaRepository;
 
-    @Autowired
-    private CategoryDataInitializer categoryDataInitializer;
-
-    @BeforeEach
-    public void setUp() {
-        categoryDataInitializer.createData(2);
-    }
-
     @Test
     public void createCategory_When_CategoryNotExist_Expected_CorrectCategory() {
         final String testTypeName = "test_type_name";
@@ -57,8 +47,6 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(savedCategory);
         assertEquals(category, savedCategory);
-
-        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -90,65 +78,106 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         assertNotNull(editCategory);
 
         assertNotEquals(testNameCategory, editCategory.getName());
-        assertEquals(savedCategory, editCategory); //
-
-        categoryDataInitializer.cleanRepositories();
+        assertEquals(savedCategory, editCategory);
     }
 
     @Test
-    public void findByTypeExpectedCorrectNameTest() {
-        final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
-        final List<CategoryJPA> categories = categoryRepository.findByType(types.get(0));
+    public void findByType_Expected_CorrectNameTest() {
+        final String testTypeName = "test_type_name";
+        final String testNameCategory = "test Name";
+        final String testDescription = "Some description";
+        final String testImageUrl = "/test";
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
+
+        final CategoryJPA category = new CategoryJPA(
+                null, testNameCategory, testDescription, testImageUrl, savedType
+        );
+
+        CategoryJPA savedCategory = categoryRepository.save(category);
+
+        final List<CategoryJPA> categories = categoryRepository.findByType(savedCategory.getType());
 
         assertEquals(1, categories.size());
-        assertEquals("Category0Name", categories.get(0).getName());
-
-
-        categoryDataInitializer.cleanRepositories();
+        assertEquals(testNameCategory, categories.get(0).getName());
     }
 
     @Test
-    public void findByNameAndTypeExpectedExistCategoryWithCorrectNameAndCategoryTypeNameTest() {
-        final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
+    public void findByNameAndType_Expected_ExistCategoryWithCorrectNameAndCategoryTypeNameTest() {
+        final String testTypeName = "test_type_name";
+        final String testNameCategory = "test Name";
+        final String testDescription = "Some description";
+        final String testImageUrl = "/test";
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
 
-        final CategoryJPA category = categoryRepository.findByNameAndType("Category0Name", types.get(0));
+        final CategoryJPA category = new CategoryJPA(
+                null, testNameCategory, testDescription, testImageUrl, savedType
+        );
 
-        assertNotNull(category);
-        assertEquals("Category0Name", category.getName());
-        assertEquals("CategoryType0Name", category.getType().getName());
-        categoryDataInitializer.cleanRepositories();
+        final CategoryJPA savedCategory = categoryRepository.save(category);
+
+        final CategoryJPA foundCategory = categoryRepository.findByNameAndType(
+                savedCategory.getName(), savedCategory.getType()
+        );
+
+        assertNotNull(foundCategory);
+        assertEquals(category.getName(), foundCategory.getName());
+        assertEquals(category.getType().getName(), foundCategory.getType().getName());
     }
 
     @Test
-    public void findByNameAndTypeExpectedNullCategoryTest() {
-        final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
+    public void findByNameAndType_When_CategoryNameNotMatch_Expected_NullCategoryTest() {
+        final String testTypeName = "test_type_name";
+        final String testNameCategory = "test Name";
+        final String testDescription = "Some description";
+        final String testImageUrl = "/test";
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
 
-        final CategoryJPA category = categoryRepository.findByNameAndType("Category0Name", types.get(1));
+        final CategoryJPA category = new CategoryJPA(
+                null, testNameCategory, testDescription, testImageUrl, savedType
+        );
 
-        assertNull(category);
-        categoryDataInitializer.cleanRepositories();
+        final CategoryJPA savedCategory = categoryRepository.save(category);
+
+        final String fakeCategoryName = "fake";
+        final CategoryJPA foundCategory = categoryRepository.findByNameAndType(fakeCategoryName, savedCategory.getType());
+
+        assertNull(foundCategory);
     }
 
     @Test
     public void findCategoryDocIds_Expected_CorrectCategoryDocId() {
-        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final String testTypeName = "test_type_name";
+        final String testNameCategory = "test Name";
+        final String testDescription = "Some description";
+        final String testImageUrl = "/test";
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
+        CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
 
-        final String testCategoryName = "test_category_name" + System.currentTimeMillis();
-        final CategoryJPA category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
-        final Category saved = categoryRepository.save(category);
+        final CategoryJPA category = new CategoryJPA(
+                null, testNameCategory, testDescription, testImageUrl, savedType
+        );
+
+        final CategoryJPA savedCategory = categoryRepository.save(category);
         final List<Meta> allMetas = metaRepository.findAll();
 
         assertFalse(allMetas.isEmpty()); // at least one doc with id=1001 should exist
 
         final Meta firstDoc = allMetas.get(0);
         final Integer docId = firstDoc.getId();
-        final Integer categoryId = saved.getId();
+        final Integer categoryId = savedCategory.getId();
 
-        firstDoc.setCategories(new HashSet<>(Collections.singleton(saved)));
+        firstDoc.setCategories(new HashSet<>(Collections.singleton(savedCategory)));
         metaRepository.save(firstDoc);
 
         final List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(categoryId);
@@ -197,8 +226,6 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(categoryDocIds);
         assertFalse(categoryDocIds.contains(docId));
-
-        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -230,7 +257,5 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
         assertNotNull(categoryDocIds);
         assertTrue(categoryDocIds.isEmpty());
-
-        categoryDataInitializer.cleanRepositories();
     }
 }
