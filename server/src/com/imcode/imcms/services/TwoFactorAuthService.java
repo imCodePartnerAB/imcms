@@ -8,6 +8,7 @@ import imcode.server.user.PhoneNumber;
 import imcode.server.user.PhoneNumberType;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +43,8 @@ public class TwoFactorAuthService {
         smsService = SmsService.getInstance();
 
         //Default is 10 days
-        cookieMaxAge = Integer.parseInt(systemProperties.getProperty(COOKIE_MAX_AGE_PROPERTY, "864000"));
+        final String cookieMaxAgeString = systemProperties.getProperty(COOKIE_MAX_AGE_PROPERTY);
+        cookieMaxAge = StringUtils.isNotBlank(cookieMaxAgeString) ? Integer.parseInt(cookieMaxAgeString) : 864000;
     }
 
 
