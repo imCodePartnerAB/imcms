@@ -1,15 +1,12 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,27 +27,46 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private CategoryTypeService categoryTypeService;
 
-    @Autowired
-    private CategoryDataInitializer categoryDataInitilizer;
-
-    @BeforeEach
-    public void setUp() {
-        categoryDataInitilizer.createData(4);
-    }
-
-    @AfterEach
-    public void cleanup() {
-        categoryDataInitilizer.cleanRepositories(); // should be done even in case of transactional
-    }
-
     @Test
-    public void getAllExpectedEqualsCategoriesAsDtoTest() {
-        assertEquals(categoryDataInitilizer.getCategoriesAsDTO(), categoryService.getAll());
+    public void getAll_Expected_categoryServiceContainSavedCategory() {
+        final String testTypeName = "test_type_name";
+        final String testDescription = "Some description";
+        final String testImageUrl = "/test";
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+
+        final CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
+
+        final CategoryJPA category = new CategoryJPA(
+                null, testTypeName, testDescription, testImageUrl, savedCategoryType
+        );
+        Category savedCategory = categoryService.save(category);
+
+        assertNotNull(savedCategory);
+        assertFalse(categoryService.getAll().isEmpty());
+        assertTrue(categoryService.getAll().contains(savedCategory));
     }
 
     @Test
     public void getById_When_Exist_Expect_NotNull() {
-        final Integer id = categoryDataInitilizer.getCategoriesAsDTO().get(0).getId();
+        final String testTypeName = "test_type_name";
+        final String testDescription = "Some description";
+        final String testImageUrl = "/test";
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+
+        final CategoryTypeJPA savedCategoryType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
+
+        final CategoryJPA category = new CategoryJPA(
+                null, testTypeName, testDescription, testImageUrl, savedCategoryType
+        );
+        Category savedCategory = categoryService.save(category);
+
+        assertNotNull(savedCategory);
+
+        final Integer id = savedCategory.getId();
         assertTrue(categoryService.getById(id).isPresent());
     }
 
@@ -60,29 +76,106 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
 
         final String testCategoryName = "test_category_name" + System.currentTimeMillis();
         final Category category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
-        final Category saved = categoryService.save(category);
+        final Category savedCategory = categoryService.save(category);
 
-        final Optional<Category> oFound = categoryService.getById(saved.getId());
+        final Optional<Category> oFound = categoryService.getById(savedCategory.getId());
 
         assertTrue(oFound.isPresent());
 
-        final Category found = oFound.get();
+        final Category foundCategory = oFound.get();
 
-        assertNotNull(found);
-        assertEquals(saved, found);
+        assertNotNull(foundCategory);
+        assertEquals(savedCategory, foundCategory);
     }
 
     @Test
-    public void delete_When_Exist_Expect_Saved() {
+    public void update_When_CategoryExist_Expected_UpdatedCorrectEntity() {
         final String testTypeName = "test_type_name" + System.currentTimeMillis();
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.save(categoryType));
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
+
+        final String testCategoryName = "test_category_name" + System.currentTimeMillis();
+        final Category category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
+        final Category savedCategory = categoryService.save(category);
+
+        final Optional<Category> oFound = categoryService.getById(savedCategory.getId());
+
+        assertTrue(oFound.isPresent());
+
+        final String otherName = "Other_category_name";
+        final Category getCategory = oFound.get();
+        getCategory.setName(otherName);
+
+        final Category savedUpdateCategory = categoryService.update(getCategory);
+
+        assertEquals(getCategory.getId(), savedCategory.getId());
+        assertNotNull(savedUpdateCategory);
+        assertNotEquals(oFound, savedUpdateCategory);
+
+    }
+
+    @Test
+    public void update_When_CategoryNameExist_Expected_CorrectException() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
+
+        final String testCategoryName1 = "test_category_name" + System.currentTimeMillis();
+        final String testCategoryName2 = "test_category_name2" + System.currentTimeMillis();
+        final Category category1 = new CategoryJPA(testCategoryName1, "dummy", "", savedType);
+        final Category category2 = new CategoryJPA(testCategoryName2, "ho-ho-ho", "../", savedType);
+        final Category savedCategory1 = categoryService.save(category1);
+
+        categoryService.save(category2);
+
+        final Optional<Category> oFound = categoryService.getById(savedCategory1.getId());
+
+        assertTrue(oFound.isPresent());
+
+
+        final Category getCategory = oFound.get();
+        getCategory.setName(testCategoryName2);
+
+        assertThrows(IllegalArgumentException.class, () -> categoryService.update(getCategory));
+    }
+
+    @Test
+    public void update_When_CategoryNameIsEmpty_Expected_CorrectException() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
+
+        final String testCategoryName1 = "test_category_name" + System.currentTimeMillis();
+        final Category category1 = new CategoryJPA(testCategoryName1, "dummy", "", savedType);
+        final Category savedCategory1 = categoryService.save(category1);
+
+        final Optional<Category> oFound = categoryService.getById(savedCategory1.getId());
+
+        assertTrue(oFound.isPresent());
+
+        final Category getCategory = oFound.get();
+        getCategory.setName("");
+
+        assertThrows(IllegalArgumentException.class, () -> categoryService.update(getCategory));
+    }
+
+    @Test
+    public void delete_When_Exist_Expect_Deleted() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryType categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryTypeJPA savedType = new CategoryTypeJPA(categoryTypeService.create(categoryType));
 
         final String testCategoryName = "test_category_name" + System.currentTimeMillis();
         final Category category = new CategoryJPA(testCategoryName, "dummy", "", savedType);
