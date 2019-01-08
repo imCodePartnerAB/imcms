@@ -11,7 +11,7 @@ public interface CategoryTypeService {
 
     List<CategoryType> getAll();
 
-    CategoryType save(CategoryType saveMe);
+    CategoryType create(CategoryType saveMe);
 
     CategoryType update(CategoryType updateMe);
 
