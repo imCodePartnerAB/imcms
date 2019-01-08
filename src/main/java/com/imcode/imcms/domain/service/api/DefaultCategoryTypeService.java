@@ -74,8 +74,8 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
         CategoryType receivedCategoryType = categoryTypeRepository.findOne(categoryTypeId);
 
-        for (CategoryType categoryTypes : getAll()) {
-            if (categoryTypes.getName().equals(categoryTypeName)) {
+        for (CategoryType categoryType : getAll()) {
+            if (categoryType.getName().equals(categoryTypeName)) {
                 throw new IllegalArgumentException();
             } else {
                 receivedCategoryType.setName(categoryTypeName);
