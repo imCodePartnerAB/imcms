@@ -1,7 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
@@ -15,6 +14,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -30,9 +30,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     private CategoryTypeService categoryTypeService;
 
     @Autowired
-    private CategoryDataInitializer categoryDataInitializer;
-
-    @Autowired
     private CategoryTypeRepository categoryTypeRepository;
 
     @Autowired
@@ -43,12 +40,12 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUpCategoryDataInitializer() {
-        categoryDataInitializer.createData(4);
+        //categoryDataInitializer.createData(4);
     }
 
     @AfterEach
     public void clearData() {
-        categoryDataInitializer.cleanRepositories();
+        //categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -69,8 +66,13 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getAllExpectedEqualsCategoryTypesAsDtoTest() {
-        assertEquals(categoryDataInitializer.getCategoryTypesAsDTO(), categoryTypeService.getAll());
+    public void getAllExpectedContainSavedCategoryType() {
+        final String testTypeName = "test_type_name" + System.currentTimeMillis();
+        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
+                null, testTypeName, 0, false, false
+        );
+        final CategoryType saved = categoryTypeService.create(categoryType);
+        assertTrue(categoryTypeService.getAll().contains(saved));
     }
 
     @Test
@@ -79,7 +81,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryType saved = categoryTypeService.save(categoryType);
+        final CategoryType saved = categoryTypeService.create(categoryType);
 
         final Optional<CategoryType> oFound = categoryTypeService.get(saved.getId());
 
@@ -100,9 +102,9 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
                 null, testTypeName, 0, true, false
         );
 
-        categoryTypeService.save(categoryType);
+        categoryTypeService.create(categoryType);
 
-        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.save(categoryType2));
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.create(categoryType2));
     }
 
     @Test
@@ -110,7 +112,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, "", 0, false, false
         );
-        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.save(categoryType));
+        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.create(categoryType));
     }
 
     @Test
@@ -119,7 +121,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryType saved = categoryTypeService.save(categoryType);
+        final CategoryType saved = categoryTypeService.create(categoryType);
 
         final Optional<CategoryType> oFound = categoryTypeService.get(saved.getId());
 
@@ -146,8 +148,8 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType2 = new CategoryTypeJPA(
                 null, testTypeName2, 0, true, false
         );
-        final CategoryType saved1 = categoryTypeService.save(categoryType);
-        final CategoryType saved2 = categoryTypeService.save(categoryType2);
+        final CategoryType saved1 = categoryTypeService.create(categoryType);
+        final CategoryType saved2 = categoryTypeService.create(categoryType2);
 
         final Optional<CategoryType> firstFound = categoryTypeService.get(saved1.getId());
         final Optional<CategoryType> secondFound = categoryTypeService.get(saved2.getId());
@@ -173,7 +175,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryType saved = categoryTypeService.save(categoryType);
+        final CategoryType saved = categoryTypeService.create(categoryType);
 
         final Integer savedId = saved.getId();
         Optional<CategoryType> oFound = categoryTypeService.get(savedId);
@@ -201,7 +203,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
         );
-        final CategoryType saved = categoryTypeService.save(categoryType);
+        final CategoryType saved = categoryTypeService.create(categoryType);
 
         CategoryTypeJPA categoryTypeJPA = new CategoryTypeJPA();
         categoryTypeJPA.setId(saved.getId());
@@ -225,6 +227,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(category.getType(), oFound);
 
-        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.delete(oFound.getId())); //todo change on correct exception
+        assertThrows(EmptyResultDataAccessException.class, () -> categoryTypeService.delete(oFound.getId())); //todo change on correct exception
     }
 }
