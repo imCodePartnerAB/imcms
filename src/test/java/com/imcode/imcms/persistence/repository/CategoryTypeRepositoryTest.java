@@ -43,7 +43,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNameIgnoreCase_When_CategoriesExist_ExpectedNotNullTest() {
-        final List<CategoryTypeJPA> types = categoryTypeRepository.findAll();
+        final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
 
         types.stream()
                 .map(CategoryTypeJPA::getName)
@@ -91,9 +91,10 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void removeCategoryType_When_CategoriesTypeExist_Expected_RemovedCorrectCategoryType() {
-        final List<CategoryTypeDTO> categoryTypeDTO = categoryDataInitializer.getCategoryTypesAsDTO();
-        assertFalse(categoryTypeDTO.isEmpty());
-        final CategoryType firstCategoryType = categoryTypeDTO.get(0);
+        final List<CategoryTypeJPA> categoriesTypes = categoryDataInitializer.getTypes();
+        assertFalse(categoriesTypes.isEmpty());
+
+        final CategoryType firstCategoryType = categoriesTypes.get(0);
         Integer id = firstCategoryType.getId();
         CategoryType foundCategoryType = categoryTypeRepository.findOne(firstCategoryType.getId());
 
