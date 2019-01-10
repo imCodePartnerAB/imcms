@@ -23,7 +23,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -188,7 +187,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(EmptyResultDataAccessException.class, () -> categoryService.delete(categoryId));
+        assertThrows(UnsupportedOperationException.class, () -> categoryService.delete(categoryId));
     }
 
     @Test
@@ -219,7 +218,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(EmptyResultDataAccessException.class, () -> categoryService.delete(categoryId));
+        assertThrows(UnsupportedOperationException.class, () -> categoryService.delete(categoryId));
     }
 
     @Test
@@ -250,6 +249,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(EmptyResultDataAccessException.class, () -> categoryService.delete(categoryId));
+        assertThrows(UnsupportedOperationException.class, () -> categoryService.delete(categoryId));
     }
 }
