@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.dto.FileDocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentDTO;
 import com.imcode.imcms.domain.dto.UrlDocumentDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -187,7 +188,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(UnsupportedOperationException.class, () -> categoryService.delete(categoryId));
+        assertThrows(DirectoryNotEmptyException.class, () -> categoryService.delete(categoryId));
     }
 
     @Test
@@ -218,7 +219,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(UnsupportedOperationException.class, () -> categoryService.delete(categoryId));
+        assertThrows(DirectoryNotEmptyException.class, () -> categoryService.delete(categoryId));
     }
 
     @Test
@@ -249,6 +250,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(UnsupportedOperationException.class, () -> categoryService.delete(categoryId));
+        assertThrows(DirectoryNotEmptyException.class, () -> categoryService.delete(categoryId));
     }
 }

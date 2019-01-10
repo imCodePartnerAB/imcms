@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.Category;
@@ -11,7 +12,6 @@ import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -143,7 +143,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     public void delete_When_CategoriesExist_Expect_CorrectException() {
         final CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
         initCategory(categoryTypeDTO);
-        assertThrows(EmptyResultDataAccessException.class, () -> categoryTypeService.delete(categoryTypeDTO.getId()));
+        assertThrows(DirectoryNotEmptyException.class, () -> categoryTypeService.delete(categoryTypeDTO.getId()));
     }
 
     private CategoryTypeDTO categoryTypeInitializer() {
