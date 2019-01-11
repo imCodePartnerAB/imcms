@@ -19,13 +19,14 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "categories")
+@Table(name = "categories", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "category_type_id"})})
 @EqualsAndHashCode(callSuper=false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CategoryJPA extends Category {
@@ -38,7 +39,6 @@ public class CategoryJPA extends Category {
     private Integer id;
 
     @NotNull
-    @Column(unique = true)
     private String name;
 
     private String description;
