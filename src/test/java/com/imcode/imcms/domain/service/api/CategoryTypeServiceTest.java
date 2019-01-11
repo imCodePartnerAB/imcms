@@ -12,6 +12,7 @@ import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -48,10 +49,11 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getAll_Expected_CorrectEntities() {
+    public void getAll_WhenCategoryTypeHasNotCategory_Expected_CorrectEntities() {
+        deleteCategories(categoryService.getAll());
         deleteInitData(categoryTypeRepository.findAll());
         assertTrue(categoryTypeRepository.findAll().isEmpty());
-        List<CategoryType> categoryTypes = categoriesTypesInit(2);
+        final List<CategoryType> categoryTypes = categoriesTypesInit(2);
 
         assertEquals(categoryTypes.size(), categoryTypeService.getAll().size());
     }
@@ -65,7 +67,10 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     @Test
     public void create_When_CategoryTypeNameExist_Expect_CorrectException() {
         CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
-        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.create(categoryTypeDTO));
+        final CategoryType categoryType = new CategoryTypeJPA(
+                categoryTypeDTO.getName(), 0, false, false
+        );
+        assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.create(categoryType));
     }
 
     @Test
@@ -97,7 +102,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         categoryTypeDTO1.setName(categoryTypeDTO2.getName());
 
         assertEquals(categoryTypeDTO1.getName(), categoryTypeDTO2.getName());
-        assertThrows(IllegalArgumentException.class, () -> categoryTypeService.update(categoryTypeDTO1));
+        assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.update(categoryTypeDTO1));
     }
 
     @Test
