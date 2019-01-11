@@ -20,10 +20,10 @@ import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -68,11 +68,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         categoryDataInitializer.createData(4);
     }
 
-    @AfterEach
-    public void cleanUp() {
-        //categoryDataInitializer.cleanRepositories(); todo: really need this ?
-    }
-
     @Test
     public void getAll_Expected_CorrectEntities() {
         List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
@@ -108,7 +103,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(categoryTypesDTO.get(0));
         final Category category = new CategoryJPA(firstCategoryDTO.getName(), "dummy", "", firstCategoryType);
 
-        assertThrows(IllegalArgumentException.class, () -> categoryService.save(category));
+        assertThrows(DataIntegrityViolationException.class, () -> categoryService.save(category));
     }
 
     @Test
@@ -134,17 +129,19 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         final String existName = categoriesDTO.get(1).getName();
         firstCategoryDTO.setName(existName);
 
-        assertThrows(IllegalArgumentException.class, () -> categoryService.update(firstCategoryDTO));
+        assertEquals(existName, firstCategoryDTO.getName());
+
+        assertThrows(DataIntegrityViolationException.class, () -> categoryService.update(firstCategoryDTO));
     }
 
     @Test
-    public void update_When_CategoryNameIsEmpty_Expected_CorrectException() {
+    public void update_When_CategoryNameIsEmpty_Expected_CorrectEntity() {
         List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
 
         firstCategoryDTO.setName("");
 
-        assertThrows(RuntimeException.class, () -> categoryService.update(firstCategoryDTO));
+        assertNotNull(categoryService.update(firstCategoryDTO));
     }
 
     @Test
