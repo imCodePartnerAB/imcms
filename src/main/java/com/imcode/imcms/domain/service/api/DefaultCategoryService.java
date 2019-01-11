@@ -1,13 +1,13 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +21,13 @@ class DefaultCategoryService implements CategoryService {
 
     private final CategoryRepository categoryRepository;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    DefaultCategoryService(CategoryRepository categoryRepository) {
+    DefaultCategoryService(CategoryRepository categoryRepository, ModelMapper modelMapper) {
 
         this.categoryRepository = categoryRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -42,32 +45,18 @@ class DefaultCategoryService implements CategoryService {
 
     @Override
     public Category save(Category saveMe) {
-        return new CategoryDTO(categoryRepository.save(new CategoryJPA(saveMe)));
+        return new CategoryDTO(categoryRepository.save(modelMapper.map(saveMe, CategoryJPA.class)));
     }
 
     @Override
     public Category update(Category updateMe) {
-        Integer id = updateMe.getId();
-        String name = updateMe.getName();
-        CategoryType categoryType = updateMe.getType();
-        String description = updateMe.getDescription();
-        String imageUrl = updateMe.getImageUrl();
-
-        Category receivedCategory = categoryRepository.findOne(id);
-
-        for (Category category : getAll()) {
-            if (receivedCategory.getName().equals(category.getName())) {
-                throw new IllegalArgumentException();
-            } else if (receivedCategory.getName().isEmpty()) {
-                throw new IllegalArgumentException();
-            } else {
-                receivedCategory.setName(name);
-                receivedCategory.setType(categoryType);
-                receivedCategory.setDescription(description);
-                receivedCategory.setImageUrl(imageUrl);
-            }
-        }
-        final Category updatedCategory = categoryRepository.save(new CategoryJPA(receivedCategory));
+        final Category receivedCategory = categoryRepository.findOne(updateMe.getId());
+        receivedCategory.setId(updateMe.getId());
+        receivedCategory.setName(updateMe.getName());
+        receivedCategory.setDescription(updateMe.getDescription());
+        receivedCategory.setImageUrl(updateMe.getImageUrl());
+        receivedCategory.setType(updateMe.getType());
+        final Category updatedCategory = categoryRepository.saveAndFlush(modelMapper.map(receivedCategory, CategoryJPA.class));
         return new CategoryDTO(updatedCategory);
     }
 
@@ -75,10 +64,9 @@ class DefaultCategoryService implements CategoryService {
     public void delete(int id) {
         List<Integer> categoryDocIds = categoryRepository.findCategoryDocIds(id);
         if (categoryDocIds.isEmpty()) {
-            categoryRepository.deleteDocumentCategory(id);
             categoryRepository.delete(id);
         } else {
-            throw new EmptyResultDataAccessException(id);
+            throw new DirectoryNotEmptyException("Category has documents!");
         }
     }
 }
