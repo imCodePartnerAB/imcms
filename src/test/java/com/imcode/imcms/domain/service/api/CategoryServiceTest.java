@@ -12,6 +12,7 @@ import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
@@ -122,16 +123,29 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void update_When_CategoryNameExist_Expected_CorrectException() {
+    public void update_When_CategoryNameExistInScopeExistCategoryTypeName_Expected_CorrectException() {
+        List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
+        CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
+
+        final String existName = categoriesDTO.get(1).getName();
+        final CategoryType categoryType = categoriesDTO.get(1).getType();
+        firstCategoryDTO.setName(existName);
+        firstCategoryDTO.setType(categoryType);
+        assertEquals(existName, firstCategoryDTO.getName());
+
+        assertThrows(DataIntegrityViolationException.class, () -> categoryService.update(firstCategoryDTO));
+    }
+
+    @Test
+    public void update_When_CategoryNameExistButNotInScopeExistCategoryTypeName_Expected_Updated() {
         List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
 
         final String existName = categoriesDTO.get(1).getName();
         firstCategoryDTO.setName(existName);
-
         assertEquals(existName, firstCategoryDTO.getName());
 
-        assertThrows(DataIntegrityViolationException.class, () -> categoryService.update(firstCategoryDTO));
+        assertNotNull(categoryService.update(firstCategoryDTO));
     }
 
     @Test
