@@ -37,6 +37,7 @@ public class CategoryTypeJPA extends CategoryType {
     private Integer id;
 
     @NotNull
+    @Column(unique = true)
     private String name;
 
     @Min(value = 0)
