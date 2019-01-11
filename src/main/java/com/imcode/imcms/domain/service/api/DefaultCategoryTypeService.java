@@ -1,14 +1,15 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
+import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.repository.CategoryRepository;
 import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,17 +19,21 @@ import java.util.stream.Collectors;
 
 @Service
 @Transactional
-//(propagation = Propagation.REQUIRES_NEW)
 class DefaultCategoryTypeService implements CategoryTypeService {
 
     private final CategoryTypeRepository categoryTypeRepository;
 
     private final CategoryRepository categoryRepository;
 
+    private final ModelMapper modelMapper;
+
     @Autowired
-    DefaultCategoryTypeService(CategoryTypeRepository categoryTypeRepository, CategoryRepository categoryRepository) {
+    DefaultCategoryTypeService(CategoryTypeRepository categoryTypeRepository,
+                               CategoryRepository categoryRepository,
+                               ModelMapper modelMapper) {
         this.categoryTypeRepository = categoryTypeRepository;
         this.categoryRepository = categoryRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -46,45 +51,27 @@ class DefaultCategoryTypeService implements CategoryTypeService {
 
     @Override
     public CategoryType create(CategoryType saveMe) {
-        String categoryTypeName = saveMe.getName();
-        if (categoryTypeName.isEmpty()) {
+        if (saveMe.getName().isEmpty()) {
             throw new IllegalArgumentException();
         }
-        List<CategoryType> categoriesTypeDTO = categoryTypeRepository.findAll()
-                .stream()
-                .map(CategoryTypeDTO::new)
-                .collect(Collectors.toList());
-
-        for (CategoryType categoryTypes : categoriesTypeDTO) {
-            if (categoryTypes.getName().equals(categoryTypeName)) {
-                throw new IllegalArgumentException();
-            }
-        }
-        final CategoryTypeJPA savedCategoryType = categoryTypeRepository.save(new CategoryTypeJPA(saveMe));
+        final CategoryTypeJPA savedCategoryType = categoryTypeRepository.save(
+                modelMapper.map(saveMe, CategoryTypeJPA.class)
+        );
         return new CategoryTypeDTO(savedCategoryType);
     }
 
     @Override
     public CategoryType update(CategoryType updateMe) {
-        Integer categoryTypeId = updateMe.getId();
-        String categoryTypeName = updateMe.getName();
-        boolean isCategoryTypeMultiSelect = updateMe.isMultiSelect();
-        boolean isCategoryTypeInherited = updateMe.isInherited();
-        boolean isCategoryTypeImageArchive = updateMe.isImageArchive();
+        final CategoryType receivedCategoryType = categoryTypeRepository.findOne(updateMe.getId());
+        receivedCategoryType.setId(updateMe.getId());
+        receivedCategoryType.setName(updateMe.getName());
+        receivedCategoryType.setImageArchive(updateMe.isImageArchive());
+        receivedCategoryType.setInherited(updateMe.isInherited());
+        receivedCategoryType.setMultiSelect(updateMe.isMultiSelect());
+        final CategoryTypeJPA updatedCategoryType = categoryTypeRepository.saveAndFlush(modelMapper.map(
+                receivedCategoryType, CategoryTypeJPA.class
+        ));
 
-        CategoryType receivedCategoryType = categoryTypeRepository.findOne(categoryTypeId);
-
-        for (CategoryType categoryType : getAll()) {
-            if (categoryType.getName().equals(categoryTypeName)) {
-                throw new IllegalArgumentException();
-            } else {
-                receivedCategoryType.setName(categoryTypeName);
-                receivedCategoryType.setMultiSelect(isCategoryTypeMultiSelect);
-                receivedCategoryType.setInherited(isCategoryTypeInherited);
-                receivedCategoryType.setImageArchive(isCategoryTypeImageArchive);
-            }
-        }
-        final CategoryTypeJPA updatedCategoryType = categoryTypeRepository.save(new CategoryTypeJPA(receivedCategoryType));
         return new CategoryTypeDTO(updatedCategoryType);
     }
 
@@ -93,7 +80,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         List<CategoryJPA> categories = categoryRepository.findAll();
         for (CategoryJPA category : categories) {
             if (category.getType().equals(categoryTypeRepository.findOne(id))) {
-                throw new EmptyResultDataAccessException(id);
+                throw new DirectoryNotEmptyException("CategoryType has categories!");
             }
         }
         categoryTypeRepository.delete(id);
