@@ -5,7 +5,6 @@ import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.junit.Assert;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +25,8 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
     private CategoryDataInitializer categoryDataInitializer;
 
     @BeforeEach
-    public void setUp() {
-        categoryDataInitializer.createData(4);
-    }
-
-    @AfterEach
     public void cleanUp() {
-        //categoryDataInitializer.cleanRepositories();
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
@@ -42,6 +36,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNameIgnoreCase_When_CategoriesExists_ExpectedNotNullTest() {
+        categoryDataInitializer.createData(4);
         final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
 
         types.stream()
@@ -63,6 +58,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void createCategoryType_When_CategoryTypeNotExists_Expected_CorrectCategoryType() {
+        categoryDataInitializer.createData(4);
         final String testTypeName = "test_type_name";
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
@@ -75,6 +71,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void updateCategoryType_When_CategoryTypeExists_Expected_CorrectEditedCategoryType() {
+        categoryDataInitializer.createData(4);
         final List<CategoryTypeJPA> categoriesTypes = categoryDataInitializer.getTypes();
         assertFalse(categoriesTypes.isEmpty());
         final CategoryType firstCategoryType = categoriesTypes.get(0);
@@ -90,6 +87,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void removeCategoryType_When_CategoriesTypeExists_Expected_RemovedCorrectCategoryType() {
+        categoryDataInitializer.createData(4);
         final List<CategoryTypeJPA> categoriesTypes = categoryDataInitializer.getTypes();
         assertFalse(categoriesTypes.isEmpty());
 
