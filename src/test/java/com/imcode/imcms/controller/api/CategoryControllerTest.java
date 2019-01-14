@@ -1,18 +1,47 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.api.DocumentsExistsException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import org.junit.jupiter.api.AfterEach;
+import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
+import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class CategoryControllerTest extends AbstractControllerTest {
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
 
-    @AfterEach
+    @Autowired
+    private CategoryController categoryController;
+
+    @Autowired
+    private DocumentService<DocumentDTO> documentService;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
+    @BeforeEach
     public void cleanRepos() {
         categoryDataInitializer.cleanRepositories();
     }
@@ -23,15 +52,144 @@ public class CategoryControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getAllExpectedOkAndJsonContentEqualsCategoyDtosAsJsonTest() throws Exception {
+    public void getAll_Expected_OkAndCorrectEntities() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
         categoryDataInitializer.createData(4);
-        final String expectedCategories = asJson(categoryDataInitializer.getCategoriesAsDTO());
+        final String expectedCategories = asJson(categoryController.getCategories());
         getAllExpectedOkAndJsonContentEquals(expectedCategories);
     }
 
     @Test
-    public void getAllExpectedOkAndJsonContentEqualsEmptyArrayOnNonExistingCategoryTest() throws Exception {
-        getAllExpectedOkAndJsonContentEquals("[]");
+    public void getAll_WhenCategoryNotCreated_Expected_OkAndEmptyResult() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+    }
+
+    @Test
+    public void create_WhenCategoryNotExists_Expected_OkAndCorrectEntity() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        final List<CategoryTypeJPA> typeData = categoryDataInitializer.createTypeData(2);
+        final CategoryDTO category = new CategoryDTO(new CategoryJPA(
+                null, "name", "description", "url", typeData.get(0)
+        ));
+        performPostWithContentExpectOk(category);
+
+        final List<Category> categories = categoryController.getCategories();
+
+        assertFalse(categories.isEmpty());
+        assertEquals(1, categories.size());
+    }
+
+    @Test
+    public void create_WhenCategoryNameExists_Expected_CorrectException() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        final List<CategoryTypeJPA> typeData = categoryDataInitializer.createTypeData(2);
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(2);
+
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final String existsName = categories.get(0).getName();
+        final CategoryDTO category = new CategoryDTO(new CategoryJPA(
+                null, existsName, "description", "url", typeData.get(0)
+        ));
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(category);
+
+        performRequestBuilderExpectException(DataIntegrityViolationException.class, requestBuilder);
+    }
+
+    @Test
+    public void update_WhenCategoryNameExists_Expected_CorrectException() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final Category firstCategory = categories.get(0);
+        firstCategory.setName(categories.get(1).getName());
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(firstCategory);
+
+        performRequestBuilderExpectException(DataIntegrityViolationException.class, requestBuilder);
+
+    }
+
+    @Test
+    public void update_WhenCategoryNameNotExists_Expected_OkAndUpdatedCorrectEntity() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final Category firstCategory = categories.get(0);
+        firstCategory.setName("Other name1");
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(firstCategory);
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(firstCategory));
+    }
+
+    @Test
+    public void delete_WhenCategoryHasDocument_Expected_CorrectException() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final DocumentDTO doc = documentDataInitializer.createData();
+        assertNotNull(doc);
+
+        final Category firstCategory = categories.get(0);
+        assertNotNull(firstCategory);
+
+        doc.setCategories(new HashSet<>(Collections.singleton(firstCategory)));
+        final DocumentDTO savedDoc = documentService.save(doc);
+        assertNotNull(savedDoc);
+
+        final int id = firstCategory.getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
+                controllerPath() + "/" + id
+        );
+
+        performRequestBuilderExpectException(DocumentsExistsException.class, requestBuilder);
+    }
+
+    @Test
+    public void delete_WhenCategoryHasNotDocuments_Expected_OkAndDeleted() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final int firstCategoryId = categories.get(0).getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
+                controllerPath() + "/" + firstCategoryId
+        );
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(categories.size() - 1, categoryController.getCategories().size());
+    }
+
+    @Test
+    public void getById_WhenCategoryExists_Expected_OkAndCorrectEntity() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final Category firstCategory = categories.get(0);
+        final int id = firstCategory.getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
+                controllerPath() + "/" + id
+        );
+
+        assertNotNull(requestBuilder);
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(categories.get(0)));
     }
 
 }
