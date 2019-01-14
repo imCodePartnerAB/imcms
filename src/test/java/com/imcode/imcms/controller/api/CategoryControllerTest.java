@@ -99,7 +99,24 @@ public class CategoryControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void update_WhenCategoryNameExists_Expected_CorrectException() throws Exception {
+    public void update_WhenCategoryNameExistsInCategoryType_Expected_CorrectException() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        categoryDataInitializer.createData(2);
+        final List<Category> categories = categoryController.getCategories();
+        assertFalse(categoryController.getCategories().isEmpty());
+
+        final Category firstCategory = categories.get(0);
+        firstCategory.setName(categories.get(1).getName());
+        firstCategory.setType(categories.get(1).getType());
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(firstCategory);
+
+        performRequestBuilderExpectException(DataIntegrityViolationException.class, requestBuilder);
+
+    }
+
+    @Test
+    public void update_WhenCategoryNameExistsButNotCurrentCategoryType_Expected_Updated() throws Exception {
         assertTrue(categoryController.getCategories().isEmpty());
         categoryDataInitializer.createData(2);
         final List<Category> categories = categoryController.getCategories();
@@ -110,7 +127,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(firstCategory);
 
-        performRequestBuilderExpectException(DataIntegrityViolationException.class, requestBuilder);
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(firstCategory));
 
     }
 
