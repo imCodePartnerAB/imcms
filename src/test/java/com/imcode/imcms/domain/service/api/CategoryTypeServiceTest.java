@@ -1,9 +1,9 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
-import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.Category;
@@ -36,37 +36,37 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     private CategoryService categoryService;
 
     @Test
-    public void get_When_CategoryTypeExist_Expect_Found() {
-        CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
+    public void get_When_CategoryTypeExists_Expect_Found() {
+        CategoryTypeDTO categoryTypeDTO = createCategoryType();
 
-        final Optional<CategoryType> oFound = categoryTypeService.get(categoryTypeDTO.getId());
+        final Optional<CategoryType> foundType = categoryTypeService.get(categoryTypeDTO.getId());
 
-        assertTrue(oFound.isPresent());
+        assertTrue(foundType.isPresent());
 
-        final CategoryType found = oFound.get();
-
-        assertEquals(found, categoryTypeDTO);
+        assertEquals(foundType.get(), categoryTypeDTO);
     }
 
     @Test
-    public void getAll_WhenCategoryTypeHasNotCategory_Expected_CorrectEntities() {
-        deleteCategories(categoryService.getAll());
-        deleteInitData(categoryTypeRepository.findAll());
+    public void getAll_WhenCategoryTypeExists_Expected_CorrectEntities() {
+        categoryTypeRepository.deleteAll();
         assertTrue(categoryTypeRepository.findAll().isEmpty());
         final List<CategoryType> categoryTypes = categoriesTypesInit(2);
 
         assertEquals(categoryTypes.size(), categoryTypeService.getAll().size());
+        assertNotNull(categoryTypeService.getAll());
     }
 
     @Test
-    public void create_When_NotExitBefore_Expect_Saved() {
-        CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
+    public void create_When_CategoryTypeNotExists_Expected_Saved() {
+        CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        assertNotNull(categoryTypeDTO);
         assertTrue(categoryTypeService.getAll().contains(categoryTypeDTO));
     }
 
     @Test
-    public void create_When_CategoryTypeNameExist_Expect_CorrectException() {
-        CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
+    public void create_When_CategoryTypeNameAlreadyExists_Expected_CorrectException() {
+        CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        assertNotNull(categoryTypeDTO);
         final CategoryType categoryType = new CategoryTypeJPA(
                 categoryTypeDTO.getName(), 0, false, false
         );
@@ -74,7 +74,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void create_When_CategoryTypeNameEmpty_Expect_CorrectException() {
+    public void create_When_CategoryTypeNameEmpty_Expected_CorrectException() {
         final CategoryType categoryType = new CategoryTypeJPA(
                 null, "", 0, false, false
         );
@@ -82,8 +82,8 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void update_When_CategoryTypeExist_Expect_UpdateEntity() {
-        CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
+    public void update_When_CategoryTypeExists_Expected_UpdateEntity() {
+        CategoryTypeDTO categoryTypeDTO = createCategoryType();
         categoryTypeDTO.setName("Other Test Name");
 
         final CategoryType updated = categoryTypeService.update(categoryTypeDTO);
@@ -93,9 +93,9 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void update_When_CategoryTypeNameSame_Expect_CorrectException() {
-        final CategoryTypeDTO categoryTypeDTO1 = categoryTypeInitializer();
-        final CategoryTypeDTO categoryTypeDTO2 = categoryTypeInitializer();
+    public void update_When_CategoryTypeNameDuplicated_Expected_CorrectException() {
+        final CategoryTypeDTO categoryTypeDTO1 = createCategoryType();
+        final CategoryTypeDTO categoryTypeDTO2 = createCategoryType();
 
         assertNotEquals(categoryTypeDTO1, categoryTypeDTO2);
 
@@ -106,52 +106,34 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete_When_CategoryTypeHasNotCategories_Expect_Deleted() {
-        final CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
-        initCategory(categoryTypeDTO);
+    public void delete_When_CategoryTypeHasNotCategories_Expected_Deleted() {
+        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        createCategory(categoryTypeDTO);
         final Integer savedId = categoryTypeDTO.getId();
-        Optional<CategoryType> oFound = categoryTypeService.get(savedId);
+        Optional<CategoryType> foundType = categoryTypeService.get(savedId);
 
-        assertTrue(oFound.isPresent());
+        assertTrue(foundType.isPresent());
         assertFalse(categoryService.getAll().isEmpty());
 
         deleteCategories(categoryService.getAll());
 
         assertTrue(categoryService.getAll().isEmpty());
 
-        categoryTypeService.delete(oFound.get().getId());
+        categoryTypeService.delete(foundType.get().getId());
 
-        oFound = categoryTypeService.get(savedId);
+        foundType = categoryTypeService.get(savedId);
 
-        assertFalse(oFound.isPresent());
+        assertFalse(foundType.isPresent());
     }
 
     @Test
-    public void delete_When_CategoryTypeNotBelongCategories_Expect_Deleted() {
-        final CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
-        final CategoryTypeDTO categoryTypeDTO2 = categoryTypeInitializer();
-        initCategory(categoryTypeDTO2);
-        final Integer savedId = categoryTypeDTO.getId();
-        Optional<CategoryType> oFound = categoryTypeService.get(savedId);
-
-        assertTrue(oFound.isPresent());
-        assertFalse(categoryService.getAll().isEmpty());
-
-        categoryTypeService.delete(oFound.get().getId());
-
-        oFound = categoryTypeService.get(savedId);
-
-        assertFalse(oFound.isPresent());
+    public void delete_When_CategoriesExists_Expected_CorrectException() {
+        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        createCategory(categoryTypeDTO);
+        assertThrows(CategoryAlreadyExistsException.class, () -> categoryTypeService.delete(categoryTypeDTO.getId()));
     }
 
-    @Test
-    public void delete_When_CategoriesExist_Expect_CorrectException() {
-        final CategoryTypeDTO categoryTypeDTO = categoryTypeInitializer();
-        initCategory(categoryTypeDTO);
-        assertThrows(DirectoryNotEmptyException.class, () -> categoryTypeService.delete(categoryTypeDTO.getId()));
-    }
-
-    private CategoryTypeDTO categoryTypeInitializer() {
+    private CategoryTypeDTO createCategoryType() {
         String name = "test_type_name" + System.currentTimeMillis();
         int maxChoices = 0;
         boolean inherited = false;
@@ -170,13 +152,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
                 .collect(Collectors.toList());
     }
 
-    private void deleteInitData(List<CategoryTypeJPA> categoryTypes) {
-        List<Integer> ids = categoryTypes.stream().map(CategoryType::getId).collect(Collectors.toList());
-        for (Integer id : ids) {
-            categoryTypeService.delete(id);
-        }
-    }
-
     private void deleteCategories(List<Category> categories) {
         List<Integer> ids = categories.stream().map(Category::getId).collect(Collectors.toList());
         for (Integer id : ids) {
@@ -184,7 +159,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         }
     }
 
-    private Category initCategory(CategoryTypeDTO categoryTypeDTO) {
+    private Category createCategory(CategoryTypeDTO categoryTypeDTO) {
         final CategoryDTO categoryDTO = new CategoryDTO(
                 null, "name", "description", "url", categoryTypeDTO
         );
