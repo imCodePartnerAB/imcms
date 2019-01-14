@@ -4,7 +4,6 @@ import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
-import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +25,7 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
     private CategoryDataInitializer categoryDataInitializer;
 
     @Autowired
-    private CategoryTypeService categoryTypeService;
+    private CategoryTypeController categoryTypeController;
 
     @BeforeEach
     public void prepareData() {
@@ -40,9 +39,9 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAll_Expected_OkAndCorrectEntities() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createTypeData(4);
-        final String expectedCategories = asJson(categoryTypeService.getAll());
+        final String expectedCategories = asJson(categoryTypeController.getCategoryTypes());
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
 
@@ -51,14 +50,14 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void getAll_WhenCategoryTypeNotCreated_Expected_OkAndEmptyResult() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath());
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
     }
 
     @Test
     public void create_WhenCategoryTypeNotExists_Expected_OkAndCorrectEntity() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
 
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
                 null, "name", 0, false, false
@@ -66,7 +65,7 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
         performPostWithContentExpectOk(categoryType);
 
-        final List<CategoryType> categoriesTypes = categoryTypeService.getAll();
+        final List<CategoryType> categoriesTypes = categoryTypeController.getCategoryTypes();
 
         assertFalse(categoriesTypes.isEmpty());
         assertEquals(1, categoriesTypes.size());
@@ -74,10 +73,10 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void create_WhenCategoryTypeNameExists_Expected_CorrectException() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createTypeData(2);
-        List<CategoryType> categoryTypes = categoryTypeService.getAll();
-        assertFalse(categoryTypeService.getAll().isEmpty());
+        List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
 
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
                 null, categoryTypes.get(0).getName(), 0, false, false
@@ -92,10 +91,10 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void update_WhenCategoryTypeNameExists_Expected_CorrectException() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createTypeData(2);
-        List<CategoryType> categoryTypes = categoryTypeService.getAll();
-        assertFalse(categoryTypeService.getAll().isEmpty());
+        List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
 
         CategoryType firstCategoryType = categoryTypes.get(0);
         firstCategoryType.setName(categoryTypes.get(1).getName());
@@ -107,10 +106,10 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void update_WhenCategoryTypeNameNotExists_Expected_OkAndUpdatedCorrectEntity() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createTypeData(2);
-        List<CategoryType> categoryTypes = categoryTypeService.getAll();
-        assertFalse(categoryTypeService.getAll().isEmpty());
+        List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
 
         CategoryType firstCategoryType = categoryTypes.get(0);
         firstCategoryType.setName("Other name");
@@ -123,10 +122,10 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void delete_WhenCategoryTypeHasCategories_Expected_CorrectException() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createData(2);
-        final List<CategoryType> categoryTypes = categoryTypeService.getAll();
-        assertFalse(categoryTypeService.getAll().isEmpty());
+        final List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
 
         final CategoryType firstCategoryType = categoryTypes.get(0);
         final int id = firstCategoryType.getId();
@@ -137,10 +136,10 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
     @Test
     public void delete_WhenCategoryTypeHasNotCategories_Expected_OkAndDeleted() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createTypeData(2);
-        final List<CategoryType> categoryTypes = categoryTypeService.getAll();
-        assertFalse(categoryTypeService.getAll().isEmpty());
+        final List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
 
         final CategoryType firstCategoryType = categoryTypes.get(0);
         final int id = firstCategoryType.getId();
@@ -148,15 +147,15 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
 
         performRequestBuilderExpectedOk(requestBuilder);
 
-        assertEquals(categoryTypes.size() - 1, categoryTypeService.getAll().size());
+        assertEquals(categoryTypes.size() - 1, categoryTypeController.getCategoryTypes().size());
     }
 
     @Test
     public void getById_WhenCategoryTypeExists_Expected_OkAndCorrectEntity() throws Exception {
-        assertTrue(categoryTypeService.getAll().isEmpty());
+        assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
         categoryDataInitializer.createTypeData(2);
-        final List<CategoryType> categoryTypes = categoryTypeService.getAll();
-        assertFalse(categoryTypeService.getAll().isEmpty());
+        final List<CategoryType> categoryTypes = categoryTypeController.getCategoryTypes();
+        assertFalse(categoryTypeController.getCategoryTypes().isEmpty());
 
         final CategoryType firstCategoryType = categoryTypes.get(0);
         final int id = firstCategoryType.getId();
