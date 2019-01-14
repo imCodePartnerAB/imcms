@@ -26,8 +26,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "categories", uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "category_type_id"})})
-@EqualsAndHashCode(callSuper=false)
+@Table(name = "categories",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name", "category_type_id"})})
+@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class CategoryJPA extends Category {
 
