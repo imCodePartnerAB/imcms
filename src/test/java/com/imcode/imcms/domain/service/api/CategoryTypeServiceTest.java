@@ -37,7 +37,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void get_When_CategoryTypeExists_Expect_Found() {
-        CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
 
         final Optional<CategoryType> foundType = categoryTypeService.get(categoryTypeDTO.getId());
 
@@ -58,14 +58,14 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void create_When_CategoryTypeNotExists_Expected_Saved() {
-        CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
         assertNotNull(categoryTypeDTO);
         assertTrue(categoryTypeService.getAll().contains(categoryTypeDTO));
     }
 
     @Test
     public void create_When_CategoryTypeNameAlreadyExists_Expected_CorrectException() {
-        CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
         assertNotNull(categoryTypeDTO);
         final CategoryType categoryType = new CategoryTypeJPA(
                 categoryTypeDTO.getName(), 0, false, false
@@ -83,7 +83,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void update_When_CategoryTypeExists_Expected_UpdateEntity() {
-        CategoryTypeDTO categoryTypeDTO = createCategoryType();
+        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
         categoryTypeDTO.setName("Other Test Name");
 
         final CategoryType updated = categoryTypeService.update(categoryTypeDTO);
@@ -94,15 +94,13 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void update_When_CategoryTypeNameDuplicated_Expected_CorrectException() {
-        final CategoryTypeDTO categoryTypeDTO1 = createCategoryType();
-        final CategoryTypeDTO categoryTypeDTO2 = createCategoryType();
+        final List<CategoryType> categoryTypes = categoriesTypesInit(2);
+        final CategoryType categoryType = categoryTypes.get(0);
 
-        assertNotEquals(categoryTypeDTO1, categoryTypeDTO2);
+        categoryType.setName(categoryTypes.get(1).getName());
 
-        categoryTypeDTO1.setName(categoryTypeDTO2.getName());
-
-        assertEquals(categoryTypeDTO1.getName(), categoryTypeDTO2.getName());
-        assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.update(categoryTypeDTO1));
+        assertEquals(categoryType.getName(), categoryTypes.get(1).getName());
+        assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.update(categoryType));
     }
 
     @Test
