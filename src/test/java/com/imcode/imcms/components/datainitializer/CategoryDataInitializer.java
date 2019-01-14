@@ -39,6 +39,13 @@ public class CategoryDataInitializer extends TestDataCleaner {
         return categories;
     }
 
+    public List<CategoryTypeJPA> createTypeData(Integer elementsCount) {
+        cleanRepositories();
+        this.elementsCount = elementsCount;
+        types = recreateTypes();
+        return types;
+    }
+
     public List<CategoryTypeJPA> getTypes() {
         return types;
     }
