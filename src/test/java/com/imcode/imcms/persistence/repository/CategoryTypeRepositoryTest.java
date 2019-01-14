@@ -18,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 @Transactional
 public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
+    private static int COUNT_DATA = 4;
+
     @Autowired
     private CategoryTypeRepository categoryTypeRepository;
 
@@ -36,7 +38,8 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNameIgnoreCase_When_CategoriesExists_ExpectedNotNullTest() {
-        categoryDataInitializer.createData(4);
+        categoryDataInitializer.createData(COUNT_DATA);
+        assertEquals(4, COUNT_DATA);
         final List<CategoryTypeJPA> types = categoryDataInitializer.getTypes();
 
         types.stream()
@@ -58,7 +61,8 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void createCategoryType_When_CategoryTypeNotExists_Expected_CorrectCategoryType() {
-        categoryDataInitializer.createData(4);
+        categoryDataInitializer.createData(COUNT_DATA);
+        assertEquals(4, COUNT_DATA);
         final String testTypeName = "test_type_name";
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
                 null, testTypeName, 0, false, false
@@ -71,7 +75,8 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void updateCategoryType_When_CategoryTypeExists_Expected_CorrectEditedCategoryType() {
-        categoryDataInitializer.createData(4);
+        categoryDataInitializer.createData(COUNT_DATA);
+        assertEquals(4, COUNT_DATA);
         final List<CategoryTypeJPA> categoriesTypes = categoryDataInitializer.getTypes();
         assertFalse(categoriesTypes.isEmpty());
         final CategoryType firstCategoryType = categoriesTypes.get(0);
@@ -87,7 +92,8 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void removeCategoryType_When_CategoriesTypeExists_Expected_RemovedCorrectCategoryType() {
-        categoryDataInitializer.createData(4);
+        categoryDataInitializer.createData(COUNT_DATA);
+        assertEquals(4, COUNT_DATA);
         final List<CategoryTypeJPA> categoriesTypes = categoryDataInitializer.getTypes();
         assertFalse(categoriesTypes.isEmpty());
 
