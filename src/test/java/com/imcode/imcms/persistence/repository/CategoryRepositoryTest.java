@@ -6,7 +6,6 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
 import com.imcode.imcms.persistence.entity.Meta;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +32,13 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
     private CategoryDataInitializer categoryDataInitializer;
 
     @BeforeEach
-    public void setUp() {
-        categoryDataInitializer.createData(4);
-    }
-
-    @AfterEach
     public void cleanUp() {
-        //categoryDataInitializer.cleanRepositories(); todo: really need this?
+        categoryDataInitializer.cleanRepositories();
     }
 
     @Test
     public void createCategory_When_CategoryNotExist_Expected_Created() {
+        categoryDataInitializer.createData(4);
         final List<CategoryTypeJPA> categories = categoryDataInitializer.getTypes();
         final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(categories.get(0));
         final CategoryJPA category = new CategoryJPA("name", "dummy", "", firstCategoryType);
@@ -55,6 +50,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void updateCategory_When_CategoryExist_Expected_UpdatedEntity() {
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategoryDTO = new CategoryJPA(categories.get(0));
 
@@ -66,11 +62,12 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         CategoryJPA updateCategory = categoryRepository.save(firstCategoryDTO);
 
         assertNotNull(updateCategory);
-        assertTrue(categoryRepository.findAll().contains(updateCategory));
+        assertEquals(updateCategory, categoryRepository.findOne(updateCategory.getId()));
     }
 
     @Test
     public void findByType_When_CategoryExist_Expected_FoundCorrectEntity() {
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategoryDTO = new CategoryJPA(categories.get(0));
 
@@ -84,6 +81,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNameAndType_When_CategoryExist_Expected_CorrectEntity() {
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategory = new CategoryJPA(categories.get(0));
 
@@ -100,6 +98,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByNameAndType_When_CategoryNameNotExist_Expected_NullCategory() {
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategory = new CategoryJPA(categories.get(0));
 
@@ -112,7 +111,8 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findCategoryDocIds_When_CategoryHasDocs_Expected_CorrectCategoryDocId() {
+    public void findCategoryDocIds_When_CategoryHasDocs_Expected_CorrectCategoryDocId() { //todo need add init document?
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategory = new CategoryJPA(categories.get(0));
 
@@ -138,6 +138,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteDocumentCategory_When_DocumenthasCategory_Expected_Deleted() {
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategory = new CategoryJPA(categories.get(0));
 
@@ -175,6 +176,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteByDocIdAndCategoryId_When_DocumenthasCategory_Expected_DeletedCorrectEntity() {
+        categoryDataInitializer.createData(4);
         final List<CategoryJPA> categories = categoryRepository.findAll();
         final CategoryJPA firstCategory = new CategoryJPA(categories.get(0));
 
