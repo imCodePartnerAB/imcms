@@ -108,16 +108,10 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     @Test
     public void delete_When_CategoryTypeHasNotCategories_Expected_Deleted() {
         final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-        createCategory(categoryTypeDTO);
         final Integer savedId = categoryTypeDTO.getId();
         Optional<CategoryType> foundType = categoryTypeService.get(savedId);
 
         assertTrue(foundType.isPresent());
-        assertFalse(categoryService.getAll().isEmpty());
-
-        deleteCategories(categoryService.getAll());
-
-        assertTrue(categoryService.getAll().isEmpty());
 
         categoryTypeService.delete(foundType.get().getId());
 
@@ -150,13 +144,6 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
                 .mapToObj(i -> new CategoryTypeJPA("CategoryType" + i + "Name", 0, false, false))
                 .map(categoryTypeRepository::saveAndFlush)
                 .collect(Collectors.toList());
-    }
-
-    private void deleteCategories(List<Category> categories) {
-        List<Integer> ids = categories.stream().map(Category::getId).collect(Collectors.toList());
-        for (Integer id : ids) {
-            categoryService.delete(id);
-        }
     }
 
     private Category createCategory(CategoryTypeDTO categoryTypeDTO) {
