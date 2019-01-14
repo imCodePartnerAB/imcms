@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.CategoryAlreadyExistsException;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
-import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
@@ -80,7 +80,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         List<CategoryJPA> categories = categoryRepository.findAll();
         for (CategoryJPA category : categories) {
             if (category.getType().equals(categoryTypeRepository.findOne(id))) {
-                throw new DirectoryNotEmptyException("CategoryType has categories!");
+                throw new CategoryAlreadyExistsException("CategoryType has categories!");
             }
         }
         categoryTypeRepository.delete(id);
