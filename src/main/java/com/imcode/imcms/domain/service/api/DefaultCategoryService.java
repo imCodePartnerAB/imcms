@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.DocumentsExistsException;
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.domain.exception.DirectoryNotEmptyException;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
@@ -66,7 +66,7 @@ class DefaultCategoryService implements CategoryService {
         if (categoryDocIds.isEmpty()) {
             categoryRepository.delete(id);
         } else {
-            throw new DirectoryNotEmptyException("Category has documents!");
+            throw new DocumentsExistsException("Category has documents!");
         }
     }
 }
