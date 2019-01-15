@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.DocumentsExistsException;
+import com.imcode.imcms.api.DataUseCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
@@ -193,7 +193,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
                 controllerPath() + "/" + id
         );
 
-        performRequestBuilderExpectException(DocumentsExistsException.class, requestBuilder);
+        performRequestBuilderExpectException(DataUseCategoryException.class, requestBuilder);
     }
 
     @Test

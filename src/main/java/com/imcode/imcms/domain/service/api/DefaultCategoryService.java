@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.api.DocumentsExistsException;
+import com.imcode.imcms.api.DataUseCategoryException;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
@@ -66,7 +66,7 @@ class DefaultCategoryService implements CategoryService {
         if (categoryDocIds.isEmpty()) {
             categoryRepository.delete(id);
         } else {
-            throw new DocumentsExistsException("Category has documents!");
+            throw new DataUseCategoryException("Category has documents!");
         }
     }
 }

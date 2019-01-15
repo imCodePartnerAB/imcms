@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.DocumentsExistsException;
+import com.imcode.imcms.api.DataUseCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
@@ -194,6 +194,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         assertFalse(categoryDocIds.isEmpty());
         assertTrue(categoryDocIds.contains(docId));
 
-        assertThrows(DocumentsExistsException.class, () -> categoryService.delete(categoryId));
+        assertThrows(DataUseCategoryException.class, () -> categoryService.delete(categoryId));
     }
 }
