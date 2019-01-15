@@ -3,9 +3,9 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.DocumentsExistsException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
+import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.domain.dto.CategoryDTO;
-import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.domain.service.DocumentService;
@@ -52,23 +52,24 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private DocumentService<DocumentDTO> documentService;
 
+    @Autowired
+    private CategoryTypeDataInitializer categoryTypeDataInitializer;
+
     @BeforeEach
     public void cleanData() {
         categoryDataInitializer.cleanRepositories();
+        categoryTypeDataInitializer.cleanRepositories();
     }
 
     @Test
     public void getAll_When_CategoriesExists_Expected_CorrectEntities() {
-        categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
-        final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
-        assertEquals(categoriesDTO.size(), categoryService.getAll().size());
+        List<CategoryJPA> categories = categoryDataInitializer.createData(COUNT_DATA);
+        assertEquals(categories.size(), categoryService.getAll().size());
     }
 
     @Test
     public void getById_When_CategoryExist_Expect_CorrectEntity() {
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
         final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
 
@@ -80,11 +81,10 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void save_When_CategoryNotExistBefore_Expect_Saved() {
-        categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
-        final List<CategoryTypeDTO> categoryTypesDTO = categoryDataInitializer.getCategoryTypesAsDTO();
-        final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(categoryTypesDTO.get(0));
-        final Category category = new CategoryJPA("name", "dummy", "", firstCategoryType);
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
+        assertNotNull(typesData);
+        final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(typesData.get(0));
+        final Category category = new CategoryJPA("name", "dummy", "/..", firstCategoryType);
         final Category savedCategory = categoryService.save(category);
 
         assertTrue(categoryService.getAll().contains(savedCategory));
@@ -93,13 +93,10 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void save_When_CategoryNameExist_Expect_CorrectException() {
-        categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
-        final List<CategoryTypeDTO> categoryTypesDTO = categoryDataInitializer.getCategoryTypesAsDTO();
-        final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
-        final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
-        final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(categoryTypesDTO.get(0));
-        final Category category = new CategoryJPA(firstCategoryDTO.getName(), "dummy", "", firstCategoryType);
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(COUNT_DATA);
+        final Category firstCategory = categories.get(0);
+        final CategoryTypeJPA firstCategoryType = categories.get(0).getType();
+        final Category category = new CategoryJPA(firstCategory.getName(), "dummy", "/..", firstCategoryType);
 
         assertThrows(DataIntegrityViolationException.class, () -> categoryService.save(category));
     }
@@ -107,7 +104,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void update_When_CategoryExists_Expected_UpdatedCorrectEntity() {
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
         final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
         final String otherName = "Other_category_name";
@@ -124,7 +120,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void update_When_CategoryNameNotUniqueInCategoryType_Expected_CorrectException() {
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
         final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
 
@@ -140,7 +135,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void update_When_CategoryNameExistButNotCurrentCategoryType_Expected_Updated() {
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
         final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
 
@@ -154,7 +148,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void update_When_CategoryNameIsEmpty_Expected_CorrectEntity() {
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
         final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
 
@@ -166,7 +159,6 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void delete_When_CategoryNotAssignedToAnyDocument_Expect_Deleted() {
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
         final List<CategoryDTO> categoriesDTO = categoryDataInitializer.getCategoriesAsDTO();
         final CategoryDTO firstCategoryDTO = categoriesDTO.get(0);
         final Integer firstCategoryId = firstCategoryDTO.getId();
@@ -179,12 +171,11 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void delete_When_CategoryHasDocuments_Expect_CorrectException() {
+    public void delete_When_DocumentsUsingCategory_Expect_CorrectException() {
         final UserDomainObject user = new UserDomainObject(1);
         user.addRoleId(Roles.SUPER_ADMIN.getId());
         Imcms.setUser(user);
         categoryDataInitializer.createData(COUNT_DATA);
-        assertEquals(4, COUNT_DATA);
 
         final DocumentDTO doc = documentDataInitializer.createData();
 
