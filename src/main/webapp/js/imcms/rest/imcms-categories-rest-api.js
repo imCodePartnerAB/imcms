@@ -7,5 +7,5 @@ define("imcms-categories-rest-api", ["imcms-rest-api"], function (rest) {
         return rest.ajax.call({url: url + '/' + category.id, type: 'DELETE', json: true});
     };
 
-    return new api;
+    return api;
 });
