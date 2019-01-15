@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryService;
@@ -9,7 +10,7 @@ import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
-import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,8 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,49 +25,61 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional
 public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
+    private static int COUNT_DATA = 3;
+
     @Autowired
     private CategoryTypeService categoryTypeService;
 
     @Autowired
-    private CategoryTypeRepository categoryTypeRepository;
+    private CategoryService categoryService;
 
     @Autowired
-    private CategoryService categoryService;
+    private CategoryTypeDataInitializer categoryTypeDataInitializer;
+
+    @BeforeEach
+    public void cleanUp() {
+        categoryTypeDataInitializer.cleanRepositories();
+    }
 
     @Test
     public void get_When_CategoryTypeExists_Expect_Found() {
-        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-
-        final Optional<CategoryType> foundType = categoryTypeService.get(categoryTypeDTO.getId());
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final List<CategoryTypeDTO> categoryTypesAsDTO = categoryTypeDataInitializer.getCategoryTypesAsDTO();
+        final CategoryType firstCategoryType = categoryTypesAsDTO.get(0);
+        final Optional<CategoryType> foundType = categoryTypeService.get(firstCategoryType.getId());
 
         assertTrue(foundType.isPresent());
 
-        assertEquals(foundType.get(), categoryTypeDTO);
+        assertEquals(foundType.get(), firstCategoryType);
     }
 
     @Test
     public void getAll_WhenCategoryTypeExists_Expected_CorrectEntities() {
-        categoryTypeRepository.deleteAll();
-        assertTrue(categoryTypeRepository.findAll().isEmpty());
-        final List<CategoryType> categoryTypes = categoriesTypesInit(2);
-
-        assertEquals(categoryTypes.size(), categoryTypeService.getAll().size());
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
         assertNotNull(categoryTypeService.getAll());
+        assertEquals(typesData.size(), categoryTypeService.getAll().size());
     }
 
     @Test
     public void create_When_CategoryTypeNotExists_Expected_Saved() {
-        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-        assertNotNull(categoryTypeDTO);
-        assertTrue(categoryTypeService.getAll().contains(categoryTypeDTO));
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
+                null, "name", 0, false, false
+        ));
+        assertNotNull(categoryTypeService.create(categoryType));
+        assertEquals(COUNT_DATA + 1, categoryTypeService.getAll().size());
     }
 
     @Test
     public void create_When_CategoryTypeNameAlreadyExists_Expected_CorrectException() {
-        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-        assertNotNull(categoryTypeDTO);
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+
         final CategoryType categoryType = new CategoryTypeJPA(
-                categoryTypeDTO.getName(), 0, false, false
+                typesData.get(0).getName(), 0, false, false
         );
         assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.create(categoryType));
     }
@@ -83,65 +94,55 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void update_When_CategoryTypeExists_Expected_UpdateEntity() {
-        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-        categoryTypeDTO.setName("Other Test Name");
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final CategoryType firstCategoryType = typesData.get(0);
+        firstCategoryType.setName("Other Test Name");
 
-        final CategoryType updated = categoryTypeService.update(categoryTypeDTO);
+        final CategoryType updated = categoryTypeService.update(firstCategoryType);
 
         assertNotNull(updated);
-        assertEquals(categoryTypeDTO.getId(), updated.getId());
+        assertEquals(firstCategoryType.getId(), updated.getId());
     }
 
     @Test
     public void update_When_CategoryTypeNameDuplicated_Expected_CorrectException() {
-        final List<CategoryType> categoryTypes = categoriesTypesInit(2);
-        final CategoryType categoryType = categoryTypes.get(0);
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final CategoryType firstCategoryType = typesData.get(0);
 
-        categoryType.setName(categoryTypes.get(1).getName());
+        firstCategoryType.setName(typesData.get(1).getName());
 
-        assertEquals(categoryType.getName(), categoryTypes.get(1).getName());
-        assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.update(categoryType));
+        assertEquals(firstCategoryType.getName(), typesData.get(1).getName());
+        assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.update(firstCategoryType));
     }
 
     @Test
     public void delete_When_CategoryTypeHasNotCategories_Expected_Deleted() {
-        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-        final Integer savedId = categoryTypeDTO.getId();
-        Optional<CategoryType> foundType = categoryTypeService.get(savedId);
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final int firstCategoryTypeId = typesData.get(0).getId();
+        Optional<CategoryType> foundType = categoryTypeService.get(firstCategoryTypeId);
 
         assertTrue(foundType.isPresent());
 
         categoryTypeService.delete(foundType.get().getId());
 
-        foundType = categoryTypeService.get(savedId);
+        foundType = categoryTypeService.get(firstCategoryTypeId);
 
         assertFalse(foundType.isPresent());
     }
 
     @Test
     public void delete_When_CategoriesExists_Expected_CorrectException() {
-        final CategoryTypeDTO categoryTypeDTO = createCategoryType();
-        createCategory(categoryTypeDTO);
-        assertThrows(CategoryAlreadyExistsException.class, () -> categoryTypeService.delete(categoryTypeDTO.getId()));
-    }
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
+        assertEquals(3, typesData.size());
+        final List<CategoryTypeDTO> categoryTypesAsDTO = categoryTypeDataInitializer.getCategoryTypesAsDTO();
+        assertEquals(typesData.size(), categoryTypesAsDTO.size());
 
-    private CategoryTypeDTO createCategoryType() {
-        String name = "test_type_name" + System.currentTimeMillis();
-        int maxChoices = 0;
-        boolean inherited = false;
-        boolean imageArchive = false;
-        final CategoryTypeJPA categoryType = new CategoryTypeJPA(
-                null, name, maxChoices, inherited, imageArchive
-        );
-
-        return new CategoryTypeDTO(categoryTypeService.create(categoryType));
-    }
-
-    private List<CategoryType> categoriesTypesInit(int countElements) {
-        return IntStream.range(0, countElements)
-                .mapToObj(i -> new CategoryTypeJPA("CategoryType" + i + "Name", 0, false, false))
-                .map(categoryTypeRepository::saveAndFlush)
-                .collect(Collectors.toList());
+        final CategoryTypeDTO firstCategoryType = categoryTypesAsDTO.get(0);
+        createCategory(firstCategoryType);
+        assertThrows(CategoryAlreadyExistsException.class, () -> categoryTypeService.delete(firstCategoryType.getId()));
     }
 
     private Category createCategory(CategoryTypeDTO categoryTypeDTO) {
