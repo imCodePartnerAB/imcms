@@ -431,7 +431,13 @@ const texts = {
 
             },
             categories: {
-                name: 'Kategorier'
+                name: 'Kategorier',
+                titleCategoryType: "Kategori typ",
+                titleCategory: "Kategori",
+                createButtonName: "Skapa",
+                editButtonName: "Redigera",
+                removeButtonName: "Ta bort",
+                viewButtonName: "Visa"
             },
             profiles: {
                 name: 'Profiler',
@@ -919,7 +925,13 @@ const texts = {
 
             },
             categories: {
-                name: 'Categories'
+                name: 'Categories',
+                titleCategoryType: "Category type",
+                titleCategory: "Category",
+                createButtonName: "Create",
+                editButtonName: "Edit",
+                removeButtonName: "Remove",
+                viewButtonName: "View"
             },
             profiles: {
                 name: 'Profiles',
