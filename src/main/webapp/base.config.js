@@ -185,6 +185,7 @@ module.exports = {
                                 'imcms-rule-editor',
                                 'imcms-rule-to-row-transformer',
                                 'imcms-field-wrapper',
+                                'imcms-category-types-editor',
                             ]
                         },
                         windows: {
