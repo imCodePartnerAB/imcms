@@ -5,21 +5,83 @@
 define(
     'imcms-categories-admin-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-field-wrapper',
-        'imcms-bem-builder', 'jquery'],
-    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $) {
+        'imcms-bem-builder', 'jquery', 'imcms-category-types-rest-api', 'imcms-categories-rest-api',
+        'imcms-category-types-editor'],
+    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor) {
 
         texts = texts.superAdmin.categories;
 
+        let $categoryTypeSelect;
+        let createContainer;
+
+        var categoryTypesLoader = {
+            categoryType: false,
+            callback: [],
+            whenCtgTypesLoaded: function (callback) {
+                (this.categoryType) ? callback(this.categoryType) : this.callback.push(callback);
+            },
+            runCallbacks: function (categoryTypes) {
+                this.categoryType = categoryTypes;
+
+                this.callback.forEach(function (callback) {
+                    callback(categoryTypes)
+                })
+            }
+        };
+
+        typesRestApi.read().done(function (ctgTypes) {
+            categoryTypesLoader.runCallbacks(ctgTypes);
+        });
+
+
+        function buildViewCategoriesTypes() {
+            $categoryTypeSelect = components.selects.multipleSelect('<div>', {
+                text: texts.chooseType
+            });
+
+            categoryTypesLoader.whenCtgTypesLoaded(function (ctgTypes) {
+                let categoriesTypesDataMapped = ctgTypes.map(function (categoryType) {
+                    return {
+                        text: categoryType.name,
+                        value: categoryType.id
+                    }
+                });
+
+                components.selects.addOptionsToSelect(categoriesTypesDataMapped, $categoryTypeSelect);
+            });
+
+            return $categoryTypeSelect;
+        }
+
+        function onCreateNewCategoryType() {
+
+            typeEditor.editCategoryType($('<div>'), {
+                id: null,
+                name: '',
+                singleSelect: '',
+                multiSelect: '',
+                inherited: false,
+                imageArchive: false
+
+            });
+        }
+
+        function create() {
+            createContainer = typeEditor.buildCategoryTypeCreateContainer();
+            return createContainer;
+        }
+
         function buildCategoryTypeButtonsContainer() {
+
+            function clickOn() {
+                return createContainer.css('display', 'inline-block').slideDown();
+            }
 
             function buildCategoryTypeCreateButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.createButtonName,
-                    click: function () {
-
-                    }
+                    click: clickOn
                 });
-
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
@@ -37,7 +99,7 @@ define(
 
             function buildCategoryTypeRemoveButton() {
                 let $button = components.buttons.positiveButton({
-                    text: 'BUtton',
+                    text: texts.removeButtonName,
                     click: function () {
 
                     }
@@ -120,7 +182,10 @@ define(
 
         return new SuperAdminTab(texts.name, [
             buildCategoryTypeButtonsContainer(),
-            buildCategoryButtonsContainer()
+            buildCategoryButtonsContainer(),
+            buildViewCategoriesTypes(),
+            create()
+            //buildCategoryTypeCreateContainer()
         ]);
     }
 );
