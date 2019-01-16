@@ -931,7 +931,33 @@ const texts = {
                 createButtonName: "Create",
                 editButtonName: "Edit",
                 removeButtonName: "Remove",
-                viewButtonName: "View"
+                viewButtonName: "View",
+                chooseType: 'Choose Category Type',
+                chooseCategory: 'Choose Category',
+                saveButton: 'Save',
+                cancelButton: 'Cancel',
+                warnCancelMessage: 'Do you really want to cancel this ?',
+                duplicateErrorName: 'There is already a category type with the name. Please choose a different name!',
+                sections: {
+                    createCategoryType: {
+                        title: 'Create category type',
+                        name: 'Category type name',
+                        inherited: 'Inherited to new documents',
+                        imageArchive: 'Used by image archive',
+                        singleSelect: 'Single select',
+                        multiSelect: 'Multi select',
+                    },
+                    removeCategoryType: {
+                        removeButton: 'Remove'
+                    },
+                    createCategory: {
+                        title: 'Create category',
+                        name: 'Category name',
+                        description: 'Description',
+                        icon: 'Icon',
+                        categoryType: 'Add to category type'
+                    }
+                }
             },
             profiles: {
                 name: 'Profiles',
