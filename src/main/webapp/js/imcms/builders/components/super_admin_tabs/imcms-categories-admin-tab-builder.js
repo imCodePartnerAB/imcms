@@ -13,51 +13,54 @@ define(
 
         let $categoryTypeSelect;
         let createContainer;
-
-        var categoryTypesLoader = {
-            categoryType: false,
-            callback: [],
-            whenCtgTypesLoaded: function (callback) {
-                (this.categoryType) ? callback(this.categoryType) : this.callback.push(callback);
-            },
-            runCallbacks: function (categoryTypes) {
-                this.categoryType = categoryTypes;
-
-                this.callback.forEach(function (callback) {
-                    callback(categoryTypes)
-                })
-            }
-        };
-
-        typesRestApi.read().done(function (ctgTypes) {
-            categoryTypesLoader.runCallbacks(ctgTypes);
-        });
-
+        let currentCtgType;
 
         function buildViewCategoriesTypes() {
-            $categoryTypeSelect = components.selects.multipleSelect('<div>', {
-                text: texts.chooseType
+
+            var onSelected = function (value) {
+                typesRestApi.getById(value).done(function (ctgType) {
+                    currentCtgType = ctgType;
+                    let edit = typeEditor.editCategoryType($('<div>'), {
+                        id: currentCtgType.id,
+                        name: currentCtgType.name,
+                        singleSelect: currentCtgType.singleSelect,
+                        multiSelect: currentCtgType.multiSelect,
+                        inherited: currentCtgType.inherited,
+                        imageArchive: currentCtgType.imageArchive
+
+                    });
+                    return edit;
+                })
+            };
+
+            let categoryTypeSelect = components.selects.selectContainer('<div>', {
+                id: "types-filter",
+                name: "types-filter",
+                emptySelect: true,
+                text: texts.chooseType,
+                onSelected: onSelected
             });
 
-            categoryTypesLoader.whenCtgTypesLoaded(function (ctgTypes) {
+
+            typesRestApi.read().done(function (ctgTypes) {
                 let categoriesTypesDataMapped = ctgTypes.map(function (categoryType) {
                     return {
                         text: categoryType.name,
-                        value: categoryType.id
+                        'data-value': categoryType.id
                     }
                 });
 
-                components.selects.addOptionsToSelect(categoriesTypesDataMapped, $categoryTypeSelect);
+                components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onSelected);
             });
 
-            return $categoryTypeSelect;
+            return categoryTypeSelect;
+
         }
 
         let view;
-
         function buildViewContainer() {
             return view = new BEM({
-                block: 'container-block',
+                block: 'shows-block',
                 elements: {
                     'view': buildViewCategoriesTypes()
                 }
@@ -65,8 +68,9 @@ define(
         }
 
         function onCreateNewCategoryType() {
-
-            typeEditor.editCategoryType($('<div>'), {
+            view.css('display', 'none').slideUp('fast');
+            createContainer.css('display', 'inline-block').slideDown();
+            typeEditor.viewCategoryType($('<div>'), {
                 id: null,
                 name: '',
                 singleSelect: null,
@@ -92,27 +96,28 @@ define(
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
-            function slideDownViewContainer() {
-                createContainer.slideUp('fast');
+            function showCategoryTypes() {
+                createContainer.css('display', 'none').slideUp('fast');
                 return view.css('display', 'inline-block').slideDown();
             }
 
             function buildCategoryTypeEditButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.editButtonName,
-                    click: slideDownViewContainer
+                    click: showCategoryTypes
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
+            function showCtgTypeRemoveContainer() {
+
+            }
 
             function buildCategoryTypeRemoveButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.removeButtonName,
-                    click: function () {
-
-                    }
+                    click: showCtgTypeRemoveContainer
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
