@@ -53,44 +53,54 @@ define(
             return $categoryTypeSelect;
         }
 
+        let view;
+
+        function buildViewContainer() {
+            return view = new BEM({
+                block: 'container-block',
+                elements: {
+                    'view': buildViewCategoriesTypes()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'});
+        }
+
         function onCreateNewCategoryType() {
 
             typeEditor.editCategoryType($('<div>'), {
                 id: null,
                 name: '',
-                singleSelect: '',
-                multiSelect: '',
-                inherited: false,
-                imageArchive: false
+                singleSelect: null,
+                multiSelect: null,
+                inherited: null,
+                imageArchive: null
 
             });
         }
 
-        function create() {
+        function showCtgTypeCreateContainer() {
             createContainer = typeEditor.buildCategoryTypeCreateContainer();
             return createContainer;
         }
 
         function buildCategoryTypeButtonsContainer() {
 
-            function clickOn() {
-                return createContainer.css('display', 'inline-block').slideDown();
-            }
-
             function buildCategoryTypeCreateButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.createButtonName,
-                    click: clickOn
+                    click: onCreateNewCategoryType
                 });
                 return components.buttons.buttonsContainer('<div>', [$button]);
+            }
+
+            function slideDownViewContainer() {
+                createContainer.slideUp('fast');
+                return view.css('display', 'inline-block').slideDown();
             }
 
             function buildCategoryTypeEditButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.editButtonName,
-                    click: function () {
-
-                    }
+                    click: slideDownViewContainer
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
@@ -183,9 +193,8 @@ define(
         return new SuperAdminTab(texts.name, [
             buildCategoryTypeButtonsContainer(),
             buildCategoryButtonsContainer(),
-            buildViewCategoriesTypes(),
-            create()
-            //buildCategoryTypeCreateContainer()
+            showCtgTypeCreateContainer(),
+            buildViewContainer()
         ]);
     }
 );
