@@ -63,10 +63,6 @@ define(
             let inherited = $inherited.isChecked();
             let imageArchive = $imageArchive.isChecked();
 
-            if (!name) {
-                return;
-            }
-
             let currentCtgTypeToSave = {
                 id: currentCategoryType.id,
                 name: name,
@@ -77,9 +73,9 @@ define(
             if (currentCtgTypeToSave.id) {
                 typesRestApi.replace(currentCtgTypeToSave).success(function (savedCategoryType) {
                     currentCategoryType = savedCategoryType;
-                    $categoryTypeRow.find('.type-create-block__field-name').text(currentCategoryType.name);
-                    $inherited.find('.type-create-block__inherited').checked(currentCategoryType.inherited);
-                    $imageArchive.find('.type-create-block__inherited').checked(currentCategoryType.inherited);
+                    $categoryTypeItem.find('.type-create-block__field-name').text(currentCategoryType.name);
+                    $categoryTypeItem.find('.type-create-block__inherited').checked(currentCategoryType.inherited);
+                    $categoryTypeItem.find('.type-create-block__imageArchive').checked(currentCategoryType.imageArchive);
                     onCategoryTypeView = onCategoryTypeSimpleView;
                     prepareCategoryTypeView();
                 }).error(function () {
@@ -87,9 +83,7 @@ define(
                 });
             } else {
                 typesRestApi.create(currentCtgTypeToSave).success(function (categoryType) {
-                    $categoryTypeRow = categoryType;
-
-                    $container.parent().find('.imcms-drop-down-list__select-item').append($categoryTypeRow);
+                    $categoryTypeItem = categoryType;
 
                     onCategoryTypeView = onCategoryTypeSimpleView;
                     prepareCategoryTypeView();
@@ -100,7 +94,6 @@ define(
 
 
         }
-
 
         function getOnWarnCancel(onConfirm) {
             return function () {
@@ -122,7 +115,7 @@ define(
                     click: getOnWarnCancel(function () {
                         onCategoryTypeView = onCategoryTypeSimpleView;
 
-                        if (currentProfile.id) {
+                        if (currentCategoryType.id) {
                             prepareCategoryTypeView();
                             $container.slideUp();
 
@@ -136,14 +129,14 @@ define(
             ]);
         }
 
+
         function prepareCategoryTypeView() {
             onEditDelegate = onSimpleEdit;
 
-            $categoryTypeRow.parent()
-                .find('.imcms-drop-down-list__select-item-value')
+            $categoryTypeItem.find('.imcms-drop-down-list__select-item-value')
                 .removeClass('imcms-drop-down-list__select-item-value');
 
-            $categoryTypeRow.addClass('imcms-drop-down-list__select-item-value');
+            $categoryTypeItem.addClass('imcms-drop-down-list__item');
 
             $typeNameRow.setValue(currentCategoryType.name);
             $singleSelect.setChecked(currentCategoryType.singleSelect);
@@ -160,13 +153,13 @@ define(
         function onCategoryTypeSimpleView($categoryTypeRowElement, categoryType) {
             if (currentCategoryType && currentCategoryType.id === categoryType.id) return;
             currentCategoryType = categoryType;
-            $categoryTypeRow = $categoryTypeRowElement;
+            $categoryTypeItem = $categoryTypeRowElement;
 
             prepareCategoryTypeView();
         }
 
         var $container;
-        var $categoryTypeRow;
+        var $categoryTypeItem;
         var currentCategoryType;
         var onCategoryTypeView = onCategoryTypeSimpleView;
 
@@ -195,7 +188,7 @@ define(
 
         function onSimpleEdit($categoryTypeRow, categoryType) {
             viewCategoryType($categoryTypeRow, categoryType);
-            onEditCategoryType();
+            //onEditCategoryType();
         }
 
         function editCategoryType($categoryTypeRow, categoryType) {
