@@ -14,6 +14,7 @@ define(
         let $categoryTypeSelect;
         let createContainer;
         let currentCtgType;
+        let editorContainer;
 
         function buildViewCategoriesTypes() {
 
@@ -29,6 +30,7 @@ define(
                         imageArchive: currentCtgType.imageArchive
 
                     });
+                    editorContainer.slideDown();
                     return edit;
                 })
             };
@@ -64,11 +66,10 @@ define(
                 elements: {
                     'view': buildViewCategoriesTypes()
                 }
-            }).buildBlockStructure('<div>', {style: 'display: none;'});
+            }).buildBlockStructure('<div>');
         }
 
         function onCreateNewCategoryType() {
-            view.css('display', 'none').slideUp('fast');
             createContainer.css('display', 'inline-block').slideDown();
             typeEditor.viewCategoryType($('<div>'), {
                 id: null,
@@ -86,6 +87,47 @@ define(
             return createContainer;
         }
 
+        function buildEditorButtonContainer() {
+
+            function onEditCurrentCtgType() {
+
+            }
+
+            function buildCategoryTypeEditButton() {
+                let $button = components.buttons.positiveButton({
+                    text: texts.editButtonName,
+                    click: onEditCurrentCtgType
+                });
+
+                return components.buttons.buttonsContainer('<div>', [$button]);
+            }
+
+            function onRemoveCtgType() {
+
+                typesRestApi.remove(currentCtgType).done(function () {
+
+                    currentCtgType = null;
+                });
+            }
+
+            function buildCategoryTypeRemoveButton() {
+                let $button = components.buttons.positiveButton({
+                    text: texts.removeButtonName,
+                    click: onRemoveCtgType
+                });
+
+                return components.buttons.buttonsContainer('<div>', [$button]);
+            }
+
+            return editorContainer = new BEM({
+                block: 'upgrade-block',
+                elements: {
+                    'edit-button': buildCategoryTypeEditButton(),
+                    'remove-button': buildCategoryTypeRemoveButton()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'});
+        }
+
         function buildCategoryTypeButtonsContainer() {
 
             function buildCategoryTypeCreateButton() {
@@ -96,40 +138,11 @@ define(
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
-            function showCategoryTypes() {
-                createContainer.css('display', 'none').slideUp('fast');
-                return view.css('display', 'inline-block').slideDown();
-            }
-
-            function buildCategoryTypeEditButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.editButtonName,
-                    click: showCategoryTypes
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            function showCtgTypeRemoveContainer() {
-
-            }
-
-            function buildCategoryTypeRemoveButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.removeButtonName,
-                    click: showCtgTypeRemoveContainer
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
             return new BEM({
                 block: 'type-buttons-block',
                 elements: {
                     'title': $('<div>', {text: texts.titleCategoryType}),
                     'create': buildCategoryTypeCreateButton(),
-                    'edit': buildCategoryTypeEditButton(),
-                    'remove': buildCategoryTypeRemoveButton()
                 }
             }).buildBlockStructure('<div>');
 
@@ -199,7 +212,8 @@ define(
             buildCategoryTypeButtonsContainer(),
             buildCategoryButtonsContainer(),
             showCtgTypeCreateContainer(),
-            buildViewContainer()
+            buildViewContainer(),
+            buildEditorButtonContainer()
         ]);
     }
 );
