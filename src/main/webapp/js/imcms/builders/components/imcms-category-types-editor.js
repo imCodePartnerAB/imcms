@@ -130,15 +130,6 @@ define(
             }
         }
 
-        function getOnWarnCancel(onConfirm) {
-            return function () {
-                modal.buildModalWindow(texts.warnCancelMessage, function (confirmed) {
-                    if (!confirmed) return;
-                    onConfirm.call();
-                })
-            }
-        }
-
         function buildCategoryTypeSaveCancelButtons() {
             return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
@@ -146,20 +137,8 @@ define(
                     click: onSaveCategoryType
                 }),
                 components.buttons.negativeButton({
-                    text: texts.cancelButton,
-                    click: getOnWarnCancel(function () {
-                        onCategoryTypeView = onCategoryTypeSimpleView;
-
-                        if (currentCategoryType.id) {
-                            prepareCategoryTypeView();
-                            $container.slideUp();
-
-                        } else {
-                            currentCategoryType = null;
-                            onEditDelegate = onSimpleEdit;
-                            $container.slideUp();
-                        }
-                    })
+                    text: texts.sections.removeCategoryType.removeButton,
+                    click: onDeleteCategoryType
                 })
             ]);
         }
