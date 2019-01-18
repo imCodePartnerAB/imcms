@@ -139,7 +139,7 @@ define(
             }
         }
 
-        function buildCategoryTypeSaveButtons() {
+        function buildCategoryTypeSaveCancelButtons() {
             return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
                     text: texts.saveButton,
@@ -204,7 +204,7 @@ define(
                     'inherited': buildInheriteNewDocsCheckBox(),
                     'imageArchive': buildImageArchiveCheckBox(),
                     'error-row': buildErrorBlock(),
-                    'ctg-type-button-save': buildCategoryTypeSaveButtons()
+                    'ctg-type-button-save': buildCategoryTypeSaveCancelButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
