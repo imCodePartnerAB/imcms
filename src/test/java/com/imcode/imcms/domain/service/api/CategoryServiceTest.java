@@ -80,6 +80,24 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getCategoriesByType_When_CategoriesUsingCategoryType_Expected_CorrectEntity() {
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
+        assertEquals(categories, categoryService.getCategoriesByCategoryType(categories.get(0).getType()));
+    }
+
+    @Test
+    public void getCategoriesByType_When_CategoriesNotUsingCategoryType_Expected_EmptyReslt() {
+        final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
+        assertNotNull(typesData);
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
+        final List<CategoryJPA> categoriesByCategoryType = categoryService.getCategoriesByCategoryType(typesData.get(0));
+
+        assertEquals(0, categoriesByCategoryType.size());
+        assertNotEquals(categories, categoriesByCategoryType.size());
+        assertTrue(categoriesByCategoryType.isEmpty());
+    }
+
+    @Test
     public void save_When_CategoryNotExistBefore_Expect_Saved() {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
         assertNotNull(typesData);
