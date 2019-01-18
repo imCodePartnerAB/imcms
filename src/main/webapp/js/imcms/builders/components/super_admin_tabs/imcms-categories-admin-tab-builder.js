@@ -6,15 +6,17 @@ define(
     'imcms-categories-admin-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-field-wrapper',
         'imcms-bem-builder', 'jquery', 'imcms-category-types-rest-api', 'imcms-categories-rest-api',
-        'imcms-category-types-editor'],
-    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor) {
+        'imcms-category-types-editor', 'imcms-modal-window-builder'],
+    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor,
+              modal) {
 
         texts = texts.superAdmin.categories;
 
-        let $categoryTypeSelect;
         let createContainer;
         let currentCtgType;
         let editorContainer;
+        let categoryCreateContainer;
+        let currentCategory;
 
         function buildViewCategoriesTypes() {
 
@@ -87,7 +89,8 @@ define(
             return createContainer;
         }
 
-        function buildEditorButtonContainer() {
+
+        function buildEditorCtgTypeButtonsContainer() {
 
             function onEditCurrentCtgType() {
 
@@ -105,8 +108,9 @@ define(
             function onRemoveCtgType() {
 
                 typesRestApi.remove(currentCtgType).done(function () {
-
                     currentCtgType = null;
+                    editorContainer.slideUp();
+                    createContainer.slideUp();
                 });
             }
 
@@ -148,14 +152,101 @@ define(
 
         }
 
+        function buildEditorCategoryButtonsContainer() {
+
+        }
+
+        let $categoryNameRow;
+        let categoryDescription;
+        let categoryUrlIcon;
+        let categorySaveButton;
+
+        function onSaveCategory() {
+
+        }
+
+        function getOnWarnCancel(onConfirm) {
+            return function () {
+                modal.buildModalWindow(texts.warnCancelMessage, function (confirmed) {
+                    if (!confirmed) return;
+                    onConfirm.call();
+                })
+            }
+        }
+
+        function buildCategoryCreateContainer() {
+
+            function buildCategoryNameRow() {
+                $categoryNameRow = components.texts.textBox('<div>', {
+                    text: texts.sections.createCategory.name
+                });
+
+                return $categoryNameRow;
+            }
+
+            function buildCategoryDescriptionTextField() {
+                categoryDescription = components.texts.textAreaField('<div>', {
+                    text: texts.sections.createCategory.description
+                });
+
+                return categoryDescription;
+            }
+
+            function buildCategoryIconRow() {
+                categoryUrlIcon = components.texts.textBox('<div>', {
+                    text: texts.sections.createCategory.icon
+                });
+
+                return categoryUrlIcon;
+            }
+
+            function buildSaveAndCancelContainer() {
+                return categorySaveButton = components.buttons.buttonsContainer('<div>', [
+                    components.buttons.saveButton({
+                        text: texts.saveButton,
+                        click: onSaveCategory
+                    }),
+                    components.buttons.negativeButton({
+                        text: texts.cancelButton,
+                        click: getOnWarnCancel(function () {
+                            //onCategoryTypeView = onCategoryTypeSimpleView;
+
+                            if (currentCategory.id) {
+                                // prepareCategoryTypeView();
+                                // $container.slideUp();
+
+                            } else {
+                                // currentCategory = null;
+                                // $container.slideUp();
+                            }
+                        })
+                    })
+                ]);
+            }
+
+            return categoryCreateContainer = new BEM({
+                block: 'category-create-block',
+                elements: {
+                    'title-create': '',
+                    'row-name': buildCategoryNameRow(),
+                    'row-description': buildCategoryDescriptionTextField(),
+                    'row-url-image': buildCategoryIconRow(),
+                    'list-category-types': buildViewCategoriesTypes(),
+                    'save-cancel-buttons': buildSaveAndCancelContainer()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'});
+        }
+
         function buildCategoryButtonsContainer() {
+
+            function openCreateContainer() {
+                return categoryCreateContainer.css('display', 'inline-block').slideDown();
+            }
 
             function buildCategoryCreateButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.createButtonName,
-                    click: function () {
-
-                    }
+                    click: openCreateContainer
                 });
 
                 return components.buttons.buttonsContainer('<div>', [$button]);
@@ -211,9 +302,10 @@ define(
         return new SuperAdminTab(texts.name, [
             buildCategoryTypeButtonsContainer(),
             buildCategoryButtonsContainer(),
-            showCtgTypeCreateContainer(),
             buildViewContainer(),
-            buildEditorButtonContainer()
+            showCtgTypeCreateContainer(),
+            buildEditorCtgTypeButtonsContainer(),
+            buildCategoryCreateContainer()
         ]);
     }
 );
