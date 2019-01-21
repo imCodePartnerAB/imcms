@@ -6,9 +6,12 @@ import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.CategoryDTO;
+import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.CategoryTypeJPA;
@@ -44,6 +47,9 @@ public class CategoryControllerTest extends AbstractControllerTest {
 
     @Autowired
     private CategoryTypeDataInitializer categoryTypeDataInitializer;
+
+    @Autowired
+    private CategoryTypeService categoryTypeService;
 
     @BeforeEach
     public void cleanRepos() {
@@ -88,6 +94,37 @@ public class CategoryControllerTest extends AbstractControllerTest {
         assertNotNull(requestBuilder);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(categories.get(0)));
+    }
+
+    @Test
+    public void getCategoriesByCategoryTypeId_When_CategoriesUsingCategoryType_Expected_OkCorrectEntity() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
+
+        final int id = categories.get(0).getType().getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
+                controllerPath() + "/categoryType/" + id
+        );
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(categories));
+
+    }
+
+    @Test
+    public void getCategoriesByCategoryTypeId_When_CategoriesNotUsingCategoryType_Expected_OkEmptyResult() throws Exception {
+        assertTrue(categoryController.getCategories().isEmpty());
+        categoryDataInitializer.createData(2);
+        final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
+                null, "other", 0, false, true
+        ));
+        final CategoryType createdCategoryType = categoryTypeService.create(categoryType);
+        final int categoryTypeId = createdCategoryType.getId();
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
+                controllerPath() + "/categoryType/" + categoryTypeId
+        );
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+
     }
 
     @Test

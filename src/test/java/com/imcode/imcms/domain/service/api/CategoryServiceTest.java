@@ -82,7 +82,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getCategoriesByType_When_CategoriesUsingCategoryType_Expected_CorrectEntity() {
         final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
-        assertEquals(categories, categoryService.getCategoriesByCategoryType(categories.get(0).getType()));
+        assertEquals(categories, categoryService.getCategoriesByCategoryType(categories.get(0).getType().getId()));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
         assertNotNull(typesData);
         final List<CategoryJPA> categories = categoryDataInitializer.createData(1);
-        final List<CategoryJPA> categoriesByCategoryType = categoryService.getCategoriesByCategoryType(typesData.get(0));
+        final List<CategoryJPA> categoriesByCategoryType = categoryService.getCategoriesByCategoryType(typesData.get(0).getId());
 
         assertEquals(0, categoriesByCategoryType.size());
         assertNotEquals(categories, categoriesByCategoryType.size());
