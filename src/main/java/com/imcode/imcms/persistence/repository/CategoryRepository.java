@@ -14,6 +14,9 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
 
     List<CategoryJPA> findByType(CategoryTypeJPA type);
 
+    @Query(value = "select * from categories where category_type_id = ?1", nativeQuery = true)
+    List<CategoryJPA> findById(int id);
+
     CategoryJPA findByNameAndType(String name, CategoryTypeJPA type);
 
     @Query(value = "select meta_id from document_categories where category_id = ?1", nativeQuery = true)
