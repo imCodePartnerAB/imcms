@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Component
-public class CategoryTypeDataInitializer extends TestDataCleaner {
+public class CategoryTypeDataInitializer extends TestDataCleaner { //todo create tests for this init
 
     private final CategoryTypeRepository categoryTypeRepository;
 
