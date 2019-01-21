@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
+import com.imcode.imcms.persistence.entity.CategoryJPA;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +31,11 @@ public class CategoryController {
     @GetMapping
     public List<Category> getCategories() {
         return categoryService.getAll();
+    }
+
+    @GetMapping("/categoryType/{id}")
+    public List<CategoryJPA> getCategoriesByCategoryTypeId(@PathVariable int id) {
+        return categoryService.getCategoriesByCategoryType(id);
     }
 
     @GetMapping("/{id}")
