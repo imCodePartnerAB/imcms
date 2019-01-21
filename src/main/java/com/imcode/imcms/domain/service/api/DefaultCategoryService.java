@@ -69,4 +69,9 @@ class DefaultCategoryService implements CategoryService {
             throw new DataUseCategoryException("Category has documents!");
         }
     }
+
+    @Override
+    public List<CategoryJPA> getCategoriesByCategoryType(int id) {
+        return categoryRepository.findById(id);
+    }
 }
