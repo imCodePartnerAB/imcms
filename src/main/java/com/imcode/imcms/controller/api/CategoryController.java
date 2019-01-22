@@ -33,8 +33,8 @@ public class CategoryController {
         return categoryService.getAll();
     }
 
-    @GetMapping("/categoryType/{id}")
-    public List<CategoryJPA> getCategoriesByCategoryTypeId(@PathVariable int id) {
+    @GetMapping("/category-type/{id}")
+    public List<CategoryJPA> getCategoriesByCategoryTypeId(@PathVariable Integer id) {
         return categoryService.getCategoriesByCategoryType(id);
     }
 
