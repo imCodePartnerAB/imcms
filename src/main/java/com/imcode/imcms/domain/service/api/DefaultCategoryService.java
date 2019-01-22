@@ -71,7 +71,7 @@ class DefaultCategoryService implements CategoryService {
     }
 
     @Override
-    public List<CategoryJPA> getCategoriesByCategoryType(int id) {
+    public List<CategoryJPA> getCategoriesByCategoryType(Integer id) {
         return categoryRepository.findById(id);
     }
 }

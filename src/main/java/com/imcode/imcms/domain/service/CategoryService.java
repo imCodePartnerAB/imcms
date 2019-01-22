@@ -18,6 +18,6 @@ public interface CategoryService {
 
     void delete(int id);
 
-    List<CategoryJPA> getCategoriesByCategoryType(int id);
+    List<CategoryJPA> getCategoriesByCategoryType(Integer id);
 
 }
