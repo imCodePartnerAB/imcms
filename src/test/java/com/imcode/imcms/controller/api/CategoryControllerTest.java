@@ -103,7 +103,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
 
         final int id = categories.get(0).getType().getId();
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
-                controllerPath() + "/categoryType/" + id
+                controllerPath() + "/category-type/" + id
         );
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(categories));
@@ -120,7 +120,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
         final CategoryType createdCategoryType = categoryTypeService.create(categoryType);
         final int categoryTypeId = createdCategoryType.getId();
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
-                controllerPath() + "/categoryType/" + categoryTypeId
+                controllerPath() + "/category-type/" + categoryTypeId
         );
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
