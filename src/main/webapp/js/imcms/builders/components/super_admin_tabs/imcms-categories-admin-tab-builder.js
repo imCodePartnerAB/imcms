@@ -13,15 +13,31 @@ define(
         texts = texts.superAdmin.categories;
 
         let createContainer;
-        let currentCtgType;
+        let currentCtgType = null;
         let editorContainer;
         let categoryCreateContainer;
         let currentCategory;
 
-        function buildViewCategoriesTypes() {
+        function buildDropDownListCategoriesTypes() {
 
-            var onSelected = function (value) {
-                typesRestApi.getById(value).done(function (ctgType) {
+            var onCategorySelected = function (value) {
+                // categoriesRestApi.getById(value).done(function (category) {
+                //     currentCategory = category;
+                //     let edit = typeEditor.editCategoryType($('<div>'), { //change for this
+                //         id: currentCategory.id,
+                //         name: currentCategory.name,
+                //         description: currentCategory.description,
+                //         imageUrl: currentCategory.imageUrl,
+                //         type: currentCtgType,
+                //     });
+                //
+                //     return edit;
+                // })
+            };
+
+            var onSelected = function (values) {
+
+                typesRestApi.getById(values).done(function (ctgType) {
                     currentCtgType = ctgType;
                     let edit = typeEditor.editCategoryType($('<div>'), {
                         id: currentCtgType.id,
@@ -33,8 +49,32 @@ define(
 
                     });
                     editorContainer.slideDown();
+
                     return edit;
-                })
+                });
+
+                let categorySelect = components.selects.selectContainer('<div>', {
+                    id: "category-filter",
+                    name: "category-filter",
+                    emptySelect: true,
+                    text: texts.chooseCategory,
+                    onCategorySelected: onCategorySelected
+                });
+
+                categoriesRestApi.getCategoriesByCategoryTypeId(values).done(function (categories) {
+
+                    let categoriesDataMapped = categories.map(function (category) {
+                        return {
+                            text: category.name,
+                            'data-value': category.id
+                        }
+                    });
+
+                    components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
+
+                });
+
+                return categorySelect;
             };
 
             let categoryTypeSelect = components.selects.selectContainer('<div>', {
@@ -47,6 +87,7 @@ define(
 
 
             typesRestApi.read().done(function (ctgTypes) {
+
                 let categoriesTypesDataMapped = ctgTypes.map(function (categoryType) {
                     return {
                         text: categoryType.name,
@@ -61,12 +102,54 @@ define(
 
         }
 
+        function buildDropDownListCategories() {
+
+            // var onCategorySelected = function (value) {
+            //     categoriesRestApi.getById(value).done(function (category) {
+            //         currentCategory = category;
+            //         let edit = typeEditor.editCategoryType($('<div>'), { //change for this
+            //             id: currentCategory.id,
+            //             name: currentCategory.name,
+            //             description: currentCategory.description,
+            //             icon: currentCategory.icon,
+            //             type: currentCtgType,
+            //         });
+            //
+            //         return edit;
+            //     })
+            // };
+            //
+            // let categorySelect = components.selects.selectContainer('<div>', {
+            //     id: "category-filter",
+            //     name: "category-filter",
+            //     emptySelect: true,
+            //     text: texts.chooseCategory,
+            //     onSelected: onCategorySelected
+            // });
+            //
+            //     // categoriesRestApi.getCategoriesByCategoryTypeId().done(function (categories) {
+            //     //
+            //     //     let categoriesDataMapped = categories.map(function (category) {
+            //     //         return {
+            //     //             text: category.name,
+            //     //             'data-value': category.id
+            //     //         }
+            //     //     });
+            //     //
+            //     //     components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
+            //     //
+            //     // });
+            //
+            // return categorySelect;
+        }
+
         let view;
-        function buildViewContainer() {
+
+        function buildViewCtgTypesContainer() {
             return view = new BEM({
                 block: 'shows-block',
                 elements: {
-                    'view': buildViewCategoriesTypes()
+                    'view': buildDropDownListCategoriesTypes()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -231,7 +314,7 @@ define(
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
                     'row-url-image': buildCategoryIconRow(),
-                    'list-category-types': buildViewCategoriesTypes(),
+                    'list-category-types': buildDropDownListCategoriesTypes(),
                     'save-cancel-buttons': buildSaveAndCancelContainer()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});
@@ -302,10 +385,11 @@ define(
         return new SuperAdminTab(texts.name, [
             buildCategoryTypeButtonsContainer(),
             buildCategoryButtonsContainer(),
-            buildViewContainer(),
+            buildViewCtgTypesContainer(),
             showCtgTypeCreateContainer(),
             buildEditorCtgTypeButtonsContainer(),
-            buildCategoryCreateContainer()
+            buildCategoryCreateContainer(),
+            //buildDropDownListCategories()
         ]);
     }
 );
