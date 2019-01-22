@@ -10,7 +10,6 @@ import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentTypeDomainObject;
 import imcode.server.document.DocumentVisitor;
 import imcode.server.document.FileDocumentDomainObject;
-import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.XmlDocumentBuilder;
 import imcode.server.document.index.DocumentQuery;
@@ -160,8 +159,6 @@ public class DocumentService {
                     ? documentMapper.saveNewDocument(internalDoc, user).getId()
                     : documentMapper.saveDocument(internalDoc, user);
 
-        } catch (MaxCategoryDomainObjectsOfTypeExceededException e) {
-            throw new MaxCategoriesOfTypeExceededException(e);
         } catch (AliasAlreadyExistsInternalException e) {
             throw new AliasAlreadyExistsException(e);
         } catch (DocumentSaveException e) {

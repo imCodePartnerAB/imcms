@@ -10,18 +10,19 @@ import com.imcode.imcms.persistence.repository.CategoryTypeRepository;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;
-import imcode.server.document.MaxCategoryDomainObjectsOfTypeExceededException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(rollbackFor = Throwable.class)
 public class CategoryMapper {
-
-    private static int UNLIMITED_MAX_CATEGORY_CHOICES = 0;
 
     private final CategoryRepository categoryRepository;
     private final CategoryTypeRepository categoryTypeRepository;
@@ -122,22 +123,6 @@ public class CategoryMapper {
 
     public void deleteOneCategoryFromDocument(DocumentDomainObject document, CategoryDomainObject category) {
         categoryRepository.deleteByDocIdAndCategoryId(document.getId(), category.getId());
-    }
-
-
-    void checkMaxDocumentCategoriesOfType(DocumentDomainObject document)
-            throws MaxCategoryDomainObjectsOfTypeExceededException {
-        CategoryTypeDomainObject[] categoryTypes = getAllCategoryTypes();
-        for (CategoryTypeDomainObject categoryType : categoryTypes) {
-            boolean multiselect = categoryType.isMultiSelect();
-            Set documentCategoriesOfType = getCategoriesOfType(categoryType, document.getCategories());
-            if (!multiselect && documentCategoriesOfType.size() > UNLIMITED_MAX_CATEGORY_CHOICES) {
-                throw new MaxCategoryDomainObjectsOfTypeExceededException("Document may have at most " + UNLIMITED_MAX_CATEGORY_CHOICES
-                        + " categories of type '"
-                        + categoryType.getName()
-                        + "'");
-            }
-        }
     }
 
     public CategoryDomainObject saveCategory(CategoryDomainObject category) throws CategoryAlreadyExistsException {
