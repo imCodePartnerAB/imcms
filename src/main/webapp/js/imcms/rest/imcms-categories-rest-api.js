@@ -7,8 +7,12 @@ define("imcms-categories-rest-api", ["imcms-rest-api"], function (rest) {
         return rest.ajax.call({url: url + '/' + category.id, type: 'DELETE', json: true});
     };
 
-    api.getById = function (category) {
-        return rest.ajax.call({url: url + '/' + category.id, type: 'GET', json: true});
+    api.getById = function (categoryId) {
+        return rest.ajax.call({url: url + '/' + categoryId, type: 'GET', json: true});
+    };
+
+    api.getCategoriesByCategoryTypeId = function (categoryTypeId) {
+        return rest.ajax.call({url: url + '/category-type/' + categoryTypeId, type: 'GET', json: true});
     };
 
     return api;
