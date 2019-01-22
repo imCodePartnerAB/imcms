@@ -59,16 +59,14 @@ define(
                     if (loopEntry === null) {
                         reference = `text?meta-id=${metaId}&index=${index}`
                     } else {
-                        reference = `text?meta-id=${metaId}&index=${index}
-                        &loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
+                        reference = `text?meta-id=${metaId}&index=${index}&loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
                     }
                 }
                 else if (type === "IMAGE") {
                     if (loopEntry === null) {
                         reference = `image?meta-id=${metaId}&index=${index}`
                     } else {
-                        reference = `image?meta-id=${metaId}&index=${index}
-                        &loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
+                        reference = `image?meta-id=${metaId}&index=${index}&loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
                     }
                 } else {
                     reference = `page-info?meta-id=${metaId}`
