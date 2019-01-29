@@ -105,7 +105,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         boolean isPageFound = false;
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
-            try (AutoCloseable autoCloseable = () -> httpConnection.disconnect()) {
+            try (AutoCloseable autoCloseable = httpConnection::disconnect) {
                 isPageFound = HttpURLConnection.HTTP_OK == httpConnection.getResponseCode();
             }
         } catch (Exception e) {

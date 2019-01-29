@@ -172,14 +172,16 @@ public class ImcmsSetupFilter implements Filter {
 
             UserDomainObject user = Utility.getLoggedOnUser(request);
 
-            ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
+            final ImcmsAuthenticatorAndUserAndRoleMapper userAndRoleMapper = service.getImcmsAuthenticatorAndUserAndRoleMapper();
+            final LanguageMapper languageMapper = service.getLanguageMapper();
 
             if (null == user) {
                 user = userAndRoleMapper.getDefaultUser();
                 assert user.isActive();
                 Utility.makeUserLoggedIn(request, user);
 
-                if (redirectToLoginIfRestricted(request, response, userAndRoleMapper, user)) return;
+                Imcms.setUser(user);
+                Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
 
                 // todo: optimize;
                 // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
@@ -232,7 +234,6 @@ public class ImcmsSetupFilter implements Filter {
                 Imcms.setUser(user);
 
 
-                final LanguageMapper languageMapper = service.getLanguageMapper();
                 final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
 
                 if (requestedLangCode != null) {
