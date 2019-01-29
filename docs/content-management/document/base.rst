@@ -117,3 +117,20 @@ Since ImCMS provide categories, each document can categorized. It should be note
 several categories at the same time if category type support multiply selecting.
 
 .. image:: base/_static/11-EditCategories.png
+
+
+-------------------
+Document Versioning
+-------------------
+
+Imcms has versioning feature. Which can be disabled or enabled in properties.
+
+If versioning is enabled:
+To apply changes press publish button on admin panel. Until that plain users. Will not seee any changes.
+Also you can preview new content before making publish by appropriate button on admin panel.
+
+If versioning is disabled:
+No additional actions required.
+
+
+.. warning:: If previously versioning was disabled by properties, all existed documents created during that period would be immediately published after change even if versioning will be enabled again. In order to make local changes to go to public version and press ``Publish`` after that versioning will start work on that document.
