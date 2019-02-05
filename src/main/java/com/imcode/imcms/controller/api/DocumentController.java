@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/documents")
 class DocumentController {
 
-    private DelegatingByTypeDocumentService documentService;
+    private final DelegatingByTypeDocumentService documentService;
 
     DocumentController(DelegatingByTypeDocumentService documentService) {
         this.documentService = documentService;
