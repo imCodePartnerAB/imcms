@@ -1,29 +1,39 @@
 <%@ page
 	
-	import="com.imcode.imcms.servlet.admin.ImageBrowse,
+	import="com.imcode.imcms.addon.ui.DocumentPaging,
+	        com.imcode.imcms.servlet.admin.ImageBrowse,
 	        com.imcode.imcms.servlet.admin.ImageBrowser,
 	        com.imcode.imcms.util.l10n.LocalizedMessage,
-	        com.imcode.imcms.addon.ui.DocumentPaging,
 	        com.imcode.util.ImageSize,
 	        imcode.server.Imcms,
 	        imcode.server.document.textdocument.ImageDomainObject,
 	        imcode.server.document.textdocument.ImagesPathRelativePathImageSource,
-	        imcode.util.*,
-	        imcode.util.image.Resize,
+	        imcode.util.Html,
+	        imcode.util.HttpSessionUtils,
+	        imcode.util.ImcmsImageUtils,
+	        imcode.util.ToStringPairTransformer,
+	        imcode.util.Utility,
 	        imcode.util.image.Format,
+	        imcode.util.image.Resize,
 	        imcode.util.io.FileUtility,
-	        java.io.File,
-	        java.util.*,
-	        java.text.SimpleDateFormat,
-	        org.apache.commons.lang.StringEscapeUtils,
-	        org.apache.commons.lang.StringUtils,
-	        org.apache.commons.io.comparator.*,
-	        org.apache.oro.text.perl.Perl5Util"
+	        org.apache.commons.io.comparator.LastModifiedFileComparator,
+	        org.apache.commons.io.comparator.NameFileComparator,
+	        org.apache.commons.io.comparator.PathFileComparator"
 	
 	contentType="text/html; charset=UTF-8"
   pageEncoding="UTF-8"
 	
-%><%@taglib prefix="vel" uri="imcmsvelocity"
+%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
+<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.oro.text.perl.Perl5Util" %>
+<%@ page import="java.io.File" %>
+<%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Collection" %>
+<%@ page import="java.util.Collections" %>
+<%@ page import="java.util.List" %>
+<%@taglib prefix="vel" uri="imcmsvelocity"
 %><%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"
 %><%!
 
@@ -184,6 +194,9 @@ jQuery(document).ready(function($) {
 		threshold : 200,
 		effect    : 'fadeIn'
 	}) ;
+    window.setTimeout(function() {
+        $('img.lazy').trigger('scroll') ;
+    }, 1000) ;
 }) ;
 </script>
 <%--
