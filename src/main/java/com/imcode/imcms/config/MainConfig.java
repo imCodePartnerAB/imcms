@@ -2,7 +2,6 @@ package com.imcode.imcms.config;
 
 import com.imcode.db.Database;
 import com.imcode.imcms.api.DocumentLanguages;
-import com.imcode.imcms.api.MailService;
 import com.imcode.imcms.components.Validator;
 import com.imcode.imcms.domain.component.DocumentSearchQueryConverter;
 import com.imcode.imcms.domain.dto.DocumentDTO;
@@ -26,8 +25,6 @@ import com.imcode.imcms.mapping.DocumentLoader;
 import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentVersionMapper;
-import com.imcode.imcms.mapping.ImageCacheMapper;
-import com.imcode.imcms.servlet.ImageCacheManager;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.LocalizedMessageProvider;
@@ -79,6 +76,7 @@ import java.util.Properties;
 @ComponentScan({
         "com.imcode.imcms.domain",
         "com.imcode.imcms.mapping",
+        "com.imcode.imcms.api",
         "imcode.util",
         "imcode.server",
         "com.imcode.imcms.components",
@@ -164,11 +162,6 @@ public class MainConfig {
     }
 
     @Bean
-    public MailService mailService(@Value("${SmtpServer}") String host, @Value("${SmtpPort}") int port) {
-        return new MailService(host, port);
-    }
-
-    @Bean
     public ResolvingQueryIndex documentIndex(Database databaseWithAutoCommit, DocumentMapper documentMapper,
                                              DocumentSearchQueryConverter documentSearchQueryConverter,
                                              DocumentIndexFactory documentIndexFactory) {
@@ -214,7 +207,7 @@ public class MainConfig {
                                                                 Config config,
                                                                 @Value("${FilePath}") Resource filesRoot) {
 
-        return new FileDocumentService(documentService, documentFileService, filesRoot.getFile(), config);
+        return new FileDocumentService(documentService, documentFileService, filesRoot, config);
     }
 
     @Bean
@@ -227,11 +220,6 @@ public class MainConfig {
     @Bean
     public LanguageMapper languageMapper(Database database, LanguageService languageService, Config config) {
         return new LanguageMapper(database, config.getDefaultLanguage(), languageService);
-    }
-
-    @Bean
-    public ImageCacheManager imageCacheManager(ImageCacheMapper imageCacheMapper, Config config) {
-        return new ImageCacheManager(imageCacheMapper, config);
     }
 
     @Bean

@@ -6,10 +6,13 @@ import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.mail.Authenticator;
 import javax.mail.PasswordAuthentication;
 
+@Service
 public class MailService {
 
     private String host;
@@ -20,7 +23,7 @@ public class MailService {
      * @param port The port of the server, usually 25.
      * @throws IllegalArgumentException Thrown when given a timeout of zero or less.
      */
-    public MailService(String host, int port) {
+    public MailService(@Value("${SmtpServer}") String host, @Value("${SmtpPort}") int port) {
         this.host = host;
         this.port = port;
     }
