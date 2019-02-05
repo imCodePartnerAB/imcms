@@ -19,7 +19,7 @@ public class PagerTag extends BodyTagSupport {
     private int showedItemIndex = -1;
 
     @Override
-    public int doStartTag() throws JspException {
+    public int doStartTag() {
         pageable = (IPageableTag) findAncestorWithClass(this, IPageableTag.class);
 
         Assert.notNull(pageable, "PagerTag must be nested to IPageableTag");
@@ -30,7 +30,7 @@ public class PagerTag extends BodyTagSupport {
     }
 
 
-    public int doAfterBody() throws JspException {
+    public int doAfterBody() {
         return SKIP_BODY;
     }
 

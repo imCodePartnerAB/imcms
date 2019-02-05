@@ -25,7 +25,7 @@ public class LoginPasswordTag extends TagSupport implements IAttributedTag {
     }
 
     @Override
-    public int doEndTag() throws JspException {
+    public int doEndTag() {
         return EVAL_PAGE;
     }
 

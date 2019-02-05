@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class SuperAdminFilter implements Filter {
 
-    public void init(FilterConfig filterConfig) throws ServletException {
+    public void init(FilterConfig filterConfig) {
     }
 
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,

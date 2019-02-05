@@ -13,7 +13,7 @@ public class SearchItemTag extends TagSupport {
     private SearchItem searchItem;
 
     @Override
-    public int doStartTag() throws JspException {
+    public int doStartTag() {
         searchTag = (SearchTag) findAncestorWithClass(this, SearchTag.class);
         assert searchTag != null;
         if ((searchItem = searchTag.nextSearchItem()) != null)
@@ -23,14 +23,14 @@ public class SearchItemTag extends TagSupport {
     }
 
     @Override
-    public int doAfterBody() throws JspException {
+    public int doAfterBody() {
         if ((searchItem = searchTag.nextSearchItem()) != null)
             return EVAL_BODY_AGAIN;
         else return SKIP_BODY;
     }
 
     @Override
-    public int doEndTag() throws JspException {
+    public int doEndTag() {
         return EVAL_PAGE;
     }
 }

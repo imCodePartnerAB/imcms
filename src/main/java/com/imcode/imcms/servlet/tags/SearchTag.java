@@ -28,7 +28,7 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
     private volatile Integer take = 20;
     private volatile int currentItemIndex = -1;
 
-    public int doStartTag() throws JspException {
+    public int doStartTag() {
         HttpServletRequest request = (HttpServletRequest) pageContext.getRequest();
         skip = request.getParameterMap().containsKey(SKIP_KEY) ?
                 Integer.parseInt(request.getParameter(SKIP_KEY)) : skip;
@@ -73,7 +73,7 @@ public class SearchTag extends BodyTagSupport implements IPageableTag {
         return searchItem;
     }
 
-    public int doAfterBody() throws JspException {
+    public int doAfterBody() {
         return SKIP_BODY;
     }
 

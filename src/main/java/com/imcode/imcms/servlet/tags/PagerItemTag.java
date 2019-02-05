@@ -13,7 +13,7 @@ public class PagerItemTag extends TagSupport {
     private PagerItem pagerItem;
 
     @Override
-    public int doStartTag() throws JspException {
+    public int doStartTag() {
         pagerTag = (PagerTag) findAncestorWithClass(this, PagerTag.class);
         assert pagerTag != null;
         if ((pagerItem = pagerTag.nextPagerItem()) != null)
@@ -23,14 +23,14 @@ public class PagerItemTag extends TagSupport {
     }
 
     @Override
-    public int doAfterBody() throws JspException {
+    public int doAfterBody() {
         if ((pagerItem = pagerTag.nextPagerItem()) != null)
             return EVAL_BODY_AGAIN;
         else return SKIP_BODY;
     }
 
     @Override
-    public int doEndTag() throws JspException {
+    public int doEndTag() {
         return EVAL_PAGE;
     }
 }

@@ -54,7 +54,7 @@ public class TemplateAdmin extends HttpServlet {
     }
 
     private static void createShortTemplateDialog(String lang, HttpServletRequest request,
-                                                  TemplateMapper templateMapper) throws IOException {
+                                                  TemplateMapper templateMapper) {
         List<TemplateDomainObject> templates = Imcms.getServices().getTemplateMapper().getAllTemplates();
         String temps = templateMapper.createHtmlOptionListOfTemplates(templates, null);
         request.setAttribute("templates", temps);
@@ -77,7 +77,7 @@ public class TemplateAdmin extends HttpServlet {
 
     private static void createStandardTemplateDialog(String lang, TemplateMapper templateMapper,
                                                      UserDomainObject user, LocalizedMessage error,
-                                                     HttpServletRequest request) throws IOException {
+                                                     HttpServletRequest request) {
         langTag(lang, request);
         request.setAttribute("templates", templateMapper.createHtmlOptionListOfTemplates(templateMapper.getAllTemplates(), null));
         request.setAttribute("error", null == error ? "" : error.toLocalizedString(user));
