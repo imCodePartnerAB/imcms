@@ -75,7 +75,7 @@ public class DocumentLanguageMapper {
             throw new IllegalStateException(message);
         }
 
-        Integer languageId = Ints.tryParse(Strings.nullToEmpty(property.getValue()));
+        Integer languageId = Integer.parseInt(Strings.nullToEmpty(property.getValue()));
 
         if (languageId == null) {
             String message = "Configuration error. DefaultLanguageId property is not a valid id.";
