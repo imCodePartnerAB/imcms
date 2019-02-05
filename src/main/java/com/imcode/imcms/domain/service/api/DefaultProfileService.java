@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class DefaultProfileService implements ProfileService {
 
     private final ProfileRepository profileRepository;
-    private DocumentMapper documentMapper;
+    private final DocumentMapper documentMapper;
 
     public DefaultProfileService(ProfileRepository profileRepository,
                                  DocumentMapper documentMapper) {

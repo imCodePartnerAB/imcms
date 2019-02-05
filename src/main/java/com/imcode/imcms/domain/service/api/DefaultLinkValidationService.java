@@ -47,13 +47,13 @@ public class DefaultLinkValidationService implements LinkValidationService {
     private static final String PROTOCOL_HTTPS = "https://";
     private final Pattern patternTexts = Pattern.compile(LINK_ATTRIBUTE_VALIDATION_REGEX);
     private final Pattern patternUrl = Pattern.compile(LINK_VALIDATION_REGEX);
-    private DocumentService<DocumentDTO> defaultDocumentService;
-    private DocRepository docRepository;
-    private LanguageService languageService;
-    private TextService textService;
-    private CommonContentService commonContentService;
-    private ImageService imageService;
-    private DocumentUrlService documentUrlService;
+    private final DocumentService<DocumentDTO> defaultDocumentService;
+    private final DocRepository docRepository;
+    private final LanguageService languageService;
+    private final TextService textService;
+    private final CommonContentService commonContentService;
+    private final ImageService imageService;
+    private final DocumentUrlService documentUrlService;
 
 
     public DefaultLinkValidationService(DocumentService<DocumentDTO> defaultDocumentService,

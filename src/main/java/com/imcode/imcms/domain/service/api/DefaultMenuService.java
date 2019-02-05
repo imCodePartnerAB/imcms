@@ -36,9 +36,9 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private final Function<List<MenuItemDTO>, Set<MenuItem>> menuItemDtoListToMenuItemList;
     private final BiFunction<Menu, Language, MenuDTO> menuSaver;
     private final UnaryOperator<MenuItem> toMenuItemsWithoutId;
-    private LanguageService languageService;
-    private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
-    private BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
+    private final LanguageService languageService;
+    private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
+    private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
