@@ -1,6 +1,10 @@
 package imcode.server.document;
 
-import imcode.server.document.textdocument.*;
+import imcode.server.document.textdocument.ImageDomainObject;
+import imcode.server.document.textdocument.MenuDomainObject;
+import imcode.server.document.textdocument.MenuItemDomainObject;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
+import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.apache.commons.lang.UnhandledException;
 import org.w3c.dom.Document;

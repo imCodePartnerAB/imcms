@@ -3,7 +3,11 @@ package imcode.server.document;
 import com.imcode.imcms.api.Document;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.util.BytesRef;
 
 import java.util.Date;
