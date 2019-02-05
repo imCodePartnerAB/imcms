@@ -27,16 +27,14 @@ public class ChangeDocDefaultVersionPageFlow extends DocumentPageFlow {
 
     @Override
     protected void dispatchFromPage(HttpServletRequest request,
-                                    HttpServletResponse response, String page) throws IOException,
-            ServletException {
+                                    HttpServletResponse response, String page) {
         // TODO Auto-generated method stub
 
     }
 
     @Override
     protected void dispatchOk(HttpServletRequest request,
-                              HttpServletResponse response, String page) throws IOException,
-            ServletException {
+                              HttpServletResponse response, String page) {
         // TODO Auto-generated method stub
 
     }

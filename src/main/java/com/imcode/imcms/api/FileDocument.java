@@ -91,7 +91,7 @@ public class FileDocument extends Document {
         /**
          * @throws UnsupportedOperationException
          */
-        public OutputStream getOutputStream() throws IOException {
+        public OutputStream getOutputStream() {
             throw new UnsupportedOperationException();
         }
 
@@ -117,7 +117,7 @@ public class FileDocument extends Document {
             return file.getInputStreamSource().getInputStream();
         }
 
-        public OutputStream getOutputStream() throws IOException {
+        public OutputStream getOutputStream() {
             throw new UnsupportedOperationException();
         }
 
@@ -146,7 +146,7 @@ public class FileDocument extends Document {
             return dataSource.getInputStream();
         }
 
-        public long getSize() throws IOException {
+        public long getSize() {
             return 0;
         }
     }
