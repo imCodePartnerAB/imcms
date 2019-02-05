@@ -8,12 +8,15 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.util.Value;
 import imcode.server.Config;
 import imcode.server.document.index.DocumentIndex;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.tika.Tika;
 import org.apache.tika.metadata.HttpHeaders;
 import org.apache.tika.metadata.Metadata;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 29.12.17.
  */
+@Service
 @Transactional
 public class FileDocumentService implements DocumentService<FileDocumentDTO> {
 
@@ -41,14 +45,15 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     private final Predicate<DocumentFileDTO> fileDocFileFilter;
     private final Tika tika = Value.with(new Tika(), t -> t.setMaxStringLength(-1));
 
+    @SneakyThrows
     public FileDocumentService(DocumentService<DocumentDTO> documentService,
                                DocumentFileService documentFileService,
-                               File filesRoot,
+                               @org.springframework.beans.factory.annotation.Value("${FilePath}") Resource filesRoot,
                                Config config) {
 
         this.defaultDocumentService = documentService;
         this.documentFileService = documentFileService;
-        this.filesRoot = filesRoot;
+        this.filesRoot = filesRoot.getFile();
         this.fileDocFileFilter = buildFileDocFilter(config);
     }
 

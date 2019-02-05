@@ -8,10 +8,12 @@ import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
+@Service
 @Transactional
 public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
 

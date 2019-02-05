@@ -10,7 +10,6 @@ import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.persistence.entity.LoopJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LoopRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +18,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service("loopService")
+@Transactional
 class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, LoopRepository> implements LoopService {
 
     private final VersionService versionService;
 
-    @Autowired
     DefaultLoopService(LoopRepository loopRepository, VersionService versionService) {
         super(loopRepository);
         this.versionService = versionService;

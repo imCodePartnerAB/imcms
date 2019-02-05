@@ -12,6 +12,7 @@ import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -22,6 +23,7 @@ import java.util.Optional;
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 22.12.17.
  */
+@Service
 @Transactional
 public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 

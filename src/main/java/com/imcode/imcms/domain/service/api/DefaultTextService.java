@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
 import static com.imcode.imcms.model.Text.HtmlFilteringPolicy.*;
 import static com.imcode.imcms.model.Text.Type.*;
 
-@Transactional
 @Service("textService")
+@Transactional
 class DefaultTextService extends AbstractVersionedContentService<TextJPA, TextRepository> implements TextService {
 
     private final LanguageService languageService;

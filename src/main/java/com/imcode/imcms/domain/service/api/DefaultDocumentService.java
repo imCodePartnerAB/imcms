@@ -112,7 +112,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    @Transactional
     public DocumentDTO save(DocumentDTO saveMe) {
 
         final Integer id = saveMe.getId();
@@ -243,7 +242,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    @Transactional
     public DocumentDTO copy(int docId) {
         final DocumentDTO documentDTO = get(docId);
 
@@ -257,7 +255,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
-    @Transactional
     public void deleteByDocId(Integer docIdToDelete) {
         deleteDocumentContent(docIdToDelete);
 
@@ -268,7 +265,6 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         documentsCache.invalidateDoc(docIdToDelete, alias);
     }
 
-    @Transactional
     protected void deleteDocumentContent(Integer docIdToDelete) {
         for (DeleterByDocumentId docContentService : docContentServices) {
             docContentService.deleteByDocId(docIdToDelete);

@@ -7,12 +7,14 @@ import com.imcode.imcms.domain.exception.UserValidationException;
 import com.imcode.imcms.domain.service.UserEditorService;
 import com.imcode.imcms.domain.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 10.07.18.
  */
 @Service
+@Transactional
 class LocalUserEditorService extends LocalUserValidationAndSaving implements UserEditorService {
 
     LocalUserEditorService(UserService userService, LocalUserEditPostValidationActionConsumer userPostValidation) {

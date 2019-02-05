@@ -5,7 +5,6 @@ import com.imcode.imcms.domain.service.PhoneService;
 import com.imcode.imcms.model.Phone;
 import com.imcode.imcms.persistence.entity.PhoneJPA;
 import com.imcode.imcms.persistence.repository.PhoneRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ class LocalUserPhoneService implements PhoneService {
             .map(PhoneJPA::new)
             .collect(Collectors.toList());
 
-    @Autowired
     LocalUserPhoneService(PhoneRepository phoneRepository) {
         this.phoneRepository = phoneRepository;
     }

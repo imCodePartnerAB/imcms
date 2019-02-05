@@ -13,7 +13,6 @@ import com.imcode.imcms.persistence.entity.TextHistoryJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.repository.TextHistoryRepository;
 import imcode.server.Imcms;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +23,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Transactional
 @Service("textHistoryService")
+@Transactional
 public class DefaultTextHistoryService implements TextHistoryService {
 
     private final TextHistoryRepository textHistoryRepository;
@@ -33,7 +32,6 @@ public class DefaultTextHistoryService implements TextHistoryService {
     private final UserService userService;
     private final Function<TextHistoryJPA, TextHistoryDTO> textHistoryJpaToTextHistoryDTO;
 
-    @Autowired
     public DefaultTextHistoryService(TextHistoryRepository textHistoryRepository,
                                      LanguageService languageService, UserService userService,
                                      Function<TextHistoryJPA, TextHistoryDTO> textHistoryJpaToTextHistoryDTO) {
