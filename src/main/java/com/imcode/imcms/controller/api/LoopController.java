@@ -5,7 +5,12 @@ import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/loops")

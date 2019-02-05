@@ -4,7 +4,13 @@ import com.google.common.collect.Maps;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Document language support.

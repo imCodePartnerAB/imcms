@@ -33,7 +33,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
     private final MetaRepository metaRepository;
     private final VersionService versionService;
     private final CommonContentService commonContentService;
-    private TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
+    private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
 
     DefaultDocumentMenuService(MetaRepository metaRepository,
                                VersionService versionService,

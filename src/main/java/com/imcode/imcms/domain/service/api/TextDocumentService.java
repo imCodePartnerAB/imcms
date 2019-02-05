@@ -27,8 +27,8 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
 
     private final DocumentService<DocumentDTO> defaultDocumentService;
     private final TextDocumentTemplateService textDocumentTemplateService;
-    private TextService textService;
-    private ImageService imageService;
+    private final TextService textService;
+    private final ImageService imageService;
 
     public TextDocumentService(DocumentService<DocumentDTO> documentService,
                                TextDocumentTemplateService textDocumentTemplateService,

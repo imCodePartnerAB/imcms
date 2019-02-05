@@ -1,6 +1,13 @@
 package com.imcode.imcms.domain.factory;
 
-import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.dto.AuditDTO;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.DocumentUrlDTO;
+import com.imcode.imcms.domain.dto.FileDocumentDTO;
+import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
+import com.imcode.imcms.domain.dto.TextDocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.UrlDocumentDTO;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;

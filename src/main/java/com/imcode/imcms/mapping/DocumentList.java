@@ -3,7 +3,11 @@ package com.imcode.imcms.mapping;
 import imcode.server.document.DocumentDomainObject;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 class DocumentList extends AbstractList<DocumentDomainObject> implements Serializable {
 
