@@ -73,7 +73,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
     }
 
     private boolean isHostFound(URL url) {
-        boolean isHostFound = false;
+        boolean isHostFound;
         if (url.getProtocol() == null) {
             isHostFound = true;
         } else {
@@ -102,7 +102,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
     }
 
     private boolean isPageFound(URL url) {
-        boolean isPageFound = false;
+        boolean isPageFound;
         try {
             HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
             try (AutoCloseable autoCloseable = httpConnection::disconnect) {
@@ -119,7 +119,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
         List<Integer> rangeIds = docRepository.getDocumentIdsInRange(startDocumentId, endDocumentId);
         List<Document> documentsToTest = rangeIds
                 .stream()
-                .map(id -> defaultDocumentService.get(id))
+                .map(defaultDocumentService::get)
                 .collect(Collectors.toList());
 
         for (Document doc : documentsToTest) {
