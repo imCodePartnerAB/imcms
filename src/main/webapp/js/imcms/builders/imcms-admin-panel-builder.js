@@ -246,6 +246,6 @@ define("imcms-admin-panel-builder",
 
                 onPanelBuiltCallbacks.push(callOnPanelBuilt);
             }
-        }
+        };
     }
 );

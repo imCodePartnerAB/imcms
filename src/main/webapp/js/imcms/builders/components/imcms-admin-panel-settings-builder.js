@@ -22,7 +22,7 @@ define(
             return () => {
                 refreshAfterMe.call();
                 setTimeout(refreshSettingsPosition, 200); // check: it may appear setTimeout is not required
-            }
+            };
         }
 
         var $switchPanelVisibilityButton = $("<button>", {
@@ -242,6 +242,6 @@ define(
                 $settings.slideToggle();
             },
             hideSettings: hideSettings
-        }
+        };
     }
 );

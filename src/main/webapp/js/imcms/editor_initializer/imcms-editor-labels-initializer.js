@@ -1,8 +1,7 @@
 define("imcms-editor-labels-initializer", ["jquery"], function ($) {
     return {
         initEditorLabels: function () {
-            var editControls = $(".imcms-editor-area__control-wrap")
-            ;
+            var editControls = $(".imcms-editor-area__control-wrap");
 
             function getParams(elem) {
                 return {
@@ -19,8 +18,7 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                         y: event.clientY
                     },
                     ctrlParams = getParams($ctrl),
-                    labelParam = getParams($label)
-                ;
+                    labelParam = getParams($label);
 
                 var labelHeight = (ctrlParams.height + labelParam.height + 5);
                 if (mouseCoords.y > labelHeight) { // 5px - height of label:before

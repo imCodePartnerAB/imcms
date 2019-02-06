@@ -124,5 +124,5 @@ define("date-format", [], function () {
 
     return {
         format: dateFormat
-    }
+    };
 });

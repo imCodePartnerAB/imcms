@@ -8,5 +8,5 @@ define("imcms-menu-editor-init-data", ["imcms-menu-editor-builder"], function (m
         EDIT_AREA_SELECTOR: ".imcms-editor-area--menu",
         CONTROL_SELECTOR: ".imcms-control--menu",
         editorBuilder: menuEditorBuilder
-    }
+    };
 });

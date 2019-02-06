@@ -36,7 +36,7 @@ define("imcms-access-tab-builder",
             return {
                 text: role.name,
                 "data-value": role.id
-            }
+            };
         }
 
         function generateRoleRow(role, $addRoleSelect) {
