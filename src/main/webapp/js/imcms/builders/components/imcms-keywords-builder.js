@@ -18,9 +18,7 @@ define("imcms-keywords-builder",
                     return $(this)
                 })
                 .toArray()
-                .reduce(function (isUnique, $keyword) {
-                    return isUnique && ($keyword.text() !== keyWord);
-                }, true);
+                .reduce((isUnique, $keyword) => isUnique && ($keyword.text() !== keyWord), true);
         }
 
         function addKeyword() {
@@ -55,7 +53,7 @@ define("imcms-keywords-builder",
         }
 
         function bindAddKeyword($input, $addKeywordButton, $keywordsBlock) {
-            return function (keyword) {
+            return keyword => {
                 $input.val(keyword);
                 $addKeywordButton.click();
                 return $keywordsBlock;

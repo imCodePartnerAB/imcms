@@ -81,9 +81,7 @@ class Publisher {
 }
 
 module.exports = {
-    createSubscriberOnTopic: function (topicName) {
-        return new Subscriber(getOrCreateTopic(topicName));
-    },
+    createSubscriberOnTopic: topicName => new Subscriber(getOrCreateTopic(topicName)),
     subscribeFromLast: function (topicName, doOnPublish) {
         this.createSubscriberOnTopic(topicName)
             .onPublish(doOnPublish)
@@ -94,7 +92,5 @@ module.exports = {
             .onPublish(doOnPublish)
             .runFromStart();
     },
-    createPublisherOnTopic: function (topicName) {
-        return new Publisher(getOrCreateTopic(topicName));
-    }
+    createPublisherOnTopic: topicName => new Publisher(getOrCreateTopic(topicName))
 };

@@ -21,7 +21,7 @@ function getElementClassWithModifiers(elementClass, modifiersArr) {
 function getModifiersClass(baseClass, modifiersArr) {
     let modifiers = "";
 
-    (modifiersArr || []).forEach(function (modifier) {
+    (modifiersArr || []).forEach(modifier => {
         modifiers += " " + baseClass + MODIFIER_SEPARATOR + modifier;
     });
 

@@ -242,7 +242,7 @@ define("imcms-image-content-builder",
             const $confirmBtn = components.buttons.neutralButton({
                 "class": "imcms-button",
                 text: texts.add,
-                click: function () {
+                click: () => {
                     let folderName = $folderNameInput.val();
 
                     if (!folderName) {
@@ -274,7 +274,7 @@ define("imcms-image-content-builder",
                         contextOnSuccess.path = pathSplitBySeparator.join("/");
                     }
 
-                    onConfirm(dataOnConfirm).done(function (response) {
+                    onConfirm(dataOnConfirm).done(response => {
                         if (response) {
                             if (!isNewFolder) {
                                 opts.folder.path = contextOnSuccess.path;
@@ -351,7 +351,7 @@ define("imcms-image-content-builder",
         }
 
         function showImagesIn(folder) {
-            folder.$images.forEach(function ($image) {
+            folder.$images.forEach($image => {
                 $image.css("display", "block");
             });
         }
@@ -362,7 +362,7 @@ define("imcms-image-content-builder",
             $(`.${ACTIVE_FOLDER_CLASS}`).removeClass(ACTIVE_FOLDER_CLASS);
             $(this).addClass(ACTIVE_FOLDER_CLASS);
 
-            viewModel.$images.forEach(function ($image) {
+            viewModel.$images.forEach($image => {
                 $image.css("display", "none");
             });
 
@@ -371,7 +371,7 @@ define("imcms-image-content-builder",
 
         function loadImages(folder, setCurrentImage) {
             imageFoldersREST.read({"path": folder.path}).done(
-                function (imagesFolder) {
+                imagesFolder => {
                     folder.imagesAreLoaded = true;
                     folder.files = imagesFolder.files;
 
@@ -423,7 +423,7 @@ define("imcms-image-content-builder",
             };
 
             if (subfolder.folders && subfolder.folders.length) {
-                elements.subfolder = buildSubFolders(subfolder, level + 1, folderPathToFind).map(function ($subfolder) {
+                elements.subfolder = buildSubFolders(subfolder, level + 1, folderPathToFind).map($subfolder => {
                     if (isSubLevel) {
                         $subfolder.modifiers = ["close"];
                     }
@@ -442,9 +442,7 @@ define("imcms-image-content-builder",
         }
 
         function buildSubFolders(folder, level, folderPathToFind) {
-            return folder.folders.map(function (subfolder) {
-                return subfolder.$folder = buildSubFolder(subfolder, level, folderPathToFind);
-            });
+            return folder.folders.map(subfolder => subfolder.$folder = buildSubFolder(subfolder, level, folderPathToFind));
         }
 
         function onImageDelete(element, imageFile) {
@@ -457,7 +455,7 @@ define("imcms-image-content-builder",
 
         function buildImageUsagesModal(usagesList) {
             let usages = "";
-            usagesList.forEach(function (usage) {
+            usagesList.forEach(usage => {
                 if (usage.docId) {
                     if (usage.elementIndex) {
                         usages += `<div>Doc: ${usage.docId} Version: ${usage.version} Index:${usage.elementIndex}</div>`;
@@ -484,7 +482,7 @@ define("imcms-image-content-builder",
                             const element = this;
                             const question = `${texts.removeImageConfirm} ${imageFile.name} ?`;
 
-                            modalWindow.buildModalWindow(question, function (isUserSure) {
+                            modalWindow.buildModalWindow(question, isUserSure => {
                                 if (isUserSure) {
                                     onImageDelete(element, imageFile);
                                 }
@@ -560,9 +558,7 @@ define("imcms-image-content-builder",
             const path = selectedFullImagePath.substring(0, slashLastIndex);
             const fixedPath = `${path.startsWith('/') ? '' : '/'}${path}`;
 
-            const $subfolders = buildSubFolders(viewModel.root, ROOT_FOLDER_LEVEL + 1, fixedPath).map(function ($subfolder) {
-                return rootFolderBEM.makeBlockElement("folders", $subfolder);
-            });
+            const $subfolders = buildSubFolders(viewModel.root, ROOT_FOLDER_LEVEL + 1, fixedPath).map($subfolder => rootFolderBEM.makeBlockElement("folders", $subfolder));
 
             viewModel.folders = viewModel.folders.concat($subfolders);
 
@@ -581,7 +577,7 @@ define("imcms-image-content-builder",
             if (activeFolder) {
                 openParentFolders(activeFolder);
 
-                loadImages(activeFolder, function () {
+                loadImages(activeFolder, () => {
                     setUpSelectedImage(activeFolder, imageName);
                     scrollToSelectedImage();
                 });
@@ -613,7 +609,7 @@ define("imcms-image-content-builder",
         }
 
         function setUpSelectedImage(folder, selectedImageName) {
-            folder.files.forEach(function (file) {
+            folder.files.forEach(file => {
                 if (file.name === selectedImageName) {
                     selectedImage = file;
                 }
@@ -623,8 +619,7 @@ define("imcms-image-content-builder",
         }
 
         function chooseSelectedImage(folder, selectedImageName) {
-            folder.$images.forEach(function ($image) {
-
+            folder.$images.forEach($image => {
                 if (selectedImageName === $image.find(".imcms-title").text()) {
                     $image.addClass("image-chosen");
                     $saveAndCloseBtn && $saveAndCloseBtn.removeAttr('disabled').removeClass('imcms-button--disabled');
@@ -633,10 +628,8 @@ define("imcms-image-content-builder",
         }
 
         return {
-            getSelectedImage: function () {
-                return selectedImage;
-            },
-            loadAndBuildContent: function (options) {
+            getSelectedImage: () => selectedImage,
+            loadAndBuildContent: options => {
                 $foldersContainer = options.foldersContainer;
                 $imagesContainer = options.imagesContainer;
                 selectedFullImagePath = options.selectedImagePath;
@@ -644,21 +637,19 @@ define("imcms-image-content-builder",
 
                 imageFoldersREST.read().done(loadImageFoldersContent);
             },
-            onImageUpload: function (formData) {
+            onImageUpload: formData => {
                 const saveImageRequestData = formData;
                 saveImageRequestData.append("folder", getFolderPath(activeFolder.$folder));
 
-                imageFilesREST.postFiles(saveImageRequestData).done(function (uploadedImageFiles) {
-                    const $newImages = uploadedImageFiles.map(function (imageFile) {
-                        return buildImage(imageFile).css("display", "block");
-                    });
+                imageFilesREST.postFiles(saveImageRequestData).done(uploadedImageFiles => {
+                    const $newImages = uploadedImageFiles.map(imageFile => buildImage(imageFile).css("display", "block"));
                     activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
                     $imagesContainer.append($newImages);
                     activeFolder.$images = activeFolder.$images.concat($newImages);
                     viewModel.$images = viewModel.$images.concat($newImages);
                 });
             },
-            clearContent: function () {
+            clearContent: () => {
                 activeFolder = selectedImage = null;
                 $imagesContainer.children().remove();
                 $foldersContainer.children().not("#closeFolders").remove();

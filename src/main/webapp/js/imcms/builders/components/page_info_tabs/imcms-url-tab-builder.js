@@ -20,13 +20,11 @@ define("imcms-url-tab-builder",
 
         UrlTab.prototype = Object.create(PageInfoTab.prototype);
 
-        UrlTab.prototype.tabElementsFactory = function () {
-            return [$urlInputContainer = components.texts.textField("<div>", {
-                name: "url",
-                text: texts.title
-            })];
-        };
-        UrlTab.prototype.fillTabDataFromDocument = function (document) {
+        UrlTab.prototype.tabElementsFactory = () => [$urlInputContainer = components.texts.textField("<div>", {
+            name: "url",
+            text: texts.title
+        })];
+        UrlTab.prototype.fillTabDataFromDocument = document => {
             /** @namespace document.documentURL */
             $urlInputContainer.setValue(document.documentURL.url);
         };
@@ -38,7 +36,7 @@ define("imcms-url-tab-builder",
             document.documentURL.url = $urlInputContainer.getValue();
             return document;
         };
-        UrlTab.prototype.clearTabData = function () {
+        UrlTab.prototype.clearTabData = () => {
             $urlInputContainer.setValue('');
             tabData = {};
         };

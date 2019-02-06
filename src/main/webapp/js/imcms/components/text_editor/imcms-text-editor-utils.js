@@ -17,10 +17,10 @@ define(
 
         var blurEnabled = true;
 
-        events.on('disable text editor blur', function () {
+        events.on('disable text editor blur', () => {
             blurEnabled = false;
         });
-        events.on('enable text editor blur', function () {
+        events.on('enable text editor blur', () => {
             blurEnabled = true;
         });
 
@@ -56,7 +56,7 @@ define(
                 }
             }
 
-            textsRestApi.create(textDTO).done(function () {
+            textsRestApi.create(textDTO).done(() => {
                 events.trigger('imcms-version-modified');
                 editor.startContent = editor.getContent();
                 editor.setDirty(false);
@@ -82,9 +82,9 @@ define(
                 return;
             }
 
-            modalWindowBuilder.buildConfirmWindow('Save changes?', function () {
+            modalWindowBuilder.buildConfirmWindow('Save changes?', () => {
                 saveContent(editor);
-            })
+            });
         }
 
         function showEditButton($editor) {

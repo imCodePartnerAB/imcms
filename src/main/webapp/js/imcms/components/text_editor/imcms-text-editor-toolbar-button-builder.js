@@ -25,7 +25,7 @@ define('imcms-text-editor-toolbar-button-builder', ['imcms-bem-builder', 'jquery
                     if ($btn.hasClass(classDisabled)) return;
                     onClick.apply(this, arguments);
                 }
-            })
+            });
         }
-    }
+    };
 });

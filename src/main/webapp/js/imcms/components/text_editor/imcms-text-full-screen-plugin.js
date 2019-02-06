@@ -19,7 +19,7 @@ define(
         return {
             pluginName: 'fullscreen',
             initFullScreen: function (editor) {
-                editor.addCommand('mceFullscreen', function () {
+                editor.addCommand('mceFullscreen', () => {
                     var $editorBody = $(editor.getBody());
                     var $toolBar = $editorBody.parent().children(".imcms-editor-area__text-toolbar");
                     var $body = $("body");
@@ -50,7 +50,7 @@ define(
                     icon: 'fullscreen',
                     cmd: 'mceFullscreen',
                     title: title,
-                    onPostRender: function () {
+                    onPostRender: () => {
                         if (imcms.textEditorFullScreenEnabled) {
                             onClick();
                         }
@@ -58,10 +58,10 @@ define(
                     }
                 });
             },
-            buildPlainTextEditorButton: function ($textEditor) {
+            buildPlainTextEditorButton: $textEditor => {
                 var isActive = imcms.textEditorFullScreenEnabled;
 
-                var onClick = function () {
+                var onClick = () => {
                     var $toolbar = $textEditor.parent()
                         .find('.imcms-editor-area__text-toolbar');
 
@@ -80,7 +80,7 @@ define(
 
                 return toolbarButtonBuilder.buildButton(
                     'text-editor-fullscreen-button', title, onClick, isActive, isActive
-                )
+                );
             }
         };
     }

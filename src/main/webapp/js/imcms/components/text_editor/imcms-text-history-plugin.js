@@ -26,12 +26,10 @@ define(
                     }
                 });
             },
-            buildPlainTextHistoryButton: function ($textEditor) {
-                return toolbarButtonBuilder.buildButton('text-history-button', title, function () {
-                    var textDTO = $textEditor.data();
-                    textHistoryBuilder.buildTextHistory(textDTO);
-                })
-            }
+            buildPlainTextHistoryButton: $textEditor => toolbarButtonBuilder.buildButton('text-history-button', title, function () {
+                var textDTO = $textEditor.data();
+                textHistoryBuilder.buildTextHistory(textDTO);
+            })
         };
     }
 );

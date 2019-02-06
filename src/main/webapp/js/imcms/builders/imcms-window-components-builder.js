@@ -15,34 +15,30 @@ module.exports = {
      * @param {function} onCloseClick
      * @returns {*} head as jQuery element
      */
-    buildHead: function (title, onCloseClick) {
-        return new BEM({
-            block: "imcms-head",
-            elements: {
-                "title": components.texts.titleText("<div>", title),
-                "button": components.buttons.closeButton({click: onCloseClick})
-            }
-        }).buildBlockStructure("<div>");
-    },
+    buildHead: (title, onCloseClick) => new BEM({
+        block: "imcms-head",
+        elements: {
+            "title": components.texts.titleText("<div>", title),
+            "button": components.buttons.closeButton({click: onCloseClick})
+        }
+    }).buildBlockStructure("<div>"),
     /**
      * Builds head with specified title
      * @param {string} title
      * @returns {*} head as jQuery element
      */
-    buildNonClosableHead: function (title) {
-        return new BEM({
-            block: "imcms-head",
-            elements: {
-                "title": components.texts.titleText("<div>", title)
-            }
-        }).buildBlockStructure("<div>");
-    },
+    buildNonClosableHead: title => new BEM({
+        block: "imcms-head",
+        elements: {
+            "title": components.texts.titleText("<div>", title)
+        }
+    }).buildBlockStructure("<div>"),
     /**
      * Builds footer with specified buttons as it's block elements
      * @param {[]} buttons - array of jQuery elements
      * @returns {*} footer as jQuery element
      */
-    buildFooter: function (buttons) {
+    buildFooter: buttons => {
         const elements = {};
 
         if (buttons) {

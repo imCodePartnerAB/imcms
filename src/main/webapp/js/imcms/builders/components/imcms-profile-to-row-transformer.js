@@ -12,7 +12,7 @@ define(
         }
 
         return {
-            transform: function (profile, profileEditor) {
+            transform: (profile, profileEditor) => {
 
                 let infoRowAttributes = {
                     id: 'profile-id-' + profile.id,

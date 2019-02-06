@@ -72,7 +72,7 @@ define("imcms-document-editor-builder",
                 setDefaultSortProperties();
             }
 
-            docSearchRestApi.read(searchQueryObj).done(function (documentList) {
+            docSearchRestApi.read(searchQueryObj).done(documentList => {
 
                 if (!documentList || (documentList.length === 0)) {
                     sendSearchDocRequest = false;
@@ -81,7 +81,7 @@ define("imcms-document-editor-builder",
 
                 incrementDocumentNumber(documentList.length);
 
-                documentList.forEach(function (document) {
+                documentList.forEach(document => {
                     $documentsList.append(buildDocument(document, currentEditorOptions));
                 });
             });
@@ -104,8 +104,8 @@ define("imcms-document-editor-builder",
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
-                docTypeSelectBuilder.build(function (type) {
-                    docProfileSelectBuilder.build(function (parentDocId) {
+                docTypeSelectBuilder.build(type => {
+                    docProfileSelectBuilder.build(parentDocId => {
                         pageInfoBuilder.build(null, addDocumentToList, type, parentDocId);
                     });
                 });
@@ -144,7 +144,7 @@ define("imcms-document-editor-builder",
             }
 
             function buildUsersFilterSelect() {
-                var onSelected = function (value) {
+                var onSelected = value => {
                     if (searchQueryObj[userId] !== value) {
                         appendDocuments(userId, value, true, true);
                     }
@@ -158,13 +158,11 @@ define("imcms-document-editor-builder",
                     onSelected: onSelected
                 });
 
-                usersRestApi.getAllAdmins().done(function (users) {
-                    var usersDataMapped = users.map(function (user) {
-                        return {
-                            text: user.login,
-                            "data-value": user.id
-                        }
-                    });
+                usersRestApi.getAllAdmins().done(users => {
+                    var usersDataMapped = users.map(user => ({
+                        text: user.login,
+                        "data-value": user.id
+                    }));
 
                     components.selects.addOptionsToSelect(
                         usersDataMapped, $usersFilterSelectContainer.getSelect(), onSelected
@@ -175,7 +173,7 @@ define("imcms-document-editor-builder",
             }
 
             function buildCategoriesFilterSelect() {
-                var onSelected = function (value) {
+                var onSelected = value => {
                     if (searchQueryObj[categoriesId][0] !== value) {
                         appendDocuments(categoriesId, {0: value}, true, true);
                     }
@@ -189,13 +187,11 @@ define("imcms-document-editor-builder",
                     onSelected: onSelected
                 });
 
-                categoriesRestApi.read(null).done(function (categories) {
-                    var categoriesDataMapped = categories.map(function (category) {
-                        return {
-                            text: category.name,
-                            "data-value": category.id
-                        }
-                    });
+                categoriesRestApi.read(null).done(categories => {
+                    var categoriesDataMapped = categories.map(category => ({
+                        text: category.name,
+                        "data-value": category.id
+                    }));
 
                     components.selects.addOptionsToSelect(
                         categoriesDataMapped, $categoriesFilterSelectContainer.getSelect(), onSelected);
@@ -416,7 +412,7 @@ define("imcms-document-editor-builder",
             $frame.appendTo("body");
         }
 
-        $(document).on("mousemove", function (event) {
+        $(document).on("mousemove", event => {
             if (!isMouseDown) {
                 return;
             }
@@ -445,7 +441,7 @@ define("imcms-document-editor-builder",
 
             if (opts.copyEnable) {
                 function onConfirm() {
-                    docCopyRestApi.copy(document.id).done(function (copiedDocument) {
+                    docCopyRestApi.copy(document.id).done(copiedDocument => {
                         addDocumentToList(copiedDocument);
                     });
                 }
@@ -462,7 +458,7 @@ define("imcms-document-editor-builder",
             }
 
             if (opts.editEnable) {
-                var $controlEdit = components.controls.edit(function () {
+                var $controlEdit = components.controls.edit(() => {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
                 $controlEdit.prop('title', texts.controls.edit.title);
@@ -601,7 +597,7 @@ define("imcms-document-editor-builder",
                 }
             }
 
-            $.each(allMenuDocObjArray, function (obj, param) {
+            $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
@@ -675,7 +671,7 @@ define("imcms-document-editor-builder",
             }
         }
 
-        $(document).on("mouseup", function (event) {
+        $(document).on("mouseup", event => {
             if (!isMouseDown) {
                 return;
             }
@@ -685,7 +681,7 @@ define("imcms-document-editor-builder",
             ;
 
             if ($frame.length === 0) {
-                return
+                return;
             }
 
             if (detectTargetArea(event)) {
@@ -736,12 +732,9 @@ define("imcms-document-editor-builder",
             $docItemId.modifiers = ["col-1", "id"];
 
             var title = (document.commonContents)
-                ? document.commonContents.filter(function (commonContent) {
-                        return commonContent.language.code === imcms.userLanguage;
-                    })
-                    .map(function (commonContent) {
-                        return commonContent.headline;
-                    })[0]
+                ? document.commonContents
+                    .filter(commonContent => commonContent.language.code === imcms.userLanguage)
+                    .map(commonContent => commonContent.headline)[0]
                 : document.title;
 
             var $docItemTitle = components.texts.titleText("<a>", title, {
@@ -812,9 +805,7 @@ define("imcms-document-editor-builder",
         }
 
         function buildDocumentList(documentList) {
-            var $blockElements = documentList.map(function (document) {
-                return buildDocumentItemContainer(document, currentEditorOptions);
-            });
+            var $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions));
 
             return new BEM({
                 block: "imcms-document-items-list",
@@ -869,7 +860,7 @@ define("imcms-document-editor-builder",
         }
 
         function loadDocumentEditorContent($documentsContainer, opts) {
-            docSearchRestApi.read().done(function (documentList) {
+            docSearchRestApi.read().done(documentList => {
                 incrementDocumentNumber(documentList.length);
                 $editorBody = buildEditorBody(documentList, opts);
                 $documentsContainer.append($editorBody);
@@ -929,7 +920,7 @@ define("imcms-document-editor-builder",
             // clean up
             $textField.$input.val("");
 
-            $.find(".imcms-drop-down-list__select-item-value").forEach(function (selectItemValue) {
+            $.find(".imcms-drop-down-list__select-item-value").forEach(selectItemValue => {
                 $(selectItemValue).text("None");
             });
 

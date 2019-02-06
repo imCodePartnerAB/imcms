@@ -52,7 +52,7 @@ define(
         }
 
         function onCancelChanges($roleRowElement, role) {
-            getOnDiscardChanges(function () {
+            getOnDiscardChanges(() => {
                 onRoleView = onRoleSimpleView;
                 currentRole = role;
                 $roleRow = $roleRowElement;
@@ -68,16 +68,16 @@ define(
 
             $roleNameRow.$input.removeAttr('disabled').focus();
 
-            permissionCheckboxes$.forEach(function ($checkbox) {
+            permissionCheckboxes$.forEach($checkbox => {
                 $checkbox.$input.removeAttr('disabled');
             })
         }
 
         function onDeleteRole() {
-            confirmationBuilder.buildModalWindow(texts.deleteConfirm, function (confirmed) {
+            confirmationBuilder.buildModalWindow(texts.deleteConfirm, confirmed => {
                 if (!confirmed) return;
 
-                rolesRestAPI.remove(currentRole).done(function () {
+                rolesRestAPI.remove(currentRole).done(() => {
                     $roleRow.remove();
                     currentRole = null;
                     onEditDelegate = onSimpleEdit;
@@ -119,7 +119,7 @@ define(
             };
 
             if (saveMe.id) {
-                rolesRestAPI.update(saveMe).done(function (savedRole) {
+                rolesRestAPI.update(saveMe).done(savedRole => {
                     // todo: maybe there is better way to reassign fields' values, not object itself
                     currentRole.id = savedRole.id;
                     $roleRow.text(currentRole.name = savedRole.name);
@@ -132,7 +132,7 @@ define(
                     prepareRoleView();
                 });
             } else {
-                rolesRestAPI.create(saveMe).done(function (role) {
+                rolesRestAPI.create(saveMe).done(role => {
                     $roleRow = roleToRow.transform((currentRole = role), roleEditor);
                     $container.parent().find('.roles-table').append($roleRow);
 
@@ -143,8 +143,8 @@ define(
         }
 
         function getOnDiscardChanges(onConfirm) {
-            return function () {
-                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, function (confirmed) {
+            return () => {
+                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
                 });
@@ -159,7 +159,7 @@ define(
                 }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
-                    click: getOnDiscardChanges(function () {
+                    click: getOnDiscardChanges(() => {
                         onRoleView = onRoleSimpleView;
 
                         if (currentRole.id) {
@@ -199,7 +199,7 @@ define(
                 currentRole.permissions.changeImagesInImageArchive
             ];
 
-            permissionCheckboxes$.forEach(function ($checkbox, i) {
+            permissionCheckboxes$.forEach(($checkbox, i) => {
                 $checkbox.$input.attr('disabled', 'disabled');
                 $checkbox.setChecked(permissions[i]);
             });
@@ -246,7 +246,7 @@ define(
 
         function editRole($roleRow, role) {
             onEditDelegate($roleRow, role);
-            onEditDelegate = function () {
+            onEditDelegate = () => {
             }
         }
 

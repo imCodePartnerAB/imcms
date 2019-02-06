@@ -56,7 +56,7 @@ define(
         }
 
         return {
-            build: function () {
+            build: () => {
                 $('body').append(buildSuperAdmin());
             }
         };

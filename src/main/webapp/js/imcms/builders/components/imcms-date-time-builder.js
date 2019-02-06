@@ -93,11 +93,9 @@ define("imcms-date-time-builder",
                     $nextMonthButton
                 ),
 
-                dayNames = weekDays.map(function (weekDay) {
-                    return calendarContainerBEM.buildBlockElement("day-name", "<div>", {
-                        text: weekDay
-                    });
-                }),
+                dayNames = weekDays.map(weekDay => calendarContainerBEM.buildBlockElement("day-name", "<div>", {
+                    text: weekDay
+                })),
                 $dayNames = calendarContainerBEM.buildBlockElement("day-names", "<div>").append(dayNames),
 
                 weeks = createEmptyWeeks(6),
@@ -259,20 +257,10 @@ define("imcms-date-time-builder",
         }
 
         return {
-            dateBoxReadOnly: function (attributes) {
-                return createDateBox(attributes);
-            },
-            datePickerCalendar: function (attributes) {
-                return createDateBox(attributes, true);
-            },
-            timePickerClock: function (attributes) {
-                return createTimeBox(attributes, true);
-            },
-            timeBoxReadOnly: function (attributes) {
-                return createTimeBox(attributes);
-            },
-            dateTimeReadOnly: function (attributes) {
-                return createDateTimeBox(attributes);
-            }
+            dateBoxReadOnly: attributes => createDateBox(attributes),
+            datePickerCalendar: attributes => createDateBox(attributes, true),
+            timePickerClock: attributes => createTimeBox(attributes, true),
+            timeBoxReadOnly: attributes => createTimeBox(attributes),
+            dateTimeReadOnly: attributes => createDateTimeBox(attributes)
         };
     });

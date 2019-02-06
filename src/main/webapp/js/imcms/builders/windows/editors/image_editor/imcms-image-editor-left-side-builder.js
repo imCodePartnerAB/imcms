@@ -4,11 +4,9 @@ const previewImageArea = require('imcms-preview-image-area');
 const croppingArea = require('imcms-cropping-area');
 
 module.exports = {
-    build: function () {
-        return $("<div>").append(
-            editableArea.getEditableImageArea(),
-            croppingArea.getCroppingBlock(),
-            previewImageArea.getPreviewImageArea(),
-        );
-    }
+    build: () => $("<div>").append(
+        editableArea.getEditableImageArea(),
+        croppingArea.getCroppingBlock(),
+        previewImageArea.getPreviewImageArea(),
+    )
 };

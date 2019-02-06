@@ -56,7 +56,7 @@ define(
                 text: texts.buildByProfile,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "profile",
-                click: function () {
+                click: () => {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideUp(400);
                     $profileSelect.slideDown(400);
@@ -68,7 +68,7 @@ define(
                 name: "select-profile-or-doc-or-current_doc",
                 value: "docId",
                 checked: true,
-                click: function () {
+                click: () => {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideDown(400);
                     $profileSelect.slideUp(400);
@@ -79,7 +79,7 @@ define(
                 text: texts.buildByCurrentDocId,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "currentDocId",
-                click: function () {
+                click: () => {
                     $validationErrorBlock.slideUp(400);
                     $parentSelect.slideUp(400);
                     $profileSelect.slideUp(400);
@@ -127,7 +127,7 @@ define(
                 var selectedParentDoc = $parentDocIdInput.getValue().trim();
 
                 if (selectedParentDoc) {
-                    documentValidationAPI.checkIsTextDocument(selectedParentDoc).success(function (isTextDoc) {
+                    documentValidationAPI.checkIsTextDocument(selectedParentDoc).done(isTextDoc => {
                         if (isTextDoc) {
                             closeWindow();
                             onProfileOrParentSelectedCallback(selectedParentDoc);
@@ -185,13 +185,13 @@ define(
         }
 
         function loadData(onParentSelected, config) {
-            profilesRestApi.read().done(function (profiles) {
-                var profilesDataMapped = profiles.map(function (profile) {
+            profilesRestApi.read().done(profiles => {
+                var profilesDataMapped = profiles.map(profile => {
                     /** @namespace profile.documentName */
                     return {
                         text: profile.name,
                         "data-value": profile.documentName
-                    }
+                    };
                 });
 
                 var profilesExist = profilesDataMapped && profilesDataMapped.length;

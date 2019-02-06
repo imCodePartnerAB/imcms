@@ -6,7 +6,7 @@ define("imcms-image-editor-initializer",
     ["imcms-image-editor-init-data", "imcms-editor-init-strategy"],
     function (editorInitData, editorInitStrategy) {
         return {
-            initEditor: function () {
+            initEditor: () => {
                 editorInitStrategy.initEditor(editorInitData);
             }
         }

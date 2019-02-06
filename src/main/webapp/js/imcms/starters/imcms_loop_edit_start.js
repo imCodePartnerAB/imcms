@@ -16,7 +16,7 @@ var imcms = require("imcms");
 const texts = require("imcms-i18n-texts");
 
 $(function () {
-    events.on("loop editor closed", function () {
+    events.on("loop editor closed", () => {
         var returnUrl = $("#return-url").val();
         window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
     });

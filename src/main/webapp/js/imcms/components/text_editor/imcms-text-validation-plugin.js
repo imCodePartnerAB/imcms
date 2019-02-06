@@ -21,7 +21,7 @@ define(
                     .removeAttr("class")
                     .attr("class", "mce-ico mce-i-imcms-w3c-text-validation-processing-icon");
 
-                textValidationAPI.validate({content: content}).done(function (validationResult) {
+                textValidationAPI.validate({content: content}).done(validationResult => {
                     var iconClass = validationResult.valid
                         ? "mce-i-imcms-w3c-text-validation-valid-icon"
                         : "mce-i-imcms-w3c-text-validation-invalid-icon";
@@ -32,28 +32,26 @@ define(
                         textValidationBuilder.buildTextValidationFailWindow(validationResult);
                     }
                 });
-            }
+            };
         };
 
-        var getOnPlainTextValidationClick = function (activeTextEditor) {
-            return function () {
-                var content = activeTextEditor.getContent();
-                var $button = activeTextEditor.$().parent().find('.html-validation-button__icon');
+        var getOnPlainTextValidationClick = activeTextEditor => () => {
+            var content = activeTextEditor.getContent();
+            var $button = activeTextEditor.$().parent().find('.html-validation-button__icon');
 
-                $button.addClass('imcms-w3c-text-validation-processing-icon');
+            $button.addClass('imcms-w3c-text-validation-processing-icon');
 
-                textValidationAPI.validate({content: content}).done(function (validationResult) {
-                    var iconClass = validationResult.valid
-                        ? 'imcms-w3c-text-validation-valid-icon'
-                        : 'imcms-w3c-text-validation-invalid-icon';
+            textValidationAPI.validate({content: content}).done(validationResult => {
+                var iconClass = validationResult.valid
+                    ? 'imcms-w3c-text-validation-valid-icon'
+                    : 'imcms-w3c-text-validation-invalid-icon';
 
-                    $button.removeClass('imcms-w3c-text-validation-processing-icon').addClass(iconClass);
+                $button.removeClass('imcms-w3c-text-validation-processing-icon').addClass(iconClass);
 
-                    if (!validationResult.valid) {
-                        textValidationBuilder.buildTextValidationFailWindow(validationResult);
-                    }
-                });
-            }
+                if (!validationResult.valid) {
+                    textValidationBuilder.buildTextValidationFailWindow(validationResult);
+                }
+            });
         };
 
         return {
@@ -65,11 +63,9 @@ define(
                     onclick: getOnTinyMCETextValidationClick(editor)
                 });
             },
-            buildHtmlValidationButton: function (activeTextEditor) {
-                return toolbarButtonBuilder.buildButton(
-                    'html-validation-button', title, getOnPlainTextValidationClick(activeTextEditor)
-                )
-            }
+            buildHtmlValidationButton: activeTextEditor => toolbarButtonBuilder.buildButton(
+                'html-validation-button', title, getOnPlainTextValidationClick(activeTextEditor)
+            )
         };
     }
 );

@@ -37,7 +37,7 @@ define(
 
         function onCancelChanges($profileRowElement, profile) {
 
-            getOnDiscardChanges(function () {
+            getOnDiscardChanges(() => {
                 onProfileView = onProfileSimpleView;
                 currentProfile = profile;
                 $profileRow = $profileRowElement;
@@ -55,10 +55,10 @@ define(
         }
 
         function onDeleteProfile() {
-            modal.buildModalWindow(texts.warnDelete, function (confirmed) {
+            modal.buildModalWindow(texts.warnDelete, confirmed => {
                 if (!confirmed) return;
 
-                profileRestApi.remove(currentProfile).done(function () {
+                profileRestApi.remove(currentProfile).done(() => {
                     $profileRow.remove();
                     currentProfile = null;
                     onEditDelegate = onSimpleEdit;
@@ -85,32 +85,32 @@ define(
             };
 
             if (currentProfileToSave.id) {
-                profileRestApi.replace(currentProfileToSave).done(function (savedProfile) {
+                profileRestApi.replace(currentProfileToSave).done(savedProfile => {
                     currentProfile = savedProfile;
                     $profileRow.find('.profile-info-row__profile-name').text(currentProfile.name);
                     $profileRow.find('.profile-info-row__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
-                }).fail(function () {
+                }).fail(() => {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
-                profileRestApi.create(currentProfileToSave).done(function (profile) {
+                profileRestApi.create(currentProfileToSave).done(profile => {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
 
                     $container.parent().find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
-                }).fail(function () {
+                }).fail(() => {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             }
         }
 
         function getOnDiscardChanges(onConfirm) {
-            return function () {
-                modal.buildModalWindow(texts.warnChangeMessage, function (confirmed) {
+            return () => {
+                modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
                 });
@@ -118,8 +118,8 @@ define(
         }
 
         function getOnWarnCancel(onConfirm) {
-            return function () {
-                modal.buildModalWindow(texts.warnCancelMessage, function (confirmed) {
+            return () => {
+                modal.buildModalWindow(texts.warnCancelMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
                 })
@@ -134,7 +134,7 @@ define(
                 }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
-                    click: getOnWarnCancel(function () {
+                    click: getOnWarnCancel(() => {
                         onProfileView = onProfileSimpleView;
 
                         if (currentProfile.id) {
@@ -212,7 +212,7 @@ define(
 
         function editProfile($profileRow, profile) {
             onEditDelegate($profileRow, profile);
-            onEditDelegate = function () {
+            onEditDelegate = () => {
             }
         }
 

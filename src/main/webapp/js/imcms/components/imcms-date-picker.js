@@ -104,28 +104,24 @@ define("imcms-date-picker",
         }
 
         function bindDateSetter($dateBoxContainer) {
-            return function (date) {
-                return $dateBoxContainer.find(".imcms-current-date__input")
-                    .val(date)
-                    .end();
-            }
+            return date => $dateBoxContainer.find(".imcms-current-date__input")
+                .val(date)
+                .end();
         }
 
         function bindDateGetter($dateBoxContainer) {
-            return function () {
-                return $dateBoxContainer.find(".imcms-current-date__input").val();
-            }
+            return () => $dateBoxContainer.find(".imcms-current-date__input").val();
         }
 
         function bindCurrentDateSetter($dateBoxContainer) {
-            return function () {
+            return () => {
                 bindDateSetter($dateBoxContainer)(getCurrentDate());
-            }
+            };
         }
 
         $(document).click(closeCalendar);
 
-        return function ($dateBoxContainer, withCalendar) {
+        return ($dateBoxContainer, withCalendar) => {
             $dateBoxContainer.setDate = bindDateSetter($dateBoxContainer);
             $dateBoxContainer.setCurrentDate = bindCurrentDateSetter($dateBoxContainer);
             $dateBoxContainer.getDate = bindDateGetter($dateBoxContainer);
@@ -144,5 +140,5 @@ define("imcms-date-picker",
                 .on('input', rebuildCalendar);
 
             return $dateBoxContainer;
-        }
+        };
     });

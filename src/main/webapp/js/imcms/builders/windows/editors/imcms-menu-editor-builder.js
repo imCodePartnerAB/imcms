@@ -268,7 +268,7 @@ define("imcms-menu-editor-builder",
                 placeStatus = null
             ;
 
-            $.each(allMenuDocObjArray, function (obj, param) {
+            $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
@@ -382,12 +382,12 @@ define("imcms-menu-editor-builder",
             isMouseDown = true;
         }
 
-        $(document).on("mousemove", function (event) {
+        $(document).on("mousemove", event => {
             if (!isMouseDown) return;
             moveFrame(event);
         });
 
-        $(document).on("mouseup", function () {
+        $(document).on("mouseup", () => {
             if (!isMouseDown) return;
             disableDrag($(".imcms-menu-items--frame"));
             toggleUserSelect(false);
@@ -463,7 +463,7 @@ define("imcms-menu-editor-builder",
                 currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
 
             var question = texts.removeConfirmation + currentMenuItemName + "\"?";
-            imcmsModalWindow.buildModalWindow(question, function (answer) {
+            imcmsModalWindow.buildModalWindow(question, answer => {
                 if (!answer) {
                     return;
                 }
@@ -482,7 +482,7 @@ define("imcms-menu-editor-builder",
                 children: []
             };
 
-            document.commonContents.forEach(function (commonContent) {
+            document.commonContents.forEach(commonContent => {
                 if (commonContent["language"]["code"] === imcms.userLanguage) {
                     menuElementTree["title"] = commonContent["headline"];
                 }
@@ -503,7 +503,7 @@ define("imcms-menu-editor-builder",
 
                 function changeTitle() {
                     var titleValue = "";
-                    document.commonContents.forEach(function (commonContent) {
+                    document.commonContents.forEach(commonContent => {
                         if (commonContent.language.code === imcms.userLanguage) {
                             titleValue = commonContent.headline;
                         }
@@ -523,9 +523,7 @@ define("imcms-menu-editor-builder",
                     var menuItemClass = "imcms-menu-items__menu-item";
                     var $menuItem = $oldMenuItem.find("." + menuItemClass).first();
 
-                    $menuItem.removeClass(function (index, className) {
-                        return (className.match(/\imcms-menu-items__menu-item--\S+/g) || []).join(' ');
-                    });
+                    $menuItem.removeClass((index, className) => (className.match(/\imcms-menu-items__menu-item--\S+/g) || []).join(' '));
 
                     $menuItem.addClass(
                         menuItemClass + "--" + document.documentStatus.replace(/_/g, "-").toLowerCase()
@@ -545,12 +543,12 @@ define("imcms-menu-editor-builder",
                 removeMenuItem.call(this, menuElementTree.documentId);
             });
 
-            var $controlEdit = components.controls.edit(function () {
+            var $controlEdit = components.controls.edit(() => {
                 pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
             });
 
-            var $controlCopy = components.controls.copy(function () {
-                docCopyRestApi.copy(menuElementTree.documentId).done(function (copiedDocument) {
+            var $controlCopy = components.controls.copy(() => {
+                docCopyRestApi.copy(menuElementTree.documentId).done(copiedDocument => {
 
                     documentEditorBuilder.incrementDocumentNumber(1);
 
@@ -646,9 +644,7 @@ define("imcms-menu-editor-builder",
 
             ++level;
 
-            var $childElements = menuElementTree.children.map(function (childElement) {
-                return buildMenuItemTree(childElement, level).addClass("imcms-submenu-items--close");
-            });
+            var $childElements = menuElementTree.children.map(childElement => buildMenuItemTree(childElement, level).addClass("imcms-submenu-items--close"));
 
             return treeBlock.append($childElements);
         }
@@ -657,9 +653,7 @@ define("imcms-menu-editor-builder",
 
         function buildMenuEditorContent(menuElementsTree) {
             function buildMenuElements(menuElements) {
-                var $menuItems = menuElements.map(function (menuElement) {
-                    return buildMenuItemTree(menuElement, 1);
-                });
+                var $menuItems = menuElements.map(menuElement => buildMenuItemTree(menuElement, 1));
                 return new BEM({
                     block: "imcms-menu-items-tree",
                     elements: {
@@ -714,8 +708,8 @@ define("imcms-menu-editor-builder",
 
             function onNewDocButtonClick(e) {
                 e.preventDefault();
-                docTypeSelectBuilder.build(function (type) {
-                    docProfileSelectBuilder.build(function (parentDocId) {
+                docTypeSelectBuilder.build(type => {
+                    docProfileSelectBuilder.build(parentDocId => {
                         pageInfoBuilder.build(null, onDocumentSaved, type, parentDocId);
                     }, {inMenu: true});
                 });

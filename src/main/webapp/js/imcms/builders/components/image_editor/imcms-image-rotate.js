@@ -84,26 +84,20 @@ function rotate(newAngle) {
 }
 
 module.exports = {
-    rotateLeft: function () {
+    rotateLeft: () => {
         rotate(currentAngle.prev);
     },
-    rotateRight: function () {
+    rotateRight: () => {
         rotate(currentAngle.next);
     },
     rotateImageByDegrees: (degrees) => rotate(anglesByDegrees[degrees]),
-    rotateImage: function (direction) {
+    rotateImage: direction => {
         rotate(anglesByDirection[direction]);
     },
-    isProportionsInverted: function () {
-        return currentAngle.proportionsInverted;
-    },
-    getCurrentAngle: function () {
-        return currentAngle;
-    },
-    getCurrentRotateCss: function () {
-        return getRotateCss(currentAngle || angleNorth);
-    },
-    destroy: function () {
+    isProportionsInverted: () => currentAngle.proportionsInverted,
+    getCurrentAngle: () => currentAngle,
+    getCurrentRotateCss: () => getRotateCss(currentAngle || angleNorth),
+    destroy: () => {
         currentAngle = angleNorth;
     }
 };

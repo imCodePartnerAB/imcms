@@ -80,9 +80,9 @@ define('imcms-text-editor-initializer',
             const editor = initEditor(type, $textEditor);
 
             if (opts && opts.autoFocus) {
-                editor.then(function (editor) {
+                editor.then(editor => {
                     editor[0].focus();
-                })
+                });
             }
         }
 
@@ -91,7 +91,7 @@ define('imcms-text-editor-initializer',
                 $(document).click(toggleFocusEditArea);
 
                 $('.imcms-editor-content--text').each(function () {
-                    initTextEditor.call(this, opts)
+                    initTextEditor.call(this, opts);
                 });
             }
         };

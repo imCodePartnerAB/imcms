@@ -8,7 +8,7 @@ const BEM = require('imcms-bem-builder');
 const $imageInfo = $('<span>');
 
 module.exports = {
-    buildEditor: function (opts) {
+    buildEditor: opts => {
         const $rightSidePanel = rightSideBuilder.build(opts);
         const $leftSide = leftSideBuilder.build();
         const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
@@ -26,7 +26,7 @@ module.exports = {
             }
         }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
     },
-    updateImageData: function ($tag, imageData) {
+    updateImageData: ($tag, imageData) => {
         $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index'));
         rightSideBuilder.updateImageData($tag, imageData);
     }

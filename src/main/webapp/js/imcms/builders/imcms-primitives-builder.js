@@ -23,21 +23,15 @@ module.exports = {
 
         return this.imcmsLabelFromObject(attributes);
     },
-    imcmsLabelFromObject: function (attributes) {
-        return primitivesBEM.buildElement("label", "<label>", attributes);
-    },
-    imcmsInput: function (attributes) {
-        return primitivesBEM.buildElement("input", "<input>", attributes);
-    },
-    imcmsInputText: function (attributes, modifiersArr) {
+    imcmsLabelFromObject: attributes => primitivesBEM.buildElement("label", "<label>", attributes),
+    imcmsInput: attributes => primitivesBEM.buildElement("input", "<input>", attributes),
+    imcmsInputText: (attributes, modifiersArr) => {
         attributes = attributes || {};
         attributes.type = "text";
         return primitivesBEM.buildElement("input", "<input>", attributes, modifiersArr);
     },
-    imcmsInputTextArea: function (attributes, modifiersArr) {
-        return primitivesBEM.buildElement("input", "<textarea>", attributes, modifiersArr);
-    },
-    imcmsInputRadio: function (attributes, modifiersArr) {
+    imcmsInputTextArea: (attributes, modifiersArr) => primitivesBEM.buildElement("input", "<textarea>", attributes, modifiersArr),
+    imcmsInputRadio: (attributes, modifiersArr) => {
         attributes = attributes || {};
         attributes.type = "radio";
         return primitivesBEM.buildElement("input", "<input>", attributes, modifiersArr);

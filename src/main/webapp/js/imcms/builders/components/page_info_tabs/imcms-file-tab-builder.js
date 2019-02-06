@@ -53,7 +53,7 @@ define("imcms-file-tab-builder",
                     "id": components.texts.textInput({value: file.fileId}),
                     "name": $("<div>", {text: file.filename}),
                     "default": $isDefaultFileRadioBtn,
-                    "delete": components.controls.remove(function () {
+                    "delete": components.controls.remove(() => {
                         $row.remove();
                     })
                 }
@@ -89,7 +89,7 @@ define("imcms-file-tab-builder",
         function getFileObjects(docId) {
             return $filesListContainerBody.children()
                 .toArray()
-                .map(function (fileRowDOM) {
+                .map(fileRowDOM => {
                     var $fileRow = $(fileRowDOM);
 
                     return {
@@ -131,7 +131,7 @@ define("imcms-file-tab-builder",
 
             var $uploadNewFilesButton = components.buttons.positiveButton({
                 text: texts.upload,
-                click: function () {
+                click: () => {
                     $fileInput.click();
                 }
             });
@@ -151,7 +151,7 @@ define("imcms-file-tab-builder",
                 $filesListContainer
             ];
         };
-        FilesTab.prototype.fillTabDataFromDocument = function (document) {
+        FilesTab.prototype.fillTabDataFromDocument = document => {
             appendFiles(document.files);
         };
         FilesTab.prototype.saveData = function (document) {
@@ -163,7 +163,7 @@ define("imcms-file-tab-builder",
             document.newFiles = tabData.formData;
             return document;
         };
-        FilesTab.prototype.clearTabData = function () {
+        FilesTab.prototype.clearTabData = () => {
             $filesListContainerBody.empty();
             $fileInput.val('');
             tabData = {};

@@ -39,7 +39,7 @@ define("imcms-loop-editor-builder",
         function getLoopData() {
             currentLoop.entries = $listItems.children()
                 .toArray()
-                .map(function (listItem) {
+                .map(listItem => {
                     var $listItem = $(listItem);
 
                     var loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
@@ -72,13 +72,11 @@ define("imcms-loop-editor-builder",
             function getMaxLoopItemID() {
                 return $listItems.children()
                     .toArray()
-                    .map(function (listItem) {
+                    .map(listItem => {
                         var loopItemIdClass = BEM.buildClass(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
                         return +($(listItem).find("." + loopItemIdClass).text());
                     })
-                    .sort(function (a, b) {
-                        return (a - b);
-                    })
+                    .sort((a, b) => (a - b))
                     .pop() || 0;
             }
 
@@ -135,7 +133,7 @@ define("imcms-loop-editor-builder",
         }
 
         function buildControls() {
-            var $remove = components.controls.remove(function () {
+            var $remove = components.controls.remove(() => {
                 $remove.parents("." + LOOP_ITEM_CLASS).remove();
             });
 
@@ -166,9 +164,7 @@ define("imcms-loop-editor-builder",
         }
 
         function buildItems(loop) {
-            var blockElements = loop.entries.map(function (entry) {
-                return {"item": buildItem(entry)};
-            });
+            var blockElements = loop.entries.map(entry => ({"item": buildItem(entry)}));
 
             return itemsBEM.buildBlock("<div>", blockElements);
         }

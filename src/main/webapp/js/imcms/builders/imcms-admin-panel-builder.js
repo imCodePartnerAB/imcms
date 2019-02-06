@@ -146,19 +146,17 @@ define("imcms-admin-panel-builder",
             var languageCode = $(this).text();
 
             if (languageCode !== imcms.language.code) {
-                languagesRestApi.replace({code: languageCode}).done(function () {
+                languagesRestApi.replace({code: languageCode}).done(() => {
                     location.reload(true);
                 });
             }
         }
 
         function buildFlags() {
-            return componentsBuilder.flags.flagsContainer(function (language) {
-                return ["<div>", {
-                    text: language.code,
-                    click: flagOnClick
-                }];
-            });
+            return componentsBuilder.flags.flagsContainer((language) => ["<div>", {
+                text: language.code,
+                click: flagOnClick
+            }]);
         }
 
         function createAdminPanel(opts) {
@@ -212,7 +210,7 @@ define("imcms-admin-panel-builder",
         var onPanelBuiltCallbacks = [];
 
         return {
-            buildPanel: function (opts) {
+            buildPanel: opts => {
                 if ($panelContainer) {
                     return;
                 }

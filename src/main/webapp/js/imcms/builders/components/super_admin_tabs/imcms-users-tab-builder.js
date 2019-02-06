@@ -33,13 +33,11 @@ define(
                     text: texts.searchFilter.byRole.title
                 });
 
-                rolesRestApi.read().done(function (roles) {
-                    var rolesDataMapped = roles.map(function (role) {
-                        return {
-                            text: role.name,
-                            value: role.id
-                        }
-                    });
+                rolesRestApi.read().done(roles => {
+                    var rolesDataMapped = roles.map(role => ({
+                        text: role.name,
+                        value: role.id
+                    }));
 
                     components.selects.addOptionsToMultiSelect(rolesDataMapped, $usersFilterSelect);
                 });
@@ -59,14 +57,14 @@ define(
             }
 
             function getOnEditUser(user) {
-                return function () {
+                return () => {
                     window.open(imcms.contextPath + '/api/user/edition/' + user.id, '_blank').focus();
                 }
             }
 
             function getOnArchiveUser(user) {
-                return function () {
-                    usersRestApi.update({id: user.id, active: false}).done(function () {
+                return () => {
+                    usersRestApi.update({id: user.id, active: false}).done(() => {
                         $('#user-id-' + user.id).addClass(userArchivedClass)
                             .find('.imcms-control--archive')
                             .replaceWith($('<div>', {
@@ -90,7 +88,7 @@ define(
 
                     return this;
                 },
-                userToRow: function (user) {
+                userToRow: user => {
                     var infoRowAttributes = {
                         id: 'user-id-' + user.id
                     };

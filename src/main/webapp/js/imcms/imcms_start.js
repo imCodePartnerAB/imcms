@@ -15,11 +15,11 @@ const $ = require('jquery');
 
 imcms.$ = $;
 
-events.on('imcms-version-modified', function () {
+events.on('imcms-version-modified', () => {
     imcms.document.hasNewerVersion = true;
 });
 
-events.on('imcms-publish-new-version-current-doc', function () {
+events.on('imcms-publish-new-version-current-doc', () => {
     window.location.href = imcms.contextPath + '/api/publish-document/' + imcms.document.id;
     alert('The version is published with status APPROVED ' + dateFormatter.format(new Date(), 'yyyy-mm-dd HH:MM'));
 });
@@ -38,7 +38,7 @@ function detectActivePanelButton() {
     return 'public';
 }
 
-$(function () {
+$(() => {
     panelBuilder.buildPanel({
         active: detectActivePanelButton()
     });

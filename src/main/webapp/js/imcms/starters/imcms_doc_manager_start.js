@@ -12,7 +12,7 @@ var events = require("imcms-events");
 var imcms = require("imcms");
 var $ = require("jquery");
 
-events.on("document-editor-closed", function () {
+events.on("document-editor-closed", () => {
     var returnUrl = $("#return-url").val();
     window.location = (returnUrl) ? returnUrl : imcms.contextPath;
 });

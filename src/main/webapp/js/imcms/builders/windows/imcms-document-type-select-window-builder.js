@@ -15,7 +15,7 @@ define("imcms-document-type-select-window-builder",
             function buildButton(type, text) {
                 return components.buttons.negativeButton({
                     text: text,
-                    click: function () {
+                    click: () => {
                         documentTypeSelectWindowBuilder.closeWindow();
                         onDocTypeSelectedCallback(type);
                     }
@@ -50,7 +50,7 @@ define("imcms-document-type-select-window-builder",
         var onDocTypeSelectedCallback;
 
         return {
-            build: function (onDocTypeSelected) {
+            build: onDocTypeSelected => {
                 onDocTypeSelectedCallback = onDocTypeSelected;
                 documentTypeSelectWindowBuilder.buildWindowWithShadow();
             }

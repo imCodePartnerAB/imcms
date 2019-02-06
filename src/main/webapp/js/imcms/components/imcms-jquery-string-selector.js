@@ -27,9 +27,7 @@ define("imcms-jquery-string-selector", ["imcms-dom-attributes-extractor"], funct
 
             delete attributes.style; // this one is quite dynamic to rely on
 
-            var otherAttributes = Object.keys(attributes).map(function (key) {
-                return "[" + key + "='" + attributes[key] + "']";
-            });
+            var otherAttributes = Object.keys(attributes).map(key => "[" + key + "='" + attributes[key] + "']");
 
             if (otherAttributes.length) {
                 elementAsString += otherAttributes.join("");

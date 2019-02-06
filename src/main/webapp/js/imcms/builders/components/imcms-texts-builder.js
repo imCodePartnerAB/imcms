@@ -63,7 +63,7 @@ function deactivateNumberBox(e) {
 }
 
 function createSetValue($resultTextBox, $input) {
-    return function (value) {
+    return value => {
         $input.val(value);
         return $resultTextBox;
     };
@@ -138,18 +138,12 @@ function generateTextFromBEM(attributes, structureBEM, factory) {
 }
 
 module.exports = {
-    textInput: function (attributes) {
-        return textBEM.makeBlockElement("input", primitives.imcmsInputText(attributes));
-    },
-    textBox: function (tag, attributes) {
-        return generateTextFromBEM(attributes, textBEM, primitives.imcmsInputText);
-    },
+    textInput: attributes => textBEM.makeBlockElement("input", primitives.imcmsInputText(attributes)),
+    textBox: (tag, attributes) => generateTextFromBEM(attributes, textBEM, primitives.imcmsInputText),
     textField: function (tag, attributes) {
         return this.textBox.apply(this, arguments).addClass("imcms-field");
     },
-    textArea: function (tag, attributes) {
-        return generateTextFromBEM(attributes, textAreaBEM, primitives.imcmsInputTextArea);
-    },
+    textArea: (tag, attributes) => generateTextFromBEM(attributes, textAreaBEM, primitives.imcmsInputTextArea),
     textAreaField: function (tag, attributes) {
         return this.textArea.apply(this, arguments).addClass("imcms-field");
     },
@@ -208,7 +202,7 @@ module.exports = {
     textNumberField: function (tag, attributes) {
         return this.textNumber.apply(this, arguments).addClass("imcms-field");
     },
-    pluralInput: function (tag, columns, attributes) {
+    pluralInput: (tag, columns, attributes) => {
         const id = columns[0].id || uuidGenerator.generateUUID();
         const $label = primitives.imcmsLabel(id, attributes.text);
         const inputs = columns.map(column => pluralInputBEM.buildBlockElement("input", "<input>", {
@@ -225,16 +219,8 @@ module.exports = {
             {"input-box": $inputBox}
         ]);
     },
-    errorText: function (tag, text, attributes) {
-        return $(tag, (attributes || {})).addClass("imcms-error-msg").text(text || "");
-    },
-    infoText: function (tag, text, attributes) {
-        return $(tag, (attributes || {})).addClass("imcms-info-msg").text(text || "");
-    },
-    infoHtml: function (tag, text, attributes) {
-        return $(tag, (attributes || {})).addClass("imcms-info-msg").html(text || "");
-    },
-    titleText: function (tag, text, attributes) {
-        return $(tag, (attributes || {})).addClass("imcms-title").text(text || "");
-    }
+    errorText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-error-msg").text(text || ""),
+    infoText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-info-msg").text(text || ""),
+    infoHtml: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-info-msg").html(text || ""),
+    titleText: (tag, text, attributes) => $(tag, (attributes || {})).addClass("imcms-title").text(text || "")
 };

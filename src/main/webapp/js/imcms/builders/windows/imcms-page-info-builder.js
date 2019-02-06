@@ -45,7 +45,7 @@ define("imcms-page-info-builder",
 
             pageInfoWindowBuilder.closeWindow();
 
-            documentsRestApi.create(documentDTO).success((savedDoc) => {
+            documentsRestApi.create(documentDTO).done((savedDoc) => {
 
                 if (documentDTO.newFiles) {
                     // files saved separately because of different content types and in file-doc case
@@ -194,6 +194,6 @@ define("imcms-page-info-builder",
                 onDocumentSaved = onDocumentSavedCallback;
                 pageInfoWindowBuilder.buildWindowWithShadow.apply(pageInfoWindowBuilder, arguments);
             }
-        }
+        };
     }
 );

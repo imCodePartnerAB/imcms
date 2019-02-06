@@ -19,7 +19,7 @@ define(
         var $settings;
 
         function wrapWithPositionRefresh(refreshAfterMe) {
-            return function () {
+            return () => {
                 refreshAfterMe.call();
                 setTimeout(refreshSettingsPosition, 200); // check: it may appear setTimeout is not required
             }
@@ -40,7 +40,7 @@ define(
                 id: "small",
                 text: texts.size.small,
                 title: texts.size.smallTitle,
-                onSettingClick: wrapWithPositionRefresh(function () {
+                onSettingClick: wrapWithPositionRefresh(() => {
                     $("#imcms-admin-panel").addClass("imcms-admin-panel--small");
                 })
             },
@@ -49,7 +49,7 @@ define(
                 isDefault: true,
                 text: texts.size.large,
                 title: texts.size.largeTitle,
-                onSettingClick: wrapWithPositionRefresh(function () {
+                onSettingClick: wrapWithPositionRefresh(() => {
                     $("#imcms-admin-panel").removeClass("imcms-admin-panel--small");
                 })
             },
@@ -58,7 +58,7 @@ define(
                 isDefault: true,
                 text: texts.appearance.auto,
                 title: texts.appearance.autoTitle,
-                onSettingClick: function () {
+                onSettingClick: () => {
                     panelState.setState("auto");
                     $("#imcms-admin").removeClass("imcms-panel-visible");
                     panelState.refreshSpecialPanelPosition();
@@ -70,7 +70,7 @@ define(
                 id: "hidden",
                 text: texts.appearance.hidden,
                 title: texts.appearance.hiddenTitle,
-                onSettingClick: function () {
+                onSettingClick: () => {
                     hideSettings();
 
                     $("#imcms-admin").removeClass("imcms-panel-visible");
@@ -92,7 +92,7 @@ define(
                 id: "visible",
                 text: texts.appearance.visible,
                 title: texts.appearance.visibleTitle,
-                onSettingClick: function () {
+                onSettingClick: () => {
                     $("body").css("top", 0);
 
                     panelState.setState("visible");
@@ -134,7 +134,7 @@ define(
 
         var switchPanelVisibility = showPanel;
 
-        $switchPanelVisibilityButton.click(function () {
+        $switchPanelVisibilityButton.click(() => {
             switchPanelVisibility();
         });
 
@@ -227,15 +227,11 @@ define(
         }
 
         return {
-            applyCurrentSettings: function () {
+            applyCurrentSettings: () => {
                 allSections
-                    .map(function (section) {
-                        return settings[cookies.getCookie(section.id)];
-                    })
-                    .filter(function (setting) {
-                        return setting && !setting.isDefault;
-                    })
-                    .forEach(function (setting) {
+                    .map(section => settings[cookies.getCookie(section.id)])
+                    .filter(setting => setting && !setting.isDefault)
+                    .forEach(setting => {
                         setting.onSettingClick.call();
                     });
             },

@@ -67,14 +67,12 @@ function loadLanguages() {
     var $select = components.selects.imcmsSelect("<div>", selectAttributes);
     $select.appendTo($langSelectContainer);
 
-    languagesRestApi.read().done(function (languages) {
+    languagesRestApi.read().done(languages => {
 
-        languages = languages.map(function (lang) {
-            return {
-                'data-value': lang.code,
-                text: lang.name
-            }
-        });
+        languages = languages.map(lang => ({
+            'data-value': lang.code,
+            text: lang.name
+        }));
 
         components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
         $select.selectValue(imcms.userLanguage);
@@ -82,7 +80,7 @@ function loadLanguages() {
 }
 
 function bindOnEditClicked($phoneRow) {
-    return function () {
+    return () => {
         $phoneRow.find('[disabled]')
             .removeAttr('disabled')
             .end()
@@ -98,9 +96,9 @@ function bindOnEditClicked($phoneRow) {
 }
 
 function bindOnDeleteClicked($phoneRow) {
-    return function () {
+    return () => {
         $phoneRow.remove();
-    }
+    };
 }
 
 function bindOnSaveClick($phoneRow) {
@@ -112,7 +110,7 @@ function bindOnSaveClick($phoneRow) {
             .end()
             .find('.imcms-control')
             .show();
-    }
+    };
 }
 
 function addPhone(e) {
@@ -187,7 +185,7 @@ $(function () {
     $('#edit-user-submit-button').click(onSubmit);
     $('#button-add-phone').click(addPhone);
 
-    $('.imcms-input--phone').keydown(filterNonDigits).on('paste', function (e) {
+    $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
         e.preventDefault();
     });
 

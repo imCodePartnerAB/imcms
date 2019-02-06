@@ -83,11 +83,9 @@ define("imcms-selects-builder",
         }
 
         function mapMultiSelectOptionsToItemsArr(options) {
-            return options.map(function (option) {
-                return dropDownListBEM.makeBlockElement(
-                    "item", checkboxesBuilder.imcmsCheckbox("<div>", option)
-                );
-            });
+            return options.map(option => dropDownListBEM.makeBlockElement(
+                "item", checkboxesBuilder.imcmsCheckbox("<div>", option)
+            ));
         }
 
         function mapOptionsToItemsArr(options, onSelected) {
@@ -164,7 +162,7 @@ define("imcms-selects-builder",
         }
 
         function bindSelectValue($resultImcmsSelect, $selectedValInput) {
-            return function (value) {
+            return value => {
                 var $selectCandidate = $resultImcmsSelect.find("[data-value='" + value + "']");
 
                 if ($selectCandidate.length) {
@@ -180,7 +178,7 @@ define("imcms-selects-builder",
         }
 
         function bindSelectFirst($resultImcmsSelect) {
-            return function () {
+            return () => {
                 var $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
                     .find(DROP_DOWN_LIST__ITEM__CLASS_$).first();
 
@@ -196,42 +194,31 @@ define("imcms-selects-builder",
         }
 
         function bindGetSelect($select) {
-            return function () {
-                return $select;
-            }
+            return () => $select;
         }
 
         function bindGetSelectedValue($input) {
-            return function () {
-                return $input.val();
-            }
+            return () => $input.val();
         }
 
         function bindSelectedText($input) {
-            return function () {
-                return $input.data("content");
-            }
+            return () => $input.data("content");
         }
 
         function bindClearSelect($resultImcmsSelect, $input) {
-            return function () {
+            return () => {
                 $input.val("");
                 $input.removeProp("data-content");
                 return $resultImcmsSelect.find(DROP_DOWN_LIST__CLASS_$).remove();
-            }
+            };
         }
 
         function bindDeleteOption($resultImcmsSelect) {
-            return function (optionValue) {
-                return $resultImcmsSelect.find("[data-value='" + optionValue + "']").remove();
-
-            }
+            return optionValue => $resultImcmsSelect.find("[data-value='" + optionValue + "']").remove();
         }
 
         function bindHasOptions($resultImcmsSelect) {
-            return function () {
-                return $resultImcmsSelect.find("[data-value]").length > 0;
-            }
+            return () => $resultImcmsSelect.find("[data-value]").length > 0;
         }
 
         function bindApi($select, $selectedValInput) {
@@ -249,7 +236,7 @@ define("imcms-selects-builder",
         }
 
         return {
-            multipleSelect: function (tag, attributes, options) {
+            multipleSelect: (tag, attributes, options) => {
                 attributes = attributes || {};
                 options = options || [];
 
@@ -274,7 +261,7 @@ define("imcms-selects-builder",
 
                 return $select;
             },
-            imcmsSelect: function (tag, attributes, options) {
+            imcmsSelect: (tag, attributes, options) => {
                 attributes = attributes || {};
                 options = options || [];
 
@@ -323,14 +310,14 @@ define("imcms-selects-builder",
 
                 return $existingSelect;
             },
-            addOptionsToSelect: function (options, $select, onSelected) {
+            addOptionsToSelect: (options, $select, onSelected) => {
                 var selectContainsDropDownList = $select.find(SELECT__DROP_DOWN_LIST__CLASS_$).length;
 
                 return selectContainsDropDownList
                     ? addOptionsToExistingDropDown(options, $select, onSelected)
                     : $select.append(buildSelectOptions(options, onSelected)).selectFirst();
             },
-            addOptionsToMultiSelect: function (options, $select) {
+            addOptionsToMultiSelect: (options, $select) => {
                 var selectContainsDropDownList = $select.find(SELECT__DROP_DOWN_LIST__CLASS_$).length;
 
                 return selectContainsDropDownList

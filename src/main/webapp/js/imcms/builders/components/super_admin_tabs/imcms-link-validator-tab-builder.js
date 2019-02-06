@@ -86,7 +86,7 @@ define(
 
                     return this;
                 },
-                linkToRow: function (validationLink) {
+                linkToRow: validationLink => {
                     let textUrl = buildLinkText(validationLink.editLink.metaId,
                         validationLink.editLink.title,
                         validationLink.editLink.index);

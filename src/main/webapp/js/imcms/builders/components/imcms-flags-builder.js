@@ -53,7 +53,7 @@ define("imcms-flags-builder",
         }
 
         function mapLanguagesToFlags(languages, flagBuilderDataProducer) {
-            return languages.map(function (language) {
+            return languages.map(language => {
                 var flagBuilderData = flagBuilderDataProducer(language),
                     isActive = language.code === imcms.language.code;
 
@@ -74,7 +74,7 @@ define("imcms-flags-builder",
             flagsContainer: function (flagBuilderDataProducer) {
                 var $result = flagsBEM.buildBlock("<div>", [], "flag");
 
-                languagesRestApi.read().done(function (languages) {
+                languagesRestApi.read().done(languages => {
                     var flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
                     $result.append(flags);
                 });

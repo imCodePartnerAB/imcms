@@ -35,7 +35,7 @@ define(
                 let $button = components.buttons.positiveButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
-                    click: function () {
+                    click: () => {
                         let propertyId = inputNumberPage.data('id');
                         let propertyValue = inputNumberPage.val();
                         updateProperty({id: propertyId, value: propertyValue});
@@ -59,8 +59,8 @@ define(
             propertyRestApi.update({id: property.id, value: property.value});
         }
 
-        propertyRestApi.getAllProperties().done(function (properties) {
-            properties.forEach(function (property) {
+        propertyRestApi.getAllProperties().done(properties => {
+            properties.forEach(property => {
                 switch (property.name) {
                     case 'StartDocument':
                         inputNumberPage.val(property.value);
@@ -110,7 +110,7 @@ define(
                 let $button = components.buttons.positiveButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
-                    click: function () {
+                    click: () => {
                         let propertyId = systemMessage.data('id');
                         let propertyValue = systemMessage.val();
                         updateProperty({id: propertyId, value: propertyValue});
@@ -158,7 +158,7 @@ define(
                 let $button = components.buttons.positiveButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
-                    click: function () {
+                    click: () => {
                         let propertyIdForName = serverMasterName.data('id');
                         let propertyValueForName = serverMasterName.val();
                         let propertyIdForEmail = serverMasterEmail.data('id');
@@ -215,7 +215,7 @@ define(
                 let $button = components.buttons.positiveButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.changeButton,
-                    click: function () {
+                    click: () => {
                         let propertyIdForWebName = webMasterFieldName.data('id');
                         let propertyValueForWebName = webMasterFieldName.val();
                         let propertyIdForWebEmail = webMasterFieldEmail.data('id');

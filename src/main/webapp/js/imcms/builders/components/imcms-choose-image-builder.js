@@ -6,7 +6,7 @@ define("imcms-choose-image-builder",
     ["imcms-bem-builder", "imcms-texts-builder", "imcms-buttons-builder", "imcms-content-manager-builder"],
     function (BEM, texts, buttons, contentManager) {
         return {
-            container: function (tag, attributes) {
+            container: (tag, attributes) => {
                 var $textField = texts.textField("<div>", {
                         id: attributes.id,
                         name: attributes.name,
@@ -21,9 +21,7 @@ define("imcms-choose-image-builder",
                             "button": buttons.neutralButton({
                                 text: attributes["button-text"],
                                 click: attributes.click && contentManager.build.bind(
-                                    contentManager, attributes.click, function () {
-                                        return $textField.getValue();
-                                    }
+                                    contentManager, attributes.click, () => $textField.getValue()
                                 )
                             })
                         }

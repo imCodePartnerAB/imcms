@@ -131,7 +131,7 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
     }
 
     return {
-        init: function ($datePicker) {
+        init: $datePicker => {
             var $curDateInput = $datePicker.find(".imcms-current-date__input"),
                 currentValue = $curDateInput.val(),
                 $calendar = $datePicker.find(".imcms-calendar"),

@@ -43,10 +43,10 @@ class KeyCallbacks {
 const callbacks = [];
 
 module.exports = {
-    unRegister: function () {
+    unRegister: () => {
         callbacks.pop();
     },
-    registerWindow: function (onEscKeyPressed, onEnterKeyPressed) {
+    registerWindow: (onEscKeyPressed, onEnterKeyPressed) => {
         if (!callbacks.length) bindHotKeys();
 
         callbacks.push(new KeyCallbacks(onEscKeyPressed, onEnterKeyPressed));

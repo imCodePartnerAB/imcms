@@ -12,7 +12,7 @@ define(
 
         function onDiscardChangesClick() {
             events.trigger("disable text editor blur");
-            modalWindowBuilder.buildModalWindow(discardChangesMessage, function (isDiscard) {
+            modalWindowBuilder.buildModalWindow(discardChangesMessage, isDiscard => {
                 if (isDiscard) {
                     tinyMCE.activeEditor.setContent(tinyMCE.activeEditor.startContent);
                     tinyMCE.activeEditor.save();
@@ -25,11 +25,11 @@ define(
             var button = this;
             button.disabled(true);
 
-            events.on("disable discard changes button", function () {
+            events.on("disable discard changes button", () => {
                 button.disabled(true);
             });
 
-            events.on("enable discard changes button", function () {
+            events.on("enable discard changes button", () => {
                 button.disabled(false);
             });
         }
@@ -45,7 +45,7 @@ define(
                     onPostRender: setEnablingStrategy
                 });
 
-                editor.on('NodeChange', function () {
+                editor.on('NodeChange', () => {
                     var eventName = (tinyMCE.activeEditor.isDirty())
                         ? "enable discard changes button"
                         : "disable discard changes button";
@@ -53,15 +53,15 @@ define(
                     events.trigger(eventName);
                 });
             },
-            buildPlainTextButton: function (activeTextEditor) {
+            buildPlainTextButton: activeTextEditor => {
                 var $btn;
 
-                activeTextEditor.$().on('change keyup paste', function () {
+                activeTextEditor.$().on('change keyup paste', () => {
                     $btn.removeClass('text-toolbar__button--disabled');
                 });
 
-                var onClick = function () {
-                    modalWindowBuilder.buildModalWindow(discardChangesMessage, function (isDiscard) {
+                var onClick = () => {
+                    modalWindowBuilder.buildModalWindow(discardChangesMessage, isDiscard => {
                         if (!isDiscard) return;
 
                         activeTextEditor.setContent(activeTextEditor.startContent);

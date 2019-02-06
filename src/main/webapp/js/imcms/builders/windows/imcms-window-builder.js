@@ -62,9 +62,7 @@ module.exports = class WindowBuilder {
     buildWindowWithShadow(windowInitData) {
         this.shadowBuilder = this.shadowBuilder || new WindowBuilder({
             disableKeyBindings: true,
-            factory: function () {
-                return $("<div>", {"class": "imcms-modal-layout"});
-            }
+            factory: () => $("<div>", {"class": "imcms-modal-layout"})
         });
 
         this.buildWindow.apply(this, arguments);

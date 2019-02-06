@@ -59,7 +59,7 @@ define(
 
         function onCancelChanges($categoryTypeElement, categoryType) {
 
-            getOnDiscardChanges(function () {
+            getOnDiscardChanges(() => {
                 onCategoryTypeView = onCategoryTypeSimpleView;
                 currentCategoryType = categoryType;
                 $categoryTypeItem = $categoryTypeElement;
@@ -73,10 +73,10 @@ define(
         }
 
         function onDeleteCategoryType() {
-            modal.buildModalWindow('delete?', function (confirmed) {
+            modal.buildModalWindow('delete?', confirmed => {
                 if (!confirmed) return;
 
-                typesRestApi.remove(currentCategoryType).done(function () {
+                typesRestApi.remove(currentCategoryType).done(() => {
                     $categoryTypeItem.remove();
                     currentCategoryType = null;
                     onEditDelegate = onSimpleEdit;
@@ -99,14 +99,14 @@ define(
             };
 
             if (currentCtgTypeToSave.id) {
-                typesRestApi.replace(currentCtgTypeToSave).done(function (savedCategoryType) {
+                typesRestApi.replace(currentCtgTypeToSave).done(savedCategoryType => {
                     currentCategoryType = savedCategoryType;
                     $categoryTypeItem.find('type-create-block__field-name').text(currentCategoryType.name);
                     $inherited.find('type-create-block__inherited').setCheckedValue(currentCategoryType.inherited);
                     $imageArchive.find('type-create-block__imageArchive').setCheckedValue(currentCategoryType.imageArchive);
                     onCategoryTypeView = onCategoryTypeSimpleView;
                     prepareCategoryTypeView();
-                }).fail(function () {
+                }).fail(() => {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
@@ -122,8 +122,8 @@ define(
         }
 
         function getOnDiscardChanges(onConfirm) {
-            return function () {
-                modal.buildModalWindow(texts.warnCancelMessage, function (confirmed) {
+            return () => {
+                modal.buildModalWindow(texts.warnCancelMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
                 });
@@ -202,7 +202,7 @@ define(
 
         function editCategoryType($categoryTypeRow, categoryType) {
             onEditDelegate($categoryTypeRow, categoryType);
-            onEditDelegate = function () {
+            onEditDelegate = () => {
             }
         }
 

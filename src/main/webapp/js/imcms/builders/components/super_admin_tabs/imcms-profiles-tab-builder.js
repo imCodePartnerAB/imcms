@@ -15,13 +15,13 @@ define(
             runCallbacks: function (profiles) {
                 this.profiles = profiles;
 
-                this.callback.forEach(function (callback) {
-                    callback(profiles)
-                })
+                this.callback.forEach(callback => {
+                    callback(profiles);
+                });
             }
         };
 
-        profileRestApi.read().done(function (profiles) {
+        profileRestApi.read().done(profiles => {
             profilesLoader.runCallbacks(profiles);
         });
 
@@ -55,11 +55,9 @@ define(
                 'class': 'profiles-table'
             });
 
-            profilesLoader.whenProfilesLoaded(function (profiles) {
+            profilesLoader.whenProfilesLoaded(profiles => {
                 $profileContainer.append(buildTitleRow());
-                $profileContainer.append(profiles.map(function (profile) {
-                    return profileToRow.transform(profile, profileEditor);
-                }))
+                $profileContainer.append(profiles.map(profile => profileToRow.transform(profile, profileEditor)));
             });
 
             return fieldWrapper.wrap([$profileContainer, profileEditor.buildProfilesContainer()]);

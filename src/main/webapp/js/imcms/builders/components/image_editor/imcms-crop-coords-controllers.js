@@ -13,7 +13,7 @@ let $cropCoordY;
 let $cropCoordX1;
 let $cropCoordY1;
 
-events.on('crop area position changed', function () {
+events.on('crop area position changed', () => {
     const $croppingArea = cropArea.getCroppingArea();
     const x = $croppingArea.getLeft();
     const y = $croppingArea.getTop();

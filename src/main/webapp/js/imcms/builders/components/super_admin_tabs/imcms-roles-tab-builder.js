@@ -25,13 +25,13 @@ define(
             runCallbacks: function (roles) {
                 this.roles = roles;
 
-                this.callbacks.forEach(function (callback) {
-                    callback(roles)
-                })
+                this.callbacks.forEach(callback => {
+                    callback(roles);
+                });
             }
         };
 
-        rolesRestApi.read().done(function (roles) {
+        rolesRestApi.read().done(roles => {
             roleLoader.runCallbacks(roles);
         });
 
@@ -69,10 +69,8 @@ define(
                 'class': 'roles-table'
             });
 
-            roleLoader.whenRolesLoaded(function (roles) {
-                $rolesContainer.append(roles.map(function (role) {
-                    return roleToRow.transform(role, roleEditor)
-                }))
+            roleLoader.whenRolesLoaded(roles => {
+                $rolesContainer.append(roles.map(role => roleToRow.transform(role, roleEditor)));
             });
 
             return fieldWrapper.wrap([$rolesContainer, roleEditor.buildContainer()]);
@@ -88,7 +86,7 @@ define(
 
             var $externalRolesContainer = externalRolesBEM.buildBlock('<div>', [], {style: 'display: none;'});
 
-            auth.getAuthProviders().done(function (providers) {
+            auth.getAuthProviders().done(providers => {
                 if (!providers || !providers.length) return;
 
                 $externalRolesContainer.css('display', 'block');
@@ -111,11 +109,11 @@ define(
                     }
                 });
 
-                var providers$ = providers.map(function (provider) {
+                var providers$ = providers.map(provider => {
                     var $roles = $('<div>');
 
-                    azureRoles.read().done(function (externalRoles) {
-                        var roles$ = externalRoles.map(function (externalRole) {
+                    azureRoles.read().done(externalRoles => {
+                        var roles$ = externalRoles.map(externalRole => {
                             var $externalRoleName = $('<div>', {
                                 text: externalRole.displayName
                             });
@@ -138,24 +136,22 @@ define(
                                 providerId: externalRole.providerId
                             }; // only these two are required for request
 
-                            externalToLocalRolesLinks.read(requestData).done(function (linkedRoles) {
-                                roleLoader.whenRolesLoaded(function (roles) {
+                            externalToLocalRolesLinks.read(requestData).done(linkedRoles => {
+                                roleLoader.whenRolesLoaded(roles => {
 
                                     var $rolesSelect;
 
                                     var $saveButton = components.buttons.saveButton({
                                         text: texts.save,
                                         style: 'display: none;',
-                                        click: function () {
+                                        click: () => {
                                             var selectedRolesId = $rolesSelect.getSelectedValues();
                                             var request = {
                                                 externalRole: requestData,
                                                 localRolesId: selectedRolesId
                                             };
-                                            externalToLocalRolesLinks.replace(request).done(function () {
-                                                linkedRoles = selectedRolesId.map(function (selectedRoleId) {
-                                                    return {id: selectedRoleId}
-                                                });
+                                            externalToLocalRolesLinks.replace(request).done(() => {
+                                                linkedRoles = selectedRolesId.map(selectedRoleId => ({id: selectedRoleId}));
                                                 $saveButton.add($cancelButton).css('display', 'none');
                                             });
                                         }
@@ -164,18 +160,18 @@ define(
                                     var $cancelButton = components.buttons.negativeButton({
                                         text: texts.cancel,
                                         style: 'display: none;',
-                                        click: function () {
+                                        click: () => {
                                             $saveButton.add($cancelButton).css('display', 'none');
                                             $selectWrapper.empty().append(buildRolesSelect());
                                         }
                                     });
 
                                     function buildRolesSelect() {
-                                        var rolesDataMapped = roles.map(function (role) {
+                                        var rolesDataMapped = roles.map(role => {
                                             var attributes = {
                                                 text: role.name,
                                                 value: role.id,
-                                                change: function () {
+                                                change: () => {
                                                     $saveButton.add($cancelButton).css('display', 'inline-block');
                                                 }
                                             };

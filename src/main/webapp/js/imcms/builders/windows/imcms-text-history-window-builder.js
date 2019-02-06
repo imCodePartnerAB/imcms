@@ -197,10 +197,10 @@ define("imcms-text-history-window-builder",
 
             delete dto.type;
 
-            textsHistoryRestAPI.read(dto).done(function (textsHistory) {
+            textsHistoryRestAPI.read(dto).done(textsHistory => {
                 var dateToTextHistoryUnits = {};
 
-                textsHistory.forEach(function (textHistory) {
+                textsHistory.forEach(textHistory => {
                     var date = textHistory.modified.date;
                     dateToTextHistoryUnits[date] = (dateToTextHistoryUnits[date] || []);
                     dateToTextHistoryUnits[date].push(textHistory);

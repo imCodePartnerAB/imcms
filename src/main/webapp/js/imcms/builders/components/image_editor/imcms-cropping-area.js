@@ -16,30 +16,22 @@ function getCurrentHeight($element) {
     return (isImageProportionsInverted) ? $element.width() : $element.height();
 }
 
-events.on("image proportions inverted", function () {
+events.on("image proportions inverted", () => {
     isImageProportionsInverted = true;
 });
 
-events.on("regular image proportions", function () {
+events.on("regular image proportions", () => {
     isImageProportionsInverted = false;
 });
 
 function setFunctionality($element) {
-    $element.getCurrentWidth = function () {
-        return getCurrentWidth($element);
-    };
+    $element.getCurrentWidth = () => getCurrentWidth($element);
 
-    $element.getCurrentHeight = function () {
-        return getCurrentHeight($element);
-    };
+    $element.getCurrentHeight = () => getCurrentHeight($element);
 
-    $element.getTop = function () {
-        return parseInt($element.css("top"));
-    };
+    $element.getTop = () => parseInt($element.css("top"));
 
-    $element.getLeft = function () {
-        return parseInt($element.css("left"));
-    };
+    $element.getLeft = () => parseInt($element.css("left"));
 
     $element.setLeft = (left) => $element.css('left', left);
 
@@ -83,12 +75,10 @@ function setPositionListeners($element, eventName) {
     };
 
     const oldAnimate = $element.animate;
-    $element.animate = function (params, duration, callback) {
-        return oldAnimate.call($element, params, duration, function () {
-            callback && callback.call();
-            events.trigger(eventName);
-        });
-    };
+    $element.animate = (params, duration, callback) => oldAnimate.call($element, params, duration, () => {
+        callback && callback.call();
+        events.trigger(eventName);
+    });
 
     return $element;
 }

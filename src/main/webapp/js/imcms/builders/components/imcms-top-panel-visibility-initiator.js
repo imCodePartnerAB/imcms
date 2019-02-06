@@ -14,10 +14,8 @@ define(
         function showPanels() {
             $("#imcmsAdminSpecial").not(".imcms-special-hidden").css("display", "block");
 
-            setTimeout(function () {
-                panels$.filter(function ($panel) {
-                        return !$panel.hasClass('imcms-special-hidden');
-                    })
+            setTimeout(() => {
+                panels$.filter($panel => !$panel.hasClass('imcms-special-hidden'))
                     .forEach(showPanel);
 
                 onPanelsShown();
@@ -28,12 +26,12 @@ define(
             $("body").css({"top": 0});
             panels$.forEach(hidePanel);
 
-            setTimeout(function () {
+            setTimeout(() => {
                 $("#imcmsAdminSpecial").css("display", "none");
             }, 300);
         }
 
-        streams.subscribeFromLast("admin panel visibility", function (content) {
+        streams.subscribeFromLast("admin panel visibility", content => {
             if (content.hidePanel) {
                 panelState.enableSpecialPanelHiding();
                 panelState.disablePanelAppearance();
@@ -70,7 +68,7 @@ define(
         function setEventListeners() {
             listenersNotSet = false;
 
-            $(document).mousemove(function (event) {
+            $(document).mousemove(event => {
 
                 var isPanelDisabledOrMouseNotInSensitiveArea = panelState.isPanelAppearanceDisabled
                     || (event.clientY < 0)
@@ -81,7 +79,7 @@ define(
                 showPanels();
             });
 
-            $(document).click(function (event) {
+            $(document).click(event => {
                 if (!$(event.target).closest(".admin-panel-settings-list").length
                     && !$(event.target).closest(".imcms-panel__item--settings").length)
                 {
@@ -96,7 +94,7 @@ define(
 
         return {
             refreshBodyTop: onPanelsShown,
-            setShowHidePanelRules: function ($panel) {
+            setShowHidePanelRules: $panel => {
                 panels$.push($panel);
                 listenersNotSet && setEventListeners();
             }

@@ -14,10 +14,10 @@ define("imcms-keywords-tab-builder",
 
         KeywordsTab.prototype = Object.create(PageInfoTab.prototype);
 
-        KeywordsTab.prototype.isDocumentTypeSupported = function () {
+        KeywordsTab.prototype.isDocumentTypeSupported = () => {
             return true; // all supported
         };
-        KeywordsTab.prototype.tabElementsFactory = function () {
+        KeywordsTab.prototype.tabElementsFactory = () => {
             tabData.$keywordsBox = components.keywords.keywordsBox("<div>", {
                 "input-id": "keyword",
                 title: texts.title,
@@ -35,16 +35,16 @@ define("imcms-keywords-tab-builder",
 
             return [tabData.$keywordsBox, $checkboxField];
         };
-        KeywordsTab.prototype.fillTabDataFromDocument = function (document) {
+        KeywordsTab.prototype.fillTabDataFromDocument = document => {
             document.keywords.forEach(tabData.$keywordsBox.addKeyword);
             tabData.$searchDisableCheckbox.setChecked(document.searchDisabled);
         };
-        KeywordsTab.prototype.saveData = function (documentDTO) {
+        KeywordsTab.prototype.saveData = documentDTO => {
             documentDTO.keywords = tabData.$keywordsBox.getKeywords();
             documentDTO.searchDisabled = tabData.$searchDisableCheckbox.isChecked();
             return documentDTO;
         };
-        KeywordsTab.prototype.clearTabData = function () {
+        KeywordsTab.prototype.clearTabData = () => {
             tabData.$keywordsBox.find('.imcms-keyword__keywords')
                 .find('.imcms-button--close')
                 .click();

@@ -13,18 +13,18 @@ define(
         var title = 'Switch to text editor'; // todo: localize!!11
 
         function getOnSwitch(editor) {
-            return function () {
+            return () => {
                 var $textEditor = $(editor.$());
                 $textEditor.attr('data-type', textTypes.editor).data('type', textTypes.editor);
 
-                textUtils.saveContent(editor, function () {
+                textUtils.saveContent(editor, () => {
                     var tinyMceTextEditor = require('imcms-tinymce-text-editor');
                     var content = $textEditor.val();
                     $textEditor.parent().find('.imcms-editor-area__text-toolbar').empty();
                     $textEditor = $textEditor.replaceTagName('div').removeAttr('wrap').removeAttr('style');
                     $textEditor.html(content);
 
-                    tinyMceTextEditor.init($textEditor).then(function (editor) {
+                    tinyMceTextEditor.init($textEditor).then(editor => {
                         editor[0].focus();
                     });
                 });
@@ -44,9 +44,7 @@ define(
                     }
                 });
             },
-            buildSwitchToTextEditorButton: function (editor) {
-                return toolbarButtonBuilder.buildButton('switch-to-text-editor-button', title, getOnSwitch(editor))
-            }
-        }
+            buildSwitchToTextEditorButton: editor => toolbarButtonBuilder.buildButton('switch-to-text-editor-button', title, getOnSwitch(editor))
+        };
     }
 );

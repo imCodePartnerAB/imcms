@@ -15,7 +15,7 @@ define("imcms-editors-initializer",
         }
 
         return {
-            initEditors: function () {
+            initEditors: () => {
                 editorLabelInitializer.initEditorLabels();
                 editorInitializers.forEach(initEditor);
             }

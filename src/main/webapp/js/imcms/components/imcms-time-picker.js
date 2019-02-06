@@ -77,20 +77,18 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
             return $timePickerContainer.find(CURRENT_TIME__INPUT__CLASS_$)
                 .val((time ? time.split(':', 2).join(':') : ''))
                 .end();
-        }
+        };
     }
 
     function bindSetCurrentTime($timePickerContainer) {
-        return function () {
+        return () => {
             var currentTimeObj = getCurrentTimeObj();
             bindSetTime($timePickerContainer)(currentTimeObj.hours + ':' + currentTimeObj.minutes);
-        }
+        };
     }
 
     function bindGetTime($timePickerContainer) {
-        return function () {
-            return $timePickerContainer.find(CURRENT_TIME__INPUT__CLASS_$).val();
-        }
+        return () => $timePickerContainer.find(CURRENT_TIME__INPUT__CLASS_$).val();
     }
 
     function allowNumbersAndColons() {
@@ -233,7 +231,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     function isValid(time) {
         var isValid = time.length === 2;
 
-        time.forEach(function (value) {
+        time.forEach(value => {
             isValid = isValid && (value.length === 1 || value.length === 2);
         });
 

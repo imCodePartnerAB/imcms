@@ -56,7 +56,7 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
 
             editControls.on("mouseleave", function () {
                 $(this).find(".imcms-editor-area__control-title").hide();
-            })
+            });
         }
-    }
+    };
 });

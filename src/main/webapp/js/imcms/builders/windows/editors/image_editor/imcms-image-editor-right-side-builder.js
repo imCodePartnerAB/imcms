@@ -36,7 +36,7 @@ define(
 
         function loadExifData() {
             /** @namespace imageData.exifInfo */
-            (imageData.exifInfo || []).forEach(function (exifDataRow) {
+            (imageData.exifInfo || []).forEach(exifDataRow => {
                 $exifInfoContainer.append($("<div>", {"class": "image-exif-window__row"}).text(exifDataRow));
             });
         }
@@ -60,7 +60,7 @@ define(
         };
 
         module.exports = {
-            updateImageData: function ($newTag, newImageData) {
+            updateImageData: ($newTag, newImageData) => {
                 $tag = $newTag;
                 imageData = newImageData;
 
@@ -85,9 +85,7 @@ define(
 
                     var $selectImageBtn = components.buttons.neutralButton({
                         text: texts.selectImage,
-                        click: contentManager.build.bind(contentManager, fillData, function () {
-                            return imageEditorBodyHeadBuilder.getImagePath();
-                        })
+                        click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
                     });
                     return components.buttons.buttonsContainer("<div>", [$selectImageBtn]);
                 }
@@ -109,17 +107,15 @@ define(
                 function buildImageLangFlags() {
                     imageData.langCode = imcms.language.code;
 
-                    return components.flags.flagsContainer(function (language) {
-                        return ["<div>", {
-                            click: function () {
-                                imageData.langCode = language.code;
+                    return components.flags.flagsContainer(language => ["<div>", {
+                        click: function () {
+                            imageData.langCode = language.code;
 
-                                var imageRequestData = getImageRequestData(imageData.langCode);
+                            var imageRequestData = getImageRequestData(imageData.langCode);
 
-                                imageRestApi.read(imageRequestData).done(fillData);
-                            }
-                        }];
-                    });
+                            imageRestApi.read(imageRequestData).done(fillData);
+                        }
+                    }]);
                 }
 
                 function buildAllLanguagesCheckbox() {

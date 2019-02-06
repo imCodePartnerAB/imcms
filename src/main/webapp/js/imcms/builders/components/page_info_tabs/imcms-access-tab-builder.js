@@ -27,7 +27,7 @@ define("imcms-access-tab-builder",
             storedRoles = roles;
             storedRoleIdsPerRoles = {};
 
-            roles.forEach(function (role) {
+            roles.forEach(role => {
                 storedRoleIdsPerRoles[role.id] = role;
             });
         }
@@ -66,7 +66,7 @@ define("imcms-access-tab-builder",
                 $roleRestricted1 = buildRole("RESTRICTED_1", role, radioName),
                 $roleRestricted2 = buildRole("RESTRICTED_2", role, radioName),
                 $row = rolesBEM.buildBlockElement("row", "<div>", {"data-role-id": role.id}),
-                onDeleteRoleClick = function () {
+                onDeleteRoleClick = () => {
                     components.selects.addOptionsToSelect([mapRoleOnSelectOption(role)], $addRoleSelect);
 
                     if ($addRoleSelect.hasOptions()) {
@@ -105,10 +105,10 @@ define("imcms-access-tab-builder",
 
         AccessTab.prototype = Object.create(PageInfoTab.prototype);
 
-        AccessTab.prototype.isDocumentTypeSupported = function () {
+        AccessTab.prototype.isDocumentTypeSupported = () => {
             return true; // all supported
         };
-        AccessTab.prototype.tabElementsFactory = function (index, docId) {
+        AccessTab.prototype.tabElementsFactory = (index, docId) => {
             var $addRoleSelect = components.selects.imcmsSelect("<div>");
 
             if (!docId) {
@@ -117,7 +117,7 @@ define("imcms-access-tab-builder",
                     components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
                 }
 
-                storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null).done(function (roles) {
+                storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null).done(roles => {
                     storeRoles(roles);
                     mapRoles(roles);
                 });
@@ -150,7 +150,7 @@ define("imcms-access-tab-builder",
 
             var $addRoleButton = components.buttons.neutralButton({
                     text: texts.addRole,
-                    click: function () {
+                    click: () => {
                         var id = $addRoleSelect.getSelectedValue();
                         var role = {
                             id: id,
@@ -194,15 +194,15 @@ define("imcms-access-tab-builder",
 
             return [$rolesField, $addRoleContainer];
         };
-        AccessTab.prototype.fillTabDataFromDocument = function (document) {
+        AccessTab.prototype.fillTabDataFromDocument = document => {
             function documentContainsRole(document, role) {
                 return document.roleIdToPermission[role.id];
             }
 
             function buildRolesRows(roles) {
-                var rolesDataMapped = roles.filter(function (role) {
-                    return !documentContainsRole(document, role);
-                }).map(mapRoleOnSelectOption);
+                var rolesDataMapped = roles
+                    .filter(role => !documentContainsRole(document, role))
+                    .map(mapRoleOnSelectOption);
 
                 tabData.$addRoleSelect.clearSelect();
 
@@ -217,7 +217,7 @@ define("imcms-access-tab-builder",
                 tabData.$addRoleSelect.css("display", addRoleDisplay);
                 $addRoleBtn.css("display", addRoleDisplay);
 
-                var $roles = Object.keys(document.roleIdToPermission).map(function (roleId) {
+                var $roles = Object.keys(document.roleIdToPermission).map(roleId => {
                     var role = storedRoleIdsPerRoles[roleId];
                     role.permission = document.roleIdToPermission[roleId];
 
@@ -230,7 +230,7 @@ define("imcms-access-tab-builder",
                 }
             }
 
-            (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null).done(function (roles) {
+            (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null).done(roles => {
                 storeRoles(roles);
                 buildRolesRows(roles);
             });
@@ -256,7 +256,7 @@ define("imcms-access-tab-builder",
 
             return documentDTO;
         };
-        AccessTab.prototype.clearTabData = function () {
+        AccessTab.prototype.clearTabData = () => {
             tabData.$rolesBody.empty();
             tabData.$rolesField.css("display", "none");
         };

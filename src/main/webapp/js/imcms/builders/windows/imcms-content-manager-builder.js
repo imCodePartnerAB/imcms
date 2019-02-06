@@ -29,7 +29,7 @@ define(
                     elements: {
                         "close-button": components.buttons.closeButton({
                             id: "closeFolders",
-                            click: function () {
+                            click: () => {
                                 $showHideFoldersButton.click();
                             }
                         })
@@ -85,7 +85,7 @@ define(
 
                 var $uploadNewImage = components.buttons.positiveButton({
                     text: texts.upload,
-                    click: function () {
+                    click: () => {
                         $fileInput.click();
                     }
                 });

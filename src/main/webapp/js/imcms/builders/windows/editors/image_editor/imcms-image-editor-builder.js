@@ -198,7 +198,7 @@ define(
             loadDataStrategy: loadData,
             clearDataStrategy: clearData,
             onEscKeyPressed: "close",
-            onEnterKeyPressed: function () {
+            onEnterKeyPressed: () => {
                 imageWindowBuilder.$editor.find(".imcms-image_editor__footer .imcms-button--save").click();
             }
         });

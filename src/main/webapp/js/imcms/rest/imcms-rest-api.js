@@ -52,7 +52,7 @@ function ajax(data, callback) {
             callback && callback(response);
         },
 
-        error: function (response) {
+        error: response => {
             console.groupEnd();
             console.error(response);
         }

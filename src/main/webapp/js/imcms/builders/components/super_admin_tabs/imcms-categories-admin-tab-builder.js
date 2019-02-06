@@ -20,7 +20,7 @@ define(
 
         function buildDropDownListCategoriesTypes() {
 
-            var onCategorySelected = function (value) {
+            var onCategorySelected = value => {
                 // categoriesRestApi.getById(value).done(function (category) {
                 //     currentCategory = category;
                 //     let edit = typeEditor.editCategoryType($('<div>'), { //change for this
@@ -35,9 +35,9 @@ define(
                 // })
             };
 
-            var onSelected = function (values) {
+            var onSelected = values => {
 
-                typesRestApi.getById(values).done(function (ctgType) {
+                typesRestApi.getById(values).done(ctgType => {
                     currentCtgType = ctgType;
                     let edit = typeEditor.editCategoryType($('<div>'), {
                         id: currentCtgType.id,
@@ -61,14 +61,12 @@ define(
                     onCategorySelected: onCategorySelected
                 });
 
-                categoriesRestApi.getCategoriesByCategoryTypeId(values).done(function (categories) {
+                categoriesRestApi.getCategoriesByCategoryTypeId(values).done(categories => {
 
-                    let categoriesDataMapped = categories.map(function (category) {
-                        return {
-                            text: category.name,
-                            'data-value': category.id
-                        }
-                    });
+                    let categoriesDataMapped = categories.map(category => ({
+                        text: category.name,
+                        'data-value': category.id
+                    }));
 
                     components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
 
@@ -86,14 +84,12 @@ define(
             });
 
 
-            typesRestApi.read().done(function (ctgTypes) {
+            typesRestApi.read().done(ctgTypes => {
 
-                let categoriesTypesDataMapped = ctgTypes.map(function (categoryType) {
-                    return {
-                        text: categoryType.name,
-                        'data-value': categoryType.id
-                    }
-                });
+                let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
+                    text: categoryType.name,
+                    'data-value': categoryType.id
+                }));
 
                 components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onSelected);
             });
@@ -190,7 +186,7 @@ define(
 
             function onRemoveCtgType() {
 
-                typesRestApi.remove(currentCtgType).done(function () {
+                typesRestApi.remove(currentCtgType).done(() => {
                     currentCtgType = null;
                     editorContainer.slideUp();
                     createContainer.slideUp();
@@ -249,8 +245,8 @@ define(
         }
 
         function getOnWarnCancel(onConfirm) {
-            return function () {
-                modal.buildModalWindow(texts.warnCancelMessage, function (confirmed) {
+            return () => {
+                modal.buildModalWindow(texts.warnCancelMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
                 })
@@ -291,7 +287,7 @@ define(
                     }),
                     components.buttons.negativeButton({
                         text: texts.cancelButton,
-                        click: getOnWarnCancel(function () {
+                        click: getOnWarnCancel(() => {
                             //onCategoryTypeView = onCategoryTypeSimpleView;
 
                             if (currentCategory.id) {
@@ -338,7 +334,7 @@ define(
             function buildCategoryEditButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.editButtonName,
-                    click: function () {
+                    click: () => {
 
                     }
                 });
@@ -350,7 +346,7 @@ define(
             function buildCategoryRemoveButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.removeButtonName,
-                    click: function () {
+                    click: () => {
 
                     }
                 });
@@ -362,7 +358,7 @@ define(
             function buildCategoryViewButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.viewButtonName,
-                    click: function () {
+                    click: () => {
 
                     }
                 });

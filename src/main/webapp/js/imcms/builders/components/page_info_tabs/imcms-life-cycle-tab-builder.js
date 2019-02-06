@@ -40,12 +40,10 @@ define("imcms-life-cycle-tab-builder",
 
         function buildDateTimeContainerBlock($title, items) {
             var lastIndex = items.length - 1;
-            var blockElements = [{"title": $title}].concat(items.map(function ($item, index) {
-                return {
-                    "item": $item,
-                    modifiers: (lastIndex === index) ? itemModifiers.concat("margin-l") : itemModifiers
-                }
-            }));
+            var blockElements = [{"title": $title}].concat(items.map(($item, index) => ({
+                "item": $item,
+                modifiers: (lastIndex === index) ? itemModifiers.concat("margin-l") : itemModifiers
+            })));
 
             return lifeCycleInnerStructureBEM.buildBlock("<div>", blockElements);
         }
@@ -67,7 +65,7 @@ define("imcms-life-cycle-tab-builder",
                 $time = components.dateTime.timePickerClock({title: containerData.timeTitle}),
                 $setDateTimeNowBtn = components.buttons.neutralButton({
                     text: texts.now,
-                    click: function () {
+                    click: () => {
                         $date.setCurrentDate();
                         $time.setCurrentTime();
 
@@ -81,7 +79,7 @@ define("imcms-life-cycle-tab-builder",
                 $setDateTimeNowContainer = components.buttons.buttonsContainer("<div>", [$setDateTimeNowBtn]),
                 $clearDateTimeBtn = components.buttons.neutralButton({
                     text: texts.clear,
-                    click: function () {
+                    click: () => {
                         cleanUpDateAndTime($date, $time);
                     }
                 }),
@@ -133,13 +131,11 @@ define("imcms-life-cycle-tab-builder",
                 name: "publisher"
             });
 
-            usersRestApi.getAllAdmins().done(function (users) {
-                var usersDataMapped = users.map(function (user) {
-                    return {
-                        text: user.login,
-                        "data-value": user.id
-                    }
-                });
+            usersRestApi.getAllAdmins().done(users => {
+                var usersDataMapped = users.map(user => ({
+                    text: user.login,
+                    "data-value": user.id
+                }));
 
                 components.selects.addOptionsToSelect(usersDataMapped, tabData.$publisherSelect);
             });// todo receive users with specific role admin
@@ -204,21 +200,19 @@ define("imcms-life-cycle-tab-builder",
 
         LifeCycleTab.prototype = Object.create(PageInfoTab.prototype);
 
-        LifeCycleTab.prototype.isDocumentTypeSupported = function () {
+        LifeCycleTab.prototype.isDocumentTypeSupported = () => {
             return true; // all supported
         };
-        LifeCycleTab.prototype.tabElementsFactory = function () {
-            return [
-                buildDocStatusSelect(),
-                buildPublishedDateTimeContainer(),
-                buildArchivedDateTimeContainer(),
-                buildPublishEndDateTimeContainer(),
-                buildPublisherSelectRow(),
-                buildCurrentVersionRow(),
-                buildDocVersionsInfoRow()
-            ];
-        };
-        LifeCycleTab.prototype.fillTabDataFromDocument = function (document) {
+        LifeCycleTab.prototype.tabElementsFactory = () => [
+            buildDocStatusSelect(),
+            buildPublishedDateTimeContainer(),
+            buildArchivedDateTimeContainer(),
+            buildPublishEndDateTimeContainer(),
+            buildPublisherSelectRow(),
+            buildCurrentVersionRow(),
+            buildDocVersionsInfoRow()
+        ];
+        LifeCycleTab.prototype.fillTabDataFromDocument = document => {
             var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
                 && imcms.isVersioningAllowed) ? "block" : "none";
 
@@ -227,7 +221,7 @@ define("imcms-life-cycle-tab-builder",
             tabData.$savingVersionInfo.find("#document-next-version").html(+document.latestVersion.id + 1);
             tabData.$docStatusSelect.selectValue(document.publicationStatus);
 
-            statusRowsNames.forEach(function (rowName) {
+            statusRowsNames.forEach(rowName => {
                 setStatusInfoRowDataFromDocument(rowName, document);
             });
 
@@ -237,10 +231,10 @@ define("imcms-life-cycle-tab-builder",
             tabData.$docVersionSaveDateTime.setDate(document.latestVersion.date)
                 .setTime(document.latestVersion.time);
         };
-        LifeCycleTab.prototype.saveData = function (documentDTO) {
+        LifeCycleTab.prototype.saveData = documentDTO => {
             documentDTO.publicationStatus = tabData.$docStatusSelect.getSelectedValue();
 
-            statusRowsNames.forEach(function (rowName) {
+            statusRowsNames.forEach(rowName => {
                 documentDTO[rowName].by = null;
                 documentDTO[rowName].date = tabData["$" + rowName + "Date"].getDate() || null;
                 documentDTO[rowName].time = tabData["$" + rowName + "Time"].getTime() || null;
@@ -254,12 +248,12 @@ define("imcms-life-cycle-tab-builder",
 
             return documentDTO;
         };
-        LifeCycleTab.prototype.clearTabData = function () {
+        LifeCycleTab.prototype.clearTabData = () => {
             var emptyString = '';
 
             tabData.$docStatusSelect.selectFirst();
 
-            statusRowsNames.forEach(function (rowName) {
+            statusRowsNames.forEach(rowName => {
                 setStatusInfoRowData(rowName, emptyString, emptyString);
             });
 

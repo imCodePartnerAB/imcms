@@ -52,12 +52,12 @@ module.exports = {
         ].forEach(func);
     },
     hideAll: function () {
-        this.forEach(function ($angle) {
+        this.forEach($angle => {
             $angle.css("display", "none");
         });
     },
     showAll: function () {
-        this.forEach(function ($angle) {
+        this.forEach($angle => {
             $angle.css("display", "block");
         })
     },

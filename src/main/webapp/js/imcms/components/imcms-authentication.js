@@ -5,8 +5,6 @@
 define('imcms-authentication', ['imcms-auth-providers-rest-api'], function (authProvidersAPI) {
 
     return {
-        getAuthProviders: function () {
-            return authProvidersAPI.read();
-        }
+        getAuthProviders: () => authProvidersAPI.read()
     };
 });

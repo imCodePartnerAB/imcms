@@ -22,7 +22,7 @@ function getRandomHexes(howMany) {
 }
 
 module.exports = {
-    generateUUID: function () {
+    generateUUID: () => {
         const first8 = getRandomHexes(8);
         const then4 = getRandomHexes(4);
         const more4 = getRandomHexes(4);

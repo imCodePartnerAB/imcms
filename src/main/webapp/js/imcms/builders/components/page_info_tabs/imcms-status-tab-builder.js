@@ -28,7 +28,7 @@ define("imcms-status-tab-builder",
                 text: title
             });
 
-            var inputs = inputFields.map(function ($input) {
+            var inputs = inputFields.map($input => {
                 $input.modifiers = ["float-l"];
                 return $input;
             });
@@ -86,23 +86,21 @@ define("imcms-status-tab-builder",
 
         StatusTab.prototype = Object.create(PageInfoTab.prototype);
 
-        StatusTab.prototype.isDocumentTypeSupported = function () {
+        StatusTab.prototype.isDocumentTypeSupported = () => {
             return true; // all supported
         };
 
-        StatusTab.prototype.tabElementsFactory = function () {
-            return statusRows.map(buildStatusInfoRow);
-        };
+        StatusTab.prototype.tabElementsFactory = () => statusRows.map(buildStatusInfoRow);
 
-        StatusTab.prototype.fillTabDataFromDocument = function (document) {
-            statusRows.forEach(function (statusTab) {
+        StatusTab.prototype.fillTabDataFromDocument = document => {
+            statusRows.forEach(statusTab => {
                 setStatusInfoRowDataFromDocument(statusTab.dataTitle, document);
             });
         };
 
-        StatusTab.prototype.clearTabData = function () {
+        StatusTab.prototype.clearTabData = () => {
             var emptyString = '';
-            statusRows.forEach(function (statusTab) {
+            statusRows.forEach(statusTab => {
                 setStatusInfoRowData(statusTab.dataTitle, emptyString, emptyString, emptyString);
             });
         };

@@ -50,12 +50,12 @@ define(
             $link.insertAfter('.imcms-admin-panel .imcms-panel__item--page-info:first');
             var $collapsible = $('#imcmsAdminSpecial.imcms-collapsible');
 
-            $link.click(function () {
+            $link.click(() => {
 
                 if ($collapsible.hasClass('imcms-special-hidden')) {
                     $collapsible.css('display', 'block');
 
-                    setTimeout(function () {
+                    setTimeout(() => {
                         $collapsible.removeClass('imcms-special-hidden').css('top', 0);
                         panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                     });
@@ -64,7 +64,7 @@ define(
                     cookies.setCookie("imcms-client-special-area", "opened", {expires: 30});
 
                 } else {
-                    $collapsible.slideUp(200, function () {
+                    $collapsible.slideUp(200, () => {
                             panelState.isSpecialPanelHidingPrevented || panelVisibility.refreshBodyTop();
                         })
                         .addClass('imcms-special-hidden')
@@ -86,7 +86,7 @@ define(
         }
 
         return {
-            init: function (onInitDone) {
+            init: onInitDone => {
                 panelBuilder.callOnPanelBuilt(initSiteSpecific);
                 panelBuilder.callOnPanelBuilt(onInitDone);
             }

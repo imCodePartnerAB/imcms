@@ -13,11 +13,11 @@ define(
         var title = 'Switch to HTML mode'; // todo: localize!!11
 
         function getOnSwitch(editor, transformEditor) {
-            return function () {
+            return () => {
                 var $textEditor = $(editor.$());
                 $textEditor.attr('data-type', textTypes.html).data('type', textTypes.html);
 
-                textUtils.saveContent(editor, function () {
+                textUtils.saveContent(editor, () => {
                     var textEditor = require('imcms-text-editor');
                     $textEditor = transformEditor($textEditor, editor);
                     textEditor.initHtmlFromEditor($textEditor);
@@ -51,14 +51,10 @@ define(
                     onclick: getOnSwitch(editor, transformFromTinyMce)
                 });
             },
-            buildDisabledSwitchToHtmlModeButton: function () {
-                return toolbarButtonBuilder.buildButton('switch-to-html-mode-button', title, new Function(), true, true)
-            },
-            buildSwitchToHtmlModeFromPlainTextButton: function (editor) {
-                return toolbarButtonBuilder.buildButton(
-                    'switch-to-html-mode-button', title, getOnSwitch(editor, transformFromPlainText)
-                )
-            }
-        }
+            buildDisabledSwitchToHtmlModeButton: () => toolbarButtonBuilder.buildButton('switch-to-html-mode-button', title, new Function(), true, true),
+            buildSwitchToHtmlModeFromPlainTextButton: editor => toolbarButtonBuilder.buildButton(
+                'switch-to-html-mode-button', title, getOnSwitch(editor, transformFromPlainText)
+            )
+        };
     }
 );

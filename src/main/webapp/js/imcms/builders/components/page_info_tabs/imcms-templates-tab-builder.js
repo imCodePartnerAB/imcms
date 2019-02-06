@@ -15,7 +15,7 @@ define("imcms-templates-tab-builder",
 
         TemplatesTab.prototype = Object.create(PageInfoTab.prototype);
 
-        TemplatesTab.prototype.tabElementsFactory = function () {
+        TemplatesTab.prototype.tabElementsFactory = () => {
             var $templateSelectContainer = components.selects.selectContainer("<div>", {
                     name: "template",
                     text: texts.template
@@ -32,13 +32,11 @@ define("imcms-templates-tab-builder",
             tabData.$defaultChildTemplateSelect = $defaultChildTemplateSelect;
 
             templatesRestApi.read(null)
-                .done(function (templates) {
-                    var templatesDataMapped = templates.map(function (template) {
-                        return {
-                            text: template.name,
-                            "data-value": template.name
-                        }
-                    });
+                .done(templates => {
+                    var templatesDataMapped = templates.map(template => ({
+                        text: template.name,
+                        "data-value": template.name
+                    }));
 
                     components.selects.addOptionsToSelect(templatesDataMapped, $templateSelect);
                     components.selects.addOptionsToSelect(templatesDataMapped, $defaultChildTemplateSelect);
@@ -49,7 +47,7 @@ define("imcms-templates-tab-builder",
                 $defaultChildTemplateSelectContainer
             ];
         };
-        TemplatesTab.prototype.fillTabDataFromDocument = function (document) {
+        TemplatesTab.prototype.fillTabDataFromDocument = document => {
             if (document.template) {
                 tabData.$templateSelect.selectValue(document.template.templateName);
                 tabData.$defaultChildTemplateSelect.selectValue(document.template.childrenTemplateName);
@@ -65,7 +63,7 @@ define("imcms-templates-tab-builder",
 
             return documentDTO;
         };
-        TemplatesTab.prototype.clearTabData = function () {
+        TemplatesTab.prototype.clearTabData = () => {
             tabData.$templateSelect.selectFirst();
             tabData.$defaultChildTemplateSelect.selectFirst();
         };

@@ -120,11 +120,11 @@ define(
             buildOnDecide: function (isConfirm, callback) {
                 var context = this;
 
-                return function () {
+                return () => {
                     callback(isConfirm);
                     context.closeModal();
                     return false;
-                }
+                };
             },
 
             addShadow: function () {
@@ -148,11 +148,11 @@ define(
         ModalWarningWindow.prototype = Object.create(ModalWindow.prototype);
         ModalWarningWindow.prototype.confirmAction = function (callback) {
             var context = this;
-            return function () {
+            return () => {
                 callback();
                 context.closeModal();
                 return false;
-            }
+            };
         };
 
         function buildModalWindow(question, callback) {
@@ -169,12 +169,12 @@ define(
 
         module.exports = {
             buildModalWindow: buildModalWindow,
-            buildConfirmWindow: function (question, onConfirm) {
-                buildModalWindow(question, function (confirm) {
+            buildConfirmWindow: (question, onConfirm) => {
+                buildModalWindow(question, confirm => {
                     confirm && onConfirm.call();
-                })
+                });
             },
-            buildConfirmWindowWithDontShowAgain: function (question, onConfirm, cookieName) {
+            buildConfirmWindowWithDontShowAgain: (question, onConfirm, cookieName) => {
                 var cookie = cookies.getCookie(cookieName);
                 var doNotShow = "do-not-show";
 
@@ -187,7 +187,7 @@ define(
                     text: 'Do not show again'
                 });
 
-                var modalWindow = buildModalWindow(question, function (confirm) {
+                var modalWindow = buildModalWindow(question, confirm => {
                     if (confirm) {
                         if ($checkbox.isChecked()) {
                             cookies.setCookie(cookieName, doNotShow, {expires: 30})
@@ -198,8 +198,8 @@ define(
 
                 modalWindow.$modal.find('.imcms-modal-body').append($checkbox);
             },
-            buildWarningWindow: function (message, callback) {
-                buildWarningWindow(message, callback)
+            buildWarningWindow: (message, callback) => {
+                buildWarningWindow(message, callback);
             }
         };
     }

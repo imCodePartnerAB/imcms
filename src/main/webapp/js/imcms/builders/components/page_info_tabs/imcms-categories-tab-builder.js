@@ -14,16 +14,14 @@ define("imcms-categories-tab-builder",
                 return false;
             }
 
-            var docCategoriesIds = document.categories.map(function (category) {
-                return category.id;
-            });
+            var docCategoriesIds = document.categories.map(category => category.id);
 
             return docCategoriesIds.indexOf(category.id) !== -1;
         }
 
         function createMultiSelectCategoryType(categoryType, document, selectWareHouse) {
 
-            var categoryTypeAsCheckboxGroup = categoryType.categories.map(function (category) {
+            var categoryTypeAsCheckboxGroup = categoryType.categories.map(category => {
                 var $imcmsCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
                     name: "category-type-" + categoryType.id,
                     value: category.id,
@@ -42,12 +40,10 @@ define("imcms-categories-tab-builder",
         }
 
         function createSingleSelectCategoryType(categoryType, document, selectWareHouse) {
-            var mappedCategoriesForSelectContainer = categoryType.categories.map(function (category) {
-                return {
-                    text: category.name,
-                    "data-value": category.id
-                };
-            });
+            var mappedCategoriesForSelectContainer = categoryType.categories.map(category => ({
+                text: category.name,
+                "data-value": category.id
+            }));
 
             var $selectContainer = components.selects.selectContainer("<div>", {
                 id: "category-type-" + categoryType.id,
@@ -58,9 +54,7 @@ define("imcms-categories-tab-builder",
             var $imcmsSelect = $selectContainer.getSelect();
             selectWareHouse.push($imcmsSelect);
 
-            var category = categoryType.categories.filter(function (category) {
-                return isDocumentContainsCategory(document, category);
-            })[0];
+            var category = categoryType.categories.filter(category => isDocumentContainsCategory(document, category))[0];
 
             category && $imcmsSelect.selectValue(category.id);
 
@@ -70,7 +64,7 @@ define("imcms-categories-tab-builder",
         function buildCategoryTypes(categoryTypes, document) {
             var categoriesBlockElements = [];
 
-            categoryTypes.forEach(function (categoryType) {
+            categoryTypes.forEach(categoryType => {
                 var $categoryType = (categoryType.multiSelect)
                     ? createMultiSelectCategoryType(categoryType, document, tabData.multiSelects$)
                     : createSingleSelectCategoryType(categoryType, document, tabData.singleSelects$);
@@ -84,7 +78,7 @@ define("imcms-categories-tab-builder",
         function extractCategoryTypes(categories) {
             var categoryTypeIdsPerType = {};
 
-            categories.forEach(function (category) {
+            categories.forEach(category => {
                 var categoryTypeId = category.type.id;
 
                 if (!categoryTypeIdsPerType[categoryTypeId]) {
@@ -115,7 +109,7 @@ define("imcms-categories-tab-builder",
 
         CategoriesTab.prototype = Object.create(PageInfoTab.prototype);
 
-        CategoriesTab.prototype.isDocumentTypeSupported = function () {
+        CategoriesTab.prototype.isDocumentTypeSupported = () => {
             return true; // all supported
         };
         CategoriesTab.prototype.tabElementsFactory = function (index, docId) {
@@ -123,41 +117,33 @@ define("imcms-categories-tab-builder",
             docId || this.fillTabDataFromDocument(); // when creating new doc without id yet, categories still should be loaded
             return tabElements;
         };
-        CategoriesTab.prototype.fillTabDataFromDocument = function (document) {
+        CategoriesTab.prototype.fillTabDataFromDocument = document => {
             tabData.multiSelects$ = [];
             tabData.singleSelects$ = [];
 
-            categoriesRestApi.read(null).done(function (categories) {
+            categoriesRestApi.read(null).done(categories => {
                 var categoryTypes = extractCategoryTypes(categories);
                 buildCategoryTypes(categoryTypes, document);
             });
         };
-        CategoriesTab.prototype.saveData = function (documentDTO) {
+        CategoriesTab.prototype.saveData = documentDTO => {
             var multiSelectCategories = tabData.multiSelects$
-                .filter(function ($categoryCheckbox) {
-                    return $categoryCheckbox.isChecked();
-                })
-                .map(function ($categoryCheckbox) {
-                    return {
-                        id: $categoryCheckbox.getValue()
-                    };
-                });
+                .filter($categoryCheckbox => $categoryCheckbox.isChecked())
+                .map($categoryCheckbox => ({
+                    id: $categoryCheckbox.getValue()
+                }));
 
             var singleSelectCategories = tabData.singleSelects$
-                .map(function ($categorySelect) {
-                    return {
-                        id: $categorySelect.getSelectedValue()
-                    };
-                })
-                .filter(function (category) {
-                    return category.id;
-                });
+                .map($categorySelect => ({
+                    id: $categorySelect.getSelectedValue()
+                }))
+                .filter(category => category.id);
 
             documentDTO.categories = multiSelectCategories.concat(singleSelectCategories);
 
             return documentDTO;
         };
-        CategoriesTab.prototype.clearTabData = function () {
+        CategoriesTab.prototype.clearTabData = () => {
             tabData.$categoriesContainer.empty();
         };
 

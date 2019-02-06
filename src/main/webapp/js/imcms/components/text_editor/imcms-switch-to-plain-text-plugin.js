@@ -13,11 +13,11 @@ define(
         var title = 'Switch to plain text mode'; // todo: localize!!11
 
         function getOnSwitch(editor, transformEditor) {
-            return function () {
+            return () => {
                 var $textEditor = $(editor.$());
                 $textEditor.attr('data-type', textTypes.text).data('type', textTypes.text);
 
-                textUtils.saveContent(editor, function () {
+                textUtils.saveContent(editor, () => {
                     var textEditor = require('imcms-text-editor');
                     $textEditor = transformEditor($textEditor, editor);
                     textEditor.initTextFromEditor($textEditor);
@@ -51,14 +51,10 @@ define(
                     onclick: getOnSwitch(editor, transformFromTinyMce)
                 });
             },
-            buildDisabledSwitchToPlainTextButton: function () {
-                return toolbarButtonBuilder.buildButton('switch-to-plain-text-button', title, new Function(), true, true)
-            },
-            buildSwitchToPlainTextFromHtmlButton: function (editor) {
-                return toolbarButtonBuilder.buildButton(
-                    'switch-to-plain-text-button', title, getOnSwitch(editor, transformFromHtml)
-                )
-            }
+            buildDisabledSwitchToPlainTextButton: () => toolbarButtonBuilder.buildButton('switch-to-plain-text-button', title, new Function(), true, true),
+            buildSwitchToPlainTextFromHtmlButton: editor => toolbarButtonBuilder.buildButton(
+                'switch-to-plain-text-button', title, getOnSwitch(editor, transformFromHtml)
+            )
         }
     }
 );

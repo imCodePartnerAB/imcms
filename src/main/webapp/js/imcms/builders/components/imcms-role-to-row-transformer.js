@@ -22,12 +22,10 @@ define('imcms-role-to-row-transformer', ['imcms-bem-builder', 'jquery'], functio
     }
 
     return {
-        transform: function (role, roleEditor) {
-            return rolesTableBEM.makeBlockElement('role-row', $('<div>', {
-                id: 'role-id-' + role.id,
-                text: role.name,
-                click: getOnRoleClicked(role, roleEditor)
-            }))
-        }
+        transform: (role, roleEditor) => rolesTableBEM.makeBlockElement('role-row', $('<div>', {
+            id: 'role-id-' + role.id,
+            text: role.name,
+            click: getOnRoleClicked(role, roleEditor)
+        }))
     };
 });

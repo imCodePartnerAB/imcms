@@ -179,7 +179,7 @@ define(
         function wrapWithNoOpIfNoImageYet(wrapMe) {
             return function () {
                 if (imageData && imageData.path) wrapMe.apply(this, arguments)
-            }
+            };
         }
 
         function onCancel() {

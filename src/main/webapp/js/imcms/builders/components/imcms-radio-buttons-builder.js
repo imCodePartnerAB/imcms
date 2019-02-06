@@ -50,7 +50,7 @@ define("imcms-radio-buttons-builder",
                         var args = arguments;
                         var context = this;
 
-                        setTimeout(function () {
+                        setTimeout(() => {
                             if ($input.is(":checked")) {
                                 attributes.click.apply(context, args);
                             }
@@ -70,29 +70,25 @@ define("imcms-radio-buttons-builder",
                 var radioBlocks$ = Array.prototype.slice.call(arguments);
 
                 return {
-                    setCheckedValue: function (value) {
-                        radioBlocks$.forEach(function ($radioBlock) {
+                    setCheckedValue: value => {
+                        radioBlocks$.forEach($radioBlock => {
                             var $radio = $radioBlock.find("input");
                             ($radio.val() === value) && $radio.prop("checked", "checked");
                         });
                     },
-                    getCheckedValue: function () {
-                        return radioBlocks$.reduce(function (prevValue, $radioBlock) {
-                            var $radio = $radioBlock.find("input");
+                    getCheckedValue: () => radioBlocks$.reduce(function (prevValue, $radioBlock) {
+                        var $radio = $radioBlock.find("input");
 
-                            if ($radio.is(":checked")) {
-                                return $radio.val();
-                            }
+                        if ($radio.is(":checked")) {
+                            return $radio.val();
+                        }
 
-                            return prevValue;
+                        return prevValue;
 
-                        }, null);
-                    }
+                    }, null)
                 };
             },
-            radioContainer: function (tag, elements, attributes) {
-                return containerBEM.buildBlock(tag, elements, attributes, "radio");
-            }
+            radioContainer: (tag, elements, attributes) => containerBEM.buildBlock(tag, elements, attributes, "radio")
         }
     }
 );

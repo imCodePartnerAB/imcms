@@ -18,9 +18,9 @@ define(
         function focusEditorOnControlClick($textEditor) {
             $textEditor.parent()
                 .find('.imcms-editor-area__control-wrap')
-                .click(function () {
+                .click(() => {
                     $textEditor[0].focus();
-                })
+                });
         }
 
         function autoGrow(e) {
@@ -49,7 +49,7 @@ define(
 
         ImcmsTextEditor.prototype = {
             $: function () {
-                return this.$editor
+                return this.$editor;
             },
             setContent: function (content) {
                 this.$editor.val(content);
@@ -78,18 +78,18 @@ define(
                 return this.dirty;
             },
             triggerBlur: function () {
-                textEditorUtils.onEditorBlur(this)
+                textEditorUtils.onEditorBlur(this);
             },
             then: function (onLoad) {
-                onLoad(this.$editor)
+                onLoad(this.$editor);
             }
         };
 
         function buildSaveButton(activeTextEditor) {
-            var onClick = function () {
+            var onClick = () => {
                 if (activeTextEditor.isDirty()) textEditorUtils.saveContent(activeTextEditor);
             };
-            return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true)
+            return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
         }
 
         function buildToolbar($textEditor, buttons$) {
@@ -105,7 +105,7 @@ define(
         }
 
         return {
-            initPlainTextEditor: function ($textEditor) {
+            initPlainTextEditor: $textEditor => {
                 var editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
@@ -117,7 +117,7 @@ define(
 
                 return editor;
             },
-            initHtmlEditor: function ($textEditor) {
+            initHtmlEditor: $textEditor => {
                 var editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
@@ -131,7 +131,7 @@ define(
 
                 return editor;
             },
-            initTextFromEditor: function ($textEditor) {
+            initTextFromEditor: $textEditor => {
                 var editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
@@ -146,7 +146,7 @@ define(
 
                 return editor;
             },
-            initHtmlFromEditor: function ($textEditor) {
+            initHtmlFromEditor: $textEditor => {
                 var editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [

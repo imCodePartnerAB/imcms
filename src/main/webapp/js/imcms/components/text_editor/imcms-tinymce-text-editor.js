@@ -70,7 +70,7 @@ define(
             forced_root_block: false,
             init_instance_callback: prepareEditor,
             save_onsavecallback: textEditorUtils.saveContent,
-            setup: function (editor) {
+            setup: editor => {
                 textHistory.initTextHistory(editor);
                 textValidation.initTextValidation(editor);
                 fullScreenPlugin.initFullScreen(editor);
@@ -93,14 +93,14 @@ define(
         function setEditorFocusOnEditControlClick(editor) {
             editor.$().parents('.imcms-editor-area--text')
                 .find('.imcms-control--text')
-                .on('click', function () {
+                .on('click', () => {
                     editor.focus();
                 });
         }
 
         function initSaveContentConfirmation(editor) {
-            editor.on('blur', function () {
-                textEditorUtils.onEditorBlur(editor)
+            editor.on('blur', () => {
+                textEditorUtils.onEditorBlur(editor);
             });
         }
 
@@ -113,7 +113,7 @@ define(
         }
 
         return {
-            init: function ($textEditor) {
+            init: $textEditor => {
                 var textAreaId = $textEditor.attr('id');
                 var toolbarId = $textEditor.closest('.imcms-editor-area--text')
                     .find('.imcms-editor-area__text-toolbar')

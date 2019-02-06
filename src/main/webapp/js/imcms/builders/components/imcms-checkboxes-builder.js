@@ -21,33 +21,29 @@ define("imcms-checkboxes-builder",
         ;
 
         function bindSetChecked(imcmsCheckboxResult, $input) {
-            return function (isChecked) {
+            return isChecked => {
                 isChecked ? $input.prop("checked", "checked") : $input.removeProp("checked");
                 return imcmsCheckboxResult;
             };
         }
 
         function bindSetLabelText(imcmsCheckboxResult, $label) {
-            return function (text) {
+            return text => {
                 $label.text(text);
                 return imcmsCheckboxResult;
             };
         }
 
         function bindIsChecked($input) {
-            return function () {
-                return $input.is(":checked");
-            };
+            return () => $input.is(":checked");
         }
 
         function bindGetValue($input) {
-            return function () {
-                return $input.val();
-            };
+            return () => $input.val();
         }
 
         return {
-            imcmsCheckbox: function (tag, attributes) {
+            imcmsCheckbox: (tag, attributes) => {
                 attributes = attributes || {};
 
                 var id = attributes.id || uuidGenerator.generateUUID();
@@ -86,10 +82,8 @@ define("imcms-checkboxes-builder",
 
                 return imcmsCheckboxResult;
             },
-            checkboxContainer: function (tag, elements, attributes) {
-                elements = elements.map(function (element) {
-                    return {"checkbox": element};
-                });
+            checkboxContainer: (tag, elements, attributes) => {
+                elements = elements.map(element => ({"checkbox": element}));
 
                 if (attributes && attributes.title) {
                     var $title = containerBEM.buildElement("title", "<div>", {text: attributes.title});

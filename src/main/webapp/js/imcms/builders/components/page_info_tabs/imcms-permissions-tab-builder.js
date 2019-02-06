@@ -51,9 +51,7 @@ define(
         }
 
         function mapCheckboxesFromAttributesArray(attributesArr) {
-            return attributesArr.map(function (attributes) {
-                return components.checkboxes.imcmsCheckbox("<div>", attributes);
-            });
+            return attributesArr.map(attributes => components.checkboxes.imcmsCheckbox("<div>", attributes));
         }
 
         function prettifyPermissionName(permissionName) {
@@ -73,17 +71,15 @@ define(
 
         PermissionsTab.prototype = Object.create(PageInfoTab.prototype);
 
-        PermissionsTab.prototype.tabElementsFactory = function () {
-            return [tabData.$permissionsWrapper = permissionsWrapperBEM.buildBlockStructure("<div>")];
-        };
-        PermissionsTab.prototype.fillTabDataFromDocument = function (document) {
+        PermissionsTab.prototype.tabElementsFactory = () => [tabData.$permissionsWrapper = permissionsWrapperBEM.buildBlockStructure("<div>")];
+        PermissionsTab.prototype.fillTabDataFromDocument = document => {
             tabData.restrictedCheckboxes$ = [];
 
             if (!document.restrictedPermissions || !document.restrictedPermissions.length) {
                 document.restrictedPermissions = getDefaultPermissions();
             }
 
-            document.restrictedPermissions.forEach(function (restrictedPermission) {
+            document.restrictedPermissions.forEach(restrictedPermission => {
                 var permissionName = restrictedPermission.permission;
 
                 var restrictedCheckboxes$ = createRestrictedCheckboxes(permissionName);
@@ -96,12 +92,12 @@ define(
 
                 var restrictedCheckboxesPerName = {};
 
-                restrictedCheckboxes$.forEach(function ($restrictedPermCheckbox) {
+                restrictedCheckboxes$.forEach($restrictedPermCheckbox => {
                     tabData.restrictedCheckboxes$.push($restrictedPermCheckbox);
                     restrictedCheckboxesPerName[$restrictedPermCheckbox.find("input").prop("name")] = $restrictedPermCheckbox;
                 });
 
-                exactPermissions.forEach(function (exactPermName) {
+                exactPermissions.forEach(exactPermName => {
                     restrictedCheckboxesPerName[exactPermName + "_" + permissionName].setChecked(restrictedPermission[exactPermName]);
                 });
             });
@@ -113,21 +109,21 @@ define(
 
             var restrictedCheckboxes = {};
 
-            tabData.restrictedCheckboxes$.forEach(function ($restrictedPermCheckbox) {
+            tabData.restrictedCheckboxes$.forEach($restrictedPermCheckbox => {
                 restrictedCheckboxes[$restrictedPermCheckbox.find("input").prop("name")] = $restrictedPermCheckbox;
             });
 
-            documentDTO.restrictedPermissions.forEach(function (restrictedPermission) {
+            documentDTO.restrictedPermissions.forEach(restrictedPermission => {
                 var permissionName = restrictedPermission.permission;
 
-                exactPermissions.forEach(function (exactPermName) {
+                exactPermissions.forEach(exactPermName => {
                     restrictedPermission[exactPermName] = restrictedCheckboxes[exactPermName + "_" + permissionName].isChecked();
                 });
             });
 
             return documentDTO;
         };
-        PermissionsTab.prototype.clearTabData = function () {
+        PermissionsTab.prototype.clearTabData = () => {
             tabData.$permissionsWrapper.empty();
         };
 

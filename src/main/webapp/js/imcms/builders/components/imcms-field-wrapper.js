@@ -4,11 +4,9 @@
  */
 define('imcms-field-wrapper', ['jquery'], function ($) {
     return {
-        wrap: function ($wrapMe, tag) {
-            return $((tag || '<div>'), {
-                'class': 'imcms-field',
-                html: $wrapMe
-            })
-        }
+        wrap: ($wrapMe, tag) => $((tag || '<div>'), {
+            'class': 'imcms-field',
+            html: $wrapMe
+        })
     }
 });

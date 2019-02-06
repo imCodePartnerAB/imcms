@@ -20,7 +20,7 @@ define("imcms-switch-builder", ["imcms-bem-builder", "imcms-primitives-builder"]
     });
 
     return {
-        imcmsSwitch: function (tag, attributes) {
+        imcmsSwitch: (tag, attributes) => {
             var $label = primitives.imcmsLabel(attributes.id);
             attributes.type = "checkbox";
             var $input = primitives.imcmsInput(attributes);
@@ -30,8 +30,6 @@ define("imcms-switch-builder", ["imcms-bem-builder", "imcms-primitives-builder"]
                 {"label": $label}
             ]);
         },
-        switchBlock: function (tag, elements, attributes) {
-            return switchBlockBEM.buildBlock(tag, elements, attributes, "switch");
-        }
+        switchBlock: (tag, elements, attributes) => switchBlockBEM.buildBlock(tag, elements, attributes, "switch")
     }
 });

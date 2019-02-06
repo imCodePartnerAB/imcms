@@ -13,7 +13,7 @@ var $ = require("jquery");
 
 imcms.disableContentManagerSaveButton = true;
 
-events.on("content manager closed", function () {
+events.on("content manager closed", () => {
     var returnUrl = $("#return-url").val();
     window.location = (returnUrl) ? returnUrl : imcms.contextPath;
 });

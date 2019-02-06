@@ -20,12 +20,10 @@ define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowB
     PageInfoTab.prototype.saveData = function (documentDTO) {
         return documentDTO; // no additional actions by default, override if necessary
     };
-    PageInfoTab.prototype.clearTabData = function () {
+    PageInfoTab.prototype.clearTabData = () => {
         // override
     };
-    PageInfoTab.prototype.isValid = function () {
-        return true;
-    };
+    PageInfoTab.prototype.isValid = () => true;
 
     return PageInfoTab;
 });

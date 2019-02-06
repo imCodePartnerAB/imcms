@@ -17,17 +17,17 @@ define(
         function onDeleteClicked() {
             $inputBlock.find('.imcms-error-msg').slideUp();
 
-            modal.buildModalWindow(texts.deleteConfirmation, function (confirm) {
+            modal.buildModalWindow(texts.deleteConfirmation, confirm => {
                 if (!confirm) return;
 
                 docs.remove($inputBlock.getInput().val())
-                    .done(function () {
+                    .done(() => {
                         $inputBlock.getInput().val('')
                     })
-                    .fail(function () {
+                    .fail(() => {
                         $inputBlock.find('.imcms-error-msg').slideDown()
-                    })
-            })
+                    });
+            });
         }
 
         function buildDeleteDocsBlock() {

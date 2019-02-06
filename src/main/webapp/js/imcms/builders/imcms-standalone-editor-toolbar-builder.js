@@ -24,12 +24,10 @@ define("imcms-standalone-editor-toolbar-builder",
         }
 
         function buildFlags() {
-            return componentsBuilder.flags.flagsContainer(function (language) {
-                return ["<div>", {
-                    text: language.code,
-                    click: flagOnClick
-                }];
-            });
+            return componentsBuilder.flags.flagsContainer(language => ["<div>", {
+                text: language.code,
+                click: flagOnClick
+            }]);
         }
 
         function createToolbarPanel(itemsToDisplay) {
@@ -44,7 +42,7 @@ define("imcms-standalone-editor-toolbar-builder",
             });
 
             let toolbarElements = [];
-            itemsToDisplay.forEach(function (item) {
+            itemsToDisplay.forEach(item => {
                 let $itemContainer;
 
                 switch (item.type) {
@@ -71,7 +69,7 @@ define("imcms-standalone-editor-toolbar-builder",
         }
 
         return {
-            buildPanel: function (itemsToDisplay) {
+            buildPanel: itemsToDisplay => {
                 if ($panelContainer) {
                     return;
                 }

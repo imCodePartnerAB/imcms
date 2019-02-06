@@ -25,7 +25,7 @@ define(
         function getOnClick(editor, $btn) {
             var $textEditor = $(editor.$());
 
-            return function (e) {
+            return e => {
                 var $target = $(e.target);
 
                 if ($target.hasClass('settings-section__setting') && $target.parents('.filtering-policies').length) {
@@ -36,8 +36,8 @@ define(
 
                 $btn.append($policies);
 
-                setTimeout(function () {
-                    $(document).one('click', function (e) {
+                setTimeout(() => {
+                    $(document).one('click', e => {
                         e.preventDefault();
                         e.stopPropagation();
 
@@ -56,16 +56,16 @@ define(
                         $policies.remove();
 
                         return false;
-                    })
+                    });
                 });
-            }
+            };
         }
 
         function buildPoliciesSelect($textEditor) {
 
             var currentPolicy = $textEditor.attr('data-html-filtering-policy');
 
-            var elements = Object.keys(filteringPolicies).map(function (key) {
+            var elements = Object.keys(filteringPolicies).map(key => {
                 var policyName = filteringPolicies[key];
 
                 return {
@@ -101,7 +101,7 @@ define(
 
                 return $btn = toolbarButtonBuilder.buildButton(
                     'html-filtering-policy-button', title, function () {
-                        getOnClick(editor, $btn).apply(this, arguments)
+                        getOnClick(editor, $btn).apply(this, arguments);
                     }
                 )
             }

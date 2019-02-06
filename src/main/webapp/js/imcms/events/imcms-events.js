@@ -27,7 +27,7 @@ module.exports = {
      * Triggers event handlers by name
      * @param name event's name
      */
-    trigger: function (name) {
+    trigger: name => {
         logger.log("%c Imcms event " + name + " triggered.", "color: blue;");
 
         getEventHandlers(name).forEach(setTimeout);
@@ -38,7 +38,7 @@ module.exports = {
      * @param name event's name
      * @param handler function that will be called asynchronously when event is triggered
      */
-    on: function (name, handler) {
+    on: (name, handler) => {
 
         if (!eventToHandlers[name]) {
             eventToHandlers[name] = [];

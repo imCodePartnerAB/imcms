@@ -25,9 +25,7 @@ define("imcms-appearance-tab-builder",
         function buildCommonContents(commonContents) {
             tabData.commonContents = [];
 
-            return commonContents.map(buildDocumentCommonContent).reduce(function (cc1, cc2) {
-                return cc1.concat(cc2);
-            });
+            return commonContents.map(buildDocumentCommonContent).reduce((cc1, cc2) => cc1.concat(cc2));
         }
 
         function buildDocumentCommonContent(commonContent) {
@@ -57,7 +55,7 @@ define("imcms-appearance-tab-builder",
                     placeholder: texts.linkToImagePlaceholder,
                     "label-text": texts.linkToImage,
                     "button-text": texts.chooseImage,
-                    click: function (selectedImage) {
+                    click: selectedImage => {
                         $linkToImage.setValue(selectedImage ? selectedImage.path : "");
                     }
                 }),
@@ -139,18 +137,16 @@ define("imcms-appearance-tab-builder",
 
         AppearanceTab.prototype = Object.create(PageInfoTab.prototype);
 
-        AppearanceTab.prototype.isDocumentTypeSupported = function () {
+        AppearanceTab.prototype.isDocumentTypeSupported = () => {
             return true; // all supported
         };
-        AppearanceTab.prototype.tabElementsFactory = function () {
-            return [
-                buildCommonContentsContainer(),
-                buildSelectTargetForDocumentLink(),
-                buildDocumentAliasBlock(),
-                buildBlockForMissingLangSetting()
-            ];
-        };
-        AppearanceTab.prototype.fillTabDataFromDocument = function (document) {
+        AppearanceTab.prototype.tabElementsFactory = () => [
+            buildCommonContentsContainer(),
+            buildSelectTargetForDocumentLink(),
+            buildDocumentAliasBlock(),
+            buildBlockForMissingLangSetting()
+        ];
+        AppearanceTab.prototype.fillTabDataFromDocument = document => {
             tabData.$commonContentsContainer.prepend(buildCommonContents(document.commonContents));
             tabData.$showIn.selectValue(document.target);
             tabData.$documentAlias.setValue(document.alias);
@@ -158,9 +154,9 @@ define("imcms-appearance-tab-builder",
             components.radios.group(tabData.$showDefaultLang, tabData.$doNotShow)
                 .setCheckedValue(document.disabledLanguageShowMode);
         };
-        AppearanceTab.prototype.saveData = function (documentDTO) {
-            documentDTO.commonContents.forEach(function (docCommonContent) {
-                tabData.commonContents.forEach(function (commonContent) {
+        AppearanceTab.prototype.saveData = documentDTO => {
+            documentDTO.commonContents.forEach(docCommonContent => {
+                tabData.commonContents.forEach(commonContent => {
 
                     if (docCommonContent.language.name !== commonContent.name) {
                         // I can't come up with better solution than double forEach
@@ -183,10 +179,10 @@ define("imcms-appearance-tab-builder",
 
             return documentDTO;
         };
-        AppearanceTab.prototype.clearTabData = function () {
+        AppearanceTab.prototype.clearTabData = () => {
             var emptyString = '';
 
-            tabData.commonContents.forEach(function (commonContent, index) {
+            tabData.commonContents.forEach((commonContent, index) => {
                 commonContent.checkbox.setChecked(index === 0);//check only first
                 commonContent.pageTitle.setValue(emptyString);
                 commonContent.menuText.setValue(emptyString);
@@ -199,11 +195,7 @@ define("imcms-appearance-tab-builder",
             tabData.$documentAlias.setValue(emptyString);
             tabData.$showDefaultLang.setChecked(true); //default value
         };
-        AppearanceTab.prototype.isValid = function () {
-            return tabData.commonContents.reduce(function (isChecked, commonContent) {
-                return isChecked || commonContent.checkbox.isChecked()
-            }, false);
-        };
+        AppearanceTab.prototype.isValid = () => tabData.commonContents.reduce((isChecked, commonContent) => isChecked || commonContent.checkbox.isChecked(), false);
 
         return new AppearanceTab(texts.name);
     }
