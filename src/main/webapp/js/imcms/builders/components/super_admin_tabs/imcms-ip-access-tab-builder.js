@@ -27,7 +27,7 @@ define(
             }
         };
 
-        rulesApi.read().success(rules => {
+        rulesApi.read().done(rules => {
             ruleLoader.runCallbacks(rules);
         });
 

@@ -44,7 +44,7 @@ define(
         initRequiredData();
 
         function initRequiredData() {
-            rolesRestApi.read().success((roles) => {
+            rolesRestApi.read().done((roles) => {
                 receivedRoles = roles;
 
                 //Init select with data
@@ -55,7 +55,7 @@ define(
                 components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
             });
 
-            usersRestApi.read().success((users) => {
+            usersRestApi.read().done((users) => {
                 receivedUsers = users;
 
                 //Init select with data
@@ -178,7 +178,7 @@ define(
                     return;
                 }
 
-                rulesAPI.remove(currentRule).success(() => {
+                rulesAPI.remove(currentRule).done(() => {
                     $ruleRow.remove();
                     currentRule = null;
                     onEditDelegate = onSimpleEdit;
@@ -214,7 +214,7 @@ define(
                     userId: $userSelect.getSelectedValue()
                 };
                 if (saveMe.id) {
-                    rulesAPI.replace(saveMe).success(savedRule => {
+                    rulesAPI.replace(saveMe).done(savedRule => {
                         currentRule = savedRule;
                         $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked", currentRule.enabled);
                         $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked", currentRule.restricted);
@@ -226,7 +226,7 @@ define(
                         prepareRuleView();
                     });
                 } else {
-                    rulesAPI.create(saveMe).success(rule => {
+                    rulesAPI.create(saveMe).done(rule => {
                         $ruleRow = ruleToRow.transform((currentRule = rule), ruleEditor);
                         $container.parent().find('.rules-table').append($ruleRow);
 

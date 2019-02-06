@@ -85,24 +85,24 @@ define(
             };
 
             if (currentProfileToSave.id) {
-                profileRestApi.replace(currentProfileToSave).success(function (savedProfile) {
+                profileRestApi.replace(currentProfileToSave).done(function (savedProfile) {
                     currentProfile = savedProfile;
                     $profileRow.find('.profile-info-row__profile-name').text(currentProfile.name);
                     $profileRow.find('.profile-info-row__profile-doc-name').text(currentProfile.documentName);
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
-                }).error(function () {
+                }).fail(function () {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
-                profileRestApi.create(currentProfileToSave).success(function (profile) {
+                profileRestApi.create(currentProfileToSave).done(function (profile) {
                     $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
 
                     $container.parent().find('.profiles-table').append($profileRow);
 
                     onProfileView = onProfileSimpleView;
                     prepareProfileView();
-                }).error(function () {
+                }).fail(function () {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             }

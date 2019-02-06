@@ -56,7 +56,7 @@ define(
                 }
             }
 
-            textsRestApi.create(textDTO).success(function () {
+            textsRestApi.create(textDTO).done(function () {
                 events.trigger('imcms-version-modified');
                 editor.startContent = editor.getContent();
                 editor.setDirty(false);

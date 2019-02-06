@@ -445,7 +445,7 @@ define("imcms-document-editor-builder",
 
             if (opts.copyEnable) {
                 function onConfirm() {
-                    docCopyRestApi.copy(document.id).success(function (copiedDocument) {
+                    docCopyRestApi.copy(document.id).done(function (copiedDocument) {
                         addDocumentToList(copiedDocument);
                     });
                 }

@@ -99,23 +99,23 @@ define(
             };
 
             if (currentCtgTypeToSave.id) {
-                typesRestApi.replace(currentCtgTypeToSave).success(function (savedCategoryType) {
+                typesRestApi.replace(currentCtgTypeToSave).done(function (savedCategoryType) {
                     currentCategoryType = savedCategoryType;
                     $categoryTypeItem.find('type-create-block__field-name').text(currentCategoryType.name);
                     $inherited.find('type-create-block__inherited').setCheckedValue(currentCategoryType.inherited);
                     $imageArchive.find('type-create-block__imageArchive').setCheckedValue(currentCategoryType.imageArchive);
                     onCategoryTypeView = onCategoryTypeSimpleView;
                     prepareCategoryTypeView();
-                }).error(function () {
+                }).fail(function () {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
-                typesRestApi.create(currentCtgTypeToSave).success(function (categoryType) {
+                typesRestApi.create(currentCtgTypeToSave).done(function (categoryType) {
                     $categoryTypeItem = categoryType;
 
                     onCategoryTypeView = onCategoryTypeSimpleView;
                     prepareCategoryTypeView();
-                }).error(function () {
+                }).fail(function () {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             }

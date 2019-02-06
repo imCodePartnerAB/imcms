@@ -31,7 +31,7 @@ define(
             }
         };
 
-        rolesRestApi.read().success(function (roles) {
+        rolesRestApi.read().done(function (roles) {
             roleLoader.runCallbacks(roles);
         });
 
@@ -88,7 +88,7 @@ define(
 
             var $externalRolesContainer = externalRolesBEM.buildBlock('<div>', [], {style: 'display: none;'});
 
-            auth.getAuthProviders().success(function (providers) {
+            auth.getAuthProviders().done(function (providers) {
                 if (!providers || !providers.length) return;
 
                 $externalRolesContainer.css('display', 'block');
@@ -114,7 +114,7 @@ define(
                 var providers$ = providers.map(function (provider) {
                     var $roles = $('<div>');
 
-                    azureRoles.read().success(function (externalRoles) {
+                    azureRoles.read().done(function (externalRoles) {
                         var roles$ = externalRoles.map(function (externalRole) {
                             var $externalRoleName = $('<div>', {
                                 text: externalRole.displayName
@@ -138,7 +138,7 @@ define(
                                 providerId: externalRole.providerId
                             }; // only these two are required for request
 
-                            externalToLocalRolesLinks.read(requestData).success(function (linkedRoles) {
+                            externalToLocalRolesLinks.read(requestData).done(function (linkedRoles) {
                                 roleLoader.whenRolesLoaded(function (roles) {
 
                                     var $rolesSelect;
@@ -152,7 +152,7 @@ define(
                                                 externalRole: requestData,
                                                 localRolesId: selectedRolesId
                                             };
-                                            externalToLocalRolesLinks.replace(request).success(function () {
+                                            externalToLocalRolesLinks.replace(request).done(function () {
                                                 linkedRoles = selectedRolesId.map(function (selectedRoleId) {
                                                     return {id: selectedRoleId}
                                                 });

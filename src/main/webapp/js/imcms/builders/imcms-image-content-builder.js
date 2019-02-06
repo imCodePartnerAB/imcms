@@ -153,8 +153,8 @@ define("imcms-image-content-builder",
             };
 
             imageFoldersREST.canDelete({"path": path})
-                .success(() => modalWindow.buildModalWindow(`${texts.removeFolderMessage}${name}"?`, onAnswer))
-                .error(() => modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, new Function()));
+                .done(() => modalWindow.buildModalWindow(`${texts.removeFolderMessage}${name}"?`, onAnswer))
+                .fail(() => modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, new Function()));
         }
 
         function buildFolderRenamingBlock(folder, level) {
@@ -202,7 +202,7 @@ define("imcms-image-content-builder",
         function setCheckFolder(folder) {
             return () => {
                 imageFoldersREST.check({"path": folder.path})
-                    .success(response => {
+                    .done(response => {
                         $imagesContainer.find('.imcms-control--warning').remove();
                         response.forEach(usedImage => {
                             let $image = $imagesContainer.children(`[data-image-name="${usedImage.imageName}"]`);
@@ -451,8 +451,8 @@ define("imcms-image-content-builder",
             imageFile.path = `${getFolderPath(activeFolder.$folder)}/${imageFile.name}`;
 
             imageFilesREST.remove(imageFile)
-                .success(response => response && $(element).parent().parent().remove())
-                .error(response => buildImageUsagesModal(response.responseJSON));
+                .done(response => response && $(element).parent().parent().remove())
+                .fail(response => buildImageUsagesModal(response.responseJSON));
         }
 
         function buildImageUsagesModal(usagesList) {

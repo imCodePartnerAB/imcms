@@ -77,7 +77,7 @@ define(
             confirmationBuilder.buildModalWindow(texts.deleteConfirm, function (confirmed) {
                 if (!confirmed) return;
 
-                rolesRestAPI.remove(currentRole).success(function () {
+                rolesRestAPI.remove(currentRole).done(function () {
                     $roleRow.remove();
                     currentRole = null;
                     onEditDelegate = onSimpleEdit;
@@ -119,7 +119,7 @@ define(
             };
 
             if (saveMe.id) {
-                rolesRestAPI.update(saveMe).success(function (savedRole) {
+                rolesRestAPI.update(saveMe).done(function (savedRole) {
                     // todo: maybe there is better way to reassign fields' values, not object itself
                     currentRole.id = savedRole.id;
                     $roleRow.text(currentRole.name = savedRole.name);
@@ -132,7 +132,7 @@ define(
                     prepareRoleView();
                 });
             } else {
-                rolesRestAPI.create(saveMe).success(function (role) {
+                rolesRestAPI.create(saveMe).done(function (role) {
                     $roleRow = roleToRow.transform((currentRole = role), roleEditor);
                     $container.parent().find('.roles-table').append($roleRow);
 

@@ -66,7 +66,7 @@ define(
 
             function getOnArchiveUser(user) {
                 return function () {
-                    usersRestApi.update({id: user.id, active: false}).success(function () {
+                    usersRestApi.update({id: user.id, active: false}).done(function () {
                         $('#user-id-' + user.id).addClass(userArchivedClass)
                             .find('.imcms-control--archive')
                             .replaceWith($('<div>', {

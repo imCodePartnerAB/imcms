@@ -65,7 +65,7 @@ define("imcms-loop-editor-builder",
 
         function onSaveAndCloseClicked() {
             var loopElement = getLoopData();
-            loopREST.create(loopElement).success(onLoopSaved);
+            loopREST.create(loopElement).done(onLoopSaved);
         }
 
         function buildEditor() {

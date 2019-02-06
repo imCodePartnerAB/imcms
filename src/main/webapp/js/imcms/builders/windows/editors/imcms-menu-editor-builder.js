@@ -62,7 +62,7 @@ define("imcms-menu-editor-builder",
                 menuItems: menuItems
             };
 
-            menusRestApi.create(menuDTO).success(onMenuSaved);
+            menusRestApi.create(menuDTO).done(onMenuSaved);
         }
 
         function saveAndClose() {
@@ -550,7 +550,7 @@ define("imcms-menu-editor-builder",
             });
 
             var $controlCopy = components.controls.copy(function () {
-                docCopyRestApi.copy(menuElementTree.documentId).success(function (copiedDocument) {
+                docCopyRestApi.copy(menuElementTree.documentId).done(function (copiedDocument) {
 
                     documentEditorBuilder.incrementDocumentNumber(1);
 

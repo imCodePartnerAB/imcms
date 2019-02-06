@@ -21,10 +21,10 @@ define(
                 if (!confirm) return;
 
                 docs.remove($inputBlock.getInput().val())
-                    .success(function () {
+                    .done(function () {
                         $inputBlock.getInput().val('')
                     })
-                    .error(function () {
+                    .fail(function () {
                         $inputBlock.find('.imcms-error-msg').slideDown()
                     })
             })

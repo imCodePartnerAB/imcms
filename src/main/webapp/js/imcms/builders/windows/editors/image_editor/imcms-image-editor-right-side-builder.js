@@ -358,7 +358,7 @@ define(
 
                     imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
 
-                    imageRestApi.remove(imageData).success(onImageSaved);
+                    imageRestApi.remove(imageData).done(onImageSaved);
                 }
 
                 function getImageRequestData(langCode) {
@@ -490,7 +490,7 @@ define(
 
                     var imageRequestData = getImageRequestData(imcms.language.code);
 
-                    imageRestApi.read(imageRequestData).success(reloadImageOnPage);
+                    imageRestApi.read(imageRequestData).done(reloadImageOnPage);
                 }
 
                 function callBackAltText(continueSaving) {
@@ -513,7 +513,7 @@ define(
 
                         imageData.format = $fileFormat.getSelectedValue();
 
-                        imageRestApi.create(imageData).success(onImageSaved);
+                        imageRestApi.create(imageData).done(onImageSaved);
                     }
                 }
 
