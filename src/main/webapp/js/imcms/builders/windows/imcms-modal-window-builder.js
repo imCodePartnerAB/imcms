@@ -183,7 +183,9 @@ define(
         ModalWarningWindow.prototype.confirmAction = function (callback) {
             const context = this;
             return () => {
-                callback();
+                if (callback) {
+                    callback();
+                }
                 context.closeModal();
                 return false;
             };
@@ -193,7 +195,9 @@ define(
         ModalErrorWindow.prototype.confirmAction = function (callback) {
             const context = this;
             return () => {
-                callback();
+                if (callback) {
+                    callback();
+                }
                 context.closeModal();
                 return false;
             };
