@@ -13,23 +13,23 @@ define("imcms-file-tab-builder",
 
         texts = texts.pageInfo.file;
 
-        var $filesListContainerBody, $fileInput;
+        let $filesListContainerBody, $fileInput;
 
         function buildFilesContainerBody() {
             return $filesListContainerBody = $("<div>", {"class": "files-container-body"});
         }
 
         function buildFilesContainerHead() {
-            var filesContainerHeadBEM = new BEM({
+            const filesContainerHeadBEM = new BEM({
                 block: "files-container-head",
                 elements: {
                     "title": "imcms-title"
                 }
             });
 
-            var $idTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.id});
-            var $nameTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.fileName});
-            var $isDefaultFileTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.isDefault});
+            const $idTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.id});
+            const $nameTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.fileName});
+            const $isDefaultFileTitle = filesContainerHeadBEM.buildElement("title", "<div>", {text: texts.isDefault});
 
             return filesContainerHeadBEM.buildBlock("<div>", [
                 {"title": $idTitle},
@@ -39,13 +39,13 @@ define("imcms-file-tab-builder",
         }
 
         function buildFileRow(file) {
-            var $isDefaultFileRadioBtn = components.radios.imcmsRadio("<div>", {
+            const $isDefaultFileRadioBtn = components.radios.imcmsRadio("<div>", {
                 name: "isDefaultFile",
                 value: file.name,
                 checked: file.defaultFile
             });
 
-            var $row;
+            let $row;
 
             return ($row = new BEM({
                 block: "file-row",
@@ -90,7 +90,7 @@ define("imcms-file-tab-builder",
             return $filesListContainerBody.children()
                 .toArray()
                 .map(fileRowDOM => {
-                    var $fileRow = $(fileRowDOM);
+                    const $fileRow = $(fileRowDOM);
 
                     return {
                         id: $fileRow.data("fileId"),
@@ -103,9 +103,9 @@ define("imcms-file-tab-builder",
                 });
         }
 
-        var tabData = {};
+        let tabData = {};
 
-        var FilesTab = function (name, docType) {
+        const FilesTab = function (name, docType) {
             PageInfoTab.apply(this, arguments);
         };
 
@@ -119,7 +119,7 @@ define("imcms-file-tab-builder",
                 change: function () {
                     tabData.formData = tabData.formData || new FormData();
 
-                    for (var i = 0; i < this.files.length; i++) {
+                    for (let i = 0; i < this.files.length; i++) {
                         tabData.formData.append('files', this.files[i]);
                     }
 
@@ -127,9 +127,9 @@ define("imcms-file-tab-builder",
                 }
             });
 
-            var $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
+            const $uploadButtonContainer = $("<div>", {"class": "imcms-field"});
 
-            var $uploadNewFilesButton = components.buttons.positiveButton({
+            const $uploadNewFilesButton = components.buttons.positiveButton({
                 text: texts.upload,
                 click: () => {
                     $fileInput.click();
@@ -138,7 +138,7 @@ define("imcms-file-tab-builder",
 
             $uploadButtonContainer.append($fileInput, $uploadNewFilesButton);
 
-            var $filesListContainer = new BEM({
+            const $filesListContainer = new BEM({
                 block: "files-container",
                 elements: {
                     "head": buildFilesContainerHead(),

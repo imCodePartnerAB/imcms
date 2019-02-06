@@ -12,11 +12,11 @@ define(
 
         texts = texts.panel.settingsList;
 
-        var adminPanelVisibilityPublisher = streams.createPublisherOnTopic("admin panel visibility");
-        var settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
-        var settingEnabledClassSelector = "." + settingEnabledClass;
+        const adminPanelVisibilityPublisher = streams.createPublisherOnTopic("admin panel visibility");
+        const settingEnabledClass = BEM.buildClass("settings-section", "setting", "enabled");
+        const settingEnabledClassSelector = "." + settingEnabledClass;
 
-        var $settings;
+        let $settings;
 
         function wrapWithPositionRefresh(refreshAfterMe) {
             return () => {
@@ -25,7 +25,7 @@ define(
             };
         }
 
-        var $switchPanelVisibilityButton = $("<button>", {
+        const $switchPanelVisibilityButton = $("<button>", {
             id: "imcms-switch-panel-visibility-button",
             "class": "imcms-button imcms-button--positive imcms-button--locked",
             title: texts.unlockPanel
@@ -35,7 +35,7 @@ define(
             $prependMe.appendTo($("#imcms-admin-panel"));
         }
 
-        var settings = {
+        const settings = {
             small: {
                 id: "small",
                 text: texts.size.small,
@@ -138,7 +138,7 @@ define(
             switchPanelVisibility();
         });
 
-        var sections = {
+        const sections = {
             size: {
                 id: "panel-size",
                 text: texts.size.name,
@@ -151,24 +151,24 @@ define(
             }
         };
 
-        var allSections = [];
+        const allSections = [];
 
         for (var key in sections) {
             allSections.push(sections[key]);
         }
 
         function buildSection(section) {
-            var savedSetting = cookies.getCookie(section.id);
+            const savedSetting = cookies.getCookie(section.id);
 
-            var settingsElements = section.settings.map(function (setting) {
-                var attributes = {
+            const settingsElements = section.settings.map(function (setting) {
+                const attributes = {
                     id: "imcms-" + section.id + "-" + setting.id,
                     text: setting.text,
                     title: setting.title
                 };
 
                 attributes.click = function () {
-                    var $setting = $(this);
+                    const $setting = $(this);
 
                     if ($setting.hasClass(settingEnabledClass)) return;
 
@@ -183,8 +183,7 @@ define(
                 };
 
                 if ((setting.id && (savedSetting === setting.id))
-                    || (!savedSetting && setting.isDefault))
-                {
+                    || (!savedSetting && setting.isDefault)) {
                     attributes["class"] = settingEnabledClass;
                 }
 
@@ -193,8 +192,8 @@ define(
                 };
             });
 
-            var sectionName = {"section-name": $("<div>", {text: section.text})};
-            var bemOptions = {
+            const sectionName = {"section-name": $("<div>", {text: section.text})};
+            const bemOptions = {
                 block: "settings-section",
                 elements: [sectionName].concat(settingsElements)
             };
@@ -203,9 +202,9 @@ define(
         }
 
         function buildSettings(settingsButton) {
-            var sections$ = allSections.map(buildSection);
+            const sections$ = allSections.map(buildSection);
 
-            var bemOptions = {
+            const bemOptions = {
                 block: "admin-panel-settings-list",
                 elements: {
                     "section": sections$

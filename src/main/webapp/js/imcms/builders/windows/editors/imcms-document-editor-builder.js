@@ -17,7 +17,7 @@ define("imcms-document-editor-builder",
 
         texts = texts.editors.document;
 
-        var isMouseDown = false,
+        let isMouseDown = false,
             mouseCoords = {
                 pageX: undefined,
                 pageY: undefined,
@@ -33,30 +33,30 @@ define("imcms-document-editor-builder",
             }
         ;
 
-        var $documentsContainer, $editorBody, $documentsList;
+        let $documentsContainer, $editorBody, $documentsList;
 
-        var currentDocumentNumber = 0;
+        let currentDocumentNumber = 0;
 
-        var term = "term";
-        var userId = "userId";
-        var categoriesId = "categoriesId";
-        var sortProperty = "page.property";
-        var sortDirection = "page.direction";
+        const term = "term";
+        const userId = "userId";
+        const categoriesId = "categoriesId";
+        const sortProperty = "page.property";
+        const sortDirection = "page.direction";
 
-        var pageSkip = "page.skip";
+        const pageSkip = "page.skip";
 
-        var defaultSortPropertyValue = "meta_id";
-        var asc = "ASC";
-        var desc = "DESC";
+        const defaultSortPropertyValue = "meta_id";
+        const asc = "ASC";
+        const desc = "DESC";
 
-        var searchQueryObj = {
+        const searchQueryObj = {
             "term": "",
             "userId": null,
             "categoriesId": {},
             "page.skip": currentDocumentNumber
         };
 
-        var sendSearchDocRequest = true;
+        let sendSearchDocRequest = true;
 
         function appendDocuments(field, value, removeOldDocuments, setDefaultSort) {
             setField(field, value);
@@ -92,13 +92,13 @@ define("imcms-document-editor-builder",
         }
 
         function addDocumentToList(document) {
-            var $document = buildDocument(document, currentEditorOptions);
+            const $document = buildDocument(document, currentEditorOptions);
             $documentsList.prepend($document); // todo: replace append by pasting into correct position in sorted list
 
             incrementDocumentNumber(1);
         }
 
-        var $textField;
+        let $textField;
 
         function buildBodyHeadTools() {
 
@@ -128,7 +128,7 @@ define("imcms-document-editor-builder",
                 });
 
                 $textField.$input.on("input", function () {
-                    var textFieldValue = $(this).val().trim();
+                    const textFieldValue = $(this).val().trim();
                     if (searchQueryObj[term] !== textFieldValue) {
                         appendDocuments(term, textFieldValue, true, true);
                     }
@@ -144,13 +144,13 @@ define("imcms-document-editor-builder",
             }
 
             function buildUsersFilterSelect() {
-                var onSelected = value => {
+                const onSelected = value => {
                     if (searchQueryObj[userId] !== value) {
                         appendDocuments(userId, value, true, true);
                     }
                 };
 
-                var $usersFilterSelectContainer = components.selects.selectContainer("<div>", {
+                const $usersFilterSelectContainer = components.selects.selectContainer("<div>", {
                     id: "users-filter",
                     name: "users-filter",
                     text: texts.owner,
@@ -159,7 +159,7 @@ define("imcms-document-editor-builder",
                 });
 
                 usersRestApi.getAllAdmins().done(users => {
-                    var usersDataMapped = users.map(user => ({
+                    const usersDataMapped = users.map(user => ({
                         text: user.login,
                         "data-value": user.id
                     }));
@@ -173,13 +173,13 @@ define("imcms-document-editor-builder",
             }
 
             function buildCategoriesFilterSelect() {
-                var onSelected = value => {
+                const onSelected = value => {
                     if (searchQueryObj[categoriesId][0] !== value) {
                         appendDocuments(categoriesId, {0: value}, true, true);
                     }
                 };
 
-                var $categoriesFilterSelectContainer = components.selects.selectContainer("<div>", {
+                const $categoriesFilterSelectContainer = components.selects.selectContainer("<div>", {
                     id: "categories-filter",
                     name: "categories-filter",
                     text: texts.category,
@@ -188,7 +188,7 @@ define("imcms-document-editor-builder",
                 });
 
                 categoriesRestApi.read(null).done(categories => {
-                    var categoriesDataMapped = categories.map(category => ({
+                    const categoriesDataMapped = categories.map(category => ({
                         text: category.name,
                         "data-value": category.id
                     }));
@@ -200,7 +200,7 @@ define("imcms-document-editor-builder",
                 return $categoriesFilterSelectContainer;
             }
 
-            var toolBEM = new BEM({
+            const toolBEM = new BEM({
                 block: "imcms-document-editor-head-tool",
                 elements: {
                     "search": "imcms-input-search",
@@ -208,16 +208,16 @@ define("imcms-document-editor-builder",
                 }
             });
 
-            var $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
+            const $newDocButtonContainer = toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
             $newDocButtonContainer.modifiers = ["grid-col-2"];
 
-            var $searchContainer = toolBEM.buildBlock("<div>", [{"search": buildSearchDocField()}]);
+            const $searchContainer = toolBEM.buildBlock("<div>", [{"search": buildSearchDocField()}]);
             $searchContainer.modifiers = ["grid-col-4"];
 
-            var $usersFilter = toolBEM.buildBlock("<div>", [{"select": buildUsersFilterSelect()}]);
+            const $usersFilter = toolBEM.buildBlock("<div>", [{"select": buildUsersFilterSelect()}]);
             $usersFilter.modifiers = ["grid-col-3"];
 
-            var $categoriesFilter = toolBEM.buildBlock("<div>", [{"select": buildCategoriesFilterSelect()}]);
+            const $categoriesFilter = toolBEM.buildBlock("<div>", [{"select": buildCategoriesFilterSelect()}]);
             $categoriesFilter.modifiers = ["grid-col-3"];
 
             return new BEM({
@@ -269,7 +269,7 @@ define("imcms-document-editor-builder",
         }
 
         function highlightDefaultSorting() {
-            var $defaultSortingHeader = $(".imcms-document-list-titles__title").first();
+            const $defaultSortingHeader = $(".imcms-document-list-titles__title").first();
             highlightSoring($defaultSortingHeader);
         }
 
@@ -306,7 +306,7 @@ define("imcms-document-editor-builder",
         }
 
         function buildDocumentListTitlesRow() {
-            var $idColumnHead = $("<div>", {
+            const $idColumnHead = $("<div>", {
                 text: texts.sort.id,
                 click: function () {
                     onClickSorting(defaultSortPropertyValue, $(this));
@@ -314,7 +314,7 @@ define("imcms-document-editor-builder",
             });
             $idColumnHead.modifiers = ["col-1"];
 
-            var $titleColumnHead = $("<div>", {
+            const $titleColumnHead = $("<div>", {
                 text: texts.sort.title,
                 click: function () {
                     onClickSorting("meta_headline_" + imcms.userLanguage, $(this));
@@ -322,7 +322,7 @@ define("imcms-document-editor-builder",
             });
             $titleColumnHead.modifiers = ["col-5"];
 
-            var $aliasColumnHead = $("<div>", {
+            const $aliasColumnHead = $("<div>", {
                 text: texts.sort.alias,
                 click: function () {
                     onClickSorting("alias", $(this));
@@ -330,10 +330,10 @@ define("imcms-document-editor-builder",
             });
             $aliasColumnHead.modifiers = ["col-3"];
 
-            var $typeColumnHead = $("<div>", {text: texts.sort.type});
+            const $typeColumnHead = $("<div>", {text: texts.sort.type});
             $typeColumnHead.modifiers = ["col-1"];
 
-            var $statusColumnHead = $("<div>", {text: texts.sort.status});
+            const $statusColumnHead = $("<div>", {text: texts.sort.status});
             $statusColumnHead.modifiers = ["col-2"];
 
             return new BEM({
@@ -351,7 +351,7 @@ define("imcms-document-editor-builder",
         }
 
         function createFrame(event) {
-            var $this = $(this),
+            const $this = $(this),
                 original = $this.closest(".imcms-document-items"),
                 $frame = original.clone(),
                 $frameLayout = $("<div>"),
@@ -420,20 +420,20 @@ define("imcms-document-editor-builder",
         });
 
         function refreshDocumentInList(document) {
-            var $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
+            const $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
 
             if ($oldDocumentElement.length === 1) {
-                var $newDocumentElement = buildDocument(document, currentEditorOptions);
+                const $newDocumentElement = buildDocument(document, currentEditorOptions);
                 $oldDocumentElement.replaceWith($newDocumentElement);
             }
         }
 
         function buildDocItemControls(document, opts) {
-            var controls = [];
+            const controls = [];
             opts = opts || {};
 
             if (opts.removeEnable) {
-                var $controlRemove = components.controls.remove(function () {
+                const $controlRemove = components.controls.remove(function () {
                     removeDocument.call(this, document);
                 });
                 controls.push($controlRemove);
@@ -446,7 +446,7 @@ define("imcms-document-editor-builder",
                     });
                 }
 
-                var $controlCopy = components.controls.copy(() => {
+                const $controlCopy = components.controls.copy(() => {
                     modalWindowBuilder.buildConfirmWindow(
                         texts.controls.copy.confirmMessage + document.id + '?',
                         onConfirm
@@ -458,7 +458,7 @@ define("imcms-document-editor-builder",
             }
 
             if (opts.editEnable) {
-                var $controlEdit = components.controls.edit(() => {
+                const $controlEdit = components.controls.edit(() => {
                     pageInfoBuilder.build(document.id, refreshDocumentInList, document.type);
                 });
                 $controlEdit.prop('title', texts.controls.edit.title);
@@ -469,7 +469,7 @@ define("imcms-document-editor-builder",
         }
 
         function moveFrame(event) {
-            var $frame = $(".imcms-document-items--frame");
+            const $frame = $(".imcms-document-items--frame");
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
 
@@ -499,8 +499,8 @@ define("imcms-document-editor-builder",
         }
 
         function checkDocInMenuEditor(original) {
-            var status = true,
-                originalId = parseInt(original.find(".imcms-title").first().text())
+            let status = true;
+            const originalId = parseInt(original.find(".imcms-title").first().text())
             ;
             $(".imcms-menu-items").each(function () {
                 if (parseInt($(this).attr("data-document-id")) === originalId) {
@@ -516,8 +516,8 @@ define("imcms-document-editor-builder",
         }
 
         function getMenuDocByObjId(obj) {
-            var menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items"),
-                menuDoc = null
+            const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
+            let menuDoc = null
             ;
 
             menuDocs.each(function () {
@@ -536,7 +536,7 @@ define("imcms-document-editor-builder",
         }
 
         function removedPreviousItemFrame() {
-            var $menuTree = $(".imcms-menu-items-tree"),
+            const $menuTree = $(".imcms-menu-items-tree"),
                 $menuItemFrame = $(".imcms-document-items--frame").find(".imcms-document-item"),
                 $frameParent = $menuTree.find("[data-document-id=" + $menuItemFrame.attr("data-id") + "]")
                     .parent("[data-menu-items-lvl]")
@@ -549,7 +549,7 @@ define("imcms-document-editor-builder",
         }
 
         function slideUpMenuDocIfItClose(menuDoc) {
-            var showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
+            const showHidBtn = menuDoc.find(".imcms-menu-item").first().find(".children-triangle");
 
             if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
                 showHidBtn.trigger("click");
@@ -557,7 +557,7 @@ define("imcms-document-editor-builder",
         }
 
         function createMenuItemFrame(menuDoc, placeStatus) {
-            var insertedParent = {
+            const insertedParent = {
                     parent: menuDoc,
                     status: placeStatus
                 },
@@ -578,7 +578,7 @@ define("imcms-document-editor-builder",
         }
 
         function checkFramePositioning(allMenuDocObjArray, frameTop) {
-            var menuDoc = null,
+            let menuDoc = null,
                 placeStatus = null
             ;
 
@@ -624,7 +624,7 @@ define("imcms-document-editor-builder",
         }
 
         function getDocumentParent() {
-            var allMenuDocObjArray = {},
+            const allMenuDocObjArray = {},
                 itemTree = $(".imcms-menu-items-tree"),
                 menuDocs = itemTree.find(".imcms-menu-item"),
                 $frame = $(".imcms-document-items--frame"),
@@ -646,7 +646,7 @@ define("imcms-document-editor-builder",
         }
 
         function setDataInputParams(insertedParent, frameItem) {
-            var dataInput = $("#dataInput");
+            const dataInput = $("#dataInput");
 
             if (insertedParent.parent !== null) {
                 dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
@@ -675,9 +675,9 @@ define("imcms-document-editor-builder",
             if (!isMouseDown) {
                 return;
             }
-            var $frame = $(".imcms-document-items--frame"),
-                frameItem = $frame.find(".imcms-document-item"),
-                insertedParent = null
+            const $frame = $(".imcms-document-items--frame"),
+                frameItem = $frame.find(".imcms-document-item");
+            let insertedParent = null
             ;
 
             if ($frame.length === 0) {
@@ -716,7 +716,7 @@ define("imcms-document-editor-builder",
 
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
-            var $docItemId = components.texts.titleText("<div>", "");
+            const $docItemId = components.texts.titleText("<div>", "");
 
             $docItemId.append(new BEM({
                 block: "imcms-title",
@@ -731,32 +731,32 @@ define("imcms-document-editor-builder",
 
             $docItemId.modifiers = ["col-1", "id"];
 
-            var title = (document.commonContents)
+            const title = (document.commonContents)
                 ? document.commonContents
                     .filter(commonContent => commonContent.language.code === imcms.userLanguage)
                     .map(commonContent => commonContent.headline)[0]
                 : document.title;
 
-            var $docItemTitle = components.texts.titleText("<a>", title, {
+            const $docItemTitle = components.texts.titleText("<a>", title, {
                 href: imcms.contextPath + "/" + document.id,
                 title: title
             });
             $docItemTitle.modifiers = ["col-5", "title"];
 
-            var $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
+            const $docItemAlias = components.texts.titleText("<div>", document.alias, {title: document.alias});
             $docItemAlias.modifiers = ["col-3", "alias"];
 
-            var $docItemType = components.texts.titleText("<div>", document.type);
+            const $docItemType = components.texts.titleText("<div>", document.type);
             $docItemType.modifiers = ["col-1", "type"];
 
-            var $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
+            const $docStatus = components.texts.titleText("<div>", getDocumentStatusText(document.documentStatus));
             $docStatus.modifiers = ["col-2", "status"];
 
-            var $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
+            const $originalDocStatus = components.texts.titleText("<div>", document.documentStatus);
             $originalDocStatus.modifiers = ["originalStatus"];
             $originalDocStatus.css({"display": "none"});
 
-            var elements = [
+            const elements = [
                 {
                     "info": [
                         $docItemId,
@@ -771,8 +771,8 @@ define("imcms-document-editor-builder",
             ];
 
             if (opts && opts.moveEnable) {
-                var $moveControl = components.controls.move().on("mousedown", createFrame);
-                var $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
+                const $moveControl = components.controls.move().on("mousedown", createFrame);
+                const $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
                 elements.unshift({controls: $controlsBlock});
             }
 
@@ -792,7 +792,7 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>", {"data-doc-id": document.id});
         }
 
-        var documentsListBEM = new BEM({
+        const documentsListBEM = new BEM({
             block: "imcms-document-items-list",
             elements: {
                 "document-items": ""
@@ -800,12 +800,12 @@ define("imcms-document-editor-builder",
         });
 
         function buildDocument(document, opts) {
-            var $documentItem = buildDocumentItemContainer(document, opts);
+            const $documentItem = buildDocumentItemContainer(document, opts);
             return documentsListBEM.makeBlockElement("document-items", $documentItem);
         }
 
         function buildDocumentList(documentList) {
-            var $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions));
+            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions));
 
             return new BEM({
                 block: "imcms-document-items-list",
@@ -820,10 +820,10 @@ define("imcms-document-editor-builder",
             $documentsList = buildDocumentList(documentList);
 
             $documentsList.scroll(function () {
-                var $this = $(this);
+                const $this = $(this);
 
-                var innerHeight = $this.innerHeight();
-                var scrollHeight = this.scrollHeight;
+                const innerHeight = $this.innerHeight();
+                const scrollHeight = this.scrollHeight;
 
                 if (sendSearchDocRequest
                     && innerHeight !== scrollHeight
@@ -880,7 +880,7 @@ define("imcms-document-editor-builder",
         }
 
         function removeDocument(document) {
-            var question = "Do you want to remove document " + document.id + "?";
+            const question = "Do you want to remove document " + document.id + "?";
 
             imcmsModalWindowBuilder.buildModalWindow(question, function (answer) {
                 if (!answer) {

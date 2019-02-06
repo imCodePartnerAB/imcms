@@ -9,19 +9,19 @@ import '../../../css/imcms-imports_files.css';
 
 const toolbarBuilder = require('imcms-standalone-editor-toolbar-builder');
 
-var menuEditorInitData = require("imcms-menu-editor-init-data");
-var $ = require("jquery");
-var events = require("imcms-events");
-var imcms = require("imcms");
+const menuEditorInitData = require("imcms-menu-editor-init-data");
+const $ = require("jquery");
+const events = require("imcms-events");
+const imcms = require("imcms");
 const texts = require("imcms-i18n-texts");
 
 $(function () {
     events.on("menu editor closed", () => {
-        var returnUrl = $("#return-url").val();
+        const returnUrl = $("#return-url").val();
         window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
     });
 
-    var $editedTag = $(menuEditorInitData.EDIT_AREA_SELECTOR);
+    const $editedTag = $(menuEditorInitData.EDIT_AREA_SELECTOR);
     var editorData = $editedTag.data();
     menuEditorInitData.editorBuilder.setTag($editedTag).build(editorData);
 

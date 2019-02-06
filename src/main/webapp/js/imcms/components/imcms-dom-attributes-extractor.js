@@ -11,7 +11,7 @@ define("imcms-dom-attributes-extractor", ["jquery"], function ($) {
             return null;
         }
 
-        var attributes = {};
+        const attributes = {};
 
         $.each(extractMyAttributes.attributes, function () {
             if (this.specified) {

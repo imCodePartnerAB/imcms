@@ -1,6 +1,6 @@
 define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], function (imcms, $, dateTimeValidator) {
 
-    var TIME_PICKER__CLASS = "imcms-time-picker",
+    const TIME_PICKER__CLASS = "imcms-time-picker",
         TIME_PICKER__CLASS_$ = "." + TIME_PICKER__CLASS,
         CURRENT_TIME__INPUT__CLASS_$ = ".imcms-current-time__input",
         CURRENT_TIME__INPUT__ERROR__CLASS = "imcms-current-time__input--error",
@@ -16,7 +16,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
             return numberStr;
         }
 
-        var result = +numberStr;
+        let result = +numberStr;
 
         if (result < 10) {
             result = "0" + result;
@@ -26,7 +26,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function getCurrentTimeObj() {
-        var currentDate = new Date();
+        const currentDate = new Date();
         return {
             hours: optionalAddZeroBeforeNumber(currentDate.getHours()),
             minutes: optionalAddZeroBeforeNumber(currentDate.getMinutes())
@@ -34,17 +34,17 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function getDateObjValidated($inputTime) {
-        var time = $inputTime.val(),
-            currentTime = getCurrentTimeObj();
+        let time = $inputTime.val();
+        const currentTime = getCurrentTimeObj();
 
         if (!time) {
             return currentTime;
         }
 
-        var inputVal = time.split(":"),
+        const inputVal = time.split(":"),
             currentHours = currentTime.hours.toString(),
-            currentMinutes = currentTime.minutes.toString(),
-            hours = inputVal[0],
+            currentMinutes = currentTime.minutes.toString();
+        let hours = inputVal[0],
             minutes = inputVal[1],
             hasErrorClass = false;
 
@@ -82,7 +82,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
 
     function bindSetCurrentTime($timePickerContainer) {
         return () => {
-            var currentTimeObj = getCurrentTimeObj();
+            const currentTimeObj = getCurrentTimeObj();
             bindSetTime($timePickerContainer)(currentTimeObj.hours + ':' + currentTimeObj.minutes);
         };
     }
@@ -92,8 +92,8 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function allowNumbersAndColons() {
-        var pressedButton = event.key,
-            result = true;
+        const pressedButton = event.key;
+        let result = true;
 
         if (pressedButton.length === 1) {
             result = /^[0-9:]$/.test(pressedButton);
@@ -103,7 +103,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function addValuesWithShift(timeValue, value, limit) {
-        var result = timeValue + value;
+        let result = timeValue + value;
 
         if (result > limit) {
             result = result - (limit + 1);
@@ -118,11 +118,11 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function initTimePicker($timePicker, $inputTime) {
-        var parsedDate = getDateObjValidated($inputTime);
+        const parsedDate = getDateObjValidated($inputTime);
 
         $timePicker.find(TIME_PICKER__TIME__CLASS_$).css("display", "block");
 
-        var hours = +parsedDate.hours,
+        const hours = +parsedDate.hours,
             minutes = +parsedDate.minutes,
             hoursContainers = $timePicker.find(TIME_PICKER__HOUR__CLASS_$),
             minutesContainers = $timePicker.find(TIME_PICKER__MINUTE__CLASS_$);
@@ -137,22 +137,22 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function arrowButtonsClick() {
-        var $clickedArrow = $(this),
+        const $clickedArrow = $(this),
             addValue = $clickedArrow.hasClass("imcms-button--increment") ? -1 : 1,
             $timeContainers = $clickedArrow.parent().find("div"),
             limit = $timeContainers.first().hasClass(TIME_PICKER__HOUR__CLASS) ? 23 : 59;
 
         $timeContainers.each(function () {
-            var $timeContainer = $(this);
+            const $timeContainer = $(this);
             $timeContainer.text(addValuesWithShift(+$timeContainer.text(), addValue, limit));
         });
     }
 
     function minutesAndHoursContainersMouseWheel(e) {
-        var event = window.event || e;
+        let event = window.event || e;
         event = event.originalEvent ? event.originalEvent : event;
 
-        var delta = event.detail ? event.detail * (-40) : event.wheelDelta,
+        const delta = event.detail ? event.detail * (-40) : event.wheelDelta,
             mousewheelUp = delta > 0,
             incrementOrDecrementBtnSelector = ".imcms-button--" + ((mousewheelUp) ? "increment" : "decrement");
 
@@ -162,9 +162,9 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function optionalHighlight(e) {
-        var $selectedTimeUnit = $(this),
-            isMouseLeaveEvent = e.type === "mouseleave",
-            selectedTimeUnitChooseClassName = getChooseClassName($selectedTimeUnit);
+        const $selectedTimeUnit = $(this);
+        let isMouseLeaveEvent = e.type === "mouseleave";
+        const selectedTimeUnitChooseClassName = getChooseClassName($selectedTimeUnit);
 
         if (!isMouseLeaveEvent) {
             $selectedTimeUnit.addClass(selectedTimeUnitChooseClassName);
@@ -182,15 +182,15 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function pickTime() {
-        var $selectedTimeUnit = $(this),
+        const $selectedTimeUnit = $(this),
             $pickerHourOrMinute = $selectedTimeUnit.parent(),
             hoursPosition = 0,
             minutesPosition = 1,
             $timeInput = $pickerHourOrMinute.parent().siblings().find(CURRENT_TIME__INPUT__CLASS_$);
 
-        var time = ($timeInput.val() || "00:00").split(":");
+        const time = ($timeInput.val() || "00:00").split(":");
 
-        var changedPosition = ($selectedTimeUnit.hasClass(TIME_PICKER__MINUTE__CLASS))
+        const changedPosition = ($selectedTimeUnit.hasClass(TIME_PICKER__MINUTE__CLASS))
             ? minutesPosition : hoursPosition;
 
         time[changedPosition] = $selectedTimeUnit.text();
@@ -201,7 +201,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function closeTimePickerFunction(e) {
-        var className = e.target.className;
+        const className = e.target.className;
 
         if (className
             && className.indexOf(TIME_PICKER__CLASS) === -1
@@ -211,12 +211,12 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
         }
 
         $(".imcms-current-time__input--error").each(function () {
-            var currentTime = getCurrentTimeObj();
-            var $this = $(this);
+            const currentTime = getCurrentTimeObj();
+            const $this = $(this);
 
-            var time = currentTime.hours + ":" + currentTime.minutes;
+            let time = currentTime.hours + ":" + currentTime.minutes;
 
-            var publishedDateBeforePublicationEndDate = dateTimeValidator
+            let publishedDateBeforePublicationEndDate = dateTimeValidator
                 .isPublishedDateBeforePublicationEndDate($this, time);
 
             if (!publishedDateBeforePublicationEndDate) {
@@ -229,7 +229,7 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
     }
 
     function isValid(time) {
-        var isValid = time.length === 2;
+        let isValid = time.length === 2;
 
         time.forEach(value => {
             isValid = isValid && (value.length === 1 || value.length === 2);
@@ -249,14 +249,14 @@ define("imcms-time-picker", ["imcms", "jquery", "imcms-date-time-validator"], fu
             return $timePickerContainer;
         }
 
-        var $timePicker = getTimePicker($timePickerContainer),
+        const $timePicker = getTimePicker($timePickerContainer),
             $inputTime = $timePicker.find(CURRENT_TIME__INPUT__CLASS_$),
             mousewheelEvent = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel";
 
         $inputTime.click(() => initTimePicker($timePicker, $inputTime))
             .keydown(allowNumbersAndColons)
             .on("input", function () {
-                var $inputTime = $(this),
+                const $inputTime = $(this),
                     time = $inputTime.val().split(":");
 
                 if (isValid(time)

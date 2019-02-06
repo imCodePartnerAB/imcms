@@ -3,7 +3,7 @@ define(
     function (BEM, $, components) {
         function getOnProfileClicked(profile, profileEditor) {
             return function () {
-                var $this = $(this);
+                const $this = $(this);
 
                 if ($this.hasClass('profiles-table__profile-row--active')) return;
 

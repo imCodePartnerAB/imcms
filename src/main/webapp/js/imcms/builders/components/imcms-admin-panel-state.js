@@ -1,6 +1,6 @@
 define("imcms-admin-panel-state", ["jquery"], function ($) {
 
-    var PanelState = function () {
+    const PanelState = function () {
         this.isSpecialPanelHidingPrevented = false;
         this.isPanelAppearanceDisabled = false;
     };
@@ -17,10 +17,10 @@ define("imcms-admin-panel-state", ["jquery"], function ($) {
             }
         },
         refreshSpecialPanelPosition: function () {
-            var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
+            const $imcmsAdminSpecial = $('#imcmsAdminSpecial');
 
             if ($imcmsAdminSpecial.length) {
-                var adminPanelHeight = this.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
+                const adminPanelHeight = this.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
                 $imcmsAdminSpecial.css("padding-top", adminPanelHeight);
             }
         },

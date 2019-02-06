@@ -4,7 +4,7 @@
  */
 define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
 
-    var formsBEM = new BEM({
+    const formsBEM = new BEM({
         block: 'imcms-form',
         elements: {'field': 'imcms-field'}
     });
@@ -13,7 +13,7 @@ define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BE
         $('.imcms-tabs__tab[data-window-id=' + tabIndex + ']').css('display', displayValue);
     }
 
-    var WindowTab = function (name) {
+    const WindowTab = function (name) {
         this.name = name;
     };
 
@@ -32,8 +32,8 @@ define('imcms-window-tab-builder', ['imcms-bem-builder', 'jquery'], function (BE
         },
         buildTab: function (index) {
             this.tabIndex = index;
-            var tabElements$ = this.tabElementsFactory.apply(this, arguments);
-            var attributes = {
+            const tabElements$ = this.tabElementsFactory.apply(this, arguments);
+            const attributes = {
                 'data-window-id': index,
                 style: 'display: none;'
             };

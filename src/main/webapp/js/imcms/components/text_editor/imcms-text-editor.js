@@ -28,8 +28,8 @@ define(
             this.style.cssText = 'height:' + (this.scrollHeight + ((e && (e.which === 13)) ? 15 : 0)) + 'px';
         }
 
-        var ImcmsTextEditor = function ($textEditor) {
-            var rows = $textEditor.attr('rows');
+        const ImcmsTextEditor = function ($textEditor) {
+            let rows = $textEditor.attr('rows');
 
             if (!rows) {
                 autoGrow.call($textEditor[0]);
@@ -61,9 +61,9 @@ define(
             setDirty: function (isDirty) {
                 this.dirty = isDirty;
 
-                var $parent = this.$editor.parent();
-                var $discard = $parent.find('.text-editor-discard-changes-button');
-                var $save = $parent.find('.text-editor-save-button');
+                const $parent = this.$editor.parent();
+                const $discard = $parent.find('.text-editor-discard-changes-button');
+                const $save = $parent.find('.text-editor-save-button');
 
                 if (isDirty) {
                     $discard.removeClass('text-toolbar__button--disabled');
@@ -86,14 +86,14 @@ define(
         };
 
         function buildSaveButton(activeTextEditor) {
-            var onClick = () => {
+            const onClick = () => {
                 if (activeTextEditor.isDirty()) textEditorUtils.saveContent(activeTextEditor);
             };
             return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
         }
 
         function buildToolbar($textEditor, buttons$) {
-            var $toolbarWrapper = $('<div>', {
+            const $toolbarWrapper = $('<div>', {
                 'class': 'text-toolbar-wrapper'
             });
 
@@ -106,7 +106,7 @@ define(
 
         return {
             initPlainTextEditor: $textEditor => {
-                var editor = new ImcmsTextEditor($textEditor);
+                const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
                     textHistory.buildPlainTextHistoryButton($textEditor),
@@ -118,7 +118,7 @@ define(
                 return editor;
             },
             initHtmlEditor: $textEditor => {
-                var editor = new ImcmsTextEditor($textEditor);
+                const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
                     textHistory.buildPlainTextHistoryButton($textEditor),
@@ -132,7 +132,7 @@ define(
                 return editor;
             },
             initTextFromEditor: $textEditor => {
-                var editor = new ImcmsTextEditor($textEditor);
+                const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
                     textHistory.buildPlainTextHistoryButton($textEditor),
@@ -147,7 +147,7 @@ define(
                 return editor;
             },
             initHtmlFromEditor: $textEditor => {
-                var editor = new ImcmsTextEditor($textEditor);
+                const editor = new ImcmsTextEditor($textEditor);
 
                 buildToolbar($textEditor, [
                     textHistory.buildPlainTextHistoryButton($textEditor),

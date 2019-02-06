@@ -5,9 +5,9 @@
 define('imcms-text-editor-toolbar-button-builder', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
     return {
         buildButton: function (blockName, title, onClick, isDisabled, isActive) {
-            var $btn;
-            var classDisabled = 'text-toolbar__button--disabled';
-            var classActive = 'text-toolbar__button--active';
+            let $btn;
+            const classDisabled = 'text-toolbar__button--disabled';
+            const classActive = 'text-toolbar__button--active';
 
             return $btn = new BEM({
                 block: blockName,

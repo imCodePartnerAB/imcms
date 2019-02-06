@@ -30,8 +30,8 @@ define(
         }
 
         function buildFooter(onConfirmed, onDeclined) {
-            var $yesButton = buildYesButton(onConfirmed);
-            var $noButton = buildNoButton(onDeclined);
+            const $yesButton = buildYesButton(onConfirmed);
+            const $noButton = buildNoButton(onDeclined);
 
             return new BEM({
                 block: "imcms-modal-footer",
@@ -42,7 +42,7 @@ define(
         }
 
         function buildWarningFooter(onConfirmed) {
-            var $warningButton = buildWarningButton(onConfirmed);
+            const $warningButton = buildWarningButton(onConfirmed);
 
             return new BEM({
                 block: "imcms-modal-footer",
@@ -105,20 +105,20 @@ define(
             }).buildBlockStructure("<div>", {"class": "imcms-modal-window--warning"},);
         }
 
-        var ModalWindow = function (question, callback) {
+        const ModalWindow = function (question, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
         };
 
-        var ModalWarningWindow = function (message, callback) {
+        const ModalWarningWindow = function (message, callback) {
             this.onConfirmed = this.confirmAction(callback);
             this.$modal = createModalWarningWindow(message, this.onConfirmed);
         };
 
         ModalWindow.prototype = {
             buildOnDecide: function (isConfirm, callback) {
-                var context = this;
+                const context = this;
 
                 return () => {
                     callback(isConfirm);
@@ -147,7 +147,7 @@ define(
 
         ModalWarningWindow.prototype = Object.create(ModalWindow.prototype);
         ModalWarningWindow.prototype.confirmAction = function (callback) {
-            var context = this;
+            const context = this;
             return () => {
                 callback();
                 context.closeModal();
@@ -175,19 +175,19 @@ define(
                 });
             },
             buildConfirmWindowWithDontShowAgain: (question, onConfirm, cookieName) => {
-                var cookie = cookies.getCookie(cookieName);
-                var doNotShow = "do-not-show";
+                const cookie = cookies.getCookie(cookieName);
+                const doNotShow = "do-not-show";
 
                 if (cookie === doNotShow) {
                     onConfirm.call();
                     return;
                 }
 
-                var $checkbox = components.checkboxes.imcmsCheckbox('<div>', {
+                const $checkbox = components.checkboxes.imcmsCheckbox('<div>', {
                     text: 'Do not show again'
                 });
 
-                var modalWindow = buildModalWindow(question, confirm => {
+                const modalWindow = buildModalWindow(question, confirm => {
                     if (confirm) {
                         if ($checkbox.isChecked()) {
                             cookies.setCookie(cookieName, doNotShow, {expires: 30})

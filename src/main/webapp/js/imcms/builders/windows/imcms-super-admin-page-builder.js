@@ -11,11 +11,11 @@ define(
 
         texts = texts.superAdmin;
 
-        var panels$;
+        let panels$;
 
         function buildSuperAdminPanels() {
             return superAdminTabs.tabBuilders.map(function (tabBuilder, index) {
-                var $tab = tabBuilder.buildTab(index);
+                const $tab = tabBuilder.buildTab(index);
 
                 (index === 0) ? $tab.slideDown() : $tab.slideUp();
 

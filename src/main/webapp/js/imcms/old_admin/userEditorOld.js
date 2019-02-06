@@ -7,23 +7,23 @@ import '../../../imcms/css/imcms_admin.css';
 import '../../../css/imcms-imports_files.css';
 import '../../../css/imcms-edit-user-page.css';
 
-var $ = require('jquery');
-var components = require('imcms-components-builder');
-var languagesRestApi = require('imcms-languages-rest-api');
-var imcms = require('imcms');
+const $ = require('jquery');
+const components = require('imcms-components-builder');
+const languagesRestApi = require('imcms-languages-rest-api');
+const imcms = require('imcms');
 
 function activateUserAdminRoles() {
-    var $form = $('#user-edit-form');
-    var $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
+    const $form = $('#user-edit-form');
+    const $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
 
     if (!$userAdminRoleIds.length) return;
 
     $userAdminRoleIds.attr('disabled', 'disabled');
 
-    var isUserAdminSelected = $form.find('input[name=role_ids]')
+    const isUserAdminSelected = $form.find('input[name=role_ids]')
         .find("option")
         .filter(function () {
-            var $option = $(this);
+            const $option = $(this);
             return ($option.text() === 'Useradmin' && $option.is(':selected'));
         })
         .length;
@@ -34,7 +34,7 @@ function activateUserAdminRoles() {
 }
 
 function onSubmit(e) {
-    var $form = $('#user-edit-form');
+    const $form = $('#user-edit-form');
 
     if ($form.find('input[name=login_name]').val() === "") {
         e.preventDefault();
@@ -42,8 +42,8 @@ function onSubmit(e) {
         return;
     }
 
-    var $pass1 = $form.find('input[name=password1]');
-    var $pass2 = $form.find('input[name=password2]');
+    const $pass1 = $form.find('input[name=password1]');
+    const $pass2 = $form.find('input[name=password2]');
 
     if ($pass1.val() === $pass2.val()) {
         $('[name=user_phone_number]').removeAttr('disabled');
@@ -57,14 +57,14 @@ function onSubmit(e) {
 }
 
 function loadLanguages() {
-    var $langSelectContainer = $('#languages-select-container');
+    const $langSelectContainer = $('#languages-select-container');
 
-    var selectAttributes = {
+    const selectAttributes = {
         text: $langSelectContainer.attr('data-text'),
         name: 'lang_id'
     };
 
-    var $select = components.selects.imcmsSelect("<div>", selectAttributes);
+    const $select = components.selects.imcmsSelect("<div>", selectAttributes);
     $select.appendTo($langSelectContainer);
 
     languagesRestApi.read().done(languages => {
@@ -116,21 +116,21 @@ function bindOnSaveClick($phoneRow) {
 function addPhone(e) {
     e.preventDefault();
 
-    var $phoneInput = $('#phone');
-    var phone = $phoneInput.val().trim();
+    const $phoneInput = $('#phone');
+    let phone = $phoneInput.val().trim();
 
     if (!phone) return;
 
     $phoneInput.val('');
 
-    var $phoneTypeContainer = $('#phone-type-select').parent();
-    var $newRow = $phoneTypeContainer.clone(true, true);
+    const $phoneTypeContainer = $('#phone-type-select').parent();
+    const $newRow = $phoneTypeContainer.clone(true, true);
 
     $newRow.addClass('imcms-text-box--existing-phone-box');
 
-    var $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
-    var $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
-    var $saveButton = components.buttons.saveButton({
+    const $editPhoneButton = components.controls.edit(bindOnEditClicked($newRow));
+    const $deletePhoneButton = components.controls.remove(bindOnDeleteClicked($newRow));
+    const $saveButton = components.buttons.saveButton({
         style: 'display: none;',
         click: bindOnSaveClick($newRow),
         text: 'Save'
@@ -190,7 +190,7 @@ $(function () {
     });
 
     $('.imcms-text-box--existing-phone-box').each(function () {
-        var $row = $(this);
+        const $row = $(this);
 
         components.selects.makeImcmsSelect($row.find('.imcms-select'));
 

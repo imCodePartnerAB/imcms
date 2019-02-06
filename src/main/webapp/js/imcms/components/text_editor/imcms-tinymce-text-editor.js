@@ -25,23 +25,23 @@ define(
         require('tinymce/plugins/save');
         require('tinymce/plugins/fullscreen');
 
-        var sourceCodePlugin = 'code';
-        var fontPlugins = ['bold', 'italic', 'underline'].join(' ');
-        var listsPlugins = ['bullist', 'numlist'].join(' ');
-        var horizontalLinePlugin = 'hr';
-        var textAlignPlugins = ['alignleft', 'aligncenter', 'alignright', 'alignjustify'].join(' ');
-        var specialInsertsPlugins = ['link', imageInText.pluginName].join(' ');
-        var customImcmsTextPlugins = [textHistory.pluginName, textValidation.pluginName].join(' ');
-        var fullscreenPlugin = fullScreenPlugin.pluginName;
-        var saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
-        var switchModePlugins = [
+        const sourceCodePlugin = 'code';
+        const fontPlugins = ['bold', 'italic', 'underline'].join(' ');
+        const listsPlugins = ['bullist', 'numlist'].join(' ');
+        const horizontalLinePlugin = 'hr';
+        const textAlignPlugins = ['alignleft', 'aligncenter', 'alignright', 'alignjustify'].join(' ');
+        const specialInsertsPlugins = ['link', imageInText.pluginName].join(' ');
+        const customImcmsTextPlugins = [textHistory.pluginName, textValidation.pluginName].join(' ');
+        const fullscreenPlugin = fullScreenPlugin.pluginName;
+        const saveAndDiscardPlugins = ['save', discardChangesPlugin.pluginName].join(' ');
+        const switchModePlugins = [
             switchToPlainTextPlugin.pluginName,
             switchToHtmlModePlugin.pluginName,
             switchToTextEditorPlugin.pluginName
         ].join(' ');
-        var htmlFilteringPolicyPlugins = htmlFilteringPolicyPlugin.pluginName;
+        const htmlFilteringPolicyPlugins = htmlFilteringPolicyPlugin.pluginName;
 
-        var toolbar = [
+        const toolbar = [
             sourceCodePlugin,
             fontPlugins,
             listsPlugins,
@@ -55,7 +55,7 @@ define(
             htmlFilteringPolicyPlugins
         ].join(' | ');
 
-        var inlineEditorConfig = {
+        const inlineEditorConfig = {
             skin_url: imcms.contextPath + '/css/tinymce/skins/white',
             convert_urls: false,
             cache_suffix: '?v=0.0.1',
@@ -114,12 +114,12 @@ define(
 
         return {
             init: $textEditor => {
-                var textAreaId = $textEditor.attr('id');
-                var toolbarId = $textEditor.closest('.imcms-editor-area--text')
+                const textAreaId = $textEditor.attr('id');
+                const toolbarId = $textEditor.closest('.imcms-editor-area--text')
                     .find('.imcms-editor-area__text-toolbar')
                     .attr('id');
 
-                var editorConfig = $.extend({
+                const editorConfig = $.extend({
                     selector: '#' + textAreaId,
                     fixed_toolbar_container: '#' + toolbarId
                 }, inlineEditorConfig);

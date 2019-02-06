@@ -12,11 +12,11 @@ define(
 
         texts = texts.editors.newDocumentProfile;
 
-        var radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect,
+        let radioButtonsGroup, $parentDocIdInput, $profilesSelect, $profileSelectBlock, $parentSelect,
             $validationErrorBlock;
 
         function buildProfileSelect() {
-            var $profilesSelectContainer = components.selects.selectContainer("<div>", {
+            const $profilesSelectContainer = components.selects.selectContainer("<div>", {
                 id: "doc-profiles",
                 text: texts.selectProfile,
                 name: "profile",
@@ -47,10 +47,10 @@ define(
             }).buildBlockStructure("<div>", {"style": "display: none;"});
         }
 
-        var $currentDocIdOption, $profilesOption;
+        let $currentDocIdOption, $profilesOption;
 
         function buildChoosingRadio($profileSelect, $parentSelect) {
-            var $choosingTitle = components.texts.titleText("<div>", texts.chooseProfileOrParent);
+            const $choosingTitle = components.texts.titleText("<div>", texts.chooseProfileOrParent);
 
             $profilesOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByProfile,
@@ -63,7 +63,7 @@ define(
                 }
             }).css("display", "none");
 
-            var $docIdOption = components.radios.imcmsRadio("<div>", {
+            const $docIdOption = components.radios.imcmsRadio("<div>", {
                 text: texts.buildByParent,
                 name: "select-profile-or-doc-or-current_doc",
                 value: "docId",
@@ -107,7 +107,7 @@ define(
             $profileSelectBlock = buildProfileSelect();
             $parentSelect = buildParentSelect();
             $validationErrorBlock = buildValidationErrorBlock();
-            var $radioBlock = buildChoosingRadio($profileSelectBlock, $parentSelect);
+            const $radioBlock = buildChoosingRadio($profileSelectBlock, $parentSelect);
 
             return new BEM({
                 block: "imcms-document-profile",
@@ -121,10 +121,10 @@ define(
         }
 
         function onSubmit() {
-            var checkedValue = radioButtonsGroup.getCheckedValue();
+            const checkedValue = radioButtonsGroup.getCheckedValue();
 
             if ("docId" === checkedValue) {
-                var selectedParentDoc = $parentDocIdInput.getValue().trim();
+                const selectedParentDoc = $parentDocIdInput.getValue().trim();
 
                 if (selectedParentDoc) {
                     documentValidationAPI.checkIsTextDocument(selectedParentDoc).done(isTextDoc => {
@@ -140,7 +140,7 @@ define(
                     $validationErrorBlock.slideDown(400);
                 }
             } else if ("profile" === checkedValue) {
-                var parentDocId = $profilesSelect.getSelectedValue();
+                const parentDocId = $profilesSelect.getSelectedValue();
 
                 if (parentDocId) {
                     closeWindow();
@@ -186,7 +186,7 @@ define(
 
         function loadData(onParentSelected, config) {
             profilesRestApi.read().done(profiles => {
-                var profilesDataMapped = profiles.map(profile => {
+                const profilesDataMapped = profiles.map(profile => {
                     /** @namespace profile.documentName */
                     return {
                         text: profile.name,
@@ -194,7 +194,7 @@ define(
                     };
                 });
 
-                var profilesExist = profilesDataMapped && profilesDataMapped.length;
+                let profilesExist = profilesDataMapped && profilesDataMapped.length;
 
                 if (profilesExist) {
                     components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelect);
@@ -202,11 +202,11 @@ define(
                     profilesExist = true;
                 }
 
-                var isInMenu = config && config.inMenu;
-                var cssDisplayValue = isInMenu ? "block" : "none";
+                let isInMenu = config && config.inMenu;
+                const cssDisplayValue = isInMenu ? "block" : "none";
                 $currentDocIdOption.css({"display": cssDisplayValue});
 
-                var checkedValue = isInMenu
+                const checkedValue = isInMenu
                     ? "currentDocId"
                     : profilesExist ? "profile" : "docId";
 

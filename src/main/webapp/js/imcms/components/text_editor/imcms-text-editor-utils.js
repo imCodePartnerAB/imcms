@@ -10,12 +10,12 @@ define(
     ],
     function (tinyMCE, textsRestApi, events, $, modalWindowBuilder, editorTypes) {
 
-        var ACTIVE_EDIT_AREA_CLASS = 'imcms-editor-area--active';
-        var ACTIVE_EDIT_AREA_CLASS_$ = '.' + ACTIVE_EDIT_AREA_CLASS;
+        const ACTIVE_EDIT_AREA_CLASS = 'imcms-editor-area--active';
+        const ACTIVE_EDIT_AREA_CLASS_$ = '.' + ACTIVE_EDIT_AREA_CLASS;
 
-        var activeEditor;
+        let activeEditor;
 
-        var blurEnabled = true;
+        let blurEnabled = true;
 
         events.on('disable text editor blur', () => {
             blurEnabled = false;
@@ -37,7 +37,7 @@ define(
         }
 
         function saveContent(editor, onSaved) {
-            var textDTO = $(editor.$()).data();
+            const textDTO = $(editor.$()).data();
             textDTO.text = editor.getContent();
 
             switch (textDTO.type) {

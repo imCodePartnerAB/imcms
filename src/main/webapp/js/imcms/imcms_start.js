@@ -44,7 +44,7 @@ $(() => {
     });
 
     if (imcms.isEditMode) {
-        var editorsInit = require('imcms-editors-initializer');
+        const editorsInit = require('imcms-editors-initializer');
         $(editorsInit.initEditors);
     }
 });

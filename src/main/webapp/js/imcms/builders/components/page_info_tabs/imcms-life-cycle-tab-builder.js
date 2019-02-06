@@ -7,7 +7,7 @@ define("imcms-life-cycle-tab-builder",
 
         texts = texts.pageInfo.lifeCycle;
 
-        var lifeCycleInnerStructureBEM = new BEM({
+        const lifeCycleInnerStructureBEM = new BEM({
                 block: "imcms-field",
                 elements: {
                     "select": "imcms-select",
@@ -39,8 +39,8 @@ define("imcms-life-cycle-tab-builder",
         }
 
         function buildDateTimeContainerBlock($title, items) {
-            var lastIndex = items.length - 1;
-            var blockElements = [{"title": $title}].concat(items.map(($item, index) => ({
+            const lastIndex = items.length - 1;
+            const blockElements = [{"title": $title}].concat(items.map(($item, index) => ({
                 "item": $item,
                 modifiers: (lastIndex === index) ? itemModifiers.concat("margin-l") : itemModifiers
             })));
@@ -60,7 +60,7 @@ define("imcms-life-cycle-tab-builder",
         }
 
         function buildDateTimeContainer(containerData) {
-            var $title = components.texts.titleText("<div>", containerData.title),
+            const $title = components.texts.titleText("<div>", containerData.title),
                 $date = components.dateTime.datePickerCalendar({title: containerData.dateTitle}),
                 $time = components.dateTime.timePickerClock({title: containerData.timeTitle}),
                 $setDateTimeNowBtn = components.buttons.neutralButton({
@@ -69,7 +69,7 @@ define("imcms-life-cycle-tab-builder",
                         $date.setCurrentDate();
                         $time.setCurrentTime();
 
-                        var date = $date.getDate().split("-");
+                        const date = $date.getDate().split("-");
 
                         if (!dateTimeValidator.isPublishedDateBeforePublicationEndDate($date, date)) {
                             cleanUpDateAndTime($date, $time);
@@ -132,7 +132,7 @@ define("imcms-life-cycle-tab-builder",
             });
 
             usersRestApi.getAllAdmins().done(users => {
-                var usersDataMapped = users.map(user => ({
+                const usersDataMapped = users.map(user => ({
                     text: user.login,
                     "data-value": user.id
                 }));
@@ -144,7 +144,7 @@ define("imcms-life-cycle-tab-builder",
         }
 
         function buildCurrentVersionRow() {
-            var $currentVersionRowTitle = components.texts.titleText("<div>", texts.currentVersion),
+            const $currentVersionRowTitle = components.texts.titleText("<div>", texts.currentVersion),
                 $docVersionSaveDateTime = components.dateTime.dateTimeReadOnly();
 
             tabData.$currentVersionNumber = components.texts.textBox("<div>", {
@@ -166,8 +166,8 @@ define("imcms-life-cycle-tab-builder",
         }
 
         function buildDocVersionsInfoRow() {
-            var $offlineVersionInfo = components.texts.infoText("<div>", texts.versionHasChanges);
-            var $nextVersionIndex = components.texts.infoText("<span>", "", {id: "document-next-version"});
+            const $offlineVersionInfo = components.texts.infoText("<div>", texts.versionHasChanges);
+            const $nextVersionIndex = components.texts.infoText("<span>", "", {id: "document-next-version"});
 
             tabData.$savingVersionInfo = components.texts.infoText("<div>", texts.publishMessage)
                 .append($nextVersionIndex);
@@ -194,7 +194,7 @@ define("imcms-life-cycle-tab-builder",
             "publicationEnd"
         ];
 
-        var LifeCycleTab = function (name) {
+        const LifeCycleTab = function (name) {
             PageInfoTab.call(this, name);
         };
 
@@ -213,7 +213,7 @@ define("imcms-life-cycle-tab-builder",
             buildDocVersionsInfoRow()
         ];
         LifeCycleTab.prototype.fillTabDataFromDocument = document => {
-            var displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
+            const displayRule = ((document.id === imcms.document.id) && imcms.document.hasNewerVersion
                 && imcms.isVersioningAllowed) ? "block" : "none";
 
             tabData.$currentVersionRowBlock.css("display", imcms.isVersioningAllowed ? "block" : "none");
@@ -249,7 +249,7 @@ define("imcms-life-cycle-tab-builder",
             return documentDTO;
         };
         LifeCycleTab.prototype.clearTabData = () => {
-            var emptyString = '';
+            const emptyString = '';
 
             tabData.$docStatusSelect.selectFirst();
 

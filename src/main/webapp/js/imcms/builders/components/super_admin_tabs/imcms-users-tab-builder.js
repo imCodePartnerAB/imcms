@@ -12,16 +12,16 @@ define(
 
         texts = texts.superAdmin.users;
 
-        var $searchResultContainer;
-        var userArchivedClass = 'imcms-user-info-row--archived';
-        var $usersNameFilter;
-        var $includeInactiveCheckbox;
-        var $usersFilterSelect;
+        let $searchResultContainer;
+        const userArchivedClass = 'imcms-user-info-row--archived';
+        let $usersNameFilter;
+        let $includeInactiveCheckbox;
+        let $usersFilterSelect;
 
         function buildSearchRow() {
 
             function buildUsersNameFilter() {
-                var $usersNameFilterBox = components.texts.textBox('<div>', texts.searchFilter.byName);
+                const $usersNameFilterBox = components.texts.textBox('<div>', texts.searchFilter.byName);
                 $usersNameFilter = $usersNameFilterBox.$input;
                 return $usersNameFilterBox;
             }
@@ -34,7 +34,7 @@ define(
                 });
 
                 rolesRestApi.read().done(roles => {
-                    var rolesDataMapped = roles.map(role => ({
+                    const rolesDataMapped = roles.map(role => ({
                         text: role.name,
                         value: role.id
                     }));
@@ -75,7 +75,7 @@ define(
                 }
             }
 
-            var UserListBuilder = function ($searchResultContainer) {
+            const UserListBuilder = function ($searchResultContainer) {
                 this.$searchResultContainer = $searchResultContainer;
                 this.userAppender = this.appendUsers.bind(this);
             };
@@ -89,7 +89,7 @@ define(
                     return this;
                 },
                 userToRow: user => {
-                    var infoRowAttributes = {
+                    const infoRowAttributes = {
                         id: 'user-id-' + user.id
                     };
 
@@ -125,7 +125,7 @@ define(
                     return this;
                 },
                 prepareTitleRow: function () {
-                    var $titleRow = new BEM({
+                    const $titleRow = new BEM({
                         block: 'imcms-user-title-row',
                         elements: {
                             'user-id': $('<div>', {text: texts.searchResult.id}),
@@ -153,17 +153,17 @@ define(
             };
 
             function listUsers() {
-                var query = {
+                const query = {
                     term: $usersNameFilter.val(),
                     includeInactive: $includeInactiveCheckbox.isChecked(),
                     roleIds: $usersFilterSelect.getSelectedValues()
                 };
-                var tableBuilder = new UserListBuilder($searchResultContainer).clearList();
+                const tableBuilder = new UserListBuilder($searchResultContainer).clearList();
                 usersRestApi.search(query).done(tableBuilder.userAppender);
             }
 
             function buildListUsersButton() {
-                var $button = components.buttons.positiveButton({
+                const $button = components.buttons.positiveButton({
                     text: texts.searchFilter.listUsers,
                     click: listUsers
                 });
@@ -206,7 +206,7 @@ define(
                 window.open(imcms.contextPath + '/api/user/creation', '_blank').focus();
             }
 
-            var $button = components.buttons.positiveButton({
+            const $button = components.buttons.positiveButton({
                 text: texts.createNewUser,
                 click: onCreateNewUserClicked
             });

@@ -5,7 +5,7 @@
 define("imcms-checkboxes-builder",
     ["imcms-bem-builder", "imcms-primitives-builder", "imcms-uuid-generator"],
     function (BEM, primitives, uuidGenerator) {
-        var checkboxBEM = new BEM({
+        const checkboxBEM = new BEM({
                 block: "imcms-checkbox",
                 elements: {
                     "checkbox": ""
@@ -46,8 +46,8 @@ define("imcms-checkboxes-builder",
             imcmsCheckbox: (tag, attributes) => {
                 attributes = attributes || {};
 
-                var id = attributes.id || uuidGenerator.generateUUID();
-                var options = {
+                const id = attributes.id || uuidGenerator.generateUUID();
+                const options = {
                     type: "checkbox",
                     name: attributes.name,
                     id: id,
@@ -57,19 +57,19 @@ define("imcms-checkboxes-builder",
                 attributes.disabled && (options.disabled = attributes.disabled);
                 attributes.change && (options.change = attributes.change);
 
-                var $input = checkboxBEM.buildElement("checkbox", "<input>", options);
+                const $input = checkboxBEM.buildElement("checkbox", "<input>", options);
 
                 if (attributes.checked) {
                     $input.prop("checked", "checked");
                 }
 
-                var $label = primitives.imcmsLabelFromObject({
+                const $label = primitives.imcmsLabelFromObject({
                     "for": id,
                     text: attributes.text,
                     click: attributes.click
                 });
 
-                var imcmsCheckboxResult = checkboxBEM.buildBlock(tag, [
+                const imcmsCheckboxResult = checkboxBEM.buildBlock(tag, [
                     {"checkbox": $input},
                     {"label": $label}
                 ]);
@@ -86,7 +86,7 @@ define("imcms-checkboxes-builder",
                 elements = elements.map(element => ({"checkbox": element}));
 
                 if (attributes && attributes.title) {
-                    var $title = containerBEM.buildElement("title", "<div>", {text: attributes.title});
+                    const $title = containerBEM.buildElement("title", "<div>", {text: attributes.title});
                     delete attributes.title;
                     elements.unshift({"title": $title});
                 }

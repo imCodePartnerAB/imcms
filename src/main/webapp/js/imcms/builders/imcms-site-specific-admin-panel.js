@@ -13,13 +13,13 @@ define(
         texts = texts.panel;
 
         function initSiteSpecific() {
-            var $imcmsAdminSpecial = $('#imcmsAdminSpecial');
+            const $imcmsAdminSpecial = $('#imcmsAdminSpecial');
 
             if ($imcmsAdminSpecial.length) {
-                var $imcms = $('#imcms-admin');
+                const $imcms = $('#imcms-admin');
 
-                var adminPanelHeight = panelState.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
-                var specialTopInitial = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
+                const adminPanelHeight = panelState.isSpecialPanelHidingPrevented ? 0 : $('#imcms-admin-panel').outerHeight();
+                const specialTopInitial = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.css('max-height'));
 
                 $imcmsAdminSpecial.css('top', specialTopInitial) // there is no real height now
                     .removeClass('imcms-collapsible-hidden') // now it is visible with some real height
@@ -27,28 +27,28 @@ define(
                     .appendTo($imcms)
                     .css("padding-top", adminPanelHeight); // exactly separated css calls!
 
-                var specialTop = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
+                const specialTop = panelState.isSpecialPanelHidingPrevented ? 0 : ("-" + $imcmsAdminSpecial.outerHeight() + "px");
                 $imcmsAdminSpecial.css("top", specialTop);
 
                 panelVisibility.setShowHidePanelRules($imcmsAdminSpecial);
                 $imcmsAdminSpecial.css('display', 'none');
 
-                var text = $imcmsAdminSpecial.data('link-text');
+                const text = $imcmsAdminSpecial.data('link-text');
                 addLinkToSpecialAdmin(text);
             }
         }
 
         function addLinkToSpecialAdmin(text) {
-            var linkText = text || texts.special;
-            var $imcms = $('#imcms-admin');
-            var $link = $("<li>", {
+            const linkText = text || texts.special;
+            const $imcms = $('#imcms-admin');
+            const $link = $("<li>", {
                 title: texts.specialTitle,
                 "class": "imcms-panel__item imcms-panel__item--specific",
                 text: linkText
             });
 
             $link.insertAfter('.imcms-admin-panel .imcms-panel__item--page-info:first');
-            var $collapsible = $('#imcmsAdminSpecial.imcms-collapsible');
+            const $collapsible = $('#imcmsAdminSpecial.imcms-collapsible');
 
             $link.click(() => {
 

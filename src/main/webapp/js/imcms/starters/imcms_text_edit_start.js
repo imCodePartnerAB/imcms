@@ -8,10 +8,10 @@ import '../../../css/imcms-imports_files.css';
  */
 const toolbarBuilder = require('imcms-standalone-editor-toolbar-builder');
 
-var textEditorInitializer = require("imcms-text-editor-initializer");
-var imageEditorInitializer = require("imcms-image-editor-initializer");
-var imcms = require("imcms");
-var $ = require('jquery');
+const textEditorInitializer = require("imcms-text-editor-initializer");
+const imageEditorInitializer = require("imcms-image-editor-initializer");
+const imcms = require("imcms");
+const $ = require('jquery');
 const texts = require("imcms-i18n-texts");
 
 imcms.textEditorFullScreenEnabled = true;
@@ -20,8 +20,8 @@ $(function () {
     textEditorInitializer.initEditor({autoFocus: true});
     imageEditorInitializer.initEditor();
 
-    var $editedTag = $('.imcms-editor-content--text:first');
-    var editorData = $editedTag.data();
+    const $editedTag = $('.imcms-editor-content--text:first');
+    const editorData = $editedTag.data();
 
     const toolbarContent = [
         {

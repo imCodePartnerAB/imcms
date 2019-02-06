@@ -7,7 +7,7 @@ define("imcms-choose-image-builder",
     function (BEM, texts, buttons, contentManager) {
         return {
             container: (tag, attributes) => {
-                var $textField = texts.textField("<div>", {
+                const $textField = texts.textField("<div>", {
                         id: attributes.id,
                         name: attributes.name,
                         text: attributes["label-text"],

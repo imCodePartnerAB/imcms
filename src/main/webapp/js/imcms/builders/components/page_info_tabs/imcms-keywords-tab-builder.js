@@ -6,9 +6,9 @@ define("imcms-keywords-tab-builder",
 
         texts = texts.pageInfo.keywords;
 
-        var tabData = {};
+        const tabData = {};
 
-        var KeywordsTab = function (name) {
+        const KeywordsTab = function (name) {
             PageInfoTab.call(this, name);
         };
 
@@ -29,7 +29,7 @@ define("imcms-keywords-tab-builder",
                 name: "isSearchDisabled",
                 text: texts.disableSearch
             });
-            var $checkboxField = components.checkboxes.checkboxContainerField("<div>", [
+            const $checkboxField = components.checkboxes.checkboxContainerField("<div>", [
                 tabData.$searchDisableCheckbox
             ]);
 

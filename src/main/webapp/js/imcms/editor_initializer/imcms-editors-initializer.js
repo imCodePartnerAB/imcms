@@ -8,7 +8,7 @@ define("imcms-editors-initializer",
         "imcms-menu-editor-initializer", "imcms-editor-labels-initializer"
     ],
     function (textEditorInit, imageEditorInit, loopEditorInit, menuEditorInit, editorLabelInitializer) {
-        var editorInitializers = [textEditorInit, imageEditorInit, loopEditorInit, menuEditorInit];
+        const editorInitializers = [textEditorInit, imageEditorInit, loopEditorInit, menuEditorInit];
 
         function initEditor(editorInitializer) {
             editorInitializer.initEditor();

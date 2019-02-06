@@ -7,7 +7,7 @@ define(
     ["jquery", "tinymce", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder'],
     function ($, tinyMCE, adminPanelState, imcms, toolbarButtonBuilder) {
 
-        var title = 'Fullscreen'; // todo: localize!
+        const title = 'Fullscreen'; // todo: localize!
 
         function setEnablingStrategy() {
             if (imcms.textEditorFullScreenEnabled) {
@@ -20,9 +20,9 @@ define(
             pluginName: 'fullscreen',
             initFullScreen: function (editor) {
                 editor.addCommand('mceFullscreen', () => {
-                    var $editorBody = $(editor.getBody());
-                    var $toolBar = $editorBody.parent().children(".imcms-editor-area__text-toolbar");
-                    var $body = $("body");
+                    const $editorBody = $(editor.getBody());
+                    const $toolBar = $editorBody.parent().children(".imcms-editor-area__text-toolbar");
+                    const $body = $("body");
 
                     if ($editorBody.hasClass('imcms-mce-fullscreen-inline') && !imcms.textEditorFullScreenEnabled) {
 
@@ -59,10 +59,10 @@ define(
                 });
             },
             buildPlainTextEditorButton: $textEditor => {
-                var isActive = imcms.textEditorFullScreenEnabled;
+                const isActive = imcms.textEditorFullScreenEnabled;
 
-                var onClick = () => {
-                    var $toolbar = $textEditor.parent()
+                const onClick = () => {
+                    const $toolbar = $textEditor.parent()
                         .find('.imcms-editor-area__text-toolbar');
 
                     isActive ? $toolbar.addClass('mce-fullscreen-toolbar')

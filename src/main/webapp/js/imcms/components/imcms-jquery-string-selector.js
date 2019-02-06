@@ -12,13 +12,13 @@ define("imcms-jquery-string-selector", ["imcms-dom-attributes-extractor"], funct
             return null;
         }
 
-        var attributes = getAttributes($transformMe[0]);
+        const attributes = getAttributes($transformMe[0]);
 
         if (attributes.id) {
             return "#" + attributes.id;
 
         } else {
-            var elementAsString = "";
+            let elementAsString = "";
 
             if (attributes["class"]) {
                 elementAsString += "." + attributes["class"].split(" ").join(".");
@@ -27,7 +27,7 @@ define("imcms-jquery-string-selector", ["imcms-dom-attributes-extractor"], funct
 
             delete attributes.style; // this one is quite dynamic to rely on
 
-            var otherAttributes = Object.keys(attributes).map(key => "[" + key + "='" + attributes[key] + "']");
+            const otherAttributes = Object.keys(attributes).map(key => "[" + key + "='" + attributes[key] + "']");
 
             if (otherAttributes.length) {
                 elementAsString += otherAttributes.join("");

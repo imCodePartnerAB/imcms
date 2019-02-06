@@ -12,7 +12,7 @@ define(
 
         texts = texts.superAdmin.deleteDocs;
 
-        var $inputBlock;
+        let $inputBlock;
 
         function onDeleteClicked() {
             $inputBlock.find('.imcms-error-msg').slideUp();

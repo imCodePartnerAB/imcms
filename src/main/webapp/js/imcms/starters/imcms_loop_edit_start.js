@@ -9,19 +9,19 @@ import '../../../css/imcms-imports_files.css';
 
 const toolbarBuilder = require('imcms-standalone-editor-toolbar-builder');
 
-var loopEditorInitData = require("imcms-loop-editor-init-data");
-var $ = require("jquery");
-var events = require("imcms-events");
-var imcms = require("imcms");
+const loopEditorInitData = require("imcms-loop-editor-init-data");
+const $ = require("jquery");
+const events = require("imcms-events");
+const imcms = require("imcms");
 const texts = require("imcms-i18n-texts");
 
 $(function () {
     events.on("loop editor closed", () => {
-        var returnUrl = $("#return-url").val();
+        const returnUrl = $("#return-url").val();
         window.location = (returnUrl) ? returnUrl : (imcms.contextPath + "/" + editorData.docId);
     });
 
-    var $editedTag = $(loopEditorInitData.EDIT_AREA_SELECTOR);
+    const $editedTag = $(loopEditorInitData.EDIT_AREA_SELECTOR);
     var editorData = $editedTag.data();
 
     const toolbarContent = [

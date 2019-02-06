@@ -12,17 +12,17 @@ define(
     ],
     function (textValidationAPI, textValidationBuilder, $, toolbarButtonBuilder) {
 
-        var title = 'Validate Content over W3C'; // todo: localize!
+        const title = 'Validate Content over W3C'; // todo: localize!
 
-        var getOnTinyMCETextValidationClick = function (editor) {
+        const getOnTinyMCETextValidationClick = function (editor) {
             return function () {
-                var content = editor.getContent();
-                var $icon = $(this.$el).find(".mce-ico")
+                const content = editor.getContent();
+                const $icon = $(this.$el).find(".mce-ico")
                     .removeAttr("class")
                     .attr("class", "mce-ico mce-i-imcms-w3c-text-validation-processing-icon");
 
                 textValidationAPI.validate({content: content}).done(validationResult => {
-                    var iconClass = validationResult.valid
+                    const iconClass = validationResult.valid
                         ? "mce-i-imcms-w3c-text-validation-valid-icon"
                         : "mce-i-imcms-w3c-text-validation-invalid-icon";
 
@@ -35,14 +35,14 @@ define(
             };
         };
 
-        var getOnPlainTextValidationClick = activeTextEditor => () => {
-            var content = activeTextEditor.getContent();
-            var $button = activeTextEditor.$().parent().find('.html-validation-button__icon');
+        const getOnPlainTextValidationClick = activeTextEditor => () => {
+            const content = activeTextEditor.getContent();
+            const $button = activeTextEditor.$().parent().find('.html-validation-button__icon');
 
             $button.addClass('imcms-w3c-text-validation-processing-icon');
 
             textValidationAPI.validate({content: content}).done(validationResult => {
-                var iconClass = validationResult.valid
+                const iconClass = validationResult.valid
                     ? 'imcms-w3c-text-validation-valid-icon'
                     : 'imcms-w3c-text-validation-invalid-icon';
 

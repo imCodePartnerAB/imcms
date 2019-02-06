@@ -11,13 +11,13 @@ define("imcms-text-history-window-builder",
     ],
     function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditorUtils, textTypes) {
 
-        var $historyListContainer, $textHistoryView;
+        let $historyListContainer, $textHistoryView;
         texts = texts.textHistory;
 
         function onWriteToTextField() {
-            var textButton = textHistoryWindowBuilder.$editor.find(".view-text-button")[0];
-            var activeTextEditor = textEditorUtils.getActiveTextEditor();
-            var content;
+            const textButton = textHistoryWindowBuilder.$editor.find(".view-text-button")[0];
+            const activeTextEditor = textEditorUtils.getActiveTextEditor();
+            let content;
 
             if ((textDTO.type === textTypes.text) || (textDTO.type === textTypes.textFromEditor)) {
                 content = $textHistoryView.text();
@@ -52,7 +52,7 @@ define("imcms-text-history-window-builder",
         }
 
         function isClickAllowed(element) {
-            var $element = $(element);
+            const $element = $(element);
 
             if ($element.hasClass("imcms-button--disabled")) {
                 return false;
@@ -118,12 +118,12 @@ define("imcms-text-history-window-builder",
         }
 
         function buildTextHistoriesForDateContainer(date) {
-            var $date = $("<div>", {
+            const $date = $("<div>", {
                 "class": "text-history-date",
                 text: date
             });
 
-            var $separator = $("<div>", {"class": "text-history-date-separator"});
+            const $separator = $("<div>", {"class": "text-history-date-separator"});
 
             return new BEM({
                 block: "text-history-date-container",
@@ -170,7 +170,7 @@ define("imcms-text-history-window-builder",
         function buildTextHistoriesForDate(textHistoriesForDate) {
             /** @namespace textHistory.modifiedBy.login */
             return textHistoriesForDate.map(function (textHistory) {
-                var $textHistoryUnit = $("<div>", {
+                const $textHistoryUnit = $("<div>", {
                     "class": "text-history-unit",
                     text: textHistory.modified.time + " | " + textHistory.modifiedBy.login,
                     click: function () {
@@ -184,7 +184,7 @@ define("imcms-text-history-window-builder",
         }
 
         function buildTextHistoryUnit(date, textHistoriesForDate) {
-            var elements = [{"date": buildTextHistoriesForDateContainer(date)}];
+            const elements = [{"date": buildTextHistoriesForDateContainer(date)}];
 
             new BEM({
                 block: "text-history-date-unit",
@@ -193,15 +193,15 @@ define("imcms-text-history-window-builder",
         }
 
         function loadData(textDTO) {
-            var dto = {...textDTO};
+            const dto = {...textDTO};
 
             delete dto.type;
 
             textsHistoryRestAPI.read(dto).done(textsHistory => {
-                var dateToTextHistoryUnits = {};
+                const dateToTextHistoryUnits = {};
 
                 textsHistory.forEach(textHistory => {
-                    var date = textHistory.modified.date;
+                    const date = textHistory.modified.date;
                     dateToTextHistoryUnits[date] = (dateToTextHistoryUnits[date] || []);
                     dateToTextHistoryUnits[date].push(textHistory);
                 });

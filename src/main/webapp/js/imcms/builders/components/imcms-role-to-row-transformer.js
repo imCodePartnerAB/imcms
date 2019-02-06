@@ -4,7 +4,7 @@
  */
 define('imcms-role-to-row-transformer', ['imcms-bem-builder', 'jquery'], function (BEM, $) {
 
-    var rolesTableBEM = new BEM({
+    const rolesTableBEM = new BEM({
         block: 'roles-table',
         elements: {
             'role-row': ''
@@ -13,7 +13,7 @@ define('imcms-role-to-row-transformer', ['imcms-bem-builder', 'jquery'], functio
 
     function getOnRoleClicked(role, roleEditor) {
         return function () {
-            var $this = $(this);
+            const $this = $(this);
 
             if ($this.hasClass('roles-table__role-row--active')) return;
 

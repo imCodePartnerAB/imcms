@@ -43,7 +43,7 @@ define(
                 });
             }
 
-            var linkListBuilder = function ($containerResult) {
+            const linkListBuilder = function ($containerResult) {
                 this.$containerResult = $containerResult;
                 this.linkAppender = this.appendLinks.bind(this);
             };
@@ -157,13 +157,13 @@ define(
             };
 
             function listValidationLinks() {
-                var linksValidationParams = {
+                const linksValidationParams = {
                     filterBrokenLinks: $filterBrokenLinksCheckbox.isChecked(),
                     startDocumentId: $startIdInput.getInput().val(),
                     endDocumentId: $endIdInput.getInput().val()
                 };
                 if (linksValidationParams.startDocumentId !== '' && linksValidationParams.endDocumentId !== '') {
-                    var tableBuilder = new linkListBuilder($resultContainer).clearList();
+                    const tableBuilder = new linkListBuilder($resultContainer).clearList();
                     linksValidatorRestApi.validate(linksValidationParams).done(tableBuilder.linkAppender);
                 }
             }

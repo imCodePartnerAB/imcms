@@ -11,7 +11,7 @@ define(
     ],
     function (WindowBuilder, BEM, components, $, events, texts) {
 
-        var $validationResultContainer;
+        let $validationResultContainer;
         texts = texts.textValidation;
 
         function buildFooter() {
@@ -41,13 +41,13 @@ define(
         function loadData(validationResult) {
 
             function appendValidationFailRow(item, pos) {
-                var $container = $("<div>").addClass("imcms-w3c-error"),
+                const $container = $("<div>").addClass("imcms-w3c-error"),
                     $sourceContainer = $("<div>");
 
-                var errorMessage = pos + 1 + ". " + item.message.charAt(0).toUpperCase() + item.message.slice(1);
-                var $errorMessage = $("<div>").text(errorMessage);
+                const errorMessage = pos + 1 + ". " + item.message.charAt(0).toUpperCase() + item.message.slice(1);
+                const $errorMessage = $("<div>").text(errorMessage);
 
-                var $invalidHtml = $("<code>").addClass("language-html")
+                const $invalidHtml = $("<code>").addClass("language-html")
                     .html(item.line + ": " + item.source.replace(/(<([^>]+)>)/ig, ""));
 
                 $sourceContainer.append($invalidHtml);
@@ -63,7 +63,7 @@ define(
 
             validationResult.data.errors.forEach(appendValidationFailRow);
 
-            var $warningsTitle = $("<h2>").text(texts.output + validationResult.data.warnings.length + texts.warnings);
+            const $warningsTitle = $("<h2>").text(texts.output + validationResult.data.warnings.length + texts.warnings);
 
             $content.append($warningsTitle);
 

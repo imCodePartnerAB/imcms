@@ -6,7 +6,7 @@ define("imcms-keywords-builder",
     ["imcms-bem-builder", "imcms-texts-builder", "imcms-buttons-builder", "imcms-primitives-builder", "imcms-uuid-generator", "jquery"],
     function (BEM, texts, buttons, primitives, uuidGenerator, $) {
 
-        var keywordMaxLength = 128;
+        const keywordMaxLength = 128;
 
         function createRemoveKeywordButton() {
             return buttons.closeButton({click: removeKeyword});
@@ -22,7 +22,7 @@ define("imcms-keywords-builder",
         }
 
         function addKeyword() {
-            var $btn = $(this),
+            const $btn = $(this),
                 $keywordInput = $btn.parent().find(".imcms-keyword__input"),
                 keywordInputVal = $keywordInput.val().trim(),
                 $keywordsContainer = $btn.parent().find(".imcms-keyword__keywords")
@@ -40,7 +40,7 @@ define("imcms-keywords-builder",
         }
 
         function removeKeyword() {
-            var $btn = $(this),
+            const $btn = $(this),
                 $keyword = $btn.parents(".imcms-keyword__keyword"),
                 $keywords = $keyword.parent()
             ;
@@ -87,7 +87,7 @@ define("imcms-keywords-builder",
 
         return {
             keywordsBox: function (tag, attributes) {
-                var inputId = attributes["input-id"] || uuidGenerator.generateUUID(),
+                const inputId = attributes["input-id"] || uuidGenerator.generateUUID(),
                     $label = primitives.imcmsLabel(inputId, attributes.title),
                     $input = primitives.imcmsInputText({
                         id: inputId,
@@ -107,15 +107,15 @@ define("imcms-keywords-builder",
                 ;
 
                 $input.on("input", function () {
-                    var $input = $(this);
-                    var keywordValue = $input.val().trim();
+                    const $input = $(this);
+                    const keywordValue = $input.val().trim();
 
                     if (keywordValue.length > keywordMaxLength) {
                         $input.val(keywordValue.substring(0, keywordMaxLength));
                     }
                 });
 
-                var $keywordsBlock = keywordsContainerBEM.buildBlock("<div>", [{"keywords-box": $keywordsBox}]);
+                const $keywordsBlock = keywordsContainerBEM.buildBlock("<div>", [{"keywords-box": $keywordsBox}]);
 
                 $keywordsBlock.addKeyword = bindAddKeyword($input, $addKeywordButton, $keywordsBlock);
                 $keywordsBlock.getKeywords = bindGetKeywords($keywordsBlock);

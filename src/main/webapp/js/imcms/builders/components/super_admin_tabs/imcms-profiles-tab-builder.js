@@ -6,7 +6,7 @@ define(
 
         texts = texts.superAdmin.profiles;
 
-        var profilesLoader = {
+        const profilesLoader = {
             profiles: false,
             callback: [],
             whenProfilesLoaded: function (callback) {

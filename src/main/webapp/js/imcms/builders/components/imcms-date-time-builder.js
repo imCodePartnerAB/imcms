@@ -5,7 +5,7 @@
 define("imcms-date-time-builder",
     ["imcms-bem-builder", "imcms-buttons-builder", "imcms-validator", "imcms-date-picker", "imcms-time-picker"],
     function (BEM, buttons, Validator, DatePicker, TimePicker) {
-        var datePickerBEM = new BEM({
+        const datePickerBEM = new BEM({
                 block: "imcms-date-picker",
                 elements: {
                     "current-date": "imcms-current-date",
@@ -61,9 +61,9 @@ define("imcms-date-time-builder",
         ;
 
         function createEmptyDays(howManyDays) {
-            var days = [];
+            const days = [];
 
-            for (var i = 0; i < howManyDays; i++) {
+            for (let i = 0; i < howManyDays; i++) {
                 days.push(calendarContainerBEM.buildBlockElement("day", "<div>"));
             }
 
@@ -71,10 +71,10 @@ define("imcms-date-time-builder",
         }
 
         function createEmptyWeeks(howManyWeeks) {
-            var weeks = [];
+            const weeks = [];
 
-            for (var i = 0; i < howManyWeeks; i++) {
-                var $week = calendarContainerBEM.buildBlockElement("week", "<div>");
+            for (let i = 0; i < howManyWeeks; i++) {
+                const $week = calendarContainerBEM.buildBlockElement("week", "<div>");
                 $week.append(createEmptyDays(7));
 
                 weeks.push($week);
@@ -84,7 +84,7 @@ define("imcms-date-time-builder",
         }
 
         function createCalendar() {
-            var $prevMonthButton = calendarContainerBEM.makeBlockElement("button", buttons.prevButton()),
+            const $prevMonthButton = calendarContainerBEM.makeBlockElement("button", buttons.prevButton()),
                 $title = calendarContainerBEM.buildBlockElement("title", "<div>"),
                 $nextMonthButton = calendarContainerBEM.makeBlockElement("button", buttons.nextButton()),
                 $header = calendarContainerBEM.buildElement("header", "<div>").append(
@@ -117,7 +117,7 @@ define("imcms-date-time-builder",
                 attributes.readonly = "readonly";
             }
 
-            var $dateInput = dateInputContainerBEM.buildElement("input", "<input>", attributes),
+            const $dateInput = dateInputContainerBEM.buildElement("input", "<input>", attributes),
                 $dateInputContainer = dateInputContainerBEM.buildBlock("<div>", [
                     {"input": $dateInput}
                 ]),
@@ -128,11 +128,11 @@ define("imcms-date-time-builder",
                 datePickerElements.push({"calendar": createCalendar()});
             }
 
-            var dateValidator = new Validator($dateInput, isDateValid);
+            const dateValidator = new Validator($dateInput, isDateValid);
 
             validateDateInput($dateInput, dateValidator);
 
-            var blockResult = datePickerBEM.buildBlock("<div>", datePickerElements);
+            const blockResult = datePickerBEM.buildBlock("<div>", datePickerElements);
 
             return new DatePicker(blockResult, withCalendar);
         }
@@ -143,8 +143,8 @@ define("imcms-date-time-builder",
                 .on('input', () => errorInputIfNotValid($dateInput, dateValidator));
 
             function allowNumbersAndHyphens(event) {
-                var pressedButton = event.key,
-                    result = true;
+                const pressedButton = event.key;
+                let result = true;
                 if (pressedButton.length === 1) {
                     result = /^[0-9-]$/.test(pressedButton);
                 }
@@ -158,8 +158,8 @@ define("imcms-date-time-builder",
         }
 
         function isDateValid() {
-            var $dateInput = this;
-            var valueSplit = $dateInput.val()
+            const $dateInput = this;
+            const valueSplit = $dateInput.val()
                 .split("-");
 
             switch (valueSplit.length) {
@@ -183,9 +183,8 @@ define("imcms-date-time-builder",
             }
 
             function isDateValid(day, month, year) {
-                var
-                    lastDateOfMonth = new Date(+year, +month, 0).getDate(),
-                    result = true;
+                const lastDateOfMonth = new Date(+year, +month, 0).getDate();
+                let result = true;
 
                 result &= day > 0 && day < 32;
                 result &= day <= lastDateOfMonth;
@@ -195,9 +194,9 @@ define("imcms-date-time-builder",
         }
 
         function createTimePickerBlockElements(elementName, howManyElements) {
-            var elements = [];
+            const elements = [];
 
-            for (var i = 0; i < howManyElements; i++) {
+            for (let i = 0; i < howManyElements; i++) {
                 elements.push(timePickerBEM.buildBlockElement(elementName, "<div>"));
             }
 
@@ -205,7 +204,7 @@ define("imcms-date-time-builder",
         }
 
         function createClock() {
-            var $prevHourButton = timePickerBEM.makeBlockElement("button", buttons.incrementButton()),
+            const $prevHourButton = timePickerBEM.makeBlockElement("button", buttons.incrementButton()),
                 emptyHours = createTimePickerBlockElements("hour", 6),
                 $nextHourButton = timePickerBEM.makeBlockElement("button", buttons.decrementButton()),
                 $hours = timePickerBEM.buildBlockElement("hours", "<div>").append(
@@ -229,7 +228,7 @@ define("imcms-date-time-builder",
                 attributes.readonly = "readonly";
             }
 
-            var $timeInput = timeInputBEM.buildElement("input", "<input>", attributes),
+            const $timeInput = timeInputBEM.buildElement("input", "<input>", attributes),
                 $timeInputContainer = timeInputBEM.buildBlock("<div>", [
                     {"input": $timeInput}
                 ]),
@@ -240,15 +239,15 @@ define("imcms-date-time-builder",
                 timePickerElements.push({"time": createClock()});
             }
 
-            var blockResult = timePickerBEM.buildBlock("<div>", timePickerElements);
+            const blockResult = timePickerBEM.buildBlock("<div>", timePickerElements);
             return new TimePicker(blockResult, withClock);
         }
 
         function createDateTimeBox(attributes) {
-            var $datePart = createDateBox(attributes),
+            const $datePart = createDateBox(attributes),
                 $timePart = createTimeBox(attributes)
             ;
-            var blockResult = dateTimeBEM.buildBlock("<div>", [
+            const blockResult = dateTimeBEM.buildBlock("<div>", [
                 {"date-picker": $datePart},
                 {"time-picker": $timePart}
             ]);

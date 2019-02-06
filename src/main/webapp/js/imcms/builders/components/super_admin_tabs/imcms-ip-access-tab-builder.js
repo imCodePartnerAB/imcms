@@ -73,7 +73,7 @@ define(
 
 
         function prepareTitleRow() {
-            var $titleRow = new BEM({
+            const $titleRow = new BEM({
                 block: 'rule-title-row',
                 elements: {
                     'rule-enabled': $('<div>', {text: texts.fields.enabled}),

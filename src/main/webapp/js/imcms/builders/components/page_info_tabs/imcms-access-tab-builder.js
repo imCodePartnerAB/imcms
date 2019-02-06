@@ -7,10 +7,10 @@ define("imcms-access-tab-builder",
 
         texts = texts.pageInfo.access;
 
-        var storedRoleIdsPerRoles;
-        var storedRoles;
+        let storedRoleIdsPerRoles;
+        let storedRoles;
 
-        var rolesBEM = new BEM({
+        const rolesBEM = new BEM({
             block: "imcms-access-role",
             elements: {
                 "head": "",
@@ -50,12 +50,12 @@ define("imcms-access-tab-builder",
 
             function displayAddRoleSelectAndBtn($addRoleSelect) {
                 $addRoleSelect.css("display", "block");
-                var $addRoleBtn = $addRoleSelect.next();
+                const $addRoleBtn = $addRoleSelect.next();
                 $addRoleBtn.css("display", "block");
             }
 
             function hideRolesField($rolesBody) {
-                var $rolesField = $rolesBody.parent().parent();
+                const $rolesField = $rolesBody.parent().parent();
                 $rolesField.css("display", "none");
             }
 
@@ -73,11 +73,11 @@ define("imcms-access-tab-builder",
                         displayAddRoleSelectAndBtn($addRoleSelect);
                     }
 
-                    var $rolesBody = $row.parent();
+                    const $rolesBody = $row.parent();
 
                     $row.remove();
 
-                    var tableContainsRows = $rolesBody.find("[data-role-id]").length;
+                    let tableContainsRows = $rolesBody.find("[data-role-id]").length;
                     if (!tableContainsRows) {
                         hideRolesField($rolesBody);
                     }
@@ -97,9 +97,9 @@ define("imcms-access-tab-builder",
             ]);
         }
 
-        var tabData = {};
+        const tabData = {};
 
-        var AccessTab = function (name) {
+        const AccessTab = function (name) {
             PageInfoTab.call(this, name);
         };
 
@@ -109,11 +109,11 @@ define("imcms-access-tab-builder",
             return true; // all supported
         };
         AccessTab.prototype.tabElementsFactory = (index, docId) => {
-            var $addRoleSelect = components.selects.imcmsSelect("<div>");
+            const $addRoleSelect = components.selects.imcmsSelect("<div>");
 
             if (!docId) {
                 function mapRoles(roles) {
-                    var rolesDataMapped = roles.map(mapRoleOnSelectOption);
+                    const rolesDataMapped = roles.map(mapRoleOnSelectOption);
                     components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
                 }
 
@@ -123,7 +123,7 @@ define("imcms-access-tab-builder",
                 });
             }
 
-            var $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: texts.role}),
+            const $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: texts.role}),
                 $titleView = rolesBEM.buildBlockElement("title", "<div>", {text: texts.view}),
                 $titleEdit = rolesBEM.buildBlockElement("title", "<div>", {text: texts.edit}),
                 $titleRestricted1 = rolesBEM.buildBlockElement("title", "<div>", {text: texts.restricted_1}),
@@ -148,16 +148,16 @@ define("imcms-access-tab-builder",
             tabData.$rolesBody = $rolesBody;
             tabData.$rolesField = $rolesField.css("display", "none");
 
-            var $addRoleButton = components.buttons.neutralButton({
+            const $addRoleButton = components.buttons.neutralButton({
                     text: texts.addRole,
                     click: () => {
-                        var id = $addRoleSelect.getSelectedValue();
-                        var role = {
+                        const id = $addRoleSelect.getSelectedValue();
+                        const role = {
                             id: id,
                             name: $addRoleSelect.selectedText()
                         };
 
-                        var $row = generateRoleRow(role, $addRoleSelect);
+                        const $row = generateRoleRow(role, $addRoleSelect);
                         $row.find(":radio")
                             .first()
                             .prop("checked", "checked");
@@ -200,14 +200,14 @@ define("imcms-access-tab-builder",
             }
 
             function buildRolesRows(roles) {
-                var rolesDataMapped = roles
+                const rolesDataMapped = roles
                     .filter(role => !documentContainsRole(document, role))
                     .map(mapRoleOnSelectOption);
 
                 tabData.$addRoleSelect.clearSelect();
 
-                var addRoleDisplay = "none",
-                    $addRoleBtn = tabData.$addRoleSelect.next();
+                let addRoleDisplay = "none";
+                const $addRoleBtn = tabData.$addRoleSelect.next();
 
                 if (rolesDataMapped.length) {
                     addRoleDisplay = "block";
@@ -217,8 +217,8 @@ define("imcms-access-tab-builder",
                 tabData.$addRoleSelect.css("display", addRoleDisplay);
                 $addRoleBtn.css("display", addRoleDisplay);
 
-                var $roles = Object.keys(document.roleIdToPermission).map(roleId => {
-                    var role = storedRoleIdsPerRoles[roleId];
+                const $roles = Object.keys(document.roleIdToPermission).map(roleId => {
+                    const role = storedRoleIdsPerRoles[roleId];
                     role.permission = document.roleIdToPermission[roleId];
 
                     return generateRoleRow(role, tabData.$addRoleSelect);
@@ -241,15 +241,15 @@ define("imcms-access-tab-builder",
             tabData.$rolesBody.find("[data-role-id]")
                 .toArray()
                 .forEach(function (roleRow) {
-                    var $roleRow = $(roleRow);
-                    var radios$ = $roleRow.find(".imcms-radio")
+                    const $roleRow = $(roleRow);
+                    const radios$ = $roleRow.find(".imcms-radio")
                         .map(function () {
                             return $(this);
                         })
                         .toArray();
 
-                    var permission = components.radios.group.apply(components.radios, radios$).getCheckedValue();
-                    var id = $roleRow.data("roleId");
+                    const permission = components.radios.group.apply(components.radios, radios$).getCheckedValue();
+                    const id = $roleRow.data("roleId");
 
                     documentDTO.roleIdToPermission[id] = permission;
                 });

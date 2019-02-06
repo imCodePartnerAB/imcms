@@ -7,22 +7,22 @@ define("imcms-categories-tab-builder",
 
         texts = texts.pageInfo.categories;
 
-        var tabData = {};
+        const tabData = {};
 
         function isDocumentContainsCategory(document, category) {
             if (!document) {
                 return false;
             }
 
-            var docCategoriesIds = document.categories.map(category => category.id);
+            const docCategoriesIds = document.categories.map(category => category.id);
 
             return docCategoriesIds.indexOf(category.id) !== -1;
         }
 
         function createMultiSelectCategoryType(categoryType, document, selectWareHouse) {
 
-            var categoryTypeAsCheckboxGroup = categoryType.categories.map(category => {
-                var $imcmsCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
+            const categoryTypeAsCheckboxGroup = categoryType.categories.map(category => {
+                const $imcmsCheckbox = components.checkboxes.imcmsCheckbox("<div>", {
                     name: "category-type-" + categoryType.id,
                     value: category.id,
                     text: category.name
@@ -40,18 +40,18 @@ define("imcms-categories-tab-builder",
         }
 
         function createSingleSelectCategoryType(categoryType, document, selectWareHouse) {
-            var mappedCategoriesForSelectContainer = categoryType.categories.map(category => ({
+            const mappedCategoriesForSelectContainer = categoryType.categories.map(category => ({
                 text: category.name,
                 "data-value": category.id
             }));
 
-            var $selectContainer = components.selects.selectContainer("<div>", {
+            const $selectContainer = components.selects.selectContainer("<div>", {
                 id: "category-type-" + categoryType.id,
                 text: categoryType.name,
                 emptySelect: true
             }, mappedCategoriesForSelectContainer);
 
-            var $imcmsSelect = $selectContainer.getSelect();
+            const $imcmsSelect = $selectContainer.getSelect();
             selectWareHouse.push($imcmsSelect);
 
             var category = categoryType.categories.filter(category => isDocumentContainsCategory(document, category))[0];
@@ -62,10 +62,10 @@ define("imcms-categories-tab-builder",
         }
 
         function buildCategoryTypes(categoryTypes, document) {
-            var categoriesBlockElements = [];
+            const categoriesBlockElements = [];
 
             categoryTypes.forEach(categoryType => {
-                var $categoryType = (categoryType.multiSelect)
+                const $categoryType = (categoryType.multiSelect)
                     ? createMultiSelectCategoryType(categoryType, document, tabData.multiSelects$)
                     : createSingleSelectCategoryType(categoryType, document, tabData.singleSelects$);
 
@@ -76,10 +76,10 @@ define("imcms-categories-tab-builder",
         }
 
         function extractCategoryTypes(categories) {
-            var categoryTypeIdsPerType = {};
+            const categoryTypeIdsPerType = {};
 
             categories.forEach(category => {
-                var categoryTypeId = category.type.id;
+                const categoryTypeId = category.type.id;
 
                 if (!categoryTypeIdsPerType[categoryTypeId]) {
                     categoryTypeIdsPerType[categoryTypeId] = category.type;
@@ -90,7 +90,7 @@ define("imcms-categories-tab-builder",
                 categoryTypeIdsPerType[categoryTypeId].categories.push(category);
             });
 
-            var categoryTypes = [];
+            const categoryTypes = [];
 
             for (var categoryType in categoryTypeIdsPerType) {
                 categoryTypes.push(categoryTypeIdsPerType[categoryType]);
@@ -103,7 +103,7 @@ define("imcms-categories-tab-builder",
             return tabData.$categoriesContainer = $('<div>');
         }
 
-        var CategoriesTab = function (name) {
+        const CategoriesTab = function (name) {
             PageInfoTab.call(this, name);
         };
 
@@ -113,7 +113,7 @@ define("imcms-categories-tab-builder",
             return true; // all supported
         };
         CategoriesTab.prototype.tabElementsFactory = function (index, docId) {
-            var tabElements = [buildCategoriesContainer()];
+            const tabElements = [buildCategoriesContainer()];
             docId || this.fillTabDataFromDocument(); // when creating new doc without id yet, categories still should be loaded
             return tabElements;
         };
@@ -122,18 +122,18 @@ define("imcms-categories-tab-builder",
             tabData.singleSelects$ = [];
 
             categoriesRestApi.read(null).done(categories => {
-                var categoryTypes = extractCategoryTypes(categories);
+                const categoryTypes = extractCategoryTypes(categories);
                 buildCategoryTypes(categoryTypes, document);
             });
         };
         CategoriesTab.prototype.saveData = documentDTO => {
-            var multiSelectCategories = tabData.multiSelects$
+            const multiSelectCategories = tabData.multiSelects$
                 .filter($categoryCheckbox => $categoryCheckbox.isChecked())
                 .map($categoryCheckbox => ({
                     id: $categoryCheckbox.getValue()
                 }));
 
-            var singleSelectCategories = tabData.singleSelects$
+            const singleSelectCategories = tabData.singleSelects$
                 .map($categorySelect => ({
                     id: $categorySelect.getSelectedValue()
                 }))

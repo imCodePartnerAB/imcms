@@ -1,17 +1,17 @@
 define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, dateTimeValidator) {
 
     function setSelectDate() {
-        var $thisDay = $(this),
-            curDateInput = $thisDay.parents(".imcms-date-picker").find(".imcms-current-date__input"),
-            curDateInputValue = curDateInput.val(),
-            curDateInputVal = curDateInput.val().split('-'),
-            year = curDateInputVal[0],
+        const $thisDay = $(this),
+            curDateInput = $thisDay.parents(".imcms-date-picker").find(".imcms-current-date__input");
+        let curDateInputValue = curDateInput.val();
+        const curDateInputVal = curDateInput.val().split('-');
+        let year = curDateInputVal[0],
             month = $thisDay.attr("data-month") || curDateInputVal[1],
             date = $thisDay.text()
         ;
 
         if (!curDateInputValue) {
-            var d = new Date();
+            const d = new Date();
             year = d.getFullYear();
             month = d.getMonth() + 1;
         }
@@ -36,7 +36,7 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
     }
 
     function correctDayStartsFromSundayToMonday(startDay) {
-        var corrected = startDay - 1;
+        const corrected = startDay - 1;
         return corrected > -1 ? corrected : 6;
     }
 
@@ -45,18 +45,18 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
             return;
         }
 
-        var calendarTitle = $calendar.find(".imcms-calendar__title"),
+        const calendarTitle = $calendar.find(".imcms-calendar__title"),
             calendarTitleVal = calendarTitle.val().split(" "),
             calendarWeek = $calendar.find(".imcms-calendar__week"),
-            firstDay = new Date(year, month - 1),
-            firstDate = firstDay.getDate(),
-            firstDayNumber = correctDayStartsFromSundayToMonday(firstDay.getDay()),
+            firstDay = new Date(year, month - 1);
+        let firstDate = firstDay.getDate();
+        const firstDayNumber = correctDayStartsFromSundayToMonday(firstDay.getDay()),
             lastD = new Date(year, month, 0),
             lastDay = lastD.getDate(),
             prevMonthD = new Date(year, month - 1, 0),
-            prevMonthDay = prevMonthD.getDate(),
-            count = 0,
-            monthList = [
+            prevMonthDay = prevMonthD.getDate();
+        let count = 0;
+        const monthList = [
                 "January",
                 "February",
                 "March",
@@ -77,11 +77,11 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
         calendarTitle.html(calendarTitleVal.join(" "));
         count = 0;
 
-        var previousMonthDayNumber = firstDayNumber - 1;
-        var nextMonthDayNumber = 1;
+        let previousMonthDayNumber = firstDayNumber - 1;
+        let nextMonthDayNumber = 1;
 
         calendarWeek.find(".imcms-calendar__day").each(function () {
-            var $calendarDay = $(this);
+            const $calendarDay = $(this);
 
             if (count < firstDayNumber) {
                 $calendarDay.removeClass("imcms-day--outer-next imcms-day--today")
@@ -113,7 +113,7 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
             count++;
         });
 
-        var lastCalendarWeekCss = ((firstDayNumber + lastDay) <= 35)
+        const lastCalendarWeekCss = ((firstDayNumber + lastDay) <= 35)
             ? {"display": "none"}
             : {"display": "block"};
 
@@ -132,19 +132,19 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
 
     return {
         init: $datePicker => {
-            var $curDateInput = $datePicker.find(".imcms-current-date__input"),
+            const $curDateInput = $datePicker.find(".imcms-current-date__input"),
                 currentValue = $curDateInput.val(),
-                $calendar = $datePicker.find(".imcms-calendar"),
-                year, month, date
+                $calendar = $datePicker.find(".imcms-calendar");
+            let year, month, date
             ;
 
             if (currentValue) {
-                var curDate = $curDateInput.val().split("-");
+                const curDate = $curDateInput.val().split("-");
                 year = parseInt(curDate[0]);
                 month = parseInt(curDate[1]);
                 date = parseInt(curDate[2]);
             } else {
-                var currentDate = new Date();
+                const currentDate = new Date();
                 year = currentDate.getFullYear();
                 month = currentDate.getMonth() + 1;
                 date = currentDate.getDate();
@@ -157,20 +157,20 @@ define("imcms-calendar", ["jquery", "imcms-date-time-validator"], function ($, d
         },
         buildCalendar: buildCalendar,
         chooseMonth: function () {
-            var $btn = $(this),
+            const $btn = $(this),
                 $calendar = $btn.parents(".imcms-calendar"),
                 $input = $btn.parents(".imcms-date-picker")
                     .find(".imcms-current-date__input"),
                 curDate = $input
                     .val()
-                    .split("-"),
-                year = curDate[0],
-                month = curDate[1],
-                date = "01"
+                    .split("-");
+            let year = curDate[0],
+                month = curDate[1];
+            const date = "01"
             ;
 
             if ($input.hasClass("imcms-currrent-date__input--error")) {
-                var currentDate = new Date();
+                const currentDate = new Date();
                 year = currentDate.getFullYear().toString();
                 month = (currentDate.getMonth() + 1).toString();
             } else {

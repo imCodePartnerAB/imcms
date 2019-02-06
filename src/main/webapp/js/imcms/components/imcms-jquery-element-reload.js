@@ -10,7 +10,7 @@ define("imcms-jquery-element-reload", ["imcms-jquery-string-selector"], function
             return;
         }
 
-        var elementAsStr = stringSelector($reloadMe),
+        const elementAsStr = stringSelector($reloadMe),
             reloadStringCommand = location.href + " " + elementAsStr + ">*";
 
         if ((callback) && (typeof callback === "function")) {

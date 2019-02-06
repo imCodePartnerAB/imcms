@@ -8,28 +8,28 @@ define("imcms-loop-editor-builder",
         "imcms-events", "imcms-i18n-texts"
     ],
     function (BEM, components, loopREST, WindowBuilder, $, events, texts) {
-        var $title, $body, $listItems;
+        let $title, $body, $listItems;
 
         texts = texts.editors.loop;
 
-        var modifiers = {
+        const modifiers = {
             ID: ["col-1", "id"],
             CONTENT: ["col-10", "content"],
             CONTROLS: ["col-1", "control"]
         };
 
-        var currentLoop;
+        let currentLoop;
 
-        var LOOP_ITEM_CLASS = "imcms-loop-item";
+        const LOOP_ITEM_CLASS = "imcms-loop-item";
 
-        var itemsBEM = new BEM({
+        const itemsBEM = new BEM({
             block: "imcms-loop-items",
             elements: {
                 "item": LOOP_ITEM_CLASS
             }
         });
 
-        var bodyBEM = new BEM({
+        const bodyBEM = new BEM({
             block: "imcms-loop-editor-body",
             elements: {
                 "list": "imcms-loop-list"
@@ -40,13 +40,13 @@ define("imcms-loop-editor-builder",
             currentLoop.entries = $listItems.children()
                 .toArray()
                 .map(listItem => {
-                    var $listItem = $(listItem);
+                    const $listItem = $(listItem);
 
-                    var loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
-                    var entryIndex = +($listItem.find(loopItemIdClass).text());
+                    const loopItemIdClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                    const entryIndex = +($listItem.find(loopItemIdClass).text());
 
-                    var loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
-                    var isEnabled = $listItem.find(loopItemControlsClass).find("input").is(":checked");
+                    const loopItemControlsClass = BEM.buildClassSelector(LOOP_ITEM_CLASS, "info", modifiers.CONTROLS[1]);
+                    const isEnabled = $listItem.find(loopItemControlsClass).find("input").is(":checked");
 
                     return {
                         index: entryIndex,
@@ -64,7 +64,7 @@ define("imcms-loop-editor-builder",
         }
 
         function onSaveAndCloseClicked() {
-            var loopElement = getLoopData();
+            const loopElement = getLoopData();
             loopREST.create(loopElement).done(onLoopSaved);
         }
 
@@ -73,7 +73,7 @@ define("imcms-loop-editor-builder",
                 return $listItems.children()
                     .toArray()
                     .map(listItem => {
-                        var loopItemIdClass = BEM.buildClass(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
+                        const loopItemIdClass = BEM.buildClass(LOOP_ITEM_CLASS, "info", modifiers.ID[1]);
                         return +($(listItem).find("." + loopItemIdClass).text());
                     })
                     .sort((a, b) => (a - b))
@@ -81,7 +81,7 @@ define("imcms-loop-editor-builder",
             }
 
             function onCreateNewClicked() {
-                var newLoopEntry = {
+                const newLoopEntry = {
                     index: getMaxLoopItemID() + 1,
                     content: "",
                     enabled: true
@@ -90,10 +90,10 @@ define("imcms-loop-editor-builder",
                 $listItems.append(itemsBEM.makeBlockElement("item", buildItem(newLoopEntry)));
             }
 
-            var $head = loopWindowBuilder.buildHead(texts.title);
+            const $head = loopWindowBuilder.buildHead(texts.title);
             $title = $head.find(".imcms-title");
 
-            var $footer = WindowBuilder.buildFooter([
+            const $footer = WindowBuilder.buildFooter([
                 components.buttons.positiveButton({
                     text: texts.createNew,
                     click: onCreateNewClicked
@@ -115,13 +115,13 @@ define("imcms-loop-editor-builder",
         }
 
         function buildTitles() {
-            var $id = $("<div>", {text: texts.id});
+            const $id = $("<div>", {text: texts.id});
             $id.modifiers = modifiers.ID;
 
-            var $content = $("<div>", {text: texts.content});
+            const $content = $("<div>", {text: texts.content});
             $content.modifiers = modifiers.CONTENT;
 
-            var $isEnabled = $("<div>", {text: texts.isEnabled});
+            const $isEnabled = $("<div>", {text: texts.isEnabled});
             $isEnabled.modifiers = modifiers.CONTROLS;
 
             return new BEM({
@@ -133,7 +133,7 @@ define("imcms-loop-editor-builder",
         }
 
         function buildControls() {
-            var $remove = components.controls.remove(() => {
+            const $remove = components.controls.remove(() => {
                 $remove.parents("." + LOOP_ITEM_CLASS).remove();
             });
 
@@ -141,14 +141,14 @@ define("imcms-loop-editor-builder",
         }
 
         function buildItem(loopEntry) {
-            var $no = components.texts.titleText("<div>", loopEntry.index);
+            const $no = components.texts.titleText("<div>", loopEntry.index);
             $no.modifiers = modifiers.ID;
 
             // todo: get content from the page!
-            var $content = components.texts.titleText("<div>", loopEntry.content);
+            const $content = components.texts.titleText("<div>", loopEntry.content);
             $content.modifiers = modifiers.CONTENT;
 
-            var $isEnabled = components.checkboxes.imcmsCheckbox("<div>", {
+            const $isEnabled = components.checkboxes.imcmsCheckbox("<div>", {
                 name: "isEnabled" + loopEntry.no,
                 checked: loopEntry.enabled ? "checked" : undefined
             });
@@ -164,7 +164,7 @@ define("imcms-loop-editor-builder",
         }
 
         function buildItems(loop) {
-            var blockElements = loop.entries.map(entry => ({"item": buildItem(entry)}));
+            const blockElements = loop.entries.map(entry => ({"item": buildItem(entry)}));
 
             return itemsBEM.buildBlock("<div>", blockElements);
         }
@@ -184,7 +184,7 @@ define("imcms-loop-editor-builder",
 
             addHeadData(loop);
 
-            var $list = bodyBEM.makeBlockElement("list", buildLoopList(loop));
+            const $list = bodyBEM.makeBlockElement("list", buildLoopList(loop));
             $body.append($list);
         }
 
@@ -210,7 +210,7 @@ define("imcms-loop-editor-builder",
             onEnterKeyPressed: onSaveAndCloseClicked
         });
 
-        var $tag;
+        let $tag;
 
         return {
             setTag: function ($editedTag) {

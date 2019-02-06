@@ -1,7 +1,7 @@
 define("imcms-editor-labels-initializer", ["jquery"], function ($) {
     return {
         initEditorLabels: function () {
-            var editControls = $(".imcms-editor-area__control-wrap");
+            const editControls = $(".imcms-editor-area__control-wrap");
 
             function getParams(elem) {
                 return {
@@ -11,8 +11,8 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
             }
 
             function positioningLabel(event) {
-                var $ctrl = $(this);
-                var $label = $ctrl.find(".imcms-editor-area__control-title"),
+                const $ctrl = $(this);
+                const $label = $ctrl.find(".imcms-editor-area__control-title"),
                     mouseCoords = {
                         x: event.clientX,
                         y: event.clientY
@@ -20,7 +20,7 @@ define("imcms-editor-labels-initializer", ["jquery"], function ($) {
                     ctrlParams = getParams($ctrl),
                     labelParam = getParams($label);
 
-                var labelHeight = (ctrlParams.height + labelParam.height + 5);
+                const labelHeight = (ctrlParams.height + labelParam.height + 5);
                 if (mouseCoords.y > labelHeight) { // 5px - height of label:before
                     $label.css({
                         "top": -(labelParam.height + 5) + "px"

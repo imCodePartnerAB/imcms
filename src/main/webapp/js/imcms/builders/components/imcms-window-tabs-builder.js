@@ -13,7 +13,7 @@ module.exports = class WindowTabsBuilder {
     getOnTabClick(index) {
         const context = this;
         return function () {
-            var $clickedTab = $(this);
+            const $clickedTab = $(this);
 
             if ($clickedTab.hasClass('imcms-title--active')) return;
 

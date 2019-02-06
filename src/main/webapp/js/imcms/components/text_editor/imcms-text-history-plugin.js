@@ -9,7 +9,7 @@ define(
     ["imcms-text-history-window-builder", "jquery", 'imcms-text-editor-toolbar-button-builder'],
     function (textHistoryBuilder, $, toolbarButtonBuilder) {
 
-        var title = 'Show text history'; // todo: localize!
+        const title = 'Show text history'; // todo: localize!
 
         return {
             pluginName: 'text_history',
@@ -18,7 +18,7 @@ define(
                     icon: 'imcms-text-history-icon',
                     tooltip: title,
                     onclick: function () {
-                        var textDTO = $(this.$el).parents(".imcms-editor-area--text")
+                        const textDTO = $(this.$el).parents(".imcms-editor-area--text")
                             .find(".imcms-editor-content--text")
                             .data();
 
@@ -27,7 +27,7 @@ define(
                 });
             },
             buildPlainTextHistoryButton: $textEditor => toolbarButtonBuilder.buildButton('text-history-button', title, function () {
-                var textDTO = $textEditor.data();
+                const textDTO = $textEditor.data();
                 textHistoryBuilder.buildTextHistory(textDTO);
             })
         };

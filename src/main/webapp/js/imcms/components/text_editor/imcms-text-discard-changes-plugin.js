@@ -7,8 +7,8 @@ define(
     ["imcms-modal-window-builder", "tinymce", "imcms-events", 'imcms-text-editor-toolbar-button-builder'],
     function (modalWindowBuilder, tinyMCE, events, toolbarButtonBuilder) {
 
-        var title = 'Discard changes'; // todo: localize!
-        var discardChangesMessage = "Discard changes?"; // todo: localize!
+        const title = 'Discard changes'; // todo: localize!
+        const discardChangesMessage = "Discard changes?"; // todo: localize!
 
         function onDiscardChangesClick() {
             events.trigger("disable text editor blur");
@@ -22,7 +22,7 @@ define(
         }
 
         function setEnablingStrategy() {
-            var button = this;
+            const button = this;
             button.disabled(true);
 
             events.on("disable discard changes button", () => {
@@ -46,7 +46,7 @@ define(
                 });
 
                 editor.on('NodeChange', () => {
-                    var eventName = (tinyMCE.activeEditor.isDirty())
+                    const eventName = (tinyMCE.activeEditor.isDirty())
                         ? "enable discard changes button"
                         : "disable discard changes button";
 
@@ -54,13 +54,13 @@ define(
                 });
             },
             buildPlainTextButton: activeTextEditor => {
-                var $btn;
+                let $btn;
 
                 activeTextEditor.$().on('change keyup paste', () => {
                     $btn.removeClass('text-toolbar__button--disabled');
                 });
 
-                var onClick = () => {
+                const onClick = () => {
                     modalWindowBuilder.buildModalWindow(discardChangesMessage, isDiscard => {
                         if (!isDiscard) return;
 

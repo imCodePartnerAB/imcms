@@ -11,11 +11,11 @@ define("imcms-admin-panel-builder",
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
               panelVisibility, texts, panelSettings) {
 
-        var $panelContainer, $panel;
+        let $panelContainer, $panel;
 
-        var panelBlock = "imcms-panel";
-        var panelItemClass = BEM.buildClass(panelBlock, "item");
-        var panelItemHasNewerVersionClass = BEM.buildClass(panelBlock, "item", "has-newer-version");
+        const panelBlock = "imcms-panel";
+        const panelItemClass = BEM.buildClass(panelBlock, "item");
+        const panelItemHasNewerVersionClass = BEM.buildClass(panelBlock, "item", "has-newer-version");
 
         texts = texts.panel;
 
@@ -32,7 +32,7 @@ define("imcms-admin-panel-builder",
         }
 
         function buildPanelButtons(opts) {
-            var panelButtonsBEM = new BEM({
+            const panelButtonsBEM = new BEM({
                 block: panelBlock,
                 elements: {
                     "items": "",
@@ -41,7 +41,7 @@ define("imcms-admin-panel-builder",
             });
 
             function buildPanelButton(buttonData) {
-                var attributes = {
+                const attributes = {
                     html: buttonData.content,
                     title: buttonData.title,
                     href: buttonData.href,
@@ -56,14 +56,14 @@ define("imcms-admin-panel-builder",
                 return panelButtonsBEM.buildBlockElement("item", buttonData.tag, attributes, buttonData.modifiers);
             }
 
-            var editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
-            var editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
-            var adminDisplayProperty = imcms.isAdmin ? "" : "display:none";
+            const editContentDisplayProperty = imcms.editOptions.isEditContent ? "" : "display:none";
+            const editDocInfoDisplayProperty = imcms.editOptions.isEditDocInfo ? "" : "display:none";
+            const adminDisplayProperty = imcms.isAdmin ? "" : "display:none";
 
-            var versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"];
-            var publishVersionButtonModifiers = (imcms.isVersioningAllowed && imcms.document.hasNewerVersion)
+            const versionedContentModifiers = imcms.isVersioningAllowed ? [] : ["versioning-off"];
+            const publishVersionButtonModifiers = (imcms.isVersioningAllowed && imcms.document.hasNewerVersion)
                 ? ["has-newer-version"] : [];
-            var buttons = [
+            const buttons = [
                 {
                     name: 'public',
                     tag: '<a>',
@@ -137,13 +137,13 @@ define("imcms-admin-panel-builder",
                 }
             ].map(buildPanelButton);
 
-            var $buttonsWrapper = $("<ul>").append(buttons);
+            const $buttonsWrapper = $("<ul>").append(buttons);
 
             return panelButtonsBEM.buildBlock("<div>", [{"items": $buttonsWrapper}]);
         }
 
         function flagOnClick() {
-            var languageCode = $(this).text();
+            const languageCode = $(this).text();
 
             if (languageCode !== imcms.language.code) {
                 languagesRestApi.replace({code: languageCode}).done(() => {
@@ -160,7 +160,7 @@ define("imcms-admin-panel-builder",
         }
 
         function createAdminPanel(opts) {
-            var adminPanelBEM = new BEM({
+            const adminPanelBEM = new BEM({
                 block: "imcms-admin-panel",
                 elements: {
                     "item": "",
@@ -170,22 +170,22 @@ define("imcms-admin-panel-builder",
                 }
             });
 
-            var $logo = adminPanelBEM.buildBlockElement("logo", "<a>", {href: ""}); // fixme: link to start doc?
-            var $logoItem = $("<div>").append($logo);
+            const $logo = adminPanelBEM.buildBlockElement("logo", "<a>", {href: ""}); // fixme: link to start doc?
+            const $logoItem = $("<div>").append($logo);
 
-            var $title = adminPanelBEM.buildBlockElement("title", "<div>", {text: imcms.version});
-            var $titleItem = $("<div>").append($title);
+            const $title = adminPanelBEM.buildBlockElement("title", "<div>", {text: imcms.version});
+            const $titleItem = $("<div>").append($title);
 
-            var $meta = adminPanelBEM.buildBlockElement("meta", "<div>", {
+            const $meta = adminPanelBEM.buildBlockElement("meta", "<div>", {
                 text: imcms.document.id,
                 title: imcms.document.alias
             });
-            var $metaItem = $("<div>").append($meta);
+            const $metaItem = $("<div>").append($meta);
 
-            var $flagsItem = buildFlags();
-            var $buttonsContainer = buildPanelButtons(opts);
+            const $flagsItem = buildFlags();
+            const $buttonsContainer = buildPanelButtons(opts);
 
-            var adminPanelElements$ = [
+            const adminPanelElements$ = [
                 $logoItem,
                 $titleItem,
                 $flagsItem,
@@ -193,7 +193,7 @@ define("imcms-admin-panel-builder",
                 $buttonsContainer
             ];
 
-            var panelAttributes = {
+            const panelAttributes = {
                 id: "imcms-admin-panel",
                 style: "top: -92px;"
             };
@@ -201,13 +201,13 @@ define("imcms-admin-panel-builder",
         }
 
         function highlightPublishButton() {
-            var panelItemPublishClassSelector = BEM.buildClassSelector(panelBlock, "item", "publish-of");
+            const panelItemPublishClassSelector = BEM.buildClassSelector(panelBlock, "item", "publish-of");
 
             $panelContainer.find(panelItemPublishClassSelector).addClass(panelItemHasNewerVersionClass);
         }
 
-        var isPanelBuilt = false;
-        var onPanelBuiltCallbacks = [];
+        let isPanelBuilt = false;
+        let onPanelBuiltCallbacks = [];
 
         return {
             buildPanel: opts => {

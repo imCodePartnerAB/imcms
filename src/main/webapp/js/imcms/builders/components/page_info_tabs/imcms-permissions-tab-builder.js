@@ -15,13 +15,13 @@ define(
             }];
         }
 
-        var editText = "editText",
+        const editText = "editText",
             editMenu = "editMenu",
             editImage = "editImage",
             editLoop = "editLoop",
             editDocInfo = "editDocInfo";
 
-        var exactPermissions = [
+        const exactPermissions = [
             editText,
             editMenu,
             editImage,
@@ -29,7 +29,7 @@ define(
             editDocInfo
         ];
 
-        var tabData = {};
+        const tabData = {};
 
         function createRestrictedCheckboxes(permissionSetName) {
             return mapCheckboxesFromAttributesArray([{
@@ -58,14 +58,14 @@ define(
             return permissionName.charAt(0).toUpperCase() + permissionName.replace("_", " ").toLowerCase().slice(1);
         }
 
-        var permissionsWrapperBEM = new BEM({
+        const permissionsWrapperBEM = new BEM({
             block: "imcms-field",
             elements: {
                 "item": ""
             }
         });
 
-        var PermissionsTab = function (name, docType) {
+        const PermissionsTab = function (name, docType) {
             PageInfoTab.apply(this, arguments);
         };
 
@@ -80,17 +80,17 @@ define(
             }
 
             document.restrictedPermissions.forEach(restrictedPermission => {
-                var permissionName = restrictedPermission.permission;
+                const permissionName = restrictedPermission.permission;
 
-                var restrictedCheckboxes$ = createRestrictedCheckboxes(permissionName);
-                var $restrictedRoleRights = components.checkboxes.checkboxContainer(
+                const restrictedCheckboxes$ = createRestrictedCheckboxes(permissionName);
+                const $restrictedRoleRights = components.checkboxes.checkboxContainer(
                     "<div>", restrictedCheckboxes$, {title: prettifyPermissionName(permissionName)}
                 );
 
                 permissionsWrapperBEM.makeBlockElement("item", $restrictedRoleRights, ["float-l", "col-3"]);
                 tabData.$permissionsWrapper.append($restrictedRoleRights);
 
-                var restrictedCheckboxesPerName = {};
+                const restrictedCheckboxesPerName = {};
 
                 restrictedCheckboxes$.forEach($restrictedPermCheckbox => {
                     tabData.restrictedCheckboxes$.push($restrictedPermCheckbox);
@@ -107,14 +107,14 @@ define(
                 return documentDTO;
             }
 
-            var restrictedCheckboxes = {};
+            const restrictedCheckboxes = {};
 
             tabData.restrictedCheckboxes$.forEach($restrictedPermCheckbox => {
                 restrictedCheckboxes[$restrictedPermCheckbox.find("input").prop("name")] = $restrictedPermCheckbox;
             });
 
             documentDTO.restrictedPermissions.forEach(restrictedPermission => {
-                var permissionName = restrictedPermission.permission;
+                const permissionName = restrictedPermission.permission;
 
                 exactPermissions.forEach(exactPermName => {
                     restrictedPermission[exactPermName] = restrictedCheckboxes[exactPermName + "_" + permissionName].isChecked();

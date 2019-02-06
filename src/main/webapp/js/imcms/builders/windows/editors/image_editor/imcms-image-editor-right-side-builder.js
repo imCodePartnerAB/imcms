@@ -11,8 +11,8 @@ define(
 
         texts = texts.editors.image;
 
-        var $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
-        var imgPosition = {
+        let $tag, imageData, $fileFormat, $textAlignmentBtnsContainer;
+        const imgPosition = {
             align: "NONE",
             spaceAround: {
                 top: 0,
@@ -22,7 +22,7 @@ define(
             }
         };
 
-        var $exifInfoContainer;
+        let $exifInfoContainer;
 
         function buildExifInfoWindow() {
             return new BEM({
@@ -52,7 +52,7 @@ define(
             onEscKeyPressed: "close"
         });
 
-        var alignButtonSelectorToAlignName = {
+        const alignButtonSelectorToAlignName = {
             NONE: BEM.buildClassSelector(null, "imcms-button", "align-none"),
             CENTER: BEM.buildClassSelector(null, "imcms-button", "align-center"),
             LEFT: BEM.buildClassSelector(null, "imcms-button", "align-left"),
@@ -64,7 +64,7 @@ define(
                 $tag = $newTag;
                 imageData = newImageData;
 
-                var spaceAround = imageData.spaceAround;
+                const spaceAround = imageData.spaceAround;
                 spaceAround.top && $("#image-space-top").val(spaceAround.top).blur();
                 spaceAround.right && $("#image-space-right").val(spaceAround.right).blur();
                 spaceAround.bottom && $("#image-space-bottom").val(spaceAround.bottom).blur();
@@ -76,14 +76,14 @@ define(
             },
             build: function (opts) {
 
-                var fillData = opts.fillData;
-                var imageWindowBuilder = opts.imageWindowBuilder;
+                const fillData = opts.fillData;
+                const imageWindowBuilder = opts.imageWindowBuilder;
                 $tag = opts.$tag;
                 imageData = opts.imageData;
 
                 function buildSelectImageBtnContainer() {
 
-                    var $selectImageBtn = components.buttons.neutralButton({
+                    const $selectImageBtn = components.buttons.neutralButton({
                         text: texts.selectImage,
                         click: contentManager.build.bind(contentManager, fillData, () => imageEditorBodyHeadBuilder.getImagePath())
                     });
@@ -111,7 +111,7 @@ define(
                         click: function () {
                             imageData.langCode = language.code;
 
-                            var imageRequestData = getImageRequestData(imageData.langCode);
+                            const imageRequestData = getImageRequestData(imageData.langCode);
 
                             imageRestApi.read(imageRequestData).done(fillData);
                         }
@@ -133,7 +133,7 @@ define(
                             text: texts.advanced,
                             "data-state": "false",
                             click: function () {
-                                var $btn = $(this);
+                                const $btn = $(this);
 
                                 if ($btn.attr("data-state") === "false") {
                                     $advancedControls.css("display", "block");
@@ -149,8 +149,8 @@ define(
                 }
 
                 function buildTextAlignmentBtnsContainer() {
-                    var $alignContainer;
-                    var activeAlignClass = "imcms-button--align-active";
+                    let $alignContainer;
+                    const activeAlignClass = "imcms-button--align-active";
 
                     function setAlign(align, button) {
                         imgPosition.align = align;
@@ -179,20 +179,20 @@ define(
                         return components.buttons.imcmsButton(attributes, ["align"].concat(modifiers));
                     }
 
-                    var $alignNoneBtn = buildAlignButton(["align-none", "align-active"], {
+                    const $alignNoneBtn = buildAlignButton(["align-none", "align-active"], {
                         click: onAlignNoneClick,
                         title: texts.align.none,
                         text: texts.none
                     });
-                    var $alignCenterBtn = buildAlignButton(["align-center"], {
+                    const $alignCenterBtn = buildAlignButton(["align-center"], {
                         click: onAlignCenterClick,
                         title: texts.align.center
                     });
-                    var $alignLeftBtn = buildAlignButton(["align-left"], {
+                    const $alignLeftBtn = buildAlignButton(["align-left"], {
                         click: onAlignLeftClick,
                         title: texts.align.left
                     });
-                    var $alignRightBtn = buildAlignButton(["align-right"], {
+                    const $alignRightBtn = buildAlignButton(["align-right"], {
                         click: onAlignRightClick,
                         title: texts.align.right
                     });
@@ -206,7 +206,7 @@ define(
                 }
 
                 function setSpaceAroundImg(spacePlace, element) {
-                    var spaceValue = $(element).val();
+                    const spaceValue = $(element).val();
                     imgPosition.spaceAround[spacePlace] = parseInt(spaceValue);
                 }
 
@@ -282,7 +282,7 @@ define(
                 }
 
                 function buildAdvancedControls() {
-                    var advancedModeBEM = new BEM({
+                    const advancedModeBEM = new BEM({
                         block: "imcms-advanced-mode",
                         elements: {
                             "title": "imcms-title",
@@ -295,14 +295,14 @@ define(
                         }
                     });
 
-                    var $textAlignmentBtnsTitle = advancedModeBEM.buildElement("title", "<div>", {text: texts.alignment});
+                    const $textAlignmentBtnsTitle = advancedModeBEM.buildElement("title", "<div>", {text: texts.alignment});
                     $textAlignmentBtnsContainer = buildTextAlignmentBtnsContainer();
-                    var $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
-                    var $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
-                    var $cropCoordinatesContainer = buildCropCoordinatesContainer();
+                    const $spaceAroundImageInputContainer = buildSpaceAroundImageInputContainer();
+                    const $cropCoordinatesText = buildCropCoordinatesText(advancedModeBEM);
+                    const $cropCoordinatesContainer = buildCropCoordinatesContainer();
                     $fileFormat = buildFileFormatSelect();
 
-                    var $showExifBtn = components.buttons.neutralButton({
+                    const $showExifBtn = components.buttons.neutralButton({
                         text: texts.exif.button,
                         click: showExif
                     });
@@ -319,7 +319,7 @@ define(
                 }
 
                 function buildEditableControls() {
-                    var editableControlsBEM = new BEM({
+                    const editableControlsBEM = new BEM({
                         block: "imcms-editable-controls-area",
                         elements: {
                             "buttons": "imcms-buttons",
@@ -330,13 +330,13 @@ define(
                         }
                     });
 
-                    var $selectImageBtnContainer = buildSelectImageBtnContainer();
-                    var $altTextBox = buildAltTextBox();
-                    var $imageLinkTextBox = buildImageLinkTextBox();
+                    const $selectImageBtnContainer = buildSelectImageBtnContainer();
+                    const $altTextBox = buildAltTextBox();
+                    const $imageLinkTextBox = buildImageLinkTextBox();
                     opts.imageDataContainers.$langFlags = buildImageLangFlags();
-                    var $allLangs = buildAllLanguagesCheckbox();
-                    var $advancedControls = buildAdvancedControls();
-                    var $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
+                    const $allLangs = buildAllLanguagesCheckbox();
+                    const $advancedControls = buildAdvancedControls();
+                    const $advancedModeBtn = buildAdvancedModeBtn($advancedControls);
 
                     return editableControlsBEM.buildBlock("<div>", [
                         {"buttons": $selectImageBtnContainer},
@@ -358,7 +358,7 @@ define(
                 }
 
                 function getImageRequestData(langCode) {
-                    var imageRequestData = {
+                    const imageRequestData = {
                         docId: imageData.docId,
                         index: imageData.index,
                         langCode: langCode
@@ -382,7 +382,7 @@ define(
                 }
 
                 function setOrRemoveHrefAttribute($image, imageDTO) {
-                    var linkUrl = imageDTO.linkUrl;
+                    let linkUrl = imageDTO.linkUrl;
                     if (linkUrl) {
                         if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
                             linkUrl = "//" + linkUrl;
@@ -430,7 +430,7 @@ define(
                     copyStyleToTinymceSpecificAttribute(this);
                 }
 
-                var alignNameToAction = {
+                const alignNameToAction = {
                     NONE: removeAlign,
                     CENTER: doCenterAlign,
                     LEFT: doLeftAlign,
@@ -438,17 +438,16 @@ define(
                 };
 
                 function setDirty() {
-                    var tinyMCE = require("tinymce");
+                    const tinyMCE = require("tinymce");
                     tinyMCE.activeEditor.setDirty(true);
                 }
 
                 function reloadImageOnPage(imageDTO) {
 
-                    var $image = $tag.find(".imcms-editor-content>a>img").first();
+                    const $image = $tag.find(".imcms-editor-content>a>img").first();
 
                     /** @namespace imageDTO.generatedFilePath */
-
-                    var filePath = imageDTO.generatedFilePath;
+                    let filePath = imageDTO.generatedFilePath;
 
                     if (filePath) {
                         filePath = location.origin + imcms.contextPath + filePath;
@@ -484,7 +483,7 @@ define(
                 function onImageSaved() {
                     events.trigger("imcms-version-modified");
 
-                    var imageRequestData = getImageRequestData(imcms.language.code);
+                    const imageRequestData = getImageRequestData(imcms.language.code);
 
                     imageRestApi.read(imageRequestData).done(reloadImageOnPage);
                 }
@@ -493,7 +492,7 @@ define(
                     if (continueSaving) {
                         imageData.width = imageResize.getWidth();
                         imageData.height = imageResize.getHeight();
-                        var currentAngle = imageRotate.getCurrentAngle();
+                        const currentAngle = imageRotate.getCurrentAngle();
                         // these three should be done before close
                         imageWindowBuilder.closeWindow();
 
@@ -523,12 +522,12 @@ define(
                 }
 
                 function buildFooter() {
-                    var $removeAndCloseButton = components.buttons.negativeButton({
+                    const $removeAndCloseButton = components.buttons.negativeButton({
                         text: texts.removeAndClose,
                         click: removeAndClose
                     });
 
-                    var $saveAndCloseButton = components.buttons.saveButton({
+                    const $saveAndCloseButton = components.buttons.saveButton({
                         text: texts.saveAndClose,
                         click: saveAndClose
                     });
@@ -536,8 +535,8 @@ define(
                     return $("<div>").append($removeAndCloseButton, $saveAndCloseButton);
                 }
 
-                var $editableControls = buildEditableControls();
-                var $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
+                const $editableControls = buildEditableControls();
+                const $footer = buildFooter().addClass(BEM.buildClass("imcms-image_editor", "footer"));
 
                 return $("<div>").append($editableControls, $footer);
             }

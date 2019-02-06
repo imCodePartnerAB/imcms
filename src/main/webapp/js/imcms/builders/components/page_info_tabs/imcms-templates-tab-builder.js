@@ -7,16 +7,16 @@ define("imcms-templates-tab-builder",
 
         texts = texts.pageInfo.appearance;
 
-        var tabData = {};
+        const tabData = {};
 
-        var TemplatesTab = function (name, docType) {
+        const TemplatesTab = function (name, docType) {
             PageInfoTab.apply(this, arguments);
         };
 
         TemplatesTab.prototype = Object.create(PageInfoTab.prototype);
 
         TemplatesTab.prototype.tabElementsFactory = () => {
-            var $templateSelectContainer = components.selects.selectContainer("<div>", {
+            const $templateSelectContainer = components.selects.selectContainer("<div>", {
                     name: "template",
                     text: texts.template
                 }),
@@ -33,7 +33,7 @@ define("imcms-templates-tab-builder",
 
             templatesRestApi.read(null)
                 .done(templates => {
-                    var templatesDataMapped = templates.map(template => ({
+                    const templatesDataMapped = templates.map(template => ({
                         text: template.name,
                         "data-value": template.name
                     }));

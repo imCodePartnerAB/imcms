@@ -9,15 +9,15 @@ define(
         "jquery", "imcms-i18n-texts", "imcms-events", "imcms"
     ],
     function (BEM, WindowBuilder, components, imageContentBuilder, $, texts, events, imcms) {
-        var $foldersContainer;
-        var $imagesContainer;
-        var $saveAndCloseBtn;
+        let $foldersContainer;
+        let $imagesContainer;
+        let $saveAndCloseBtn;
 
         texts = texts.editors.content;
 
         function buildContentManager() {
-            var $footer;
-            var $showHideFoldersButton;
+            let $footer;
+            let $showHideFoldersButton;
 
             function buildHead() {
                 return contentManagerWindowBuilder.buildHead(texts.title);
@@ -39,8 +39,8 @@ define(
 
             function buildFooter() {
                 function openCloseFolders() {
-                    var $btn = $(this);
-                    var btnText, btnState, imagesAndFooterLeft, foldersLeft;
+                    const $btn = $(this);
+                    let btnText, btnState, imagesAndFooterLeft, foldersLeft;
 
                     if ($btn.attr("data-state") === "close") {
                         foldersLeft = 0;
@@ -67,15 +67,15 @@ define(
                     click: openCloseFolders
                 });
 
-                var $fileInput = $("<input>", {
+                const $fileInput = $("<input>", {
                     type: "file",
                     accept: "image/*",
                     style: "display: none;",
                     multiple: "",
                     change: function () {
-                        var formData = new FormData();
+                        const formData = new FormData();
 
-                        for (var i = 0; i < this.files.length; i++) {
+                        for (let i = 0; i < this.files.length; i++) {
                             formData.append('files', this.files[i]);
                         }
 
@@ -83,19 +83,19 @@ define(
                     }
                 });
 
-                var $uploadNewImage = components.buttons.positiveButton({
+                const $uploadNewImage = components.buttons.positiveButton({
                     text: texts.upload,
                     click: () => {
                         $fileInput.click();
                     }
                 });
 
-                var $cancelBtn = components.buttons.negativeButton({
+                const $cancelBtn = components.buttons.negativeButton({
                     text: texts.cancel,
                     click: closeWindow
                 });
 
-                var footerElements$ = [$showHideFoldersButton, $fileInput, $cancelBtn];
+                const footerElements$ = [$showHideFoldersButton, $fileInput, $cancelBtn];
 
                 if (!imcms.disableContentManagerSaveButton) {
                     $saveAndCloseBtn = components.buttons.saveButton({

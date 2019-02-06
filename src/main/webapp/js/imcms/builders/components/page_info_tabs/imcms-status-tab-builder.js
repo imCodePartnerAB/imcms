@@ -6,12 +6,12 @@ define("imcms-status-tab-builder",
 
         texts = texts.pageInfo.status;
 
-        var tabData = {};
+        const tabData = {};
 
         function buildRowBlock($dateTimeField, $doneByInput) {
             $dateTimeField.modifiers = ["col-3", "float-l"];
 
-            var $doneBy = buildLabelWithInputs(texts.by, [$doneByInput]);
+            const $doneBy = buildLabelWithInputs(texts.by, [$doneByInput]);
             $doneBy.modifiers = ["col-2-3", "float-l"];
 
             return new BEM({
@@ -23,12 +23,12 @@ define("imcms-status-tab-builder",
         }
 
         function buildLabelWithInputs(title, inputFields) {
-            var $label = $("<div>", {
+            const $label = $("<div>", {
                 "class": "imcms-label",
                 text: title
             });
 
-            var inputs = inputFields.map($input => {
+            const inputs = inputFields.map($input => {
                 $input.modifiers = ["float-l"];
                 return $input;
             });
@@ -49,16 +49,16 @@ define("imcms-status-tab-builder",
         }
 
         function buildStatusInfoRow(statusTab) {
-            var $dateBlock = components.dateTime.dateBoxReadOnly({id: statusTab.dataTitle + "Date"});
-            var $timeBlock = components.dateTime.timeBoxReadOnly({id: statusTab.dataTitle + "Time"});
-            var $doneByBlock = components.texts.textBox("<div>", {
+            const $dateBlock = components.dateTime.dateBoxReadOnly({id: statusTab.dataTitle + "Date"});
+            const $timeBlock = components.dateTime.timeBoxReadOnly({id: statusTab.dataTitle + "Time"});
+            const $doneByBlock = components.texts.textBox("<div>", {
                 id: statusTab.dataTitle + "By",
                 readonly: "readonly"
             });
 
             saveStatusInfoRowData(statusTab.dataTitle, $dateBlock, $timeBlock, $doneByBlock);
 
-            var $dateTimeField = buildLabelWithInputs(statusTab.title, [$dateBlock, $timeBlock]);
+            const $dateTimeField = buildLabelWithInputs(statusTab.title, [$dateBlock, $timeBlock]);
             return buildRowBlock($dateTimeField, $doneByBlock);
         }
 
@@ -72,7 +72,7 @@ define("imcms-status-tab-builder",
             tabData["$" + rowName + "By"].setValue(by);
         }
 
-        var statusRows = [
+        const statusRows = [
             {title: texts.created, dataTitle: "created"},
             {title: texts.modified, dataTitle: "modified"},
             {title: texts.archived, dataTitle: "archived"},
@@ -80,7 +80,7 @@ define("imcms-status-tab-builder",
             {title: texts.publicationEnd, dataTitle: "publicationEnd"}
         ];
 
-        var StatusTab = function (name) {
+        const StatusTab = function (name) {
             PageInfoTab.call(this, name);
         };
 
@@ -99,7 +99,7 @@ define("imcms-status-tab-builder",
         };
 
         StatusTab.prototype.clearTabData = () => {
-            var emptyString = '';
+            const emptyString = '';
             statusRows.forEach(statusTab => {
                 setStatusInfoRowData(statusTab.dataTitle, emptyString, emptyString, emptyString);
             });

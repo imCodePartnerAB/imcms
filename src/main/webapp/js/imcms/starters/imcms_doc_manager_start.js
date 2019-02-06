@@ -6,14 +6,13 @@ import '../../../css/imcms-imports_files.css';
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 20.02.18
  */
-
-var documentEditorBuilder = require("imcms-document-editor-builder");
-var events = require("imcms-events");
-var imcms = require("imcms");
-var $ = require("jquery");
+const documentEditorBuilder = require("imcms-document-editor-builder");
+const events = require("imcms-events");
+const imcms = require("imcms");
+const $ = require("jquery");
 
 events.on("document-editor-closed", () => {
-    var returnUrl = $("#return-url").val();
+    const returnUrl = $("#return-url").val();
     window.location = (returnUrl) ? returnUrl : imcms.contextPath;
 });
 

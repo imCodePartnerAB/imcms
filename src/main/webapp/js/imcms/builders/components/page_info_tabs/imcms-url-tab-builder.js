@@ -12,9 +12,9 @@ define("imcms-url-tab-builder",
 
         texts = texts.pageInfo.url;
 
-        var tabData = {}, $urlInputContainer;
+        let tabData = {}, $urlInputContainer;
 
-        var UrlTab = function (name, docType) {
+        const UrlTab = function (name, docType) {
             PageInfoTab.apply(this, arguments);
         };
 

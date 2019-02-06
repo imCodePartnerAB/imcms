@@ -15,8 +15,8 @@
  * Adopted for imCMS by Serhii Maksymchuk
  */
 define("date-format", [], function () {
-    var dateFormat = (() => {
-        var token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
+    const dateFormat = (() => {
+        const token = /d{1,4}|m{1,4}|yy(?:yy)?|([HhMsTt])\1?|[LloSZ]|"[^"]*"|'[^']*'/g,
             timezone = /\b(?:[PMCEA][SDP]T|(?:Pacific|Mountain|Central|Eastern|Atlantic) (?:Standard|Daylight|Prevailing) Time|(?:GMT|UTC)(?:[-+]\d{4})?)\b/g,
             timezoneClip = /[^-+\dA-Z]/g,
             pad = function (val, len) {
@@ -28,7 +28,7 @@ define("date-format", [], function () {
 
         // Regexes and supporting functions are cached through closure
         return function (date, mask, utc) {
-            var dF = dateFormat;
+            const dF = dateFormat;
 
             // You can't provide utc if you skip other args (use the "UTC:" mask prefix)
             if (arguments.length === 1 && Object.prototype.toString.call(date) === "[object String]" && !/\d/.test(date)) {
@@ -48,7 +48,7 @@ define("date-format", [], function () {
                 utc = true;
             }
 
-            var _ = utc ? "getUTC" : "get",
+            const _ = utc ? "getUTC" : "get",
                 d = date[_ + "Date"](),
                 D = date[_ + "Day"](),
                 m = date[_ + "Month"](),

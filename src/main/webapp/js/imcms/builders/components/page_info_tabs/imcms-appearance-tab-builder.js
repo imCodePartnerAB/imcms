@@ -7,7 +7,7 @@ define("imcms-appearance-tab-builder",
 
         texts = texts.pageInfo.title;
 
-        var pageInfoInnerStructureBEM = new BEM({
+        const pageInfoInnerStructureBEM = new BEM({
             block: "imcms-field",
             elements: {
                 "checkboxes": "imcms-checkboxes",
@@ -20,7 +20,7 @@ define("imcms-appearance-tab-builder",
             }
         });
 
-        var tabData = {};
+        const tabData = {};
 
         function buildCommonContents(commonContents) {
             tabData.commonContents = [];
@@ -29,7 +29,7 @@ define("imcms-appearance-tab-builder",
         }
 
         function buildDocumentCommonContent(commonContent) {
-            var $checkbox = components.checkboxes.imcmsCheckbox("<div>", {
+            const $checkbox = components.checkboxes.imcmsCheckbox("<div>", {
                     name: commonContent.language.name.toLowerCase(), // fixme: or native name?
                     text: commonContent.language.name,
                     checked: commonContent.enabled ? "checked" : undefined
@@ -110,7 +110,7 @@ define("imcms-appearance-tab-builder",
         }
 
         function buildBlockForMissingLangSetting() {
-            var $languagesTitle = components.texts.titleText("<div>", texts.missingLangRuleTitle);
+            const $languagesTitle = components.texts.titleText("<div>", texts.missingLangRuleTitle);
 
             tabData.$showDefaultLang = components.radios.imcmsRadio("<div>", {
                 text: texts.showInDefault,
@@ -131,7 +131,7 @@ define("imcms-appearance-tab-builder",
             ]);
         }
 
-        var AppearanceTab = function (name) {
+        const AppearanceTab = function (name) {
             PageInfoTab.call(this, name);
         };
 
@@ -180,7 +180,7 @@ define("imcms-appearance-tab-builder",
             return documentDTO;
         };
         AppearanceTab.prototype.clearTabData = () => {
-            var emptyString = '';
+            const emptyString = '';
 
             tabData.commonContents.forEach((commonContent, index) => {
                 commonContent.checkbox.setChecked(index === 0);//check only first

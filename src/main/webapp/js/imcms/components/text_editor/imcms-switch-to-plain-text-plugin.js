@@ -10,15 +10,15 @@ define(
 
         require('imcms-jquery-tag-replacer');
 
-        var title = 'Switch to plain text mode'; // todo: localize!!11
+        const title = 'Switch to plain text mode'; // todo: localize!!11
 
         function getOnSwitch(editor, transformEditor) {
             return () => {
-                var $textEditor = $(editor.$());
+                let $textEditor = $(editor.$());
                 $textEditor.attr('data-type', textTypes.text).data('type', textTypes.text);
 
                 textUtils.saveContent(editor, () => {
-                    var textEditor = require('imcms-text-editor');
+                    const textEditor = require('imcms-text-editor');
                     $textEditor = transformEditor($textEditor, editor);
                     textEditor.initTextFromEditor($textEditor);
                 });
@@ -36,7 +36,7 @@ define(
 
         function transformFromHtml($textEditor) {
             $textEditor.parent().find('.imcms-editor-area__text-toolbar').empty();
-            var $newEditor = $textEditor.clone();
+            const $newEditor = $textEditor.clone();
             $textEditor.replaceWith($newEditor);
 
             return $newEditor

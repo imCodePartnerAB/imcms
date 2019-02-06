@@ -4,14 +4,14 @@
  */
 define("imcms-switch-builder", ["imcms-bem-builder", "imcms-primitives-builder"], function (BEM, primitives) {
 
-    var switchBlockBEM = new BEM({
+    const switchBlockBEM = new BEM({
         block: "imcms-switches",
         elements: {
             "switch": "imcms-switch"
         }
     });
 
-    var switchBEM = new BEM({
+    const switchBEM = new BEM({
         block: "imcms-switch",
         elements: {
             "input": "imcms-input",
@@ -21,9 +21,9 @@ define("imcms-switch-builder", ["imcms-bem-builder", "imcms-primitives-builder"]
 
     return {
         imcmsSwitch: (tag, attributes) => {
-            var $label = primitives.imcmsLabel(attributes.id);
+            const $label = primitives.imcmsLabel(attributes.id);
             attributes.type = "checkbox";
-            var $input = primitives.imcmsInput(attributes);
+            const $input = primitives.imcmsInput(attributes);
 
             return switchBEM.buildBlock("<div>", [
                 {"input": $input},

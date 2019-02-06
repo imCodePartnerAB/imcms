@@ -7,9 +7,9 @@ define(
     ["imcms-events", "imcms-admin-panel-settings-builder", "imcms-admin-panel-state", "imcms-streams", "jquery"],
     function (events, panelSettings, panelState, streams, $) {
 
-        var panelSensitivePixels = 15;
-        var panels$ = [];
-        var listenersNotSet = true;
+        const panelSensitivePixels = 15;
+        const panels$ = [];
+        let listenersNotSet = true;
 
         function showPanels() {
             $("#imcmsAdminSpecial").not(".imcms-special-hidden").css("display", "block");
@@ -46,7 +46,7 @@ define(
         });
 
         function onPanelsShown() {
-            var bodyCss = ($(window).scrollTop() === 0)
+            const bodyCss = ($(window).scrollTop() === 0)
                 ? {"top": $("#imcms-admin").height() || $("#imcms-admin-panel").height()}
                 : {"padding-top": "0"};
 
@@ -70,7 +70,7 @@ define(
 
             $(document).mousemove(event => {
 
-                var isPanelDisabledOrMouseNotInSensitiveArea = panelState.isPanelAppearanceDisabled
+                const isPanelDisabledOrMouseNotInSensitiveArea = panelState.isPanelAppearanceDisabled
                     || (event.clientY < 0)
                     || (event.clientY > panelSensitivePixels);
 

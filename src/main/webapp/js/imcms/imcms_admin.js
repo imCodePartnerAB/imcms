@@ -1,18 +1,18 @@
 function focusField(theFormName, theElementName) {
-    var f = isNaN(theFormName) ? eval("document.forms." + theFormName) : eval("document.forms[" + theFormName + "]");
+    const f = isNaN(theFormName) ? eval("document.forms." + theFormName) : eval("document.forms[" + theFormName + "]");
     if (f) {
-        var el = eval("f." + theElementName);
+        const el = eval("f." + theElementName);
         if (el) el.focus();
     }
 }
 
 function getParam(attrib) {			// get querystring-parameters from document.location
-    var sParams = location.search;
-    var retVal = "";
+    const sParams = location.search;
+    let retVal = "";
     if (sParams.indexOf('?') != -1) {
-        var pairs = sParams.substring(1, sParams.length).split('&');
-        for (var i = 0; i < pairs.length; i++) {
-            var nameVal = pairs[i].split('=');
+        const pairs = sParams.substring(1, sParams.length).split('&');
+        for (let i = 0; i < pairs.length; i++) {
+            const nameVal = pairs[i].split('=');
             if (nameVal[0] == attrib) {
                 retVal = nameVal[1];
             }
@@ -26,7 +26,7 @@ function onSelectChange(str) {
 }
 
 function popWinOpen(winW, winH, sUrl, sName, iResize, iScroll) {
-    var winX, winY;
+    let winX, winY;
     if (screen) {
         if ((screen.height - winH) < 150) {
             winX = (screen.width - winW) / 2;
@@ -35,7 +35,7 @@ function popWinOpen(winW, winH, sUrl, sName, iResize, iScroll) {
             winX = (screen.width - winW) / 2;
             winY = (screen.height - winH) / 2;
         }
-        var popWindow = window.open(sUrl, sName, "resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH + ",top=" + winY + ",left=" + winX + "");
+        const popWindow = window.open(sUrl, sName, "resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH + ",top=" + winY + ",left=" + winX + "");
         if (popWindow) popWindow.focus();
     } else {
         window.open(sUrl, sName, "resizable=" + iResize + ",menubar=0,scrollbars=" + iScroll + ",width=" + winW + ",height=" + winH);

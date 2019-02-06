@@ -10,16 +10,16 @@ define(
 
         require('imcms-jquery-tag-replacer');
 
-        var title = 'Switch to text editor'; // todo: localize!!11
+        const title = 'Switch to text editor'; // todo: localize!!11
 
         function getOnSwitch(editor) {
             return () => {
-                var $textEditor = $(editor.$());
+                let $textEditor = $(editor.$());
                 $textEditor.attr('data-type', textTypes.editor).data('type', textTypes.editor);
 
                 textUtils.saveContent(editor, () => {
-                    var tinyMceTextEditor = require('imcms-tinymce-text-editor');
-                    var content = $textEditor.val();
+                    const tinyMceTextEditor = require('imcms-tinymce-text-editor');
+                    const content = $textEditor.val();
                     $textEditor.parent().find('.imcms-editor-area__text-toolbar').empty();
                     $textEditor = $textEditor.replaceTagName('div').removeAttr('wrap').removeAttr('style');
                     $textEditor.html(content);

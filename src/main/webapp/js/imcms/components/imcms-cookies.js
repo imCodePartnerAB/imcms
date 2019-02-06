@@ -12,10 +12,10 @@ module.exports = {
     setCookie(name, value, options) {
         options = options || {};
 
-        var expires = options.expires;
+        let expires = options.expires;
 
         if (expires && (typeof expires === "number")) { // expires in days here
-            var currentDate = new Date();
+            const currentDate = new Date();
             currentDate.setTime(currentDate.getTime() + expires * 24 * 60 * 60 * 1000);
             expires = options.expires = currentDate;
         }
@@ -26,11 +26,11 @@ module.exports = {
 
         value = encodeURIComponent(value);
 
-        var updatedCookie = name + "=" + value;
+        let updatedCookie = name + "=" + value;
 
-        for (var propName in options) {
+        for (let propName in options) {
             updatedCookie += "; " + propName;
-            var propValue = options[propName];
+            const propValue = options[propName];
 
             if (propValue !== true) {
                 updatedCookie += "=" + propValue;

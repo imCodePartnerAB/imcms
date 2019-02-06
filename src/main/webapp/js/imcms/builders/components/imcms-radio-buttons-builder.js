@@ -13,7 +13,7 @@ define("imcms-radio-buttons-builder",
             };
         }
 
-        var radioBEM = new bemBuilder({
+        const radioBEM = new bemBuilder({
                 block: "imcms-radio",
                 elements: {}
             }),
@@ -27,7 +27,7 @@ define("imcms-radio-buttons-builder",
 
         return {
             imcmsRadio: function (tag, attributes) {
-                var id = attributes.id || uuidGenerator.generateUUID(),
+                const id = attributes.id || uuidGenerator.generateUUID(),
                     $input = primitives.imcmsInputRadio({
                         name: attributes.name,
                         id: id,
@@ -38,7 +38,7 @@ define("imcms-radio-buttons-builder",
                     $input.prop("checked", "checked");
                 }
 
-                var $label = primitives.imcmsLabelFromObject({
+                const $label = primitives.imcmsLabelFromObject({
                     "for": id,
                     text: attributes.text,
                     click: function () {
@@ -47,8 +47,8 @@ define("imcms-radio-buttons-builder",
                             return;
                         }
 
-                        var args = arguments;
-                        var context = this;
+                        const args = arguments;
+                        const context = this;
 
                         setTimeout(() => {
                             if ($input.is(":checked")) {
@@ -57,7 +57,7 @@ define("imcms-radio-buttons-builder",
                         });
                     }
                 });
-                var buildBlock = radioBEM.buildBlock(tag, [
+                const buildBlock = radioBEM.buildBlock(tag, [
                     {"input": $input},
                     {"label": $label}
                 ]);
@@ -67,17 +67,17 @@ define("imcms-radio-buttons-builder",
                 return buildBlock;
             },
             group: function () {
-                var radioBlocks$ = Array.prototype.slice.call(arguments);
+                const radioBlocks$ = Array.prototype.slice.call(arguments);
 
                 return {
                     setCheckedValue: value => {
                         radioBlocks$.forEach($radioBlock => {
-                            var $radio = $radioBlock.find("input");
+                            const $radio = $radioBlock.find("input");
                             ($radio.val() === value) && $radio.prop("checked", "checked");
                         });
                     },
                     getCheckedValue: () => radioBlocks$.reduce(function (prevValue, $radioBlock) {
-                        var $radio = $radioBlock.find("input");
+                        const $radio = $radioBlock.find("input");
 
                         if ($radio.is(":checked")) {
                             return $radio.val();

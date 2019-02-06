@@ -5,11 +5,11 @@
 define("imcms-flags-builder",
     ["imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery"],
     function (bemBuilder, languagesRestApi, imcms, $) {
-        var FLAGS_CLASS = "imcms-flag",
+        const FLAGS_CLASS = "imcms-flag",
             FLAG_ACTIVE_CLASS = FLAGS_CLASS + "--" + "active"
         ;
 
-        var flagsBEM = new bemBuilder({
+        const flagsBEM = new bemBuilder({
             block: "imcms-flags",
             elements: {
                 "flag": FLAGS_CLASS
@@ -17,7 +17,7 @@ define("imcms-flags-builder",
         });
 
         function changeNeighborFlag($btn) {
-            var $neighborFlag = ($btn.next("." + FLAGS_CLASS).length !== 0)
+            const $neighborFlag = ($btn.next("." + FLAGS_CLASS).length !== 0)
                 ? $btn.next("." + FLAGS_CLASS)
                 : $btn.prev("." + FLAGS_CLASS);
 
@@ -25,7 +25,7 @@ define("imcms-flags-builder",
         }
 
         function onFlagClick(event) {
-            var $clickedFlag = $(this);
+            const $clickedFlag = $(this);
 
             if (!$clickedFlag.hasClass(FLAGS_CLASS)) {
                 return;
@@ -41,7 +41,7 @@ define("imcms-flags-builder",
         }
 
         function buildFlag(tag, attributes, isActive, language) {
-            var modifiers = [language.code];
+            const modifiers = [language.code];
             if (isActive) {
                 modifiers.push("active");
             }
@@ -54,7 +54,7 @@ define("imcms-flags-builder",
 
         function mapLanguagesToFlags(languages, flagBuilderDataProducer) {
             return languages.map(language => {
-                var flagBuilderData = flagBuilderDataProducer(language),
+                const flagBuilderData = flagBuilderDataProducer(language),
                     isActive = language.code === imcms.language.code;
 
                 return buildFlag.apply(null, flagBuilderData.concat([isActive, language]));
@@ -63,7 +63,7 @@ define("imcms-flags-builder",
 
         function addDisplayMode(displayModeCSS) {
             return function () {
-                var $flags = $(this);
+                const $flags = $(this);
 
                 $flags.css(displayModeCSS);
                 $flags.next().css(displayModeCSS);
@@ -72,18 +72,18 @@ define("imcms-flags-builder",
 
         return {
             flagsContainer: function (flagBuilderDataProducer) {
-                var $result = flagsBEM.buildBlock("<div>", [], "flag");
+                const $result = flagsBEM.buildBlock("<div>", [], "flag");
 
                 languagesRestApi.read().done(languages => {
-                    var flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
+                    const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
                     $result.append(flags);
                 });
 
                 $result.setActive = function (langCode) {
-                    var $flags = $(this);
+                    const $flags = $(this);
 
-                    var activeClass = "imcms-flag--active";
-                    var languageFlagClass = "imcms-flag--" + langCode;
+                    const activeClass = "imcms-flag--active";
+                    const languageFlagClass = "imcms-flag--" + langCode;
 
                     $flags.find("." + activeClass).removeClass(activeClass);
                     $flags.find("." + languageFlagClass).addClass(activeClass);

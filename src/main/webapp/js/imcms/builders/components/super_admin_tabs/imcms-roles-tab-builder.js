@@ -16,7 +16,7 @@ define(
 
         texts = texts.superAdmin.roles;
 
-        var roleLoader = {
+        const roleLoader = {
             roles: false,
             callbacks: [],
             whenRolesLoaded: function (callback) {
@@ -35,7 +35,7 @@ define(
             roleLoader.runCallbacks(roles);
         });
 
-        var $rolesContainer;
+        let $rolesContainer;
 
         function buildTabTitle() {
             return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
@@ -77,21 +77,21 @@ define(
         }
 
         function buildExternalRolesContainer() {
-            var externalRolesBEM = new BEM({
+            const externalRolesBEM = new BEM({
                 block: 'external-roles',
                 elements: {
                     'auth-provider': ''
                 }
             });
 
-            var $externalRolesContainer = externalRolesBEM.buildBlock('<div>', [], {style: 'display: none;'});
+            const $externalRolesContainer = externalRolesBEM.buildBlock('<div>', [], {style: 'display: none;'});
 
             auth.getAuthProviders().done(providers => {
                 if (!providers || !providers.length) return;
 
                 $externalRolesContainer.css('display', 'block');
 
-                var providerBEM = new BEM({
+                const providerBEM = new BEM({
                     block: 'external-provider',
                     elements: {
                         'title': '',
@@ -100,7 +100,7 @@ define(
                     }
                 });
 
-                var externalRolesRowBEM = new BEM({
+                const externalRolesRowBEM = new BEM({
                     block: 'external-role',
                     elements: {
                         'name': '',
@@ -109,19 +109,19 @@ define(
                     }
                 });
 
-                var providers$ = providers.map(provider => {
-                    var $roles = $('<div>');
+                const providers$ = providers.map(provider => {
+                    const $roles = $('<div>');
 
                     azureRoles.read().done(externalRoles => {
-                        var roles$ = externalRoles.map(externalRole => {
-                            var $externalRoleName = $('<div>', {
+                        const roles$ = externalRoles.map(externalRole => {
+                            const $externalRoleName = $('<div>', {
                                 text: externalRole.displayName
                             });
 
-                            var $selectWrapper = $('<div>');
-                            var $controlsWrapper = $('<div>');
+                            const $selectWrapper = $('<div>');
+                            const $controlsWrapper = $('<div>');
 
-                            var $row = externalRolesRowBEM.buildBlock(
+                            const $row = externalRolesRowBEM.buildBlock(
                                 '<div>',
                                 [
                                     {'name': $externalRoleName},
@@ -131,7 +131,7 @@ define(
                                 {'class': 'imcms-field'}
                             );
 
-                            var requestData = {
+                            const requestData = {
                                 id: externalRole.id,
                                 providerId: externalRole.providerId
                             }; // only these two are required for request
@@ -139,14 +139,14 @@ define(
                             externalToLocalRolesLinks.read(requestData).done(linkedRoles => {
                                 roleLoader.whenRolesLoaded(roles => {
 
-                                    var $rolesSelect;
+                                    let $rolesSelect;
 
-                                    var $saveButton = components.buttons.saveButton({
+                                    const $saveButton = components.buttons.saveButton({
                                         text: texts.save,
                                         style: 'display: none;',
                                         click: () => {
-                                            var selectedRolesId = $rolesSelect.getSelectedValues();
-                                            var request = {
+                                            const selectedRolesId = $rolesSelect.getSelectedValues();
+                                            const request = {
                                                 externalRole: requestData,
                                                 localRolesId: selectedRolesId
                                             };
@@ -167,8 +167,8 @@ define(
                                     });
 
                                     function buildRolesSelect() {
-                                        var rolesDataMapped = roles.map(role => {
-                                            var attributes = {
+                                        const rolesDataMapped = roles.map(role => {
+                                            const attributes = {
                                                 text: role.name,
                                                 value: role.id,
                                                 change: () => {
@@ -176,8 +176,8 @@ define(
                                                 }
                                             };
 
-                                            for (var i = 0; i < linkedRoles.length; i++) {
-                                                var linkedRole = linkedRoles[i];
+                                            for (let i = 0; i < linkedRoles.length; i++) {
+                                                const linkedRole = linkedRoles[i];
 
                                                 if (linkedRole.id === role.id) {
                                                     attributes.checked = 'checked';
@@ -205,15 +205,15 @@ define(
                         $roles.append(roles$);
                     });
 
-                    var $title = components.texts.titleText('<div>', provider.providerName).append($('<img>', {
+                    const $title = components.texts.titleText('<div>', provider.providerName).append($('<img>', {
                         'class': 'auth-provider-icon',
                         src: imcms.contextPath + provider.iconPath
                     }));
-                    var $text = $('<div>', {
+                    const $text = $('<div>', {
                         'class': 'imcms-field',
                         text: texts.externalRolesInfo
                     });
-                    var $providerBlock = providerBEM.buildBlock('<div>', [
+                    const $providerBlock = providerBEM.buildBlock('<div>', [
                         {'title': $title},
                         {'text': $text},
                         {'roles': $roles}

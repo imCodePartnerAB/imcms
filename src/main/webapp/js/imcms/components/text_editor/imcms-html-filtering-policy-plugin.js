@@ -10,29 +10,29 @@ define(
     ],
     function (toolbarButtonBuilder, filteringPolicies, BEM, $, textUtils) {
 
-        var title = 'HTML content filtering policy'; // todo: localize!!!11
+        const title = 'HTML content filtering policy'; // todo: localize!!!11
 
-        var policyToName = {}; // todo: localize!!1
+        const policyToName = {}; // todo: localize!!1
         policyToName[filteringPolicies.restricted] = 'Restricted';
         policyToName[filteringPolicies.relaxed] = 'Relaxed';
         policyToName[filteringPolicies.allowAll] = 'Everything is allowed';
 
-        var policyToTitle = {};  // todo: localize!!1
+        const policyToTitle = {};  // todo: localize!!1
         policyToTitle[filteringPolicies.restricted] = 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. Not allowed attributes (class, style, etc.) are removed.';
         policyToTitle[filteringPolicies.relaxed] = 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. All attributes are allowed.';
         policyToTitle[filteringPolicies.allowAll] = 'Everything is allowed';
 
         function getOnClick(editor, $btn) {
-            var $textEditor = $(editor.$());
+            const $textEditor = $(editor.$());
 
             return e => {
-                var $target = $(e.target);
+                const $target = $(e.target);
 
                 if ($target.hasClass('settings-section__setting') && $target.parents('.filtering-policies').length) {
                     return;
                 }
 
-                var $policies = buildPoliciesSelect($textEditor);
+                const $policies = buildPoliciesSelect($textEditor);
 
                 $btn.append($policies);
 
@@ -41,10 +41,10 @@ define(
                         e.preventDefault();
                         e.stopPropagation();
 
-                        var $target = $(e.target);
+                        const $target = $(e.target);
 
                         if ($target.hasClass('settings-section__setting') && $target.parents('.filtering-policies').length) {
-                            var policy = $target.attr('data-policy');
+                            const policy = $target.attr('data-policy');
 
                             $textEditor.attr('data-html-filtering-policy', policy)
                                 .data('htmlFilteringPolicy', policy);
@@ -63,10 +63,10 @@ define(
 
         function buildPoliciesSelect($textEditor) {
 
-            var currentPolicy = $textEditor.attr('data-html-filtering-policy');
+            const currentPolicy = $textEditor.attr('data-html-filtering-policy');
 
-            var elements = Object.keys(filteringPolicies).map(key => {
-                var policyName = filteringPolicies[key];
+            const elements = Object.keys(filteringPolicies).map(key => {
+                const policyName = filteringPolicies[key];
 
                 return {
                     'policy': $('<div>', {
@@ -97,7 +97,7 @@ define(
                 });
             },
             buildHtmlFilteringPolicyButton: function (editor) {
-                var $btn;
+                let $btn;
 
                 return $btn = toolbarButtonBuilder.buildButton(
                     'html-filtering-policy-button', title, function () {

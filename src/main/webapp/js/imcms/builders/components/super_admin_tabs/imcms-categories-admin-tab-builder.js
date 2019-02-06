@@ -20,7 +20,7 @@ define(
 
         function buildDropDownListCategoriesTypes() {
 
-            var onCategorySelected = value => {
+            const onCategorySelected = value => {
                 // categoriesRestApi.getById(value).done(function (category) {
                 //     currentCategory = category;
                 //     let edit = typeEditor.editCategoryType($('<div>'), { //change for this
@@ -35,7 +35,7 @@ define(
                 // })
             };
 
-            var onSelected = values => {
+            const onSelected = values => {
 
                 typesRestApi.getById(values).done(ctgType => {
                     currentCtgType = ctgType;

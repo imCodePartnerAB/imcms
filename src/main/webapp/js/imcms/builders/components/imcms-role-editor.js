@@ -12,17 +12,17 @@ define(
 
         texts = texts.superAdmin.roles;
 
-        var $roleNameRow;
+        let $roleNameRow;
 
-        var $getPasswordByEmail;
-        var $accessToAdminPages;
-        var $useImagesInImageArchive;
-        var $changeImagesInImageArchive;
+        let $getPasswordByEmail;
+        let $accessToAdminPages;
+        let $useImagesInImageArchive;
+        let $changeImagesInImageArchive;
 
-        var permissionCheckboxes$;
+        let permissionCheckboxes$;
 
-        var $roleViewButtons;
-        var $roleEditButtons;
+        let $roleViewButtons;
+        let $roleEditButtons;
 
         function buildRoleNameRow() {
             $roleNameRow = components.texts.textBox('<div>', {text: texts.roleName});
@@ -100,14 +100,14 @@ define(
         }
 
         function onSaveRole() {
-            var name = $roleNameRow.getValue();
+            let name = $roleNameRow.getValue();
 
             if (!name) {
                 $roleNameRow.$input.focus();
                 return;
             }
 
-            var saveMe = {
+            const saveMe = {
                 id: currentRole.id,
                 name: name,
                 permissions: {
@@ -192,7 +192,7 @@ define(
             $roleNameRow.$input.attr('disabled', 'disabled');
             $roleNameRow.setValue(currentRole.name);
 
-            var permissions = [
+            const permissions = [
                 currentRole.permissions.getPasswordByEmail,
                 currentRole.permissions.accessToAdminPages,
                 currentRole.permissions.useImagesInImageArchive,

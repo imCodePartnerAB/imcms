@@ -4,7 +4,7 @@
  */
 define('imcms-page-info-tab', ['imcms-window-tab-builder'], function (TabWindowBuilder) {
 
-    var PageInfoTab = function (name, supportedDocumentType) {
+    const PageInfoTab = function (name, supportedDocumentType) {
         TabWindowBuilder.call(this, name);
         this.supportedDocumentType = supportedDocumentType;
     };

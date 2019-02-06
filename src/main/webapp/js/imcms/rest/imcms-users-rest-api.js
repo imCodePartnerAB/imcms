@@ -1,6 +1,6 @@
 define('imcms-users-rest-api', ['imcms-rest-api'], function (rest) {
-    var url = '/users';
-    var api = new rest.API(url);
+    const url = '/users';
+    const api = new rest.API(url);
 
     api.getAllAdmins = () => rest.ajax.call({url: `${url}/admins`, type: 'GET', json: false});
 
