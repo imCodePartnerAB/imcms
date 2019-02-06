@@ -81,7 +81,7 @@ define(
                     currentCategoryType = null;
                     onEditDelegate = onSimpleEdit;
                     //$container.slideUp();
-                })
+                });
             });
         }
 
@@ -115,7 +115,7 @@ define(
 
                     onCategoryTypeView = onCategoryTypeSimpleView;
                     prepareCategoryTypeView();
-                }).fail(function () {
+                }).fail(() => {
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             }
@@ -127,7 +127,7 @@ define(
                     if (!confirmed) return;
                     onConfirm.call();
                 });
-            }
+            };
         }
 
         function buildCategoryTypeSaveCancelButtons() {
@@ -202,8 +202,7 @@ define(
 
         function editCategoryType($categoryTypeRow, categoryType) {
             onEditDelegate($categoryTypeRow, categoryType);
-            onEditDelegate = () => {
-            }
+            onEditDelegate = () => {};
         }
 
         let categoryTypeEditor = {
