@@ -154,7 +154,7 @@ define("imcms-image-content-builder",
 
             imageFoldersREST.canDelete({"path": path})
                 .done(() => modalWindow.buildModalWindow(`${texts.removeFolderMessage}${name}"?`, onAnswer))
-                .fail(() => modalWindow.buildWarningWindow(texts.folderNotEmptyMessage, new Function()));
+                .fail(() => modalWindow.buildWarningWindow(texts.folderNotEmptyMessage));
         }
 
         function buildFolderRenamingBlock(folder, level) {
@@ -468,7 +468,7 @@ define("imcms-image-content-builder",
                     usages += `<div>Doc: undefined ${usage.comment}</div>`;
                 }
             });
-            modalWindow.buildWarningWindow(texts.imageStillUsed + usages, new Function());
+            modalWindow.buildWarningWindow(texts.imageStillUsed + usages);
         }
 
         function buildImageDescription(imageFile) {
