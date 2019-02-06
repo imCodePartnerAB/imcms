@@ -34,7 +34,8 @@
     z-index: 65535;
 }
 
-.imcms-modal-window--warning {
+.imcms-modal-window--warning,
+.imcms-modal-window--error {
     height: auto;
     min-height: 200px;
     max-height: 600px;
@@ -48,6 +49,10 @@
     background-color: #ffc107;
 }
 
+.imcms-modal-window--error .imcms-modal-window__modal-head {
+    background-color: #ed4337;
+}
+
 .imcms-modal-window__modal-body {
     background-color: #f3f5f7;
     display: block;
@@ -55,7 +60,8 @@
     height: 100px;
 }
 
-.imcms-modal-window--warning .imcms-modal-window__modal-body {
+.imcms-modal-window--warning .imcms-modal-window__modal-body,
+.imcms-modal-window--error .imcms-modal-window__modal-body {
     height: auto;
 }
 

@@ -73,6 +73,10 @@
     background-image: url("/images_new/controls/icon_controll_warning.svg");
 }
 
+.imcms-control--error {
+    background-image: url("/images_new/controls/icon_controll_error.svg");
+}
+
 .imcms-folder__controls .imcms-control--move {
     background-image: url("/images_new/controls/icon_folder_controll_move.png");
 }
