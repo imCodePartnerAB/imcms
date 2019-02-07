@@ -8,7 +8,7 @@ define(
         'imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
         'imcms-ip-rules-rest-api', 'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms-rule-to-row-transformer'
     ],
-    function (BEM, $, components, texts, confirmationBuilder, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
+    function (BEM, $, components, texts, modal, rulesAPI, rolesRestApi, usersRestApi, ruleToRow) {
 
         const ruleEditor = {
             buildContainer: buildContainer,
@@ -44,28 +44,32 @@ define(
         initRequiredData();
 
         function initRequiredData() {
-            rolesRestApi.read().done((roles) => {
-                receivedRoles = roles;
+            rolesRestApi.read()
+                .done((roles) => {
+                    receivedRoles = roles;
 
-                //Init select with data
-                let rolesDataMapped = receivedRoles.map((role) => ({
-                    text: role.name,
-                    "data-value": role.id
-                }));
-                components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
-            });
+                    //Init select with data
+                    let rolesDataMapped = receivedRoles.map((role) => ({
+                        text: role.name,
+                        "data-value": role.id
+                    }));
+                    components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadRolesFailed));
 
-            usersRestApi.read().done((users) => {
-                receivedUsers = users;
+            usersRestApi.read()
+                .done((users) => {
+                    receivedUsers = users;
 
-                //Init select with data
-                let usersDataMapped = receivedUsers.map((user) => ({
-                    text: user.login,
-                    "data-value": user.id
-                }));
+                    //Init select with data
+                    let usersDataMapped = receivedUsers.map((user) => ({
+                        text: user.login,
+                        "data-value": user.id
+                    }));
 
-                components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
-            });
+                    components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadUsersFailed));
         }
 
         function buildRuleRange1Row() {
@@ -104,8 +108,8 @@ define(
         }
 
         function buildRuleRangeErrorsRow() {
-            $ruleRange1Error = components.texts.errorText("<div>", texts.wrongIpError, {style: 'display: none;'});
-            $ruleRange2Error = components.texts.errorText("<div>", texts.wrongIpError, {style: 'display: none;'});
+            $ruleRange1Error = components.texts.errorText("<div>", texts.error.invalidIP, {style: 'display: none;'});
+            $ruleRange2Error = components.texts.errorText("<div>", texts.error.invalidIP, {style: 'display: none;'});
 
             return new BEM({
                 block: 'ip-range',
@@ -173,17 +177,19 @@ define(
         }
 
         function onDeleteRule() {
-            confirmationBuilder.buildModalWindow(texts.deleteConfirm, confirmed => {
+            modal.buildModalWindow(texts.deleteConfirm, confirmed => {
                 if (!confirmed) {
                     return;
                 }
 
-                rulesAPI.remove(currentRule).done(() => {
-                    $ruleRow.remove();
-                    currentRule = null;
-                    onEditDelegate = onSimpleEdit;
-                    $container.slideUp();
-                });
+                rulesAPI.remove(currentRule)
+                    .done(() => {
+                        $ruleRow.remove();
+                        currentRule = null;
+                        onEditDelegate = onSimpleEdit;
+                        $container.slideUp();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
         }
 
@@ -214,32 +220,36 @@ define(
                     userId: $userSelect.getSelectedValue()
                 };
                 if (saveMe.id) {
-                    rulesAPI.replace(saveMe).done(savedRule => {
-                        currentRule = savedRule;
-                        $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked", currentRule.enabled);
-                        $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked", currentRule.restricted);
-                        $ruleRow.find('.rule-row__rule-ip-range').text(currentRule.ipRange);
-                        $ruleRow.find('.rule-row__rule-role').text(receivedRoles[currentRule.roleId].name);
-                        $ruleRow.find('.rule-row__rule-user').text(receivedUsers[currentRule.userId].login);
+                    rulesAPI.replace(saveMe)
+                        .done(savedRule => {
+                            currentRule = savedRule;
+                            $ruleRow.find('.rule-row__rule-enabled > :input').attr("checked", currentRule.enabled);
+                            $ruleRow.find('.rule-row__rule-restricted > :input').attr("checked", currentRule.restricted);
+                            $ruleRow.find('.rule-row__rule-ip-range').text(currentRule.ipRange);
+                            $ruleRow.find('.rule-row__rule-role').text(receivedRoles[currentRule.roleId].name);
+                            $ruleRow.find('.rule-row__rule-user').text(receivedUsers[currentRule.userId].login);
 
-                        onRuleView = onRuleSimpleView;
-                        prepareRuleView();
-                    });
+                            onRuleView = onRuleSimpleView;
+                            prepareRuleView();
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.updateFailed));
                 } else {
-                    rulesAPI.create(saveMe).done(rule => {
-                        $ruleRow = ruleToRow.transform((currentRule = rule), ruleEditor);
-                        $container.parent().find('.rules-table').append($ruleRow);
+                    rulesAPI.create(saveMe)
+                        .done(rule => {
+                            $ruleRow = ruleToRow.transform((currentRule = rule), ruleEditor);
+                            $container.parent().find('.rules-table').append($ruleRow);
 
-                        onRuleView = onRuleSimpleView;
-                        prepareRuleView();
-                    });
+                            onRuleView = onRuleSimpleView;
+                            prepareRuleView();
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.createFailed));
                 }
             }
         }
 
         function getOnDiscardChanges(onConfirm) {
             return () => {
-                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, confirmed => {
+                modal.buildModalWindow(texts.discardChangesMessage, confirmed => {
                     if (!confirmed) {
                         return;
                     }

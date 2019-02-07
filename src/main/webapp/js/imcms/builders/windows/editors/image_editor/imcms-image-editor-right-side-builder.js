@@ -6,7 +6,7 @@ define(
         "imcms-window-builder", "imcms-image-rotate", "imcms-image-editor-body-head-builder", 'imcms-image-resize',
         'imcms-crop-coords-controllers'
     ],
-    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modalWindowBuilder, events, WindowBuilder,
+    function (components, texts, contentManager, imcms, $, imageRestApi, BEM, modal, events, WindowBuilder,
               imageRotate, imageEditorBodyHeadBuilder, imageResize, cropCoordsControllers) {
 
         texts = texts.editors.image;
@@ -113,7 +113,9 @@ define(
 
                             const imageRequestData = getImageRequestData(imageData.langCode);
 
-                            imageRestApi.read(imageRequestData).done(fillData);
+                            imageRestApi.read(imageRequestData)
+                                .done(fillData)
+                                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
                         }
                     }]);
                 }
@@ -354,7 +356,9 @@ define(
 
                     imageData.allLanguages = opts.imageDataContainers.$allLanguagesCheckBox.isChecked();
 
-                    imageRestApi.remove(imageData).done(onImageSaved);
+                    imageRestApi.remove(imageData)
+                        .done(onImageSaved)
+                        .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
                 }
 
                 function getImageRequestData(langCode) {
@@ -485,7 +489,9 @@ define(
 
                     const imageRequestData = getImageRequestData(imcms.language.code);
 
-                    imageRestApi.read(imageRequestData).done(reloadImageOnPage);
+                    imageRestApi.read(imageRequestData)
+                        .done(reloadImageOnPage)
+                        .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
                 }
 
                 function callBackAltText(continueSaving) {
@@ -508,13 +514,15 @@ define(
 
                         imageData.format = $fileFormat.getSelectedValue();
 
-                        imageRestApi.create(imageData).done(onImageSaved);
+                        imageRestApi.create(imageData)
+                            .done(onImageSaved)
+                            .fail(() => modal.buildErrorWindow(texts.error.createFailed));
                     }
                 }
 
                 function saveAndClose() {
                     if (!opts.imageDataContainers.$altText.$input.val()) {
-                        modalWindowBuilder.buildModalWindow(texts.altTextConfirm, callBackAltText);
+                        modal.buildModalWindow(texts.altTextConfirm, callBackAltText);
 
                     } else {
                         callBackAltText(true);

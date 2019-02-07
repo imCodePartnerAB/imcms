@@ -7,8 +7,13 @@ const $ = require('jquery');
 const auth = require('imcms-authentication');
 const components = require('imcms-components-builder');
 const BEM = require('imcms-bem-builder');
+const modal = require("imcms-modal-window-builder");
+let texts = require("imcms-i18n-texts");
 
 $(function () {
+
+    texts = texts.login;
+
     const nextUrl = $('input[name=next_url]').val();
 
     function getIdentifierLink(authProvider) {
@@ -51,7 +56,9 @@ $(function () {
         $('.imcms-info-body__login').append($alternateLoginFooter);
     }
 
-    auth.getAuthProviders().done(onAuthProvidersLoaded);
+    auth.getAuthProviders()
+        .done(onAuthProvidersLoaded)
+        .fail(() => modal.buildErrorWindow(texts.error.loadProvidersFailed));
 
     $('#Username').focus();
 });

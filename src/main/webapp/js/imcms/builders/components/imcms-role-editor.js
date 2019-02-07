@@ -8,7 +8,7 @@ define(
         'imcms-bem-builder', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms-modal-window-builder',
         'imcms-roles-rest-api', 'imcms-role-to-row-transformer'
     ],
-    function (BEM, components, texts, confirmationBuilder, rolesRestAPI, roleToRow) {
+    function (BEM, components, texts, modal, rolesRestAPI, roleToRow) {
 
         texts = texts.superAdmin.roles;
 
@@ -70,19 +70,21 @@ define(
 
             permissionCheckboxes$.forEach($checkbox => {
                 $checkbox.$input.removeAttr('disabled');
-            })
+            });
         }
 
         function onDeleteRole() {
-            confirmationBuilder.buildModalWindow(texts.deleteConfirm, confirmed => {
+            modal.buildModalWindow(texts.deleteConfirm, confirmed => {
                 if (!confirmed) return;
 
-                rolesRestAPI.remove(currentRole).done(() => {
-                    $roleRow.remove();
-                    currentRole = null;
-                    onEditDelegate = onSimpleEdit;
-                    $container.slideUp();
-                })
+                rolesRestAPI.remove(currentRole)
+                    .done(() => {
+                        $roleRow.remove();
+                        currentRole = null;
+                        onEditDelegate = onSimpleEdit;
+                        $container.slideUp();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
         }
 
@@ -119,36 +121,40 @@ define(
             };
 
             if (saveMe.id) {
-                rolesRestAPI.update(saveMe).done(savedRole => {
-                    // todo: maybe there is better way to reassign fields' values, not object itself
-                    currentRole.id = savedRole.id;
-                    $roleRow.text(currentRole.name = savedRole.name);
-                    currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
-                    currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
-                    currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
-                    currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
+                rolesRestAPI.update(saveMe)
+                    .done(savedRole => {
+                        // todo: maybe there is better way to reassign fields' values, not object itself
+                        currentRole.id = savedRole.id;
+                        $roleRow.text(currentRole.name = savedRole.name);
+                        currentRole.permissions.getPasswordByEmail = savedRole.permissions.getPasswordByEmail;
+                        currentRole.permissions.accessToAdminPages = savedRole.permissions.accessToAdminPages;
+                        currentRole.permissions.useImagesInImageArchive = savedRole.permissions.useImagesInImageArchive;
+                        currentRole.permissions.changeImagesInImageArchive = savedRole.permissions.changeImagesInImageArchive;
 
-                    onRoleView = onRoleSimpleView;
-                    prepareRoleView();
-                });
+                        onRoleView = onRoleSimpleView;
+                        prepareRoleView();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.updateFailed));
             } else {
-                rolesRestAPI.create(saveMe).done(role => {
-                    $roleRow = roleToRow.transform((currentRole = role), roleEditor);
-                    $container.parent().find('.roles-table').append($roleRow);
+                rolesRestAPI.create(saveMe)
+                    .done(role => {
+                        $roleRow = roleToRow.transform((currentRole = role), roleEditor);
+                        $container.parent().find('.roles-table').append($roleRow);
 
-                    onRoleView = onRoleSimpleView;
-                    prepareRoleView();
-                });
+                        onRoleView = onRoleSimpleView;
+                        prepareRoleView();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.createFailed));
             }
         }
 
         function getOnDiscardChanges(onConfirm) {
             return () => {
-                confirmationBuilder.buildModalWindow(texts.discardChangesMessage, confirmed => {
+                modal.buildModalWindow(texts.discardChangesMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
                 });
-            }
+            };
         }
 
         function buildRoleEditButtons() {
@@ -247,7 +253,7 @@ define(
         function editRole($roleRow, role) {
             onEditDelegate($roleRow, role);
             onEditDelegate = () => {
-            }
+            };
         }
 
         var roleEditor = {

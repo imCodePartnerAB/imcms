@@ -5,9 +5,9 @@
 define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder", "jquery",
-        "imcms-events", "imcms-i18n-texts"
+        "imcms-events", "imcms-i18n-texts", "imcms-modal-window-builder"
     ],
-    function (BEM, components, loopREST, WindowBuilder, $, events, texts) {
+    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal) {
         let $title, $body, $listItems;
 
         texts = texts.editors.loop;
@@ -65,7 +65,9 @@ define("imcms-loop-editor-builder",
 
         function onSaveAndCloseClicked() {
             const loopElement = getLoopData();
-            loopREST.create(loopElement).done(onLoopSaved);
+            loopREST.create(loopElement)
+                .done(onLoopSaved)
+                .fail(() => modal.buildErrorWindow(texts.error.createFailed));
         }
 
         function buildEditor() {
@@ -199,7 +201,9 @@ define("imcms-loop-editor-builder",
         }
 
         function loadData(opts) {
-            loopREST.read(opts).done(buildData);
+            loopREST.read(opts)
+                .done(buildData)
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
         var loopWindowBuilder = new WindowBuilder({
@@ -220,6 +224,6 @@ define("imcms-loop-editor-builder",
             build: function (opts) {
                 loopWindowBuilder.buildWindow.apply(loopWindowBuilder, arguments);
             }
-        }
+        };
     }
 );

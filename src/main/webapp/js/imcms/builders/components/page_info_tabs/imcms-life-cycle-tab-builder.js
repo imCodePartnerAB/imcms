@@ -1,9 +1,9 @@
 define("imcms-life-cycle-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-users-rest-api", "imcms", "imcms-i18n-texts",
-        "imcms-date-time-validator", "imcms-page-info-tab"
+        "imcms-date-time-validator", "imcms-page-info-tab", "imcms-modal-window-builder"
     ],
-    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, PageInfoTab) {
+    function (BEM, components, usersRestApi, imcms, texts, dateTimeValidator, PageInfoTab, modal) {
 
         texts = texts.pageInfo.lifeCycle;
 
@@ -131,14 +131,15 @@ define("imcms-life-cycle-tab-builder",
                 name: "publisher"
             });
 
-            usersRestApi.getAllAdmins().done(users => {
-                const usersDataMapped = users.map(user => ({
-                    text: user.login,
-                    "data-value": user.id
-                }));
-
-                components.selects.addOptionsToSelect(usersDataMapped, tabData.$publisherSelect);
-            });// todo receive users with specific role admin
+            usersRestApi.getAllAdmins()
+                .done(users => {
+                    const usersDataMapped = users.map(user => ({
+                        text: user.login,
+                        "data-value": user.id
+                    }));
+                    components.selects.addOptionsToSelect(usersDataMapped, tabData.$publisherSelect);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.userLoadFailed)); // todo receive users with specific role admin
 
             return lifeCycleInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$publisherSelect}]);
         }

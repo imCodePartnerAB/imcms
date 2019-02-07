@@ -9,7 +9,7 @@ define("imcms-page-info-builder",
         "imcms-modal-window-builder", "imcms-i18n-texts", 'imcms-appearance-tab-builder'
     ],
     (BEM, components, documentsRestApi, WindowBuilder, pageInfoTabs, $, events, imcms, docFilesAjaxApi,
-     modalWindowBuilder, texts, appearanceTab) => {
+     modal, texts, appearanceTab) => {
 
         texts = texts.pageInfo;
 
@@ -33,7 +33,7 @@ define("imcms-page-info-builder",
         }
 
         function closePageInfo() {
-            modalWindowBuilder.buildConfirmWindowWithDontShowAgain(
+            modal.buildConfirmWindowWithDontShowAgain(
                 texts.confirmMessageOnCancel,
                 () => pageInfoWindowBuilder.closeWindow(),
                 "page-info-close"
@@ -45,37 +45,39 @@ define("imcms-page-info-builder",
 
             pageInfoWindowBuilder.closeWindow();
 
-            documentsRestApi.create(documentDTO).done((savedDoc) => {
+            documentsRestApi.create(documentDTO)
+                .done((savedDoc) => {
 
-                if (documentDTO.newFiles) {
-                    // files saved separately because of different content types and in file-doc case
-                    documentDTO.newFiles.append("docId", savedDoc.id);
-                    docFilesAjaxApi.postFiles(documentDTO.newFiles);
-                }
+                    if (documentDTO.newFiles) {
+                        // files saved separately because of different content types and in file-doc case
+                        documentDTO.newFiles.append("docId", savedDoc.id);
+                        docFilesAjaxApi.postFiles(documentDTO.newFiles);
+                    }
 
-                if (documentDTO.id === imcms.document.id) {
-                    events.trigger("imcms-version-modified");
+                    if (documentDTO.id === imcms.document.id) {
+                        events.trigger("imcms-version-modified");
 
-                } else {
-                    documentDTO.id = savedDoc.id;
-                }
+                    } else {
+                        documentDTO.id = savedDoc.id;
+                    }
 
-                if (onDocumentSavedCallback) {
-                    onDocumentSavedCallback(savedDoc);
-                }
+                    if (onDocumentSavedCallback) {
+                        onDocumentSavedCallback(savedDoc);
+                    }
 
-                if (onDocumentSaved) {
-                    onDocumentSaved(savedDoc);
-                }
-            });
+                    if (onDocumentSaved) {
+                        onDocumentSaved(savedDoc);
+                    }
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.createDocumentFailed));
         }
 
         function saveAndPublish() {
-            saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"))
+            saveAndClose(() => events.trigger("imcms-publish-new-version-current-doc"));
         }
 
         function confirmSaving() {
-            modalWindowBuilder.buildConfirmWindow(texts.confirmMessage, saveAndClose)
+            modal.buildConfirmWindow(texts.confirmMessage, saveAndClose);
         }
 
         function validateDoc() {
@@ -89,7 +91,7 @@ define("imcms-page-info-builder",
             return () => {
                 const validationResult = validateDoc();
                 (validationResult.isValid) ? callMeIfValid.call() : alert(validationResult.message);
-            }
+            };
         }
 
         function buildPageInfoFooterButtons() {
@@ -148,20 +150,22 @@ define("imcms-page-info-builder",
                 requestData.type = docType;
             }
 
-            documentsRestApi.read(requestData).done((document) => {
-                documentDTO = document;
-                $title.text((document.id) ? (texts.document + " " + document.id) : texts.newDocument);
+            documentsRestApi.read(requestData)
+                .done((document) => {
+                    documentDTO = document;
+                    $title.text((document.id) ? (texts.document + " " + document.id) : texts.newDocument);
 
-                pageInfoTabs.tabBuilders.forEach((tab) => {
-                    if (tab.isDocumentTypeSupported(document.type)) {
-                        tab.fillTabDataFromDocument(document);
-                        tab.showTab();
+                    pageInfoTabs.tabBuilders.forEach((tab) => {
+                        if (tab.isDocumentTypeSupported(document.type)) {
+                            tab.fillTabDataFromDocument(document);
+                            tab.showTab();
 
-                    } else {
-                        tab.hideTab();
-                    }
-                });
-            });
+                        } else {
+                            tab.hideTab();
+                        }
+                    });
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadDocumentFailed));
         }
 
         function clearPageInfoData() {

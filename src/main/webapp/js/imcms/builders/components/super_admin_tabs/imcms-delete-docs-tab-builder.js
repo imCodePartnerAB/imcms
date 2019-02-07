@@ -22,10 +22,10 @@ define(
 
                 docs.remove($inputBlock.getInput().val())
                     .done(() => {
-                        $inputBlock.getInput().val('')
+                        $inputBlock.getInput().val('');
                     })
                     .fail(() => {
-                        $inputBlock.find('.imcms-error-msg').slideDown()
+                        $inputBlock.find('.imcms-error-msg').slideDown();
                     });
             });
         }

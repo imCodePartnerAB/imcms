@@ -7,7 +7,7 @@ define("imcms-image-content-builder",
         "imcms-image-files-rest-api", "imcms-image-folders-rest-api", "imcms-bem-builder", "imcms-components-builder",
         "imcms-primitives-builder", "imcms-modal-window-builder", "jquery", "imcms-i18n-texts", 'imcms'
     ],
-    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, modalWindow, $, texts, imcms) {
+    function (imageFilesREST, imageFoldersREST, BEM, components, primitives, modal, $, texts, imcms) {
         const OPENED_FOLDER_BTN_CLASS = "imcms-folder-btn--open";
         const SUBFOLDER_CLASS = "imcms-folders__subfolder";
         const ACTIVE_FOLDER_CLASS = "imcms-folder--active";
@@ -144,17 +144,25 @@ define("imcms-image-content-builder",
             const name = this.name;
 
             const onRemoveResponse = response => {
-                if (response) onDoneRemoveFolder($folder);
-                else console.error(`Folder ${name} was not removed!`);
+                if (response) {
+                    onDoneRemoveFolder($folder);
+                }
             };
 
             const onAnswer = answer => {
-                if (answer) imageFoldersREST.remove({"path": path}).done(onRemoveResponse);
+                if (answer) {
+                    imageFoldersREST.remove({"path": path})
+                        .done(onRemoveResponse)
+                        .fail(() => {
+                            console.error(`Folder ${name} was not removed!`);
+                            return modal.buildErrorWindow(texts.error.removeFailed);
+                        });
+                }
             };
 
             imageFoldersREST.canDelete({"path": path})
-                .done(() => modalWindow.buildModalWindow(`${texts.removeFolderMessage}${name}"?`, onAnswer))
-                .fail(() => modalWindow.buildWarningWindow(texts.folderNotEmptyMessage));
+                .done(() => modal.buildModalWindow(`${texts.removeFolderMessage}${name}"?`, onAnswer))
+                .fail(() => modal.buildWarningWindow(texts.folderNotEmptyMessage));
         }
 
         function buildFolderRenamingBlock(folder, level) {
@@ -196,7 +204,7 @@ define("imcms-image-content-builder",
                 }
 
                 openSubFolders.call($openFolderBtn[0]);
-            }
+            };
         }
 
         function setCheckFolder(folder) {
@@ -208,8 +216,9 @@ define("imcms-image-content-builder",
                             let $image = $imagesContainer.children(`[data-image-name="${usedImage.imageName}"]`);
                             buildImageUsageInfoIcon($image, usedImage.usages);
                         });
-                    });
-            }
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.checkFailed));
+            };
         }
 
         function buildImageUsageInfoIcon($image, usages) {
@@ -274,14 +283,16 @@ define("imcms-image-content-builder",
                         contextOnSuccess.path = pathSplitBySeparator.join("/");
                     }
 
-                    onConfirm(dataOnConfirm).done(response => {
-                        if (response) {
-                            if (!isNewFolder) {
-                                opts.folder.path = contextOnSuccess.path;
+                    onConfirm(dataOnConfirm)
+                        .done(response => {
+                            if (response) {
+                                if (!isNewFolder) {
+                                    opts.folder.path = contextOnSuccess.path;
+                                }
+                                onSuccess.call(contextOnSuccess, response);
                             }
-                            onSuccess.call(contextOnSuccess, response);
-                        }
-                    });
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.addFolderFailed));
                 }
             });
 
@@ -370,19 +381,21 @@ define("imcms-image-content-builder",
         }
 
         function loadImages(folder, setCurrentImage) {
-            imageFoldersREST.read({"path": folder.path}).done(
-                imagesFolder => {
-                    folder.imagesAreLoaded = true;
-                    folder.files = imagesFolder.files;
+            imageFoldersREST.read({"path": folder.path})
+                .done(
+                    imagesFolder => {
+                        folder.imagesAreLoaded = true;
+                        folder.files = imagesFolder.files;
 
-                    buildImagesNotRecursive(folder);
+                        buildImagesNotRecursive(folder);
 
-                    $imagesContainer.append(folder.$images);
+                        $imagesContainer.append(folder.$images);
 
-                    showImagesIn(folder);
+                        showImagesIn(folder);
 
-                    setCurrentImage && setCurrentImage();
-                });
+                        setCurrentImage && setCurrentImage();
+                    })
+                .fail(() => modal.buildErrorWindow(texts.error.loadImagesFailed));
         }
 
         function buildFolder(subfolder, level) {
@@ -468,7 +481,7 @@ define("imcms-image-content-builder",
                     usages += `<div>Doc: undefined ${usage.comment}</div>`;
                 }
             });
-            modalWindow.buildWarningWindow(texts.imageStillUsed + usages);
+            modal.buildWarningWindow(texts.imageStillUsed + usages);
         }
 
         function buildImageDescription(imageFile) {
@@ -482,7 +495,7 @@ define("imcms-image-content-builder",
                             const element = this;
                             const question = `${texts.removeImageConfirm} ${imageFile.name} ?`;
 
-                            modalWindow.buildModalWindow(question, isUserSure => {
+                            modal.buildModalWindow(question, isUserSure => {
                                 if (isUserSure) {
                                     onImageDelete(element, imageFile);
                                 }
@@ -635,19 +648,23 @@ define("imcms-image-content-builder",
                 selectedFullImagePath = options.selectedImagePath;
                 $saveAndCloseBtn = options.$saveAndCloseBtn;
 
-                imageFoldersREST.read().done(loadImageFoldersContent);
+                imageFoldersREST.read()
+                    .done(loadImageFoldersContent)
+                    .fail(() => modal.buildErrorWindow(texts.error.loadImagesFailed));
             },
             onImageUpload: formData => {
                 const saveImageRequestData = formData;
                 saveImageRequestData.append("folder", getFolderPath(activeFolder.$folder));
 
-                imageFilesREST.postFiles(saveImageRequestData).done(uploadedImageFiles => {
-                    const $newImages = uploadedImageFiles.map(imageFile => buildImage(imageFile).css("display", "block"));
-                    activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
-                    $imagesContainer.append($newImages);
-                    activeFolder.$images = activeFolder.$images.concat($newImages);
-                    viewModel.$images = viewModel.$images.concat($newImages);
-                });
+                imageFilesREST.postFiles(saveImageRequestData)
+                    .done(uploadedImageFiles => {
+                        const $newImages = uploadedImageFiles.map(imageFile => buildImage(imageFile).css("display", "block"));
+                        activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
+                        $imagesContainer.append($newImages);
+                        activeFolder.$images = activeFolder.$images.concat($newImages);
+                        viewModel.$images = viewModel.$images.concat($newImages);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.uploadImagesFailed));
             },
             clearContent: () => {
                 activeFolder = selectedImage = null;

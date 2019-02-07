@@ -6,10 +6,10 @@ define("imcms-admin-panel-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-page-info-builder", "imcms-document-editor-builder",
         "jquery", "imcms", "imcms-events", "imcms-languages-rest-api", "imcms-top-panel-visibility-initiator",
-        "imcms-i18n-texts", "imcms-admin-panel-settings-builder"
+        "imcms-i18n-texts", "imcms-admin-panel-settings-builder", "imcms-modal-window-builder"
     ],
     function (BEM, componentsBuilder, pageInfoBuilder, documentEditorBuilder, $, imcms, events, languagesRestApi,
-              panelVisibility, texts, panelSettings) {
+              panelVisibility, texts, panelSettings, modal) {
 
         let $panelContainer, $panel;
 
@@ -146,9 +146,12 @@ define("imcms-admin-panel-builder",
             const languageCode = $(this).text();
 
             if (languageCode !== imcms.language.code) {
-                languagesRestApi.replace({code: languageCode}).done(() => {
-                    location.reload(true);
-                });
+                languagesRestApi.replace({code: languageCode})
+                    .done(() => {
+                        location.reload(true);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+
             }
         }
 

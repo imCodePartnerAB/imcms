@@ -6,9 +6,11 @@ define(
     'imcms-text-editor-utils',
     [
         'tinymce', 'imcms-texts-rest-api', 'imcms-events', 'jquery', 'imcms-modal-window-builder',
-        'imcms-text-editor-types'
+        'imcms-text-editor-types', 'imcms-i18n-texts'
     ],
-    function (tinyMCE, textsRestApi, events, $, modalWindowBuilder, editorTypes) {
+    function (tinyMCE, textsRestApi, events, $, modal, editorTypes, texts) {
+
+        texts = texts.editor.text;
 
         const ACTIVE_EDIT_AREA_CLASS = 'imcms-editor-area--active';
         const ACTIVE_EDIT_AREA_CLASS_$ = '.' + ACTIVE_EDIT_AREA_CLASS;
@@ -42,27 +44,27 @@ define(
 
             switch (textDTO.type) {
                 case editorTypes.html:
-                case editorTypes.htmlFromEditor:
-                {
+                case editorTypes.htmlFromEditor: {
                     textDTO.text = textDTO.text.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
                     if (textDTO.type === editorTypes.htmlFromEditor) textDTO.type = editorTypes.html;
                     break;
                 }
                 case editorTypes.text:
-                case editorTypes.textFromEditor:
-                {
+                case editorTypes.textFromEditor: {
                     textDTO.text = textDTO.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
                     if (textDTO.type === editorTypes.textFromEditor) textDTO.type = editorTypes.text;
                 }
             }
 
-            textsRestApi.create(textDTO).done(() => {
-                events.trigger('imcms-version-modified');
-                editor.startContent = editor.getContent();
-                editor.setDirty(false);
+            textsRestApi.create(textDTO)
+                .done(() => {
+                    events.trigger('imcms-version-modified');
+                    editor.startContent = editor.getContent();
+                    editor.setDirty(false);
 
-                onSaved && onSaved.call && onSaved.call();
-            });
+                    onSaved && onSaved.call && onSaved.call();
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.createFailed));
         }
 
         function setEditorFocus(activeTextEditor) {
@@ -74,7 +76,7 @@ define(
                     .removeClass('mce-edit-focus');
 
                 $(this).closest('.imcms-editor-area--text').addClass(ACTIVE_EDIT_AREA_CLASS);
-            })
+            });
         }
 
         function onEditorBlur(editor) {
@@ -82,7 +84,7 @@ define(
                 return;
             }
 
-            modalWindowBuilder.buildConfirmWindow('Save changes?', () => {
+            modal.buildConfirmWindow('Save changes?', () => {
                 saveContent(editor);
             });
         }
@@ -102,6 +104,6 @@ define(
             setEditorFocus: setEditorFocus,
             onEditorBlur: onEditorBlur,
             showEditButton: showEditButton
-        }
+        };
     }
 );

@@ -4,9 +4,11 @@
  */
 define(
     'imcms-system-properties-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-settings-rest-api',
-        'imcms-components-builder'],
-    function (SuperAdminTab, BEM, texts, propertyRestApi, components) {
+    [
+        'imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-settings-rest-api',
+        'imcms-components-builder', "imcms-modal-window-builder"
+    ],
+    function (SuperAdminTab, BEM, texts, propertyRestApi, components, modal) {
 
         texts = texts.superAdmin.systemProperties;
 
@@ -20,7 +22,7 @@ define(
         function buildPageRow() {
 
             function buildTitleTextStartPage() {
-                return components.texts.titleText('<div>', texts.sections.startPage.name, {})
+                return components.texts.titleText('<div>', texts.sections.startPage.name, {});
             }
 
             function buildCreateFiledInputNumberPage() {
@@ -59,40 +61,42 @@ define(
             propertyRestApi.update({id: property.id, value: property.value});
         }
 
-        propertyRestApi.getAllProperties().done(properties => {
-            properties.forEach(property => {
-                switch (property.name) {
-                    case 'StartDocument':
-                        inputNumberPage.val(property.value);
-                        inputNumberPage.data('id', property.id);
-                        break;
-                    case 'SystemMessage':
-                        systemMessage.val(property.value);
-                        systemMessage.data('id', property.id);
-                        break;
-                    case 'ServerMaster':
-                        serverMasterName.val(property.value);
-                        serverMasterName.data('id', property.id);
-                        break;
-                    case 'ServerMasterAddress':
-                        serverMasterEmail.val(property.value);
-                        serverMasterEmail.data('id', property.id);
-                        break;
-                    case 'WebMaster':
-                        webMasterFieldName.val(property.value);
-                        webMasterFieldName.data('id', property.id);
-                        break;
-                    case 'WebMasterAddress':
-                        webMasterFieldEmail.val(property.value);
-                        webMasterFieldEmail.data('id', property.id);
-                        break;
-                }
+        propertyRestApi.getAllProperties()
+            .done(properties => {
+                properties.forEach(property => {
+                    switch (property.name) {
+                        case 'StartDocument':
+                            inputNumberPage.val(property.value);
+                            inputNumberPage.data('id', property.id);
+                            break;
+                        case 'SystemMessage':
+                            systemMessage.val(property.value);
+                            systemMessage.data('id', property.id);
+                            break;
+                        case 'ServerMaster':
+                            serverMasterName.val(property.value);
+                            serverMasterName.data('id', property.id);
+                            break;
+                        case 'ServerMasterAddress':
+                            serverMasterEmail.val(property.value);
+                            serverMasterEmail.data('id', property.id);
+                            break;
+                        case 'WebMaster':
+                            webMasterFieldName.val(property.value);
+                            webMasterFieldName.data('id', property.id);
+                            break;
+                        case 'WebMasterAddress':
+                            webMasterFieldEmail.val(property.value);
+                            webMasterFieldEmail.data('id', property.id);
+                            break;
+                    }
+                });
             })
-        });
+            .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
         function buildSystemMessageRow() {
             function buildCreateTitleSystemMessage() {
-                return components.texts.titleText('<div>', texts.sections.systemMessage.name, {})
+                return components.texts.titleText('<div>', texts.sections.systemMessage.name, {});
 
             }
 
@@ -132,7 +136,7 @@ define(
 
         function buildServerMasterRow() {
             function buildCreateTitleServerMaster() {
-                return components.texts.titleText('<div>', texts.sections.serverMaster.name, {})
+                return components.texts.titleText('<div>', texts.sections.serverMaster.name, {});
 
             }
 
@@ -188,7 +192,7 @@ define(
 
         function buildWebMasterRow() {
             function buildCreateTilteWebMaster() {
-                return components.texts.titleText('<div>', texts.sections.webMaster.name, {})
+                return components.texts.titleText('<div>', texts.sections.webMaster.name, {});
 
             }
 

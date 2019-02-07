@@ -1,9 +1,8 @@
 define("imcms-access-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator", "jquery",
-        "imcms-i18n-texts", "imcms-page-info-tab"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator", "jquery", "imcms-page-info-tab", "imcms-modal-window-builder"
     ],
-    function (BEM, components, rolesRestApi, uuidGenerator, $, texts, PageInfoTab) {
+    function (BEM, components, rolesRestApi, uuidGenerator, $, texts, PageInfoTab, modal) {
 
         texts = texts.pageInfo.access;
 
@@ -117,10 +116,12 @@ define("imcms-access-tab-builder",
                     components.selects.addOptionsToSelect(rolesDataMapped, $addRoleSelect);
                 }
 
-                storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null).done(roles => {
-                    storeRoles(roles);
-                    mapRoles(roles);
-                });
+                storedRoles ? mapRoles(storedRoles) : rolesRestApi.read(null)
+                    .done(roles => {
+                        storeRoles(roles);
+                        mapRoles(roles);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
             }
 
             const $titleRole = rolesBEM.buildBlockElement("title", "<div>", {text: texts.role}),
@@ -230,10 +231,12 @@ define("imcms-access-tab-builder",
                 }
             }
 
-            (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null).done(roles => {
-                storeRoles(roles);
-                buildRolesRows(roles);
-            });
+            (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null)
+                .done(roles => {
+                    storeRoles(roles);
+                    buildRolesRows(roles);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         };
         AccessTab.prototype.saveData = function (documentDTO) {
             documentDTO.roleIdToPermission = {};
