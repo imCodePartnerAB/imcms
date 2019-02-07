@@ -394,6 +394,7 @@ const texts = {
                     role: 'Roll',
                     user: 'Användare'
                 },
+
                 wrongIpError: 'Ogiltig ipv4/ipv6 adress'
             },
             deleteDocs: {
@@ -496,7 +497,10 @@ const texts = {
                         inputEmail: "Webmaster e-postinmatning"
                     },
                 },
-                changeButton: "Byta"
+                changeButton: "Byta",
+                error: {
+                    loadFailed: ""
+                }
             }
         }
     },
@@ -522,6 +526,9 @@ const texts = {
                     unlockPanel: "Unlock Admin Panel",
                     hidePanel: "Hide Admin Panel"
                 }
+            },
+            error: {
+                loadFailed: "Failed to reload. Try again"
             },
             'public': 'public',
             publicTitle: 'Shows the published view',
@@ -600,7 +607,10 @@ const texts = {
                 publisher: "Publisher",
                 currentVersion: "Current version:",
                 versionHasChanges: "This offline version has changes.",
-                publishMessage: "Please press \"Save and publish this version\" to publish as version № "
+                publishMessage: "Please press \"Save and publish this version\" to publish as version № ",
+                error: {
+                    userLoadFailed: 'Failed to fetch publishers. Try again',
+                }
             },
             appearance: {
                 name: "Appearance",
@@ -615,7 +625,10 @@ const texts = {
                 disableSearch: "Disable search"
             },
             categories: {
-                name: "Categories"
+                name: "Categories",
+                error: {
+                    loadFailed: "Failed to fetch categories. Try gain"
+                }
             },
             access: {
                 name: "Access",
@@ -624,7 +637,10 @@ const texts = {
                 edit: "edit",
                 restricted_1: "restricted 1",
                 restricted_2: "restricted 2",
-                addRole: "Add role"
+                addRole: "Add role",
+                error: {
+                    loadFailed: "Failed to fetch roles. Try gain"
+                }
             },
             permissions: {
                 name: "Permission settings",
@@ -658,6 +674,10 @@ const texts = {
                 ok: "ok",
                 cancel: "cancel",
                 saveAndPublish: "save and publish this version"
+            },
+            error: {
+                createDocumentFailed: 'Failed to save document. Try again',
+                loadDocumentFailed: 'Failed to load. Try again'
             }
         },
         modal: {
@@ -698,6 +718,13 @@ const texts = {
                     disapproved: "Disapproved",
                     archived: "Archived",
                     passed: "Publication end"
+                },
+                error: {
+                    searchFailed: 'Search failed. Try again',
+                    userLoadFailed: 'Failed to fetch users. Try again',
+                    categoriesLoadFailed: 'Failed to fetch categories. Try again',
+                    copyDocumentFailed: 'Failed to copy document. Try again',
+                    removeDocumentFailed: 'Failed to remove document. Try again'
                 }
             },
             newDocument: {
@@ -715,7 +742,10 @@ const texts = {
                 buildByParent: "Use any text document id",
                 buildByCurrentDocId: "This document’s settings",
                 selectProfile: "Select profile",
-                selectParent: "Select parent document"
+                selectParent: "Select parent document",
+                error: {
+                    loadProfilesFailed: "Failed to fetch categories. Try again"
+                }
             },
             menu: {
                 newDoc: "New",
@@ -724,7 +754,12 @@ const texts = {
                 docTitle: "Title",
                 status: "Status",
                 removeConfirmation: "Do you want to remove the menu item \"",
-                saveAndClose: "Save and close"
+                saveAndClose: "Save and close",
+                error: {
+                    createFailed: 'Failed to save menu. Try again',
+                    copyDocumentFailed: 'Failed to copy document. Try again',
+                    loadFailed: 'Failed to load. Try again'
+                }
             },
             loop: {
                 title: "Loop Editor",
@@ -732,7 +767,11 @@ const texts = {
                 saveAndClose: "Save and close",
                 id: "ID",
                 content: "text content",
-                isEnabled: "is enabled"
+                isEnabled: "is enabled",
+                error: {
+                    createFailed: 'Failed to create loop. Try again',
+                    loadFailed: 'Failed to load. Try again'
+                }
             },
             content: {
                 title: "Content manager",
@@ -749,6 +788,13 @@ const texts = {
                 newFolderName: "New folder name",
                 add: "ADD+",
                 openImage: "Open image in new window",
+                error: {
+                    removeFailed: 'Failed to remove. Try again',
+                    checkFailed: 'Failed to check. Try again',
+                    addFolderFailed: 'Failed to add folder. Try again',
+                    loadImagesFailed: 'Failed to fetch images. Try again',
+                    uploadImagesFailed: 'Failed to fetch images. Try again'
+                }
             },
             image: {
                 title: "Image Editor",
@@ -803,7 +849,22 @@ const texts = {
                 saveAndClose: "Save and close",
                 exif: {
                     button: "Show exif info"
+                },
+                error: {
+                    loadFailed: 'Failed to load image. Try again',
+                    removeFailed: 'Failed to remove image. Try again',
+                    createFailed: 'Failed to create image. Try again'
                 }
+            },
+            text:{
+                error:{
+                    createFailed: 'Failed to save text. Try again'
+                }
+            }
+        },
+        languageFlags: {
+            error: {
+                loadFailed: 'Failed to load languages. Try again'
             }
         },
         textHistory: {
@@ -811,14 +872,20 @@ const texts = {
             cancel: "Cancel",
             writeToText: "Write to text field",
             viewSource: "View Source",
-            viewText: "View Text"
+            viewText: "View Text",
+            error: {
+                loadFailed: 'Failed to fetch history. Try again'
+            }
         },
         textValidation: {
             title: "Validation on W3C",
             ok: "OK",
             output: "Validation result: ",
             errors: " Errors",
-            warnings: " Warnings"
+            warnings: " Warnings",
+            error:{
+                validationFailed:'Failed to validate. Try again'
+            }
         },
         sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?",
         contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving.",
@@ -846,7 +913,12 @@ const texts = {
                     email: 'Email',
                     archived: 'archived'
                 },
-                createNewUser: 'Create new user'
+                createNewUser: 'Create new user',
+                error: {
+                    loadRolesFailed: 'Failed to fetch roles. Try again',
+                    updateFailed: 'Failed to update user. Try again',
+                    searchFailed: 'Failed to search for users. Try again'
+                }
             },
             roles: {
                 name: 'Roles',
@@ -867,7 +939,21 @@ const texts = {
                 editRole: 'Edit role',
                 deleteRole: 'Delete role',
                 saveChanges: 'Save changes',
-                discardChangesMessage: 'Discard changes?'
+                discardChangesMessage: 'Discard changes?',
+                error: {
+                    loadFailed: 'Failed to fetch roles. Try again',
+                    loadProvidersFailed: 'Failed to auth providers. Try again',
+                    removeFailed: 'Failed to remove role. Try again',
+                    updateFailed: 'Failed to update role. Try again',
+                    createFailed: 'Failed to create role. Try again',
+                    externalRoles: {
+                        loadFailed: 'Failed to fetch external roles. Try again',
+                        updateFailed: 'Failed to update external role. Try again',
+                    },
+                    azureRoles: {
+                        loadFailed: 'Failed to fetch external roles. Try again',
+                    }
+                }
             },
             ipAccess: {
                 name: 'IP Access',
@@ -887,7 +973,15 @@ const texts = {
                     role: 'Role',
                     user: 'User'
                 },
-                wrongIpError: 'Invalid ipv4/ipv6 address'
+                error: {
+                    loadFailed: 'Failed to fetch rules. Try again',
+                    removeFailed: 'Failed to remove rule. Try again',
+                    updateFailed: 'Failed to update rule. Try again',
+                    createFailed: 'Failed to create rule. Try again',
+                    loadRolesFailed: 'Failed to fetch roles. Try again',
+                    loadUsersFailed: 'Failed to fetch users. Try again',
+                    invalidIP: 'Invalid ipv4/ipv6 address',
+                }
             },
             deleteDocs: {
                 name: 'Delete Documents',
@@ -921,8 +1015,10 @@ const texts = {
                     hostFound: 'Host found',
                     hostReachable: 'Host reachable',
                     pageFound: 'Page found'
+                },
+                error: {
+                    validationFailed: 'Failed to validate. Try again',
                 }
-
             },
             categories: {
                 name: 'Categories',
@@ -957,6 +1053,15 @@ const texts = {
                         icon: 'Icon',
                         categoryType: 'Add to category type'
                     }
+                },
+                error: {
+                    category: {
+                        loadFailed: 'Failed to fetch category. Try again',
+                    },
+                    categoryType: {
+                        loadFailed: 'Failed to fetch categories types. Try again',
+                        removeFailed: 'Failed to remove category type. Try again'
+                    }
                 }
             },
             profiles: {
@@ -966,7 +1071,6 @@ const texts = {
                 warnChangeMessage: 'Do you want to change this profile?',
                 warnDelete: 'Do you really delete this profile?',
                 warnCancelMessage: 'Do you want to really cancel?',
-                error: 'Sorry, but you did mistake!',
                 cancel: 'Cancel',
                 titleTextName: 'Name',
                 titleTextDocName: 'Document name',
@@ -983,6 +1087,11 @@ const texts = {
                     buttonEdit: 'Edit profile',
                     buttonDelete: 'Delete profile'
                 },
+                error: {
+                    createFailed: 'Failed to create profile. Try again',
+                    loadFailed: 'Failed to fetch profiles. Try again',
+                    errorMessage: 'Sorry, but you did mistake!'
+                }
             },
             systemProperties: {
                 name: 'System Properties',
@@ -1016,7 +1125,15 @@ const texts = {
                         inputEmail: "Web master email input"
                     },
                 },
-                changeButton: "Change"
+                changeButton: "Change",
+                error: {
+                    loadFailed: 'Failed to load properties. Try again'
+                }
+            }
+        },
+        login:{
+            error:{
+                loadProvidersFailed: 'Failed to auth providers. Try again'
             }
         }
     }
