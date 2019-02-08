@@ -522,10 +522,10 @@ const texts = {
                     hidden: "Hidden",
                     hiddenTitle: "Panel is hidden by default, you can open it by clicking on small icon on the top of the page",
                     visible: "Visible",
-                    visibleTitle: "Panel is always visible",
-                    unlockPanel: "Unlock Admin Panel",
-                    hidePanel: "Hide Admin Panel"
-                }
+                    visibleTitle: "Panel is always visible"
+                },
+                unlockPanel: "Unlock Admin Panel",
+                hidePanel: "Hide Admin Panel"
             },
             error: {
                 loadFailed: "Failed to reload. Try again"
@@ -856,8 +856,8 @@ const texts = {
                     createFailed: 'Failed to create image. Try again'
                 }
             },
-            text:{
-                error:{
+            text: {
+                error: {
                     createFailed: 'Failed to save text. Try again'
                 }
             }
@@ -883,8 +883,8 @@ const texts = {
             output: "Validation result: ",
             errors: " Errors",
             warnings: " Warnings",
-            error:{
-                validationFailed:'Failed to validate. Try again'
+            error: {
+                validationFailed: 'Failed to validate. Try again'
             }
         },
         sessionExpiredMessage: "You have been logged out due to inactivity. Redirect to login page?",
@@ -1131,8 +1131,8 @@ const texts = {
                 }
             }
         },
-        login:{
-            error:{
+        login: {
+            error: {
                 loadProvidersFailed: 'Failed to auth providers. Try again'
             }
         }
