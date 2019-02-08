@@ -23,7 +23,6 @@ import imcode.server.ImcmsServices;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -203,7 +202,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setId(user.getId());
         userDO.setLoginName(user.getLogin());
         userDO.setImcmsExternal(user.isExternal());
-        userDO.setLanguageIso639_2(ObjectUtils.defaultIfNull(user.getLanguageIso639_2(), services.getLanguageMapper().getDefaultLanguage()));
+        userDO.setLanguageIso639_2(services.getLanguageMapper().getDefaultLanguage());
         userDO.setLastName(user.getLastName());
         userDO.setPassword(user.getPassword(), UserDomainObject.PasswordType.valueOf(user.getPasswordType().name()));
         Optional.ofNullable(user.getPasswordReset()).ifPresent(passwordReset ->
