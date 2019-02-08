@@ -30,6 +30,9 @@ const texts = {
                 unlockPanel: "Lås Upp Administratörspanelen",
                 hidePanel: "Dölj Administrationspanelen"
             },
+            error: {
+                loadFailed: "Misslyckades att ladda om. Försök igen"
+            },
             "public": "offentlig",
             publicTitle: 'Visar den publicerade vyn',
             edit: "redigera",
@@ -52,7 +55,7 @@ const texts = {
             documentId: "Dokument ",
             documentIdTitle: "Dokument no",
             elementIndex: "Element ",
-            elementIndexTitle: "Element no",
+            elementIndexTitle: "Element no"
         },
         pageInfo: {
             document: "Dokument",
@@ -72,7 +75,7 @@ const texts = {
                 replaceAll: "Ersätt alla",
                 alias: "Dokumentets alias",
                 aliasPlaceholder: "detta-dokument-alias",
-                missingLangRule: "Om det begärda språket saknas:",
+                missingLangRuleTitle: "Om det begärda språket saknas:",
                 showInDefault: "Visa i standardspråk om det är aktiverat",
                 doNotShow: "Visa inte alls"
             },
@@ -107,7 +110,10 @@ const texts = {
                 publisher: "Utgivare",
                 currentVersion: "Aktuell version:",
                 versionHasChanges: "Denna arbetsversion har ändringar",
-                publishMessage: "Tryck \"Spara och publicera den här versionen\" för att publicera"
+                publishMessage: "Tryck \"Spara och publicera den här versionen\" för att publicera",
+                error: {
+                    userLoadFailed: 'Misslyckades med att hämta utgivare. Försök igen'
+                }
             },
             appearance: {
                 name: "Utseende",
@@ -122,7 +128,10 @@ const texts = {
                 disableSearch: "Inaktivera sökning"
             },
             categories: {
-                name: "Kategorier"
+                name: "Kategorier",
+                error: {
+                    loadFailed: "Misslyckades med att hämta kategorier. Försök få vinst"
+                }
             },
             access: {
                 name: "Behörigheter",
@@ -131,7 +140,10 @@ const texts = {
                 edit: "redigera",
                 restricted_1: "begränsad 1",
                 restricted_2: "begränsad 2",
-                addRole: "Lägg till roll"
+                addRole: "Lägg till roll",
+                error: {
+                    loadFailed: "Misslyckades med att hämta roller. Försök få vinst"
+                }
             },
             permissions: {
                 name: "Behörighetsinställningar",
@@ -165,6 +177,10 @@ const texts = {
                 ok: "ok",
                 cancel: "avbryt",
                 saveAndPublish: "spara och publicera den här versionen"
+            },
+            error: {
+                createDocumentFailed: 'Misslyckades med att spara dokument. Försök igen',
+                loadDocumentFailed: 'Misslyckades att ladda. Försök igen'
             }
         },
         modal: {
@@ -189,7 +205,7 @@ const texts = {
                     copy: {
                         title: "Kopiera",
                         confirmMessage: "Vill du verkligen kopiera (all information i dokumentet kommer att kopieras) doc med id "
-                    },
+                    }
                 },
                 sort: {
                     id: "ID",
@@ -205,6 +221,13 @@ const texts = {
                     disapproved: "Ej godkänd",
                     archived: "Arkiverat",
                     passed: "Publiceringsänden"
+                },
+                error: {
+                    searchFailed: 'Sökningen misslyckades. Försök igen',
+                    userLoadFailed: 'Misslyckades med att hämta användare. Försök igen',
+                    categoriesLoadFailed: 'Misslyckades med att hämta kategorier. Försök igen',
+                    copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
+                    removeDocumentFailed: 'Misslyckades med att ta bort dokument. Försök igen'
                 }
             },
             newDocument: {
@@ -222,7 +245,10 @@ const texts = {
                 buildByParent: "Välj valfritt textdokuments ID",
                 buildByCurrentDocId: "Välj detta dokument som profil",
                 selectProfile: "Välj profil",
-                selectParent: "Välj 'förälder'"
+                selectParent: "Välj 'förälder'",
+                error: {
+                    loadProfilesFailed: "Misslyckades med att hämta kategorier. Försök igen"
+                }
             },
             menu: {
                 newDoc: "Ny",
@@ -231,7 +257,12 @@ const texts = {
                 docTitle: "Rubrik",
                 status: "Status",
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
-                saveAndClose: "Spara och stäng"
+                saveAndClose: "Spara och stäng",
+                error: {
+                    createFailed: 'Det gick inte att spara menyn. Försök igen',
+                    copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
+                    loadFailed: 'Misslyckades att ladda. Försök igen'
+                }
             },
             loop: {
                 title: ";odul-redigerare",
@@ -239,7 +270,11 @@ const texts = {
                 saveAndClose: "Spara och stäng",
                 id: "ID",
                 content: "innehåll",
-                isEnabled: "är aktiverad"
+                isEnabled: "är aktiverad",
+                error: {
+                    createFailed: 'Misslyckades med att skapa loop. Försök igen',
+                    loadFailed: 'Misslyckades att ladda. Försök igen'
+                }
             },
             content: {
                 title: "Bildarkiv",
@@ -256,6 +291,13 @@ const texts = {
                 newFolderName: "Nytt mappnamn",
                 add: "LÄGG TILL+",
                 openImage: "Öppna bild i nytt fönster",
+                error: {
+                    removeFailed: 'Misslyckades med att ta bort. Försök igen',
+                    checkFailed: 'Misslyckades med att kontrollera. Försök igen',
+                    addFolderFailed: 'Misslyckades med att lägga till mapp. Försök igen',
+                    loadImagesFailed: 'Misslyckades med att hämta bilder. Försök igen',
+                    uploadImagesFailed: 'Misslyckades med att ladda upp bilder. Försök igen'
+                }
             },
             image: {
                 title: "Bild-redigerare",
@@ -282,7 +324,7 @@ const texts = {
                     rotateLeft: 'Rotera vänster',
                     rotateRight: 'Vrid höger',
                     revert: 'Återställ till original',
-                    cropping: 'Beskära bild',
+                    cropping: 'Beskära bild'
                 },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
                 displaySize: "Visad storlek",
@@ -310,7 +352,22 @@ const texts = {
                 saveAndClose: "Spara och stäng",
                 exif: {
                     button: "Visa exif info"
+                },
+                error: {
+                    loadFailed: 'Det gick inte att ladda bilden. Försök igen',
+                    removeFailed: 'Misslyckades med att ta bort bilden. Försök igen',
+                    createFailed: 'Misslyckades med att skapa bild. Försök igen'
                 }
+            },
+            text: {
+                error: {
+                    createFailed: 'Misslyckades med att spara text. Försök igen'
+                }
+            }
+        },
+        languageFlags: {
+            error: {
+                loadFailed: 'Misslyckades med att ladda språk. Försök igen'
             }
         },
         textHistory: {
@@ -318,14 +375,20 @@ const texts = {
             cancel: "Avbryt",
             writeToText: "Skriv till textfält",
             viewSource: "Visa källa",
-            viewText: "Visa text"
+            viewText: "Visa text",
+            error: {
+                loadFailed: 'Misslyckades med att hämta historia. Försök igen'
+            }
         },
         textValidation: {
             title: "Validering på W3C",
             ok: "OK",
             output: "Valideringsresultat: ",
             errors: " Fel",
-            warnings: " Varningar"
+            warnings: " Varningar",
+            error: {
+                validationFailed: 'Misslyckades att validera. Försök igen'
+            }
         },
         sessionExpiredMessage: "Du har blivit utloggad p\u00e5 grund av inaktivitet. Omdirigera till inloggningssidan?",
         contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat.",
@@ -353,7 +416,12 @@ const texts = {
                     email: 'E-post',
                     archived: 'arkiveras'
                 },
-                createNewUser: 'Create new user'
+                createNewUser: 'Create new user',
+                error: {
+                    loadRolesFailed: 'Misslyckades med att hämta roller. Försök igen',
+                    updateFailed: 'Misslyckades med att uppdatera användaren. Försök igen',
+                    searchFailed: 'Misslyckades med att söka efter användare. Försök igen'
+                }
             },
             roles: {
                 name: 'Roller',
@@ -374,7 +442,21 @@ const texts = {
                 editRole: 'Redigera rollen',
                 deleteRole: 'Radera rollen',
                 saveChanges: 'Spara ändringar',
-                discardChangesMessage: 'Ignorera ändringar?'
+                discardChangesMessage: 'Ignorera ändringar?',
+                error: {
+                    loadFailed: 'Misslyckades med att hämta roller. Försök igen',
+                    loadProvidersFailed: 'Misslyckades med auth leverantörer. Försök igen',
+                    removeFailed: 'Misslyckades med att ta bort rollen. Försök igen',
+                    updateFailed: 'Misslyckades med att uppdatera rollen. Försök igen',
+                    createFailed: 'Misslyckades med att skapa roll. Försök igen',
+                    externalRoles: {
+                        loadFailed: 'Misslyckades med att hämta externa roller. Försök igen',
+                        updateFailed: 'Misslyckades med att uppdatera extern roll. Försök igen'
+                    },
+                    azureRoles: {
+                        loadFailed: 'Misslyckades med att hämta externa roller. Försök igen'
+                    }
+                }
             },
             ipAccess: {
                 name: 'IP-åtkomst',
@@ -394,8 +476,15 @@ const texts = {
                     role: 'Roll',
                     user: 'Användare'
                 },
-
-                wrongIpError: 'Ogiltig ipv4/ipv6 adress'
+                error: {
+                    loadFailed: 'Misslyckades med att hämta regler. Försök igen',
+                    removeFailed: 'Misslyckades med att ta bort regeln. Försök igen',
+                    updateFailed: 'Misslyckades med att uppdatera regeln. Försök igen',
+                    createFailed: 'Misslyckades med att skapa regel. Försök igen',
+                    loadRolesFailed: 'Misslyckades med att hämta roller. Försök igen',
+                    loadUsersFailed: 'Misslyckades med att hämta användare. Försök igen',
+                    invalidIP: 'Ogiltig ipv4 / ipv6-adress'
+                }
             },
             deleteDocs: {
                 name: 'Radera dokument',
@@ -424,12 +513,15 @@ const texts = {
                     status: "Status",
                     type: 'Typ',
                     admin: "Administration",
+                    reference: "Ref.",
                     link: "Länk",
                     hostFound: "Värd hittades",
                     hostReachable: "Värden kan nås",
                     pageFound: 'Sidan hittades'
+                },
+                error: {
+                    validationFailed: 'Misslyckades att validera. Försök igen'
                 }
-
             },
             categories: {
                 name: 'Kategorier',
@@ -438,7 +530,42 @@ const texts = {
                 createButtonName: "Skapa",
                 editButtonName: "Redigera",
                 removeButtonName: "Ta bort",
-                viewButtonName: "Visa"
+                viewButtonName: "Visa",
+                chooseType: 'Choose Category Type',
+                chooseCategory: 'Choose Category',
+                saveButton: 'Save',
+                cancelButton: 'Cancel',
+                warnCancelMessage: 'Do you really want to cancel this ?',
+                duplicateErrorName: 'There is already a category type with the name. Please choose a different name!',
+                sections: {
+                    createCategoryType: {
+                        title: 'Create category type',
+                        name: 'Category type name',
+                        inherited: 'Inherited to new documents',
+                        imageArchive: 'Used by image archive',
+                        singleSelect: 'Single select',
+                        multiSelect: 'Multi select'
+                    },
+                    removeCategoryType: {
+                        removeButton: 'Remove'
+                    },
+                    createCategory: {
+                        title: 'Create category',
+                        name: 'Category name',
+                        description: 'Description',
+                        icon: 'Icon',
+                        categoryType: 'Add to category type'
+                    }
+                },
+                error: {
+                    category: {
+                        loadFailed: 'Misslyckades med att hämta kategori. Försök igen'
+                    },
+                    categoryType: {
+                        loadFailed: 'Misslyckades med att hämta kategorierna. Försök igen',
+                        removeFailed: 'Misslyckades med att ta bort kategoritypen. Försök igen'
+                    }
+                }
             },
             profiles: {
                 name: 'Profiler',
@@ -447,14 +574,13 @@ const texts = {
                 warnChangeMessage: 'Vill du ändra den här profilen?',
                 warnDelete: 'Ta du verkligen bort den här profilen?',
                 warnCancelMessage: 'Vill du verkligen avbryta?',
-                error: "Tyvärr, men du gjorde fel!",
                 cancel: "Avbryt",
                 titleTextName: 'Namn',
                 titleTextDocName: 'Dokumentnamn',
                 createNewProfile: {
                     titleTextName: 'Namn',
-                    textFieldName: 'Textnamn',
                     titleTextDocName: 'Dokumentnamn',
+                    textFieldName: 'Textnamn',
                     textFieldDocName: 'Text doc namn',
                     buttonSave: 'Save'
                 },
@@ -464,6 +590,11 @@ const texts = {
                     buttonEdit: 'Redigera profil',
                     buttonDelete: 'Ta bort profil'
                 },
+                error: {
+                    createFailed: 'Misslyckades med att skapa profil. Försök igen',
+                    loadFailed: 'Misslyckades med att hämta profiler. Försök igen',
+                    errorMessage: 'Tyvärr, men du gjorde fel!'
+                }
             },
             systemProperties: {
                 name: 'Systemegenskaper',
@@ -495,12 +626,17 @@ const texts = {
                         descriptionByEmail: "Webmaster E-postbeskrivning",
                         inputName: "Inmatning av webbnamn",
                         inputEmail: "Webmaster e-postinmatning"
-                    },
+                    }
                 },
                 changeButton: "Byta",
                 error: {
-                    loadFailed: ""
+                    loadFailed: 'Misslyckades med att ladda egenskaper. Försök igen'
                 }
+            }
+        },
+        login: {
+            error: {
+                loadProvidersFailed: 'Misslyckades med auth leverantörer. Försök igen'
             }
         }
     },
@@ -552,7 +688,7 @@ const texts = {
             documentId: "Document ",
             documentIdTitle: "Document no",
             elementIndex: "Element ",
-            elementIndexTitle: "Element no",
+            elementIndexTitle: "Element no"
         },
         pageInfo: {
             document: "Document",
@@ -609,7 +745,7 @@ const texts = {
                 versionHasChanges: "This offline version has changes.",
                 publishMessage: "Please press \"Save and publish this version\" to publish as version № ",
                 error: {
-                    userLoadFailed: 'Failed to fetch publishers. Try again',
+                    userLoadFailed: 'Failed to fetch publishers. Try again'
                 }
             },
             appearance: {
@@ -702,7 +838,7 @@ const texts = {
                     copy: {
                         title: "Copy",
                         confirmMessage: "Do you really want to copy (all information in the document will be copied) doc with id "
-                    },
+                    }
                 },
                 sort: {
                     id: "ID",
@@ -821,7 +957,7 @@ const texts = {
                     rotateLeft: 'Rotate left',
                     rotateRight: 'Rotate right',
                     revert: 'Reset to original',
-                    cropping: 'Crop image',
+                    cropping: 'Crop image'
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
                 displaySize: "Display size",
@@ -948,10 +1084,10 @@ const texts = {
                     createFailed: 'Failed to create role. Try again',
                     externalRoles: {
                         loadFailed: 'Failed to fetch external roles. Try again',
-                        updateFailed: 'Failed to update external role. Try again',
+                        updateFailed: 'Failed to update external role. Try again'
                     },
                     azureRoles: {
-                        loadFailed: 'Failed to fetch external roles. Try again',
+                        loadFailed: 'Failed to fetch external roles. Try again'
                     }
                 }
             },
@@ -980,7 +1116,7 @@ const texts = {
                     createFailed: 'Failed to create rule. Try again',
                     loadRolesFailed: 'Failed to fetch roles. Try again',
                     loadUsersFailed: 'Failed to fetch users. Try again',
-                    invalidIP: 'Invalid ipv4/ipv6 address',
+                    invalidIP: 'Invalid ipv4/ipv6 address'
                 }
             },
             deleteDocs: {
@@ -1017,7 +1153,7 @@ const texts = {
                     pageFound: 'Page found'
                 },
                 error: {
-                    validationFailed: 'Failed to validate. Try again',
+                    validationFailed: 'Failed to validate. Try again'
                 }
             },
             categories: {
@@ -1041,7 +1177,7 @@ const texts = {
                         inherited: 'Inherited to new documents',
                         imageArchive: 'Used by image archive',
                         singleSelect: 'Single select',
-                        multiSelect: 'Multi select',
+                        multiSelect: 'Multi select'
                     },
                     removeCategoryType: {
                         removeButton: 'Remove'
@@ -1056,7 +1192,7 @@ const texts = {
                 },
                 error: {
                     category: {
-                        loadFailed: 'Failed to fetch category. Try again',
+                        loadFailed: 'Failed to fetch category. Try again'
                     },
                     categoryType: {
                         loadFailed: 'Failed to fetch categories types. Try again',
@@ -1123,7 +1259,7 @@ const texts = {
                         descriptionByEmail: "Web master Email description",
                         inputName: "Web master name input",
                         inputEmail: "Web master email input"
-                    },
+                    }
                 },
                 changeButton: "Change",
                 error: {
