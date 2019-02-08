@@ -4,9 +4,11 @@
  */
 define(
     'imcms-categories-admin-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-field-wrapper',
+    [
+        'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-field-wrapper',
         'imcms-bem-builder', 'jquery', 'imcms-category-types-rest-api', 'imcms-categories-rest-api',
-        'imcms-category-types-editor', 'imcms-modal-window-builder'],
+        'imcms-category-types-editor', 'imcms-modal-window-builder'
+    ],
     function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor,
               modal) {
 
@@ -37,21 +39,23 @@ define(
 
             const onSelected = values => {
 
-                typesRestApi.getById(values).done(ctgType => {
-                    currentCtgType = ctgType;
-                    let edit = typeEditor.editCategoryType($('<div>'), {
-                        id: currentCtgType.id,
-                        name: currentCtgType.name,
-                        singleSelect: currentCtgType.singleSelect,
-                        multiSelect: currentCtgType.multiSelect,
-                        inherited: currentCtgType.inherited,
-                        imageArchive: currentCtgType.imageArchive
+                typesRestApi.getById(values)
+                    .done(ctgType => {
+                        currentCtgType = ctgType;
+                        let edit = typeEditor.editCategoryType($('<div>'), {
+                            id: currentCtgType.id,
+                            name: currentCtgType.name,
+                            singleSelect: currentCtgType.singleSelect,
+                            multiSelect: currentCtgType.multiSelect,
+                            inherited: currentCtgType.inherited,
+                            imageArchive: currentCtgType.imageArchive
 
-                    });
-                    editorContainer.slideDown();
+                        });
+                        editorContainer.slideDown();
 
-                    return edit;
-                });
+                        return edit;
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
 
                 let categorySelect = components.selects.selectContainer('<div>', {
                     id: "category-filter",
@@ -61,16 +65,17 @@ define(
                     onCategorySelected: onCategorySelected
                 });
 
-                categoriesRestApi.getCategoriesByCategoryTypeId(values).done(categories => {
+                categoriesRestApi.getCategoriesByCategoryTypeId(values)
+                    .done(categories => {
+                        let categoriesDataMapped = categories.map(category => ({
+                            text: category.name,
+                            'data-value': category.id
+                        }));
 
-                    let categoriesDataMapped = categories.map(category => ({
-                        text: category.name,
-                        'data-value': category.id
-                    }));
+                        components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
 
-                    components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
-
-                });
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.category.loadFailed));
 
                 return categorySelect;
             };
@@ -84,15 +89,16 @@ define(
             });
 
 
-            typesRestApi.read().done(ctgTypes => {
+            typesRestApi.read()
+                .done(ctgTypes => {
+                    let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
+                        text: categoryType.name,
+                        'data-value': categoryType.id
+                    }));
 
-                let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
-                    text: categoryType.name,
-                    'data-value': categoryType.id
-                }));
-
-                components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onSelected);
-            });
+                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onSelected);
+                })
+                .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage));
 
             return categoryTypeSelect;
 
@@ -186,11 +192,13 @@ define(
 
             function onRemoveCtgType() {
 
-                typesRestApi.remove(currentCtgType).done(() => {
-                    currentCtgType = null;
-                    editorContainer.slideUp();
-                    createContainer.slideUp();
-                });
+                typesRestApi.remove(currentCtgType)
+                    .done(() => {
+                        currentCtgType = null;
+                        editorContainer.slideUp();
+                        createContainer.slideUp();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.categoryType.error.removeFailed));
             }
 
             function buildCategoryTypeRemoveButton() {
@@ -249,8 +257,8 @@ define(
                 modal.buildModalWindow(texts.warnCancelMessage, confirmed => {
                     if (!confirmed) return;
                     onConfirm.call();
-                })
-            }
+                });
+            };
         }
 
         function buildCategoryCreateContainer() {

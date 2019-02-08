@@ -6,9 +6,10 @@ define(
     'imcms-ip-access-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-ip-rules-rest-api',
-        'imcms-rule-editor', 'imcms-rule-to-row-transformer', 'imcms', 'imcms-bem-builder', 'jquery', 'imcms-field-wrapper'
+        'imcms-rule-editor', 'imcms-rule-to-row-transformer', 'imcms', 'imcms-bem-builder', 'jquery', 'imcms-field-wrapper',
+        "imcms-modal-window-builder"
     ],
-    function (SuperAdminTab, texts, components, rulesApi, ruleEditor, ruleToRow, imcms, BEM, $, fieldWrapper) {
+    function (SuperAdminTab, texts, components, rulesApi, ruleEditor, ruleToRow, imcms, BEM, $, fieldWrapper, modal) {
 
         texts = texts.superAdmin.ipAccess;
 
@@ -23,13 +24,15 @@ define(
 
                 this.callbacks.forEach((callback) => {
                     callback(rules);
-                })
+                });
             }
         };
 
-        rulesApi.read().done(rules => {
-            ruleLoader.runCallbacks(rules);
-        });
+        rulesApi.read()
+            .done(rules => {
+                ruleLoader.runCallbacks(rules);
+            })
+            .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
         let $rulesContainer;
 

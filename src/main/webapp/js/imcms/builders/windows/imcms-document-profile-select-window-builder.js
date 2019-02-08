@@ -6,9 +6,9 @@ define(
     "imcms-document-profile-select-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-i18n-texts", "imcms-components-builder",
-        "imcms-profiles-rest-api", "imcms-document-validation-rest-api", "imcms"
+        "imcms-profiles-rest-api", "imcms-document-validation-rest-api", "imcms", "imcms-modal-window-builder"
     ],
-    function (WindowBuilder, BEM, texts, components, profilesRestApi, documentValidationAPI, imcms) {
+    function (WindowBuilder, BEM, texts, components, profilesRestApi, documentValidationAPI, imcms, modal) {
 
         texts = texts.editors.newDocumentProfile;
 
@@ -127,15 +127,16 @@ define(
                 const selectedParentDoc = $parentDocIdInput.getValue().trim();
 
                 if (selectedParentDoc) {
-                    documentValidationAPI.checkIsTextDocument(selectedParentDoc).done(isTextDoc => {
-                        if (isTextDoc) {
-                            closeWindow();
-                            onProfileOrParentSelectedCallback(selectedParentDoc);
-
-                        } else {
-                            $validationErrorBlock.slideDown(400);
-                        }
-                    });
+                    documentValidationAPI.checkIsTextDocument(selectedParentDoc)
+                        .done(isTextDoc => {
+                            if (isTextDoc) {
+                                closeWindow();
+                                onProfileOrParentSelectedCallback(selectedParentDoc);
+                            } else {
+                                $validationErrorBlock.slideDown(400);
+                            }
+                        })
+                        .fail(() => $validationErrorBlock.slideDown(400));
                 } else {
                     $validationErrorBlock.slideDown(400);
                 }
@@ -185,43 +186,45 @@ define(
         }
 
         function loadData(onParentSelected, config) {
-            profilesRestApi.read().done(profiles => {
-                const profilesDataMapped = profiles.map(profile => {
-                    /** @namespace profile.documentName */
-                    return {
-                        text: profile.name,
-                        "data-value": profile.documentName
-                    };
-                });
+            profilesRestApi.read()
+                .done(profiles => {
+                    const profilesDataMapped = profiles.map(profile => {
+                        /** @namespace profile.documentName */
+                        return {
+                            text: profile.name,
+                            "data-value": profile.documentName
+                        };
+                    });
 
-                let profilesExist = profilesDataMapped && profilesDataMapped.length;
+                    let profilesExist = profilesDataMapped && profilesDataMapped.length;
 
-                if (profilesExist) {
-                    components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelect);
-                    $profilesOption && $profilesOption.css("display", "block");
-                    profilesExist = true;
-                }
-
-                let isInMenu = config && config.inMenu;
-                const cssDisplayValue = isInMenu ? "block" : "none";
-                $currentDocIdOption.css({"display": cssDisplayValue});
-
-                const checkedValue = isInMenu
-                    ? "currentDocId"
-                    : profilesExist ? "profile" : "docId";
-
-                radioButtonsGroup.setCheckedValue(checkedValue);
-
-                if (!isInMenu) {
                     if (profilesExist) {
-                        $profileSelectBlock.css("display", "block");
-                        $profilesOption.css("display", "block");
-
-                    } else {
-                        $parentSelect.css("display", "block");
+                        components.selects.addOptionsToSelect(profilesDataMapped, $profilesSelect);
+                        $profilesOption && $profilesOption.css("display", "block");
+                        profilesExist = true;
                     }
-                }
-            });
+
+                    let isInMenu = config && config.inMenu;
+                    const cssDisplayValue = isInMenu ? "block" : "none";
+                    $currentDocIdOption.css({"display": cssDisplayValue});
+
+                    const checkedValue = isInMenu
+                        ? "currentDocId"
+                        : profilesExist ? "profile" : "docId";
+
+                    radioButtonsGroup.setCheckedValue(checkedValue);
+
+                    if (!isInMenu) {
+                        if (profilesExist) {
+                            $profileSelectBlock.css("display", "block");
+                            $profilesOption.css("display", "block");
+
+                        } else {
+                            $parentSelect.css("display", "block");
+                        }
+                    }
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadProfilesFailed));
         }
 
         function closeWindow() {

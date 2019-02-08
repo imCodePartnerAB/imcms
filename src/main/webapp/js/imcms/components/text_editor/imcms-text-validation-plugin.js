@@ -8,9 +8,11 @@ define(
     "imcms-text-validation-plugin",
     [
         "imcms-texts-validation-rest-api", "imcms-text-validation-result-builder", "jquery",
-        'imcms-text-editor-toolbar-button-builder'
+        'imcms-text-editor-toolbar-button-builder', "imcms-modal-window-builder", "imcms-i18n-texts"
     ],
-    function (textValidationAPI, textValidationBuilder, $, toolbarButtonBuilder) {
+    function (textValidationAPI, textValidationBuilder, $, toolbarButtonBuilder, modal, texts) {
+
+        texts = texts.textValidation;
 
         const title = 'Validate Content over W3C'; // todo: localize!
 
@@ -21,17 +23,19 @@ define(
                     .removeAttr("class")
                     .attr("class", "mce-ico mce-i-imcms-w3c-text-validation-processing-icon");
 
-                textValidationAPI.validate({content: content}).done(validationResult => {
-                    const iconClass = validationResult.valid
-                        ? "mce-i-imcms-w3c-text-validation-valid-icon"
-                        : "mce-i-imcms-w3c-text-validation-invalid-icon";
+                textValidationAPI.validate({content: content})
+                    .done(validationResult => {
+                        const iconClass = validationResult.valid
+                            ? "mce-i-imcms-w3c-text-validation-valid-icon"
+                            : "mce-i-imcms-w3c-text-validation-invalid-icon";
 
-                    $icon.removeAttr("class").attr("class", "mce-ico " + iconClass);
+                        $icon.removeAttr("class").attr("class", "mce-ico " + iconClass);
 
-                    if (!validationResult.valid) {
-                        textValidationBuilder.buildTextValidationFailWindow(validationResult);
-                    }
-                });
+                        if (!validationResult.valid) {
+                            textValidationBuilder.buildTextValidationFailWindow(validationResult);
+                        }
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.validationFailed));
             };
         };
 
@@ -41,17 +45,19 @@ define(
 
             $button.addClass('imcms-w3c-text-validation-processing-icon');
 
-            textValidationAPI.validate({content: content}).done(validationResult => {
-                const iconClass = validationResult.valid
-                    ? 'imcms-w3c-text-validation-valid-icon'
-                    : 'imcms-w3c-text-validation-invalid-icon';
+            textValidationAPI.validate({content: content})
+                .done(validationResult => {
+                    const iconClass = validationResult.valid
+                        ? 'imcms-w3c-text-validation-valid-icon'
+                        : 'imcms-w3c-text-validation-invalid-icon';
 
-                $button.removeClass('imcms-w3c-text-validation-processing-icon').addClass(iconClass);
+                    $button.removeClass('imcms-w3c-text-validation-processing-icon').addClass(iconClass);
 
-                if (!validationResult.valid) {
-                    textValidationBuilder.buildTextValidationFailWindow(validationResult);
-                }
-            });
+                    if (!validationResult.valid) {
+                        textValidationBuilder.buildTextValidationFailWindow(validationResult);
+                    }
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.validationFailed));
         };
 
         return {

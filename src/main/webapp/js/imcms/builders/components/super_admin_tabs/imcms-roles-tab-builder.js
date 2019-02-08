@@ -7,11 +7,12 @@ define(
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-roles-rest-api', 'imcms',
         'imcms-bem-builder', 'imcms-role-editor', 'jquery', 'imcms-role-to-row-transformer', 'imcms-authentication',
-        'imcms-azure-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api', 'imcms-field-wrapper'
+        'imcms-azure-roles-rest-api', 'imcms-external-to-local-roles-links-rest-api', 'imcms-field-wrapper',
+        'imcms-modal-window-builder'
     ],
     function (
         SuperAdminTab, texts, components, rolesRestApi, imcms, BEM, roleEditor, $, roleToRow, auth, azureRoles,
-        externalToLocalRolesLinks, fieldWrapper
+        externalToLocalRolesLinks, fieldWrapper, modal
     ) {
 
         texts = texts.superAdmin.roles;
@@ -31,14 +32,16 @@ define(
             }
         };
 
-        rolesRestApi.read().done(roles => {
-            roleLoader.runCallbacks(roles);
-        });
+        rolesRestApi.read()
+            .done(roles => {
+                roleLoader.runCallbacks(roles);
+            })
+            .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
         let $rolesContainer;
 
         function buildTabTitle() {
-            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title))
+            return fieldWrapper.wrap(components.texts.titleText('<div>', texts.title));
         }
 
         function onCreateNewRole() {
@@ -86,143 +89,151 @@ define(
 
             const $externalRolesContainer = externalRolesBEM.buildBlock('<div>', [], {style: 'display: none;'});
 
-            auth.getAuthProviders().done(providers => {
-                if (!providers || !providers.length) return;
+            auth.getAuthProviders()
+                .done(providers => {
+                    if (!providers || !providers.length) return;
 
-                $externalRolesContainer.css('display', 'block');
+                    $externalRolesContainer.css('display', 'block');
 
-                const providerBEM = new BEM({
-                    block: 'external-provider',
-                    elements: {
-                        'title': '',
-                        'text': '',
-                        'roles': ''
-                    }
-                });
+                    const providerBEM = new BEM({
+                        block: 'external-provider',
+                        elements: {
+                            'title': '',
+                            'text': '',
+                            'roles': ''
+                        }
+                    });
 
-                const externalRolesRowBEM = new BEM({
-                    block: 'external-role',
-                    elements: {
-                        'name': '',
-                        'linked-local-roles': '',
-                        'controls': ''
-                    }
-                });
+                    const externalRolesRowBEM = new BEM({
+                        block: 'external-role',
+                        elements: {
+                            'name': '',
+                            'linked-local-roles': '',
+                            'controls': ''
+                        }
+                    });
 
-                const providers$ = providers.map(provider => {
-                    const $roles = $('<div>');
+                    const providers$ = providers.map(provider => {
+                        const $roles = $('<div>');
 
-                    azureRoles.read().done(externalRoles => {
-                        const roles$ = externalRoles.map(externalRole => {
-                            const $externalRoleName = $('<div>', {
-                                text: externalRole.displayName
-                            });
+                        azureRoles.read()
+                            .done(externalRoles => {
+                                const roles$ = externalRoles.map(externalRole => {
+                                    const $externalRoleName = $('<div>', {
+                                        text: externalRole.displayName
+                                    });
 
-                            const $selectWrapper = $('<div>');
-                            const $controlsWrapper = $('<div>');
+                                    const $selectWrapper = $('<div>');
+                                    const $controlsWrapper = $('<div>');
 
-                            const $row = externalRolesRowBEM.buildBlock(
-                                '<div>',
-                                [
-                                    {'name': $externalRoleName},
-                                    {'linked-local-roles': $selectWrapper},
-                                    {'controls': $controlsWrapper}
-                                ],
-                                {'class': 'imcms-field'}
-                            );
+                                    const $row = externalRolesRowBEM.buildBlock(
+                                        '<div>',
+                                        [
+                                            {'name': $externalRoleName},
+                                            {'linked-local-roles': $selectWrapper},
+                                            {'controls': $controlsWrapper}
+                                        ],
+                                        {'class': 'imcms-field'}
+                                    );
 
-                            const requestData = {
-                                id: externalRole.id,
-                                providerId: externalRole.providerId
-                            }; // only these two are required for request
+                                    const requestData = {
+                                        id: externalRole.id,
+                                        providerId: externalRole.providerId
+                                    }; // only these two are required for request
 
-                            externalToLocalRolesLinks.read(requestData).done(linkedRoles => {
-                                roleLoader.whenRolesLoaded(roles => {
+                                    externalToLocalRolesLinks.read(requestData)
+                                        .done(linkedRoles => {
+                                            roleLoader.whenRolesLoaded(roles => {
 
-                                    let $rolesSelect;
+                                                let $rolesSelect;
 
-                                    const $saveButton = components.buttons.saveButton({
-                                        text: texts.save,
-                                        style: 'display: none;',
-                                        click: () => {
-                                            const selectedRolesId = $rolesSelect.getSelectedValues();
-                                            const request = {
-                                                externalRole: requestData,
-                                                localRolesId: selectedRolesId
-                                            };
-                                            externalToLocalRolesLinks.replace(request).done(() => {
-                                                linkedRoles = selectedRolesId.map(selectedRoleId => ({id: selectedRoleId}));
-                                                $saveButton.add($cancelButton).css('display', 'none');
+                                                const $saveButton = components.buttons.saveButton({
+                                                    text: texts.save,
+                                                    style: 'display: none;',
+                                                    click: () => {
+                                                        const selectedRolesId = $rolesSelect.getSelectedValues();
+                                                        const request = {
+                                                            externalRole: requestData,
+                                                            localRolesId: selectedRolesId
+                                                        };
+                                                        externalToLocalRolesLinks.replace(request)
+                                                            .done(() => {
+                                                                linkedRoles = selectedRolesId.map(selectedRoleId => ({id: selectedRoleId}));
+                                                                $saveButton.add($cancelButton).css('display', 'none');
+                                                            })
+                                                            .fail(() => modal.buildErrorWindow(texts.error.externalRoles.updateFailed));
+                                                    }
+                                                });
+
+                                                var $cancelButton = components.buttons.negativeButton({
+                                                    text: texts.cancel,
+                                                    style: 'display: none;',
+                                                    click: () => {
+                                                        $saveButton.add($cancelButton).css('display', 'none');
+                                                        $selectWrapper.empty().append(buildRolesSelect());
+                                                    }
+                                                });
+
+                                                function buildRolesSelect() {
+                                                    const rolesDataMapped = roles.map(role => {
+                                                        const attributes = {
+                                                            text: role.name,
+                                                            value: role.id,
+                                                            change: () => {
+                                                                $saveButton.add($cancelButton).css('display', 'inline-block');
+                                                            }
+                                                        };
+
+                                                        for (let i = 0; i < linkedRoles.length; i++) {
+                                                            const linkedRole = linkedRoles[i];
+
+                                                            if (linkedRole.id === role.id) {
+                                                                attributes.checked = 'checked';
+                                                                break;
+                                                            }
+                                                        }
+
+                                                        return attributes
+                                                    });
+
+                                                    return $rolesSelect = components.selects.multipleSelect(
+                                                        '<div>', {}, rolesDataMapped
+                                                    );
+                                                }
+
+                                                $selectWrapper.append(buildRolesSelect());
+
+                                                $controlsWrapper.append([$saveButton, $cancelButton])
                                             });
-                                        }
-                                    });
+                                        })
+                                        .fail(() => modal.buildErrorWindow(texts.error.externalRoles.loadFailed));
 
-                                    var $cancelButton = components.buttons.negativeButton({
-                                        text: texts.cancel,
-                                        style: 'display: none;',
-                                        click: () => {
-                                            $saveButton.add($cancelButton).css('display', 'none');
-                                            $selectWrapper.empty().append(buildRolesSelect());
-                                        }
-                                    });
-
-                                    function buildRolesSelect() {
-                                        const rolesDataMapped = roles.map(role => {
-                                            const attributes = {
-                                                text: role.name,
-                                                value: role.id,
-                                                change: () => {
-                                                    $saveButton.add($cancelButton).css('display', 'inline-block');
-                                                }
-                                            };
-
-                                            for (let i = 0; i < linkedRoles.length; i++) {
-                                                const linkedRole = linkedRoles[i];
-
-                                                if (linkedRole.id === role.id) {
-                                                    attributes.checked = 'checked';
-                                                    break;
-                                                }
-                                            }
-
-                                            return attributes
-                                        });
-
-                                        return $rolesSelect = components.selects.multipleSelect(
-                                            '<div>', {}, rolesDataMapped
-                                        );
-                                    }
-
-                                    $selectWrapper.append(buildRolesSelect());
-
-                                    $controlsWrapper.append([$saveButton, $cancelButton])
+                                    return $row;
                                 });
-                            });
 
-                            return $row;
+                                $roles.append(roles$);
+                            })
+                            .fail(() => modal.buildErrorWindow(texts.error.azureRoles.loadFailed));
+
+                        const $title = components.texts.titleText('<div>', provider.providerName).append($('<img>', {
+                            'class': 'auth-provider-icon',
+                            src: imcms.contextPath + provider.iconPath
+                        }));
+                        const $text = $('<div>', {
+                            'class': 'imcms-field',
+                            text: texts.externalRolesInfo
                         });
-
-                        $roles.append(roles$);
+                        const $providerBlock = providerBEM.buildBlock('<div>', [
+                            {'title': $title},
+                            {'text': $text},
+                            {'roles': $roles}
+                        ]);
+                        return externalRolesBEM.makeBlockElement('auth-provider', $providerBlock);
                     });
 
-                    const $title = components.texts.titleText('<div>', provider.providerName).append($('<img>', {
-                        'class': 'auth-provider-icon',
-                        src: imcms.contextPath + provider.iconPath
-                    }));
-                    const $text = $('<div>', {
-                        'class': 'imcms-field',
-                        text: texts.externalRolesInfo
-                    });
-                    const $providerBlock = providerBEM.buildBlock('<div>', [
-                        {'title': $title},
-                        {'text': $text},
-                        {'roles': $roles}
-                    ]);
-                    return externalRolesBEM.makeBlockElement('auth-provider', $providerBlock);
-                });
-
-                $externalRolesContainer.append(providers$);
-            });
+                    $externalRolesContainer.append(providers$);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadProvidersFailed));
 
             return fieldWrapper.wrap($externalRolesContainer);
         }

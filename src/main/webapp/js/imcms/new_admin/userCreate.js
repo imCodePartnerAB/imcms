@@ -10,8 +10,12 @@ const $ = require('jquery');
 const components = require('imcms-components-builder');
 const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
+const modal = require("imcms-modal-window-builder");
+let texts = require("imcms-i18n-texts");
 
 function activateUserAdminRoles() {
+
+    texts = texts.languageFlags;
     const $form = $('#user-edit-form');
     const $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
 
@@ -41,8 +45,7 @@ function onSubmit(e) {
     if (!$form.find('input[name=login]').val()
         || !$pass1.val()
         || !$pass2.val()
-        || !$form.find('#email').val())
-    {
+        || !$form.find('#email').val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;
@@ -78,16 +81,18 @@ function loadLanguages() {
     const $select = components.selects.imcmsSelect("<div>", selectAttributes);
     $select.appendTo($langSelectContainer);
 
-    languagesRestApi.read().done(languages => {
+    languagesRestApi.read()
+        .done(languages => {
 
-        languages = languages.map(lang => ({
-            'data-value': lang.code,
-            text: lang.name
-        }));
+            languages = languages.map(lang => ({
+                'data-value': lang.code,
+                text: lang.name
+            }));
 
-        components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
-        $select.selectValue(imcms.userLanguage);
-    });
+            components.selects.addOptionsToSelect(languages, $select, $select.selectValue);
+            $select.selectValue(imcms.userLanguage);
+        })
+        .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 }
 
 function bindOnEditClicked($phoneRow) {
@@ -103,7 +108,7 @@ function bindOnEditClicked($phoneRow) {
             .end()
             .find('.imcms-input--phone')
             .focus();
-    }
+    };
 }
 
 function bindOnDeleteClicked($phoneRow) {

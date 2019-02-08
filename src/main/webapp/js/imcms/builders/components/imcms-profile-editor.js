@@ -31,7 +31,7 @@ define(
         let errorMsg;
 
         function buildErrorBlock() {
-            errorMsg = components.texts.errorText("<div>", texts.error, {style: 'display: none;'});
+            errorMsg = components.texts.errorText("<div>", texts.error.errorMessage, {style: 'display: none;'});
             return errorMsg;
         }
 
@@ -58,12 +58,14 @@ define(
             modal.buildModalWindow(texts.warnDelete, confirmed => {
                 if (!confirmed) return;
 
-                profileRestApi.remove(currentProfile).done(() => {
-                    $profileRow.remove();
-                    currentProfile = null;
-                    onEditDelegate = onSimpleEdit;
-                    $container.slideUp();
-                })
+                profileRestApi.remove(currentProfile)
+                    .done(() => {
+                        $profileRow.remove();
+                        currentProfile = null;
+                        onEditDelegate = onSimpleEdit;
+                        $container.slideUp();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
         }
 
@@ -95,16 +97,18 @@ define(
                     errorMsg.css('display', 'inline-block').slideDown();
                 });
             } else {
-                profileRestApi.create(currentProfileToSave).done(profile => {
-                    $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
+                profileRestApi.create(currentProfileToSave)
+                    .done(profile => {
+                        $profileRow = profileToRow.transform((currentProfile = profile), profileEditor);
 
-                    $container.parent().find('.profiles-table').append($profileRow);
+                        $container.parent().find('.profiles-table').append($profileRow);
 
-                    onProfileView = onProfileSimpleView;
-                    prepareProfileView();
-                }).fail(() => {
-                    errorMsg.css('display', 'inline-block').slideDown();
-                });
+                        onProfileView = onProfileSimpleView;
+                        prepareProfileView();
+                    })
+                    .fail(() => {
+                        errorMsg.css('display', 'inline-block').slideDown();
+                    });
             }
         }
 

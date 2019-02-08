@@ -76,12 +76,14 @@ define(
             modal.buildModalWindow('delete?', confirmed => {
                 if (!confirmed) return;
 
-                typesRestApi.remove(currentCategoryType).done(() => {
-                    $categoryTypeItem.remove();
-                    currentCategoryType = null;
-                    onEditDelegate = onSimpleEdit;
-                    //$container.slideUp();
-                })
+                typesRestApi.remove(currentCategoryType)
+                    .done(() => {
+                        $categoryTypeItem.remove();
+                        currentCategoryType = null;
+                        onEditDelegate = onSimpleEdit;
+                        //$container.slideUp();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
         }
 
@@ -99,25 +101,29 @@ define(
             };
 
             if (currentCtgTypeToSave.id) {
-                typesRestApi.replace(currentCtgTypeToSave).done(savedCategoryType => {
-                    currentCategoryType = savedCategoryType;
-                    $categoryTypeItem.find('type-create-block__field-name').text(currentCategoryType.name);
-                    $inherited.find('type-create-block__inherited').setCheckedValue(currentCategoryType.inherited);
-                    $imageArchive.find('type-create-block__imageArchive').setCheckedValue(currentCategoryType.imageArchive);
-                    onCategoryTypeView = onCategoryTypeSimpleView;
-                    prepareCategoryTypeView();
-                }).fail(() => {
-                    errorMsg.css('display', 'inline-block').slideDown();
-                });
+                typesRestApi.replace(currentCtgTypeToSave)
+                    .done(savedCategoryType => {
+                        currentCategoryType = savedCategoryType;
+                        $categoryTypeItem.find('type-create-block__field-name').text(currentCategoryType.name);
+                        $inherited.find('type-create-block__inherited').setCheckedValue(currentCategoryType.inherited);
+                        $imageArchive.find('type-create-block__imageArchive').setCheckedValue(currentCategoryType.imageArchive);
+                        onCategoryTypeView = onCategoryTypeSimpleView;
+                        prepareCategoryTypeView();
+                    })
+                    .fail(() => {
+                        errorMsg.css('display', 'inline-block').slideDown();
+                    });
             } else {
-                typesRestApi.create(currentCtgTypeToSave).done(function (categoryType) {
-                    $categoryTypeItem = categoryType;
+                typesRestApi.create(currentCtgTypeToSave)
+                    .done(function (categoryType) {
+                        $categoryTypeItem = categoryType;
 
-                    onCategoryTypeView = onCategoryTypeSimpleView;
-                    prepareCategoryTypeView();
-                }).fail(function () {
-                    errorMsg.css('display', 'inline-block').slideDown();
-                });
+                        onCategoryTypeView = onCategoryTypeSimpleView;
+                        prepareCategoryTypeView();
+                    })
+                    .fail(() => {
+                        errorMsg.css('display', 'inline-block').slideDown();
+                    });
             }
         }
 
@@ -127,7 +133,7 @@ define(
                     if (!confirmed) return;
                     onConfirm.call();
                 });
-            }
+            };
         }
 
         function buildCategoryTypeSaveCancelButtons() {
@@ -203,7 +209,7 @@ define(
         function editCategoryType($categoryTypeRow, categoryType) {
             onEditDelegate($categoryTypeRow, categoryType);
             onEditDelegate = () => {
-            }
+            };
         }
 
         let categoryTypeEditor = {

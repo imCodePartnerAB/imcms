@@ -7,9 +7,10 @@
 define("imcms-text-history-window-builder",
     [
         "imcms-window-builder", "imcms-bem-builder", "imcms-components-builder", "jquery", "imcms-i18n-texts",
-        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor-utils', 'imcms-text-editor-types'
+        "imcms-texts-history-rest-api", "imcms-events", 'imcms-text-editor-utils', 'imcms-text-editor-types',
+        "imcms-modal-window-builder"
     ],
-    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditorUtils, textTypes) {
+    function (WindowBuilder, BEM, components, $, texts, textsHistoryRestAPI, events, textEditorUtils, textTypes, modal) {
 
         let $historyListContainer, $textHistoryView;
         texts = texts.textHistory;
@@ -197,21 +198,23 @@ define("imcms-text-history-window-builder",
 
             delete dto.type;
 
-            textsHistoryRestAPI.read(dto).done(textsHistory => {
-                const dateToTextHistoryUnits = {};
+            textsHistoryRestAPI.read(dto)
+                .done(textsHistory => {
+                    const dateToTextHistoryUnits = {};
 
-                textsHistory.forEach(textHistory => {
-                    const date = textHistory.modified.date;
-                    dateToTextHistoryUnits[date] = (dateToTextHistoryUnits[date] || []);
-                    dateToTextHistoryUnits[date].push(textHistory);
-                });
+                    textsHistory.forEach(textHistory => {
+                        const date = textHistory.modified.date;
+                        dateToTextHistoryUnits[date] = (dateToTextHistoryUnits[date] || []);
+                        dateToTextHistoryUnits[date].push(textHistory);
+                    });
 
-                $.each(dateToTextHistoryUnits, buildTextHistoryUnit);
+                    $.each(dateToTextHistoryUnits, buildTextHistoryUnit);
 
-                $historyListContainer.find(".text-history-date-unit__unit")
-                    .first()
-                    .click();
-            });
+                    $historyListContainer.find(".text-history-date-unit__unit")
+                        .first()
+                        .click();
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
         function clearData() {

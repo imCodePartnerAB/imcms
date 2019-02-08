@@ -1,8 +1,10 @@
 define(
     'imcms-link-validator-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder',
-        'imcms-field-wrapper', 'imcms-bem-builder', 'jquery', 'imcms-link-validator-rest-api'],
-    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, linksValidatorRestApi) {
+    [
+        'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder',
+        'imcms-field-wrapper', 'imcms-bem-builder', 'jquery', 'imcms-link-validator-rest-api', 'imcms-modal-window-builder'
+    ],
+    function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, linksValidatorRestApi, modal) {
 
         texts = texts.superAdmin.linkValidator;
 
@@ -164,7 +166,9 @@ define(
                 };
                 if (linksValidationParams.startDocumentId !== '' && linksValidationParams.endDocumentId !== '') {
                     const tableBuilder = new linkListBuilder($resultContainer).clearList();
-                    linksValidatorRestApi.validate(linksValidationParams).done(tableBuilder.linkAppender);
+                    linksValidatorRestApi.validate(linksValidationParams)
+                        .done(tableBuilder.linkAppender)
+                        .fail(() => modal.buildErrorWindow(texts.error.validationFailed));
                 }
             }
 

@@ -6,9 +6,9 @@ define(
     'imcms-users-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-i18n-texts', 'jquery', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms'
+        'imcms-roles-rest-api', 'imcms-users-rest-api', 'imcms', 'imcms-modal-window-builder'
     ],
-    function (SuperAdminTab, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms) {
+    function (SuperAdminTab, texts, $, BEM, components, rolesRestApi, usersRestApi, imcms, modal) {
 
         texts = texts.superAdmin.users;
 
@@ -33,14 +33,16 @@ define(
                     text: texts.searchFilter.byRole.title
                 });
 
-                rolesRestApi.read().done(roles => {
-                    const rolesDataMapped = roles.map(role => ({
-                        text: role.name,
-                        value: role.id
-                    }));
+                rolesRestApi.read()
+                    .done(roles => {
+                        const rolesDataMapped = roles.map(role => ({
+                            text: role.name,
+                            value: role.id
+                        }));
 
-                    components.selects.addOptionsToMultiSelect(rolesDataMapped, $usersFilterSelect);
-                });
+                        components.selects.addOptionsToMultiSelect(rolesDataMapped, $usersFilterSelect);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.loadRolesFailed));
 
                 return $usersFilterSelect;
             }
@@ -59,20 +61,22 @@ define(
             function getOnEditUser(user) {
                 return () => {
                     window.open(imcms.contextPath + '/api/user/edition/' + user.id, '_blank').focus();
-                }
+                };
             }
 
             function getOnArchiveUser(user) {
                 return () => {
-                    usersRestApi.update({id: user.id, active: false}).done(() => {
-                        $('#user-id-' + user.id).addClass(userArchivedClass)
-                            .find('.imcms-control--archive')
-                            .replaceWith($('<div>', {
-                                'class': 'imcms-user-info-row__archive',
-                                text: texts.searchResult.archived
-                            }));
-                    });
-                }
+                    usersRestApi.update({id: user.id, active: false})
+                        .done(() => {
+                            $('#user-id-' + user.id).addClass(userArchivedClass)
+                                .find('.imcms-control--archive')
+                                .replaceWith($('<div>', {
+                                    'class': 'imcms-user-info-row__archive',
+                                    text: texts.searchResult.archived
+                                }));
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.updateFailed));
+                };
             }
 
             const UserListBuilder = function ($searchResultContainer) {
@@ -159,7 +163,9 @@ define(
                     roleIds: $usersFilterSelect.getSelectedValues()
                 };
                 const tableBuilder = new UserListBuilder($searchResultContainer).clearList();
-                usersRestApi.search(query).done(tableBuilder.userAppender);
+                usersRestApi.search(query)
+                    .done(tableBuilder.userAppender)
+                    .fail(() => modal.buildErrorWindow(texts.error.searchFailed));
             }
 
             function buildListUsersButton() {

@@ -9,7 +9,7 @@ define("imcms-menu-editor-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
         "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder"
     ],
-    function (BEM, components, documentEditorBuilder, imcmsModalWindow, WindowBuilder, menusRestApi, pageInfoBuilder, $,
+    function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
               docProfileSelectBuilder) {
 
@@ -62,7 +62,9 @@ define("imcms-menu-editor-builder",
                 menuItems: menuItems
             };
 
-            menusRestApi.create(menuDTO).done(onMenuSaved);
+            menusRestApi.create(menuDTO)
+                .done(onMenuSaved)
+                .fail(() => modal.buildErrorWindow(texts.error.createFailed));
         }
 
         function saveAndClose() {
@@ -463,12 +465,12 @@ define("imcms-menu-editor-builder",
                 currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
-            imcmsModalWindow.buildModalWindow(question, answer => {
+            modal.buildModalWindow(question, answer => {
                 if (!answer) {
                     return;
                 }
 
-                removeMenuItemFromEditor(currentMenuItem)
+                removeMenuItemFromEditor(currentMenuItem);
             });
         }
 
@@ -548,17 +550,19 @@ define("imcms-menu-editor-builder",
             });
 
             const $controlCopy = components.controls.copy(() => {
-                docCopyRestApi.copy(menuElementTree.documentId).done(copiedDocument => {
+                docCopyRestApi.copy(menuElementTree.documentId)
+                    .done(copiedDocument => {
 
-                    documentEditorBuilder.incrementDocumentNumber(1);
+                        documentEditorBuilder.incrementDocumentNumber(1);
 
-                    const $documentItemContainer = documentEditorBuilder
-                        .buildDocument(copiedDocument, {moveEnable: true});
+                        const $documentItemContainer = documentEditorBuilder
+                            .buildDocument(copiedDocument, {moveEnable: true});
 
-                    $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
+                        $documentEditor.find(".imcms-document-list__items").prepend($documentItemContainer);
 
-                    appendNewMenuItem(copiedDocument);
-                })
+                        appendNewMenuItem(copiedDocument);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
             });
 
             return components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
@@ -731,7 +735,9 @@ define("imcms-menu-editor-builder",
 
         function loadMenuEditorContent(opts) {
             addHeadData(opts);
-            menusRestApi.read(opts).done(fillEditorContent);
+            menusRestApi.read(opts)
+                .done(fillEditorContent)
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
         function addHeadData(opts) {

@@ -29,6 +29,13 @@ define(
             });
         }
 
+        function buildErrorButton(callback) {
+            return components.buttons.errorButton({
+                text: texts.ok,
+                click: callback
+            });
+        }
+
         function buildFooter(onConfirmed, onDeclined) {
             const $yesButton = buildYesButton(onConfirmed);
             const $noButton = buildNoButton(onDeclined);
@@ -48,6 +55,17 @@ define(
                 block: "imcms-modal-footer",
                 elements: {
                     "button": [$warningButton]
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildErrorFooter(onConfirmed) {
+            const $errorButton = buildErrorButton(onConfirmed);
+
+            return new BEM({
+                block: "imcms-modal-footer",
+                elements: {
+                    "button": [$errorButton]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -102,7 +120,18 @@ define(
                     "modal-body": buildHTMLBody(message),
                     "modal-footer": buildWarningFooter(onConfirmed)
                 }
-            }).buildBlockStructure("<div>", {"class": "imcms-modal-window--warning"},);
+            }).buildBlockStructure("<div>", {"class": "imcms-modal-window--warning"});
+        }
+
+        function createModalErrorWindow(message, onConfirmed) {
+            return new BEM({
+                block: "imcms-modal-window",
+                elements: {
+                    "modal-head": buildHead(),
+                    "modal-body": buildHTMLBody(message),
+                    "modal-footer": buildErrorFooter(onConfirmed)
+                }
+            }).buildBlockStructure("<div>", {"class": "imcms-modal-window--error"});
         }
 
         const ModalWindow = function (question, callback) {
@@ -114,6 +143,11 @@ define(
         const ModalWarningWindow = function (message, callback) {
             this.onConfirmed = this.confirmAction(callback);
             this.$modal = createModalWarningWindow(message, this.onConfirmed);
+        };
+
+        const ModalErrorWindow = function (message, callback) {
+            this.onConfirmed = this.confirmAction(callback);
+            this.$modal = createModalErrorWindow(message, this.onConfirmed);
         };
 
         ModalWindow.prototype = {
@@ -149,7 +183,21 @@ define(
         ModalWarningWindow.prototype.confirmAction = function (callback) {
             const context = this;
             return () => {
-                callback();
+                if (callback) {
+                    callback();
+                }
+                context.closeModal();
+                return false;
+            };
+        };
+
+        ModalErrorWindow.prototype = Object.create(ModalWindow.prototype);
+        ModalErrorWindow.prototype.confirmAction = function (callback) {
+            const context = this;
+            return () => {
+                if (callback) {
+                    callback();
+                }
                 context.closeModal();
                 return false;
             };
@@ -163,6 +211,11 @@ define(
 
         function buildWarningWindow(message, callback) {
             return new ModalWarningWindow(message, callback)
+                .addShadow()
+                .appendTo($("body"));
+        }
+        function buildErrorWindow(message, callback) {
+            return new ModalErrorWindow(message, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
@@ -200,6 +253,9 @@ define(
             },
             buildWarningWindow: (message, callback) => {
                 buildWarningWindow(message, callback);
+            },
+            buildErrorWindow: (message, callback) => {
+                buildErrorWindow(message, callback);
             }
         };
     }

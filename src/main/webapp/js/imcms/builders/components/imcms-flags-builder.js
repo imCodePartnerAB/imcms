@@ -3,8 +3,13 @@
  * 24.07.17.
  */
 define("imcms-flags-builder",
-    ["imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery"],
-    function (bemBuilder, languagesRestApi, imcms, $) {
+    [
+        "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-modal-window-builder", "imcms-i18n-texts"
+    ],
+    function (bemBuilder, languagesRestApi, imcms, $, modal, texts) {
+
+        texts = texts.languageFlags;
+
         const FLAGS_CLASS = "imcms-flag",
             FLAG_ACTIVE_CLASS = FLAGS_CLASS + "--" + "active"
         ;
@@ -74,10 +79,12 @@ define("imcms-flags-builder",
             flagsContainer: function (flagBuilderDataProducer) {
                 const $result = flagsBEM.buildBlock("<div>", [], "flag");
 
-                languagesRestApi.read().done(languages => {
-                    const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
-                    $result.append(flags);
-                });
+                languagesRestApi.read()
+                    .done(languages => {
+                        const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
+                        $result.append(flags);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
                 $result.setActive = function (langCode) {
                     const $flags = $(this);
@@ -99,6 +106,6 @@ define("imcms-flags-builder",
 
                 return $result;
             }
-        }
+        };
     }
 );

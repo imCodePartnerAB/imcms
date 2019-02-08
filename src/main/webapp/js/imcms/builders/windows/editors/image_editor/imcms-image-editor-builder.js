@@ -7,10 +7,12 @@ define(
     [
         "imcms-window-builder", "imcms-images-rest-api", "jquery", "imcms-events", "imcms", "imcms-image-rotate",
         "imcms-image-editor-factory", 'imcms-editable-image', 'imcms-image-editor-body-head-builder',
-        'imcms-image-resize', 'imcms-image-edit-size-controls'
+        'imcms-image-resize', 'imcms-image-edit-size-controls', "imcms-modal-window-builder", "imcms-i18n-texts"
     ],
     function (WindowBuilder, imageRestApi, $, events, imcms, imageRotate, imageEditorFactory, editableImage,
-              bodyHeadBuilder, imageResize, editSizeControls) {
+              bodyHeadBuilder, imageResize, editSizeControls, modal, texts) {
+
+        texts = texts.editors.image;
 
         const imageDataContainers = {};
         const imageData = {};
@@ -101,8 +103,7 @@ define(
                     && (cropRegion.cropX1 >= 0)
                     && (cropRegion.cropX2 >= 1)
                     && (cropRegion.cropY1 >= 0)
-                    && (cropRegion.cropY2 >= 1))
-                {
+                    && (cropRegion.cropY2 >= 1)) {
                     const width = cropRegion.cropX2 - cropRegion.cropX1;
                     const height = cropRegion.cropY2 - cropRegion.cropY1;
 
@@ -176,7 +177,9 @@ define(
                 imageDataContainers.$langFlags.setActive(imcms.language.code);
             }
 
-            imageRestApi.read(opts).done(fillData);
+            imageRestApi.read(opts)
+                .done(fillData)
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
         function clearComponents() {

@@ -1,9 +1,9 @@
 define("imcms-categories-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-categories-rest-api", "imcms-i18n-texts", "jquery",
-        "imcms-page-info-tab"
+        "imcms-page-info-tab", "imcms-modal-window-builder"
     ],
-    function (BEM, components, categoriesRestApi, texts, $, PageInfoTab) {
+    function (BEM, components, categoriesRestApi, texts, $, PageInfoTab, modal) {
 
         texts = texts.pageInfo.categories;
 
@@ -121,10 +121,12 @@ define("imcms-categories-tab-builder",
             tabData.multiSelects$ = [];
             tabData.singleSelects$ = [];
 
-            categoriesRestApi.read(null).done(categories => {
-                const categoryTypes = extractCategoryTypes(categories);
-                buildCategoryTypes(categoryTypes, document);
-            });
+            categoriesRestApi.read(null)
+                .done(categories => {
+                    const categoryTypes = extractCategoryTypes(categories);
+                    buildCategoryTypes(categoryTypes, document);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         };
         CategoriesTab.prototype.saveData = documentDTO => {
             const multiSelectCategories = tabData.multiSelects$

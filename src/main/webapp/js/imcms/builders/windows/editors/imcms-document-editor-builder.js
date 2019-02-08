@@ -13,7 +13,7 @@ define("imcms-document-editor-builder",
     ],
     function (BEM, pageInfoBuilder, components, primitives, docRestApi, docSearchRestApi, usersRestApi,
               categoriesRestApi, WindowBuilder, $, imcms, imcmsModalWindowBuilder, docTypeSelectBuilder, texts, events,
-              docProfileSelectBuilder, docCopyRestApi, modalWindowBuilder) {
+              docProfileSelectBuilder, docCopyRestApi, modal) {
 
         texts = texts.editors.document;
 
@@ -72,19 +72,20 @@ define("imcms-document-editor-builder",
                 setDefaultSortProperties();
             }
 
-            docSearchRestApi.read(searchQueryObj).done(documentList => {
+            docSearchRestApi.read(searchQueryObj)
+                .done(documentList => {
+                    if (!documentList || (documentList.length === 0)) {
+                        sendSearchDocRequest = false;
+                        return;
+                    }
 
-                if (!documentList || (documentList.length === 0)) {
-                    sendSearchDocRequest = false;
-                    return;
-                }
+                    incrementDocumentNumber(documentList.length);
 
-                incrementDocumentNumber(documentList.length);
-
-                documentList.forEach(document => {
-                    $documentsList.append(buildDocument(document, currentEditorOptions));
-                });
-            });
+                    documentList.forEach(document => {
+                        $documentsList.append(buildDocument(document, currentEditorOptions));
+                    });
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.searchFailed));
         }
 
         function setField(field, value) {
@@ -158,16 +159,18 @@ define("imcms-document-editor-builder",
                     onSelected: onSelected
                 });
 
-                usersRestApi.getAllAdmins().done(users => {
-                    const usersDataMapped = users.map(user => ({
-                        text: user.login,
-                        "data-value": user.id
-                    }));
+                usersRestApi.getAllAdmins()
+                    .done(users => {
+                        const usersDataMapped = users.map(user => ({
+                            text: user.login,
+                            "data-value": user.id
+                        }));
 
-                    components.selects.addOptionsToSelect(
-                        usersDataMapped, $usersFilterSelectContainer.getSelect(), onSelected
-                    );
-                });
+                        components.selects.addOptionsToSelect(
+                            usersDataMapped, $usersFilterSelectContainer.getSelect(), onSelected
+                        );
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.userLoadFailed));
 
                 return $usersFilterSelectContainer;
             }
@@ -187,15 +190,17 @@ define("imcms-document-editor-builder",
                     onSelected: onSelected
                 });
 
-                categoriesRestApi.read(null).done(categories => {
-                    const categoriesDataMapped = categories.map(category => ({
-                        text: category.name,
-                        "data-value": category.id
-                    }));
+                categoriesRestApi.read(null)
+                    .done(categories => {
+                        const categoriesDataMapped = categories.map(category => ({
+                            text: category.name,
+                            "data-value": category.id
+                        }));
 
-                    components.selects.addOptionsToSelect(
-                        categoriesDataMapped, $categoriesFilterSelectContainer.getSelect(), onSelected);
-                });
+                        components.selects.addOptionsToSelect(
+                            categoriesDataMapped, $categoriesFilterSelectContainer.getSelect(), onSelected);
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.categoriesLoadFailed));
 
                 return $categoriesFilterSelectContainer;
             }
@@ -441,13 +446,15 @@ define("imcms-document-editor-builder",
 
             if (opts.copyEnable) {
                 function onConfirm() {
-                    docCopyRestApi.copy(document.id).done(copiedDocument => {
-                        addDocumentToList(copiedDocument);
-                    });
+                    docCopyRestApi.copy(document.id)
+                        .done(copiedDocument => {
+                            addDocumentToList(copiedDocument);
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
                 }
 
                 const $controlCopy = components.controls.copy(() => {
-                    modalWindowBuilder.buildConfirmWindow(
+                    modal.buildConfirmWindow(
                         texts.controls.copy.confirmMessage + document.id + '?',
                         onConfirm
                     );
@@ -827,8 +834,7 @@ define("imcms-document-editor-builder",
 
                 if (sendSearchDocRequest
                     && innerHeight !== scrollHeight
-                    && (($this.scrollTop() + innerHeight) >= scrollHeight))
-                {
+                    && (($this.scrollTop() + innerHeight) >= scrollHeight)) {
                     appendDocuments(pageSkip, currentDocumentNumber, false, false);
                 }
             });
@@ -860,12 +866,14 @@ define("imcms-document-editor-builder",
         }
 
         function loadDocumentEditorContent($documentsContainer, opts) {
-            docSearchRestApi.read().done(documentList => {
-                incrementDocumentNumber(documentList.length);
-                $editorBody = buildEditorBody(documentList, opts);
-                $documentsContainer.append($editorBody);
-                highlightDefaultSorting();
-            });
+            docSearchRestApi.read()
+                .done(documentList => {
+                    incrementDocumentNumber(documentList.length);
+                    $editorBody = buildEditorBody(documentList, opts);
+                    $documentsContainer.append($editorBody);
+                    highlightDefaultSorting();
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.searchFailed));
         }
 
         function buildDocumentEditor() {
@@ -887,9 +895,11 @@ define("imcms-document-editor-builder",
                     return;
                 }
 
-                docRestApi.remove(document).done(function () {
-                    $(this).parent().parent().remove();
-                })
+                docRestApi.remove(document)
+                    .done(function () {
+                        $(this).parent().parent().remove();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.removeDocumentFailed));
             });
         }
 

@@ -21,6 +21,7 @@ module.exports = {
     positive: getButtonBuilder('positive'),
     neutral: getButtonBuilder('neutral'),
     warning: getButtonBuilder("warning"),
+    error: getButtonBuilder("error"),
     save: getButtonBuilder('save'),
     close: getButtonBuilder('close'),
     increment: getButtonBuilder('increment'),
@@ -50,6 +51,9 @@ module.exports = {
     },
     warningButton: function (attributes) {
         return this.warning("<button>",attributes);
+    },
+    errorButton: function (attributes) {
+        return this.error("<button>",attributes);
     },
     saveButton: function (attributes) {
         return this.save('<button>', attributes);

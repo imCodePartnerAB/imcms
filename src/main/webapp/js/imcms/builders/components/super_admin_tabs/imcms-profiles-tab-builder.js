@@ -1,8 +1,10 @@
 define(
     'imcms-profiles-tab-builder',
-    ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-bem-builder', 'imcms-field-wrapper',
-        'jquery', 'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer', 'imcms-profile-editor'],
-    function (SuperAdminTab, texts, components, BEM, fieldWrapper, $, profileRestApi, profileToRow, profileEditor) {
+    [
+        'imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-bem-builder', 'imcms-field-wrapper',
+        'jquery', 'imcms-profiles-rest-api', 'imcms-profile-to-row-transformer', 'imcms-profile-editor', 'imcms-modal-window-builder'
+    ],
+    function (SuperAdminTab, texts, components, BEM, fieldWrapper, $, profileRestApi, profileToRow, profileEditor, modal) {
 
         texts = texts.superAdmin.profiles;
 
@@ -21,9 +23,11 @@ define(
             }
         };
 
-        profileRestApi.read().done(profiles => {
-            profilesLoader.runCallbacks(profiles);
-        });
+        profileRestApi.read()
+            .done(profiles => {
+                profilesLoader.runCallbacks(profiles);
+            })
+            .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
         let $profileContainer;
 
