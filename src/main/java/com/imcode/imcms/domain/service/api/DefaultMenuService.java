@@ -159,6 +159,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .stream()
                 .map(menuItemFunction)
                 .filter(Objects::nonNull)
+                .filter(menuItemDTO -> !menuItemDTO.getTitle().isEmpty())
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
                 .peek(menuItemDTO -> {
                     if (status == MenuItemsStatus.ALL) return;
@@ -166,6 +167,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                     final List<MenuItemDTO> children = menuItemDTO.getChildren()
                             .stream()
                             .filter(this::isPublicMenuItem)
+                            .filter(e -> !e.getTitle().isEmpty())
                             .collect(Collectors.toList());
 
                     menuItemDTO.setChildren(children);
