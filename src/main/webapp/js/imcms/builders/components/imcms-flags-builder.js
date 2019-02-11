@@ -84,7 +84,7 @@ define("imcms-flags-builder",
                         const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
                         $result.append(flags);
                     })
-                    .fail(() => console.log(texts.error.loadFailed));
+                    .fail(() => console.error(texts.error.loadFailed));
 
                 $result.setActive = function (langCode) {
                     const $flags = $(this);
