@@ -10,7 +10,7 @@ define(
     ],
     function (tinyMCE, textsRestApi, events, $, modal, editorTypes, texts) {
 
-        texts = texts.editor.text;
+        texts = texts.editors.text;
 
         const ACTIVE_EDIT_AREA_CLASS = 'imcms-editor-area--active';
         const ACTIVE_EDIT_AREA_CLASS_$ = '.' + ACTIVE_EDIT_AREA_CLASS;
