@@ -4,9 +4,9 @@
  */
 define("imcms-flags-builder",
     [
-        "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-modal-window-builder", "imcms-i18n-texts"
+        "imcms-bem-builder", "imcms-languages-rest-api", "imcms", "jquery", "imcms-i18n-texts"
     ],
-    function (bemBuilder, languagesRestApi, imcms, $, modal, texts) {
+    function (bemBuilder, languagesRestApi, imcms, $, texts) {
 
         texts = texts.languageFlags;
 
@@ -84,7 +84,7 @@ define("imcms-flags-builder",
                         const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
                         $result.append(flags);
                     })
-                    .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+                    .fail(() => console.log(texts.error.loadFailed));
 
                 $result.setActive = function (langCode) {
                     const $flags = $(this);
