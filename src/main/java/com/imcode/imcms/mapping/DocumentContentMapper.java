@@ -101,6 +101,7 @@ public class DocumentContentMapper {
                 .menuImageURL(commonContent.getMenuImageURL())
                 .menuText(commonContent.getMenuText())
                 .enabled(commonContent.isEnabled())
+                .versionNo(commonContent.getVersionNo())
                 .build();
     }
 }
