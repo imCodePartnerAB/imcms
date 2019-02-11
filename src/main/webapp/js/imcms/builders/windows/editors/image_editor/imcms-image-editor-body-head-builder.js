@@ -221,38 +221,38 @@ define(
                     'class': 'imcms-image-crop-proportions-info',
                     style: 'display: block;'
                 }
-            )
+            );
         }
 
         let $cancelChangesButton;
 
         function getCancelChangesButton() {
             return $cancelChangesButton || ($cancelChangesButton = components.buttons.negativeButton({
-                text: 'Cancel', //todo: localize!!!111
-                title: 'Cancel changes', //todo: localize!!!111
+                text: texts.buttons.cancelText,
+                title: texts.buttons.cancelTitle,
                 click: onCancel,
                 style: 'display: none;',
-            }))
+            }));
         }
 
         let $applyChangesButton;
 
         function getApplyChangesButton() {
             return $applyChangesButton || ($applyChangesButton = components.buttons.saveButton({
-                text: 'Apply',//todo: localize!!!111
-                title: 'Apply changes', //todo: localize!!!111
+                text: texts.buttons.applyChangeText,
+                title: texts.buttons.applyChangeTitle,
                 click: onApply,
                 style: 'display: none;',
-            }))
+            }));
         }
 
         let $showImageRotationControls;
 
         function getShowImageRotationControls() {
             return $showImageRotationControls || ($showImageRotationControls = components.buttons.rotationButton({
-                title: 'Activate rotation controls',//todo: localize!!!111
+                title: texts.buttons.rotationTitle,
                 click: onRotationActivated,
-            }))
+            }));
         }
 
         let $zoomPlusButton;
@@ -262,7 +262,7 @@ define(
                 title: texts.buttons.zoomIn,
                 click: wrapWithNoOpIfNoImageYet(zoomPlus),
                 style: 'display: none;',
-            }))
+            }));
         }
 
         let $zoomMinusButton;

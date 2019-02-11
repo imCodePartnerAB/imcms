@@ -71,8 +71,8 @@ define(
 
                 return $btn = toolbarButtonBuilder.buildButton(
                     'text-editor-discard-changes-button', title, onClick, true
-                )
+                );
             }
-        }
+        };
     }
 );

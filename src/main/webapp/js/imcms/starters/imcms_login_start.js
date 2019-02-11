@@ -46,7 +46,7 @@ $(function () {
         const $alternateLoginFooter = new BEM({
             block: 'imcms-info-footer',
             elements: {
-                message: components.texts.infoText('<div>', 'Alternative login:'), //todo: support localization!
+                message: components.texts.infoText('<div>', texts.alternativeLogin),
                 button: $alternateLoginButtons
             }
         }).buildBlockStructure('<div>', {

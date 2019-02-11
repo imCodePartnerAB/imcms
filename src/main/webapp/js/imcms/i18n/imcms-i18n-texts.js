@@ -324,7 +324,12 @@ const texts = {
                     rotateLeft: 'Rotera vänster',
                     rotateRight: 'Vrid höger',
                     revert: 'Återställ till original',
-                    cropping: 'Beskära bild'
+                    cropping: 'Beskära bild',
+                    cancelText: "Annullera",
+                    cancelTitle: "Avbryt ändringar",
+                    applyChangeText: "Tillämpa",
+                    applyChangeTitle: "Applicera förändringar",
+                    rotationTitle: "Aktivera rotationsreglage"
                 },
                 proportionsButtonTitle: "Bevara bildens proportioner Av/På",
                 displaySize: "Visad storlek",
@@ -360,6 +365,7 @@ const texts = {
                 }
             },
             text: {
+                confirmSave: "Spara ändringar?",
                 error: {
                     createFailed: 'Misslyckades med att spara text. Försök igen'
                 }
@@ -382,6 +388,7 @@ const texts = {
         },
         textValidation: {
             title: "Validering på W3C",
+            pluginTitle: "Validera innehåll över W3C",
             ok: "OK",
             output: "Valideringsresultat: ",
             errors: " Fel",
@@ -635,6 +642,7 @@ const texts = {
             }
         },
         login: {
+            alternativeLogin: "Alternativ inloggning:",
             error: {
                 loadProvidersFailed: 'Misslyckades med auth leverantörer. Försök igen'
             }
@@ -957,7 +965,12 @@ const texts = {
                     rotateLeft: 'Rotate left',
                     rotateRight: 'Rotate right',
                     revert: 'Reset to original',
-                    cropping: 'Crop image'
+                    cropping: 'Crop image',
+                    cancelText: "Cancel",
+                    cancelTitle: "Cancel changes",
+                    applyChangeText: "Apply",
+                    applyChangeTitle: "Apply changes",
+                    rotationTitle: "Activate rotation controls"
                 },
                 proportionsButtonTitle: "Keep image proportion On/Off",
                 displaySize: "Display size",
@@ -993,6 +1006,7 @@ const texts = {
                 }
             },
             text: {
+                confirmSave: "Save changes?",
                 error: {
                     createFailed: 'Failed to save text. Try again'
                 }
@@ -1015,6 +1029,7 @@ const texts = {
         },
         textValidation: {
             title: "Validation on W3C",
+            pluginTitle: "Validate content over W3C",
             ok: "OK",
             output: "Validation result: ",
             errors: " Errors",
@@ -1268,6 +1283,7 @@ const texts = {
             }
         },
         login: {
+            alternativeLogin: "Alternative login:",
             error: {
                 loadProvidersFailed: 'Failed to auth providers. Try again'
             }
