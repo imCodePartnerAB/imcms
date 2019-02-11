@@ -1,10 +1,12 @@
 define("imcms-access-tab-builder",
     [
-        "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator", "jquery", "imcms-page-info-tab", "imcms-modal-window-builder"
+        "imcms-bem-builder", "imcms-components-builder", "imcms-roles-rest-api", "imcms-uuid-generator",
+        "jquery", "imcms-i18n-texts", "imcms-page-info-tab", "imcms-modal-window-builder"
     ],
     function (BEM, components, rolesRestApi, uuidGenerator, $, texts, PageInfoTab, modal) {
 
         texts = texts.pageInfo.access;
+        console.log('PAGE INFO', texts);
 
         let storedRoleIdsPerRoles;
         let storedRoles;
