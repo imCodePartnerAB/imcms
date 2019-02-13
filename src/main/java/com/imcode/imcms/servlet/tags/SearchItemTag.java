@@ -2,7 +2,6 @@ package com.imcode.imcms.servlet.tags;
 
 import com.imcode.imcms.api.SearchItem;
 
-import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 /**
