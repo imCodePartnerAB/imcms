@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class TextDocumentContentLoader {
     private final DocumentLanguageMapper languageMapper;
     private final LoopService loopService;
 
-    @Inject
     public TextDocumentContentLoader(VersionRepository versionRepository,
                                      TextRepository textRepository,
                                      TextHistoryRepository textHistoryRepository,

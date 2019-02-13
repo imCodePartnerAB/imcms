@@ -34,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -64,7 +63,6 @@ public class DocumentSaver {
     private final DocumentSavingVisitor documentSavingVisitor;
     private DefaultDocumentMapper documentMapper;
 
-    @Inject
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
                          VersionService versionService, LanguageRepository languageRepository,
                          CommonContentRepository commonContentRepository, MetaRepository metaRepository,
