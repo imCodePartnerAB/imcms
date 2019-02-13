@@ -2,10 +2,6 @@ package com.imcode.imcms.db.exception;
 
 public class RuntimeSqlException extends RuntimeException {
 
-    public RuntimeSqlException() {
-        super();
-    }
-
     public RuntimeSqlException(String message) {
         super(message);
     }
@@ -18,7 +14,4 @@ public class RuntimeSqlException extends RuntimeException {
         super(cause);
     }
 
-    protected RuntimeSqlException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
