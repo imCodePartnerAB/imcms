@@ -6,6 +6,7 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.RoleIdToDocumentPermissionSetTypeMappings;
+import lombok.Data;
 import org.apache.commons.lang.NullArgumentException;
 
 import java.io.Serializable;
@@ -21,16 +22,17 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * <p/>
  * Shared by all versions of the same document.
  */
+@Data
 public class DocumentMeta implements Serializable, Cloneable {
 
+    private static final long serialVersionUID = 7849963298323476235L;
     private volatile Integer id;
     private volatile int defaultVersionNo = DocumentVersion.WORKING_VERSION_NO;
     /**
      * Disabled language's content show option.
      */
     private volatile DisabledLanguageShowMode disabledLanguageShowMode = DisabledLanguageShowMode.DO_NOT_SHOW;
-    // todo: rename to documentTypeId
-    private volatile Integer documentType;
+    private volatile Integer documentTypeId;
     private volatile Boolean linkableByOtherUsers;
     private volatile Boolean linkedForUnauthorizedUsers;
     /**
@@ -81,173 +83,8 @@ public class DocumentMeta implements Serializable, Cloneable {
         }
     }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    // Attributes properties:
-    public Integer getDocumentType() {
-        return documentType;
-    }
-
-    public void setDocumentType(Integer documentType) {
-        this.documentType = documentType;
-    }
-
-    public Integer getCreatorId() {
-        return creatorId;
-    }
-
-    public void setCreatorId(Integer creatorId) {
-        this.creatorId = creatorId;
-    }
-
-    public Boolean getLinkableByOtherUsers() {
-        return linkableByOtherUsers;
-    }
-
-    public void setLinkableByOtherUsers(Boolean linkableByOtherUsers) {
-        this.linkableByOtherUsers = linkableByOtherUsers;
-    }
-
-    public Boolean getLinkedForUnauthorizedUsers() {
-        return linkedForUnauthorizedUsers;
-    }
-
-    public void setLinkedForUnauthorizedUsers(Boolean linkedForUnauthorizedUsers) {
-        this.linkedForUnauthorizedUsers = linkedForUnauthorizedUsers;
-    }
-
-    public Date getCreatedDatetime() {
-        return createdDatetime;
-    }
-
-    public void setCreatedDatetime(Date createdDatetime) {
-        this.createdDatetime = createdDatetime;
-    }
-
-    public Date getModifiedDatetime() {
-        return modifiedDatetime;
-    }
-
-    public void setModifiedDatetime(Date modifiedDatetime) {
-        this.modifiedDatetime = modifiedDatetime;
-    }
-
-    public Date getActualModifiedDatetime() {
-        return actualModifiedDatetime;
-    }
-
-    public void setActualModifiedDatetime(Date actualModifiedDatetime) {
-        this.actualModifiedDatetime = actualModifiedDatetime;
-    }
-
-    public boolean getSearchDisabled() {
-        return searchDisabled;
-    }
-
-    public void setSearchDisabled(boolean searchDisabled) {
-        this.searchDisabled = searchDisabled;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public Date getArchivedDatetime() {
-        return archivedDatetime;
-    }
-
-    public void setArchivedDatetime(Date archivedDatetime) {
-        this.archivedDatetime = archivedDatetime;
-    }
-
-    public Integer getArchiverId() {
-        return archiverId;
-    }
-
-    public void setArchiverId(Integer archiverId) {
-        this.archiverId = archiverId;
-    }
-
-    public Integer getPublisherId() {
-        return publisherId;
-    }
-
-    public void setPublisherId(Integer publisherId) {
-        this.publisherId = publisherId;
-    }
-
-    public Integer getDepublisherId() {
-        return depublisherId;
-    }
-
-    public void setDepublisherId(Integer depublisherId) {
-        this.depublisherId = depublisherId;
-    }
-
-    public Date getPublicationStartDatetime() {
-        return publicationStartDatetime;
-    }
-
-    public void setPublicationStartDatetime(Date publicationStartDatetime) {
-        this.publicationStartDatetime = publicationStartDatetime;
-    }
-
-    public Date getPublicationEndDatetime() {
-        return publicationEndDatetime;
-    }
-
-    public void setPublicationEndDatetime(Date publicationEndDatetime) {
-        this.publicationEndDatetime = publicationEndDatetime;
-    }
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
-
-    public Set<Category> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<Category> categories) {
-        this.categories = categories;
-    }
-
-    public Set<String> getKeywords() {
-        return keywords;
-    }
-
     public void setKeywords(Set<String> keywords) {
         this.keywords = new CopyOnWriteArraySet<>(keywords != null ? keywords : Collections.emptySet());
-    }
-
-    public DisabledLanguageShowMode getDisabledLanguageShowMode() {
-        return disabledLanguageShowMode;
-    }
-
-    public void setDisabledLanguageShowMode(DisabledLanguageShowMode disabledLanguageShowMode) {
-        this.disabledLanguageShowMode = disabledLanguageShowMode;
-    }
-
-    public RoleIdToDocumentPermissionSetTypeMappings getRoleIdToDocumentPermissionSetTypeMappings() {
-        return roleIdToDocumentPermissionSetTypeMappings;
-    }
-
-    public void setRoleIdToDocumentPermissionSetTypeMappings(RoleIdToDocumentPermissionSetTypeMappings roleIdToDocumentPermissionSetTypeMappings) {
-        this.roleIdToDocumentPermissionSetTypeMappings = roleIdToDocumentPermissionSetTypeMappings.clone();
     }
 
     public Document.PublicationStatus getPublicationStatus() {
@@ -267,30 +104,14 @@ public class DocumentMeta implements Serializable, Cloneable {
 
     public void setAlias(String alias) {
         if (alias == null) {
-            removeAlis();
+            removeAlias();
         } else {
             properties.put(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, alias);
         }
     }
 
-    public void removeAlis() {
+    public void removeAlias() {
         properties.remove(DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS);
-    }
-
-    public Integer getDefaultVersionNo() {
-        return defaultVersionNo;
-    }
-
-    public void setDefaultVersionNo(Integer defaultVersionNo) {
-        this.defaultVersionNo = defaultVersionNo;
-    }
-
-    public Set<RestrictedPermissionJPA> getRestrictedPermissions() {
-        return restrictedPermissions;
-    }
-
-    public void setRestrictedPermissions(Set<RestrictedPermissionJPA> restrictedPermissions) {
-        this.restrictedPermissions = restrictedPermissions;
     }
 
     /**

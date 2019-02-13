@@ -416,7 +416,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
     }
 
     public boolean isSearchDisabled() {
-        return meta.getSearchDisabled();
+        return meta.isSearchDisabled();
     }
 
     public void setSearchDisabled(boolean searchDisabled) {

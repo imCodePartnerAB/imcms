@@ -391,7 +391,7 @@ public class DocumentSaver {
                         Collectors.toMap(Mapping::getRoleId, Mapping::getDocumentPermissionSetType)
                 )
         );
-        meta.setSearchDisabled(metaDO.getSearchDisabled());
+        meta.setSearchDisabled(metaDO.isSearchDisabled());
         meta.setTarget(metaDO.getTarget());
 
         return meta;
