@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;

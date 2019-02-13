@@ -1,7 +1,7 @@
 package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.DocumentLanguageDisabledException;
+import com.imcode.imcms.api.exception.DocumentLanguageDisabledException;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.TextDocumentDataInitializer;
 import com.imcode.imcms.domain.dto.LanguageDTO;

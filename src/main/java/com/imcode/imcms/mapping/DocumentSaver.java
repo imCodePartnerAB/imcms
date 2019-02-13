@@ -10,6 +10,8 @@ import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.TextDocTextsContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.exception.AliasAlreadyExistsInternalException;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;

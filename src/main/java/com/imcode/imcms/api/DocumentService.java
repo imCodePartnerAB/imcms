@@ -1,9 +1,16 @@
 package com.imcode.imcms.api;
 
-import com.imcode.imcms.mapping.AliasAlreadyExistsInternalException;
+import com.imcode.imcms.api.exception.AliasAlreadyExistsException;
+import com.imcode.imcms.api.exception.BadQueryException;
+import com.imcode.imcms.api.exception.CategoryAlreadyExistsException;
+import com.imcode.imcms.api.exception.CategoryTypeAlreadyExistsException;
+import com.imcode.imcms.api.exception.NoPermissionException;
+import com.imcode.imcms.api.exception.SaveException;
+import com.imcode.imcms.api.exception.SearchException;
 import com.imcode.imcms.mapping.CategoryMapper;
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.exception.AliasAlreadyExistsInternalException;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import imcode.server.document.CategoryDomainObject;
 import imcode.server.document.CategoryTypeDomainObject;
 import imcode.server.document.DocumentDomainObject;

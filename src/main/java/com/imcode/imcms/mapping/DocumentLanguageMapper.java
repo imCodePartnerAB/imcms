@@ -1,7 +1,6 @@
 package com.imcode.imcms.mapping;
 
 import com.google.common.base.Strings;
-import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
 import com.imcode.imcms.mapping.jpa.SystemPropertyRepository;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,9 +22,8 @@ public class DocumentLanguageMapper {
 
     private final LanguageRepository languageRepository;
     private final SystemPropertyRepository systemRepository;
-    private Logger logger = LoggerFactory.getLogger(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Inject
     public DocumentLanguageMapper(LanguageRepository languageRepository, SystemPropertyRepository systemRepository) {
         this.languageRepository = languageRepository;
         this.systemRepository = systemRepository;

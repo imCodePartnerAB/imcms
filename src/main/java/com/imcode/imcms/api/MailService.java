@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.api.exception.MailException;
 import imcode.util.PropertyManager;
 import imcode.util.Utility;
 import org.apache.commons.lang.UnhandledException;

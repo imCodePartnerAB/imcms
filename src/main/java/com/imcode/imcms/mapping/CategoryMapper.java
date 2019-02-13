@@ -1,6 +1,6 @@
 package com.imcode.imcms.mapping;
 
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.api.exception.CategoryAlreadyExistsException;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CategoryType;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
@@ -13,7 +13,6 @@ import imcode.server.document.DocumentDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -27,12 +26,10 @@ public class CategoryMapper {
     private final CategoryRepository categoryRepository;
     private final CategoryTypeRepository categoryTypeRepository;
 
-    @Inject
     public CategoryMapper(CategoryRepository categoryRepository, CategoryTypeRepository categoryTypeRepository) {
         this.categoryRepository = categoryRepository;
         this.categoryTypeRepository = categoryTypeRepository;
     }
-
 
     public CategoryDomainObject[] getAllCategoriesOfType(CategoryTypeDomainObject categoryType) {
         CategoryTypeJPA docCategoryType = categoryTypeRepository.findOne(categoryType.getId());
@@ -45,7 +42,6 @@ public class CategoryMapper {
 
         return categoryDomainObjectList.toArray(new CategoryDomainObject[categoryDomainObjectList.size()]);
     }
-
 
     public boolean isUniqueCategoryTypeName(String categoryTypeName) {
         return categoryTypeRepository.findByNameIgnoreCase(categoryTypeName) == null;

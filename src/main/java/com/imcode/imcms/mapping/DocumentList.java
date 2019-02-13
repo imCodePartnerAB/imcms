@@ -11,8 +11,8 @@ import java.util.Map;
 
 class DocumentList extends AbstractList<DocumentDomainObject> implements Serializable {
 
-    private List<DocumentDomainObject> list;
-    private Map<Integer, DocumentDomainObject> map;
+    private final List<DocumentDomainObject> list;
+    private final Map<Integer, DocumentDomainObject> map;
 
     DocumentList(Map documentMap) {
         map = Collections.synchronizedMap(documentMap);

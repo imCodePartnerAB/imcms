@@ -1,4 +1,4 @@
-package com.imcode.imcms.db;
+package com.imcode.imcms.db.exception;
 
 public class RuntimeSqlException extends RuntimeException {
 

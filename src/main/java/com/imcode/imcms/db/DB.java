@@ -1,5 +1,6 @@
 package com.imcode.imcms.db;
 
+import com.imcode.imcms.db.exception.RuntimeSqlException;
 import com.imcode.imcms.persistence.components.SqlResourcePathResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

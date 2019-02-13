@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.CategoryAlreadyExistsException;
+import com.imcode.imcms.api.exception.CategoryAlreadyExistsException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;

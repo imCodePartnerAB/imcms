@@ -5,7 +5,6 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
-import java.io.IOException;
 
 
 class LoginCallbackHandler implements CallbackHandler {
@@ -21,7 +20,7 @@ class LoginCallbackHandler implements CallbackHandler {
         this.password = password;
     }
 
-    public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
+    public void handle(Callback[] callbacks) throws UnsupportedCallbackException {
         for (Callback callback : callbacks) {
             if (callback instanceof NameCallback && username != null) {
                 NameCallback nc = (NameCallback) callback;
