@@ -284,7 +284,7 @@ public class DocumentSaver {
         documentMapper.setCreatedAndModifiedDatetimes(metaDO, new Date());
         metaDO.setId(null);
         metaDO.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
-        metaDO.setDocumentType(doc.getDocumentTypeId());
+        metaDO.setDocumentTypeId(doc.getDocumentTypeId());
 
         Meta jpaMeta = toJpaObject(metaDO);
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
@@ -374,7 +374,7 @@ public class DocumentSaver {
         meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
                 metaDO.getDisabledLanguageShowMode().name()
         ));
-        meta.setDocumentType(DocumentType.values()[metaDO.getDocumentType()]);
+        meta.setDocumentType(DocumentType.values()[metaDO.getDocumentTypeId()]);
         meta.setId(metaDO.getId());
         meta.setKeywords(metaDO.getKeywords());
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());

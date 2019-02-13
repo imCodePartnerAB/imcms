@@ -304,7 +304,7 @@ public class TextDocument extends Document {
             menuItemDTO.setDocumentId(docId);
             menuItemDTO.setTitle(documentToAdd.getHeadline());
             menuItemDTO.setTarget(documentToAdd.getTarget());
-            menuItemDTO.setType(Meta.DocumentType.values()[documentToAdd.getInternal().getMeta().getDocumentType()]);
+            menuItemDTO.setType(Meta.DocumentType.values()[documentToAdd.getInternal().getMeta().getDocumentTypeId()]);
             menuItemDTO.setDocumentStatus(DocumentStatus.IN_PROCESS);
             menuItemDTO.setLink("/" + (documentToAdd.getAlias() == null ? docId : documentToAdd.getAlias()));
             menuItemDTO.setChildren(Collections.emptyList());

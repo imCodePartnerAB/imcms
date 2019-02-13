@@ -50,7 +50,7 @@
 //            public DocumentDomainObject getDocument() {
 //                return new DocumentDomainObject() {
 //                    @Override
-//                    public DocumentTypeDomainObject getDocumentType() {
+//                    public DocumentTypeDomainObject getDocumentTypeId() {
 //                        return null;
 //                    }
 //

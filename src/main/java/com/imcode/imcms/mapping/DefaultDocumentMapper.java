@@ -147,7 +147,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         }
 
         newDocument.getMeta().setId(null);
-        newDocument.getMeta().setDocumentType(documentTypeId);
+        newDocument.getMeta().setDocumentTypeId(documentTypeId);
 
         newDocument.setVersionNo(0);
 
@@ -455,7 +455,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         makeDocumentLookNew(documentMeta, user);
         documentMeta.setId(null);
-        documentMeta.removeAlis();
+        documentMeta.removeAlias();
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();
