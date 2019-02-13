@@ -11,6 +11,7 @@ import imcode.server.document.HtmlDocumentDomainObject;
 import imcode.server.document.UrlDocumentDomainObject;
 import imcode.server.document.textdocument.TextDocumentDomainObject;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Updates existing document content.
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
 @Component
+@Transactional
 public class DocumentSavingVisitor extends DocumentStoringVisitor {
 
     public DocumentSavingVisitor(DocRepository docRepository,
