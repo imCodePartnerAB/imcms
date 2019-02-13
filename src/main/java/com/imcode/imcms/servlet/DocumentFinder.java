@@ -71,7 +71,7 @@ public class DocumentFinder extends WebComponent {
         if (booleanQuery.iterator().hasNext()) {
             List documentsFound = index.search(new SimpleDocumentQuery(booleanQuery, null, logged), Utility.getLoggedOnUser(request));
             if (null != documentComparator) {
-                Collections.sort(documentsFound, documentComparator);
+                documentsFound.sort(documentComparator);
             }
             page.setDocumentsFound(documentsFound);
         }

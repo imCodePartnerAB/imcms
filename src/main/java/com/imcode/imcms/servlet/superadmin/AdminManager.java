@@ -299,7 +299,7 @@ public class AdminManager extends HttpServlet {
         if (null != newSortOrder) {
             subreport.setSortorder(newSortOrder);
         }
-        Collections.sort(subreport.getDocuments(), getComparator(subreport.getSortorder()));
+        subreport.getDocuments().sort(getComparator(subreport.getSortorder()));
         boolean expanded = Utility.parameterIsSet(request, subreport.getName() + "_expand")
                 && !Utility.parameterIsSet(request, subreport.getName() + "_unexpand");
         subreport.setExpanded(expanded);

@@ -98,7 +98,7 @@ public class MenuDomainObject implements Cloneable, Serializable {
                 menuItemsUserCanSee.add(menuItem);
             }
         }
-        Collections.sort(menuItemsUserCanSee, getMenuItemComparatorForSortOrder(sortOrder));
+        menuItemsUserCanSee.sort(getMenuItemComparatorForSortOrder(sortOrder));
         return menuItemsUserCanSee;
     }
 
