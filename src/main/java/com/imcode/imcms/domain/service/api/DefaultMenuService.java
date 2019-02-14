@@ -10,6 +10,7 @@ import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
@@ -159,15 +160,15 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .stream()
                 .map(menuItemFunction)
                 .filter(Objects::nonNull)
-                .filter(menuItemDTO -> !menuItemDTO.getTitle().isEmpty())
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
+                .filter(menuItemDTO -> !documentMenuService.getDisabledLanguageShowMode(menuItemDTO.getDocumentId())
+                        .equals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW))
                 .peek(menuItemDTO -> {
                     if (status == MenuItemsStatus.ALL) return;
 
                     final List<MenuItemDTO> children = menuItemDTO.getChildren()
                             .stream()
                             .filter(this::isPublicMenuItem)
-                            .filter(e -> !e.getTitle().isEmpty())
                             .collect(Collectors.toList());
 
                     menuItemDTO.setChildren(children);
@@ -178,5 +179,4 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private boolean isPublicMenuItem(MenuItemDTO menuItemDTO) {
         return documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId());
     }
-
 }
