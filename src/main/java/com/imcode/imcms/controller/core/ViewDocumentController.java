@@ -147,12 +147,15 @@ public class ViewDocumentController {
                 .findFirst();
 
         final String language;
-
+        if (user.isSuperAdmin()) {
+            textDocument.setDisabledLanguageShowMode(String.valueOf(SHOW_IN_DEFAULT_LANGUAGE));
+        }
         if (!optionalCommonContent.isPresent()) {
             if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
                 language = user.getLanguage();
             } else {
-                throw new DocumentLanguageDisabledException(textDocument, textDocument.getLanguage());
+                response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
+                return null;
             }
         } else {
             language = docLangCode;
