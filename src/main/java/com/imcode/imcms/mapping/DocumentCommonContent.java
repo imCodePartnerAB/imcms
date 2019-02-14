@@ -8,6 +8,7 @@ import java.util.Objects;
  */
 public final class DocumentCommonContent implements Serializable {
 
+    private static final long serialVersionUID = -3790331598505829889L;
     /**
      * Doc's headline label. Mainly used as HTML page title.
      */

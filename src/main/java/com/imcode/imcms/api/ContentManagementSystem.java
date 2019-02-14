@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.api.exception.NoPermissionException;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;

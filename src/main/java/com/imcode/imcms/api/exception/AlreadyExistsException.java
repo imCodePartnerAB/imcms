@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.api.exception;
 
 /**
  * @since 2.0

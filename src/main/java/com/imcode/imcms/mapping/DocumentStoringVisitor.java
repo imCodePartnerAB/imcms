@@ -15,6 +15,8 @@ import imcode.util.io.FileUtility;
 import imcode.util.io.InputStreamSource;
 import org.apache.commons.lang.UnhandledException;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,6 +34,8 @@ import java.util.regex.Pattern;
  * @see com.imcode.imcms.mapping.DocumentSaver
  */
 //todo: hibernate.batch_update_versioned
+@Service
+@Transactional
 class DocumentStoringVisitor extends DocumentVisitor {
 
     private static final int FILE_BUFFER_LENGTH = 2048;

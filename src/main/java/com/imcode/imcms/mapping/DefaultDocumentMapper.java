@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
@@ -36,7 +37,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -73,7 +73,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     private DocumentIndex documentIndex;
 
-    @Inject
     public DefaultDocumentMapper(NativeQueries nativeQueries,
                                  DocumentSaver documentSaver,
                                  CategoryMapper categoryMapper,
@@ -148,7 +147,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
         }
 
         newDocument.getMeta().setId(null);
-        newDocument.getMeta().setDocumentType(documentTypeId);
+        newDocument.getMeta().setDocumentTypeId(documentTypeId);
 
         newDocument.setVersionNo(0);
 
@@ -456,7 +455,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         makeDocumentLookNew(documentMeta, user);
         documentMeta.setId(null);
-        documentMeta.removeAlis();
+        documentMeta.removeAlias();
 
         for (Map.Entry<DocumentLanguage, DocumentCommonContent> e : dccMap.entrySet()) {
             DocumentLanguage language = e.getKey();
@@ -476,7 +475,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
                     "Unable to copy. Source document does not exists. DocVersionRef: %s.", versionRef));
         }
 
-        Integer docCopyId = documentSaver.saveNewDocsWithCommonMetaAndVersion(newDocs, user);
+        int docCopyId = documentSaver.saveNewDocsWithCommonMetaAndVersion(newDocs, user);
 
         invalidateDocument(docCopyId);
 
@@ -486,7 +485,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
     @Override
     public List<DocumentDomainObject> getDocumentsWithPermissionsForRole(final RoleDomainObject role) {
         return new AbstractList<DocumentDomainObject>() {
-            private List<Integer> documentIds = nativeQueries.getDocumentsWithPermissionsForRole(role.getId());
+            private final List<Integer> documentIds = nativeQueries.getDocumentsWithPermissionsForRole(role.getId());
 
             public DocumentDomainObject get(int index) {
                 return getDocument(documentIds.get(index));

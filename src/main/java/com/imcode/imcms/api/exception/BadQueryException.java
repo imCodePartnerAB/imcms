@@ -4,7 +4,7 @@
  * Date: 2004-feb-09
  * Time: 16:26:49
  */
-package com.imcode.imcms.api;
+package com.imcode.imcms.api.exception;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 

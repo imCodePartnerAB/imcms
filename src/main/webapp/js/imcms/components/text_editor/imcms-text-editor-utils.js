@@ -84,7 +84,7 @@ define(
                 return;
             }
 
-            modal.buildConfirmWindow('Save changes?', () => {
+            modal.buildConfirmWindow(texts.confirmSave, () => {
                 saveContent(editor);
             });
         }

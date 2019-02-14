@@ -135,7 +135,7 @@ public class DocumentLoaderCachingProxy {
 
             DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
             DocumentVersion version = versionInfo.getWorkingVersion();
-            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
 
             doc.setMeta(meta.clone());
             doc.setVersionNo(version.getNo());
@@ -159,7 +159,7 @@ public class DocumentLoaderCachingProxy {
 
             DocumentVersionInfo versionInfo = getDocVersionInfo(docId);
             DocumentVersion version = versionInfo.getDefaultVersion();
-            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+            DocumentDomainObject doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
 
             doc.setMeta(meta.clone());
             doc.setVersionNo(version.getNo());
@@ -181,7 +181,7 @@ public class DocumentLoaderCachingProxy {
 
         DocumentVersionInfo versionInfo = getDocVersionInfo(docRef.getId());
         DocumentVersion version = versionInfo.getVersion(docRef.getVersionNo());
-        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentType());
+        T doc = DocumentDomainObject.fromDocumentTypeId(meta.getDocumentTypeId());
 
         doc.setMeta(meta.clone());
         doc.setVersionNo(version.getNo());

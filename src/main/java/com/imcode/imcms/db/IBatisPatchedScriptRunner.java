@@ -15,6 +15,8 @@
  */
 package com.imcode.imcms.db;
 
+import com.imcode.imcms.db.exception.RuntimeSqlException;
+
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.io.Reader;

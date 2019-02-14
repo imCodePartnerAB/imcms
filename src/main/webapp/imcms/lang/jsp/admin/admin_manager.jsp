@@ -120,8 +120,8 @@ if (!AdminManager.PARAMETER_VALUE__SHOW_SEARCH.equals(adminManagerPage.getTabNam
 				<%--DocumentTypeDomainObject.FILE,--%>
 			<%--} ;--%>
 			<%--for ( int i = 0; i < documentTypes.length; i++ ) {--%>
-				<%--DocumentTypeDomainObject documentType = documentTypes[i] ; %>--%>
-			<%--<option value="<%= documentType.getId() %>"><%= documentType.getName().toLocalizedString( request ) %></option><%--%>
+				<%--DocumentTypeDomainObject documentTypeId = documentTypes[i] ; %>--%>
+			<%--<option value="<%= documentTypeId.getId() %>"><%= documentTypeId.getName().toLocalizedString( request ) %></option><%--%>
 			<%--} %>--%>
 			<%--<option value="<%= AdminManager.REQUEST_PARAMETER__ACTION__COPY %>"><? global/Copy ?></option>--%>
 		<%--</select>--%>

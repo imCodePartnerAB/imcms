@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.DataUseCategoryException;
+import com.imcode.imcms.api.exception.DataUseCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;

@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -40,7 +39,6 @@ public class DocRepository {
 
     private Logger logger = Logger.getLogger(getClass());
 
-    @Inject
     public DocRepository(MetaRepository metaRepository, PropertyRepository propertyRepository,
                          HtmlDocContentRepository htmlDocContentRepository,
                          DocumentUrlRepository documentUrlRepository, DocumentFileRepository documentFileRepository) {

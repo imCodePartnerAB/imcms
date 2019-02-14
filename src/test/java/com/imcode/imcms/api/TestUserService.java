@@ -2,6 +2,8 @@ package com.imcode.imcms.api;
 
 import com.imcode.db.DatabaseException;
 import com.imcode.db.mock.MockDatabase;
+import com.imcode.imcms.api.exception.NoPermissionException;
+import com.imcode.imcms.api.exception.SaveException;
 import com.imcode.imcms.db.ProcedureExecutor;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.servlet.LoginPasswordManager;

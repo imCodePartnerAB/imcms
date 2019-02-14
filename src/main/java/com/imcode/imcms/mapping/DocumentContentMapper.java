@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,7 +24,6 @@ public class DocumentContentMapper {
     private final LanguageRepository languageRepository;
     private final DocumentLanguageMapper languageMapper;
 
-    @Inject
     public DocumentContentMapper(CommonContentRepository commonContentRepository, LanguageRepository languageRepository,
                                  DocumentLanguageMapper languageMapper) {
         this.commonContentRepository = commonContentRepository;

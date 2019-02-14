@@ -1,7 +1,7 @@
 package com.imcode.imcms.servlet.superadmin;
 
 import com.imcode.imcms.mapping.DocumentMapper;
-import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.servlet.AdminManagerSearchPage;
 import com.imcode.imcms.servlet.DocumentFinder;
 import com.imcode.imcms.servlet.SearchDocumentsPage;
@@ -299,7 +299,7 @@ public class AdminManager extends HttpServlet {
         if (null != newSortOrder) {
             subreport.setSortorder(newSortOrder);
         }
-        Collections.sort(subreport.getDocuments(), getComparator(subreport.getSortorder()));
+        subreport.getDocuments().sort(getComparator(subreport.getSortorder()));
         boolean expanded = Utility.parameterIsSet(request, subreport.getName() + "_expand")
                 && !Utility.parameterIsSet(request, subreport.getName() + "_unexpand");
         subreport.setExpanded(expanded);

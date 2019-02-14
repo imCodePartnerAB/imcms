@@ -1,10 +1,10 @@
 package com.imcode.imcms.servlet.admin;
 
 import com.imcode.imcms.api.ContentManagementSystem;
-import com.imcode.imcms.api.SaveException;
 import com.imcode.imcms.api.User;
-import com.imcode.imcms.api.UserAlreadyExistsException;
 import com.imcode.imcms.api.UserService;
+import com.imcode.imcms.api.exception.SaveException;
+import com.imcode.imcms.api.exception.UserAlreadyExistsException;
 import com.imcode.imcms.flow.DispatchCommand;
 import com.imcode.imcms.servlet.superadmin.UserEditorPage;
 import com.imcode.imcms.util.l10n.LocalizedMessage;

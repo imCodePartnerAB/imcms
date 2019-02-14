@@ -38,7 +38,6 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.image.Format;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +58,6 @@ public class TextDocumentContentSaver {
     private final LanguageRepository languageRepository;
     private final UserRepository userRepository;
 
-    @Autowired
     public TextDocumentContentSaver(MenuService menuService,
                                     VersionRepository versionRepository,
                                     TextRepository textRepository,

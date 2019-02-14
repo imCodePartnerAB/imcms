@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,10 +28,10 @@ public class LoopRepositoryTest extends WebAppSpringTestConfig {
     private static final int DOC_ID = 1001;
     private static final int VERSION_NO = 0;
 
-    @Inject
+    @Autowired
     private VersionRepository versionRepository;
 
-    @Inject
+    @Autowired
     private LoopRepository loopRepository;
 
     @Autowired

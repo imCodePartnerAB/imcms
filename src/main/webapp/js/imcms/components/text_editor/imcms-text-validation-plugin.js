@@ -14,7 +14,7 @@ define(
 
         texts = texts.textValidation;
 
-        const title = 'Validate Content over W3C'; // todo: localize!
+        const title = texts.pluginTitle;
 
         const getOnTinyMCETextValidationClick = function (editor) {
             return function () {

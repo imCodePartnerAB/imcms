@@ -1,6 +1,7 @@
 package com.imcode.imcms.api;
 
 import com.google.common.collect.Maps;
+import com.imcode.imcms.api.exception.DocumentLanguageException;
 import com.imcode.imcms.mapping.DocumentLanguageMapper;
 import org.apache.log4j.Logger;
 

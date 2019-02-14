@@ -10,6 +10,8 @@ import com.imcode.imcms.mapping.container.TextDocImagesContainer;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.TextDocTextsContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
+import com.imcode.imcms.mapping.exception.AliasAlreadyExistsInternalException;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.doc.DocRepository;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
@@ -32,7 +34,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -62,7 +63,6 @@ public class DocumentSaver {
     private final DocumentSavingVisitor documentSavingVisitor;
     private DefaultDocumentMapper documentMapper;
 
-    @Inject
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
                          VersionService versionService, LanguageRepository languageRepository,
                          CommonContentRepository commonContentRepository, MetaRepository metaRepository,
@@ -284,7 +284,7 @@ public class DocumentSaver {
         documentMapper.setCreatedAndModifiedDatetimes(metaDO, new Date());
         metaDO.setId(null);
         metaDO.setDefaultVersionNo(DocumentVersion.WORKING_VERSION_NO);
-        metaDO.setDocumentType(doc.getDocumentTypeId());
+        metaDO.setDocumentTypeId(doc.getDocumentTypeId());
 
         Meta jpaMeta = toJpaObject(metaDO);
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
@@ -374,7 +374,7 @@ public class DocumentSaver {
         meta.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.valueOf(
                 metaDO.getDisabledLanguageShowMode().name()
         ));
-        meta.setDocumentType(DocumentType.values()[metaDO.getDocumentType()]);
+        meta.setDocumentType(DocumentType.values()[metaDO.getDocumentTypeId()]);
         meta.setId(metaDO.getId());
         meta.setKeywords(metaDO.getKeywords());
         meta.setLinkableByOtherUsers(metaDO.getLinkableByOtherUsers());
@@ -391,7 +391,7 @@ public class DocumentSaver {
                         Collectors.toMap(Mapping::getRoleId, Mapping::getDocumentPermissionSetType)
                 )
         );
-        meta.setSearchDisabled(metaDO.getSearchDisabled());
+        meta.setSearchDisabled(metaDO.isSearchDisabled());
         meta.setTarget(metaDO.getTarget());
 
         return meta;

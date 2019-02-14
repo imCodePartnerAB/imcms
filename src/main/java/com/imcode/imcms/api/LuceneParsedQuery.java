@@ -1,5 +1,6 @@
 package com.imcode.imcms.api;
 
+import com.imcode.imcms.api.exception.BadQueryException;
 import imcode.server.document.index.DefaultQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.search.Query;

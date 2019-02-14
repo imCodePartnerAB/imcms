@@ -93,7 +93,7 @@ public class DocumentLoader {
         metaDO.setCreatorId(meta.getCreatorId());
         metaDO.setDefaultVersionNo(meta.getDefaultVersionNo());
         metaDO.setDisabledLanguageShowMode(DocumentMeta.DisabledLanguageShowMode.valueOf(meta.getDisabledLanguageShowMode().name()));
-        metaDO.setDocumentType(meta.getDocumentType().ordinal());
+        metaDO.setDocumentTypeId(meta.getDocumentType().ordinal());
         metaDO.setId(meta.getId());
         metaDO.setKeywords(meta.getKeywords());
         metaDO.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());

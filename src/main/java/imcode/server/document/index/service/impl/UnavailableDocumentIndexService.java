@@ -1,6 +1,6 @@
 package imcode.server.document.index.service.impl;
 
-import com.imcode.imcms.api.ServiceUnavailableException;
+import com.imcode.imcms.api.exception.ServiceUnavailableException;
 import imcode.server.document.index.service.DocumentIndexService;
 import imcode.server.document.index.service.IndexUpdateOp;
 import org.apache.solr.client.solrj.SolrQuery;

@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.api.DataUseCategoryException;
+import com.imcode.imcms.api.exception.DataUseCategoryException;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;

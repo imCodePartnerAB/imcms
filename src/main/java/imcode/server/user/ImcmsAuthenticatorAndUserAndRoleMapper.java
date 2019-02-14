@@ -11,7 +11,7 @@ import com.imcode.db.commands.SqlUpdateCommand;
 import com.imcode.db.commands.TransactionDatabaseCommand;
 import com.imcode.db.exceptions.IntegrityConstraintViolationException;
 import com.imcode.db.exceptions.StringTruncationException;
-import com.imcode.imcms.api.UserAlreadyExistsException;
+import com.imcode.imcms.api.exception.UserAlreadyExistsException;
 import com.imcode.imcms.db.StringArrayResultSetHandler;
 import com.imcode.imcms.domain.service.IpAccessRuleService;
 import com.imcode.imcms.domain.service.UserService;

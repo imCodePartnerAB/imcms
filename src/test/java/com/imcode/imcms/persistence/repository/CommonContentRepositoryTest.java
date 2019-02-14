@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.inject.Inject;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -24,10 +23,10 @@ public class CommonContentRepositoryTest extends WebAppSpringTestConfig {
     private static final String ENG_CODE = "en";
     private static final String SWE_CODE = "sv";
 
-    @Inject
+    @Autowired
     private LanguageRepository languageRepository;
 
-    @Inject
+    @Autowired
     private CommonContentRepository commonContentRepository;
 
     @Autowired

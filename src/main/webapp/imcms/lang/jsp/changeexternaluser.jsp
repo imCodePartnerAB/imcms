@@ -1,9 +1,9 @@
 <%@ page import="com.imcode.imcms.api.ContentManagementSystem,
-                 com.imcode.imcms.api.NoPermissionException,
                  com.imcode.imcms.api.Role,
-                 com.imcode.imcms.api.SaveException,
                  com.imcode.imcms.api.User,
-                 com.imcode.imcms.api.UserService"
+                 com.imcode.imcms.api.UserService,
+                 com.imcode.imcms.api.exception.NoPermissionException,
+                 com.imcode.imcms.api.exception.SaveException"
 %>
 <%@ page import="com.imcode.imcms.servlet.superadmin.AdminUser" %>
 <%@ page import="javax.servlet.http.HttpServletRequest" %>

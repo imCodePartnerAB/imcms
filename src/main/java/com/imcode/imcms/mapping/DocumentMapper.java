@@ -8,6 +8,7 @@ import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.DocumentReference;
 import imcode.server.document.NoPermissionToEditDocumentException;

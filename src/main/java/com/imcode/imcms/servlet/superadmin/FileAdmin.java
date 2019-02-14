@@ -257,9 +257,9 @@ public class FileAdmin extends HttpServlet {
 
     private StringBuffer buildWarningOptions(File[] relativeSourceFileTree, File destDir, StringBuffer optionList) throws IOException {
         StringBuffer fileList = new StringBuffer();
-        for (int i = 0; i < relativeSourceFileTree.length; i++) {
-            File destFile = new File(destDir, relativeSourceFileTree[i].getPath());
-            fileList.append(relativeSourceFileTree[i]).append(File.pathSeparator);
+        for (File aRelativeSourceFileTree : relativeSourceFileTree) {
+            File destFile = new File(destDir, aRelativeSourceFileTree.getPath());
+            fileList.append(aRelativeSourceFileTree).append(File.pathSeparator);
             if (destFile.exists()) {
                 String optionString = createWarningFileOptionString(destFile);
                 optionList.append("<option>").append(optionString).append("</option>");
@@ -536,8 +536,8 @@ public class FileAdmin extends HttpServlet {
             return null;
         }
         LinkedList list = new LinkedList();
-        for (int i = 0; i < files.length; i++) {
-            String filename = files[i].getPath();
+        for (File file : files) {
+            String filename = file.getPath();
             if (!("..".equals(filename) || new File(filename).isAbsolute())) {
                 list.add(new File(parent, filename));
             }
@@ -567,16 +567,16 @@ public class FileAdmin extends HttpServlet {
             return new File[0];
         }
         LinkedList list = new LinkedList();
-        for (int i = 0; i < files.length; i++) {
+        for (File file : files) {
             if (dirfirst) {
-                list.add(files[i]);
+                list.add(file);
             }
-            if (files[i].isDirectory()) {
-                File[] sub_list = makeFileTreeList(files[i].listFiles(), dirfirst);
+            if (file.isDirectory()) {
+                File[] sub_list = makeFileTreeList(file.listFiles(), dirfirst);
                 Collections.addAll(list, sub_list);
             }
             if (!dirfirst) {
-                list.add(files[i]);
+                list.add(file);
             }
         }
         File[] result = new File[list.size()];
@@ -629,8 +629,8 @@ public class FileAdmin extends HttpServlet {
     private String createDirectoryOptionList(File[] rootlist, File directory) throws IOException {
         StringBuffer optionlist = new StringBuffer();
         File webappPath = Imcms.getPath();
-        for (int i = 0; i < rootlist.length; i++) {
-            String dirname = getPathRelativeTo(webappPath, rootlist[i]);
+        for (File aRootlist : rootlist) {
+            String dirname = getPathRelativeTo(webappPath, aRootlist);
             optionlist.append(getDirectoryOption(File.separator + dirname + File.separator, File.separator + dirname + File.separator));
         }
         File parent = directory.getCanonicalFile().getParentFile();

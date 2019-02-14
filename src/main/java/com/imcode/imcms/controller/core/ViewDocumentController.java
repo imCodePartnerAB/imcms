@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.core;
 
-import com.imcode.imcms.api.DocumentLanguageDisabledException;
+import com.imcode.imcms.api.exception.DocumentLanguageDisabledException;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.CommonContentService;

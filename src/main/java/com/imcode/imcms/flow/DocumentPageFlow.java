@@ -1,7 +1,7 @@
 package com.imcode.imcms.flow;
 
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
-import com.imcode.imcms.mapping.DocumentSaveException;
+import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import imcode.server.document.ConcurrentDocumentModificationException;
 import imcode.server.document.DocumentDomainObject;
 import imcode.server.document.NoPermissionToEditDocumentException;

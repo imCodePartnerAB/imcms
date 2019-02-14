@@ -1,4 +1,4 @@
-package com.imcode.imcms.api;
+package com.imcode.imcms.api.exception;
 
 public class ServiceUnavailableException extends ServiceException {
 

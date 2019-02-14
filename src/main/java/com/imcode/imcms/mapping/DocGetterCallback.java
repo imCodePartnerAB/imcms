@@ -40,11 +40,11 @@ public class DocGetterCallback implements Serializable {
         logger.trace("Working doc requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getWorkingDocument(docId, language);
     };
-    private Callback uncheckedDefaultDocCallback = (docId, docMapper) -> {
+    private final Callback uncheckedDefaultDocCallback = (docId, docMapper) -> {
         logger.trace("Default doc (unchecked) requested - user: {}, docId: {}, language: {}.", user, docId, language);
         return docMapper.getDefaultDocument(docId, language);
     };
-    private Callback defaultDocCallback = (docId, docMapper) -> {
+    private final Callback defaultDocCallback = (docId, docMapper) -> {
         logger.trace("Default doc requested - user: {}, docId: {}, language: {}.", docId, language);
 
         DocumentDomainObject doc = docMapper.getDefaultDocument(docId, language);

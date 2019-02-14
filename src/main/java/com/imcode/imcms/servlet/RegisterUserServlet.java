@@ -1,6 +1,6 @@
 package com.imcode.imcms.servlet;
 
-import com.imcode.imcms.api.UserAlreadyExistsException;
+import com.imcode.imcms.api.exception.UserAlreadyExistsException;
 import com.imcode.imcms.model.Roles;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;

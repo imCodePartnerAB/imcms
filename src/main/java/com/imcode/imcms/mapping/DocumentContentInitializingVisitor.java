@@ -62,7 +62,6 @@ public class DocumentContentInitializingVisitor extends DocumentVisitor {
         }
     }
 
-
     public void visitHtmlDocument(HtmlDocumentDomainObject doc) {
         HtmlDocContent html = docRepository.getHtmlDocContent(doc.getRef());
         doc.setHtml(html.getHtml());

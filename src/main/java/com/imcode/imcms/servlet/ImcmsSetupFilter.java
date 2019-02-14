@@ -1,6 +1,5 @@
 package com.imcode.imcms.servlet;
 
-import com.google.common.primitives.Ints;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.mapping.DocGetterCallback;
@@ -79,7 +78,8 @@ public class ImcmsSetupFilter implements Filter {
 
         docGetterCallback.setLanguage(preferredLanguage);
 
-        Integer docId = Ints.tryParse(StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID)));
+        final String stringDocId = StringUtils.trimToEmpty(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_ID));
+        final Integer docId = stringDocId.isEmpty() ? null : Integer.valueOf(stringDocId);
         String versionStr = StringUtils.trimToNull(request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_VERSION));
 
         if (null != docId && null != versionStr) {
@@ -93,7 +93,7 @@ public class ImcmsSetupFilter implements Filter {
                     break;
 
                 default:
-                    Integer versionNo = Ints.tryParse(versionStr);
+                    Integer versionNo = versionStr.isEmpty() ? null : Integer.valueOf(versionStr);
                     if (null != versionNo) {
                         docGetterCallback.setCustom(docId, versionNo);
                     }

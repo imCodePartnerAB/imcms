@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.component;
 
-import com.sun.istack.Nullable;
 import net.sf.ehcache.Ehcache;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +16,7 @@ public interface DocumentsCache {
 
     void setCache(Ehcache cache);
 
-    void invalidateDoc(Integer id, @Nullable String alias);
+    void invalidateDoc(Integer id, String alias);
 
     boolean isDocumentAlreadyCached(String cacheKey);
 }
