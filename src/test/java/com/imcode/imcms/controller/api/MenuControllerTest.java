@@ -1,12 +1,13 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.model.Roles;
+import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
@@ -17,9 +18,6 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
-
 @Transactional
 public class MenuControllerTest extends AbstractControllerTest {
 
@@ -29,10 +27,8 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Autowired
     private VersionDataInitializer versionDataInitializer;
 
-    private static final int DOC_ID = 1001;
-    private static final int WORKING_VERSION_NO = 0;
     @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
+    private DocumentService<DocumentDTO> documentService;
 
     @BeforeEach
     public void setUp() {
@@ -55,33 +51,16 @@ public class MenuControllerTest extends AbstractControllerTest {
     @Test
     public void getMenuItems_When_MenuExists_Expect_MenuItemsDtosJson() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true);
-
-        menu.getMenuItems()
-                .stream()
-                .map(new UnaryOperator<MenuItemDTO>() {
-                    @Override
-                    public MenuItemDTO apply(MenuItemDTO menuItemDTO) {
-                        menuItemDTO.setTitle("headline_en");
-
-                        menuItemDTO.getChildren()
-                                .stream()
-                                .map(this)
-                                .collect(Collectors.toList());
-
-                        return menuItemDTO;
-                    }
-                })
-                .collect(Collectors.toList());
-
-        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
-
-        final String expectedMenuItemDtos = asJson(menu.getMenuItems());
-
+        final DocumentDTO documentDTO = documentService.get(menu.getDocId());
+        if (!documentDTO.getDisabledLanguageShowMode().equals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE)) {
+            documentDTO.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+            documentService.save(documentDTO);
+        }
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, expectedMenuItemDtos);
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
     }
 
     @Test
