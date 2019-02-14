@@ -1,15 +1,17 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
 import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.persistence.entity.Menu;
+import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
@@ -21,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.function.UnaryOperator;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +53,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
-    private CommonContentDataInitializer commonContentDataInitializer;
+    private DocumentService<DocumentDTO> documentService;
 
     @BeforeEach
     public void setUp() {
@@ -169,41 +169,28 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getMenuItems_MenuNoAndDocIdAndUserLanguage_Expect_MenuItemsIsReturnedWithTitleOfUsersLanguage() {
         final MenuDTO menu = menuDataInitializer.createData(true);
-
-        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
-
+        final DocumentDTO documentDTO = documentService.get(menu.getDocId());
+        if (!documentDTO.getDisabledLanguageShowMode().equals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE)) {
+            documentDTO.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+            documentService.save(documentDTO);
+        }
         final String language = Imcms.getUser().getLanguage();
-        final String titleTest = language.equals("en") ? "headline_en" : "headline_se";
 
         final List<MenuItemDTO> menuItems = menuService
                 .getMenuItems(menu.getMenuIndex(), menu.getDocId(), language);
 
         assertEquals(menu.getMenuItems().size(), menuItems.size());
-
-        menuItems
-                .stream()
-                .map(new UnaryOperator<MenuItemDTO>() {
-                    @Override
-                    public MenuItemDTO apply(MenuItemDTO menuItemDTO) {
-                        assertEquals(titleTest, menuItemDTO.getTitle());
-
-                        menuItemDTO.getChildren()
-                                .stream()
-                                .map(this)
-                                .collect(Collectors.toList());
-
-                        return menuItemDTO;
-                    }
-                })
-                .collect(Collectors.toList());
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
         final MenuDTO menu = menuDataInitializer.createData(true);
+        final DocumentDTO documentDTO = documentService.get(menu.getDocId());
+        if (!documentDTO.getDisabledLanguageShowMode().equals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE)) {
+            documentDTO.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+            documentService.save(documentDTO);
+        }
 
         final String code = languageDataInitializer.createData().get(0).getCode();
-
-        commonContentDataInitializer.createData(DOC_ID, WORKING_VERSION_NO);
 
         final List<MenuItemDTO> menuItemDtosOfMenu = isAll
                 ? menuService.getVisibleMenuItems(menu.getMenuIndex(), menu.getDocId(), code)
@@ -211,7 +198,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(menuDataInitializer.getMenuItemDtoList().size(), menuItemDtosOfMenu.size());
         assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().size());
-        assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().get(0).getChildren().size(), menuItemDtosOfMenu.get(0).getChildren().get(0).getChildren().size());
+        assertEquals(menuDataInitializer.getMenuItemDtoList().get(0).getChildren().get(0).getChildren().size(),
+                menuItemDtosOfMenu.get(0).getChildren().get(0).getChildren().size());
+
     }
 
     private void getMenuItemsOf_When_MenuDoesntExist_Expect_EmptyList(boolean isAll) {
