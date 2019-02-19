@@ -18,6 +18,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -122,19 +123,16 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getDocument_whenEnLanguageSetAndUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {//todo fix that???
-
-        assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(0));
+    public void getDocument_whenEnLanguageSetAndUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {
+        assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(0).andExpect(status().isNotFound()));
     }
 
     @Test
-    public void getDocument_whenSvLanguageSetAndUserDoesNotHaveThisLanguage_Expect_NotFound404Response() { //todo fix that???
-
-        assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1));
+    public void getDocument_whenSvLanguageSetAndUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {
+        assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1).andExpect(status().isNotFound()));
     }
 
-    private void testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(int languageIndex)
-            throws Throwable {
+    private ResultActions testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(int languageIndex) throws Exception {
 
         final LanguageDTO language = languages.get(languageIndex);
         Imcms.setLanguage(language);
@@ -152,12 +150,7 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
                 .forEach(commonContent -> commonContent.setEnabled(false));
 
         commonContentService.save(docId, commonContents);
-
-        try {
-            mockMvc.perform(get(VIEW_DOC + docId));
-        } catch (Exception e) {
-            throw e.getCause();
-        }
+        return mockMvc.perform(get(VIEW_DOC + docId));
     }
 
     private void testWhenUserDoesNotHaveSpecificLanguageAndOptionSHOW_IN_DEFAULT_LANGUAGESet(int languageIndex)
