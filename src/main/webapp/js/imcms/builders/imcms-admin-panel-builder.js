@@ -147,10 +147,7 @@ define("imcms-admin-panel-builder",
             const languageParamName = 'lang';
             const languageCode = $(this).text();
 
-            if (urlParams.has(languageParamName)) {
-                urlParams.delete(languageParamName);
-            }
-            urlParams.append(languageParamName, languageCode);
+            urlParams.set(languageParamName, languageCode);
 
             location.href = location.origin + location.pathname + '?' + urlParams.toString();
         }
