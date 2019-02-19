@@ -147,9 +147,6 @@ public class ViewDocumentController {
                 .findFirst();
 
         final String language;
-        if (user.isSuperAdmin()) {
-            textDocument.setDisabledLanguageShowMode(String.valueOf(SHOW_IN_DEFAULT_LANGUAGE));
-        }
         if (!optionalCommonContent.isPresent()) {
             if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
                 language = user.getLanguage();
