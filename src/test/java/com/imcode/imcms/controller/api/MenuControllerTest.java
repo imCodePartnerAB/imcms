@@ -6,6 +6,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class MenuControllerTest extends AbstractControllerTest {
@@ -49,13 +52,45 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getMenuItems_When_MenuExists_Expect_MenuItemsDtosJson() throws Exception {
+    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANG_Expect_MenuItemsDtosJson() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true);
-        final DocumentDTO documentDTO = documentService.get(menu.getDocId());
-        if (!documentDTO.getDisabledLanguageShowMode().equals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE)) {
-            documentDTO.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
-            documentService.save(documentDTO);
-        }
+        final DocumentDTO document = documentService.get(menu.getDocId());
+        document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
+        documentService.save(document);
+
+        assertEquals(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE, document.getDisabledLanguageShowMode());
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("menuIndex", String.valueOf(menu.getMenuIndex()))
+                .param("docId", String.valueOf(menu.getDocId()));
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
+    }
+
+    @Test
+    public void getMenuItems_When_MenuExistAndHasModeDONOTSHOW_Expect_EmptyResult() throws Exception {
+        final MenuDTO menu = menuDataInitializer.createData(true);
+        final Document document = documentService.get(menu.getDocId());
+
+        assertEquals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW, document.getDisabledLanguageShowMode());
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
+                .param("menuIndex", String.valueOf(menu.getMenuIndex()))
+                .param("docId", String.valueOf(menu.getDocId()));
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, "[]");
+    }
+
+    @Test
+    public void getMenuItems_When_UserSuperAdminMenuExistInModeDONOTSHOW_Expect_MenuItemsDtosJson() throws Exception {
+        final MenuDTO menu = menuDataInitializer.createData(true);
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        Imcms.setUser(user);
+
+        assertTrue(Imcms.getUser().isSuperAdmin());
+
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
