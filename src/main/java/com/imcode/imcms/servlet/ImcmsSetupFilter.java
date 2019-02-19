@@ -183,6 +183,7 @@ public class ImcmsSetupFilter implements Filter {
                 Imcms.setUser(user);
                 Imcms.setLanguage(languageMapper.getLanguageByCode(user.getLanguage()));
 
+
                 // todo: optimize;
                 // In case system denies multiple sessions for the same logged-in user and the user was not authenticated by an IP:
                 // -invalidates current session if it does not match to last user's session
@@ -235,11 +236,11 @@ public class ImcmsSetupFilter implements Filter {
 
 
                 final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-
+                session.setAttribute("lang", requestedLangCode);
                 final Cookie[] cookies = request.getCookies();
                 final Optional<Cookie> userLanguageCookie;
-                if (requestedLangCode != null) {
-                    Imcms.setLanguage(languageMapper.getLanguageByCode(requestedLangCode));
+                if (session.getAttribute("lang") != null) {
+                    Imcms.setLanguage(languageMapper.getLanguageByCode(session.getAttribute("lang").toString()));
                     final Cookie newUserLanguageCookie = new Cookie(USER_LANGUAGE_IN_COOKIE_NAME, requestedLangCode);
                     newUserLanguageCookie.setMaxAge(session.getMaxInactiveInterval());
                     newUserLanguageCookie.setPath("/");
@@ -256,7 +257,8 @@ public class ImcmsSetupFilter implements Filter {
                     final String langCode;
 
                     if (userLanguageCookie.isPresent()) {
-                        langCode = userLanguageCookie.get().getValue();
+                        langCode = (session.getAttribute("lang") != null) ? session.getAttribute("lang").toString()
+                                : userLanguageCookie.get().getValue();
 
                     } else {
                         final String defaultLanguage = service.getConfig().getDefaultLanguage();
@@ -277,6 +279,7 @@ public class ImcmsSetupFilter implements Filter {
 
             }
 
+            session.removeAttribute("lang");
             ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
 
             Utility.initRequestWithApi(request, user);
