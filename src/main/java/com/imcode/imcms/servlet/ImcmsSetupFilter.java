@@ -236,8 +236,8 @@ public class ImcmsSetupFilter implements Filter {
 
 
                 final String requestedLangCode = request.getParameter(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
-                session.setAttribute("lang", requestedLangCode);
-                final Object langSession = session.getAttribute("lang");
+                session.setAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE, requestedLangCode);
+                final Object langSession = session.getAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
                 final Cookie[] cookies = request.getCookies();
                 final Optional<Cookie> userLanguageCookie;
                 if (langSession != null) {
@@ -279,7 +279,7 @@ public class ImcmsSetupFilter implements Filter {
 
             }
 
-            session.removeAttribute("lang");
+            session.removeAttribute(ImcmsConstants.REQUEST_PARAM__DOC_LANGUAGE);
             ImcmsSetupFilter.updateUserDocGetterCallback(request, service, user);
 
             Utility.initRequestWithApi(request, user);
