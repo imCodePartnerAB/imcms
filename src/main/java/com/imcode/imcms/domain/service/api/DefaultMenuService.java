@@ -14,6 +14,7 @@ import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -149,6 +150,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         final Version version = versionService.getVersion(docId, versionReceiver);
         final Language language = languageService.findByCode(langCode);
         final Menu menu = repository.findByNoAndVersionAndFetchMenuItemsEagerly(menuIndex, version);
+        final UserDomainObject user = Imcms.getUser();
 
         final Function<MenuItem, MenuItemDTO> menuItemFunction = isVisible
                 ? menuItem -> menuItemToMenuItemDtoWithLang.apply(menuItem, language)
@@ -162,7 +164,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .filter(Objects::nonNull)
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
                 .filter(menuItemDTO -> !documentMenuService.getDisabledLanguageShowMode(menuItemDTO.getDocumentId())
-                        .equals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW))
+                        .equals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW) || user.isSuperAdmin())
                 .peek(menuItemDTO -> {
                     if (status == MenuItemsStatus.ALL) return;
 
