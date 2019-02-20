@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.component;
 
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.constructs.web.PageInfo;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,6 +16,8 @@ public interface DocumentsCache {
     String calculateKey(final String documentIdString, final String langCode);
 
     void setCache(Ehcache cache);
+
+    PageInfo getPageInfoFromCache(String key);
 
     void invalidateDoc(Integer id, String alias);
 

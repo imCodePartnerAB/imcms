@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -79,7 +80,20 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                     return ((null != document) && Utility.isTextDocument(document));
                 };
 
-                if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
+                boolean isSameETag = false;
+                final PageInfo tempPageInfo = documentsCache.getPageInfoFromCache(cacheKey);
+                if (null != tempPageInfo) {
+                    final String eTagRequest = request.getHeader("if-none-match");
+                    if (null == eTagRequest) {
+                        isSameETag = true;
+                    } else {
+                        Optional<Header<? extends Serializable>> eTag = tempPageInfo.getHeaders().stream().filter(item -> item.getName().equals("ETag")).findFirst();
+                        isSameETag = eTag.isPresent() && eTagRequest.equals(eTag.get().getValue());
+                    }
+                }
+
+
+                if (isSameETag && (isDocumentAlreadyCached || textDocExist.getAsBoolean())) {
                     try {
                         super.doFilter(request, response, chain);
                         return;
@@ -164,8 +178,12 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 
         headers.add(new Header<>("Last-Modified", lastModified));
         headers.add(new Header<>("Expires", System.currentTimeMillis() + ttlMilliseconds));
-        headers.add(new Header<>("Cache-Control", "max-age=" + ttlMilliseconds / 1000));
+        //no-cache needed just to  validated content over ETag before load. Should be needed by manual language switch
+        headers.add(new Header<>("Cache-Control", "no-cache,max-age=" + ttlMilliseconds / 1000));
+//        headers.add(new Header<>("Cache-Control", "no-store,max-age=" + ttlMilliseconds / 1000));
         headers.add(new Header<>("ETag", generateEtag(ttlMilliseconds)));
+
+        System.out.println("Etag: " + headers.get(headers.size() - 1));
 
         return pageInfo;
     }
