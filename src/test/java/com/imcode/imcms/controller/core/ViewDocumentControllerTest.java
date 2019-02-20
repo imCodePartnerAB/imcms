@@ -123,12 +123,32 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getDocument_whenEnLanguageSetAndUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {
+    public void getDocument_whenEnLanguageSetAndSuperAdminDoesNotHaveThisLanguage_Expect_OkStatus() {
+        assertTrue(Imcms.getUser().isSuperAdmin());
+        assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(0).andExpect(status().isOk()));
+    }
+
+    @Test
+    public void getDocument_whenSvLanguageSetAndSuperAdminDoesNotHaveThisLanguage_Expect_OkStatus() {
+        assertTrue(Imcms.getUser().isSuperAdmin());
+        assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1).andExpect(status().isOk()));
+    }
+
+    @Test
+    public void getDocument_whenEnLanguageSetAndDefaultUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.USER.getId());
+        Imcms.setUser(user);
         assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(0).andExpect(status().isNotFound()));
     }
 
     @Test
-    public void getDocument_whenSvLanguageSetAndUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {
+    public void getDocument_whenSvLanguageSetAndDefaultUserDoesNotHaveThisLanguage_Expect_NotFound404Response() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng");
+        user.addRoleId(Roles.USER.getId());
+        Imcms.setUser(user);
         assertDoesNotThrow(() -> testWhenUserDoesNotHaveSpecificLanguageAndOptionDO_NOT_SHOWSet(1).andExpect(status().isNotFound()));
     }
 
