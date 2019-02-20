@@ -148,8 +148,7 @@ public class ViewDocumentController {
 
         final String language;
         if (!optionalCommonContent.isPresent()) {
-            if (user.isSuperAdmin()) textDocument.setDisabledLanguageShowMode(String.valueOf(SHOW_IN_DEFAULT_LANGUAGE));
-            if (textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
+            if (user.isSuperAdmin() || textDocument.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
                 language = user.getLanguage();
             } else {
                 response.sendError(404, String.valueOf(HttpServletResponse.SC_NOT_FOUND));
