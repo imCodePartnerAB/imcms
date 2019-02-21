@@ -80,20 +80,21 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                     return ((null != document) && Utility.isTextDocument(document));
                 };
 
-                boolean isSameETag = false;
                 final PageInfo tempPageInfo = documentsCache.getPageInfoFromCache(cacheKey);
                 if (null != tempPageInfo) {
                     final String eTagRequest = request.getHeader("if-none-match");
-                    if (null == eTagRequest) {
-                        isSameETag = true;
-                    } else {
-                        Optional<Header<? extends Serializable>> eTag = tempPageInfo.getHeaders().stream().filter(item -> item.getName().equals("ETag")).findFirst();
-                        isSameETag = eTag.isPresent() && eTagRequest.equals(eTag.get().getValue());
+                    if (null != eTagRequest) {
+                        Optional<Header<? extends Serializable>> eTag = tempPageInfo.getHeaders().stream()
+                                .filter(item -> item.getName().equals("ETag")).findFirst();
+                        boolean isSameETag = eTag.isPresent() && eTagRequest.equals(eTag.get().getValue());
+
+                        if (!isSameETag && isDocumentAlreadyCached) {
+                            documentsCache.invalidateItem(cacheKey);
+                        }
                     }
                 }
 
-
-                if (isSameETag && (isDocumentAlreadyCached || textDocExist.getAsBoolean())) {
+                if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
                     try {
                         super.doFilter(request, response, chain);
                         return;

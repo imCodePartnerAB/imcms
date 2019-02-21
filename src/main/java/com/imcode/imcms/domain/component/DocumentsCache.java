@@ -21,5 +21,7 @@ public interface DocumentsCache {
 
     void invalidateDoc(Integer id, String alias);
 
+    void invalidateItem(String key);
+
     boolean isDocumentAlreadyCached(String cacheKey);
 }

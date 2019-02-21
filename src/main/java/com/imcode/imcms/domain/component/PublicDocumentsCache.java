@@ -74,6 +74,14 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
+    public void invalidateItem(String key) {
+        if (cache == null) return;
+        if (StringUtils.isNotBlank(key)) {
+            cache.remove(key);
+        }
+    }
+
+    @Override
     public void setCache(Ehcache cache) {
         this.cache = cache;
     }
