@@ -184,8 +184,6 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 //        headers.add(new Header<>("Cache-Control", "no-store,max-age=" + ttlMilliseconds / 1000));
         headers.add(new Header<>("ETag", generateEtag(ttlMilliseconds)));
 
-        System.out.println("Etag: " + headers.get(headers.size() - 1));
-
         return pageInfo;
     }
 
