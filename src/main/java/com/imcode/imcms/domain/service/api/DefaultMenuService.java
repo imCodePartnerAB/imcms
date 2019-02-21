@@ -171,7 +171,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .filter(Objects::nonNull)
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
                 .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
-                .filter(getMenuItemDTOPredicate(language, user, versionReceiver))
+                .filter(isMenuItemAccessibleForLang(language, versionReceiver))
                 .peek(menuItemDTO -> {
                     if (status == MenuItemsStatus.ALL) return;
 
@@ -185,24 +185,22 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .collect(Collectors.toList());
     }
 
-    private Predicate<MenuItemDTO> getMenuItemDTOPredicate(Language language, UserDomainObject user, Function<Integer, Version> versionReceiver) {
+    private Predicate<MenuItemDTO> isMenuItemAccessibleForLang(Language language, Function<Integer, Version> versionReceiver) {
         return menuItemDTO -> {
             final int versionNo = versionService.getVersion(menuItemDTO.getDocumentId(), versionReceiver).getNo();
-            final Integer menuDocumentId = documentMenuService.getMenuItemDTO(menuItemDTO.getDocumentId(), language).getDocumentId();
 
             final List<CommonContent> menuItemDocContent = commonContentService.getOrCreateCommonContents(menuItemDTO.getDocumentId(), versionNo);
 
-            final List<Language> enabledLanguages = menuItemDocContent
-                    .stream()
+            final List<Language> enabledLanguages = menuItemDocContent.stream()
                     .filter(item -> item.getLanguage().isEnabled())
                     .map(CommonContent::getLanguage)
                     .collect(Collectors.toList());
 
             final boolean isLanguageEnabled = enabledLanguages.contains(language);
             final boolean isCurrentLangDefault = language.getCode().equals(Imcms.getServices().getLanguageMapper().getDefaultLanguage());
-            final boolean isAllowedToShowWithDefaultLanguage = documentMenuService.getDisabledLanguageShowMode(menuDocumentId).equals(SHOW_IN_DEFAULT_LANGUAGE);
+            final boolean isAllowedToShowWithDefaultLanguage = documentMenuService.getDisabledLanguageShowMode(menuItemDTO.getDocumentId()).equals(SHOW_IN_DEFAULT_LANGUAGE);
 
-            return ((isLanguageEnabled) || isCurrentLangDefault && !isAllowedToShowWithDefaultLanguage && isLanguageEnabled);
+            return isLanguageEnabled || (!isCurrentLangDefault && isAllowedToShowWithDefaultLanguage);
         };
 
     }
