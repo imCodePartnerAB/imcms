@@ -181,7 +181,6 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
         headers.add(new Header<>("Expires", System.currentTimeMillis() + ttlMilliseconds));
         //no-cache needed just to  validated content over ETag before load. Should be needed by manual language switch
         headers.add(new Header<>("Cache-Control", "no-cache,max-age=" + ttlMilliseconds / 1000));
-//        headers.add(new Header<>("Cache-Control", "no-store,max-age=" + ttlMilliseconds / 1000));
         headers.add(new Header<>("ETag", generateEtag(ttlMilliseconds)));
 
         return pageInfo;
