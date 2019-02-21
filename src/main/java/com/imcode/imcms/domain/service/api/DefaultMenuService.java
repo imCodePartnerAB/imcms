@@ -3,14 +3,15 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.IdDeleterMenuService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
@@ -25,8 +26,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
+
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 
 @Service
 @Transactional
@@ -41,6 +45,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
     private final LanguageService languageService;
     private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
     private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
+    private final CommonContentService commonContentService;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -50,7 +55,8 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                        LanguageService languageService,
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
-                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang) {
+                       BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang,
+                       CommonContentService commonContentService) {
 
         super(menuRepository);
         this.versionService = versionService;
@@ -60,6 +66,7 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         this.menuItemToDTO = menuItemToDTO;
         this.languageService = languageService;
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
+        this.commonContentService = commonContentService;
         this.menuSaver = (menu, language) -> menuToMenuDTO.apply(menuRepository.save(menu), language);
     }
 
@@ -163,8 +170,8 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                 .map(menuItemFunction)
                 .filter(Objects::nonNull)
                 .filter(menuItemDTO -> (status == MenuItemsStatus.ALL || isPublicMenuItem(menuItemDTO)))
-                .filter(menuItemDTO -> !documentMenuService.getDisabledLanguageShowMode(menuItemDTO.getDocumentId())
-                        .equals(Meta.DisabledLanguageShowMode.DO_NOT_SHOW) || user.isSuperAdmin())
+                .filter(menuItemDTO -> documentMenuService.hasUserAccessToDoc(menuItemDTO.getDocumentId(), user))
+                .filter(getMenuItemDTOPredicate(language, user, versionReceiver))
                 .peek(menuItemDTO -> {
                     if (status == MenuItemsStatus.ALL) return;
 
@@ -176,6 +183,28 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
                     menuItemDTO.setChildren(children);
                 })
                 .collect(Collectors.toList());
+    }
+
+    private Predicate<MenuItemDTO> getMenuItemDTOPredicate(Language language, UserDomainObject user, Function<Integer, Version> versionReceiver) {
+        return menuItemDTO -> {
+            final int versionNo = versionService.getVersion(menuItemDTO.getDocumentId(), versionReceiver).getNo();
+            final Integer menuDocumentId = documentMenuService.getMenuItemDTO(menuItemDTO.getDocumentId(), language).getDocumentId();
+
+            final List<CommonContent> menuItemDocContent = commonContentService.getOrCreateCommonContents(menuItemDTO.getDocumentId(), versionNo);
+
+            final List<Language> enabledLanguages = menuItemDocContent
+                    .stream()
+                    .filter(item -> item.getLanguage().isEnabled())
+                    .map(CommonContent::getLanguage)
+                    .collect(Collectors.toList());
+
+            final boolean isLanguageEnabled = enabledLanguages.contains(language);
+            final boolean isCurrentLangDefault = language.getCode().equals(Imcms.getServices().getLanguageMapper().getDefaultLanguage());
+            final boolean isAllowedToShowWithDefaultLanguage = documentMenuService.getDisabledLanguageShowMode(menuDocumentId).equals(SHOW_IN_DEFAULT_LANGUAGE);
+
+            return ((isLanguageEnabled) || isCurrentLangDefault && !isAllowedToShowWithDefaultLanguage && isLanguageEnabled);
+        };
+
     }
 
     private boolean isPublicMenuItem(MenuItemDTO menuItemDTO) {
