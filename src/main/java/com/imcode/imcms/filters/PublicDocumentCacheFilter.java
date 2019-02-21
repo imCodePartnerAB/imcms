@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
@@ -78,6 +79,20 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 
                     return ((null != document) && Utility.isTextDocument(document));
                 };
+
+                final PageInfo tempPageInfo = documentsCache.getPageInfoFromCache(cacheKey);
+                if (null != tempPageInfo) {
+                    final String eTagRequest = request.getHeader("if-none-match");
+                    if (null != eTagRequest) {
+                        Optional<Header<? extends Serializable>> eTag = tempPageInfo.getHeaders().stream()
+                                .filter(item -> item.getName().equals("ETag")).findFirst();
+                        boolean isSameETag = eTag.isPresent() && eTagRequest.equals(eTag.get().getValue());
+
+                        if (!isSameETag && isDocumentAlreadyCached) {
+                            documentsCache.invalidateItem(cacheKey);
+                        }
+                    }
+                }
 
                 if (isDocumentAlreadyCached || textDocExist.getAsBoolean()) {
                     try {
@@ -164,7 +179,8 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 
         headers.add(new Header<>("Last-Modified", lastModified));
         headers.add(new Header<>("Expires", System.currentTimeMillis() + ttlMilliseconds));
-        headers.add(new Header<>("Cache-Control", "max-age=" + ttlMilliseconds / 1000));
+        //no-cache needed just to  validated content over ETag before load. Should be needed by manual language switch
+        headers.add(new Header<>("Cache-Control", "no-cache,max-age=" + ttlMilliseconds / 1000));
         headers.add(new Header<>("ETag", generateEtag(ttlMilliseconds)));
 
         return pageInfo;

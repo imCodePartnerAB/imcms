@@ -5,6 +5,8 @@ import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
 import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.constructs.web.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -33,7 +35,7 @@ public class PublicDocumentsCache implements DocumentsCache {
     public String calculateKey(HttpServletRequest request) {
         final String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
         final String documentIdString = extractDocIdentifier(path);
-        final String langCode = Imcms.getUser().getDocGetterCallback().getLanguage().getCode();
+        final String langCode = Imcms.getLanguage().getCode();
 
         return calculateKey(documentIdString, langCode);
     }
@@ -72,8 +74,26 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
+    public void invalidateItem(String key) {
+        if (cache == null) return;
+        if (StringUtils.isNotBlank(key)) {
+            cache.remove(key);
+        }
+    }
+
+    @Override
     public void setCache(Ehcache cache) {
         this.cache = cache;
+    }
+
+    @Override
+    public PageInfo getPageInfoFromCache(String key) {
+        if (!cache.isKeyInCache(key)) {
+            return null;
+        } else {
+            final Element element = cache.get(key);
+            return (PageInfo) element.getObjectValue();
+        }
     }
 
     @Override
