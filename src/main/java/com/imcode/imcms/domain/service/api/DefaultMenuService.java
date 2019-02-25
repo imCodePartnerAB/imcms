@@ -147,6 +147,11 @@ class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepos
         return menu;
     }
 
+    @Override
+    public List<Menu> getAll() {
+        return repository.findAll();
+    }
+
     private List<MenuItemDTO> getMenuItemsOf(
             int menuIndex, int docId, MenuItemsStatus status, String langCode, boolean isVisible
     ) {
