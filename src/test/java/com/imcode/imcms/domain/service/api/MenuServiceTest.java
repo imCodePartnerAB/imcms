@@ -246,27 +246,13 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
     }
 
-    @Test
-    public void getMenuItems_When_UserSetSvLangAndMenuDisableSv_ShowModeDO_NOT_SHOW_Expect_404() {
-        final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("swe");
-        Imcms.setUser(user);
-        final MenuDTO menu = menuDataInitializer.createData(true);
-        final Language language = languageDataInitializer.createData().get(0);
-        final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = getMenuItems(menu, language, DO_NOT_SHOW);
-
-        assertEquals(menuItems.size(), menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
-
-    }
-
     private List<MenuItemDTO> getMenuItems(MenuDTO menu, Language language, Meta.DisabledLanguageShowMode showMode) {
         final int menuDocId = menu.getDocId();
         final List<MenuItemDTO> menuItems = new ArrayList<>();
         final DocumentDTO documentDTO = documentService.get(menuDocId);
         final Meta metaDoc = metaRepository.getOne(documentDTO.getId());
         metaDoc.setDisabledLanguageShowMode(showMode);
-        Meta saved = metaRepository.save(metaDoc);
+        final Meta saved = metaRepository.save(metaDoc);
         final List<CommonContent> menuItemDocContent = documentDTO.getCommonContents();
         final List<CommonContent> newMenuItemContent = new ArrayList<>();
 
