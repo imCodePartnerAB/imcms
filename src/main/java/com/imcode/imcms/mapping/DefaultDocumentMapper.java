@@ -7,12 +7,16 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
+import com.imcode.imcms.domain.component.DocumentsCache;
+import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
 import com.imcode.imcms.mapping.container.TextDocTextContainer;
 import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.exception.DocumentSaveException;
 import com.imcode.imcms.mapping.jpa.NativeQueries;
+import com.imcode.imcms.persistence.entity.Menu;
+import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.repository.MenuRepository;
 import imcode.server.Imcms;
 import imcode.server.document.CategoryDomainObject;
@@ -46,6 +50,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -70,7 +75,8 @@ public class DefaultDocumentMapper implements DocumentMapper {
     private final DocumentContentMapper documentContentMapper;
     private final MenuRepository menuRepository;
     private final DocumentLanguages documentLanguages;
-
+    private final MenuService defaultMenuService;
+    private final DocumentsCache documentsCache;
     private DocumentIndex documentIndex;
 
     public DefaultDocumentMapper(NativeQueries nativeQueries,
@@ -81,7 +87,9 @@ public class DefaultDocumentMapper implements DocumentMapper {
                                  Database database,
                                  DocumentLanguages languages,
                                  PropertyService propertyService,
-                                 DocumentLoaderCachingProxy documentLoaderCachingProxy) {
+                                 DocumentLoaderCachingProxy documentLoaderCachingProxy,
+                                 MenuService defaultMenuService,
+                                 DocumentsCache documentsCache) {
 
         this.nativeQueries = nativeQueries;
         this.documentSaver = documentSaver;
@@ -92,6 +100,8 @@ public class DefaultDocumentMapper implements DocumentMapper {
         this.documentLanguages = languages;
         this.propertyService = propertyService;
         this.documentLoaderCachingProxy = documentLoaderCachingProxy;
+        this.defaultMenuService = defaultMenuService;
+        this.documentsCache = documentsCache;
     }
 
     private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
@@ -328,7 +338,30 @@ public class DefaultDocumentMapper implements DocumentMapper {
     @Override
     public void invalidateDocument(int docId) {
         documentLoaderCachingProxy.removeDocFromCache(docId);
-        documentIndex.indexDocument(docId);
+
+        Set<Integer> idsToInvalidate = new HashSet<>();
+
+        List<Menu> menus = defaultMenuService.getAll();
+
+        for (Menu menu : menus) {
+            final int foundUsages = (int) menu.getMenuItems().stream()
+                    .flatMap(MenuItem::flattened)
+                    .map(MenuItem::getDocumentId)
+                    .filter(id -> docId == id).distinct().count();
+            if (foundUsages > 0) {
+                idsToInvalidate.add(menu.getVersion().getDocId());
+                documentLoaderCachingProxy.invalidateMenuItemsCacheBy(menu);
+            }
+        }
+
+        idsToInvalidate.add(docId);
+
+        for (Integer id : idsToInvalidate) {
+            documentLoaderCachingProxy.removeDocFromCache(id);
+            documentLoaderCachingProxy.invalidateMenuItemsCacheBy(id);
+            documentsCache.invalidateDoc(id, null);
+            documentIndex.indexDocument(id);
+        }
     }
 
     @Override
@@ -733,6 +766,5 @@ public class DefaultDocumentMapper implements DocumentMapper {
             return getDocument(documentId);
         }
     }
-
 
 }
