@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "imcms_menu_item")
@@ -48,5 +49,11 @@ public class MenuItem implements Serializable {
     public Set<MenuItem> getChildren() {
         if (children == null) children = new LinkedHashSet<>();
         return children;
+    }
+
+    public Stream<MenuItem> flattened() {
+        return Stream.concat(
+                Stream.of(this),
+                children.stream().flatMap(MenuItem::flattened));
     }
 }
