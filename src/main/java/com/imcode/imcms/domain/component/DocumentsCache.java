@@ -23,5 +23,7 @@ public interface DocumentsCache {
 
     void invalidateItem(String key);
 
+    void invalidateCache();
+
     boolean isDocumentAlreadyCached(String cacheKey);
 }

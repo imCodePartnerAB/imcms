@@ -199,6 +199,7 @@ public class DocumentLoaderCachingProxy {
 
             workingDocs.remove(key);
             defaultDocs.remove(key);
+            invalidateMenuItemsCacheBy(docId);
         });
 
         Optional.ofNullable(idsToAliases.get(docId)).ifPresent(alias -> {

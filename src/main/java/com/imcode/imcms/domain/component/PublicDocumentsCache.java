@@ -82,6 +82,11 @@ public class PublicDocumentsCache implements DocumentsCache {
     }
 
     @Override
+    public void invalidateCache() {
+        cache.removeAll();
+    }
+
+    @Override
     public void setCache(Ehcache cache) {
         this.cache = cache;
     }

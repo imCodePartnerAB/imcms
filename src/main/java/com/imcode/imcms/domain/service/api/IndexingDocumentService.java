@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.mapping.DocumentMapper;
@@ -17,14 +18,16 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     private final DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService;
     private final DocumentIndexer documentIndexer;
     private final DocumentMapper documentMapper;
+    private final DocumentsCache documentsCache;
 
     public IndexingDocumentService(DelegatingByTypeDocumentService defaultDelegatingByTypeDocumentService,
                                    DocumentIndexer documentIndexer,
-                                   DocumentMapper documentMapper) {
+                                   DocumentMapper documentMapper, DocumentsCache documentsCache) {
 
         this.defaultDelegatingByTypeDocumentService = defaultDelegatingByTypeDocumentService;
         this.documentIndexer = documentIndexer;
         this.documentMapper = documentMapper;
+        this.documentsCache = documentsCache;
     }
 
     @Override
@@ -38,6 +41,7 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
 
         if (isPublished) {
             invalidateDocument(docId);
+            documentsCache.invalidateCache();
         }
 
         return isPublished;

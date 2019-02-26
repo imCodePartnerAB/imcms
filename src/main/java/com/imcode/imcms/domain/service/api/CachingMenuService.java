@@ -52,6 +52,11 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
+    public List<Menu> getAll() {
+        return defaultMenuService.getAll();
+    }
+
+    @Override
     public MenuDTO saveFrom(MenuDTO menuDTO) {
         documentLoaderCachingProxy.invalidateMenuItemsCacheBy(menuDTO);
         return defaultMenuService.saveFrom(menuDTO);
