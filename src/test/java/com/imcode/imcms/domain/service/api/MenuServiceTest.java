@@ -31,8 +31,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 @Transactional
@@ -223,6 +227,17 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertTrue(menuItems.isEmpty());
         assertEquals(menuItems.size(), menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
 
+    }
+
+    @Test
+    public void getMenu_Expect_CorrectEntities() {
+        menuDataInitializer.createData(true, 1);
+        menuDataInitializer.createData(true, 2);
+
+        List<Menu> foundMenus = menuService.getAll();
+
+        assertNotNull(foundMenus);
+        assertEquals(2, foundMenus.size());
     }
 
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
