@@ -202,7 +202,7 @@ public class ImcmsAuthenticatorAndUserAndRoleMapper implements UserAndRoleRegist
         userDO.setId(user.getId());
         userDO.setLoginName(user.getLogin());
         userDO.setImcmsExternal(user.isExternal());
-        userDO.setLanguageIso639_2(services.getLanguageMapper().getDefaultLanguage());
+        userDO.setLanguageIso639_2(user.getLanguageIso639_2());
         userDO.setLastName(user.getLastName());
         userDO.setPassword(user.getPassword(), UserDomainObject.PasswordType.valueOf(user.getPasswordType().name()));
         Optional.ofNullable(user.getPasswordReset()).ifPresent(passwordReset ->
