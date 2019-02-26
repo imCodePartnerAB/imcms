@@ -7,7 +7,6 @@ import com.imcode.imcms.api.DocumentLanguages;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.api.DocumentVersionInfo;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
-import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.mapping.container.DocRef;
@@ -60,7 +59,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.imcode.imcms.mapping.DocumentStoringVisitor.getFileForFileDocumentFile;
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.PERM_EDIT_TEXT_DOCUMENT_TEXTS;
+import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static imcode.server.ImcmsConstants.SINGLE_EDITOR_VIEW;
 
 @Transactional
 @Service
@@ -76,7 +77,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
     private final MenuRepository menuRepository;
     private final DocumentLanguages documentLanguages;
     private final MenuService defaultMenuService;
-    private final DocumentsCache documentsCache;
     private DocumentIndex documentIndex;
 
     public DefaultDocumentMapper(NativeQueries nativeQueries,
@@ -88,8 +88,7 @@ public class DefaultDocumentMapper implements DocumentMapper {
                                  DocumentLanguages languages,
                                  PropertyService propertyService,
                                  DocumentLoaderCachingProxy documentLoaderCachingProxy,
-                                 MenuService defaultMenuService,
-                                 DocumentsCache documentsCache) {
+                                 MenuService defaultMenuService) {
 
         this.nativeQueries = nativeQueries;
         this.documentSaver = documentSaver;
@@ -101,7 +100,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
         this.propertyService = propertyService;
         this.documentLoaderCachingProxy = documentLoaderCachingProxy;
         this.defaultMenuService = defaultMenuService;
-        this.documentsCache = documentsCache;
     }
 
     private static void deleteFileDocumentFilesAccordingToFileFilter(FileFilter fileFilter) {
@@ -337,12 +335,10 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
     @Override
     public void invalidateDocument(int docId) {
-        documentLoaderCachingProxy.removeDocFromCache(docId);
-
         Set<Integer> idsToInvalidate = new HashSet<>();
+        idsToInvalidate.add(docId);
 
         List<Menu> menus = defaultMenuService.getAll();
-
         for (Menu menu : menus) {
             final int foundUsages = (int) menu.getMenuItems().stream()
                     .flatMap(MenuItem::flattened)
@@ -350,19 +346,13 @@ public class DefaultDocumentMapper implements DocumentMapper {
                     .filter(id -> docId == id).distinct().count();
             if (foundUsages > 0) {
                 idsToInvalidate.add(menu.getVersion().getDocId());
-                documentLoaderCachingProxy.invalidateMenuItemsCacheBy(menu);
             }
         }
 
-        idsToInvalidate.add(docId);
-
         for (Integer id : idsToInvalidate) {
             documentLoaderCachingProxy.removeDocFromCache(id);
-            documentLoaderCachingProxy.invalidateMenuItemsCacheBy(id);
             documentIndex.indexDocument(id);
         }
-
-        documentsCache.invalidateCache();
     }
 
     @Override
