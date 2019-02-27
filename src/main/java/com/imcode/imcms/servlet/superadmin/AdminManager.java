@@ -190,6 +190,9 @@ public class AdminManager extends HttpServlet {
         {
             documentsFound = index.search(new SimpleDocumentQuery(query), loggedOnUser);
         }
+        if (null == documentsFound) {
+            documentsFound = Collections.emptyList();
+        }
 
         AdminManagerSubreport newDocumentsSubreport = new AdminManagerSubreport();
         AdminManagerSubreport modifiedDocumentsSubreport = new AdminManagerSubreport();
