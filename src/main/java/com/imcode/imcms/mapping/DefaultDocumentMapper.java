@@ -349,7 +349,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         for (Integer id : idsToInvalidate) {
             documentLoaderCachingProxy.removeDocFromCache(id);
-            documentIndex.removeDocument(id);
             documentIndex.indexDocument(id);
         }
     }
