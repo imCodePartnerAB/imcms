@@ -336,9 +336,11 @@ public class AdminManager extends HttpServlet {
 
         Date oneWeekAgo = getDateOneWeekAgo();
         for (DocumentDomainObject document : documentsFound) {
-            boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
-            if (createdInPastWeek) {
-                newDocuments.add(document);
+            if (null != document.getCreatedDatetime()) {
+                boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
+                if (createdInPastWeek) {
+                    newDocuments.add(document);
+                }
             }
         }
 
