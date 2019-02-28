@@ -8,17 +8,14 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.persistence.repository.MetaRepository;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.AfterEach;
@@ -27,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -68,13 +64,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CommonContentService commonContentService;
-
-    @Autowired
-    private DocumentMenuService documentMenuService;
-
-    @Autowired
-    private MetaRepository metaRepository;
-
 
     @BeforeEach
     public void setUp() {
@@ -194,10 +183,8 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     public void getMenuItems_MenuNoAndDocIdAndUserLanguage_Expect_MenuItemsIsReturnedWithTitleOfUsersLanguage() {
         final MenuDTO menu = menuDataInitializer.createData(true);
         final DocumentDTO documentDTO = documentService.get(menu.getDocId());
-        if (!documentDTO.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-            documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
-            documentService.save(documentDTO);
-        }
+        documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+        documentService.save(documentDTO);
         final String language = Imcms.getUser().getLanguage();
 
         final List<MenuItemDTO> menuItems = menuService
@@ -207,27 +194,59 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectSizeEntities() {
-        final MenuDTO menu = menuDataInitializer.createData(true);
-        final Language language = languageDataInitializer.createData().get(1);
+    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntities() {
+        final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
-        final List<MenuItemDTO> menuItems = getMenuItems(menu, language, SHOW_IN_DEFAULT_LANGUAGE);
-        assertEquals(menuItems.size(), menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        final String enableLanguage = languageDataInitializer.createData().get(1).getCode(); //0 -en
+
+        setUpMenuItem(menu, SHOW_IN_DEFAULT_LANGUAGE, enableLanguage);
+
+        assertFalse(menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).isEmpty());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
-    public void getMenuItems_When_UserSetSvLangAndMenuDisableSv_ShowModeDO_NOT_SHOW_Expect_EmptyResult() {
+    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeDONOTSHOW_Expect_CorrectEntities() {
+        final MenuDTO menu = menuDataInitializer.createData(true, 1);
+        final String langUser = Imcms.getUser().getLanguage();
+        final String enableLanguage = languageDataInitializer.createData().get(1).getCode(); //0 -en
+
+        setUpMenuItem(menu, DO_NOT_SHOW, enableLanguage);
+
+        assertFalse(menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).isEmpty());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+    }
+
+    @Test
+    public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("swe");
         Imcms.setUser(user);
-        final MenuDTO menu = menuDataInitializer.createData(true);
-        final Language language = languageDataInitializer.createData().get(0);
+        final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
-        List<MenuItemDTO> menuItems = getMenuItems(menu, language, DO_NOT_SHOW);
-        assertTrue(menuItems.isEmpty());
-        assertEquals(menuItems.size(), menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        final String enableLanguage = languageDataInitializer.createData().get(1).getCode(); //0 -en
 
+        setUpMenuItem(menu, DO_NOT_SHOW, enableLanguage);
+
+        assertFalse(menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).isEmpty());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
+
+    @Test
+    public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_ShowModeSHOW_ON_DEFAULT_Expect_CorrectEntitiesSize() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("swe");
+        Imcms.setUser(user);
+        final MenuDTO menu = menuDataInitializer.createData(true, 1);
+        final String langUser = Imcms.getUser().getLanguage();
+        final String enableLanguage = languageDataInitializer.createData().get(1).getCode(); //0 -en
+
+        setUpMenuItem(menu, SHOW_IN_DEFAULT_LANGUAGE, enableLanguage);
+
+        assertFalse(menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).isEmpty());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+    }
+
 
     @Test
     public void getMenu_Expect_CorrectEntities() {
@@ -243,10 +262,8 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     private void getMenuItemsOf_When_MenuNoAndDocId_Expect_ResultEqualsExpectedMenuItems(boolean isAll) {
         final MenuDTO menu = menuDataInitializer.createData(true);
         final DocumentDTO documentDTO = documentService.get(menu.getDocId());
-        if (!documentDTO.getDisabledLanguageShowMode().equals(SHOW_IN_DEFAULT_LANGUAGE)) {
-            documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
-            documentService.save(documentDTO);
-        }
+        documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
+        documentService.save(documentDTO);
 
         final String code = languageDataInitializer.createData().get(0).getCode();
 
@@ -261,33 +278,15 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
     }
 
-    private List<MenuItemDTO> getMenuItems(MenuDTO menu, Language language, Meta.DisabledLanguageShowMode showMode) {
-        final int menuDocId = menu.getDocId();
-        final List<MenuItemDTO> menuItems = new ArrayList<>();
-        final DocumentDTO documentDTO = documentService.get(menuDocId);
-        final Meta metaDoc = metaRepository.getOne(documentDTO.getId());
-        metaDoc.setDisabledLanguageShowMode(showMode);
-        final Meta saved = metaRepository.save(metaDoc);
-        final List<CommonContent> menuItemDocContent = documentDTO.getCommonContents();
-        final List<CommonContent> newMenuItemContent = new ArrayList<>();
-
-        Language enableLang = Imcms.getServices().getLanguageMapper().getLanguageByCode(language.getCode());
-        if (!saved.getDisabledLanguageShowMode().equals(DO_NOT_SHOW)) {
-            for (CommonContent commonContent : menuItemDocContent) {
-                if (commonContent.getLanguage().getCode().equals(language.getCode())) {
-                    commonContent.getLanguage().setEnabled(true);
-                    Integer docId = commonContent.getDocId();
-                    menuItems.add(documentMenuService.getMenuItemDTO(docId, commonContent.getLanguage()));
-                } else {
-                    commonContent.getLanguage().setEnabled(false);
-                    Integer docId = commonContent.getDocId();
-                    menuItems.add(documentMenuService.getMenuItemDTO(docId, enableLang));
-                }
-                newMenuItemContent.add(commonContent);
-            }
+    private void setUpMenuItem(MenuDTO menu, Meta.DisabledLanguageShowMode showMode, String enableLang) {
+        final List<MenuItemDTO> menuItems = menu.getMenuItems();
+        final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
+        menuItemDoc.setDisabledLanguageShowMode(showMode);
+        for (CommonContent content : menuItemDoc.getCommonContents()) {
+            content.setEnabled(content.getLanguage().getCode().equals(enableLang));
         }
-        commonContentService.save(menuDocId, newMenuItemContent);
-        return menuItems;
+
+        commonContentService.save(menuItemDoc.getId(), menuItemDoc.getCommonContents());
     }
 
 
