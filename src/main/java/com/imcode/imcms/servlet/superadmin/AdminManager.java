@@ -313,7 +313,7 @@ public class AdminManager extends HttpServlet {
         List<DocumentDomainObject> modifiedDocuments = new ArrayList<>();
         Date oneWeekAgo = getDateOneWeekAgo();
         for (DocumentDomainObject document : documentsFound) {
-            if (null != document.getCreatedDatetime() && null != document.getModifiedDatetime()) {
+            if (null != document) {
                 boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
                 boolean modifiedInPastWeek = !document.getModifiedDatetime().before(oneWeekAgo);
                 if (modifiedInPastWeek && !createdInPastWeek) {
@@ -336,7 +336,7 @@ public class AdminManager extends HttpServlet {
 
         Date oneWeekAgo = getDateOneWeekAgo();
         for (DocumentDomainObject document : documentsFound) {
-            if (null != document.getCreatedDatetime()) {
+            if (null != document) {
                 boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
                 if (createdInPastWeek) {
                     newDocuments.add(document);
