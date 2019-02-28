@@ -186,8 +186,7 @@ public class AdminManager extends HttpServlet {
 
         List<DocumentDomainObject> documentsFound = Collections.emptyList();
         if (tabToShow.equals(PARAMETER_VALUE__SHOW_RECENT) || tabToShow.equals(PARAMETER_VALUE__SHOW_REMINDERS)
-                || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY))
-        {
+                || tabToShow.equals(PARAMETER_VALUE__SHOW_SUMMARY)) {
             documentsFound = index.search(new SimpleDocumentQuery(query), loggedOnUser);
         }
         if (null == documentsFound) {
@@ -314,10 +313,12 @@ public class AdminManager extends HttpServlet {
         List<DocumentDomainObject> modifiedDocuments = new ArrayList<>();
         Date oneWeekAgo = getDateOneWeekAgo();
         for (DocumentDomainObject document : documentsFound) {
-            boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
-            boolean modifiedInPastWeek = !document.getModifiedDatetime().before(oneWeekAgo);
-            if (modifiedInPastWeek && !createdInPastWeek) {
-                modifiedDocuments.add(document);
+            if (null != document) {
+                boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
+                boolean modifiedInPastWeek = !document.getModifiedDatetime().before(oneWeekAgo);
+                if (modifiedInPastWeek && !createdInPastWeek) {
+                    modifiedDocuments.add(document);
+                }
             }
         }
 
@@ -335,9 +336,11 @@ public class AdminManager extends HttpServlet {
 
         Date oneWeekAgo = getDateOneWeekAgo();
         for (DocumentDomainObject document : documentsFound) {
-            boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
-            if (createdInPastWeek) {
-                newDocuments.add(document);
+            if (null != document) {
+                boolean createdInPastWeek = !document.getCreatedDatetime().before(oneWeekAgo);
+                if (createdInPastWeek) {
+                    newDocuments.add(document);
+                }
             }
         }
 
@@ -388,8 +391,7 @@ public class AdminManager extends HttpServlet {
             Date archivedDatetime = document.getArchivedDatetime();
             if (ArrayUtils.contains(phases, phase) && null != archivedDatetime
                     && !archivedDatetime.before(lastMidnight)
-                    && archivedDatetime.before(oneWeekAhead))
-            {
+                    && archivedDatetime.before(oneWeekAhead)) {
                 documentsArchivedWithinOneWeek.add(document);
             }
         }
@@ -416,8 +418,7 @@ public class AdminManager extends HttpServlet {
             Date publicationEndDatetime = document.getPublicationEndDatetime();
             if (ArrayUtils.contains(phases, phase) && null != publicationEndDatetime
                     && !publicationEndDatetime.before(lastMidnight)
-                    && publicationEndDatetime.before(oneWeekAhead))
-            {
+                    && publicationEndDatetime.before(oneWeekAhead)) {
                 documentsUnpublishedWithinOneWeek.add(document);
             }
         }

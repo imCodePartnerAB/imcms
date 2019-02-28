@@ -72,8 +72,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void createRoleWithPermissionsSpecified_Expect_Saved() {
-        final RoleJPA role = roleRepository.save(new RoleJPA("test-role-name"));
-        final Integer roleId = role.getId();
+        final RoleJPA role = new RoleJPA("test-role-name");
 
         final RolePermissionsJPA permissions = new RolePermissionsJPA();
         permissions.setAccessToAdminPages(true);
@@ -82,6 +81,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
         role.setPermissions(permissions);
 
         roleRepository.save(role);
+        final Integer roleId = role.getId();
 
         final RolePermissionsJPA savedPermissions = roleRepository.findOne(roleId).getPermissions();
 
@@ -93,8 +93,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteRoleWithPermissionSpecified_Expect_Deleted() {
-        RoleJPA role = roleRepository.save(new RoleJPA("test-role-name"));
-        final Integer roleId = role.getId();
+        RoleJPA role = new RoleJPA("test-role-name");
 
         final RolePermissionsJPA permissions = new RolePermissionsJPA();
         permissions.setAccessToAdminPages(true);
@@ -103,6 +102,7 @@ public class RoleRepositoryTest extends WebAppSpringTestConfig {
         role.setPermissions(permissions);
 
         roleRepository.save(role);
+        final Integer roleId = role.getId();
         roleRepository.delete(roleId);
 
         assertNull(roleRepository.findOne(roleId));
