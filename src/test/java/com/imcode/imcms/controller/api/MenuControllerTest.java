@@ -6,6 +6,7 @@ import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.MenuService;
 import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -19,7 +20,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class MenuControllerTest extends AbstractControllerTest {
@@ -32,6 +34,9 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Autowired
     private DocumentService<DocumentDTO> documentService;
+
+    @Autowired
+    private MenuService menuService;
 
     @BeforeEach
     public void setUp() {
@@ -124,8 +129,8 @@ public class MenuControllerTest extends AbstractControllerTest {
     public void postMenu_When_MenuMissing_Expect_EmptyArray() throws Exception {
         final MenuDTO menuDTO = menuDataInitializer.createData(true);
 
-        menuDataInitializer.cleanRepositories();
         versionDataInitializer.createData(0, 1001);
+        menuService.deleteByDocId(menuDTO.getDocId());
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
