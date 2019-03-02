@@ -3,6 +3,7 @@ package com.imcode.imcms.servlet;
 import com.imcode.imcms.mapping.ImageCacheMapper;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.server.Config;
+import imcode.server.Imcms;
 import imcode.util.ImcmsImageUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +20,16 @@ public class ImageCacheManager {
     private static File imageCachePath = null;
     private static long maxCacheSize = 0;
 
-    private static ImageCacheMapper cacheMapper;
+    private static ImageCacheMapper cacheMapper = Imcms.getServices().getManagedBean(ImageCacheMapper.class);
+
+    // Needed to init correctly settings for image handling in static context
+    // No much sense into better refactoring since it deprecated.
+    static {
+        ImageCacheManager.cacheMapper = Imcms.getServices().getManagedBean(ImageCacheMapper.class);
+        final Config config = Imcms.getServices().getConfig();
+        imageCachePath = config.getImageCachePath();
+        maxCacheSize = config.getImageCacheMaxSize();
+    }
 
     public ImageCacheManager(ImageCacheMapper cacheMapper, Config config) {
         ImageCacheManager.cacheMapper = cacheMapper;
