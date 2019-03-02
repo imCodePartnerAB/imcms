@@ -1,7 +1,9 @@
 package com.imcode.imcms.components.datainitializer;
 
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -32,16 +34,22 @@ public class MenuDataInitializer extends TestDataCleaner {
     private final LanguageService languageService;
     private Menu savedMenu;
     private Version version;
+    private DocumentDataInitializer documentDataInitializer;
+    private DocumentService<DocumentDTO> documentService;
 
     public MenuDataInitializer(MenuRepository menuRepository,
                                VersionDataInitializer versionDataInitializer,
                                BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
-                               LanguageService languageService) {
+                               LanguageService languageService,
+                               DocumentDataInitializer documentDataInitializer,
+                               DocumentService<DocumentDTO> documentService) {
         super(menuRepository);
         this.menuRepository = menuRepository;
         this.versionDataInitializer = versionDataInitializer;
         this.menuToMenuDTO = menuToMenuDTO;
         this.languageService = languageService;
+        this.documentDataInitializer = documentDataInitializer;
+        this.documentService = documentService;
     }
 
     public MenuDTO createData(boolean withMenuItems) {
@@ -139,9 +147,12 @@ public class MenuDataInitializer extends TestDataCleaner {
     }
 
     private MenuItem createMenuItem(int sortOrder) {
+        documentDataInitializer.cleanRepositories();
+        final DocumentDTO initDoc = documentDataInitializer.createData();
+        documentService.publishDocument(initDoc.getId(), Imcms.getUser().getId());
         final MenuItem menuItem = new MenuItem();
         menuItem.setSortOrder(sortOrder);
-        menuItem.setDocumentId(DOC_ID);
+        menuItem.setDocumentId(initDoc.getId());
         return menuItem;
     }
 }
