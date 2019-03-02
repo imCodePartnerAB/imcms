@@ -420,6 +420,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
 
         if (!menuExist) {
             versionDataInitializer.createData(WORKING_VERSION_NO, DOC_ID);
+            menuService.deleteByDocId(menuDTO.getDocId());
         }
 
         final MenuDTO savedMenu = menuService.saveFrom(menuDTO);
