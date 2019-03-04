@@ -10,7 +10,7 @@ import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
+import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
@@ -33,11 +33,10 @@ import java.util.stream.IntStream;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.ImcmsConstants.ENG_CODE;
+import static imcode.server.ImcmsConstants.ENG_CODE_ISO_639_2;
 import static imcode.server.ImcmsConstants.SWE_CODE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @Transactional
@@ -62,9 +61,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     private VersionDataInitializer versionDataInitializer;
 
     @Autowired
-    private VersionRepository versionRepository;
-
-    @Autowired
     private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
@@ -73,10 +69,13 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
 
+    @Autowired
+    private VersionService versionService;
+
     @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("eng");
+        user.setLanguageIso639_2(ENG_CODE_ISO_639_2);
         Imcms.setUser(user);
     }
 
@@ -171,14 +170,12 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final boolean withMenuItems = true;
         final Menu workingVersionMenu = menuDataInitializer.createDataEntity(withMenuItems);
 
-        final Version workingVersion = versionRepository.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO);
+        final Version workingVersion = versionService.findByDocIdAndNo(DOC_ID, WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(DOC_ID);
 
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, DOC_ID);
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
-
-        final List<Menu> menuByVersion = menuRepository.findByVersion(latestVersion);
+        final List<Menu> menuByVersion = menuRepository.findByVersion(latestVersionDoc);
 
         assertEquals(1, menuByVersion.size());
 
@@ -203,18 +200,18 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntities() {
+    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
 
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, SHOW_IN_DEFAULT_LANGUAGE);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
@@ -225,17 +222,17 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeDONOTSHOW_Expect_CorrectEntities() {
+    public void getMenuItems_When_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, DO_NOT_SHOW);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
@@ -248,18 +245,18 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("swe");
+        user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, DO_NOT_SHOW);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
@@ -272,18 +269,18 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_ShowModeSHOW_ON_DEFAULT_Expect_CorrectEntitiesSize() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("swe");
+        user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, SWE_CODE, SHOW_IN_DEFAULT_LANGUAGE);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
@@ -294,17 +291,17 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableSv_ShowModeDoNotShow_Expect_CorrectEntitiesSize() {
+    public void getMenuItems_When_UserSetEnLangAndMenuDisableSv_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, ENG_CODE, DO_NOT_SHOW);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
@@ -321,11 +318,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, ENG_CODE, SHOW_IN_DEFAULT_LANGUAGE);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
@@ -336,26 +333,28 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetSvLangAndMenuDisableSv_ShowModeDoNotShow_Expect_CorrectEntitiesSize() {
+    public void getMenuItems_When_UserSetSvLangAndMenuDisableSv_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
         final UserDomainObject user = new UserDomainObject(1);
-        user.setLanguageIso639_2("swe");
+        user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
         final DocumentDTO menuItemDoc = documentService.get(menuItems.get(0).getDocumentId());
         final DocumentDTO changedMenuItemDoc = setUpMenuItem(menuItemDoc, ENG_CODE, DO_NOT_SHOW);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
 
         documentService.publishDocument(changedMenuItemDoc.getId(), Imcms.getUser().getId());
         documentService.publishDocument(menu.getDocId(), Imcms.getUser().getId());
         menuService.saveFrom(menu);
 
+        MenuItemDTO menuItemDTO = menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).get(0);
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
+        assertNotEquals(documentService.get(menuItemDTO.getDocumentId()).getCommonContents().get(0).getLanguage(), Imcms.getLanguage());
         assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
@@ -376,11 +375,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         final DocumentDTO documentDTO = documentService.get(menu.getDocId());
         documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(documentDTO);
-        final Version workingVersion = versionRepository.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
-        final int latestVersionNo = WORKING_VERSION_NO + 1;
-        final Version latestVersion = versionDataInitializer.createData(latestVersionNo, menu.getDocId());
 
-        menuService.createVersionedContent(workingVersion, latestVersion);
+        final Version workingVersion = versionService.findByDocIdAndNo(menu.getDocId(), WORKING_VERSION_NO);
+        final Version latestVersionDoc = versionService.getLatestVersion(menu.getDocId());
+
+        menuService.createVersionedContent(workingVersion, latestVersionDoc);
         menuService.saveFrom(menu);
 
         final String code = languageDataInitializer.createData().get(0).getCode();
@@ -398,7 +397,6 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         for (CommonContent content : document.getCommonContents()) {
             Language language = content.getLanguage();
             language.setEnabled(content.getLanguage().getCode().equals(enableLang));
-            content.setEnabled(content.getLanguage().getCode().equals(enableLang));
             languageRepository.save(new LanguageJPA(language));
         }
         document.setDisabledLanguageShowMode(showMode);
