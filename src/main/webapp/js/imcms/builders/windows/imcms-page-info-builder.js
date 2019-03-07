@@ -83,7 +83,7 @@ define("imcms-page-info-builder",
         function validateDoc() {
             return {
                 isValid: appearanceTab.isValid(), // only this tab for now...
-                message: 'At least one language must be enabled!' // todo: localize!!!111
+                message: texts.oneLanguageShouldBeEnabled
             };
         }
 
