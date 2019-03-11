@@ -47,19 +47,7 @@ define("imcms-appearance-tab-builder",
                     html: commonContent.menuText,
                     name: "menu-text"
                 }),
-                $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]),
-                $linkToImage = chooseImage.container("<div>", {
-                    id: "path-to-image",
-                    name: "image",
-                    value: commonContent.menuImageURL,
-                    placeholder: texts.linkToImagePlaceholder,
-                    "label-text": texts.linkToImage,
-                    "button-text": texts.chooseImage,
-                    click: selectedImage => {
-                        $linkToImage.setValue(selectedImage ? selectedImage.path : "");
-                    }
-                }),
-                $linkToImageContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"choose-image": $linkToImage}]);
+                $menuTextContainer = pageInfoInnerStructureBEM.buildBlock("<div>", [{"text-area": $menuText}]);
 
             tabData.commonContents = tabData.commonContents || [];
 
@@ -67,11 +55,10 @@ define("imcms-appearance-tab-builder",
                 name: commonContent.language.name,
                 checkbox: $checkbox,
                 pageTitle: $pageTitle,
-                menuText: $menuText,
-                linkToImage: $linkToImage
+                menuText: $menuText
             });
 
-            return [$checkboxContainer, $pageTitleContainer, $menuTextContainer, $linkToImageContainer];
+            return [$checkboxContainer, $pageTitleContainer, $menuTextContainer];
         }
 
         function buildCommonContentsContainer() {
@@ -166,7 +153,6 @@ define("imcms-appearance-tab-builder",
                     docCommonContent.enabled = commonContent.checkbox.isChecked();
                     docCommonContent.headline = commonContent.pageTitle.getValue();
                     docCommonContent.menuText = commonContent.menuText.getValue();
-                    docCommonContent.menuImageURL = commonContent.linkToImage.getValue();
                 });
             });
 
@@ -186,7 +172,6 @@ define("imcms-appearance-tab-builder",
                 commonContent.checkbox.setChecked(index === 0);//check only first
                 commonContent.pageTitle.setValue(emptyString);
                 commonContent.menuText.setValue(emptyString);
-                commonContent.linkToImage.setValue(emptyString);
             });
 
             tabData.$commonContentsContainer.empty();
