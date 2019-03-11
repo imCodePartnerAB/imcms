@@ -15,77 +15,42 @@ define(
         texts = texts.superAdmin.categories;
 
         let createContainer;
-        let currentCtgType = null;
+        let currentCtgType;
         let editorContainer;
         let categoryCreateContainer;
         let currentCategory;
+        let categoriesList;
 
         function buildDropDownListCategoriesTypes() {
-
-            const onCategorySelected = value => {
-                // categoriesRestApi.getById(value).done(function (category) {
-                //     currentCategory = category;
-                //     let edit = typeEditor.editCategoryType($('<div>'), { //change for this
-                //         id: currentCategory.id,
-                //         name: currentCategory.name,
-                //         description: currentCategory.description,
-                //         imageUrl: currentCategory.imageUrl,
-                //         type: currentCtgType,
-                //     });
-                //
-                //     return edit;
-                // })
-            };
-
-            const onSelected = values => {
-
+            const onCategoryTypeSelected = values => {
                 typesRestApi.getById(values)
                     .done(ctgType => {
                         currentCtgType = ctgType;
                         let edit = typeEditor.editCategoryType($('<div>'), {
-                            id: currentCtgType.id,
-                            name: currentCtgType.name,
-                            singleSelect: currentCtgType.singleSelect,
-                            multiSelect: currentCtgType.multiSelect,
-                            inherited: currentCtgType.inherited,
-                            imageArchive: currentCtgType.imageArchive
+                            id: ctgType.id,
+                            name: ctgType.name,
+                            singleSelect: ctgType.singleSelect,
+                            multiSelect: ctgType.multiSelect,
+                            inherited: ctgType.inherited,
+                            imageArchive: ctgType.imageArchive,
 
                         });
-                        editorContainer.slideDown();
 
-                        return edit;
+                        buildDropDownListCategories(values);
+
+                        editorContainer.slideDown();
+                        categoriesList.slideDown();
+
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
-
-                let categorySelect = components.selects.selectContainer('<div>', {
-                    id: "category-filter",
-                    name: "category-filter",
-                    emptySelect: true,
-                    text: texts.chooseCategory,
-                    onCategorySelected: onCategorySelected
-                });
-
-                categoriesRestApi.getCategoriesByCategoryTypeId(values)
-                    .done(categories => {
-                        let categoriesDataMapped = categories.map(category => ({
-                            text: category.name,
-                            'data-value': category.id
-                        }));
-
-                        components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
-
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.error.category.loadFailed));
-
-                return categorySelect;
             };
 
             let categoryTypeSelect = components.selects.selectContainer('<div>', {
-                id: "types-filter",
-                name: "types-filter",
+                id: "types-id",
+                name: "types-name",
                 emptySelect: true,
                 text: texts.chooseType,
-                onSelected: onSelected
+                onSelected: onCategoryTypeSelected
             });
 
 
@@ -96,59 +61,71 @@ define(
                         'data-value': categoryType.id
                     }));
 
-                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onSelected);
+                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onCategoryTypeSelected);
                 })
                 .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage));
 
             return categoryTypeSelect;
-
         }
 
-        function buildDropDownListCategories() {
+        let buildCategory;
 
-            // var onCategorySelected = function (value) {
-            //     categoriesRestApi.getById(value).done(function (category) {
-            //         currentCategory = category;
-            //         let edit = typeEditor.editCategoryType($('<div>'), { //change for this
-            //             id: currentCategory.id,
-            //             name: currentCategory.name,
-            //             description: currentCategory.description,
-            //             icon: currentCategory.icon,
-            //             type: currentCtgType,
-            //         });
-            //
-            //         return edit;
-            //     })
-            // };
-            //
-            // let categorySelect = components.selects.selectContainer('<div>', {
-            //     id: "category-filter",
-            //     name: "category-filter",
-            //     emptySelect: true,
-            //     text: texts.chooseCategory,
-            //     onSelected: onCategorySelected
-            // });
-            //
-            //     // categoriesRestApi.getCategoriesByCategoryTypeId().done(function (categories) {
-            //     //
-            //     //     let categoriesDataMapped = categories.map(function (category) {
-            //     //         return {
-            //     //             text: category.name,
-            //     //             'data-value': category.id
-            //     //         }
-            //     //     });
-            //     //
-            //     //     components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
-            //     //
-            //     // });
-            //
-            // return categorySelect;
+        function buildDropDownListCategories(v) {
+
+            let onCategorySelected = function (value) {
+                categoriesRestApi.getById(value).done(function (category) {
+                    currentCategory = category;
+                    let edit = typeEditor.editCategoryType($('<div>'), {
+                        id: currentCategory.id,
+                        name: currentCategory.name,
+                        description: currentCategory.description,
+                        icon: currentCategory.icon,
+                        type: currentCtgType,
+                    });
+
+                    return edit;
+                })
+            };
+
+            let categorySelect = components.selects.selectContainer('<div>', {
+                id: "category-filter",
+                name: "category-filter",
+                emptySelect: true,
+                text: texts.chooseCategory,
+                onSelected: onCategorySelected
+            });
+            categoriesRestApi.getCategoriesByCategoryTypeId(v).done(function (categories) {
+
+                let categoriesDataMapped = categories.map(function (category) {
+                    return {
+                        text: category.name,
+                        'data-value': category.id
+                    }
+                });
+
+                components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
+
+            });
+
+            return categorySelect;
         }
 
-        let view;
+
+        function buildCategoriesContainer() {
+
+            return new BEM({
+                block: 'categories-block',
+                elements: {
+                    'categories': buildDropDownListCategories()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'});
+        }
+
+
+        let buildShowCategoryType;
 
         function buildViewCtgTypesContainer() {
-            return view = new BEM({
+            return buildShowCategoryType = new BEM({
                 block: 'shows-block',
                 elements: {
                     'view': buildDropDownListCategoriesTypes()
@@ -233,7 +210,7 @@ define(
                 block: 'type-buttons-block',
                 elements: {
                     'title': $('<div>', {text: texts.titleCategoryType}),
-                    'create': buildCategoryTypeCreateButton(),
+                    'create-button': buildCategoryTypeCreateButton(),
                 }
             }).buildBlockStructure('<div>');
 
@@ -392,8 +369,8 @@ define(
             buildViewCtgTypesContainer(),
             showCtgTypeCreateContainer(),
             buildEditorCtgTypeButtonsContainer(),
-            buildCategoryCreateContainer(),
-            //buildDropDownListCategories()
+            categoriesList = buildCategoriesContainer(),
+            buildCategoryCreateContainer()
         ]);
     }
 );
