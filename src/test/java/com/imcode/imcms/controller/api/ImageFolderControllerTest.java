@@ -122,8 +122,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         try (DeleteOnCloseFile folder3 = new DeleteOnCloseFile(imagesPath, testFolderName3);
              DeleteOnCloseFile folder2 = new DeleteOnCloseFile(imagesPath, testFolderName2);
              DeleteOnCloseFile folder1 = new DeleteOnCloseFile(imagesPath, testFolderName1);
-             DeleteOnCloseFile folder0 = new DeleteOnCloseFile(imagesPath, testFolderName0))
-        {
+             DeleteOnCloseFile folder0 = new DeleteOnCloseFile(imagesPath, testFolderName0)) {
             final MockHttpServletRequestBuilder requestBuilder0 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName0));
             final MockHttpServletRequestBuilder requestBuilder1 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName1));
             final MockHttpServletRequestBuilder requestBuilder2 = getPostRequestBuilderWithContent(new ImageFolderDTO(testFolderName2));
@@ -188,8 +187,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         imageFolderDTO.setName(testFolderNewName);
 
         try (DeleteOnCloseFile folder = new DeleteOnCloseFile(imagesPath, testFolderName);
-             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, testFolderNewName))
-        {
+             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, testFolderNewName)) {
             assertFalse(folder.exists());
             assertFalse(newFolder.exists());
 
@@ -223,8 +221,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         try (DeleteOnCloseFile folder = new DeleteOnCloseFile(imagesPath, testFolderName);
              DeleteOnCloseFile nestedFolder = new DeleteOnCloseFile(folder, testNestedFolderName);
-             DeleteOnCloseFile newNestedFolder = new DeleteOnCloseFile(folder, testNestedFolderNewName))
-        {
+             DeleteOnCloseFile newNestedFolder = new DeleteOnCloseFile(folder, testNestedFolderNewName)) {
             final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
             final MockHttpServletRequestBuilder requestBuilderPost = getPostRequestBuilderWithContent(imageFolderDTO);
 
@@ -300,8 +297,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
         try (DeleteOnCloseFile folder = new DeleteOnCloseFile(imagesPath, testFolderName);
              DeleteOnCloseFile folder1 = new DeleteOnCloseFile(imagesPath, testFolderName1);
-             DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(folder, testFolderName))
-        {
+             DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(folder, testFolderName)) {
             final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
             final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageFolderDTO);
 
@@ -343,8 +339,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
         final String testFolderNewName = "test_folder_new_name";
 
         try (DeleteOnCloseFile folder = new DeleteOnCloseFile(imagesPath, testFolderName);
-             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, testFolderNewName))
-        {
+             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, testFolderNewName)) {
 
             final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(testFolderName);
             final MockHttpServletRequestBuilder requestBuilderPost = getPostRequestBuilderWithContent(imageFolderDTO);
@@ -612,7 +607,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             Files.copy(testFile.toPath(), testImageFile.toPath(), StandardCopyOption.COPY_ATTRIBUTES);
 
             imageDataInitializer.createAllAvailableImageContent(
-                    true, separator + testImageFileName, testImageFileName, testImageFileName
+                    true, testImageFileName, testImageFileName
             );
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
@@ -624,7 +619,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
             assertNotNull(imageFileUsagesDTOS);
             assertEquals(1, imageFileUsagesDTOS.size());
-            assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
+            assertEquals(2, imageFileUsagesDTOS.get(0).getUsages().size());
         }
     }
 
@@ -648,7 +643,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testImageFile.exists());
 
             imageDataInitializer.createAllAvailableImageContent(
-                    true, separator + testStubImageUrl, testStubImageUrl, testStubImageUrl
+                    true, testStubImageUrl, testStubImageUrl
             );
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
@@ -681,7 +676,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testImageFile.exists());
 
             imageDataInitializer.createAllAvailableImageContent(
-                    true, separator + testImageUrl, testImageUrl, testImageUrl
+                    true, testImageUrl, testImageUrl
             );
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
@@ -693,7 +688,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
 
             assertNotNull(imageFileUsagesDTOS);
             assertEquals(1, imageFileUsagesDTOS.size());
-            assertEquals(4, imageFileUsagesDTOS.get(0).getUsages().size());
+            assertEquals(2, imageFileUsagesDTOS.get(0).getUsages().size());
         }
     }
 
@@ -722,7 +717,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertTrue(testImage2File.exists());
 
             imageDataInitializer.createAllAvailableImageContent(
-                    false, separator + testImage2Url, testImage1Url, testImage2Url
+                    false, testImage1Url, testImage2Url
             );
 
             final MockHttpServletRequestBuilder requestBuilderGet = get(controllerPath() + "/check")
@@ -735,7 +730,7 @@ public class ImageFolderControllerTest extends AbstractControllerTest {
             assertEquals(2, imageFileUsagesDTOS.size());
             // TODO: 26.09.18 Make better check of returned data
             assertEquals(1, imageFileUsagesDTOS.get(0).getUsages().size());
-            assertEquals(3, imageFileUsagesDTOS.get(1).getUsages().size());
+            assertEquals(1, imageFileUsagesDTOS.get(1).getUsages().size());
         }
     }
 

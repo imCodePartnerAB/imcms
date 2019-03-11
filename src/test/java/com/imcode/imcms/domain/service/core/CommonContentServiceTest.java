@@ -115,7 +115,6 @@ public class CommonContentServiceTest extends WebAppSpringTestConfig {
                 .map(languageDTO -> Value.with(new CommonContentDTO(), contentDTO -> {
                     contentDTO.setVersionNo(WORKING_VERSION_INDEX);
                     contentDTO.setEnabled(true);
-                    contentDTO.setMenuImageURL("menu_image_url_test");
                     contentDTO.setMenuText("menu_text_test");
                     contentDTO.setHeadline("test_headline");
                     contentDTO.setDocId(DOC_ID);

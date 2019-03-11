@@ -164,7 +164,6 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
             assertEquals(childCommonContent.getLanguage(), commonContent.getLanguage());
             assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
             assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
-            assertEquals(childCommonContent.getMenuImageURL(), commonContent.getMenuImageURL());
 
             assertNull(childCommonContent.getId());
             assertNull(childCommonContent.getDocId());

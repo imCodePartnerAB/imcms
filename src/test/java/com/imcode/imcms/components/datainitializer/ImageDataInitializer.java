@@ -85,11 +85,8 @@ public class ImageDataInitializer extends TestDataCleaner {
         });
     }
 
-    public void createAllAvailableImageContent(boolean sameDoc, String menuImageUrl, String workingImageURL, String publishedImageURL) {
+    public void createAllAvailableImageContent(boolean sameDoc, String workingImageURL, String publishedImageURL) {
         final DocumentDTO commonDocumentDTO = documentDataInitializer.createData();
-        commonDocumentDTO.getCommonContents()
-                .forEach(commonContent -> commonContent.setMenuImageURL(menuImageUrl));
-        commonContentService.save(commonDocumentDTO.getId(), commonDocumentDTO.getCommonContents());
 
         final Integer latestDocumentId = sameDoc ? commonDocumentDTO.getId() : documentDataInitializer.createData().getId();
         final Version latestVersion = versionService.create(latestDocumentId, 1);

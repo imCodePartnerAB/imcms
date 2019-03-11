@@ -5,7 +5,6 @@ import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
@@ -13,10 +12,8 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.Imcms;
@@ -357,94 +354,6 @@ public class ImageFileControllerTest extends AbstractControllerTest {
 
             assertEquals("[]", response);
             assertFalse(imageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_ImageReferencedAtPublishedDocumentMenuIcon_Expect_ListWithUsagesAndImageNotDeleted() throws Exception {
-        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
-        final String originalFilename = "img1-test.jpg";
-        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
-        final String subDirectoryName = "subfolder";
-
-        final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath())
-                .file(file)
-                .param("folder", separator + subDirectoryName);
-
-        try (DeleteOnCloseFile subDirectory = new DeleteOnCloseFile(imagesPath, subDirectoryName)) {
-            final File imageFile = new File(subDirectory, originalFilename);
-
-            assertFalse(subDirectory.exists());
-            assertTrue(subDirectory.mkdir());
-            assertTrue(subDirectory.exists());
-            assertFalse(imageFile.exists());
-            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-            assertTrue(imageFile.exists());
-
-            final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            imageFileDTO.setPath(separator + subDirectoryName + separator + originalFilename);
-
-            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
-
-            final List<CommonContent> latestCommonContent = commonContentDataInitializer.createData(
-                    tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1
-            );
-
-            latestCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-
-            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
-
-            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(asJson(imageFileDTO));
-
-            final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, METHOD_NOT_ALLOWED.value());
-            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileUsageDTO>>() {
-            });
-
-            assertNotNull(imageFileUsagesDTOS);
-            assertEquals(2, imageFileUsagesDTOS.size());
-            assertTrue(imageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_ImageReferencedAtWorkingDocumentMenuIcon_Expect_ListWithUsagesAndImageNotDeleted() throws Exception {
-        final byte[] imageFileBytes = FileUtils.readFileToByteArray(testImageFile);
-        final String originalFilename = "img1-test.jpg";
-        final MockMultipartFile file = new MockMultipartFile("files", originalFilename, null, imageFileBytes);
-        final String folderName = separator + ImcmsConstants.IMAGE_GENERATED_FOLDER;
-
-        final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath())
-                .file(file)
-                .param("folder", folderName);
-
-        final String path = folderName + separator + originalFilename;
-
-        try (DeleteOnCloseFile imageFile = new DeleteOnCloseFile(imagesPath, path)) {
-            assertFalse(imageFile.exists());
-            performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-            assertTrue(imageFile.exists());
-
-            final ImageFileDTO imageFileDTO = new ImageFileDTO();
-            imageFileDTO.setPath(path);
-
-            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
-            tempDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
-
-            final MockHttpServletRequestBuilder requestBuilder = delete(controllerPath())
-                    .contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(asJson(imageFileDTO));
-
-            final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, METHOD_NOT_ALLOWED.value());
-            final List<ImageFileUsageDTO> imageFileUsagesDTOS = fromJson(jsonResponse, new TypeReference<List<ImageFileUsageDTO>>() {
-            });
-
-            assertNotNull(imageFileUsagesDTOS);
-            assertEquals(2, imageFileUsagesDTOS.size());
-            assertTrue(imageFile.exists());
         }
     }
 

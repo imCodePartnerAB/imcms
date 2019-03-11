@@ -4,7 +4,6 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.CommonContentDataInitializer;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
-import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
@@ -13,9 +12,7 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Image;
-import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.ImcmsConstants;
@@ -235,8 +232,7 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final String testSubDirectoryName = "subdirectory";
 
         try (final DeleteOnCloseFile testSubdirectory = new DeleteOnCloseFile(imagesPath, testSubDirectoryName);
-             final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(testSubdirectory, testImageFileName))
-        {
+             final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(testSubdirectory, testImageFileName)) {
 
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
             imageFileDTO.setPath(File.separator + testSubDirectoryName + File.separator + testImageFileName);
@@ -268,8 +264,7 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         final String testSubDirectoryName = "subdirectory";
 
         try (final DeleteOnCloseFile testSubdirectory = new DeleteOnCloseFile(imagesPath, testSubDirectoryName);
-             final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(testSubdirectory, testImageFileName))
-        {
+             final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(testSubdirectory, testImageFileName)) {
             final ImageFileDTO imageFileDTO = new ImageFileDTO();
             imageFileDTO.setPath(testSubDirectoryName + File.separator + testImageFileName);
 
@@ -368,155 +363,6 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
             assertFalse(testImageFile.exists());
             assertTrue(testImageFile.createNewFile());
             assertTrue(testImageFile.exists());
-
-            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
-
-            assertTrue(usages.isEmpty());
-            assertFalse(testImageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_When_ImageUsedAsMenuImageAtPublishedOrWorkingDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.jpg";
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(File.separator + testImageFileName);
-
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
-            assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
-            assertTrue(testImageFile.exists());
-
-            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
-
-            tempDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
-
-            List<CommonContent> latestCommonContent = commonContentDataInitializer
-                    .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
-            latestCommonContent
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
-
-
-            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
-
-            assertFalse(usages.isEmpty());
-            assertEquals(4, usages.size());
-            assertTrue(testImageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_When_ImageUsedAsMenuImageAtWorkingDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.jpg";
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(testImageFileName);
-
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
-            assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
-            assertTrue(testImageFile.exists());
-
-            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData();
-
-            tempDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
-
-            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
-
-            assertFalse(usages.isEmpty());
-            assertEquals(2, usages.size());
-            assertTrue(testImageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_When_ImageUsedAsMenuImageAtPublishedDocument_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.jpg";
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(File.separator + testImageFileName);
-
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
-            assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
-            assertTrue(testImageFile.exists());
-
-            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
-
-            List<CommonContent> latestCommonContent = commonContentDataInitializer
-                    .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
-            latestCommonContent
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
-
-            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
-
-            assertFalse(usages.isEmpty());
-            assertEquals(2, usages.size());
-            assertTrue(testImageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_When_ImageUsedAsMenuImageAtSeveralWorkingDocuments_Expect_ListWithUsages() throws IOException {
-        final String testImageFileName = "test.jpg";
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(File.separator + testImageFileName);
-
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
-            assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
-            assertTrue(testImageFile.exists());
-
-            final DocumentDTO tempDocument1DTO = documentDataInitializer.createData();
-            tempDocument1DTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocument1DTO.getId(), tempDocument1DTO.getCommonContents());
-
-            final DocumentDTO tempDocument2DTO = documentDataInitializer.createData();
-            tempDocument2DTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocument2DTO.getId(), tempDocument2DTO.getCommonContents());
-
-            final DocumentDTO tempDocument3DTO = documentDataInitializer.createData();
-            tempDocument3DTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(imageFileDTO.getPath()));
-            commonContentService.save(tempDocument3DTO.getId(), tempDocument3DTO.getCommonContents());
-
-            List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
-
-            assertFalse(usages.isEmpty());
-            assertEquals(6, usages.size());
-            assertTrue(testImageFile.exists());
-        }
-    }
-
-    @Test
-    public void deleteImage_When_ImageNotUsedAsMenuImage_Expect_TrueAndFileDeleted() throws IOException {
-        final String testImageFileName = "test.jpg";
-        final String stubImageFileName = "testStub.jpg";
-        final ImageFileDTO imageFileDTO = new ImageFileDTO();
-        imageFileDTO.setPath(testImageFileName);
-
-        try (final DeleteOnCloseFile testImageFile = new DeleteOnCloseFile(imagesPath, testImageFileName)) {
-            assertFalse(testImageFile.exists());
-            assertTrue(testImageFile.createNewFile());
-            assertTrue(testImageFile.exists());
-
-            final DocumentDTO tempDocumentDTO = documentDataInitializer.createData(Meta.PublicationStatus.APPROVED);
-
-            tempDocumentDTO.getCommonContents()
-                    .forEach(commonContent -> commonContent.setMenuImageURL(File.separator + stubImageFileName));
-            commonContentService.save(tempDocumentDTO.getId(), tempDocumentDTO.getCommonContents());
-
-            List<CommonContent> latestCommonContent = commonContentDataInitializer
-                    .createData(tempDocumentDTO.getId(), tempDocumentDTO.getLatestVersion().getId() + 1);
-
-            latestCommonContent.forEach(commonContent -> commonContent.setMenuImageURL(File.separator + stubImageFileName));
-            commonContentService.save(tempDocumentDTO.getId(), latestCommonContent);
 
             List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
 

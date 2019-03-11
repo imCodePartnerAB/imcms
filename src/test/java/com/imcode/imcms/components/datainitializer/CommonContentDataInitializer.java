@@ -46,10 +46,10 @@ public class CommonContentDataInitializer extends TestDataCleaner {
 
         return Arrays.asList(
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-                        version.getDocId(), en, "headline_en", "menuText_en", "menuImageUrl_en", true, version.getNo()
+                        version.getDocId(), en, "headline_en", "menuText_en", true, version.getNo()
                 )),
                 commonContentRepository.saveAndFlush(new CommonContentJPA(
-                        version.getDocId(), se, "headline_se", "menuText_se", "menuImageUrl_se", true, version.getNo()
+                        version.getDocId(), se, "headline_se", "menuText_se", true, version.getNo()
                 ))
         );
     }

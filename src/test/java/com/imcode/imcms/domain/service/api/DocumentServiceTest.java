@@ -92,76 +92,51 @@ import static org.mockito.Mockito.mock;
 public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     private static File testSolrFolder;
-
+    private final DocumentsCache documentsCache = mock(DocumentsCache.class);
     private DocumentDTO createdDoc;
-
     private DocumentService<DocumentDTO> documentService;
-
     @Autowired
     private UserDataInitializer userDataInitializer;
-
     @Autowired
     private CategoryService categoryService;
-
     @Autowired
     private CategoryDataInitializer categoryDataInitializer;
-
     @Autowired
     private RoleService roleService;
-
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
-
     @Autowired
     private CommonContentService commonContentService;
-
     @Autowired
     private TextService textService;
-
     @Autowired
     private MenuService menuService;
-
     @Autowired
     private ImageService imageService;
-
     @Autowired
     private LoopService loopService;
-
     @Autowired
     private LoopDataInitializer loopDataInitializer;
-
     @Autowired
     private VersionRepository versionRepository;
-
     @Autowired
     private MenuRepository menuRepository;
-
     @Autowired
     private ImageRepository imageRepository;
-
     @Autowired
     private MenuDataInitializer menuDataInitializer;
-
     @Autowired
     private ImageDataInitializer imageDataInitializer;
-
     @Autowired
     private TextRepository textRepository;// instead of initializer :)
-
     @Autowired
     private VersionService versionService;
-
     @Autowired
     private MetaRepository metaRepository;
-
     @Autowired
     private TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO;
-
     @Autowired
     private Function<DocumentDTO, Meta> documentDtoToMeta;
-
-    private final DocumentsCache documentsCache = mock(DocumentsCache.class);
-
     @Autowired
     @Qualifier("versionedContentServices")
     private List<VersionedContentService> versionedContentServices;
@@ -172,6 +147,15 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @Value("WEB-INF/solr")
     private File defaultSolrFolder;
+
+    @AfterAll
+    public static void shutDownSolr() {
+        try {
+            FileUtility.forceDelete(testSolrFolder);
+        } catch (Exception e) {
+            // windows user may receive it
+        }
+    }
 
     @PostConstruct
     private void init() {
@@ -189,15 +173,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 versionedContentServices
         );
         ((DefaultDocumentService) documentService).init();
-    }
-
-    @AfterAll
-    public static void shutDownSolr() {
-        try {
-            FileUtility.forceDelete(testSolrFolder);
-        } catch (Exception e) {
-            // windows user may receive it
-        }
     }
 
     @BeforeEach
@@ -256,7 +231,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
             assertEquals(childCommonContent.getLanguage(), commonContent.getLanguage());
             assertEquals(childCommonContent.getHeadline(), commonContent.getHeadline());
             assertEquals(childCommonContent.getMenuText(), commonContent.getMenuText());
-            assertEquals(childCommonContent.getMenuImageURL(), commonContent.getMenuImageURL());
 
             assertNull(childCommonContent.getId());
             assertNull(childCommonContent.getDocId());
@@ -300,7 +274,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
             CommonContent commonContent = commonContents.get(i);
             commonContent.setHeadline("Test headline " + i);
             commonContent.setMenuText("Test menu text " + i);
-            commonContent.setMenuImageURL("Test menu image url " + i);
             commonContent.setEnabled((i % 2) == 0);
         }
 
@@ -855,7 +828,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
             publishedDoc.getCommonContents().forEach(commonContent -> {
                 commonContent.setHeadline(head);
                 commonContent.setEnabled(isEnabled);
-                commonContent.setMenuImageURL(url);
                 commonContent.setMenuText(menuText);
             });
 
@@ -865,7 +837,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
             savedDoc.getCommonContents().forEach(commonContent -> {
                 assertEquals(head, commonContent.getHeadline());
                 assertEquals(isEnabled, commonContent.isEnabled());
-                assertEquals(url, commonContent.getMenuImageURL());
                 assertEquals(menuText, commonContent.getMenuText());
             });
 
@@ -877,7 +848,6 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
             publishedDoc.getCommonContents().forEach(commonContent -> {
                 assertEquals(head, commonContent.getHeadline());
                 assertEquals(isEnabled, commonContent.isEnabled());
-                assertEquals(url, commonContent.getMenuImageURL());
                 assertEquals(menuText, commonContent.getMenuText());
             });
         }

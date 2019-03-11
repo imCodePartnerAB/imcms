@@ -128,8 +128,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         try (DeleteOnCloseFile newFolder3 = new DeleteOnCloseFile(imagesPath, newFolderPath3);
              DeleteOnCloseFile newFolder2 = new DeleteOnCloseFile(imagesPath, newFolderPath2);
              DeleteOnCloseFile newFolder1 = new DeleteOnCloseFile(imagesPath, newFolderPath1);
-             DeleteOnCloseFile newFolder0 = new DeleteOnCloseFile(imagesPath, newFolderPath0))
-        {
+             DeleteOnCloseFile newFolder0 = new DeleteOnCloseFile(imagesPath, newFolderPath0)) {
             final ImageFolderDTO imageFolderDTO0 = new ImageFolderDTO(newFolderName0, newFolderPath0);
             final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(newFolderName1, newFolderPath1);
             final ImageFolderDTO imageFolderDTO2 = new ImageFolderDTO(newFolderName2, newFolderPath2);
@@ -171,8 +170,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         imageFolderDTO.setName(folderNewName);
 
         try (DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(imagesPath, folderNewName);
-             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName))
-        {
+             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName)) {
             assertFalse(newFolder.exists());
 
             assertTrue(imageFolderService.createImageFolder(imageFolderDTO));
@@ -194,8 +192,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         final String folderNewName = "new_name";
 
         try (DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(imagesPath, folderNewName);
-             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName))
-        {
+             DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName)) {
             assertFalse(renamedFolder.exists());
             assertFalse(newFolder.exists());
 
@@ -215,8 +212,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
 
         try (DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName);
              DeleteOnCloseFile newNestedFolder = new DeleteOnCloseFile(imagesPath, path);
-             DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(imagesPath, renamedFolderPath))
-        {
+             DeleteOnCloseFile renamedFolder = new DeleteOnCloseFile(imagesPath, renamedFolderPath)) {
             final ImageFolderDTO imageFolderDTO = new ImageFolderDTO(newFolderName);
 
             assertFalse(newFolder.exists());
@@ -251,8 +247,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         final ImageFolderDTO imageFolderDTO1 = new ImageFolderDTO(newFolderName1);
 
         try (DeleteOnCloseFile newFolder = new DeleteOnCloseFile(imagesPath, newFolderName);
-             DeleteOnCloseFile newFolder1 = new DeleteOnCloseFile(imagesPath, newFolderName1))
-        {
+             DeleteOnCloseFile newFolder1 = new DeleteOnCloseFile(imagesPath, newFolderName1)) {
             assertFalse(newFolder.exists());
             assertFalse(newFolder1.exists());
 
@@ -307,8 +302,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         final String testSubdirectoryName = "testSubDirectory";
 
         try (DeleteOnCloseFile testDirectory = new DeleteOnCloseFile(imagesPath, testDirectoryName);
-             DeleteOnCloseFile testSubdirectory = new DeleteOnCloseFile(testDirectory, testSubdirectoryName))
-        {
+             DeleteOnCloseFile testSubdirectory = new DeleteOnCloseFile(testDirectory, testSubdirectoryName)) {
             final ImageFolderDTO testImageFolderDTO = new ImageFolderDTO(testDirectory.getName());
             final String name = testDirectory.getName() + separator + testSubdirectory.getName();
             final ImageFolderDTO testImageSubFolderDTO = new ImageFolderDTO(name);
@@ -517,7 +511,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         final String testStubImageName = "testStub.jpg";
 
         imageDataInitializer.createAllAvailableImageContent(
-                true, separator + testStubImageName, testStubImageName, testStubImageName
+                true, testStubImageName, testStubImageName
         );
 
         List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -537,7 +531,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertTrue(testImage.exists());
 
             imageDataInitializer.createAllAvailableImageContent(
-                    false, separator + testImageName, testImageName, testImageName
+                    false, testImageName, testImageName
             );
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -545,7 +539,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertNotNull(usages);
             assertFalse(usages.isEmpty());
             assertEquals(1, usages.size());
-            assertEquals(4, usages.get(0).getUsages().size());
+            assertEquals(2, usages.get(0).getUsages().size());
             assertEquals(testImageName, usages.get(0).getImageName());
             assertEquals(imageFolderDTO.getPath(), usages.get(0).getFilePath());
         }
@@ -560,8 +554,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         final String testImage2Name = "test2.jpg";
 
         try (DeleteOnCloseFile testImage1File = new DeleteOnCloseFile(imagesPath, testImage1Name);
-             DeleteOnCloseFile testImage2File = new DeleteOnCloseFile(imagesPath, testImage2Name))
-        {
+             DeleteOnCloseFile testImage2File = new DeleteOnCloseFile(imagesPath, testImage2Name)) {
             assertFalse(testImage1File.exists());
             assertTrue(testImage1File.createNewFile());
             assertTrue(testImage1File.exists());
@@ -570,7 +563,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertTrue(testImage2File.exists());
 
             imageDataInitializer.createAllAvailableImageContent(
-                    false, separator + testImage1Name, testImage1Name, testImage2Name
+                    false, testImage1Name, testImage2Name
             );
 
             List<ImageFolderItemUsageDTO> usages = imageFolderService.checkFolder(imageFolderDTO);
@@ -578,7 +571,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertNotNull(usages);
             assertFalse(usages.isEmpty());
             assertEquals(2, usages.size());
-            assertEquals(3, usages.get(0).getUsages().size());
+            assertEquals(1, usages.get(0).getUsages().size());
             assertEquals(1, usages.get(1).getUsages().size());
             assertEquals(testImage1Name, usages.get(0).getImageName());
             assertEquals(testImage2Name, usages.get(1).getImageName());
@@ -603,7 +596,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertTrue(testImageFile.exists());
 
             imageDataInitializer.createAllAvailableImageContent(
-                    true, separator + testImageUrl, testImageUrl, testImageUrl
+                    true, testImageUrl, testImageUrl
             );
 
             final ImageFolderDTO imageFolderDTO = imageFolderService.getImageFolder();
@@ -613,7 +606,7 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
             assertNotNull(usages);
             assertFalse(usages.isEmpty());
             assertEquals(1, usages.size());
-            assertEquals(4, usages.get(0).getUsages().size());
+            assertEquals(2, usages.get(0).getUsages().size());
             assertEquals(testImageName, usages.get(0).getImageName());
             assertEquals(imageFolderDTO.getPath(), usages.get(0).getFilePath());
         }
