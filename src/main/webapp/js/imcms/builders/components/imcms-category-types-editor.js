@@ -105,8 +105,8 @@ define(
                     .done(savedCategoryType => {
                         currentCategoryType = savedCategoryType;
                         $categoryTypeItem.find('type-create-block__field-name').text(currentCategoryType.name);
-                        $inherited.find('type-create-block__inherited').setCheckedValue(currentCategoryType.inherited);
-                        $imageArchive.find('type-create-block__imageArchive').setCheckedValue(currentCategoryType.imageArchive);
+                        $inherited.find('type-create-block__inherited').setChecked(currentCategoryType.inherited);
+                        $imageArchive.find('type-create-block__imageArchive').setChecked(currentCategoryType.imageArchive);
                         onCategoryTypeView = onCategoryTypeSimpleView;
                         prepareCategoryTypeView();
                     })
