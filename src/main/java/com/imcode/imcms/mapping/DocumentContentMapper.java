@@ -84,7 +84,6 @@ public class DocumentContentMapper {
         dcc.setLanguage(language);
         dcc.setHeadline(dccDO.getHeadline());
         dcc.setMenuText(dccDO.getMenuText());
-        dcc.setMenuImageURL(dccDO.getMenuImageURL());
         dcc.setEnabled(dccDO.getEnabled());
         dcc.setVersionNo(doc.getVersionNo());
 
@@ -96,7 +95,6 @@ public class DocumentContentMapper {
                 ? null
                 : DocumentCommonContent.builder()
                 .headline(commonContent.getHeadline())
-                .menuImageURL(commonContent.getMenuImageURL())
                 .menuText(commonContent.getMenuText())
                 .enabled(commonContent.isEnabled())
                 .versionNo(commonContent.getVersionNo())

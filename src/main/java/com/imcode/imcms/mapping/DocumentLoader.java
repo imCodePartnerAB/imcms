@@ -50,7 +50,7 @@ public class DocumentLoader {
 
         document.setCommonContent(dcc != null
                 ? dcc
-                : DocumentCommonContent.builder().headline("").menuImageURL("").menuText("").build()
+                : DocumentCommonContent.builder().headline("").menuText("").build()
         );
         document.accept(documentContentInitializingVisitor);
 

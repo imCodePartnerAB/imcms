@@ -7,7 +7,6 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.mapping.ImageCacheMapper;
-import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
 import imcode.util.Utility;
@@ -111,21 +110,17 @@ class DefaultImageFileService implements ImageFileService {
     public List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath) {
         List<Image> foundUsagesInDocumentContent =
                 imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.startsWith(File.separator) ? imageFileDTOPath.substring(1) : imageFileDTOPath);
-        List<CommonContent> foundUsagesInCommonContent = commonContentService.findCommonContentWhichUsesImage(imageFileDTOPath);
 
         List<ImageCacheDomainObject> foundImageCache =
                 imageCacheMapper.getAllImageResourcesByResourcePath(File.separator + imagesPath.getName() + imageFileDTOPath);
 
         List<ImageFileUsageDTO> usages = new ArrayList<>();
-        if (!foundUsagesInDocumentContent.isEmpty() || !foundUsagesInCommonContent.isEmpty() || !foundImageCache.isEmpty()) {
+        if (!foundUsagesInDocumentContent.isEmpty() || !foundImageCache.isEmpty()) {
             usages.addAll(foundUsagesInDocumentContent.stream()
                     .map(item -> new ImageFileUsageDTO(item.getVersion().getDocId(), item.getVersion().getNo(), item.getIndex(), "content image"))
                     .collect(Collectors.toList())
             );
-            usages.addAll(foundUsagesInCommonContent.stream()
-                    .map(item -> new ImageFileUsageDTO(item.getDocId(), item.getVersionNo(), null, "menu image"))
-                    .collect(Collectors.toList())
-            );
+
             usages.addAll(foundImageCache.stream()
                     .map(item -> new ImageFileUsageDTO(null, null, null, "image cache content"))
                     .collect(Collectors.toList())

@@ -261,14 +261,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         meta.setId(id == ID_NEW ? null : id);
     }
 
-    public String getMenuImage() {
-        return commonContent.getMenuImageURL();
-    }
-
-    public void setMenuImage(String v) {
-        setCommonContent(DocumentCommonContent.builder(getCommonContent()).menuImageURL(v).build());
-    }
-
     public Set<String> getKeywords() {
         return meta.getKeywords();
     }

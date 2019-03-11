@@ -15,7 +15,6 @@ public abstract class CommonContent implements Serializable {
         setHeadline(from.getHeadline());
         setLanguage(from.getLanguage());
         setMenuText(from.getMenuText());
-        setMenuImageURL(from.getMenuImageURL());
         setEnabled(from.isEnabled());
         setVersionNo(from.getVersionNo());
     }
@@ -39,10 +38,6 @@ public abstract class CommonContent implements Serializable {
     public abstract String getMenuText();
 
     public abstract void setMenuText(String menuText);
-
-    public abstract String getMenuImageURL();
-
-    public abstract void setMenuImageURL(String menuImageURL);
 
     public abstract boolean isEnabled();
 

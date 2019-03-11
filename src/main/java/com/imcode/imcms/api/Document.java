@@ -129,14 +129,6 @@ public class Document implements Serializable {
         return internalDocument.getName();
     }
 
-    public String getMenuImageURL() {
-        return internalDocument.getMenuImage();
-    }
-
-    public void setMenuImageURL(String imageUrl) {
-        internalDocument.setMenuImage(imageUrl);
-    }
-
     public User getCreator() {
         int creatorId = internalDocument.getCreatorId();
         return contentManagementSystem.getUserService().getUser(creatorId);

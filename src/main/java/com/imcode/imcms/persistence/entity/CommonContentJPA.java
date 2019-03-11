@@ -59,12 +59,6 @@ public class CommonContentJPA extends CommonContent {
     private String menuText;
 
     /**
-     * Menu item image.
-     */
-    @Column(name = "menu_image_url")
-    private String menuImageURL;
-
-    /**
      * Flag indicates is current language enabled for document
      */
     @Column(name = "is_enabled")
@@ -76,13 +70,12 @@ public class CommonContentJPA extends CommonContent {
     @Column(name = "version_no", nullable = false)
     private Integer versionNo;
 
-    public CommonContentJPA(Integer docId, LanguageJPA language, String headline, String menuText, String menuImageURL,
+    public CommonContentJPA(Integer docId, LanguageJPA language, String headline, String menuText,
                             Boolean isEnabled, Integer versionNo) {
         this.docId = docId;
         this.language = language;
         this.headline = headline;
         this.menuText = menuText;
-        this.menuImageURL = menuImageURL;
         this.isEnabled = isEnabled;
         this.versionNo = versionNo;
     }

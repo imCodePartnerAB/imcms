@@ -21,7 +21,6 @@ public class CommonContentDTO extends CommonContent implements Cloneable {
     private LanguageDTO language;
     private String headline;
     private String menuText;
-    private String menuImageURL;
     private boolean isEnabled;
     private Integer versionNo;
 

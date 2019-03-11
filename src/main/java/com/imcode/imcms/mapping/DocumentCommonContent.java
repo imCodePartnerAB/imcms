@@ -19,10 +19,6 @@ public final class DocumentCommonContent implements Serializable {
      */
     private final String menuText;
     /**
-     * Menu item image url.
-     */
-    private final String menuImageURL;
-    /**
      * Is current language enabled
      */
     private final boolean enabled;
@@ -32,14 +28,13 @@ public final class DocumentCommonContent implements Serializable {
     private final Integer versionNo;
 
     public DocumentCommonContent() {
-        this("", "", "", false, 0);
+        this("", "", false, 0);
     }
 
-    public DocumentCommonContent(String headline, String menuText, String menuImageURL, boolean enabled,
+    public DocumentCommonContent(String headline, String menuText, boolean enabled,
                                  Integer versionNo) {
         this.headline = headline;
         this.menuText = menuText;
-        this.menuImageURL = menuImageURL;
         this.enabled = enabled;
         this.versionNo = versionNo;
     }
@@ -59,13 +54,12 @@ public final class DocumentCommonContent implements Serializable {
 
     private boolean equals(DocumentCommonContent that) {
         return Objects.equals(headline, that.headline)
-                && Objects.equals(menuText, that.menuText)
-                && Objects.equals(menuImageURL, that.menuImageURL);
+                && Objects.equals(menuText, that.menuText);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(headline, menuText, menuImageURL);
+        return Objects.hash(headline, menuText);
     }
 
     @Override
@@ -73,7 +67,6 @@ public final class DocumentCommonContent implements Serializable {
         return com.google.common.base.Objects.toStringHelper(this)
                 .add("headline", headline)
                 .add("menuText", menuText)
-                .add("menuImageUrl", menuImageURL)
                 .add("enabled", enabled)
                 .add("versionNo", versionNo)
                 .toString();
@@ -87,10 +80,6 @@ public final class DocumentCommonContent implements Serializable {
         return menuText;
     }
 
-    public String getMenuImageURL() {
-        return menuImageURL;
-    }
-
     public Boolean getEnabled() {
         return enabled;
     }
@@ -102,7 +91,6 @@ public final class DocumentCommonContent implements Serializable {
     public static class Builder {
         private String headline;
         private String menuText;
-        private String menuImageURL;
         private boolean enabled = false;
         private Integer versionNo;
 
@@ -112,23 +100,16 @@ public final class DocumentCommonContent implements Serializable {
         public Builder(DocumentCommonContent documentCommonContent) {
             this.headline = documentCommonContent.headline;
             this.menuText = documentCommonContent.menuText;
-            this.menuImageURL = documentCommonContent.menuImageURL;
             this.enabled = documentCommonContent.enabled;
             this.versionNo = documentCommonContent.versionNo;
         }
 
         public DocumentCommonContent build() {
-            return new DocumentCommonContent(headline, menuText, menuImageURL, enabled, versionNo);
+            return new DocumentCommonContent(headline, menuText, enabled, versionNo);
         }
-
 
         public Builder headline(String headline) {
             this.headline = headline;
-            return this;
-        }
-
-        public Builder menuImageURL(String menuImageURL) {
-            this.menuImageURL = menuImageURL;
             return this;
         }
 

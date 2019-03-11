@@ -34,6 +34,4 @@ public interface CommonContentService extends VersionedContentService, DeleterBy
 
     Set<CommonContent> getByVersion(Version version);
 
-    List<CommonContent> findCommonContentWhichUsesImage(String imagePath);
-
 }

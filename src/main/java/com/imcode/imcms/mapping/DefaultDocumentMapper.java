@@ -159,7 +159,6 @@ public class DefaultDocumentMapper implements DocumentMapper {
 
         newDocument.setHeadline("");
         newDocument.setMenuText("");
-        newDocument.setMenuImage("");
         newDocument.getKeywords().clear();
         newDocument.getProperties().clear();
 
