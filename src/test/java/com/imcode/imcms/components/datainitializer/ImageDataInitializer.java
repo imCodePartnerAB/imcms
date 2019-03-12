@@ -1,37 +1,41 @@
 package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.repository.ImageHistoryRepository;
 import com.imcode.imcms.persistence.repository.ImageRepository;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import com.imcode.imcms.util.Value;
 import imcode.util.image.Format;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+
 @Component
 public class ImageDataInitializer extends TestDataCleaner {
 
-    private final CommonContentService commonContentService;
     private final VersionService versionService;
 
     private final LanguageRepository languageRepository;
     private final ImageRepository imageRepository;
+    private final ImageHistoryRepository imageHistoryRepository;
     private final VersionDataInitializer versionDataInitializer;
     private final DocumentDataInitializer documentDataInitializer;
 
-    public ImageDataInitializer(CommonContentService commonContentService, VersionService versionService, LanguageRepository languageRepository,
+    public ImageDataInitializer(VersionService versionService, LanguageRepository languageRepository,
                                 ImageRepository imageRepository,
-                                VersionDataInitializer versionDataInitializer, DocumentDataInitializer documentDataInitializer) {
+                                ImageHistoryRepository imageHistoryRepository, VersionDataInitializer versionDataInitializer, DocumentDataInitializer documentDataInitializer) {
         super(imageRepository);
-        this.commonContentService = commonContentService;
         this.versionService = versionService;
         this.languageRepository = languageRepository;
         this.imageRepository = imageRepository;
+        this.imageHistoryRepository = imageHistoryRepository;
         this.versionDataInitializer = versionDataInitializer;
         this.documentDataInitializer = documentDataInitializer;
     }
@@ -70,6 +74,19 @@ public class ImageDataInitializer extends TestDataCleaner {
             image.setLoopEntryRef(loopEntryRef);
             image.setFormat(Format.JPEG);
             imageRepository.save(image);
+        });
+    }
+
+    public ImageHistoryJPA generateImageHistory(int index, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef, User user) {
+        return Value.with(new ImageHistoryJPA(), image -> {
+            image.setIndex(index);
+            image.setLanguage(language);
+            image.setVersion(version);
+            image.setLoopEntryRef(loopEntryRef);
+            image.setFormat(Format.JPEG);
+            image.setModifiedAt(LocalDateTime.now());
+            image.setModifiedBy(user);
+            imageHistoryRepository.save(image);
         });
     }
 
