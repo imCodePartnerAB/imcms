@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS `imcms_text_doc_images_history`;
 
 CREATE TABLE `imcms_text_doc_images_history` (
   `id`               int(11)      NOT NULL AUTO_INCREMENT,
-  `align`            varchar(255)          DEFAULT NULL,
+  `align`            varchar(15)           DEFAULT NULL,
   `all_languages`    tinyint(4)            DEFAULT '0',
   `alt_text`         varchar(255)          DEFAULT NULL,
   `archive_image_id` bigint(20)            DEFAULT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE `imcms_text_doc_images_history` (
   `left_space`       int(11)               DEFAULT '0',
   `right_space`      int(11)               DEFAULT '0',
   `top_space`        int(11)               DEFAULT '0',
-  `target`           varchar(255)          DEFAULT NULL,
+  `target`           varchar(15)           DEFAULT NULL,
   `type`             int(11)      NOT NULL,
   `imgurl`           varchar(255)          DEFAULT NULL,
   `width`            int(11)      NOT NULL,
