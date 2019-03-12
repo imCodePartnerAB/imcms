@@ -2,6 +2,7 @@ package com.imcode.imcms.persistence.entity;
 
 import imcode.util.image.Format;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -20,6 +21,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "imcms_text_doc_images_history")
 @Data
 public class ImageHistoryJPA {
@@ -46,6 +48,14 @@ public class ImageHistoryJPA {
     @Column(name = "`index`")
     private Integer index;
 
+    private int width;
+
+    private int height;
+
+    private int border;
+
+    private String align = "";
+
     @Column(name = "alt_text")
     private String alternateText = "";
 
@@ -60,6 +70,8 @@ public class ImageHistoryJPA {
 
     @Column(name = "image_name")
     private String name = "";
+
+    private int type;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
