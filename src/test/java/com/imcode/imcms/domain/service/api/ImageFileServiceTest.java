@@ -8,14 +8,15 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFileUsageDTO;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
-import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
+import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import imcode.server.user.UserDomainObject;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -49,8 +50,6 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
     private ImageService imageService;
     @Autowired
     private VersionService versionService;
-    @Autowired
-    private CommonContentService commonContentService;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
@@ -70,6 +69,10 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
         imageDataInitializer.cleanRepositories();
         commonContentDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
+
+        final UserDomainObject user = new UserDomainObject(1);
+        user.setLanguageIso639_2("eng"); // user lang should exist in common content
+        Imcms.setUser(user);
     }
 
     @AfterEach
