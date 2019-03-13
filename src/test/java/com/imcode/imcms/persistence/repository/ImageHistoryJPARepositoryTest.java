@@ -4,13 +4,18 @@ import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.service.UserService;
+import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
+import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import imcode.server.ImcmsConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,7 +55,7 @@ public class ImageHistoryJPARepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveImageHistory_When_UsedSAmeVersion_Expected_Saved() {
+    public void saveImageHistory_When_UsedSameVersion_Expected_Saved() {
         assertTrue(imageHistoryRepository.findAll().isEmpty());
 
         imageDataInitializer.generateImageHistory(IMAGE_INDEX, swedish, version, null, userService.getUser(1));
@@ -58,6 +63,66 @@ public class ImageHistoryJPARepositoryTest extends WebAppSpringTestConfig {
         imageDataInitializer.generateImageHistory(IMAGE_INDEX + 1, english, version, null, userService.getUser(1));
 
         assertEquals(3, imageHistoryRepository.findAll().size());
+    }
+
+    @Test
+    public void saveImageHistory_When_UsedLoopEntry_Expected_Saved() {
+        assertTrue(imageHistoryRepository.findAll().isEmpty());
+
+        final LoopEntryRefJPA loopEntryRefJPA = new LoopEntryRefJPA();
+        loopEntryRefJPA.setLoopIndex(1);
+        loopEntryRefJPA.setLoopEntryIndex(1);
+
+        imageDataInitializer.generateImageHistory(IMAGE_INDEX, swedish, version, loopEntryRefJPA, userService.getUser(1));
+        imageDataInitializer.generateImageHistory(IMAGE_INDEX + 1, english, version, null, userService.getUser(1));
+
+        assertEquals(2, imageHistoryRepository.findAll().size());
+    }
+
+    @Test
+    public void findImageHistoryInLoop_When_OneSpecifiedExists_Expect_OneImageHistoryReturned() {
+        final LoopEntryRefJPA loopEntryRefJPA = new LoopEntryRefJPA();
+        loopEntryRefJPA.setLoopIndex(1);
+        loopEntryRefJPA.setLoopEntryIndex(1);
+
+
+        final ImageHistoryJPA savedImageHistoryJPA = imageDataInitializer.generateImageHistory(
+                IMAGE_INDEX, swedish, version, loopEntryRefJPA, userService.getUser(1)
+        );
+
+        final List<ImageHistoryJPA> expected = Collections.singletonList(savedImageHistoryJPA);
+
+        final List<ImageHistoryJPA> actual = imageHistoryRepository.findImageHistoryInLoop(
+                DOC_ID, savedImageHistoryJPA.getLanguage(), loopEntryRefJPA, 1
+        );
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    public void findImageHistoryNotInLoop_When_MultipleDocsAndHistoriesExist_Expect_FoundForSpecifiedDoc() {
+
+        final ImageHistoryJPA savedImageHistoryJPAen = imageDataInitializer.generateImageHistory(
+                IMAGE_INDEX, english, version, null, userService.getUser(1)
+        );
+
+        final ImageHistoryJPA savedImageHistoryJPAsv = imageDataInitializer.generateImageHistory(
+                IMAGE_INDEX, swedish, version, null, userService.getUser(1)
+        );
+
+        final List<ImageHistoryJPA> expectedEn = Collections.singletonList(savedImageHistoryJPAen);
+        final List<ImageHistoryJPA> expectedSv = Collections.singletonList(savedImageHistoryJPAsv);
+
+        final List<ImageHistoryJPA> imageHistory_en = imageHistoryRepository.findImageHistoryNotInLoop(
+                DOC_ID, english, IMAGE_INDEX
+        );
+
+        final List<ImageHistoryJPA> imageHistory_sv = imageHistoryRepository.findImageHistoryNotInLoop(
+                DOC_ID, swedish, IMAGE_INDEX
+        );
+
+        assertEquals(expectedEn, imageHistory_en);
+        assertEquals(expectedSv, imageHistory_sv);
     }
 
 }
