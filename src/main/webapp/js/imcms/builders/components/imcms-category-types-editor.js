@@ -25,6 +25,7 @@ define(
                 text: texts.sections.createCategoryType.name
             });
 
+            $typeNameRow.$input.attr('disabled', 'disabled');
             return $typeNameRow;
         }
 
@@ -35,12 +36,14 @@ define(
 
         function buildInheriteNewDocsCheckBox() {
             return $inherited = components.checkboxes.imcmsCheckbox('<div>', {
+                disabled: 'disabled',
                 text: texts.sections.createCategoryType.inherited,
             });
         }
 
         function buildImageArchiveCheckBox() {
             return $imageArchive = components.checkboxes.imcmsCheckbox('<div>', {
+                disabled: 'disabled',
                 text: texts.sections.createCategoryType.imageArchive,
             });
         }
