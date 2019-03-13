@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.factory.ImageInTextFactory;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
+import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.VersionService;
@@ -36,6 +37,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
     private final VersionService versionService;
     private final LanguageService languageService;
+    private final ImageHistoryService imageHistoryService;
     private final TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage;
     private final ImageInTextFactory imageInTextFactory;
     private final Function<Image, ImageDTO> imageToImageDTO;
@@ -43,13 +45,14 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
     DefaultImageService(ImageRepository imageRepository,
                         VersionService versionService,
                         LanguageService languageService,
-                        TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
+                        ImageHistoryService imageHistoryService, TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage,
                         ImageInTextFactory imageInTextFactory,
                         Function<Image, ImageDTO> imageToImageDTO) {
 
         super(imageRepository);
         this.versionService = versionService;
         this.languageService = languageService;
+        this.imageHistoryService = imageHistoryService;
         this.imageDtoToImage = imageDtoToImage;
         this.imageInTextFactory = imageInTextFactory;
         this.imageToImageDTO = imageToImageDTO;
@@ -124,6 +127,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
             final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
             saveImage(imageDTO, language, version);
             updateImagesWithDifferentLangCode(imageDTO, version);
+
         }
 
         super.updateWorkingVersion(docId);
@@ -257,6 +261,7 @@ class DefaultImageService extends AbstractVersionedContentService<Image, ImageRe
 
         image.setId(imageId);
         repository.save(image);
+        imageHistoryService.save(image);
     }
 
     @Override
