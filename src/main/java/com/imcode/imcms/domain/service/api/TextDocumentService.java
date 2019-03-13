@@ -7,8 +7,10 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.util.Value;
 import imcode.server.document.index.DocumentIndex;
 import org.apache.solr.common.SolrInputDocument;
@@ -62,10 +64,16 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
         final boolean isNew = (saveMe.getId() == null);
         final Optional<TextDocumentTemplateDTO> oTemplate = Optional.ofNullable(saveMe.getTemplate());
 
-        final int savedDocId = defaultDocumentService.save(saveMe).getId();
+        final DocumentDTO savedDoc = defaultDocumentService.save(saveMe);
+        final int savedDocId = savedDoc.getId();
 
         if (isNew) {
             oTemplate.ifPresent(textDocumentTemplateDTO -> textDocumentTemplateDTO.setDocId(savedDocId));
+            for (CommonContent content : savedDoc.getCommonContents()) {
+                final Text text = textService.getText(savedDocId, 1, content.getLanguage().getCode(), null);
+                text.setText(content.getHeadline());
+                textService.save(text);
+            }
         }
 
         oTemplate.ifPresent(textDocumentTemplateService::save);

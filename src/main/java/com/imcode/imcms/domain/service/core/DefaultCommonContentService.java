@@ -11,10 +11,13 @@ import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.CommonContentRepository;
 import com.imcode.imcms.util.Value;
+import imcode.server.Config;
+import imcode.server.LanguageMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -31,18 +34,33 @@ public class DefaultCommonContentService
         implements CommonContentService {
 
     private final LanguageService languageService;
+    private final Config config;
 
     DefaultCommonContentService(CommonContentRepository commonContentRepository,
-                                LanguageService languageService) {
+                                LanguageService languageService,
+                                Config config) {
 
         super(commonContentRepository);
         this.languageService = languageService;
+        this.config = config;
     }
 
     @Override
     public List<CommonContent> getOrCreateCommonContents(int docId, int versionNo) {
+        Comparator<Language> languageComparator = (lang1, lang2) -> {
+            final String mappedLanguage = LanguageMapper.convert639_2to639_1(config.getDefaultLanguage());
+            if (lang1.getCode().equals(mappedLanguage)) {
+                return -1;
+            }
+            if (lang2.getCode().equals(mappedLanguage)) {
+                return 1;
+            }
+            return lang1.getCode().compareTo(lang2.getCode());
+        };
+
         return languageService.getAll()
                 .stream()
+                .sorted(languageComparator)
                 .map(language -> getOrCreate(docId, versionNo, language))
                 .collect(toList());
     }

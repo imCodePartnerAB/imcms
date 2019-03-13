@@ -62,6 +62,7 @@ const texts = {
             newDocument: "Nytt dokument",
             confirmMessage: "Spara ändringar?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
+            oneLanguageShouldBeEnabled: "Minst ett språk måste vara aktiverat!",
             title: {
                 name: "Rubrik",
                 title: "Rubrik",
@@ -703,6 +704,7 @@ const texts = {
             newDocument: "New Document",
             confirmMessage: "Save changes?",
             confirmMessageOnCancel: "Do you really want to exit?",
+            oneLanguageShouldBeEnabled: "At least one language must be enabled!",
             title: {
                 name: "Title",
                 title: "Title",

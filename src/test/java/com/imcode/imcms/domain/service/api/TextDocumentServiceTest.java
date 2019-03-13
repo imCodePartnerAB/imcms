@@ -14,6 +14,7 @@ import com.imcode.imcms.domain.factory.DocumentDtoFactory;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
@@ -71,6 +72,9 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private CommonContentDataInitializer commonContentDataInitializer;
+
+    @Autowired
+    private TextService textService;
 
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
@@ -165,6 +169,25 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
             assertNull(childCommonContent.getId());
             assertNull(childCommonContent.getDocId());
             assertEquals(childCommonContent.getVersionNo(), Integer.valueOf(Version.WORKING_VERSION_INDEX));
+        }
+    }
+
+    @Test
+    public void createFromParent_When_ParentExist_Expect_CreatedAndSavedSpecifiedHeadlineTexts() {
+        TextDocumentDTO childDoc = documentService.createFromParent(createdDoc.getId());
+
+        assertNotNull(childDoc);
+
+        final List<CommonContent> childCommonContents = childDoc.getCommonContents();
+        for (int i = 0; i < childCommonContents.size(); i++) {
+            final CommonContent childCommonContent = childCommonContents.get(i);
+            childCommonContent.setHeadline("test" + i);
+        }
+        childDoc = documentService.save(childDoc);
+
+        for (int i = 0; i < childCommonContents.size(); i++) {
+            final CommonContent childCommonContent = childCommonContents.get(i);
+            assertEquals("test" + i, textService.getText(childDoc.getId(), 1, childCommonContent.getLanguage().getCode(), null).getText());
         }
     }
 
