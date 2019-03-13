@@ -14,6 +14,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageHistoryDTO;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
+import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.domain.service.ImageService;
@@ -170,7 +171,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
         history.forEach(imageHistory -> {
             assertEquals(imageDTO.getIndex(), imageHistory.getIndex());
-            assertEquals(imageDTO.getLangCode(), imageHistory.getLanguage().getCode());
+            assertEquals(imageDTO.getLangCode(), imageHistory.getLangCode());
             assertNull(imageHistory.getLoopEntryRef());
         });
     }
@@ -224,8 +225,10 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
         history.forEach(imageHistory -> {
             assertEquals(imageDTO.getIndex(), imageHistory.getIndex());
-            assertEquals(imageDTO.getLangCode(), imageHistory.getLanguage().getCode());
-            assertEquals(loopEntryRef, imageHistory.getLoopEntryRef());
+            assertEquals(imageDTO.getLangCode(), imageHistory.getLangCode());
+            final LoopEntryRefDTO actualLoopEntryRef = imageHistory.getLoopEntryRef();
+            assertEquals(loopEntryRef.getLoopIndex(), actualLoopEntryRef.getLoopIndex());
+            assertEquals(loopEntryRef.getLoopEntryIndex(), actualLoopEntryRef.getLoopEntryIndex());
         });
     }
 

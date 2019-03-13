@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 @Transactional
@@ -102,8 +102,8 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
         assertEquals(3, actual.size());
         actual.forEach(imageHistory -> {
             assertEquals(generatedImage.getIndex(), imageHistory.getIndex());
-            assertEquals(generatedImage.getLanguage(), imageHistory.getLanguage());
-            assertEquals(generatedImage.getLoopEntryRef(), imageHistory.getLoopEntryRef());
+            assertEquals(generatedImage.getLanguage().getCode(), imageHistory.getLangCode());
+            assertEquals(generatedImage.getLoopEntryRef(), new LoopEntryRefJPA(imageHistory.getLoopEntryRef()));
         });
     }
 
@@ -121,8 +121,8 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
         assertEquals(3, actual.size());
         actual.forEach(imageHistory -> {
             assertEquals(generatedImage.getIndex(), imageHistory.getIndex());
-            assertEquals(generatedImage.getLanguage(), imageHistory.getLanguage());
-            assertEquals(generatedImage.getLoopEntryRef(), imageHistory.getLoopEntryRef());
+            assertEquals(generatedImage.getLanguage().getCode(), imageHistory.getLangCode());
+            assertNull(imageHistory.getLoopEntryRef());
         });
     }
 
