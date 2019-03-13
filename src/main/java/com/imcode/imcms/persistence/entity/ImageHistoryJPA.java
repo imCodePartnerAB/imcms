@@ -62,6 +62,10 @@ public class ImageHistoryJPA {
     @Column(name = "low_scr")
     private String lowResolutionUrl = "";
 
+    private SpaceAroundJPA spaceAround = new SpaceAroundJPA();
+
+    private String target = "";
+
     @Column(name = "linkurl")
     private String linkUrl = "";
 
@@ -104,5 +108,35 @@ public class ImageHistoryJPA {
 
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
+
+    public ImageHistoryJPA(Image image, User modifiedBy, LocalDateTime modifiedAt) {
+        this.version = image.getVersion();
+        this.language = image.getLanguage();
+        this.index = image.getIndex();
+        this.format = image.getFormat();
+        this.loopEntryRef = image.getLoopEntryRef();
+        this.width = image.getWidth();
+        this.height = image.getHeight();
+        this.border = image.getBorder();
+        this.align = image.getAlign();
+        this.alternateText = image.getAlternateText();
+        this.lowResolutionUrl = image.getLowResolutionUrl();
+        this.target = image.getTarget();
+        this.linkUrl = image.getLinkUrl();
+        this.url = image.getUrl();
+        this.name = image.getName();
+        this.type = image.getType();
+        this.cropRegion = image.getCropRegion();
+        this.rotateAngle = image.getRotateAngle();
+        this.generatedFilename = image.getGeneratedFilename();
+        this.resize = image.getResize();
+        this.archiveImageId = image.getArchiveImageId();
+        this.allLanguages = image.isAllLanguages();
+        this.inText = image.isInText();
+        this.setSpaceAround(new SpaceAroundJPA(image.getSpaceAround()));
+
+        this.modifiedBy = modifiedBy;
+        this.modifiedAt = modifiedAt;
+    }
 }
 
