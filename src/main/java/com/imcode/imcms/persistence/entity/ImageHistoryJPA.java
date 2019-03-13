@@ -18,13 +18,16 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Entity
-@NoArgsConstructor
 @Table(name = "imcms_text_doc_images_history")
 @Data
-public class ImageHistoryJPA {
+@NoArgsConstructor
+public class ImageHistoryJPA implements Serializable {
+
+    private static final long serialVersionUID = 3025155812924776954L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
