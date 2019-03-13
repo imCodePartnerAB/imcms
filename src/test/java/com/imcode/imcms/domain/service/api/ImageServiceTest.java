@@ -11,9 +11,11 @@ import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
 import com.imcode.imcms.domain.dto.ImageDTO;
+import com.imcode.imcms.domain.dto.ImageHistoryDTO;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
+import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
@@ -63,6 +65,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private ImageService imageService;
+    @Autowired
+    private ImageHistoryService imageHistoryService;
 
     @Autowired
     private VersionDataInitializer versionDataInitializer;
@@ -150,6 +154,28 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void saveImage_When_LoopEntryRefIsNull_Expect_SavedHistory() {
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        imageService.saveImage(imageDTO);
+        imageService.saveImage(imageDTO);
+
+        final ImageDTO result = imageService.getImage(TEST_IMAGE_DTO);
+        final List<ImageHistoryDTO> history = imageHistoryService.getAll(imageDTO);
+
+        assertEquals(result, imageDTO);
+        assertTrue(!history.isEmpty());
+        assertEquals(2, history.size());
+
+        history.forEach(imageHistory -> {
+            assertEquals(imageDTO.getIndex(), imageHistory.getIndex());
+            assertEquals(imageDTO.getLangCode(), imageHistory.getLanguage().getCode());
+            assertNull(imageHistory.getLoopEntryRef());
+        });
+    }
+
+    @Test
     public void saveImage_When_InLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() {
         saveImageWhenAllLanguagesFlagIsSet(true);
     }
@@ -180,6 +206,27 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         final ImageDTO result = imageService.getImage(imageDTO);
 
         assertEquals(result, imageDTO);
+    }
+
+    @Test
+    public void saveImage_When_LoopEntryRefIsNotNull_Expect_SavedHistory() {
+        final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
+        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+
+        imageService.saveImage(imageDTO);
+        imageService.saveImage(imageDTO);
+
+        final List<ImageHistoryDTO> history = imageHistoryService.getAll(imageDTO);
+
+        assertTrue(!history.isEmpty());
+        assertEquals(2, history.size());
+
+        history.forEach(imageHistory -> {
+            assertEquals(imageDTO.getIndex(), imageHistory.getIndex());
+            assertEquals(imageDTO.getLangCode(), imageHistory.getLanguage().getCode());
+            assertEquals(loopEntryRef, imageHistory.getLoopEntryRef());
+        });
     }
 
     @Test
