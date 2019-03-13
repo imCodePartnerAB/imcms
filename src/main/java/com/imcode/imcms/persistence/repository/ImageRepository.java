@@ -1,6 +1,6 @@
 package com.imcode.imcms.persistence.repository;
 
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -14,53 +14,53 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, Integer>, VersionedContentRepository<Image> {
+public interface ImageRepository extends JpaRepository<ImageJPA, Integer>, VersionedContentRepository<ImageJPA> {
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NULL")
-    List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, LanguageJPA language);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NULL")
+    List<ImageJPA> findByVersionAndLanguageWhereLoopEntryRefIsNull(Version version, LanguageJPA language);
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NOT NULL")
-    List<Image> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, LanguageJPA language);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.loopEntryRef IS NOT NULL")
+    List<ImageJPA> findByVersionAndLanguageWhereLoopEntryRefIsNotNull(Version version, LanguageJPA language);
 
     @SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection")
-    @Query("select i.linkUrl from Image i where i.version = ?1 and i.language = ?2 and i.linkUrl > ''")
+    @Query("select i.linkUrl from ImageJPA i where i.version = ?1 and i.language = ?2 and i.linkUrl > ''")
     Set<String> findNonEmptyImageLinkUrlByVersionAndLanguage(Version version, LanguageJPA language);
 
-    Set<Image> findByVersionAndLanguage(Version version, LanguageJPA language);
+    Set<ImageJPA> findByVersionAndLanguage(Version version, LanguageJPA language);
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef IS NULL")
-    List<Image> findByVersionAndIndexWhereLoopEntryRefIsNull(Version version, int index);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef IS NULL")
+    List<ImageJPA> findByVersionAndIndexWhereLoopEntryRefIsNull(Version version, int index);
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef = ?3")
-    List<Image> findByVersionAndIndexAndLoopEntryRef(Version version, int index, LoopEntryRefJPA loopEntryRef);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.index = ?2 AND i.loopEntryRef = ?3")
+    List<ImageJPA> findByVersionAndIndexAndLoopEntryRef(Version version, int index, LoopEntryRefJPA loopEntryRef);
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
-    Image findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, LanguageJPA language, int index);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
+    ImageJPA findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, LanguageJPA language, int index);
 
-    @Query("SELECT i FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
-    Image findByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, LanguageJPA language, int index, LoopEntryRefJPA loopEntryRef);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
+    ImageJPA findByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, LanguageJPA language, int index, LoopEntryRefJPA loopEntryRef);
 
-    @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
+    @Query("SELECT i.id FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef IS NULL")
     Integer findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(Version version, LanguageJPA language, int index);
 
-    @Query("SELECT i.id FROM Image i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
+    @Query("SELECT i.id FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2 AND i.index = ?3 AND i.loopEntryRef = ?4")
     Integer findIdByVersionAndLanguageAndIndexAndLoopEntryRef(Version version, LanguageJPA language, int index, LoopEntryRefJPA loopEntryRef);
 
     @Query("SELECT i " +
-            "FROM Image i " +
+            "FROM ImageJPA i " +
             "WHERE i.generatedFilename IS NOT NULL AND i.generatedFilename <> '' " +
             "   OR i.url IS NOT NULL AND i.url <> '' " +
             "ORDER BY i.id DESC")
-    Collection<Image> findAllRegenerationCandidates();
+    Collection<ImageJPA> findAllRegenerationCandidates();
 
     @Override
-    @Query("SELECT i FROM Image i WHERE i.version = ?1")
-    List<Image> findByVersion(Version version);
+    @Query("SELECT i FROM ImageJPA i WHERE i.version = ?1")
+    List<ImageJPA> findByVersion(Version version);
 
-    List<Image> findByUrl(String url);
+    List<ImageJPA> findByUrl(String url);
 
     @Modifying
-    @Query("DELETE FROM Image i WHERE i.version = ?1 AND i.language = ?2")
+    @Query("DELETE FROM ImageJPA i WHERE i.version = ?1 AND i.language = ?2")
     void deleteByVersionAndLanguage(Version version, LanguageJPA language);
 
     @Modifying

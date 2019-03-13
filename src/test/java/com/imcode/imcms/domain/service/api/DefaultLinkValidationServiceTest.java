@@ -22,7 +22,7 @@ import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
@@ -65,7 +65,7 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private ImageDataInitializer imageDataInitializer;
     @Autowired
-    private Function<Image, ImageDTO> imageToImageDTO;
+    private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
     @Autowired
     private ImageService imageService;
     @Autowired
@@ -212,11 +212,11 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version versionDoc = versionService.create(docId, 1);
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl(getLinkFromText(TEXT_URL));
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -243,11 +243,11 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         final Version versionDoc = versionService.create(doc1Id, 1);
 
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl((getLinkFromText(NOT_REACHABLE_URL_IP)));
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -354,13 +354,13 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LoopDTO loopDTO = new LoopDTO(docId, index, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         loopDataInitializer.createData(loopDTO, versionDoc);
 
         image.setLinkUrl(TEXTS);
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -394,11 +394,11 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         final Language en = languageDataInitializer.createData().get(0);
         final LanguageJPA languageJPA = new LanguageJPA(en);
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl(getLinkFromText(TEXT_URL));
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -428,13 +428,13 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
         final LoopDTO loopDTO = new LoopDTO(docId, index, Collections.singletonList(LoopEntryDTO.createEnabled(1)));
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         loopDataInitializer.createData(loopDTO, versionDoc);
 
         image.setLinkUrl(getLinkFromText(NOT_REACHABLE_URL_IP));
 
-        final ImageDTO imageDTO1 = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO1 = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO1);
 
@@ -495,11 +495,11 @@ public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
 
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl((getLinkFromText(TEXT_URL)));
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 

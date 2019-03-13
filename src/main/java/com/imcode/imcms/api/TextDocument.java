@@ -58,8 +58,8 @@ public class TextDocument extends Document {
     }
 
     /**
-     * @return A SortedMap that contains the images index as keys, and instances of Image as values. Only the
-     * Image that has an url is returned.
+     * @return A SortedMap that contains the images index as keys, and instances of ImageJPA as values. Only the
+     * ImageJPA that has an url is returned.
      */
     public SortedMap<Integer, Image> getImages() {
         Predicate<Entry<?, ImageDomainObject>> predicate = entry -> !entry.getValue().isEmpty();

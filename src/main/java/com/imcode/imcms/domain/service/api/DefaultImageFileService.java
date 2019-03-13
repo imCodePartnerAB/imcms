@@ -7,8 +7,8 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.mapping.ImageCacheMapper;
-import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import imcode.util.Utility;
 import imcode.util.io.FileUtility;
 import org.apache.commons.io.FilenameUtils;
@@ -108,7 +108,7 @@ class DefaultImageFileService implements ImageFileService {
 
     @Override
     public List<ImageFileUsageDTO> getImageFileUsages(String imageFileDTOPath) {
-        List<Image> foundUsagesInDocumentContent =
+        List<ImageJPA> foundUsagesInDocumentContent =
                 imageService.getUsedImagesInWorkingAndLatestVersions(imageFileDTOPath.startsWith(File.separator) ? imageFileDTOPath.substring(1) : imageFileDTOPath);
 
         List<ImageCacheDomainObject> foundImageCache =

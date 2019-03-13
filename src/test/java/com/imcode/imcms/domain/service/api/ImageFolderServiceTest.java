@@ -10,7 +10,7 @@ import com.imcode.imcms.domain.exception.FolderAlreadyExistException;
 import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFolderService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.ImcmsConstants;
@@ -624,11 +624,11 @@ class ImageFolderServiceTest extends WebAppSpringTestConfig {
         final Version intermediateVersion = versionService.create(testDocumentId, 1);
 
         // fixme: check usage
-        final Image imageIntermediate = imageDataInitializer.createData(1, "", testImageName, intermediateVersion);
+        final ImageJPA imageIntermediate = imageDataInitializer.createData(1, "", testImageName, intermediateVersion);
 
         final Version latestVersion = versionService.create(testDocumentId, 1);
         // fixme: check usage
-        final Image imageLatest = imageDataInitializer.createData(
+        final ImageJPA imageLatest = imageDataInitializer.createData(
                 1, "", subDirectoryName + separator + testStubImageName, latestVersion
         );
 

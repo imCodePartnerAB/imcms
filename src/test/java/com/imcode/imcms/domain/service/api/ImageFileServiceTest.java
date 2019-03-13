@@ -11,7 +11,7 @@ import com.imcode.imcms.domain.exception.FolderNotExistException;
 import com.imcode.imcms.domain.service.ImageFileService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.Imcms;
@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ImageFileServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
-    private Function<Image, ImageDTO> imageToImageDTO;
+    private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
     @Autowired
     private ImageFileService imageFileService;
     @Autowired
@@ -186,12 +186,12 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
 
             final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocId);
 
-            final Image image = imageDataInitializer.createData(1, workingVersion);
+            final ImageJPA image = imageDataInitializer.createData(1, workingVersion);
 
             image.setName(testImageFileName);
             image.setUrl(testImageFileName);
 
-            final ImageDTO imageDTO = imageToImageDTO.apply(image);
+            final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
             imageService.saveImage(imageDTO);
 
@@ -215,12 +215,12 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
 
             final Version latestVersion = versionService.getLatestVersion(latestDocId);
 
-            final Image image = imageDataInitializer.createData(1, latestVersion);
+            final ImageJPA image = imageDataInitializer.createData(1, latestVersion);
 
             image.setName(testImageFileName);
             image.setUrl(testImageFileName);
 
-            final ImageDTO imageDTO = imageToImageDTO.apply(image);
+            final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
             imageService.saveImage(imageDTO);
 
@@ -248,12 +248,12 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
             final int latestDocId = documentDataInitializer.createData().getId();
             versionService.create(latestDocId, 1);
             final Version latestVersion = versionService.getLatestVersion(latestDocId);
-            final Image image = imageDataInitializer.createData(1, latestVersion);
+            final ImageJPA image = imageDataInitializer.createData(1, latestVersion);
 
             image.setName(testImageFileName);
             image.setUrl(testSubDirectoryName + File.separator + testImageFileName);
 
-            final ImageDTO imageDTO = imageToImageDTO.apply(image);
+            final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
             imageService.saveImage(imageDTO);
             assertFalse(imageFileService.deleteImage(imageFileDTO).isEmpty());
@@ -299,8 +299,8 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
             versionService.create(latestDocId, 1);
             final Version latestVersion = versionService.create(latestDocId, 1);
 
-            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
-            final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
+            final ImageJPA imageLatest = imageDataInitializer.createData(1, latestVersion);
+            final ImageJPA imageWorking = imageDataInitializer.createData(1, workingVersion);
 
             imageLatest.setName(testImageFileName);
             imageLatest.setUrl(testImageFileName);
@@ -308,8 +308,8 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
             imageWorking.setName(testImageFileName);
             imageWorking.setUrl(testImageFileName);
 
-            final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
-            final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
+            final ImageDTO imageDTOLatest = imageJPAToImageDTO.apply(imageLatest);
+            final ImageDTO imageDTOWorking = imageJPAToImageDTO.apply(imageWorking);
 
             imageService.saveImage(imageDTOLatest);
             imageService.saveImage(imageDTOWorking);
@@ -342,12 +342,12 @@ class ImageFileServiceTest extends WebAppSpringTestConfig {
             final Version intermediateVersion = versionService.create(tempDocId, 1);
 
             // fixme: check usage
-            final Image imageIntermediate = imageDataInitializer.createData(1, testImageFileName, testImageFileName, intermediateVersion);
+            final ImageJPA imageIntermediate = imageDataInitializer.createData(1, testImageFileName, testImageFileName, intermediateVersion);
 
             final Version latestVersion = versionService.create(tempDocId, 1);
 
             // fixme: check usage
-            final Image imageLatest = imageDataInitializer.createData(1, test2ImageFileName, test2ImageFileName, latestVersion);
+            final ImageJPA imageLatest = imageDataInitializer.createData(1, test2ImageFileName, test2ImageFileName, latestVersion);
 
             List<ImageFileUsageDTO> usages = imageFileService.deleteImage(imageFileDTO);
 

@@ -26,7 +26,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Table(name = "imcms_text_doc_images")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class Image implements Serializable {
+public class ImageJPA implements Serializable {
 
     private static final long serialVersionUID = -4028479126820231301L;
 
@@ -106,7 +106,7 @@ public class Image implements Serializable {
     @Column(name = "in_text", columnDefinition = "tinyint")
     private boolean inText;
 
-    public Image(Image from, Version version) {
+    public ImageJPA(ImageJPA from, Version version) {
         this.version = version;
         this.language = from.language;
         this.index = from.index;

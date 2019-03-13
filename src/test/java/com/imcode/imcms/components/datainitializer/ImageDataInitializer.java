@@ -2,8 +2,8 @@ package com.imcode.imcms.components.datainitializer;
 
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.User;
@@ -40,34 +40,34 @@ public class ImageDataInitializer extends TestDataCleaner {
         this.documentDataInitializer = documentDataInitializer;
     }
 
-    public Image createData(Integer imageIndex, Integer docId, Integer versionIndex) {
+    public ImageJPA createData(Integer imageIndex, Integer docId, Integer versionIndex) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
         final LanguageJPA language = languageRepository.findByCode("en");
 
         return generateImage(imageIndex, language, version, null);
     }
 
-    public Image createData(Integer imageIndex, Version version) {
+    public ImageJPA createData(Integer imageIndex, Version version) {
         final LanguageJPA language = languageRepository.findByCode("en");
 
         return generateImage(imageIndex, language, version, null);
     }
 
-    public Image createData(Integer imageIndex, String fileName, String imgUrl, Version version) {
+    public ImageJPA createData(Integer imageIndex, String fileName, String imgUrl, Version version) {
         final LanguageJPA language = languageRepository.findByCode("en");
 
         return generateImage(imageIndex, fileName, imgUrl, language, version, null);
     }
 
-    public Image createData(int imageIndex, int docId, int versionIndex, LoopEntryRefJPA loopEntryRef) {
+    public ImageJPA createData(int imageIndex, int docId, int versionIndex, LoopEntryRefJPA loopEntryRef) {
         final Version version = versionDataInitializer.createData(versionIndex, docId);
         final LanguageJPA language = languageRepository.findByCode("en");
 
         return generateImage(imageIndex, language, version, loopEntryRef);
     }
 
-    public Image generateImage(int index, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef) {
-        return Value.with(new Image(), image -> {
+    public ImageJPA generateImage(int index, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef) {
+        return Value.with(new ImageJPA(), image -> {
             image.setIndex(index);
             image.setLanguage(language);
             image.setVersion(version);
@@ -90,8 +90,8 @@ public class ImageDataInitializer extends TestDataCleaner {
         });
     }
 
-    public Image generateImage(int index, String fileName, String imgUrl, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef) {
-        return Value.with(new Image(), image -> {
+    public ImageJPA generateImage(int index, String fileName, String imgUrl, LanguageJPA language, Version version, LoopEntryRefJPA loopEntryRef) {
+        return Value.with(new ImageJPA(), image -> {
             image.setIndex(index);
             image.setLanguage(language);
             image.setVersion(version);
@@ -107,10 +107,10 @@ public class ImageDataInitializer extends TestDataCleaner {
 
         final Integer latestDocumentId = sameDoc ? commonDocumentDTO.getId() : documentDataInitializer.createData().getId();
         final Version latestVersion = versionService.create(latestDocumentId, 1);
-        final Image imageLatest = createData(1, "", publishedImageURL, latestVersion);
+        final ImageJPA imageLatest = createData(1, "", publishedImageURL, latestVersion);
 
         final Integer workingDocumentId = sameDoc ? commonDocumentDTO.getId() : documentDataInitializer.createData().getId();
         final Version workingVersion = versionService.getDocumentWorkingVersion(workingDocumentId);
-        final Image imageWorking = createData(1, "", workingImageURL, workingVersion);
+        final ImageJPA imageWorking = createData(1, "", workingImageURL, workingVersion);
     }
 }

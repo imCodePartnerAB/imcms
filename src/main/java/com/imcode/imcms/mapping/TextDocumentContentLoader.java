@@ -7,7 +7,7 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextHistoryJPA;
@@ -158,7 +158,7 @@ public class TextDocumentContentLoader {
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
 
         return imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, language)
-                .stream().collect(toMap(Image::getIndex, ImcmsImageUtils::toDomainObject));
+                .stream().collect(toMap(ImageJPA::getIndex, ImcmsImageUtils::toDomainObject));
 
     }
 
@@ -167,7 +167,7 @@ public class TextDocumentContentLoader {
         LanguageJPA language = languageRepository.findByCode(docRef.getLanguageCode());
         final Map<TextDocumentDomainObject.LoopItemRef, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
+        for (ImageJPA image : imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, language)) {
             TextDocumentDomainObject.LoopItemRef loopItemRef = TextDocumentDomainObject.LoopItemRef.of(
                     image.getLoopEntryRef().getLoopIndex(), image.getLoopEntryRef().getLoopEntryIndex(), image.getIndex()
             );
@@ -187,7 +187,7 @@ public class TextDocumentContentLoader {
         Version version = versionRepository.findByDocIdAndNo(versionRef.getDocId(), versionRef.getNo());
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
 
-        for (Image image : imageRepository.findByVersionAndIndexWhereLoopEntryRefIsNull(version, imageNo)) {
+        for (ImageJPA image : imageRepository.findByVersionAndIndexWhereLoopEntryRefIsNull(version, imageNo)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
         }
 
@@ -199,7 +199,7 @@ public class TextDocumentContentLoader {
         Map<DocumentLanguage, ImageDomainObject> result = new HashMap<>();
         LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-        for (Image image : imageRepository.findByVersionAndIndexAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
+        for (ImageJPA image : imageRepository.findByVersionAndIndexAndLoopEntryRef(version, loopItemRef.getItemNo(), loopEntryRef)) {
             result.put(languageMapper.toApiObject(image.getLanguage()), ImcmsImageUtils.toDomainObject(image));
         }
 

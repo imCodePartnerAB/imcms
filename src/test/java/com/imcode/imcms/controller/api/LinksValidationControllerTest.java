@@ -16,7 +16,7 @@ import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.api.DefaultLinkValidationService;
 import com.imcode.imcms.model.LoopEntryRef;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.TextJPA;
@@ -58,7 +58,7 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
     @Autowired
     private ImageDataInitializer imageDataInitializer;
     @Autowired
-    private Function<Image, ImageDTO> imageToImageDTO;
+    private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
     @Autowired
     private ImageService imageService;
     @Autowired
@@ -141,11 +141,11 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version versionDoc = versionService.create(docId, 1);
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl(getLinkFromText(TEXT_URL));
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -168,11 +168,11 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final int index = 1;
         int docId = documentDataInitializer.createData().getId();
         final Version versionDoc = versionService.create(docId, 1);
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl(TEXTS);
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -273,11 +273,11 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final Version versionDoc = versionService.create(docId, 1);
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl(TEXTS);
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -306,11 +306,11 @@ public class LinksValidationControllerTest extends AbstractControllerTest {
         final Version versionDoc = versionService.create(docId, 1);
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(index, 1);
         final LanguageJPA languageJPA = new LanguageJPA(languageDataInitializer.createData().get(0));
-        final Image image = imageDataInitializer.createData(index, versionDoc);
+        final ImageJPA image = imageDataInitializer.createData(index, versionDoc);
 
         image.setLinkUrl(getLinkFromText(TEXT_URL));
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 

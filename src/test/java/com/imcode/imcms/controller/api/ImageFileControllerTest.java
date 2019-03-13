@@ -13,7 +13,7 @@ import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.util.DeleteOnCloseFile;
 import imcode.server.Imcms;
@@ -48,7 +48,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class ImageFileControllerTest extends AbstractControllerTest {
 
     @Autowired
-    Function<Image, ImageDTO> imageToImageDTO;
+    Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
 
     @Autowired
     private ImageService imageService;
@@ -283,8 +283,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             versionService.create(latestDocId, 1);
             final Version latestVersion = versionService.getDocumentWorkingVersion(latestDocId);
 
-            final Image imageLatest = imageDataInitializer.createData(1, latestVersion);
-            final Image imageWorking = imageDataInitializer.createData(1, workingVersion);
+            final ImageJPA imageLatest = imageDataInitializer.createData(1, latestVersion);
+            final ImageJPA imageWorking = imageDataInitializer.createData(1, workingVersion);
 
             imageLatest.setName(originalFilename);
             imageLatest.setLinkUrl(separator + originalFilename);
@@ -292,8 +292,8 @@ public class ImageFileControllerTest extends AbstractControllerTest {
             imageWorking.setName(originalFilename);
             imageWorking.setLinkUrl(separator + originalFilename);
 
-            final ImageDTO imageDTOLatest = imageToImageDTO.apply(imageLatest);
-            final ImageDTO imageDTOWorking = imageToImageDTO.apply(imageWorking);
+            final ImageDTO imageDTOLatest = imageJPAToImageDTO.apply(imageLatest);
+            final ImageDTO imageDTOWorking = imageJPAToImageDTO.apply(imageWorking);
 
             imageService.saveImage(imageDTOLatest);
             imageService.saveImage(imageDTOWorking);

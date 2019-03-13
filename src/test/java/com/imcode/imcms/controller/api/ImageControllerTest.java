@@ -8,7 +8,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -42,7 +42,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     private VersionDataInitializer versionDataInitializer;
 
     @Autowired
-    private Function<Image, ImageDTO> imageToImageDTO;
+    private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
@@ -90,8 +90,8 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImage_Expect_Ok() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(testDocId))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX))
@@ -122,8 +122,8 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void getImage_When_ImageExist_Expect_OkAndEqualContent() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(testDocId))
                 .param("index", String.valueOf(TEST_IMAGE_INDEX))
@@ -135,8 +135,8 @@ public class ImageControllerTest extends AbstractControllerTest {
     @Test
     public void getImage_When_LoopEntryRefIsNotNull_Expect_OkAndEqualContent() throws Exception {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(imageDTO.getDocId()))
                 .param("index", String.valueOf(imageDTO.getIndex()))
@@ -166,8 +166,8 @@ public class ImageControllerTest extends AbstractControllerTest {
 
     @Test
     public void postImage_When_LoopEntryRefIsNull_Expect_Ok() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, null);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         performPostWithContentExpectOk(imageDTO);
     }
@@ -175,16 +175,16 @@ public class ImageControllerTest extends AbstractControllerTest {
     @Test
     public void postImage_When_LoopEntryRefIsNotNull_Expect_Ok() throws Exception {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         performPostWithContentExpectOk(imageDTO);
     }
 
     @Test
     public void postImage_When_DataChanged_Expect_CorrectSave() throws Exception {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, null);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         final MockHttpServletRequestBuilder getImageReqBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("docId", String.valueOf(imageDTO.getDocId()))
@@ -295,18 +295,18 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         languageRepository.findAll()
                 .forEach(language -> {
-                    final Image image = imageDataInitializer
+                    final ImageJPA image = imageDataInitializer
                             .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
 
                     image.setAllLanguages(true);
                     imageRepository.save(image);
                 });
 
-        final List<Image> images = imageRepository.findAll();
+        final List<ImageJPA> images = imageRepository.findAll();
 
         assertEquals(languageRepository.findAll().size(), images.size());
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(images.get(0));
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(images.get(0));
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
         performRequestBuilderExpectedOk(requestBuilder);
@@ -323,23 +323,23 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         languageRepository.findAll()
                 .forEach(language -> {
-                    final Image image = imageDataInitializer
+                    final ImageJPA image = imageDataInitializer
                             .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
 
                     image.setAllLanguages(true);
                     imageRepository.save(image);
                 });
 
-        final List<Image> images = imageRepository.findAll();
+        final List<ImageJPA> images = imageRepository.findAll();
 
         assertEquals(languageRepository.findAll().size(), images.size());
 
-        final Image image = images.get(0);
+        final ImageJPA image = images.get(0);
         image.setAllLanguages(false);
 
         imageRepository.save(image);
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(images.get(0));
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(images.get(0));
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
         performRequestBuilderExpectedOk(requestBuilder);
@@ -351,7 +351,7 @@ public class ImageControllerTest extends AbstractControllerTest {
     private void testDeletingImage_WhenImageExists(boolean inLoop) throws Exception {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
-        final Image image = inLoop
+        final ImageJPA image = inLoop
                 ? imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef)
                 : imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
 
@@ -360,7 +360,7 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         assertEquals(1, imageRepository.findAll().size());
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(imageDTO);
         performRequestBuilderExpectedOk(requestBuilder);
@@ -371,11 +371,11 @@ public class ImageControllerTest extends AbstractControllerTest {
     private void testDeletingImage_WhenImageDoesNotExist(boolean inLoop) throws Exception {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
 
-        final Image image = inLoop
+        final ImageJPA image = inLoop
                 ? imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef)
                 : imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX);
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageRepository.delete(image);
 
@@ -395,7 +395,7 @@ public class ImageControllerTest extends AbstractControllerTest {
         final Version version = versionDataInitializer.createData(TEST_VERSION_INDEX, testDocId);
 
         languageRepository.findAll().forEach(language -> {
-            final Image image = imageDataInitializer
+            final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRef);
 
             image.setAllLanguages(true);
@@ -404,10 +404,10 @@ public class ImageControllerTest extends AbstractControllerTest {
 
         imageRepository.findAll().forEach(image -> assertTrue(image.isAllLanguages()));
 
-        final Image newImage = imageRepository.findAll().get(0);
+        final ImageJPA newImage = imageRepository.findAll().get(0);
         newImage.setAllLanguages(false);
 
-        final ImageDTO imageDTO = imageToImageDTO.apply(newImage);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(newImage);
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(imageDTO);
         performRequestBuilderExpectedOk(requestBuilder);
@@ -420,10 +420,10 @@ public class ImageControllerTest extends AbstractControllerTest {
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, testDocId, TEST_VERSION_INDEX, loopEntryRef);
         image.setAllLanguages(true);
 
-        final ImageDTO expected = imageToImageDTO.apply(image);
+        final ImageDTO expected = imageJPAToImageDTO.apply(image);
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(expected);
         performRequestBuilderExpectedOk(requestBuilder);

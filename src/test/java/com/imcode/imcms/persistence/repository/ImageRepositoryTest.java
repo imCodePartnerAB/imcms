@@ -6,7 +6,7 @@ import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
 import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.dto.LoopDTO;
 import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -60,10 +60,10 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByVersionAndLanguageWhereLoopEntryRefIsNull() {
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
 
-        List<Image> images = imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, english);
+        List<ImageJPA> images = imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNull(version, english);
 
         assertTrue(images.size() > 0);
         assertEquals(imageEng, images.get(0));
@@ -81,10 +81,10 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
 
-        List<Image> images = imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, english);
+        List<ImageJPA> images = imageRepository.findByVersionAndLanguageWhereLoopEntryRefIsNotNull(version, english);
 
         assertTrue(images.size() > 0);
         assertEquals(imageEng, images.get(0));
@@ -97,9 +97,9 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findByVersionAndIndexWhereLoopEntryRefIsNull() {
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
-        final List<Image> images = imageRepository.findByVersionAndIndexWhereLoopEntryRefIsNull(version, 1);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
+        final List<ImageJPA> images = imageRepository.findByVersionAndIndexWhereLoopEntryRefIsNull(version, 1);
 
         assertTrue(images.contains(imageSwe) && images.contains(imageEng));
     }
@@ -110,20 +110,20 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
-        final List<Image> images = imageRepository.findByVersionAndIndexAndLoopEntryRef(version, 1, loopEntryRef);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
+        final List<ImageJPA> images = imageRepository.findByVersionAndIndexAndLoopEntryRef(version, 1, loopEntryRef);
 
         assertTrue(images.contains(imageSwe) && images.contains(imageEng));
     }
 
     @Test
     public void findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull() {
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
 
-        final Image imageEngResult = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, english, 1);
-        final Image imageSweResult = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, swedish, 1);
+        final ImageJPA imageEngResult = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, english, 1);
+        final ImageJPA imageSweResult = imageRepository.findByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, swedish, 1);
 
         assertEquals(imageSwe, imageSweResult);
         assertEquals(imageEng, imageEngResult);
@@ -135,11 +135,11 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
 
-        final Image imageEngResult = imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, english, 1, loopEntryRef);
-        final Image imageSweResult = imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, swedish, 1, loopEntryRef);
+        final ImageJPA imageEngResult = imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, english, 1, loopEntryRef);
+        final ImageJPA imageSweResult = imageRepository.findByVersionAndLanguageAndIndexAndLoopEntryRef(version, swedish, 1, loopEntryRef);
 
         assertEquals(imageSwe, imageSweResult);
         assertEquals(imageEng, imageEngResult);
@@ -147,8 +147,8 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull() {
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, null);
 
         final Integer imageEngId = imageRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, english, 1);
         final Integer imageSweId = imageRepository.findIdByVersionAndLanguageAndIndexWhereLoopEntryRefIsNull(version, swedish, 1);
@@ -163,8 +163,8 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
         loopDataInitializer.createData(loopDTO);
 
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
-        final Image imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, loopEntryRef);
+        final ImageJPA imageSwe = imageDataInitializer.generateImage(IMAGE_INDEX, swedish, version, loopEntryRef);
 
         final Integer imageEngId = imageRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, english, 1, loopEntryRef);
         final Integer imageSweId = imageRepository.findIdByVersionAndLanguageAndIndexAndLoopEntryRef(version, swedish, 1, loopEntryRef);
@@ -175,7 +175,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void findAllRegenerationCandidates_When_AllPossibleCasesExist_Expect_OnlyOneFound() {
-        final Image image = new Image(); // not empty url, genFile = null - should be found
+        final ImageJPA image = new ImageJPA(); // not empty url, genFile = null - should be found
         image.setIndex(1);
         image.setLanguage(swedish);
         image.setVersion(version);
@@ -184,7 +184,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image.setUrl("dummy");
         imageRepository.save(image);
 
-        final Image image1 = new Image(); // empty url, genFile = null - should not be found
+        final ImageJPA image1 = new ImageJPA(); // empty url, genFile = null - should not be found
         image1.setIndex(2);
         image1.setLanguage(swedish);
         image1.setVersion(version);
@@ -193,7 +193,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image1.setUrl("");
         imageRepository.save(image1);
 
-        final Image image2 = new Image(); // null url, genFile = null - should not be found
+        final ImageJPA image2 = new ImageJPA(); // null url, genFile = null - should not be found
         image2.setIndex(3);
         image2.setLanguage(swedish);
         image2.setVersion(version);
@@ -202,7 +202,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image2.setUrl("");
         imageRepository.save(image2);
 
-        final Image image3 = new Image(); // null url, empty genFile - should not be found
+        final ImageJPA image3 = new ImageJPA(); // null url, empty genFile - should not be found
         image3.setIndex(4);
         image3.setLanguage(swedish);
         image3.setVersion(version);
@@ -211,7 +211,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image3.setGeneratedFilename("");
         imageRepository.save(image3);
 
-        final Image image4 = new Image(); // null url, not empty genFile - should be found
+        final ImageJPA image4 = new ImageJPA(); // null url, not empty genFile - should be found
         image4.setIndex(5);
         image4.setLanguage(swedish);
         image4.setVersion(version);
@@ -220,7 +220,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image4.setGeneratedFilename("not_empty");
         imageRepository.save(image4);
 
-        final Image image5 = new Image(); // empty url, empty genFile - should not be found
+        final ImageJPA image5 = new ImageJPA(); // empty url, empty genFile - should not be found
         image5.setIndex(6);
         image5.setLanguage(swedish);
         image5.setVersion(version);
@@ -230,7 +230,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image5.setUrl("");
         imageRepository.save(image5);
 
-        final Image image6 = new Image(); // not empty url, not empty genFile - should be found
+        final ImageJPA image6 = new ImageJPA(); // not empty url, not empty genFile - should be found
         image6.setIndex(7);
         image6.setLanguage(swedish);
         image6.setVersion(version);
@@ -240,7 +240,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image6.setUrl("not_empty");
         imageRepository.save(image6);
 
-        final Image image7 = new Image(); // not empty url, empty genFile - should be found
+        final ImageJPA image7 = new ImageJPA(); // not empty url, empty genFile - should be found
         image7.setIndex(8);
         image7.setLanguage(swedish);
         image7.setVersion(version);
@@ -250,7 +250,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image7.setGeneratedFilename("");
         imageRepository.save(image7);
 
-        final Image image8 = new Image(); // empty url, not empty genFile - should be found
+        final ImageJPA image8 = new ImageJPA(); // empty url, not empty genFile - should be found
         image8.setIndex(9);
         image8.setLanguage(swedish);
         image8.setVersion(version);
@@ -260,7 +260,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
         image8.setGeneratedFilename("not_empty");
         imageRepository.save(image8);
 
-        final List<Image> images = new ArrayList<>(imageRepository.findAllRegenerationCandidates());
+        final List<ImageJPA> images = new ArrayList<>(imageRepository.findAllRegenerationCandidates());
 
         assertEquals(5, images.size());
         assertTrue(images.containsAll(Arrays.asList(image, image4, image6, image7, image8)));
@@ -268,8 +268,8 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteByVersionAndLanguage() {
-        final Image imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
-        List<Image> images = imageRepository.findAll();
+        final ImageJPA imageEng = imageDataInitializer.generateImage(IMAGE_INDEX, english, version, null);
+        List<ImageJPA> images = imageRepository.findAll();
 
         assertEquals(1, images.size());
         assertEquals(images.get(0), imageEng);
@@ -333,7 +333,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
             for (LanguageJPA language : languages) {
                 IntStream.range(IMAGE_INDEX, IMAGE_INDEX + imagesPerVersionPerLanguage)
                         .forEach(index -> {
-                            final Image image = new Image();
+                            final ImageJPA image = new ImageJPA();
                             image.setIndex(index);
                             image.setLanguage(language);
                             image.setVersion(version);
@@ -344,7 +344,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
                         });
                 IntStream.range(IMAGE_INDEX + imagesPerVersionPerLanguage, IMAGE_INDEX + (2 * imagesPerVersionPerLanguage))
                         .forEach(index -> {
-                            final Image image = new Image();
+                            final ImageJPA image = new ImageJPA();
                             image.setIndex(index);
                             image.setLanguage(language);
                             image.setVersion(version);
@@ -382,7 +382,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
             for (LanguageJPA language : languages) {
                 IntStream.range(IMAGE_INDEX, IMAGE_INDEX + imagesPerVersionPerLanguage)
                         .forEach(index -> {
-                            final Image image = new Image();
+                            final ImageJPA image = new ImageJPA();
                             image.setIndex(index);
                             image.setLanguage(language);
                             image.setVersion(version);
@@ -398,7 +398,7 @@ public class ImageRepositoryTest extends WebAppSpringTestConfig {
 
         for (Version version : versions) {
             for (LanguageJPA language : languages) {
-                Set<Image> images = imageRepository.findByVersionAndLanguage(version, language);
+                Set<ImageJPA> images = imageRepository.findByVersionAndLanguage(version, language);
 
                 assertFalse(images.isEmpty());
                 images.forEach(image -> assertTrue(image.getLinkUrl().startsWith(testLinkUrl)));

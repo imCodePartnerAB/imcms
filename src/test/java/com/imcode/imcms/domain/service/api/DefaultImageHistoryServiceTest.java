@@ -7,7 +7,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageHistoryDTO;
 import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
@@ -45,7 +45,7 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
     private LanguageDataInitializer languageDataInitializer;
 
     @Autowired
-    private Function<Image, ImageDTO> imageToImageDTO;
+    private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
 
     @BeforeAll
     public static void setUser() {
@@ -64,8 +64,8 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void saveImageHistory_WhenUsedInLoop_Expect_Saved() {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageHistoryService.save(image);
         imageHistoryService.save(image);
@@ -77,8 +77,8 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveImageHistory_WhenNotUsedInLoop_Expect_Saved() {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageHistoryService.save(image);
 
@@ -90,12 +90,12 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
     @Test
     public void findAll_When_UsingLoopImage_Expect_CorrectEntities() {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image generatedImage = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageJPA generatedImage = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
         generatedImage.setLanguage(languageRepository.findByCode(ImcmsConstants.SWE_CODE));
         imageHistoryService.save(generatedImage);
         imageHistoryService.save(generatedImage);
         imageHistoryService.save(generatedImage);
-        final ImageDTO imageDTO = imageToImageDTO.apply(generatedImage);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(generatedImage);
 
         final List<ImageHistoryDTO> actual = imageHistoryService.getAll(imageDTO);
 
@@ -109,12 +109,12 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void findAll_When_UsingNotLoopImage_Expect_CorrectEntities() {
-        final Image generatedImage = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
+        final ImageJPA generatedImage = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
         generatedImage.setLanguage(languageRepository.findByCode(ImcmsConstants.ENG_CODE));
         imageHistoryService.save(generatedImage);
         imageHistoryService.save(generatedImage);
         imageHistoryService.save(generatedImage);
-        final ImageDTO imageDTO = imageToImageDTO.apply(generatedImage);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(generatedImage);
 
         final List<ImageHistoryDTO> actual = imageHistoryService.getAll(imageDTO);
 

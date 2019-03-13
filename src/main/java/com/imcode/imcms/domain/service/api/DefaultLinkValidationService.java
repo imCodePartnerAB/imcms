@@ -16,7 +16,7 @@ import com.imcode.imcms.model.Document;
 import com.imcode.imcms.model.DocumentURL;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.Meta;
 import org.springframework.stereotype.Service;
 
@@ -152,7 +152,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
 
             for (Language language : languageService.getAll()) {
                 Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
-                Set<Image> images = imageService.getImagesAllVersionAndLanguages(doc.getId(), language);
+                Set<ImageJPA> images = imageService.getImagesAllVersionAndLanguages(doc.getId(), language);
                 for (Text text : publicTexts) {
                     EditLink editLink = new EditLink();
                     editLink.setMetaId(dtoFieldsDocument.getId());
@@ -174,7 +174,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                         validationLinks.addAll(validationLinksChecked(validateTextLink, patternUrl));
                     }
                 }
-                for (Image image : images) {
+                for (ImageJPA image : images) {
                     List<String> validUrls = getValidUrls(image.getLinkUrl(), patternUrl);
 
                     for (String url : validUrls) {

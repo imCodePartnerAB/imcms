@@ -5,8 +5,8 @@ import com.imcode.imcms.domain.dto.ImageHistoryDTO;
 import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.repository.ImageHistoryRepository;
@@ -38,7 +38,7 @@ public class DefaultImageHistoryService implements ImageHistoryService {
     }
 
     @Override
-    public void save(Image image) {
+    public void save(ImageJPA image) {
         final ImageHistoryJPA mappedHistory = new ImageHistoryJPA(
                 image,
                 userService.getUser(Imcms.getUser().getId()),

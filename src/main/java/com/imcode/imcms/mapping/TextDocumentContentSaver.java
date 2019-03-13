@@ -15,8 +15,8 @@ import com.imcode.imcms.mapping.container.VersionRef;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Text;
-import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -145,7 +145,7 @@ public class TextDocumentContentSaver {
      * Saves existing document image.
      */
     public void saveImage(TextDocImageContainer container) {
-        Image image = toJpaObject(container);
+        ImageJPA image = toJpaObject(container);
 
         saveImage(image, SaveMode.UPDATE);
     }
@@ -155,14 +155,14 @@ public class TextDocumentContentSaver {
 
         for (Map.Entry<com.imcode.imcms.api.DocumentLanguage, ImageDomainObject> e : container.getImages().entrySet()) {
             LanguageJPA language = findLanguage(e.getKey());
-            Image image = toJpaObject(e.getValue(), version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
+            ImageJPA image = toJpaObject(e.getValue(), version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveImage(image, SaveMode.UPDATE);
         }
 
         container.getImages().forEach((languageDO, imageDO) -> {
             LanguageJPA language = findLanguage(languageDO);
-            Image image = toJpaObject(imageDO, version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
+            ImageJPA image = toJpaObject(imageDO, version, language, container.getImageNo(), toJpaObject(container.getLoopEntryRef()));
 
             saveImage(image, SaveMode.UPDATE);
         });
@@ -203,7 +203,7 @@ public class TextDocumentContentSaver {
 
     private void saveImages(TextDocumentDomainObject doc, Version version, LanguageJPA language, SaveMode saveMode) {
         for (Map.Entry<Integer, ImageDomainObject> entry : doc.getImages().entrySet()) {
-            Image image = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
+            ImageJPA image = toJpaObject(entry.getValue(), version, language, entry.getKey(), null);
 
             saveImage(image, saveMode);
         }
@@ -212,7 +212,7 @@ public class TextDocumentContentSaver {
             TextDocumentDomainObject.LoopItemRef loopItemRef = entry.getKey();
             LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(loopItemRef.getLoopNo(), loopItemRef.getEntryNo());
 
-            Image image = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
+            ImageJPA image = toJpaObject(entry.getValue(), version, language, loopItemRef.getItemNo(), loopEntryRef);
 
             saveImage(image, saveMode);
         }
@@ -235,7 +235,7 @@ public class TextDocumentContentSaver {
         }
     }
 
-    private void saveImage(Image image, SaveMode saveMode) {
+    private void saveImage(ImageJPA image, SaveMode saveMode) {
         if (saveMode == SaveMode.UPDATE) {
             LoopEntryRefJPA loopEntryRef = image.getLoopEntryRef();
             Integer id = loopEntryRef == null
@@ -311,7 +311,7 @@ public class TextDocumentContentSaver {
         return text;
     }
 
-    private Image toJpaObject(TextDocImageContainer container) {
+    private ImageJPA toJpaObject(TextDocImageContainer container) {
         LanguageJPA language = findLanguage(container);
         Version version = findVersion(container);
         LoopEntryRefJPA loopEntryRef = toJpaObject(container.getLoopEntryRef());
@@ -319,13 +319,13 @@ public class TextDocumentContentSaver {
         return toJpaObject(container.getImage(), version, language, container.getImageNo(), loopEntryRef);
     }
 
-    private Image toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef) {
+    private ImageJPA toJpaObject(ImageDomainObject imageDO, Version version, LanguageJPA language, int no, LoopEntryRefJPA loopEntryRef) {
         ImageCropRegionDTO cropRegionDO = imageDO.getCropRegion();
         ImageCropRegionJPA cropRegion = cropRegionDO.isValid()
                 ? new ImageCropRegionJPA(cropRegionDO)
                 : new ImageCropRegionJPA(-1, -1, -1, -1);
 
-        Image image = new Image();
+        ImageJPA image = new ImageJPA();
 
         image.setIndex(no);
         image.setLanguage(language);

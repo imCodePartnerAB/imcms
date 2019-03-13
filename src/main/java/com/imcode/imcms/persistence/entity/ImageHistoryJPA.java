@@ -109,7 +109,7 @@ public class ImageHistoryJPA {
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
 
-    public ImageHistoryJPA(Image image, User modifiedBy, LocalDateTime modifiedAt) {
+    public ImageHistoryJPA(ImageJPA image, User modifiedBy, LocalDateTime modifiedAt) {
         this.version = image.getVersion();
         this.language = image.getLanguage();
         this.index = image.getIndex();

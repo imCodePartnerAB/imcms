@@ -22,8 +22,8 @@ import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
@@ -215,7 +215,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<Image, ImageDTO> imageToImageDTO(@Value("${ImageUrl}") String imagesPath) {
+    public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath) {
         final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator;
 
         return image -> {
@@ -261,10 +261,10 @@ class MappingConfig {
     }
 
     @Bean
-    public TernaryFunction<ImageDTO, Version, Language, Image> imageDtoToImage() {
+    public TernaryFunction<ImageDTO, Version, Language, ImageJPA> imageDTOToImageJPA() {
 
         return (imageDTO, version, language) -> {
-            final Image image = new Image();
+            final ImageJPA image = new ImageJPA();
 
             final String path = imageDTO.getPath();
             image.setUrl(!path.isEmpty() && path.startsWith("/") ? path.substring(1) : path);

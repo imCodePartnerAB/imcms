@@ -19,7 +19,7 @@ import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Version;
@@ -72,7 +72,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     private VersionDataInitializer versionDataInitializer;
 
     @Autowired
-    private Function<Image, ImageDTO> imageToImageDTO;
+    private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
 
     @Autowired
     private ImageDataInitializer imageDataInitializer;
@@ -124,8 +124,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getImage_When_LoopEntryRefIsNull_Expect_EqualResult() {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
         final ImageDTO resultImage = imageService.getImage(TEST_IMAGE_DTO);
 
         assertEquals(imageDTO, resultImage);
@@ -134,8 +134,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     @Test
     public void getImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
         final ImageDTO resultImage = imageService.getImage(imageDTO);
 
         assertEquals(imageDTO, resultImage);
@@ -143,8 +143,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveImage_When_LoopEntryRefIsNull_Expect_EqualResult() {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -155,8 +155,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveImage_When_LoopEntryRefIsNull_Expect_SavedHistory() {
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
         imageService.saveImage(imageDTO);
@@ -198,8 +198,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     @Test
     public void saveImage_When_LoopEntryRefIsNotNull_Expect_EqualResult() {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
 
@@ -211,8 +211,8 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     @Test
     public void saveImage_When_LoopEntryRefIsNotNull_Expect_SavedHistory() {
         final LoopEntryRefJPA loopEntryRef = new LoopEntryRefJPA(1, 1);
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
-        final ImageDTO imageDTO = imageToImageDTO.apply(image);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(imageDTO);
         imageService.saveImage(imageDTO);
@@ -308,17 +308,17 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
     @Test
     public void createVersionedContent() {
         int testImageIndex = TEST_IMAGE_INDEX;
-        final Image workingVersionImage = imageDataInitializer.createData(++testImageIndex, TEST_DOC_ID, VERSION_INDEX);
+        final ImageJPA workingVersionImage = imageDataInitializer.createData(++testImageIndex, TEST_DOC_ID, VERSION_INDEX);
 
         final Version latestVersion = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
 
         imageService.createVersionedContent(workingVersion, latestVersion);
 
-        final List<Image> latestVersionImages = imageRepository.findByVersion(latestVersion);
+        final List<ImageJPA> latestVersionImages = imageRepository.findByVersion(latestVersion);
 
         assertEquals(1, latestVersionImages.size());
 
-        final Image image = latestVersionImages.get(0);
+        final ImageJPA image = latestVersionImages.get(0);
 
         assertEquals(workingVersionImage.getGeneratedFilename(), image.getGeneratedFilename());
         assertEquals(workingVersionImage.getName(), image.getName());
@@ -391,7 +391,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
             for (LanguageJPA language : languages) {
                 IntStream.range(TEST_IMAGE_INDEX, TEST_IMAGE_INDEX + imagesPerVersionPerLanguage)
                         .forEach(index -> {
-                            final Image image = new Image();
+                            final ImageJPA image = new ImageJPA();
                             image.setIndex(index);
                             image.setLanguage(language);
                             image.setVersion(version);
@@ -402,7 +402,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
                         });
                 IntStream.range(TEST_IMAGE_INDEX + imagesPerVersionPerLanguage, TEST_IMAGE_INDEX + (2 * imagesPerVersionPerLanguage))
                         .forEach(index -> {
-                            final Image image = new Image();
+                            final ImageJPA image = new ImageJPA();
                             image.setIndex(index);
                             image.setLanguage(language);
                             image.setVersion(version);
@@ -482,10 +482,10 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        final Image image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, loopEntryRef);
         image.setAllLanguages(true);
 
-        final ImageDTO expected = imageToImageDTO.apply(image);
+        final ImageDTO expected = imageJPAToImageDTO.apply(image);
 
         imageService.saveImage(expected);
 
@@ -511,7 +511,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         languageService.getAll().forEach(language -> {
-            final Image image = imageDataInitializer
+            final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRef);
 
             image.setAllLanguages(true);
@@ -521,10 +521,10 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         assertEquals(languageRepository.findAll().size(), imageRepository.findAll().size());
         imageRepository.findAll().forEach(image -> assertTrue(image.isAllLanguages()));
 
-        final Image newImage = imageRepository.findAll().get(0);
+        final ImageJPA newImage = imageRepository.findAll().get(0);
         newImage.setAllLanguages(false);
 
-        imageService.saveImage(imageToImageDTO.apply(newImage));
+        imageService.saveImage(imageJPAToImageDTO.apply(newImage));
 
         imageRepository.findAll().forEach(image -> assertFalse(image.isAllLanguages()));
     }
@@ -537,18 +537,18 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
                 : null;
 
         languageService.getAll().forEach(language -> {
-            final Image image = imageDataInitializer
+            final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
 
             image.setAllLanguages(true);
             imageRepository.save(image);
         });
 
-        final List<Image> images = imageRepository.findAll();
+        final List<ImageJPA> images = imageRepository.findAll();
 
         assertEquals(languageRepository.findAll().size(), images.size());
 
-        imageService.deleteImage(imageToImageDTO.apply(images.get(0)));
+        imageService.deleteImage(imageJPAToImageDTO.apply(images.get(0)));
 
         assertEquals(0, imageRepository.findAll().size());
     }
@@ -561,22 +561,22 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
                 : null;
 
         languageService.getAll().forEach(language -> {
-            final Image image = imageDataInitializer
+            final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
 
             image.setAllLanguages(true);
             imageRepository.save(image);
         });
 
-        final List<Image> images = imageRepository.findAll();
+        final List<ImageJPA> images = imageRepository.findAll();
 
         assertEquals(languageRepository.findAll().size(), images.size());
 
-        final Image image = images.get(0);
+        final ImageJPA image = images.get(0);
         image.setAllLanguages(false);
 
         imageRepository.save(image);
-        imageService.deleteImage(imageToImageDTO.apply(image));
+        imageService.deleteImage(imageJPAToImageDTO.apply(image));
 
         imageRepository.findAll()
                 .forEach(imageJPA -> assertFalse(imageJPA.isAllLanguages()));

@@ -6,7 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
- * Image object used in Text Editor. Always has <b>negative</b> {@code index}.
+ * ImageJPA object used in Text Editor. Always has <b>negative</b> {@code index}.
  *
  * @author Serhii from Ubrainians for imCode
  * 13.02.2018.

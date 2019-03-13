@@ -9,8 +9,8 @@ import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageData.RotateDirection;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.ImageCropRegion;
-import com.imcode.imcms.persistence.entity.Image;
 import com.imcode.imcms.persistence.entity.ImageCacheDomainObject;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.servlet.ImcmsSetupFilter;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -451,7 +451,7 @@ public class ImcmsImageUtils {
         return exifInfo;
     }
 
-    public static ImageDomainObject toDomainObject(Image image) {
+    public static ImageDomainObject toDomainObject(ImageJPA image) {
         if (image == null) return null;
 
         final ImageDomainObject imageDO = new ImageDomainObject();
@@ -475,7 +475,7 @@ public class ImcmsImageUtils {
         return initImageSource(image, imageDO);
     }
 
-    private static ImageDomainObject initImageSource(Image jpaImage, ImageDomainObject imageDO) {
+    private static ImageDomainObject initImageSource(ImageJPA jpaImage, ImageDomainObject imageDO) {
         String url = jpaImage.getUrl();
         Integer type = jpaImage.getType();
 
@@ -491,7 +491,7 @@ public class ImcmsImageUtils {
         switch (type) {
             case ImageSource.IMAGE_TYPE_ID__FILE_DOCUMENT:
                 throw new IllegalStateException(
-                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. Image: %s", image)
+                        String.format("Illegal image source type - IMAGE_TYPE_ID__FILE_DOCUMENT. ImageJPA: %s", image)
                 );
 
             case ImageSource.IMAGE_TYPE_ID__IMAGES_PATH_RELATIVE_PATH:

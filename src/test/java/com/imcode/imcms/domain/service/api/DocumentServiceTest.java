@@ -37,7 +37,7 @@ import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.model.Role;
 import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.persistence.entity.Image;
+import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -628,7 +628,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
         menuDataInitializer.createData(false, index, workingVersion);
 
-        final Image image = imageDataInitializer.createData(index, workingVersion);
+        final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
         //get language from image to not use repo.
         createText(index, image.getLanguage(), workingVersion);
@@ -655,7 +655,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, menuByVersion.size());
         assertEquals(index, new ArrayList<>(menuByVersion).get(0).getNo());
 
-        final List<Image> imageByVersion = imageRepository.findByVersion(latestVersion);
+        final List<ImageJPA> imageByVersion = imageRepository.findByVersion(latestVersion);
         assertNotNull(imageByVersion);
         assertEquals(1, imageByVersion.size());
         assertEquals(index, new ArrayList<>(imageByVersion).get(0).getIndex());
@@ -699,7 +699,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
         menuDataInitializer.createData(false, index, workingVersion);
 
-        final Image image = imageDataInitializer.createData(index, workingVersion);
+        final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
         //get language from image to not use repo.
         createText(index, image.getLanguage(), workingVersion);
@@ -727,7 +727,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, menuByVersion.size());
         assertEquals(index, new ArrayList<>(menuByVersion).get(0).getNo());
 
-        final List<Image> imageByVersion = imageRepository.findByVersion(newVersion);
+        final List<ImageJPA> imageByVersion = imageRepository.findByVersion(newVersion);
         assertNotNull(imageByVersion);
         assertEquals(1, imageByVersion.size());
         assertEquals(index, new ArrayList<>(imageByVersion).get(0).getIndex());
