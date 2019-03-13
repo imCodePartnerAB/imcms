@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageData;
 import com.imcode.imcms.domain.dto.ImageFileDTO;
 import com.imcode.imcms.domain.dto.ImageFolderDTO;
+import com.imcode.imcms.domain.dto.ImageHistoryDTO;
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
@@ -23,6 +24,7 @@ import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
 import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
+import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LanguageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
@@ -255,6 +257,54 @@ class MappingConfig {
             dto.setRotateDirection(ImageData.RotateDirection.fromAngle(image.getRotateAngle()));
             dto.setArchiveImageId(image.getArchiveImageId());
             dto.setResize(Resize.getByOrdinal(image.getResize()));
+
+            return dto;
+        };
+    }
+
+    @Bean
+    public Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO(@Value("${ImageUrl}") String imagesPath) {
+        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator;
+
+        return image -> {
+            final ImageHistoryDTO dto = new ImageHistoryDTO();
+
+            dto.setIndex(image.getIndex());
+            dto.setName(image.getName());
+            dto.setDocId(image.getVersion().getDocId());
+            dto.setLangCode(image.getLanguage().getCode());
+            dto.setPath(image.getUrl());
+            dto.setAllLanguages(image.isAllLanguages());
+
+            dto.setExifInfo(ImcmsImageUtils.getExifInfo(image.getUrl()));
+
+            final boolean filenameExists = (image.getGeneratedFilename() != null)
+                    && !image.getGeneratedFilename().equals("");
+
+            final String generatedFilePath = filenameExists ? (generatedImagesPath + image.getGeneratedFilename()) : "";
+
+            dto.setGeneratedFilePath(generatedFilePath);
+            dto.setGeneratedFilename(image.getGeneratedFilename());
+            dto.setFormat(image.getFormat());
+            dto.setHeight(image.getHeight());
+            dto.setWidth(image.getWidth());
+            Optional.ofNullable(image.getLoopEntryRef()).map(LoopEntryRefDTO::new).ifPresent(dto::setLoopEntryRef);
+            dto.setCropRegion(new ImageCropRegionDTO(image.getCropRegion()));
+            dto.setInText(image.isInText());
+            dto.setAlternateText(image.getAlternateText());
+            dto.setLinkUrl(image.getLinkUrl());
+            dto.setBorder(image.getBorder());
+            dto.setAlign(image.getAlign());
+            dto.setLowResolutionUrl(image.getLowResolutionUrl());
+            dto.setSpaceAround(image.getSpaceAround());
+            dto.setTarget(image.getTarget());
+            dto.setType(image.getType());
+            dto.setRotateAngle(image.getRotateAngle());
+            dto.setRotateDirection(ImageData.RotateDirection.fromAngle(image.getRotateAngle()));
+            dto.setArchiveImageId(image.getArchiveImageId());
+            dto.setResize(Resize.getByOrdinal(image.getResize()));
+            dto.setModifiedAt(image.getModifiedAt());
+            dto.setModifiedBy(image.getModifiedBy());
 
             return dto;
         };
