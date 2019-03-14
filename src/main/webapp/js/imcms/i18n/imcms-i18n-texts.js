@@ -544,7 +544,7 @@ const texts = {
                 saveButton: 'Save',
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
-                duplicateErrorName: 'There is already a category type with the name. Please choose a different name!',
+                duplicateErrorName: 'Category exists. Please choose a different name!',
                 sections: {
                     createCategoryType: {
                         title: 'Create category type',
@@ -1173,7 +1173,7 @@ const texts = {
                     validationFailed: 'Failed to validate. Try again'
                 }
             },
-            categories: {
+            tabCategories: {
                 name: 'Categories',
                 titleCategoryType: "Category type",
                 titleCategory: "Category",
@@ -1186,7 +1186,7 @@ const texts = {
                 saveButton: 'Save',
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
-                duplicateErrorName: 'There is already a category type with the name. Please choose a different name!',
+                duplicateErrorName: 'This is name exists. Please choose a different name!',
                 sections: {
                     createCategoryType: {
                         title: 'Create category type',
@@ -1195,9 +1195,6 @@ const texts = {
                         imageArchive: 'Used by image archive',
                         singleSelect: 'Single select',
                         multiSelect: 'Multi select'
-                    },
-                    removeCategoryType: {
-                        removeButton: 'Remove'
                     },
                     createCategory: {
                         title: 'Create category',
