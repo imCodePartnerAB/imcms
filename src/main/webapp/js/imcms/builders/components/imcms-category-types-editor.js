@@ -10,7 +10,7 @@ define(
     ],
     function (BEM, components, texts, typesRestApi, $, modal) {
 
-        texts = texts.superAdmin.categories;
+        texts = texts.superAdmin.tabCategories;
 
         let $typeNameRow;
         let $inherited;
@@ -19,6 +19,7 @@ define(
         let $multiSelect;
         let errorMsg;
         let $categoryTypeSaveButtons;
+        let $editCategoryTypeButtons;
 
         function buildTypeNameRow() {
             $typeNameRow = components.texts.textBox('<div>', {
@@ -84,7 +85,7 @@ define(
                         $categoryTypeItem.remove();
                         currentCategoryType = null;
                         onEditDelegate = onSimpleEdit;
-                        //$container.slideUp();
+                        $container.slideUp();
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
@@ -99,7 +100,7 @@ define(
             let currentCtgTypeToSave = {
                 id: currentCategoryType.id,
                 name: name,
-                inherited: inherited,
+                inherited: inherited, // add permissions!!
                 imageArchive: imageArchive
             };
 
@@ -139,14 +140,37 @@ define(
             };
         }
 
-        function buildCategoryTypeSaveCancelButtons() {
+        function buildCategoryTypeEditButtons() {
             return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
                     text: texts.saveButton,
                     click: onSaveCategoryType
                 }),
                 components.buttons.negativeButton({
-                    text: texts.sections.removeCategoryType.removeButton,
+                    text: texts.cancelButton,
+                    click: getOnDiscardChanges(() => {
+                        $categoryTypeSaveButtons.slideUp();
+                        $editCategoryTypeButtons.slideDown();
+                    })
+                })
+            ], {
+                style: 'display: none;'
+            });
+        }
+
+        function buildCategoryTypeViewButtons() {
+            return $editCategoryTypeButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.positiveButton({
+                    text: texts.editButtonName,
+                    click: function () {
+                        $editCategoryTypeButtons.css('display', 'none;').slideUp();
+                        $categoryTypeSaveButtons.css('display', 'inline-block').slideDown();
+                        $typeNameRow.$input.removeAttr('disabled', 'disabled').focus();
+
+                    }
+                }),
+                components.buttons.negativeButton({
+                    text: texts.removeButtonName,
                     click: onDeleteCategoryType
                 })
             ]);
@@ -192,7 +216,8 @@ define(
                     'inherited': buildInheriteNewDocsCheckBox(),
                     'imageArchive': buildImageArchiveCheckBox(),
                     'error-row': buildErrorBlock(),
-                    'ctg-type-button-save': buildCategoryTypeSaveCancelButtons()
+                    'ctg-type-view-button': buildCategoryTypeViewButtons(),
+                    'ctg-type-edit-button': buildCategoryTypeEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
