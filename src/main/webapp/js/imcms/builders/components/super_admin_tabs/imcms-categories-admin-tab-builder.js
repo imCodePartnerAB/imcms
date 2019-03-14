@@ -12,14 +12,14 @@ define(
     function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor,
               modal) {
 
-        texts = texts.superAdmin.categories;
+        texts = texts.superAdmin.tabCategories;
 
         let createContainer;
         let currentCtgType;
-        let editorContainer;
         let categoryCreateContainer;
         let currentCategory;
         let categoriesList;
+
         function buildDropDownListCategoriesTypes() {
             const onCategoryTypeSelected = values => {
                 typesRestApi.getById(values)
@@ -39,11 +39,6 @@ define(
                             $('.categories-block').remove();
                             $('.category-types-block').append(buildCategoriesContainer(values));
                             categoriesList.slideDown();
-                            if (categoryCreateContainer) {
-                                editorContainer.css('display', 'none').slideUp();
-                            } else {
-                                editorContainer.slideDown();
-                            }
                         }
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
@@ -56,6 +51,8 @@ define(
                 text: texts.chooseType,
                 onSelected: onCategoryTypeSelected
             });
+
+            categoryTypeSelected = categoryTypeSelect.getSelect();
 
             typesRestApi.read()
                 .done(ctgTypes => {
@@ -71,19 +68,27 @@ define(
             return categoryTypeSelect;
         }
 
+        let categorySelected;
+        let categoryTypeSelected;
         function buildDropDownListCategories(id) {
 
             let onCategorySelected = function (value) {
                 categoriesRestApi.getById(value).done(function (category) {
                     currentCategory = category;
-                    typeEditor.editCategoryType($('<div>'), {
-                        id: currentCategory.id,
-                        name: currentCategory.name,
-                        description: currentCategory.description,
-                        icon: currentCategory.icon,
-                        type: currentCtgType,
-                    });
-                })
+                    let categoryObj = {
+                        name: $categoryNameRow.setValue(currentCategory.name),
+                        description: categoryDescription.setValue(currentCategory.description),
+                        imageUrl: categoryUrlIcon.setValue(currentCategory.imageUrl),
+                        type: currentCtgType
+                    };
+                    if (createContainer) {
+                        createContainer.css('display', 'none').slideUp();
+                    }
+                    categoryCreateContainer.slideDown();
+
+                    return categoryObj;
+
+                }).fail(() => modal.buildErrorWindow(texts.error.category.loadFailed));
             };
 
             let categorySelect = components.selects.selectContainer('<div>', {
@@ -93,6 +98,8 @@ define(
                 text: texts.chooseCategory,
                 onSelected: onCategorySelected
             });
+
+            categorySelected = categorySelect.getSelect();
 
             categoriesRestApi.getCategoriesByCategoryTypeId(id).done(function (categories) {
 
@@ -131,14 +138,14 @@ define(
         }
 
         function onCreateNewCategoryType() {
-            createContainer.css('display', 'inline-block').slideDown();
-            typeEditor.viewCategoryType($('<div>'), {
+            showCtgTypeCreateContainer();
+            typeEditor.editCategoryType($('<div>'), {
                 id: null,
                 name: '',
-                singleSelect: null,
-                multiSelect: null,
-                inherited: null,
-                imageArchive: null
+                singleSelect: false,
+                multiSelect: false,
+                inherited: false,
+                imageArchive: false
 
             });
         }
@@ -146,51 +153,6 @@ define(
         function showCtgTypeCreateContainer() {
             createContainer = typeEditor.buildCategoryTypeCreateContainer();
             return createContainer;
-        }
-
-
-        function buildEditorCtgTypeButtonsContainer() {
-
-            function onEditCurrentCtgType() {
-
-            }
-
-            function buildCategoryTypeEditButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.editButtonName,
-                    click: onEditCurrentCtgType
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            function onRemoveCtgType() {
-
-                typesRestApi.remove(currentCtgType)
-                    .done(() => {
-                        currentCtgType = null;
-                        editorContainer.slideUp();
-                        createContainer.slideUp();
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.categoryType.error.removeFailed));
-            }
-
-            function buildCategoryTypeRemoveButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.removeButtonName,
-                    click: onRemoveCtgType
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return editorContainer = new BEM({
-                block: 'upgrade-block',
-                elements: {
-                    'edit-button': buildCategoryTypeEditButton(),
-                    'remove-button': buildCategoryTypeRemoveButton()
-                }
-            }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
         function buildCategoryTypeButtonsContainer() {
@@ -213,17 +175,53 @@ define(
 
         }
 
-        function buildEditorCategoryButtonsContainer() {
-
-        }
-
         let $categoryNameRow;
         let categoryDescription;
         let categoryUrlIcon;
         let categorySaveButton;
-        let categoryEditButtons;
+        let categoryViewButtons;
+        let errorDuplicateMessage;
+
+        function buildErrorBlock() {
+            errorDuplicateMessage = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
+            return errorDuplicateMessage;
+        }
 
         function onSaveCategory() {
+            let name = $categoryNameRow.getValue();
+            let description = categoryDescription.getValue();
+            let imageUrl = categoryUrlIcon.getValue();
+            let categoryType = currentCtgType;
+
+            let currentCategoryToSave = {
+                id: currentCategory.id,
+                name: name,
+                description: description,
+                imageUrl: imageUrl,
+                type: categoryType
+            };
+
+            if (currentCategoryToSave.id) { // to do
+                categoriesRestApi.replace(currentCategoryToSave)
+                    .done(savedCategory => {
+                        currentCategory = savedCategory;
+                        categorySelected.find('category-create-block__row-name').text(currentCategory.name);
+                        description.find('category-create-block__row-description').text(currentCategory.description);
+                        imageUrl.find('category-create-block__list-category-types').text(currentCategory.imageUrl);
+                        categoryType.find('').setValue(currentCategory.type);
+                    })
+                    .fail(() => {
+                        errorDuplicateMessage.css('display', 'inline-block').slideDown();
+                    });
+            } else {
+                categoriesRestApi.create(currentCategoryToSave) // to do
+                    .done(category => {
+                        categorySelected = category;
+                    })
+                    .fail(() => {
+                        errorDuplicateMessage.css('display', 'inline-block').slideDown();
+                    });
+            }
 
         }
 
@@ -242,7 +240,7 @@ define(
                 $categoryNameRow = components.texts.textBox('<div>', {
                     text: texts.sections.createCategory.name
                 });
-
+                $categoryNameRow.$input.attr('disabled', 'disabled');
                 return $categoryNameRow;
             }
 
@@ -251,6 +249,7 @@ define(
                     text: texts.sections.createCategory.description
                 });
 
+                categoryDescription.$input.attr('disabled', 'disabled');
                 return categoryDescription;
             }
 
@@ -259,53 +258,79 @@ define(
                     text: texts.sections.createCategory.icon
                 });
 
+                categoryUrlIcon.$input.attr('disabled', 'disabled');
                 return categoryUrlIcon;
+            }
+
+            function dropDownListCategoryTypesForCategory() {
+                let categoryTypeSelect = components.selects.selectContainer('<div>', {
+                    id: "types-id",
+                    name: "types-name",
+                    emptySelect: true,
+                    text: texts.chooseType,
+                });
+
+                typesRestApi.read()
+                    .done(ctgTypes => {
+                        let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
+                            text: categoryType.name,
+                            'data-value': categoryType.id
+                        }));
+
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect());
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage));
+
+                return categoryTypeSelect;
+            }
+
+            function onRemoveCategory() {
+                modal.buildModalWindow('delete?', confirmed => {
+                    if (!confirmed) return;
+
+                    categoriesRestApi.remove(currentCategory)
+                        .done(() => {
+                            currentCategory = null;
+                            categoryCreateContainer.slideUp();
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+                });
             }
 
             function buildSaveAndCancelContainer() {
                 return categorySaveButton = components.buttons.buttonsContainer('<div>', [
                     components.buttons.saveButton({
                         text: texts.saveButton,
-                        style: 'display: none;',
                         click: onSaveCategory
-                    }),
-                    components.buttons.negativeButton({
-                        text: 'remove',
-                        style: 'display: none;',
-                        click: function () {
-
-                        }
-                    })
-                ]);
-            }
-
-            function buildEditAndCancelButtons() {
-                return categoryEditButtons = components.buttons.buttonsContainer('<div>', [
-                    components.buttons.saveButton({
-                        text: 'Edit',
-                        click: function () {
-                            categoryEditButtons.css('display', 'none').slideUp();
-                            categorySaveButton.css('display', 'inline-block').slideDown();
-                        }
                     }),
                     components.buttons.negativeButton({
                         text: texts.cancelButton,
                         click: getOnWarnCancel(() => {
-                            //onCategoryTypeView = onCategoryTypeSimpleView;
-
-                            if (currentCategory) {
-                                // prepareCategoryTypeView();
-                                // $container.slideUp();
-
-                            } else {
-                                // currentCategory = null;
-                                // $container.slideUp();
-                            }
+                            categorySaveButton.slideUp();
+                            categoryViewButtons.slideDown();
                         })
+                    })
+                ], {
+                    style: 'display: none;'
+                })
+            }
+
+            function buildCategoryViewButtons() {
+                return categoryViewButtons = components.buttons.buttonsContainer('<div>', [
+                    components.buttons.positiveButton({
+                        text: texts.editButtonName,
+                        click: function () {
+                            categoryViewButtons.css('display', 'none').slideUp();
+                            categorySaveButton.css('display', 'inline-block').slideDown();
+                        }
+                    }),
+                    components.buttons.negativeButton({
+                        text: texts.removeButtonName,
+                        click: onRemoveCategory
                     })
                 ]);
             }
-            
+
             return categoryCreateContainer = new BEM({
                 block: 'category-create-block',
                 elements: {
@@ -313,18 +338,20 @@ define(
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
                     'row-url-image': buildCategoryIconRow(),
-                    'list-category-types': buildDropDownListCategoriesTypes(),
-                    'edit-cancel-buttons': buildEditAndCancelButtons(),
+                    'list-category-types': dropDownListCategoryTypesForCategory(),
+                    'error-duplicate': buildErrorBlock(),
+                    'edit-cancel-buttons': buildCategoryViewButtons(),
                     'save-cancel-buttons': buildSaveAndCancelContainer()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
-        function buildCategoryEditButtonsContainer() {
+        function buildCategoryCreateButtonContainer() {
 
             function openCreateContainer() {
-                createContainer.css('display', 'none');
-                editorContainer.css('display', 'none'); //todo fix it need add all in one block BEM, (edit,save, create buttons and fields)
+                alert('open create category!');
+                createContainer.css('display', 'none').slideUp();
+                //editorContainer.css('display', 'none'); //todo fix it need add all in one block BEM, (edit,save, create buttons and fields)
                 return categoryCreateContainer.css('display', 'inline-block').slideDown();
             }
 
@@ -337,59 +364,20 @@ define(
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
-            function buildCategoryEditButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.editButtonName,
-                    click: () => {
-
-                    }
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-
-            function buildCategoryRemoveButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.removeButtonName,
-                    click: () => {
-
-                    }
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-
-            function buildCategoryViewButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.viewButtonName,
-                    click: () => {
-
-                    }
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
             return new BEM({
-                block: 'category-buttons-block',
+                block: 'create-button-block',
                 elements: {
                     'title': $('<div>', {text: texts.titleCategory}),
                     'create': buildCategoryCreateButton(),
-                    'edit': buildCategoryEditButton(),
-                    'remove': buildCategoryRemoveButton(),
-                    'view': buildCategoryViewButton()
                 }
             }).buildBlockStructure('<div>');
         }
 
         return new SuperAdminTab(texts.name, [
             buildCategoryTypeButtonsContainer(),
-            buildCategoryEditButtonsContainer(),
+            buildCategoryCreateButtonContainer(),
             buildViewCtgTypesContainer(),
             showCtgTypeCreateContainer(),
-            buildEditorCtgTypeButtonsContainer(),
             buildCategoryCreateContainer()
         ]);
     }
