@@ -3,12 +3,14 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
 import com.imcode.imcms.components.datainitializer.LanguageDataInitializer;
+import com.imcode.imcms.components.datainitializer.VersionDataInitializer;
 import com.imcode.imcms.domain.dto.ImageDTO;
 import com.imcode.imcms.domain.dto.ImageHistoryDTO;
 import com.imcode.imcms.domain.service.ImageHistoryService;
 import com.imcode.imcms.model.Roles;
 import com.imcode.imcms.persistence.entity.ImageJPA;
 import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
+import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.LanguageRepository;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -43,6 +45,8 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
     private ImageDataInitializer imageDataInitializer;
     @Autowired
     private LanguageDataInitializer languageDataInitializer;
+    @Autowired
+    private VersionDataInitializer versionDataInitializer;
 
     @Autowired
     private Function<ImageJPA, ImageDTO> imageJPAToImageDTO;
@@ -57,6 +61,7 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void setUp() {
         imageDataInitializer.cleanRepositories();
+        versionDataInitializer.cleanRepositories();
         languageDataInitializer.cleanRepositories();
         languageDataInitializer.createData();
     }
@@ -81,6 +86,19 @@ public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
         final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
 
         imageHistoryService.save(image);
+
+        final List<ImageHistoryDTO> actual = imageHistoryService.getAll(imageDTO);
+
+        assertEquals(1, actual.size());
+    }
+
+    @Test
+    public void saveImageHistory_WhenUsedDTOObject_Expect_Saved() {
+        final ImageJPA image = imageDataInitializer.createData(TEST_IMAGE_INDEX, TEST_DOC_ID, VERSION_INDEX, null);
+        final ImageDTO imageDTO = imageJPAToImageDTO.apply(image);
+        final Version version = versionDataInitializer.createData(VERSION_INDEX + 1, TEST_DOC_ID);
+
+        imageHistoryService.save(imageDTO, languageRepository.findByCode(ImcmsConstants.ENG_CODE), version);
 
         final List<ImageHistoryDTO> actual = imageHistoryService.getAll(imageDTO);
 
