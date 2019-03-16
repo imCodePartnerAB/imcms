@@ -12,21 +12,14 @@ define(
 
         texts = texts.superAdmin.tabCategories;
 
-        let $typeNameRow;
-        let $inherited;
-        let $imageArchive;
-        let $singleSelect;
-        let $multiSelect;
-        let errorMsg;
-        let $categoryTypeSaveButtons;
-        let $editCategoryTypeButtons;
+        let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, errorMsg, $categoryTypeSaveButtons,
+            $categoryTypeEditButtons, valueRadios, radioButtonsGroup;
 
         function buildTypeNameRow() {
             $typeNameRow = components.texts.textBox('<div>', {
                 text: texts.sections.createCategoryType.name
             });
-
-            $typeNameRow.$input.attr('disabled', 'disabled');
+            //$typeNameRow.$input.attr('disabled', 'disabled');
             return $typeNameRow;
         }
 
@@ -35,30 +28,35 @@ define(
             return errorMsg;
         }
 
-        function buildInheriteNewDocsCheckBox() {
-            return $inherited = components.checkboxes.imcmsCheckbox('<div>', {
-                disabled: 'disabled',
-                text: texts.sections.createCategoryType.inherited,
-            });
+
+        function buildCategoryTypeProperty() {
+
+            return $isInherited = components.checkboxes.imcmsCheckbox("<div>", {
+                text: texts.sections.createCategoryType.inherited
+            })
         }
 
-        function buildImageArchiveCheckBox() {
-            return $imageArchive = components.checkboxes.imcmsCheckbox('<div>', {
-                disabled: 'disabled',
-                text: texts.sections.createCategoryType.imageArchive,
-            });
-        }
+        function buildCategoryTypeSelectionModes() {
 
-        function buildSingleSelectRadioButton() {
-            return $singleSelect = components.radios.imcmsRadio('<div>', {
-                text: texts.sections.createCategoryType.singleSelect,
-            });
-        }
+            valueRadios = [
+                $isSingleSelect = components.radios.imcmsRadio("<div>", {
+                    text: texts.sections.createCategoryType.singleSelect,
+                    name: 'select',
+                    value: 'single-select',
+                }),
+                $isMultiSelect = components.radios.imcmsRadio("<div>", {
+                    text: texts.sections.createCategoryType.multiSelect,
+                    name: 'select',
+                    value: 'multi-select',
+                }),
+            ];
 
-        function buildMultiSelectRadioButton() {
-            return $multiSelect = components.radios.imcmsRadio('<div>', {
-                text: texts.sections.createCategoryType.multiSelect,
-            });
+            radioButtonsGroup = components.radios.group($isSingleSelect, $isMultiSelect);
+
+
+            return components.radios.radioContainer(
+                '<div>', valueRadios, {}
+            );
         }
 
         function onCancelChanges($categoryTypeElement, categoryType) {
@@ -73,7 +71,19 @@ define(
 
         function onEditCategoryType() {
             onCategoryTypeView = onCancelChanges;
+
+            $categoryTypeEditButtons.slideUp();
             $categoryTypeSaveButtons.slideDown();
+
+            // $typeNameRow.$input.removeAttr('disabled').focus();
+            //
+            // valueCheckboxes$.forEach($checkbox => {
+            //     $checkbox.$input.removeAttr('disabled');
+            // });
+            //
+            // valueRadios.forEach($radios => {
+            //     $radios.$input.removeAttr('disabled');
+            // });
         }
 
         function onDeleteCategoryType() {
@@ -93,24 +103,34 @@ define(
 
 
         function onSaveCategoryType() {
+            let ckeckValue = radioButtonsGroup.getCheckedValue();
+
             let name = $typeNameRow.getValue();
-            let inherited = $inherited.isChecked();
-            let imageArchive = $imageArchive.isChecked();
+            let inherited = $isInherited.isChecked();
+
+            if (!name) {
+                $typeNameRow.$input.focus();
+                return;
+            }
 
             let currentCtgTypeToSave = {
                 id: currentCategoryType.id,
                 name: name,
-                inherited: inherited, // add permissions!!
-                imageArchive: imageArchive
+                singleSelect: (ckeckValue === 'single-select'), // foreach
+                multiSelect: (ckeckValue === 'multi-select'),
+                inherited: inherited,
+
             };
 
             if (currentCtgTypeToSave.id) {
                 typesRestApi.replace(currentCtgTypeToSave)
                     .done(savedCategoryType => {
-                        currentCategoryType = savedCategoryType;
-                        $categoryTypeItem.find('type-create-block__field-name').text(currentCategoryType.name);
-                        $inherited.find('type-create-block__inherited').setChecked(currentCategoryType.inherited);
-                        $imageArchive.find('type-create-block__imageArchive').setChecked(currentCategoryType.imageArchive);
+                        currentCategoryType.id = savedCategoryType.id;
+                        currentCategoryType.name = savedCategoryType.name;
+                        currentCategoryType.singleSelect = savedCategoryType.singleSelect;
+                        currentCategoryType.multiSelect = savedCategoryType.multiSelect;
+                        currentCategoryType.inherited = savedCategoryType.inherited;
+
                         onCategoryTypeView = onCategoryTypeSimpleView;
                         prepareCategoryTypeView();
                     })
@@ -121,6 +141,8 @@ define(
                 typesRestApi.create(currentCtgTypeToSave)
                     .done(function (categoryType) {
                         $categoryTypeItem = categoryType;
+
+                        console.log(inherited + ' let inhereted');
 
                         onCategoryTypeView = onCategoryTypeSimpleView;
                         prepareCategoryTypeView();
@@ -140,7 +162,7 @@ define(
             };
         }
 
-        function buildCategoryTypeEditButtons() {
+        function buildCategoryTypeSaveButtons() {
             return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
                     text: texts.saveButton,
@@ -150,7 +172,7 @@ define(
                     text: texts.cancelButton,
                     click: getOnDiscardChanges(() => {
                         $categoryTypeSaveButtons.slideUp();
-                        $editCategoryTypeButtons.slideDown();
+                        $categoryTypeEditButtons.slideDown();
                     })
                 })
             ], {
@@ -158,16 +180,11 @@ define(
             });
         }
 
-        function buildCategoryTypeViewButtons() {
-            return $editCategoryTypeButtons = components.buttons.buttonsContainer('<div>', [
+        function buildCategoryTypeEditButtons() {
+            return $categoryTypeEditButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.positiveButton({
                     text: texts.editButtonName,
-                    click: function () {
-                        $editCategoryTypeButtons.css('display', 'none;').slideUp();
-                        $categoryTypeSaveButtons.css('display', 'inline-block').slideDown();
-                        $typeNameRow.$input.removeAttr('disabled', 'disabled').focus();
-
-                    }
+                    click: onEditCategoryType
                 }),
                 components.buttons.negativeButton({
                     text: texts.removeButtonName,
@@ -181,12 +198,11 @@ define(
             onEditDelegate = onSimpleEdit;
 
             $typeNameRow.setValue(currentCategoryType.name);
-            $singleSelect.setChecked(currentCategoryType.singleSelect);
-            $multiSelect.setChecked(currentCategoryType.multiSelect);
-            $inherited.setChecked(currentCategoryType.inherited);
-            $imageArchive.setChecked(currentCategoryType.imageArchive);
+            $isSingleSelect.setChecked((currentCategoryType.multiSelect === false));
+            $isMultiSelect.setChecked(currentCategoryType.multiSelect);
+            $isInherited.setChecked(currentCategoryType.inherited);
 
-            $categoryTypeSaveButtons.slideDown('fast');
+            $categoryTypeSaveButtons.slideDown();
 
             $container.css('display', 'inline-block');
             errorMsg.css('display', 'none').slideUp();
@@ -206,18 +222,17 @@ define(
         var onCategoryTypeView = onCategoryTypeSimpleView;
 
         function buildCreateCategoryTypeContainer() {
+
             return $container || ($container = new BEM({
                 block: 'type-create-block',
                 elements: {
                     'title-row': $('<div>', {text: texts.sections.createCategoryType.title}),
                     'field-name': buildTypeNameRow(),
-                    'single-select': buildSingleSelectRadioButton(),
-                    'multi-select': buildMultiSelectRadioButton(),
-                    'inherited': buildInheriteNewDocsCheckBox(),
-                    'imageArchive': buildImageArchiveCheckBox(),
+                    'selection-modes': buildCategoryTypeSelectionModes(),
+                    'properties': buildCategoryTypeProperty(),
                     'error-row': buildErrorBlock(),
-                    'ctg-type-view-button': buildCategoryTypeViewButtons(),
-                    'ctg-type-edit-button': buildCategoryTypeEditButtons()
+                    'ctg-type-view-button': buildCategoryTypeEditButtons(),
+                    'ctg-type-edit-button': buildCategoryTypeSaveButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
