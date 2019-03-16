@@ -14,7 +14,7 @@ define(
 
         texts = texts.superAdmin.tabCategories;
 
-        let createContainer;
+        let createTypeContainer;
         let currentCtgType;
         let categoryCreateContainer;
         let currentCategory;
@@ -31,7 +31,6 @@ define(
                             singleSelect: ctgType.singleSelect,
                             multiSelect: ctgType.multiSelect,
                             inherited: ctgType.inherited,
-                            imageArchive: ctgType.imageArchive,
 
                         });
 
@@ -70,20 +69,19 @@ define(
 
         let categorySelected;
         let categoryTypeSelected;
-        function buildDropDownListCategories(id) {
 
+        function buildDropDownListCategories(id) {
             let onCategorySelected = function (value) {
                 categoriesRestApi.getById(value).done(function (category) {
                     currentCategory = category;
                     let categoryObj = {
                         name: $categoryNameRow.setValue(currentCategory.name),
                         description: categoryDescription.setValue(currentCategory.description),
-                        imageUrl: categoryUrlIcon.setValue(currentCategory.imageUrl),
                         type: currentCtgType
                     };
-                    if (createContainer) {
-                        createContainer.css('display', 'none').slideUp();
-                    }
+
+                    createTypeContainer.css('display', 'none').slideUp();
+
                     categoryCreateContainer.slideDown();
 
                     return categoryObj;
@@ -128,7 +126,7 @@ define(
 
         let buildShowCategoryType;
 
-        function buildViewCtgTypesContainer() {
+        function buildDropListCtgTypesContainer() {
             return buildShowCategoryType = new BEM({
                 block: 'category-types-block',
                 elements: {
@@ -138,21 +136,20 @@ define(
         }
 
         function onCreateNewCategoryType() {
-            showCtgTypeCreateContainer();
+            if (currentCtgType) {
+                return;
+            }
             typeEditor.editCategoryType($('<div>'), {
                 id: null,
                 name: '',
-                singleSelect: false,
+                singleSelect: true,
                 multiSelect: false,
                 inherited: false,
-                imageArchive: false
-
             });
         }
 
-        function showCtgTypeCreateContainer() {
-            createContainer = typeEditor.buildCategoryTypeCreateContainer();
-            return createContainer;
+        function buildCtgTypeCreateContainer() {
+            return createTypeContainer = typeEditor.buildCategoryTypeCreateContainer();
         }
 
         function buildCategoryTypeButtonsContainer() {
@@ -178,8 +175,8 @@ define(
         let $categoryNameRow;
         let categoryDescription;
         let categoryUrlIcon;
-        let categorySaveButton;
-        let categoryViewButtons;
+        let categorySaveButtons;
+        let categoryEditButtons;
         let errorDuplicateMessage;
 
         function buildErrorBlock() {
@@ -191,30 +188,31 @@ define(
             let name = $categoryNameRow.getValue();
             let description = categoryDescription.getValue();
             let imageUrl = categoryUrlIcon.getValue();
-            let categoryType = currentCtgType;
 
+            if (!name) {
+                $categoryNameRow.$input.focus();
+                return;
+            }
             let currentCategoryToSave = {
                 id: currentCategory.id,
                 name: name,
                 description: description,
                 imageUrl: imageUrl,
-                type: categoryType
             };
 
-            if (currentCategoryToSave.id) { // to do
+            if (currentCategoryToSave.id) {
                 categoriesRestApi.replace(currentCategoryToSave)
                     .done(savedCategory => {
                         currentCategory = savedCategory;
                         categorySelected.find('category-create-block__row-name').text(currentCategory.name);
                         description.find('category-create-block__row-description').text(currentCategory.description);
                         imageUrl.find('category-create-block__list-category-types').text(currentCategory.imageUrl);
-                        categoryType.find('').setValue(currentCategory.type);
                     })
                     .fail(() => {
                         errorDuplicateMessage.css('display', 'inline-block').slideDown();
                     });
             } else {
-                categoriesRestApi.create(currentCategoryToSave) // to do
+                categoriesRestApi.create(currentCategoryToSave)
                     .done(category => {
                         categorySelected = category;
                     })
@@ -240,7 +238,7 @@ define(
                 $categoryNameRow = components.texts.textBox('<div>', {
                     text: texts.sections.createCategory.name
                 });
-                $categoryNameRow.$input.attr('disabled', 'disabled');
+                // $categoryNameRow.$input.attr('disabled', 'disabled');
                 return $categoryNameRow;
             }
 
@@ -249,7 +247,7 @@ define(
                     text: texts.sections.createCategory.description
                 });
 
-                categoryDescription.$input.attr('disabled', 'disabled');
+                //categoryDescription.$input.attr('disabled', 'disabled');
                 return categoryDescription;
             }
 
@@ -258,30 +256,8 @@ define(
                     text: texts.sections.createCategory.icon
                 });
 
-                categoryUrlIcon.$input.attr('disabled', 'disabled');
+                //categoryUrlIcon.$input.attr('disabled', 'disabled');
                 return categoryUrlIcon;
-            }
-
-            function dropDownListCategoryTypesForCategory() {
-                let categoryTypeSelect = components.selects.selectContainer('<div>', {
-                    id: "types-id",
-                    name: "types-name",
-                    emptySelect: true,
-                    text: texts.chooseType,
-                });
-
-                typesRestApi.read()
-                    .done(ctgTypes => {
-                        let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
-                            text: categoryType.name,
-                            'data-value': categoryType.id
-                        }));
-
-                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect());
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage));
-
-                return categoryTypeSelect;
             }
 
             function onRemoveCategory() {
@@ -298,7 +274,7 @@ define(
             }
 
             function buildSaveAndCancelContainer() {
-                return categorySaveButton = components.buttons.buttonsContainer('<div>', [
+                return categorySaveButtons = components.buttons.buttonsContainer('<div>', [
                     components.buttons.saveButton({
                         text: texts.saveButton,
                         click: onSaveCategory
@@ -306,8 +282,8 @@ define(
                     components.buttons.negativeButton({
                         text: texts.cancelButton,
                         click: getOnWarnCancel(() => {
-                            categorySaveButton.slideUp();
-                            categoryViewButtons.slideDown();
+                            categorySaveButtons.slideUp();
+                            categoryEditButtons.slideDown();
                         })
                     })
                 ], {
@@ -316,12 +292,12 @@ define(
             }
 
             function buildCategoryViewButtons() {
-                return categoryViewButtons = components.buttons.buttonsContainer('<div>', [
+                return categoryEditButtons = components.buttons.buttonsContainer('<div>', [
                     components.buttons.positiveButton({
                         text: texts.editButtonName,
                         click: function () {
-                            categoryViewButtons.css('display', 'none').slideUp();
-                            categorySaveButton.css('display', 'inline-block').slideDown();
+                            categoryEditButtons.css('display', 'none').slideUp();
+                            categorySaveButtons.css('display', 'inline-block').slideDown();
                         }
                     }),
                     components.buttons.negativeButton({
@@ -338,7 +314,6 @@ define(
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
                     'row-url-image': buildCategoryIconRow(),
-                    'list-category-types': dropDownListCategoryTypesForCategory(),
                     'error-duplicate': buildErrorBlock(),
                     'edit-cancel-buttons': buildCategoryViewButtons(),
                     'save-cancel-buttons': buildSaveAndCancelContainer()
@@ -349,9 +324,7 @@ define(
         function buildCategoryCreateButtonContainer() {
 
             function openCreateContainer() {
-                alert('open create category!');
-                createContainer.css('display', 'none').slideUp();
-                //editorContainer.css('display', 'none'); //todo fix it need add all in one block BEM, (edit,save, create buttons and fields)
+                createTypeContainer.css('display', 'none').slideUp();
                 return categoryCreateContainer.css('display', 'inline-block').slideDown();
             }
 
@@ -376,8 +349,8 @@ define(
         return new SuperAdminTab(texts.name, [
             buildCategoryTypeButtonsContainer(),
             buildCategoryCreateButtonContainer(),
-            buildViewCtgTypesContainer(),
-            showCtgTypeCreateContainer(),
+            buildDropListCtgTypesContainer(),
+            buildCtgTypeCreateContainer(),
             buildCategoryCreateContainer()
         ]);
     }
