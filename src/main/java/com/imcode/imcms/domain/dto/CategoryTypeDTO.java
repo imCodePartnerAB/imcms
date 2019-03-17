@@ -18,18 +18,20 @@ public class CategoryTypeDTO extends CategoryType {
 
     private boolean multiSelect;
 
+    private boolean inherited;
+
     public CategoryTypeDTO(CategoryType from) {
         super(from);
     }
 
     @Override
     public boolean isInherited() {
-        return false;
+        return inherited;
     }
 
     @Override
     public void setInherited(boolean isInherited) {
-        // not implemented
+        this.inherited = isInherited;
     }
 
     @Override
