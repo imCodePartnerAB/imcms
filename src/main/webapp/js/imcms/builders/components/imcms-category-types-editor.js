@@ -119,7 +119,6 @@ define(
                 singleSelect: (ckeckValue === 'single-select'), // foreach
                 multiSelect: (ckeckValue === 'multi-select'),
                 inherited: inherited,
-
             };
 
             if (currentCtgTypeToSave.id) {
@@ -141,8 +140,6 @@ define(
                 typesRestApi.create(currentCtgTypeToSave)
                     .done(function (categoryType) {
                         $categoryTypeItem = categoryType;
-
-                        console.log(inherited + ' let inhereted');
 
                         onCategoryTypeView = onCategoryTypeSimpleView;
                         prepareCategoryTypeView();
