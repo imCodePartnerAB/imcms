@@ -136,9 +136,6 @@ define(
         }
 
         function onCreateNewCategoryType() {
-            if (currentCtgType) {
-                return;
-            }
             typeEditor.editCategoryType($('<div>'), {
                 id: null,
                 name: '',
@@ -174,50 +171,50 @@ define(
 
         let $categoryNameRow;
         let categoryDescription;
-        let categoryUrlIcon;
         let categorySaveButtons;
         let categoryEditButtons;
-        let errorDuplicateMessage;
+        let errorDuplicateMessage$;
 
         function buildErrorBlock() {
-            errorDuplicateMessage = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
-            return errorDuplicateMessage;
+            errorDuplicateMessage$ = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
+            return errorDuplicateMessage$;
         }
 
         function onSaveCategory() {
             let name = $categoryNameRow.getValue();
             let description = categoryDescription.getValue();
-            let imageUrl = categoryUrlIcon.getValue();
 
             if (!name) {
                 $categoryNameRow.$input.focus();
+                categoryDescription.$input.focus();
                 return;
             }
+
             let currentCategoryToSave = {
-                id: currentCategory.id,
+                id: (currentCategory) ? currentCategory.id : null,
                 name: name,
                 description: description,
-                imageUrl: imageUrl,
+                type: currentCtgType
             };
 
             if (currentCategoryToSave.id) {
                 categoriesRestApi.replace(currentCategoryToSave)
                     .done(savedCategory => {
-                        currentCategory = savedCategory;
-                        categorySelected.find('category-create-block__row-name').text(currentCategory.name);
-                        description.find('category-create-block__row-description').text(currentCategory.description);
-                        imageUrl.find('category-create-block__list-category-types').text(currentCategory.imageUrl);
+                        currentCategory.id = savedCategory.id;
+                        currentCategory.name = savedCategory.name;
+                        currentCategory.description = savedCategory.description;
+                        currentCategory.type = savedCategory.type;
                     })
                     .fail(() => {
-                        errorDuplicateMessage.css('display', 'inline-block').slideDown();
+                        errorDuplicateMessage$.css('display', 'inline-block').slideDown();
                     });
             } else {
                 categoriesRestApi.create(currentCategoryToSave)
                     .done(category => {
-                        categorySelected = category;
+                        currentCategory = category;
                     })
                     .fail(() => {
-                        errorDuplicateMessage.css('display', 'inline-block').slideDown();
+                        errorDuplicateMessage$.css('display', 'inline-block').slideDown();
                     });
             }
 
@@ -249,15 +246,6 @@ define(
 
                 //categoryDescription.$input.attr('disabled', 'disabled');
                 return categoryDescription;
-            }
-
-            function buildCategoryIconRow() {
-                categoryUrlIcon = components.texts.textBox('<div>', {
-                    text: texts.sections.createCategory.icon
-                });
-
-                //categoryUrlIcon.$input.attr('disabled', 'disabled');
-                return categoryUrlIcon;
             }
 
             function onRemoveCategory() {
@@ -313,7 +301,6 @@ define(
                     'title-create': '',
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
-                    'row-url-image': buildCategoryIconRow(),
                     'error-duplicate': buildErrorBlock(),
                     'edit-cancel-buttons': buildCategoryViewButtons(),
                     'save-cancel-buttons': buildSaveAndCancelContainer()
