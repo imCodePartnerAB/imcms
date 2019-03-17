@@ -13,6 +13,7 @@ public abstract class CategoryType implements Serializable {
         setId(from.getId());
         setName(from.getName());
         setMultiSelect(from.isMultiSelect());
+        setInherited(from.isInherited());
     }
 
     public abstract boolean isMultiSelect();
