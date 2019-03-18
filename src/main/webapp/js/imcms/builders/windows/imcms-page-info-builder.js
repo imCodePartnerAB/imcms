@@ -45,6 +45,9 @@ define("imcms-page-info-builder",
 
             pageInfoWindowBuilder.closeWindow();
 
+            //Clear modified info before send to API
+            documentDTO.modified = {id: ""};
+
             documentsRestApi.create(documentDTO)
                 .done((savedDoc) => {
 
