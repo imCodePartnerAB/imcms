@@ -34,7 +34,12 @@ public class PublicDocumentsCache implements DocumentsCache {
     @Override
     public String calculateKey(HttpServletRequest request) {
         final String path = StringUtils.substringAfter(request.getRequestURI(), request.getContextPath());
-        final String documentIdString = extractDocIdentifier(path);
+        final String docIdentifier = extractDocIdentifier(path);
+        //Needed to fetch correct page with specified request params
+        final String queryString = request.getQueryString();
+        final String documentIdString = StringUtils.isBlank(queryString)
+                ? docIdentifier
+                : docIdentifier + "?" + queryString;
         final String langCode = Imcms.getLanguage().getCode();
 
         return calculateKey(documentIdString, langCode);
