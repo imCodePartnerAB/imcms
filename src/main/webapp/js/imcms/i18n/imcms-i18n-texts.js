@@ -539,30 +539,25 @@ const texts = {
                 editButtonName: "Redigera",
                 removeButtonName: "Ta bort",
                 viewButtonName: "Visa",
-                chooseType: 'Choose Category Type',
-                chooseCategory: 'Choose Category',
-                saveButton: 'Save',
-                cancelButton: 'Cancel',
-                warnCancelMessage: 'Do you really want to cancel this ?',
-                duplicateErrorName: 'Category exists. Please choose a different name!',
+                chooseType: 'Välj kategori Typ',
+                chooseCategory: 'Välj kategori',
+                saveButton: 'Spara',
+                cancelButton: 'Annullera',
+                warnCancelMessage: 'Vill du verkligen avbryta detta?',
+                duplicateErrorName: 'Kategori finns. Vänligen välj ett annat namn!',
                 sections: {
                     createCategoryType: {
-                        title: 'Create category type',
-                        name: 'Category type name',
-                        inherited: 'Inherited to new documents',
-                        imageArchive: 'Used by image archive',
-                        singleSelect: 'Single select',
-                        multiSelect: 'Multi select'
-                    },
-                    removeCategoryType: {
-                        removeButton: 'Remove'
+                        title: 'Skapa kategori typ',
+                        name: 'Kategori typnamn',
+                        inherited: 'Erfaren av nya dokument',
+                        singleSelect: 'Singel välj',
+                        multiSelect: 'Flera val'
                     },
                     createCategory: {
-                        title: 'Create category',
-                        name: 'Category name',
-                        description: 'Description',
-                        icon: 'Icon',
-                        categoryType: 'Add to category type'
+                        title: 'Skapa kategori',
+                        name: 'Kategori namn',
+                        description: 'Beskrivning',
+                        categoryType: 'Lägg till i kategoritypen'
                     }
                 },
                 error: {
@@ -1173,7 +1168,7 @@ const texts = {
                     validationFailed: 'Failed to validate. Try again'
                 }
             },
-            tabCategories: {
+            categories: {
                 name: 'Categories',
                 titleCategoryType: "Category type",
                 titleCategory: "Category",
@@ -1192,7 +1187,6 @@ const texts = {
                         title: 'Create category type',
                         name: 'Category type name',
                         inherited: 'Inherited to new documents',
-                        imageArchive: 'Used by image archive',
                         singleSelect: 'Single select',
                         multiSelect: 'Multi select'
                     },
@@ -1200,7 +1194,6 @@ const texts = {
                         title: 'Create category',
                         name: 'Category name',
                         description: 'Description',
-                        icon: 'Icon',
                         categoryType: 'Add to category type'
                     }
                 },
