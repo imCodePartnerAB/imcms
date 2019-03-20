@@ -4,7 +4,6 @@ import imcode.server.ImcmsConstants;
 import imcode.util.Utility;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.constructs.web.GenericResponseWrapper;
 import net.sf.ehcache.constructs.web.Header;
 import net.sf.ehcache.constructs.web.PageInfo;
@@ -44,7 +43,6 @@ import java.util.stream.Stream;
 public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter {
 
     private static final int MILLISECONDS_PER_SECOND = 1000;
-    private static final long ONE_YEAR_IN_MILLISECONDS = 60 * 60 * 24 * 365 * 1000L;
 
     private List<String> cacheURLs = new ArrayList<>();
 
@@ -190,21 +188,4 @@ public class ImcmsCacheSupervisor extends SimpleCachingHeadersPageCachingFilter 
         return "\"" + eTagRaw + "\"";
     }
 
-    /**
-     * Get the time to live for a page, in milliseconds
-     *
-     * @return time to live in milliseconds
-     */
-    protected long calculateTimeToLiveMilliseconds() {
-        if (blockingCache.isDisabled()) {
-            return -1;
-        } else {
-            CacheConfiguration cacheConfiguration = blockingCache.getCacheConfiguration();
-            if (cacheConfiguration.isEternal()) {
-                return ONE_YEAR_IN_MILLISECONDS;
-            } else {
-                return cacheConfiguration.getTimeToLiveSeconds() * MILLISECONDS_PER_SECOND;
-            }
-        }
-    }
 }
