@@ -33,7 +33,7 @@ define(
 
                         categoryCreateContainer.css('display', 'none').slideUp();
 
-                        $typeContainer.slideDown();
+                        $categoryTypeCreateContainer.slideDown();
 
                         if (values) {
                             $('.categories-block').remove();
@@ -105,7 +105,7 @@ define(
             categoryCreateContainer.css('display', 'none').slideUp();
             categoriesList.css('display', 'none').slideUp();
             categoryCreateBtnContainer.css('display', 'none').slideUp();
-            $typeContainer.slideDown();
+            $categoryTypeCreateContainer.slideDown();
 
             return createCategoryType;
         }
@@ -186,7 +186,7 @@ define(
 
                         categoryTypeSelected.find("[data-value='" + currentCategoryType.id + "']").remove();
                         currentCategoryType = null;
-                        $typeContainer.slideUp();
+                        $categoryTypeCreateContainer.slideUp();
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
@@ -273,8 +273,6 @@ define(
                     click: onWarnCancel(() => {
                         $categoryTypeSaveButtons.slideUp();
                         $categoryTypeEditButtons.slideDown();
-
-                        //$typeNameRow.$input.attr('disabled', 'disabled');
                     })
                 })
             ], {
@@ -298,12 +296,12 @@ define(
             ]);
         }
 
-        var $typeContainer;
+        var $categoryTypeCreateContainer;
         var currentCategoryType;
 
         function buildCreateCategoryTypeContainer() {
 
-            return $typeContainer || ($typeContainer = new BEM({
+            return $categoryTypeCreateContainer || ($categoryTypeCreateContainer = new BEM({
                 block: 'type-create-block',
                 elements: {
                     'title-row': $('<div>', {text: texts.sections.createCategoryType.title}),
@@ -327,7 +325,7 @@ define(
                         type: currentCategoryType
                     };
 
-                    $typeContainer.css('display', 'none').slideUp();
+                    $categoryTypeCreateContainer.css('display', 'none').slideUp();
 
                     categoryCreateContainer.slideDown();
 
@@ -460,7 +458,6 @@ define(
                 $categoryNameRow = components.texts.textBox('<div>', {
                     text: texts.sections.createCategory.name
                 });
-                // $categoryNameRow.$input.attr('disabled', 'disabled');
                 return $categoryNameRow;
             }
 
@@ -468,8 +465,6 @@ define(
                 categoryDescription = components.texts.textAreaField('<div>', {
                     text: texts.sections.createCategory.description
                 });
-
-                //categoryDescription.$input.attr('disabled', 'disabled');
                 return categoryDescription;
             }
 
@@ -546,7 +541,7 @@ define(
                 $categoryNameRow.setValue(createCategory.name);
                 categoryDescription.setValue(createCategory.description);
             }
-            $typeContainer.css('display', 'none').slideUp();
+            $categoryTypeCreateContainer.css('display', 'none').slideUp();
             categoryCreateContainer.slideDown();
 
             return createCategory;
