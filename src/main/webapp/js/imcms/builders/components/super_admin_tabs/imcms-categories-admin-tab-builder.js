@@ -85,14 +85,29 @@ define(
         }
 
         function onCreateNewCategoryType() {
+
+            let createCategoryType = {
+                id: null,
+                name: '',
+                singleSelect: true,
+                multiSelect: false,
+                inherited: false
+            };
+
             if (currentCategoryType) {
-                $typeNameRow.setValue('');
-                $isSingleSelect.setChecked(true);
-                $isMultiSelect.setChecked(false);
-                $isInherited.setChecked(false);
+                currentCategoryType = null;
+                $typeNameRow.setValue(createCategoryType.name);
+                $isSingleSelect.setChecked(createCategoryType.singleSelect);
+                $isMultiSelect.setChecked(createCategoryType.multiSelect);
+                $isInherited.setChecked(createCategoryType.inherited);
             }
+
             categoryCreateContainer.css('display', 'none').slideUp();
-            return $typeContainer.slideDown();
+            categoriesList.css('display', 'none').slideUp();
+            categoryCreateBtnContainer.css('display', 'none').slideUp();
+            $typeContainer.slideDown();
+
+            return createCategoryType;
         }
 
         function buildCategoryTypeButtonsContainer() {
@@ -176,7 +191,6 @@ define(
                     .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
         }
-
 
         function onSaveCategoryType() {
             let checkValue = radioButtonsGroup.getCheckedValue();
@@ -522,12 +536,20 @@ define(
         }
 
         function onShowCategoryCreateContainer() {
+            let createCategory = {
+                id: null,
+                name: '',
+                description: ''
+            };
             if (currentCategory) {
-                $categoryNameRow.setValue('');
-                categoryDescription.setValue('');
+                currentCategory = null;
+                $categoryNameRow.setValue(createCategory.name);
+                categoryDescription.setValue(createCategory.description);
             }
             $typeContainer.css('display', 'none').slideUp();
-            return categoryCreateContainer.slideDown();
+            categoryCreateContainer.slideDown();
+
+            return createCategory;
         }
 
         function buildCategoryCreateButton() {
