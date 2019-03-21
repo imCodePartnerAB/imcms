@@ -85,7 +85,7 @@ define(
         }
 
         function onCreateNewCategoryType() {
-
+            currentCategoryType = null;
             let createCategoryType = {
                 id: null,
                 name: '',
@@ -262,7 +262,7 @@ define(
             };
         }
 
-        function buildCategoryTypeSaveButtons() {
+        function buildCategoryTypeEditButtons() {
             return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.saveButton({
                     text: texts.saveButton,
@@ -271,23 +271,8 @@ define(
                 components.buttons.negativeButton({
                     text: texts.cancelButton,
                     click: onWarnCancel(() => {
-                        $categoryTypeSaveButtons.slideUp();
-                        $categoryTypeEditButtons.slideDown();
+                        $categoryTypeCreateContainer.slideUp();
                     })
-                })
-            ], {
-                style: 'display: none;'
-            });
-        }
-
-        function buildCategoryTypeEditButtons() {
-            return $categoryTypeEditButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: texts.editButtonName,
-                    click: function () {
-                        $categoryTypeEditButtons.slideUp();
-                        $categoryTypeSaveButtons.slideDown();
-                    }
                 }),
                 components.buttons.negativeButton({
                     text: texts.removeButtonName,
@@ -309,8 +294,7 @@ define(
                     'selection-modes': buildCategoryTypeSelectionModes(),
                     'properties': buildCategoryTypeProperty(),
                     'error-row': buildErrorMsgBlock(),
-                    'ctg-type-view-button': buildCategoryTypeEditButtons(),
-                    'ctg-type-edit-button': buildCategoryTypeSaveButtons()
+                    'ctg-type-edit-button': buildCategoryTypeEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
@@ -484,7 +468,7 @@ define(
                 });
             }
 
-            function buildSaveAndCancelContainer() {
+            function buildEditCategoryButtonContainer() {
                 return categorySaveButtons = components.buttons.buttonsContainer('<div>', [
                     components.buttons.saveButton({
                         text: texts.saveButton,
@@ -493,29 +477,14 @@ define(
                     components.buttons.negativeButton({
                         text: texts.cancelButton,
                         click: getOnWarnCancel(() => {
-                            categorySaveButtons.slideUp();
-                            categoryEditButtons.slideDown();
+                            categoryCreateContainer.slideUp();
                         })
-                    })
-                ], {
-                    style: 'display: none;'
-                })
-            }
-
-            function buildCategoryViewButtons() {
-                return categoryEditButtons = components.buttons.buttonsContainer('<div>', [
-                    components.buttons.positiveButton({
-                        text: texts.editButtonName,
-                        click: function () {
-                            categoryEditButtons.css('display', 'none').slideUp();
-                            categorySaveButtons.css('display', 'inline-block').slideDown();
-                        }
                     }),
                     components.buttons.negativeButton({
                         text: texts.removeButtonName,
                         click: onRemoveCategory
                     })
-                ]);
+                ])
             }
 
             return categoryCreateContainer = new BEM({
@@ -525,19 +494,18 @@ define(
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
                     'error-duplicate': buildErrorBlock(),
-                    'edit-cancel-buttons': buildCategoryViewButtons(),
-                    'save-cancel-buttons': buildSaveAndCancelContainer()
+                    'edit-buttons': buildEditCategoryButtonContainer()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
         function onShowCategoryCreateContainer() {
+            currentCategory = null;
             let createCategory = {
                 id: null,
                 name: '',
                 description: ''
             };
-
             $categoryNameRow.setValue(createCategory.name);
             categoryDescription.setValue(createCategory.description);
             $categoryTypeCreateContainer.css('display', 'none').slideUp();
