@@ -289,7 +289,6 @@ define(
             return $categoryTypeCreateContainer || ($categoryTypeCreateContainer = new BEM({
                 block: 'type-create-block',
                 elements: {
-                    'title-row': $('<div>', {text: texts.sections.createCategoryType.title}),
                     'field-name': buildTypeNameRow(),
                     'selection-modes': buildCategoryTypeSelectionModes(),
                     'properties': buildCategoryTypeProperty(),
@@ -479,7 +478,7 @@ define(
                             categoryCreateContainer.slideUp();
                         })
                     }),
-                    components.buttons.negativeButton({
+                    components.buttons.warningButton({
                         text: texts.removeButtonName,
                         click: onRemoveCategory
                     })
@@ -489,7 +488,6 @@ define(
             return categoryCreateContainer = new BEM({
                 block: 'category-create-block',
                 elements: {
-                    'title-create': '',
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
                     'error-duplicate': buildErrorBlock(),

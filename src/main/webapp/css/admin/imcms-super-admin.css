@@ -281,6 +281,25 @@
     background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
+.type-create-block__field-name {
+    padding-bottom: 15px;
+}
+
+.category-create-block__row-description {
+    padding-bottom: 15px;
+    width: 40%;
+}
+
+.create-button-block__title,
+.type-buttons-block__title {
+    padding-bottom: 10px;
+}
+
+.type-buttons-block__create-button {
+    padding-bottom: 5px;
+}
+
+
 .profile-info-row {
     padding: 5px;
     cursor: pointer;
