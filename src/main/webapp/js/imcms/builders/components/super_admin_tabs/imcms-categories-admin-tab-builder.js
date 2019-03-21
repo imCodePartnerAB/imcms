@@ -14,25 +14,29 @@ define(
 
         texts = texts.superAdmin.categories;
 
-        let createTypeContainer;
-        let currentCtgType;
         let categoryCreateContainer;
         let currentCategory;
         let categoriesList;
+        let categoryTypeSelected;
 
         function buildDropDownListCategoriesTypes() {
             const onCategoryTypeSelected = values => {
                 typesRestApi.getById(values)
                     .done(ctgType => {
-                        currentCtgType = ctgType;
-                        typeEditor.editCategoryType($('<div>'), {
-                            id: ctgType.id,
-                            name: ctgType.name,
-                            singleSelect: ctgType.singleSelect,
-                            multiSelect: ctgType.multiSelect,
-                            inherited: ctgType.inherited,
+                        currentCategoryType = ctgType;
+                        let categoryTypeObj = {
+                            name: $typeNameRow.setValue(ctgType.name),
+                            singleSelect: $isSingleSelect.setChecked((ctgType.multiSelect === false)),
+                            multiSelect: $isMultiSelect.setChecked(ctgType.multiSelect),
+                            inherited: $isInherited.setChecked(ctgType.inherited)
+                        };
 
-                        });
+                        console.log(ctgType.singleSelect + " is");
+                        console.log(ctgType.multiSelect + " is");
+
+                        categoryCreateContainer.css('display', 'none').slideUp();
+
+                        $typeContainer.slideDown();
 
                         if (values) {
                             $('.categories-block').remove();
@@ -40,6 +44,8 @@ define(
                             categoriesList.slideDown();
                             categoryCreateBtnContainer.slideDown();
                         }
+
+                        return categoryTypeObj
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
             };
@@ -70,7 +76,6 @@ define(
 
 
         let categorySelected;
-        let categoryTypeSelected;
         let buildShowCategoryType;
 
         function buildDropListCtgTypesContainer() {
@@ -83,17 +88,8 @@ define(
         }
 
         function onCreateNewCategoryType() {
-            typeEditor.editCategoryType($('<div>'), {
-                id: null,
-                name: '',
-                singleSelect: true,
-                multiSelect: false,
-                inherited: false,
-            });
-        }
-
-        function buildCtgTypeCreateContainer() {
-            return createTypeContainer = typeEditor.buildCategoryTypeCreateContainer();
+            categoryCreateContainer.css('display', 'none').slideUp();
+            return $typeContainer.slideDown();
         }
 
         function buildCategoryTypeButtonsContainer() {
@@ -117,6 +113,192 @@ define(
         }
 
 
+        let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, errorMsg, $categoryTypeSaveButtons,
+            $categoryTypeEditButtons, valueRadios, radioButtonsGroup;
+
+        function buildTypeNameRow() {
+            $typeNameRow = components.texts.textBox('<div>', {
+                text: texts.sections.createCategoryType.name
+            });
+            return $typeNameRow;
+        }
+
+        function buildErrorMsgBlock() {
+            errorMsg = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
+            return errorMsg;
+        }
+
+
+        function buildCategoryTypeProperty() {
+
+            return $isInherited = components.checkboxes.imcmsCheckbox("<div>", {
+                text: texts.sections.createCategoryType.inherited
+            })
+        }
+
+        function buildCategoryTypeSelectionModes() {
+
+            valueRadios = [
+                $isSingleSelect = components.radios.imcmsRadio("<div>", {
+                    text: texts.sections.createCategoryType.singleSelect,
+                    name: 'select',
+                    value: 'single-select',
+                }),
+                $isMultiSelect = components.radios.imcmsRadio("<div>", {
+                    text: texts.sections.createCategoryType.multiSelect,
+                    name: 'select',
+                    value: 'multi-select',
+                }),
+            ];
+
+            radioButtonsGroup = components.radios.group($isSingleSelect, $isMultiSelect);
+
+
+            return components.radios.radioContainer(
+                '<div>', valueRadios, {}
+            );
+        }
+
+        function onDeleteCategoryType() {
+            modal.buildModalWindow('delete?', confirmed => {
+                if (!confirmed) return;
+
+                typesRestApi.remove(currentCategoryType)
+                    .done(() => {
+
+                        categoryTypeSelected.find('"[data-value=' + currentCategoryType.id + ']"').remove();
+                        currentCategoryType = null;
+                        $typeContainer.slideUp();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+            });
+        }
+
+
+        function onSaveCategoryType() {
+            let checkValue = radioButtonsGroup.getCheckedValue();
+
+            let name = $typeNameRow.getValue();
+            let inherited = $isInherited.isChecked();
+
+            if (!name) {
+                $typeNameRow.$input.focus();
+                return;
+            }
+
+            let currentCtgTypeToSave = {
+                id: (currentCategoryType) ? currentCategoryType.id : null,
+                name: name,
+                singleSelect: (checkValue === 'single-select'),
+                multiSelect: (checkValue === 'multi-select'),
+                inherited: inherited,
+            };
+
+            if (currentCtgTypeToSave.id) {
+                typesRestApi.replace(currentCtgTypeToSave)
+                    .done(savedCategoryType => {
+                        currentCategoryType.id = savedCategoryType.id;
+                        currentCategoryType.name = savedCategoryType.name;
+                        currentCategoryType.singleSelect = savedCategoryType.singleSelect;
+                        currentCategoryType.multiSelect = savedCategoryType.multiSelect;
+                        currentCategoryType.inherited = savedCategoryType.inherited;
+
+                        let categoriesTypesDataMapped = [{
+                            text: savedCategoryType.name,
+                            'data-value': savedCategoryType.id
+                        }];
+
+
+                        categoryTypeSelected.find('"[data-value=' + savedCategoryType.id + ']"').remove();
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, function () {
+                        });
+
+                    })
+                    .fail(() => {
+                        errorMsg.css('display', 'inline-block').slideDown();
+                    });
+            } else {
+                typesRestApi.create(currentCtgTypeToSave)
+                    .done(function (categoryType) {
+                        currentCategoryType = categoryType;
+
+                        let categoriesTypesDataMapped = [{
+                            text: categoryType.name,
+                            'data-value': categoryType.id
+                        }];
+
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, function () {
+                        });
+                    })
+                    .fail(() => {
+                        errorMsg.css('display', 'inline-block').slideDown();
+                    });
+            }
+        }
+
+        function onWarnCancel(onConfirm) {
+            return () => {
+                modal.buildModalWindow(texts.warnCancelMessage, confirmed => {
+                    if (!confirmed) return;
+                    onConfirm.call();
+                });
+            };
+        }
+
+        function buildCategoryTypeSaveButtons() {
+            return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.saveButton({
+                    text: texts.saveButton,
+                    click: onSaveCategoryType
+                }),
+                components.buttons.negativeButton({
+                    text: texts.cancelButton,
+                    click: onWarnCancel(() => {
+                        $categoryTypeSaveButtons.slideUp();
+                        $categoryTypeEditButtons.slideDown();
+
+                        //$typeNameRow.$input.attr('disabled', 'disabled');
+                    })
+                })
+            ], {
+                style: 'display: none;'
+            });
+        }
+
+        function buildCategoryTypeEditButtons() {
+            return $categoryTypeEditButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.positiveButton({
+                    text: texts.editButtonName,
+                    click: function () {
+                        $categoryTypeEditButtons.slideUp();
+                        $categoryTypeSaveButtons.slideDown();
+                    }
+                }),
+                components.buttons.negativeButton({
+                    text: texts.removeButtonName,
+                    click: onDeleteCategoryType
+                })
+            ]);
+        }
+
+        var $typeContainer;
+        var currentCategoryType;
+
+        function buildCreateCategoryTypeContainer() {
+
+            return $typeContainer || ($typeContainer = new BEM({
+                block: 'type-create-block',
+                elements: {
+                    'title-row': $('<div>', {text: texts.sections.createCategoryType.title}),
+                    'field-name': buildTypeNameRow(),
+                    'selection-modes': buildCategoryTypeSelectionModes(),
+                    'properties': buildCategoryTypeProperty(),
+                    'error-row': buildErrorMsgBlock(),
+                    'ctg-type-view-button': buildCategoryTypeEditButtons(),
+                    'ctg-type-edit-button': buildCategoryTypeSaveButtons()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'}));
+        }
 
         function buildDropDownListCategories(id) {
             let onCategorySelected = function (value) {
@@ -125,10 +307,10 @@ define(
                     let categoryObj = {
                         name: $categoryNameRow.setValue(currentCategory.name),
                         description: categoryDescription.setValue(currentCategory.description),
-                        type: currentCtgType
+                        type: currentCategoryType
                     };
 
-                    createTypeContainer.css('display', 'none').slideUp();
+                    $typeContainer.css('display', 'none').slideUp();
 
                     categoryCreateContainer.slideDown();
 
@@ -197,7 +379,7 @@ define(
                 id: (currentCategory) ? currentCategory.id : null,
                 name: name,
                 description: description,
-                type: currentCtgType
+                type: currentCategoryType
             };
 
             if (currentCategoryToSave.id) {
@@ -278,6 +460,8 @@ define(
 
                     categoriesRestApi.remove(currentCategory)
                         .done(() => {
+
+                            categorySelected.find("[data-value='" + currentCategory.id + "']").remove();
                             currentCategory = null;
                             categoryCreateContainer.slideUp();
                         })
@@ -334,7 +518,7 @@ define(
 
         function onShowCategoryCreateContainer() {
             //create container un correct work !!
-            createTypeContainer.css('display', 'none').slideUp();
+            $typeContainer.css('display', 'none').slideUp();
             return categoryCreateContainer.css('display', 'inline-block').slideDown();
         }
 
@@ -364,7 +548,7 @@ define(
             buildCategoryTypeButtonsContainer(),
             buildCategoryCreateButtonContainer(),
             buildDropListCtgTypesContainer(),
-            buildCtgTypeCreateContainer(),
+            buildCreateCategoryTypeContainer(),
             buildCategoryCreateContainer()
         ]);
     }
