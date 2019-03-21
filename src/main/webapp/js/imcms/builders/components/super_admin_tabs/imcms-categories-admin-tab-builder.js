@@ -516,8 +516,12 @@ define(
         }
 
         function onShowCategoryCreateContainer() {
+            if (currentCategory) {
+                $categoryNameRow.setValue('');
+                categoryDescription.setValue('');
+            }
             $typeContainer.css('display', 'none').slideUp();
-            return categoryCreateContainer.css('display', 'inline-block').slideDown();
+            return categoryCreateContainer.slideDown();
         }
 
         function buildCategoryCreateButton() {
