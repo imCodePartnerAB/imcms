@@ -94,13 +94,10 @@ define(
                 inherited: false
             };
 
-            if (currentCategoryType) {
-                currentCategoryType = null;
-                $typeNameRow.setValue(createCategoryType.name);
-                $isSingleSelect.setChecked(createCategoryType.singleSelect);
-                $isMultiSelect.setChecked(createCategoryType.multiSelect);
-                $isInherited.setChecked(createCategoryType.inherited);
-            }
+            $typeNameRow.setValue(createCategoryType.name);
+            $isSingleSelect.setChecked(createCategoryType.singleSelect);
+            $isMultiSelect.setChecked(createCategoryType.multiSelect);
+            $isInherited.setChecked(createCategoryType.inherited);
 
             categoryCreateContainer.css('display', 'none').slideUp();
             categoriesList.css('display', 'none').slideUp();
@@ -186,7 +183,10 @@ define(
 
                         categoryTypeSelected.find("[data-value='" + currentCategoryType.id + "']").remove();
                         currentCategoryType = null;
+                        categoryTypeSelected.selectFirst();
                         $categoryTypeCreateContainer.slideUp();
+                        categoriesList.slideUp();
+                        categoryCreateBtnContainer.slideUp();
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
             });
@@ -477,6 +477,7 @@ define(
 
                             categorySelected.find("[data-value='" + currentCategory.id + "']").remove();
                             currentCategory = null;
+                            categorySelected.selectFirst();
                             categoryCreateContainer.slideUp();
                         })
                         .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
@@ -536,11 +537,9 @@ define(
                 name: '',
                 description: ''
             };
-            if (currentCategory) {
-                currentCategory = null;
-                $categoryNameRow.setValue(createCategory.name);
-                categoryDescription.setValue(createCategory.description);
-            }
+
+            $categoryNameRow.setValue(createCategory.name);
+            categoryDescription.setValue(createCategory.description);
             $categoryTypeCreateContainer.css('display', 'none').slideUp();
             categoryCreateContainer.slideDown();
 
