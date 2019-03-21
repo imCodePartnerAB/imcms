@@ -281,16 +281,6 @@
     background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
-.imcms-input.imcms-text-area__input {
-    width: 40%;
-}
-
-.imcms-drop-down-list.imcms-select__drop-down-list {
-    width: 40%;
-}
-
-
-
 .profile-info-row {
     padding: 5px;
     cursor: pointer;
