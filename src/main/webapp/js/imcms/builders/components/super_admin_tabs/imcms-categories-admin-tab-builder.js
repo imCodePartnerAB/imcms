@@ -129,7 +129,7 @@ define(
 
 
         let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, errorMsg, $categoryTypeSaveButtons,
-            $categoryTypeEditButtons, valueRadios, radioButtonsGroup;
+            valueRadios, radioButtonsGroup;
 
         function buildTypeNameRow() {
             $typeNameRow = components.texts.textBox('<div>', {
@@ -274,7 +274,7 @@ define(
                         $categoryTypeCreateContainer.slideUp();
                     })
                 }),
-                components.buttons.negativeButton({
+                components.buttons.warningButton({
                     text: texts.removeButtonName,
                     click: onDeleteCategoryType
                 })
@@ -356,7 +356,6 @@ define(
         let $categoryNameRow;
         let categoryDescription;
         let categorySaveButtons;
-        let categoryEditButtons;
         let errorDuplicateMessage$;
 
         function buildErrorBlock() {
