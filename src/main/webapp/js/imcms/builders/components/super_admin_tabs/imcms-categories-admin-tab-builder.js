@@ -12,7 +12,7 @@ define(
     function (SuperAdminTab, texts, components, fieldWrapper, BEM, $, typesRestApi, categoriesRestApi, typeEditor,
               modal) {
 
-        texts = texts.superAdmin.tabCategories;
+        texts = texts.superAdmin.categories;
 
         let createTypeContainer;
         let currentCtgType;
@@ -38,6 +38,7 @@ define(
                             $('.categories-block').remove();
                             $('.category-types-block').append(buildCategoriesContainer(values));
                             categoriesList.slideDown();
+                            categoryCreateBtnContainer.slideDown();
                         }
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
@@ -67,8 +68,55 @@ define(
             return categoryTypeSelect;
         }
 
+
         let categorySelected;
         let categoryTypeSelected;
+        let buildShowCategoryType;
+
+        function buildDropListCtgTypesContainer() {
+            return buildShowCategoryType = new BEM({
+                block: 'category-types-block',
+                elements: {
+                    'categories-types': buildDropDownListCategoriesTypes()
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        function onCreateNewCategoryType() {
+            typeEditor.editCategoryType($('<div>'), {
+                id: null,
+                name: '',
+                singleSelect: true,
+                multiSelect: false,
+                inherited: false,
+            });
+        }
+
+        function buildCtgTypeCreateContainer() {
+            return createTypeContainer = typeEditor.buildCategoryTypeCreateContainer();
+        }
+
+        function buildCategoryTypeButtonsContainer() {
+
+            function buildCategoryTypeCreateButton() {
+                let $button = components.buttons.positiveButton({
+                    text: texts.createButtonName,
+                    click: onCreateNewCategoryType
+                });
+                return components.buttons.buttonsContainer('<div>', [$button]);
+            }
+
+            return new BEM({
+                block: 'type-buttons-block',
+                elements: {
+                    'title': $('<div>', {text: texts.titleCategoryType}),
+                    'create-button': buildCategoryTypeCreateButton(),
+                }
+            }).buildBlockStructure('<div>');
+
+        }
+
+
 
         function buildDropDownListCategories(id) {
             let onCategorySelected = function (value) {
@@ -124,51 +172,6 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        let buildShowCategoryType;
-
-        function buildDropListCtgTypesContainer() {
-            return buildShowCategoryType = new BEM({
-                block: 'category-types-block',
-                elements: {
-                    'categories-types': buildDropDownListCategoriesTypes()
-                }
-            }).buildBlockStructure('<div>');
-        }
-
-        function onCreateNewCategoryType() {
-            typeEditor.editCategoryType($('<div>'), {
-                id: null,
-                name: '',
-                singleSelect: true,
-                multiSelect: false,
-                inherited: false,
-            });
-        }
-
-        function buildCtgTypeCreateContainer() {
-            return createTypeContainer = typeEditor.buildCategoryTypeCreateContainer();
-        }
-
-        function buildCategoryTypeButtonsContainer() {
-
-            function buildCategoryTypeCreateButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.createButtonName,
-                    click: onCreateNewCategoryType
-                });
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return new BEM({
-                block: 'type-buttons-block',
-                elements: {
-                    'title': $('<div>', {text: texts.titleCategoryType}),
-                    'create-button': buildCategoryTypeCreateButton(),
-                }
-            }).buildBlockStructure('<div>');
-
-        }
-
         let $categoryNameRow;
         let categoryDescription;
         let categorySaveButtons;
@@ -204,6 +207,18 @@ define(
                         currentCategory.name = savedCategory.name;
                         currentCategory.description = savedCategory.description;
                         currentCategory.type = savedCategory.type;
+
+                        let categoryDataMapped = [{
+                            text: savedCategory.name,
+                            'data-value': savedCategory.id
+                        }];
+
+
+                        categorySelected.find("[data-value='" + savedCategory.id + "']").remove();
+
+                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, function () {
+                        });
+
                     })
                     .fail(() => {
                         errorDuplicateMessage$.css('display', 'inline-block').slideDown();
@@ -212,6 +227,15 @@ define(
                 categoriesRestApi.create(currentCategoryToSave)
                     .done(category => {
                         currentCategory = category;
+
+                        let categoryDataMapped = [{
+                            text: category.name,
+                            'data-value': category.id
+                        }];
+
+                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, function () {
+                        });
+
                     })
                     .fail(() => {
                         errorDuplicateMessage$.css('display', 'inline-block').slideDown();
@@ -308,29 +332,32 @@ define(
             }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
+        function onShowCategoryCreateContainer() {
+            //create container un correct work !!
+            createTypeContainer.css('display', 'none').slideUp();
+            return categoryCreateContainer.css('display', 'inline-block').slideDown();
+        }
+
+        function buildCategoryCreateButton() {
+            let $button = components.buttons.positiveButton({
+                text: texts.createButtonName,
+                click: onShowCategoryCreateContainer
+            });
+
+            return components.buttons.buttonsContainer('<div>', [$button]);
+        }
+
+        let categoryCreateBtnContainer;
+
         function buildCategoryCreateButtonContainer() {
 
-            function openCreateContainer() {
-                createTypeContainer.css('display', 'none').slideUp();
-                return categoryCreateContainer.css('display', 'inline-block').slideDown();
-            }
-
-            function buildCategoryCreateButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.createButtonName,
-                    click: openCreateContainer
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return new BEM({
+            return categoryCreateBtnContainer = new BEM({
                 block: 'create-button-block',
                 elements: {
                     'title': $('<div>', {text: texts.titleCategory}),
                     'create': buildCategoryCreateButton(),
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
         return new SuperAdminTab(texts.name, [
