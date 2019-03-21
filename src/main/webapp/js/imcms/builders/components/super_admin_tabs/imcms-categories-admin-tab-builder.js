@@ -85,6 +85,12 @@ define(
         }
 
         function onCreateNewCategoryType() {
+            if (currentCategoryType) {
+                $typeNameRow.setValue('');
+                $isSingleSelect.setChecked(true);
+                $isMultiSelect.setChecked(false);
+                $isInherited.setChecked(false);
+            }
             categoryCreateContainer.css('display', 'none').slideUp();
             return $typeContainer.slideDown();
         }
