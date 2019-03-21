@@ -31,9 +31,6 @@ define(
                             inherited: $isInherited.setChecked(ctgType.inherited)
                         };
 
-                        console.log(ctgType.singleSelect + " is");
-                        console.log(ctgType.multiSelect + " is");
-
                         categoryCreateContainer.css('display', 'none').slideUp();
 
                         $typeContainer.slideDown();
@@ -166,7 +163,7 @@ define(
                 typesRestApi.remove(currentCategoryType)
                     .done(() => {
 
-                        categoryTypeSelected.find('"[data-value=' + currentCategoryType.id + ']"').remove();
+                        categoryTypeSelected.find("[data-value='" + currentCategoryType.id + "']").remove();
                         currentCategoryType = null;
                         $typeContainer.slideUp();
                     })
@@ -209,7 +206,7 @@ define(
                         }];
 
 
-                        categoryTypeSelected.find('"[data-value=' + savedCategoryType.id + ']"').remove();
+                        categoryTypeSelected.find("[data-value='" + savedCategoryType.id + "']").remove();
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, function () {
                         });
 
@@ -418,6 +415,8 @@ define(
                         components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, function () {
                         });
 
+                        categoryCreateContainer.slideUp();
+
                     })
                     .fail(() => {
                         errorDuplicateMessage$.css('display', 'inline-block').slideDown();
@@ -517,7 +516,6 @@ define(
         }
 
         function onShowCategoryCreateContainer() {
-            //create container un correct work !!
             $typeContainer.css('display', 'none').slideUp();
             return categoryCreateContainer.css('display', 'inline-block').slideDown();
         }
