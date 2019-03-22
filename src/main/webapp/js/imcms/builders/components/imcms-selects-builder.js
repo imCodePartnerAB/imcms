@@ -193,6 +193,22 @@ define("imcms-selects-builder",
             }
         }
 
+        function bindSelectLast($resultImcmsSelect) {
+            return () => {
+                const $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
+                    .find(DROP_DOWN_LIST__ITEM__CLASS_$).last();
+
+                if ($selectCandidate.length) {
+                    onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
+                    return $resultImcmsSelect;
+
+                } else {
+                    logger.log("%c Select is empty, nothing to choose", "color: red;");
+                    logger.log($resultImcmsSelect[0]);
+                }
+            }
+        }
+
         function bindGetSelect($select) {
             return () => $select;
         }
@@ -229,6 +245,7 @@ define("imcms-selects-builder",
             $select.clearSelect = bindClearSelect($select, $selectedValInput);
             $select.deleteOption = bindDeleteOption($select);
             $select.hasOptions = bindHasOptions($select);
+            $select.selectLast = bindSelectLast($select);
         }
 
         function buildSelectLabel(attributes) {

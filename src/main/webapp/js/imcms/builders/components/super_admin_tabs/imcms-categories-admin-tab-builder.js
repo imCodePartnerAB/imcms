@@ -220,7 +220,7 @@ define(
                         }];
 
 
-                        categoryTypeSelected.find(`[data-value='${savedCategoryType.id}']`).remove();
+                        categoryTypeSelected.deleteOption();
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
 
                     })
@@ -238,6 +238,7 @@ define(
                         }];
 
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
+                        categoryTypeSelected.selectLast();
                     })
                     .fail(() => {
                         errorMsg.css('display', 'inline-block').slideDown();
@@ -319,7 +320,7 @@ define(
             let categorySelect = components.selects.selectContainer('<div>', {
                 id: "category-filter",
                 name: "category-filter",
-                emptySelect: true,
+                emptySelect: false,
                 text: texts.chooseCategory,
                 onSelected: buildOnCategorySelected
             });
@@ -389,7 +390,7 @@ define(
                             'data-value': savedCategory.id
                         }];
 
-                        categorySelected.find("[data-value='" + savedCategory.id + "']").remove();
+                        categorySelected.deleteOption();
 
                         components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, buildOnCategorySelected());
 
@@ -408,7 +409,7 @@ define(
                         }];
 
                         components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, buildOnCategorySelected());
-
+                        categorySelected.selectLast();
                         categoryCreateContainer.slideUp();
 
                     })
@@ -529,8 +530,6 @@ define(
         }
 
         return new SuperAdminTab(texts.name, [
-            //buildCategoryTypeButtonsContainer(),
-            //buildCategoryCreateButtonContainer(),
             buildDropListCtgTypesContainer(),
             buildCreateCategoryTypeContainer(),
             buildCategoryCreateContainer()
