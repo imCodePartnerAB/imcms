@@ -14,122 +14,8 @@ define(
 
         texts = texts.superAdmin.categories;
 
-        let categoryCreateContainer;
-        let currentCategory;
-        let categoriesList;
-        let categoryTypeSelected;
-
-        function buildDropDownListCategoriesTypes() {
-            const onCategoryTypeSelected = values => {
-                typesRestApi.getById(values)
-                    .done(ctgType => {
-                        currentCategoryType = ctgType;
-                        let categoryTypeObj = {
-                            name: $typeNameRow.setValue(ctgType.name),
-                            singleSelect: $isSingleSelect.setChecked((ctgType.multiSelect === false)),
-                            multiSelect: $isMultiSelect.setChecked(ctgType.multiSelect),
-                            inherited: $isInherited.setChecked(ctgType.inherited)
-                        };
-
-                        categoryCreateContainer.css('display', 'none').slideUp();
-
-                        $categoryTypeCreateContainer.slideDown();
-
-                        if (values) {
-                            $('.categories-block').remove();
-                            $('.category-types-block').append(buildCategoriesContainer(values));
-                            categoriesList.slideDown();
-                            categoryCreateBtnContainer.slideDown();
-                        }
-
-                        return categoryTypeObj
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
-            };
-
-            let categoryTypeSelect = components.selects.selectContainer('<div>', {
-                id: "types-id",
-                name: "types-name",
-                emptySelect: true,
-                text: texts.chooseType,
-                onSelected: onCategoryTypeSelected
-            });
-
-            categoryTypeSelected = categoryTypeSelect.getSelect();
-
-            typesRestApi.read()
-                .done(ctgTypes => {
-                    let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
-                        text: categoryType.name,
-                        'data-value': categoryType.id
-                    }));
-
-                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onCategoryTypeSelected);
-                })
-                .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage));
-
-            return categoryTypeSelect;
-        }
-
-
-        let categorySelected;
-        let buildShowCategoryType;
-
-        function buildDropListCtgTypesContainer() {
-            return buildShowCategoryType = new BEM({
-                block: 'category-types-block',
-                elements: {
-                    'categories-types': buildDropDownListCategoriesTypes()
-                }
-            }).buildBlockStructure('<div>');
-        }
-
-        function onCreateNewCategoryType() {
-            currentCategoryType = null;
-            let createCategoryType = {
-                id: null,
-                name: '',
-                singleSelect: true,
-                multiSelect: false,
-                inherited: false
-            };
-
-            $typeNameRow.setValue(createCategoryType.name);
-            $isSingleSelect.setChecked(createCategoryType.singleSelect);
-            $isMultiSelect.setChecked(createCategoryType.multiSelect);
-            $isInherited.setChecked(createCategoryType.inherited);
-
-            categoryCreateContainer.css('display', 'none').slideUp();
-            categoriesList.css('display', 'none').slideUp();
-            categoryCreateBtnContainer.css('display', 'none').slideUp();
-            $categoryTypeCreateContainer.slideDown();
-
-            return createCategoryType;
-        }
-
-        function buildCategoryTypeButtonsContainer() {
-
-            function buildCategoryTypeCreateButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.createButtonName,
-                    click: onCreateNewCategoryType
-                });
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return new BEM({
-                block: 'type-buttons-block',
-                elements: {
-                    'title': $('<div>', {text: texts.titleCategoryType}),
-                    'create-button': buildCategoryTypeCreateButton(),
-                }
-            }).buildBlockStructure('<div>');
-
-        }
-
-
         let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, errorMsg, $categoryTypeSaveButtons,
-            valueRadios, radioButtonsGroup;
+            valueRadios, radioButtonsGroup, categoryCreateContainer, categoryTypeSelected, currentCategoryType;
 
         function buildTypeNameRow() {
             $typeNameRow = components.texts.textBox('<div>', {
@@ -138,7 +24,7 @@ define(
             return $typeNameRow;
         }
 
-        function buildErrorMsgBlock() {
+        function buildErrorCtgTypeDuplicateMsgBlock() {
             errorMsg = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
             return errorMsg;
         }
@@ -174,8 +60,118 @@ define(
             );
         }
 
+        function buildOnCategoryTypeSelected() {
+            return id => {
+                typesRestApi.getById(id)
+                    .done(ctgType => {
+                        currentCategoryType = ctgType;
+                        let categoryTypeObj = {
+                            name: $typeNameRow.setValue(ctgType.name),
+                            singleSelect: $isSingleSelect.setChecked(ctgType.multiSelect === false),
+                            multiSelect: $isMultiSelect.setChecked(ctgType.multiSelect),
+                            inherited: $isInherited.setChecked(ctgType.inherited)
+                        };
+
+                        categoryCreateContainer.slideUp();
+
+                        $categoryTypeCreateContainer.slideDown();
+
+                        if (id) {
+                            $('.categories-block').remove();
+                            buildShowCategoryType.append(buildCategoriesContainer(id));
+
+                            categoriesList.slideDown();
+                            categoryCreateBtnContainer.slideDown();
+                        }
+
+                        return categoryTypeObj
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
+            };
+        }
+
+        function buildDropDownListCategoriesTypes() {
+            let categoryTypeSelect = components.selects.selectContainer('<div>', {
+                id: "types-id",
+                name: "types-name",
+                emptySelect: false,
+                text: texts.chooseType,
+                onSelected: buildOnCategoryTypeSelected
+            });
+
+            categoryTypeSelected = categoryTypeSelect.getSelect();
+
+            typesRestApi.read()
+                .done(ctgTypes => {
+                    let categoriesTypesDataMapped = ctgTypes.map(categoryType => ({
+                        text: categoryType.name,
+                        'data-value': categoryType.id
+                    }));
+
+                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), buildOnCategoryTypeSelected());
+                })
+                .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage)); // What is the error here ?
+
+            return categoryTypeSelect;
+        }
+
+
+        let buildShowCategoryType;
+
+        function buildDropListCtgTypesContainer() {
+            return buildShowCategoryType = new BEM({
+                block: 'category-types-block',
+                elements: {
+                    'categories-types': buildDropDownListCategoriesTypes()
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        function onCreateNewCategoryType() {
+            currentCategoryType = null;
+            let createCategoryType = {
+                id: null,
+                name: '',
+                singleSelect: true,
+                multiSelect: false,
+                inherited: false
+            };
+
+            $typeNameRow.setValue(createCategoryType.name);
+            $isSingleSelect.setChecked(createCategoryType.singleSelect);
+            $isMultiSelect.setChecked(createCategoryType.multiSelect);
+            $isInherited.setChecked(createCategoryType.inherited);
+
+            if (categoryCreateContainer) categoryCreateContainer.slideUp();
+            if (categoriesList) categoriesList.slideUp();
+            categoryCreateBtnContainer.slideUp();
+            $categoryTypeCreateContainer.slideDown();
+
+            return createCategoryType;
+        }
+
+        function buildCategoryTypeButtonsContainer() {
+
+            function buildCategoryTypeCreateButton() {
+                let $button = components.buttons.positiveButton({
+                    text: texts.createButtonName,
+                    click: onCreateNewCategoryType
+                });
+                return components.buttons.buttonsContainer('<div>', [$button]);
+            }
+
+            return new BEM({
+                block: 'type-buttons-block',
+                elements: {
+                    'title': $('<div>', {text: texts.titleCategoryType}),
+                    'create-button': buildCategoryTypeCreateButton(),
+                }
+            }).buildBlockStructure('<div>');
+
+        }
+
         function onDeleteCategoryType() {
-            modal.buildModalWindow('delete?', confirmed => {
+            modal.buildModalWindow(texts.warnDelete, confirmed => {
                 if (!confirmed) return;
 
                 typesRestApi.remove(currentCategoryType)
@@ -214,11 +210,7 @@ define(
             if (currentCtgTypeToSave.id) {
                 typesRestApi.replace(currentCtgTypeToSave)
                     .done(savedCategoryType => {
-                        currentCategoryType.id = savedCategoryType.id;
-                        currentCategoryType.name = savedCategoryType.name;
-                        currentCategoryType.singleSelect = savedCategoryType.singleSelect;
-                        currentCategoryType.multiSelect = savedCategoryType.multiSelect;
-                        currentCategoryType.inherited = savedCategoryType.inherited;
+                        currentCategoryType = savedCategoryType;
 
                         let categoriesTypesDataMapped = [{
                             text: savedCategoryType.name,
@@ -226,13 +218,12 @@ define(
                         }];
 
 
-                        categoryTypeSelected.find("[data-value='" + savedCategoryType.id + "']").remove();
-                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, function () {
-                        });
+                        categoryTypeSelected.find(`[data-value='${savedCategoryType.id}']`).remove();
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
 
                     })
                     .fail(() => {
-                        errorMsg.css('display', 'inline-block').slideDown();
+                        errorMsg.slideDown();
                     });
             } else {
                 typesRestApi.create(currentCtgTypeToSave)
@@ -244,8 +235,7 @@ define(
                             'data-value': categoryType.id
                         }];
 
-                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, function () {
-                        });
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
                     })
                     .fail(() => {
                         errorMsg.css('display', 'inline-block').slideDown();
@@ -274,15 +264,14 @@ define(
                         $categoryTypeCreateContainer.slideUp();
                     })
                 }),
-                components.buttons.warningButton({
+                components.buttons.errorButton({
                     text: texts.removeButtonName,
                     click: onDeleteCategoryType
                 })
             ]);
         }
 
-        var $categoryTypeCreateContainer;
-        var currentCategoryType;
+        let $categoryTypeCreateContainer;
 
         function buildCreateCategoryTypeContainer() {
 
@@ -292,14 +281,19 @@ define(
                     'field-name': buildTypeNameRow(),
                     'selection-modes': buildCategoryTypeSelectionModes(),
                     'properties': buildCategoryTypeProperty(),
-                    'error-row': buildErrorMsgBlock(),
+                    'error-row': buildErrorCtgTypeDuplicateMsgBlock(),
                     'ctg-type-edit-button': buildCategoryTypeEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
         }
 
-        function buildDropDownListCategories(id) {
-            let onCategorySelected = function (value) {
+        let categorySelected;
+        let currentCategory;
+        let categoriesList;
+
+
+        function buildOnCategorySelected() {
+            return value => {
                 categoriesRestApi.getById(value).done(function (category) {
                     currentCategory = category;
                     let categoryObj = {
@@ -308,7 +302,7 @@ define(
                         type: currentCategoryType
                     };
 
-                    $categoryTypeCreateContainer.css('display', 'none').slideUp();
+                    $categoryTypeCreateContainer.slideUp();
 
                     categoryCreateContainer.slideDown();
 
@@ -316,13 +310,15 @@ define(
 
                 }).fail(() => modal.buildErrorWindow(texts.error.category.loadFailed));
             };
+        }
 
+        function buildDropDownListCategories(id) {
             let categorySelect = components.selects.selectContainer('<div>', {
                 id: "category-filter",
                 name: "category-filter",
                 emptySelect: true,
                 text: texts.chooseCategory,
-                onSelected: onCategorySelected
+                onSelected: buildOnCategorySelected
             });
 
             categorySelected = categorySelect.getSelect();
@@ -336,7 +332,7 @@ define(
                     }
                 });
 
-                components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
+                components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), buildOnCategorySelected());
 
             });
 
@@ -357,7 +353,7 @@ define(
         let categorySaveButtons;
         let errorDuplicateMessage$;
 
-        function buildErrorBlock() {
+        function buildCategoryNameDupblicateErrorBlock() {
             errorDuplicateMessage$ = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
             return errorDuplicateMessage$;
         }
@@ -382,21 +378,16 @@ define(
             if (currentCategoryToSave.id) {
                 categoriesRestApi.replace(currentCategoryToSave)
                     .done(savedCategory => {
-                        currentCategory.id = savedCategory.id;
-                        currentCategory.name = savedCategory.name;
-                        currentCategory.description = savedCategory.description;
-                        currentCategory.type = savedCategory.type;
+                        currentCategory = savedCategory;
 
                         let categoryDataMapped = [{
                             text: savedCategory.name,
                             'data-value': savedCategory.id
                         }];
 
-
                         categorySelected.find("[data-value='" + savedCategory.id + "']").remove();
 
-                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, function () {
-                        });
+                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, buildOnCategorySelected());
 
                     })
                     .fail(() => {
@@ -412,8 +403,7 @@ define(
                             'data-value': category.id
                         }];
 
-                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, function () {
-                        });
+                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, buildOnCategorySelected());
 
                         categoryCreateContainer.slideUp();
 
@@ -451,7 +441,7 @@ define(
             }
 
             function onRemoveCategory() {
-                modal.buildModalWindow('delete?', confirmed => {
+                modal.buildModalWindow(texts.warnDelete, confirmed => {
                     if (!confirmed) return;
 
                     categoriesRestApi.remove(currentCategory)
@@ -478,7 +468,7 @@ define(
                             categoryCreateContainer.slideUp();
                         })
                     }),
-                    components.buttons.warningButton({
+                    components.buttons.errorButton({
                         text: texts.removeButtonName,
                         click: onRemoveCategory
                     })
@@ -490,7 +480,7 @@ define(
                 elements: {
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
-                    'error-duplicate': buildErrorBlock(),
+                    'error-duplicate': buildCategoryNameDupblicateErrorBlock(),
                     'edit-buttons': buildEditCategoryButtonContainer()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});

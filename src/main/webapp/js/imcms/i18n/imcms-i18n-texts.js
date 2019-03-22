@@ -545,6 +545,7 @@ const texts = {
                 cancelButton: 'Annullera',
                 warnCancelMessage: 'Vill du verkligen avbryta detta?',
                 duplicateErrorName: 'Kategori finns. Vänligen välj ett annat namn!',
+                warnDelete: 'Radera?',
                 sections: {
                     createCategoryType: {
                         title: 'Skapa kategori typ',
@@ -1182,6 +1183,7 @@ const texts = {
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
                 duplicateErrorName: 'This is name exists. Please choose a different name!',
+                warnDelete: 'Delete?',
                 sections: {
                     createCategoryType: {
                         title: 'Create category type',
