@@ -198,7 +198,8 @@ define(
 
             if (!name) {
                 $typeNameRow.$input.focus();
-                $errorDuplicateMsg.slideDown();
+                modal.buildErrorWindow(texts.errorName);
+                return;
             }
 
             let currentCtgTypeToSave = {
@@ -220,7 +221,7 @@ define(
                         }];
 
 
-                        categoryTypeSelected.deleteOption();
+                        categoryTypeSelected.find(`[data-value='${savedCategoryType.id}']`).remove();
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
 
                     })
@@ -385,7 +386,7 @@ define(
                             'data-value': savedCategory.id
                         }];
 
-                        categorySelected.deleteOption();
+                        categorySelected.find(`[data-value='${savedCategory.id}']`).remove();
 
                         components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, buildOnCategorySelected());
 
