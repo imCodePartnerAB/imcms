@@ -79,8 +79,8 @@ define(
                         if (id) {
                             $('.categories-block').remove();
                             buildShowCategoryType.append(buildCategoriesContainer(id));
-
                             categoriesList.slideDown();
+                            $('.imcms-button--error').css('display', 'inline-block');
                             categoryCreateBtnContainer.slideDown();
                         }
 
@@ -143,6 +143,7 @@ define(
             $isMultiSelect.setChecked(createCategoryType.multiSelect);
             $isInherited.setChecked(createCategoryType.inherited);
 
+            $('.imcms-button--error').css('display', 'none');
             if (categoryCreateContainer) categoryCreateContainer.slideUp();
             if (categoriesList) categoriesList.slideUp();
             if (categoryCreateBtnContainer) categoryCreateBtnContainer.slideUp();
@@ -305,6 +306,7 @@ define(
 
                     $categoryTypeCreateContainer.slideUp();
 
+                    $('.imcms-button--error').css('display', 'inline-block');
                     categoryCreateContainer.slideDown();
 
                     return categoryObj;
@@ -497,7 +499,8 @@ define(
             };
             $categoryNameRow.setValue(createCategory.name);
             categoryDescription.setValue(createCategory.description);
-            $categoryTypeCreateContainer.css('display', 'none').slideUp();
+            $categoryTypeCreateContainer.slideUp();
+            $('.imcms-button--error').css('display', 'none');
             categoryCreateContainer.slideDown();
 
             return createCategory;
