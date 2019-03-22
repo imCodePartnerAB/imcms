@@ -122,7 +122,8 @@ define(
             return buildShowCategoryType = new BEM({
                 block: 'category-types-block',
                 elements: {
-                    'categories-types': buildDropDownListCategoriesTypes()
+                    'categories-types': buildDropDownListCategoriesTypes(),
+                    'type-create-button': buildCategoryTypeButtonsContainer()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -144,7 +145,7 @@ define(
 
             if (categoryCreateContainer) categoryCreateContainer.slideUp();
             if (categoriesList) categoriesList.slideUp();
-            categoryCreateBtnContainer.slideUp();
+            if (categoryCreateBtnContainer) categoryCreateBtnContainer.slideUp();
             $categoryTypeCreateContainer.slideDown();
 
             return createCategoryType;
@@ -343,7 +344,8 @@ define(
             return categoriesList = new BEM({
                 block: 'categories-block',
                 elements: {
-                    'categories': buildDropDownListCategories(id)
+                    'categories': buildDropDownListCategories(id),
+                    'category-create': buildCategoryCreateButtonContainer()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -524,8 +526,8 @@ define(
         }
 
         return new SuperAdminTab(texts.name, [
-            buildCategoryTypeButtonsContainer(),
-            buildCategoryCreateButtonContainer(),
+            //buildCategoryTypeButtonsContainer(),
+            //buildCategoryCreateButtonContainer(),
             buildDropListCtgTypesContainer(),
             buildCreateCategoryTypeContainer(),
             buildCategoryCreateContainer()

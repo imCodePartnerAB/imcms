@@ -287,7 +287,7 @@
 
 .category-create-block__row-description {
     padding-bottom: 15px;
-    width: 40%;
+    width: 55%;
 }
 
 .create-button-block__title,
@@ -297,6 +297,40 @@
 
 .type-buttons-block__create-button {
     padding-bottom: 5px;
+}
+
+.category-types-block {
+    display: inline-flex;
+    width: 100%;
+}
+
+.category-types-block__category-create-button {
+    margin-left: 10%;
+    margin-top: 3%;
+}
+
+.category-types-block__categories-types {
+    width: 200px;
+}
+
+.category-create-block {
+    margin-left: 60%;
+}
+
+.categories-block {
+    display: inline-flex;
+}
+
+.categories-block__categories {
+    width: 200px;
+    margin-left: 300px;
+    margin-right: 25px;
+}
+
+.categories-block__category-create,
+.category-types-block__type-create-button {
+    margin-top: 10px;
+    margin-left: 15px;
 }
 
 
