@@ -14,7 +14,7 @@ define(
 
         texts = texts.superAdmin.categories;
 
-        let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, errorMsg, $categoryTypeSaveButtons,
+        let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, $errorDuplicateMsg, $categoryTypeSaveButtons,
             valueRadios, radioButtonsGroup, categoryCreateContainer, categoryTypeSelected, currentCategoryType;
 
         function buildTypeNameRow() {
@@ -25,8 +25,8 @@ define(
         }
 
         function buildErrorCtgTypeDuplicateMsgBlock() {
-            errorMsg = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
-            return errorMsg;
+            $errorDuplicateMsg = components.texts.errorText("<div>", texts.errorName, {style: 'display: none;'});
+            return $errorDuplicateMsg;
         }
 
 
@@ -198,7 +198,7 @@ define(
 
             if (!name) {
                 $typeNameRow.$input.focus();
-                return;
+                $errorDuplicateMsg.slideDown();
             }
 
             let currentCtgTypeToSave = {
@@ -225,7 +225,7 @@ define(
 
                     })
                     .fail(() => {
-                        errorMsg.slideDown();
+                        $errorDuplicateMsg.slideDown();
                     });
             } else {
                 typesRestApi.create(currentCtgTypeToSave)
@@ -241,7 +241,7 @@ define(
                         categoryTypeSelected.selectLast();
                     })
                     .fail(() => {
-                        errorMsg.css('display', 'inline-block').slideDown();
+                        $errorDuplicateMsg.css('display', 'inline-block').slideDown();
                     });
             }
         }
@@ -284,7 +284,7 @@ define(
                     'field-name': buildTypeNameRow(),
                     'selection-modes': buildCategoryTypeSelectionModes(),
                     'properties': buildCategoryTypeProperty(),
-                    'error-row': buildErrorCtgTypeDuplicateMsgBlock(),
+                    'error-duplicate-row': buildErrorCtgTypeDuplicateMsgBlock(),
                     'ctg-type-edit-button': buildCategoryTypeEditButtons()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'}));
@@ -308,6 +308,7 @@ define(
                     $categoryTypeCreateContainer.slideUp();
 
                     $('.imcms-button--error').css('display', 'inline-block');
+                    errorDuplicateMessage$.slideUp();
                     categoryCreateContainer.slideDown();
 
                     return categoryObj;
@@ -359,7 +360,7 @@ define(
         let errorDuplicateMessage$;
 
         function buildCategoryNameDupblicateErrorBlock() {
-            errorDuplicateMessage$ = components.texts.errorText("<div>", texts.duplicateErrorName, {style: 'display: none;'});
+            errorDuplicateMessage$ = components.texts.errorText("<div>", texts.errorName, {style: 'display: none;'});
             return errorDuplicateMessage$;
         }
 
@@ -367,15 +368,9 @@ define(
             let name = $categoryNameRow.getValue();
             let description = categoryDescription.getValue();
 
-            if (!name) {
-                $categoryNameRow.$input.focus();
-                categoryDescription.$input.focus();
-                return;
-            }
-
             let currentCategoryToSave = {
                 id: (currentCategory) ? currentCategory.id : null,
-                name: name,
+                name: (name === null || name === '') ? ' ' : name,
                 description: description,
                 type: currentCategoryType
             };
@@ -502,6 +497,7 @@ define(
             categoryDescription.setValue(createCategory.description);
             $categoryTypeCreateContainer.slideUp();
             $('.imcms-button--error').css('display', 'none');
+            errorDuplicateMessage$.slideUp();
             categoryCreateContainer.slideDown();
 
             return createCategory;

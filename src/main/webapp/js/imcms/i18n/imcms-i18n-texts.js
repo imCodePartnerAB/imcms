@@ -544,7 +544,7 @@ const texts = {
                 saveButton: 'Spara',
                 cancelButton: 'Annullera',
                 warnCancelMessage: 'Vill du verkligen avbryta detta?',
-                duplicateErrorName: 'Kategori finns. Vänligen välj ett annat namn!',
+                errorName: 'Tomt namn är oacceptabelt! Vänligen välj ett annat namn!',
                 warnDelete: 'Radera?',
                 sections: {
                     createCategoryType: {
@@ -1182,7 +1182,7 @@ const texts = {
                 saveButton: 'Save',
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
-                duplicateErrorName: 'This is name exists. Please choose a different name!',
+                errorName: 'Empty name is unacceptable! Please choose a different name!',
                 warnDelete: 'Delete?',
                 sections: {
                     createCategoryType: {
