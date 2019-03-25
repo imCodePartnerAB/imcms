@@ -110,7 +110,7 @@ define(
 
                     components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), buildOnCategoryTypeSelected());
                 })
-                .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage)); // What is the error here ?
+                .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
 
             return categoryTypeSelect;
         }
@@ -226,7 +226,7 @@ define(
 
                     })
                     .fail(() => {
-                        $errorDuplicateMsg.slideDown();
+                        modal.buildErrorWindow(texts.errorName);
                     });
             } else {
                 typesRestApi.create(currentCtgTypeToSave)
@@ -242,7 +242,7 @@ define(
                         categoryTypeSelected.selectLast();
                     })
                     .fail(() => {
-                        $errorDuplicateMsg.css('display', 'inline-block').slideDown();
+                        modal.buildErrorWindow(texts.errorName);
                     });
             }
         }
@@ -309,7 +309,6 @@ define(
                     $categoryTypeCreateContainer.slideUp();
 
                     $('.imcms-button--error').css('display', 'inline-block');
-                    errorDuplicateMessage$.slideUp();
                     categoryCreateContainer.slideDown();
 
                     return categoryObj;
@@ -358,12 +357,6 @@ define(
         let $categoryNameRow;
         let categoryDescription;
         let categorySaveButtons;
-        let errorDuplicateMessage$;
-
-        function buildCategoryNameDupblicateErrorBlock() {
-            errorDuplicateMessage$ = components.texts.errorText("<div>", texts.errorName, {style: 'display: none;'});
-            return errorDuplicateMessage$;
-        }
 
         function onSaveCategory() {
             let name = $categoryNameRow.getValue();
@@ -392,7 +385,7 @@ define(
 
                     })
                     .fail(() => {
-                        errorDuplicateMessage$.css('display', 'inline-block').slideDown();
+                        modal.buildErrorWindow(texts.errorName);
                     });
             } else {
                 categoriesRestApi.create(currentCategoryToSave)
@@ -410,7 +403,7 @@ define(
 
                     })
                     .fail(() => {
-                        errorDuplicateMessage$.css('display', 'inline-block').slideDown();
+                        modal.buildErrorWindow(texts.errorName);
                     });
             }
 
@@ -481,7 +474,6 @@ define(
                 elements: {
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
-                    'error-duplicate': buildCategoryNameDupblicateErrorBlock(),
                     'edit-buttons': buildEditCategoryButtonContainer()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});
@@ -498,7 +490,6 @@ define(
             categoryDescription.setValue(createCategory.description);
             $categoryTypeCreateContainer.slideUp();
             $('.imcms-button--error').css('display', 'none');
-            errorDuplicateMessage$.slideUp();
             categoryCreateContainer.slideDown();
 
             return createCategory;

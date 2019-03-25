@@ -1182,7 +1182,7 @@ const texts = {
                 saveButton: 'Save',
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
-                errorName: 'Empty name is unacceptable! Please choose a different name!',
+                errorName: 'This is name is unacceptable! Please choose a different name!',
                 warnDelete: 'Delete?',
                 sections: {
                     createCategoryType: {
