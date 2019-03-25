@@ -71,7 +71,7 @@ define(
                         $categoryTypeCreateContainer.slideDown();
 
                         if (id) {
-                            $('.categories-block').remove();
+                            buildShowCategoryType.find('.categories-block').remove();
                             buildShowCategoryType.append(buildCategoriesContainer(id));
                             categoriesList.slideDown();
                             $categoryTypeSaveButtons.find('.imcms-button--error').show();
@@ -151,22 +151,11 @@ define(
         }
 
         function buildCategoryTypeButtonsContainer() {
-
-            function buildCategoryTypeCreateButton() {
                 let $button = components.buttons.positiveButton({
                     text: texts.createButtonName,
                     click: onCreateNewCategoryType
                 });
                 return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return new BEM({
-                block: 'type-buttons-block',
-                elements: {
-                    'create-button': buildCategoryTypeCreateButton(),
-                }
-            }).buildBlockStructure('<div>');
-
         }
 
         function onDeleteCategoryType() {
