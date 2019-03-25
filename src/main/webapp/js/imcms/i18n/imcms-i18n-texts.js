@@ -544,8 +544,7 @@ const texts = {
                 saveButton: 'Spara',
                 cancelButton: 'Annullera',
                 warnCancelMessage: 'Vill du verkligen avbryta detta?',
-                errorName: 'Tomt namn är oacceptabelt! Vänligen välj ett annat namn!',
-                warnDelete: 'Radera?',
+                confirmDelete: 'Radera?',
                 sections: {
                     createCategoryType: {
                         title: 'Skapa kategori typ',
@@ -562,6 +561,7 @@ const texts = {
                     }
                 },
                 error: {
+                    invalidateName: 'Tomt namn är oacceptabelt! Vänligen välj ett annat namn!',
                     category: {
                         loadFailed: 'Misslyckades med att hämta kategori. Försök igen'
                     },
@@ -1182,8 +1182,7 @@ const texts = {
                 saveButton: 'Save',
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
-                errorName: 'This is name is unacceptable! Please choose a different name!',
-                warnDelete: 'Delete?',
+                confirmDelete: 'Delete?',
                 sections: {
                     createCategoryType: {
                         title: 'Create category type',
@@ -1200,6 +1199,7 @@ const texts = {
                     }
                 },
                 error: {
+                    invalidateName: 'This is name is unacceptable! Please choose a different name!',
                     category: {
                         loadFailed: 'Failed to fetch category. Try again'
                     },
