@@ -74,7 +74,7 @@ define(
                             $('.categories-block').remove();
                             buildShowCategoryType.append(buildCategoriesContainer(id));
                             categoriesList.slideDown();
-                            $categoryTypeSaveButtons.find('.imcms-button--error').slideDown();
+                            $categoryTypeSaveButtons.find('.imcms-button--error').show();
                             categoryCreateBtnContainer.slideDown();
                         }
 
@@ -89,7 +89,7 @@ define(
                 id: "types-id",
                 name: "types-name",
                 emptySelect: false,
-                text: texts.chooseType,
+                text: texts.sections.createCategoryType.chooseType,
                 onSelected: buildOnCategoryTypeSelected
             });
 
@@ -137,17 +137,17 @@ define(
             $isMultiSelect.setChecked(createCategoryType.multiSelect);
             $isInherited.setChecked(createCategoryType.inherited);
 
-            $categoryTypeSaveButtons.find('.imcms-button--error').slideUp();
-            slideUpDifferentContainer(categoryCreateContainer, categoriesList, categoryCreateBtnContainer);
+            $categoryTypeSaveButtons.find('.imcms-button--error').hide();
+            hideCategoriesContainer();
             $categoryTypeCreateContainer.slideDown();
 
             return createCategoryType;
         }
 
-        function slideUpDifferentContainer(firstContainer, secondContainer, thirdContainer) {
-            if (firstContainer) firstContainer.slideUp();
-            if (secondContainer) secondContainer.slideUp();
-            if (thirdContainer) thirdContainer.slideUp();
+        function hideCategoriesContainer() {
+            if (categoryCreateContainer) categoryCreateContainer.slideUp();
+            if (categoriesList) categoriesList.slideUp();
+            if (categoryCreateBtnContainer) categoryCreateBtnContainer.slideUp();
         }
 
         function buildCategoryTypeButtonsContainer() {
@@ -179,7 +179,7 @@ define(
                         categoryTypeSelected.find(`[data-value='${currentCategoryType.id}']`).remove();
                         currentCategoryType = null;
                         categoryTypeSelected.selectFirst();
-                        slideUpDifferentContainer($categoryTypeCreateContainer, categoriesList, categoryCreateBtnContainer);
+                        hideCategoriesContainer();
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.removeFailed));
             });
@@ -192,7 +192,7 @@ define(
             let inherited = $isInherited.isChecked();
 
             if (!name) {
-                modal.buildErrorWindow(texts.error.invalidateName);
+                modal.buildErrorWindow(texts.error.invalidName);
                 return;
             }
 
@@ -220,7 +220,7 @@ define(
 
                     })
                     .fail(() => {
-                        modal.buildErrorWindow(texts.error.invalidateName);
+                        modal.buildErrorWindow(texts.error.invalidName);
                     });
             } else {
                 typesRestApi.create(currentCtgTypeToSave)
@@ -236,7 +236,7 @@ define(
                         categoryTypeSelected.selectLast();
                     })
                     .fail(() => {
-                        modal.buildErrorWindow(texts.error.invalidateName);
+                        modal.buildErrorWindow(texts.error.invalidName);
                     });
             }
         }
@@ -294,14 +294,14 @@ define(
                 categoriesRestApi.getById(id).done(function (category) {
                     currentCategory = category;
                     let categoryObj = {
-                        name: $categoryNameRow.setValue(currentCategory.name),
+                        name: categoryNameRow.setValue(currentCategory.name),
                         description: categoryDescription.setValue(currentCategory.description),
                         type: currentCategoryType
                     };
 
                     $categoryTypeCreateContainer.slideUp();
 
-                    $categorySaveButtons.find('.imcms-button--error').slideDown();
+                    categorySaveButtons.find('.imcms-button--error').show();
                     categoryCreateContainer.slideDown();
 
                     return categoryObj;
@@ -315,7 +315,7 @@ define(
                 id: "category-filter",
                 name: "category-filter",
                 emptySelect: false,
-                text: texts.chooseCategory,
+                text: texts.sections.createCategory.chooseCategory,
                 onSelected: onCategorySelected
             });
 
@@ -347,12 +347,12 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        let $categoryNameRow;
+        let categoryNameRow;
         let categoryDescription;
-        let $categorySaveButtons;
+        let categorySaveButtons;
 
         function onSaveCategory() {
-            let name = $categoryNameRow.getValue();
+            let name = categoryNameRow.getValue();
             let description = categoryDescription.getValue();
 
             let currentCategoryToSave = {
@@ -378,7 +378,7 @@ define(
 
                     })
                     .fail(() => {
-                        modal.buildErrorWindow(texts.error.invalidateName);
+                        modal.buildErrorWindow(texts.error.invalidName);
                     });
             } else {
                 categoriesRestApi.create(currentCategoryToSave)
@@ -396,7 +396,7 @@ define(
 
                     })
                     .fail(() => {
-                        modal.buildErrorWindow(texts.error.invalidateName);
+                        modal.buildErrorWindow(texts.error.invalidName);
                     });
             }
 
@@ -414,10 +414,10 @@ define(
         function buildCategoryCreateContainer() {
 
             function buildCategoryNameRow() {
-                $categoryNameRow = components.texts.textBox('<div>', {
+                categoryNameRow = components.texts.textBox('<div>', {
                     text: texts.sections.createCategory.name
                 });
-                return $categoryNameRow;
+                return categoryNameRow;
             }
 
             function buildCategoryDescriptionTextField() {
@@ -444,7 +444,7 @@ define(
             }
 
             function buildEditCategoryButtonContainer() {
-                return $categorySaveButtons = components.buttons.buttonsContainer('<div>', [
+                return categorySaveButtons = components.buttons.buttonsContainer('<div>', [
                     components.buttons.saveButton({
                         text: texts.saveButton,
                         click: onSaveCategory
@@ -472,17 +472,17 @@ define(
             }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
-        function onCreateCategory() {
+        function onCategoryCreate() {
             currentCategory = null;
             let createCategory = {
                 id: null,
                 name: '',
                 description: ''
             };
-            $categoryNameRow.setValue(createCategory.name);
+            categoryNameRow.setValue(createCategory.name);
             categoryDescription.setValue(createCategory.description);
             $categoryTypeCreateContainer.slideUp();
-            $categorySaveButtons.find('.imcms-button--error').slideUp();
+            categorySaveButtons.find('.imcms-button--error').hide();
             categoryCreateContainer.slideDown();
 
             return createCategory;
@@ -491,7 +491,7 @@ define(
         function buildCategoryCreateButton() {
             let $button = components.buttons.positiveButton({
                 text: texts.createButtonName,
-                click: onCreateCategory
+                click: onCategoryCreate
             });
 
             return components.buttons.buttonsContainer('<div>', [$button]);
