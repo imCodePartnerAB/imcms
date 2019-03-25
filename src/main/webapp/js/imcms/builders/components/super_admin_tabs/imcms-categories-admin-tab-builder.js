@@ -114,13 +114,23 @@ define(
 
         function buildDropListCtgTypesContainer() {
             return buildShowCategoryType = new BEM({
-                block: 'category-types-block',
+                block: 'container-main-block',
+                elements: {
+                    'container-type': buildCategoryTypeContainer()
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        function buildCategoryTypeContainer() {
+            return new BEM({
+                block: 'category-type-block',
                 elements: {
                     'categories-types': buildDropDownListCategoriesTypes(),
                     'type-create-button': buildCategoryTypeButtonsContainer()
                 }
             }).buildBlockStructure('<div>');
         }
+
 
         function onCreateNewCategoryType() {
             currentCategoryType = null;

@@ -281,34 +281,26 @@
     background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
-
-.category-types-block {
-    width: 100%;
+.container-main-block {
     display: inline-flex;
+    width: 100%;
 }
 
+.category-type-block,
 .categories-block {
     display: inline-flex;
-    width: 100%;
+    width: 50%;
 }
 
-.categories-block__category-create {
-    margin-top: 35px;
-    margin-left: 25px;
-}
-
+.category-type-block__categories-types,
 .categories-block__categories {
-    width: 45%;
-    margin-left: 30px;
+    width: 65%;
 }
 
-.category-types-block__type-create-button {
+.categories-block__category-create,
+.category-type-block__type-create-button {
     margin-top: 35px;
     margin-left: 25px;
-}
-
-.category-types-block__categories-types {
-    width: 45%;
 }
 
 .category-create-block__row-description {
