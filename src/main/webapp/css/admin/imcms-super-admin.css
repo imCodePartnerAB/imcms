@@ -281,56 +281,37 @@
     background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
-.type-create-block__field-name {
-    padding-bottom: 15px;
-}
-
-.category-create-block__row-description {
-    padding-bottom: 15px;
-    width: 52%;
-}
-
-.create-button-block__title,
-.type-buttons-block__title {
-    padding-bottom: 10px;
-}
-
-.type-buttons-block__create-button {
-    padding-bottom: 5px;
-}
 
 .category-types-block {
     display: inline-flex;
-    width: 100%;
-}
-
-.category-types-block__category-create-button {
-    margin-left: 10%;
-    margin-top: 3%;
-}
-
-.category-types-block__categories-types {
-    width: 220px;
-}
-
-.category-create-block {
-    margin-left: 58%;
 }
 
 .categories-block {
     display: inline-flex;
+    width: 40%;
+}
+
+.categories-block__category-create {
+    margin-top: 35px;
+    margin-left: 25px;
 }
 
 .categories-block__categories {
-    width: 220px;
-    margin-left: 280px;
-    margin-right: 25px;
+    width: 400px;
+    margin-left: 30px;
 }
 
-.categories-block__category-create,
 .category-types-block__type-create-button {
-    margin-top: 10px;
-    margin-left: 15px;
+    margin-top: 35px;
+    margin-left: 25px;
+}
+
+.category-types-block__categories-types {
+    width: 300px;
+}
+
+.category-create-block__row-description {
+    width: 22%;
 }
 
 
