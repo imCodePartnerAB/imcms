@@ -25,16 +25,6 @@ public class CategoryTypeDTO extends CategoryType {
     }
 
     @Override
-    public boolean isInherited() {
-        return inherited;
-    }
-
-    @Override
-    public void setInherited(boolean isInherited) {
-        this.inherited = isInherited;
-    }
-
-    @Override
     public boolean isImageArchive() {
         return false;
     }
