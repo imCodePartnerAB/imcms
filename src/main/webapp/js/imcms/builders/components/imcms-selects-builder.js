@@ -182,7 +182,7 @@ define("imcms-selects-builder",
                 const $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
                     .find(DROP_DOWN_LIST__ITEM__CLASS_$).first();
 
-                selectItems($selectCandidate, $resultImcmsSelect);
+                selectItem($selectCandidate, $resultImcmsSelect);
 
             }
         }
@@ -192,11 +192,11 @@ define("imcms-selects-builder",
                 const $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
                     .find(DROP_DOWN_LIST__ITEM__CLASS_$).last();
 
-                selectItems($selectCandidate, $resultImcmsSelect);
+                selectItem($selectCandidate, $resultImcmsSelect);
             }
         }
 
-        function selectItems($selectCandidate, $resultImcmsSelect) {
+        function selectItem($selectCandidate, $resultImcmsSelect) {
             if ($selectCandidate.length) {
                 onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
                 return $resultImcmsSelect;
