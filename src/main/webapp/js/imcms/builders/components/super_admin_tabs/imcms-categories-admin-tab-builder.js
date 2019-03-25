@@ -72,7 +72,7 @@ define(
 
                         if (id) {
                             buildShowCategoryType.find('.categories-block').remove();
-                            buildShowCategoryType.append(buildCategoriesContainer(id));
+                            buildShowCategoryType.append(buildCategoriesSelection(id));
                             categoriesList.slideDown();
                             $categoryTypeSaveButtons.find('.imcms-button--error').show();
                             categoryCreateBtnContainer.slideDown();
@@ -116,7 +116,7 @@ define(
             return buildShowCategoryType = new BEM({
                 block: 'container-main-block',
                 elements: {
-                    'container-type': buildCategoryTypeContainer()
+                    'container-type': buildAllCategoryTypeContainer()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -126,7 +126,17 @@ define(
                 block: 'category-type-block',
                 elements: {
                     'categories-types': buildDropDownListCategoriesTypes(),
-                    'type-create-button': buildCategoryTypeButtonsContainer()
+                    'type-create-button': buildCategoryTypeButtonsContainer(),
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+        function buildAllCategoryTypeContainer() {
+            return new BEM({
+                block: 'types-block',
+                elements: {
+                    'container': buildCategoryTypeContainer(),
+                    'create-container': buildCreateCategoryTypeContainer()
                 }
             }).buildBlockStructure('<div>');
         }
@@ -346,6 +356,16 @@ define(
             }).buildBlockStructure('<div>');
         }
 
+        function buildCategoriesSelection(id) {
+            return new BEM({
+                block: 'category-selection-block',
+                elements: {
+                    'selection-container': buildCategoriesContainer(id),
+                    'create-container': buildCategoryCreateContainer()
+                }
+            }).buildBlockStructure('<div>');
+        }
+
         let categoryNameRow;
         let categoryDescription;
         let categorySaveButtons;
@@ -510,7 +530,7 @@ define(
 
         return new SuperAdminTab(texts.name, [
             buildDropListCtgTypesContainer(),
-            buildCreateCategoryTypeContainer(),
+            //buildAllCategoryTypeContainer(),
             buildCategoryCreateContainer()
         ]);
     }
