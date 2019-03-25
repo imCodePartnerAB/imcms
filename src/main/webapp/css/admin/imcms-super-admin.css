@@ -287,7 +287,7 @@
 
 .category-create-block__row-description {
     padding-bottom: 15px;
-    width: 55%;
+    width: 52%;
 }
 
 .create-button-block__title,
@@ -310,11 +310,11 @@
 }
 
 .category-types-block__categories-types {
-    width: 200px;
+    width: 220px;
 }
 
 .category-create-block {
-    margin-left: 60%;
+    margin-left: 58%;
 }
 
 .categories-block {
@@ -322,8 +322,8 @@
 }
 
 .categories-block__categories {
-    width: 200px;
-    margin-left: 300px;
+    width: 220px;
+    margin-left: 280px;
     margin-right: 25px;
 }
 
