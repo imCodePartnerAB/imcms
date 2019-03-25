@@ -163,7 +163,6 @@ define(
             return new BEM({
                 block: 'type-buttons-block',
                 elements: {
-                    'title': $('<div>', {text: texts.titleCategoryType}),
                     'create-button': buildCategoryTypeCreateButton(),
                 }
             }).buildBlockStructure('<div>');
@@ -182,7 +181,7 @@ define(
                         categoryTypeSelected.selectFirst();
                         slideUpDifferentContainer($categoryTypeCreateContainer, categoriesList, categoryCreateBtnContainer);
                     })
-                    .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+                    .fail(() => modal.buildErrorWindow(texts.error.categoryType.removeFailed));
             });
         }
 
@@ -505,7 +504,6 @@ define(
             return categoryCreateBtnContainer = new BEM({
                 block: 'create-button-block',
                 elements: {
-                    'title': $('<div>', {text: texts.titleCategory}),
                     'create': buildCategoryCreateButton(),
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});
