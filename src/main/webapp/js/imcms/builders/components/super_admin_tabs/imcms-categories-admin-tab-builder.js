@@ -71,8 +71,8 @@ define(
                         $categoryTypeCreateContainer.slideDown();
 
                         if (id) {
-                            buildShowCategoryType.find('.categories-block').remove();
-                            buildShowCategoryType.append(buildCategoriesSelection(id));
+                            buildShowCategoryType.find('.category-editor').remove();
+                            buildShowCategoryType.append(categoryTypeBem.makeBlockElement('category', buildCategoriesSelection(id)));
                             categoriesList.slideDown();
                             $categoryTypeSaveButtons.find('.imcms-button--error').show();
                             categoryCreateBtnContainer.slideDown();
@@ -111,32 +111,32 @@ define(
 
 
         let buildShowCategoryType;
+        const categoryTypeBem = new BEM({
+            block: 'category-admin',
+        });
 
         function buildDropListCtgTypesContainer() {
-            return buildShowCategoryType = new BEM({
-                block: 'container-main-block',
+            return buildShowCategoryType = categoryTypeBem.buildBlock('<div>', [{
+                'category-type': buildCategoryTypeEditorContainer()
+            }]);
+        }
+
+        function buildCategoryTypeEditorContainer() {
+            return new BEM({
+                block: 'category-type-editor',
                 elements: {
-                    'container-type': buildAllCategoryTypeContainer()
+                    'type-container': buildCategoryTypeContainer(),
+                    'create-container': buildCreateCategoryTypeContainer()
                 }
             }).buildBlockStructure('<div>');
         }
 
         function buildCategoryTypeContainer() {
             return new BEM({
-                block: 'category-type-block',
+                block: 'category-type',
                 elements: {
-                    'categories-types': buildDropDownListCategoriesTypes(),
-                    'type-create-button': buildCategoryTypeButtonsContainer(),
-                }
-            }).buildBlockStructure('<div>');
-        }
-
-        function buildAllCategoryTypeContainer() {
-            return new BEM({
-                block: 'types-block',
-                elements: {
-                    'container': buildCategoryTypeContainer(),
-                    'create-container': buildCreateCategoryTypeContainer()
+                    'type-drop-list': buildDropDownListCategoriesTypes(),
+                    'type-create-button': buildCategoryTypeButtonContainer(),
                 }
             }).buildBlockStructure('<div>');
         }
@@ -170,12 +170,12 @@ define(
             if (categoryCreateBtnContainer) categoryCreateBtnContainer.slideUp();
         }
 
-        function buildCategoryTypeButtonsContainer() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.createButtonName,
-                    click: onCreateNewCategoryType
-                });
-                return components.buttons.buttonsContainer('<div>', [$button]);
+        function buildCategoryTypeButtonContainer() {
+            let $button = components.buttons.positiveButton({
+                text: texts.createButtonName,
+                click: onCreateNewCategoryType
+            });
+            return components.buttons.buttonsContainer('<div>', [$button]);
         }
 
         function onDeleteCategoryType() {
@@ -350,17 +350,17 @@ define(
             return categoriesList = new BEM({
                 block: 'categories-block',
                 elements: {
-                    'categories': buildDropDownListCategories(id),
-                    'category-create': buildCategoryCreateButtonContainer()
+                    'select-categories': buildDropDownListCategories(id),
+                    'category-create-button': buildCategoryCreateButtonContainer()
                 }
             }).buildBlockStructure('<div>');
         }
 
         function buildCategoriesSelection(id) {
             return new BEM({
-                block: 'category-selection-block',
+                block: 'category-editor',
                 elements: {
-                    'selection-container': buildCategoriesContainer(id),
+                    'select-container': buildCategoriesContainer(id),
                     'create-container': buildCategoryCreateContainer()
                 }
             }).buildBlockStructure('<div>');
@@ -530,7 +530,6 @@ define(
 
         return new SuperAdminTab(texts.name, [
             buildDropListCtgTypesContainer(),
-            //buildAllCategoryTypeContainer(),
             buildCategoryCreateContainer()
         ]);
     }
