@@ -12,7 +12,7 @@
                 <td>
 							<table border="0" cellspacing="0" cellpadding="0">
 							<tr>
-                                <td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MAX_CHOICES%>"
+                                <td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MULTI_SELECT%>"
                                                        value="1" <%= categoryTypeToEdit.isMultiSelect() ? "" : "checked" %> >
                                 </td>
 								<td>&nbsp;&nbsp;</td>
@@ -25,7 +25,7 @@
                  <td>
 							<table border="0" cellspacing="0" cellpadding="0">
 							<tr>
-                                <td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MAX_CHOICES%>"
+                                <td height="24"><input type="radio" name="<%=AdminCategories.PARAMETER__MULTI_SELECT%>"
                                                        value="0" <%= categoryTypeToEdit.isMultiSelect() ? "checked" : "" %> >
                                 </td>
 								<td>&nbsp;&nbsp;</td>
@@ -36,8 +36,4 @@
             <tr>
                 <td><? install/htdocs/sv/jsp/category_admin/inherited ?></td>
                 <td><input type="checkbox" name="<%=AdminCategories.PARAMETER__INHERITED%>" value="1" <%= categoryTypeToEdit.isInherited() ? "checked" : "" %> ></td>
-            </tr>
-            <tr>
-                <td><? install/htdocs/sv/jsp/category_admin/image_archive ?></td>
-                <td><input type="checkbox" name="<%=AdminCategories.PARAMETER__IMAGE_ARCHIVE%>" value="1" <%= categoryTypeToEdit.isImageArchive() ? "checked" : "" %> ></td>
             </tr>
