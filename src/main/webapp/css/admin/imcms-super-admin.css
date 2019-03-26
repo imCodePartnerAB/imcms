@@ -281,32 +281,63 @@
     background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
-.container-main-block {
-    display: inline-flex;
-    width: 100%;
-}
-
-.category-type-block,
-.categories-block {
-    display: inline-flex;
+.category-type-editor,
+.category-editor {
     width: 50%;
 }
 
-.category-type-block__categories-types,
-.categories-block__categories {
+.categories,
+.category-type {
+    display: flex;
+    width: 100%;
+}
+
+.category-type__type-drop-list {
     width: 65%;
 }
 
-.categories-block__category-create,
-.category-type-block__type-create-button {
-    margin-top: 35px;
-    margin-left: 25px;
+.categories__select-categories {
+    width: 65%;
+}
+
+.categories__category-create-button {
+    margin-top: 32px;
+    margin-left: 15px;
+}
+
+.category-type__type-create-button {
+    margin-top: 32px;
+    margin-left: 15px;
 }
 
 .category-create-block__row-description {
-    width: 22%;
+    width: 65%;
 }
 
+.type-create-block__field-name {
+    width: 65%;
+}
+
+.category-create-block__row-name {
+    width: 65%;
+}
+
+.category-selection-block {
+    flex-basis: 50%;
+}
+
+.types-editor-block {
+    flex-basis: 50%;
+}
+
+.category-admin {
+    display: flex;
+    justify-content: space-between;
+}
+
+.categories-block__select-categories {
+    width: 55%;
+}
 
 .profile-info-row {
     padding: 5px;

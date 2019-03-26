@@ -14,11 +14,19 @@ define(
 
         texts = texts.superAdmin.categories;
 
-        let $typeNameRow, $isInherited, $isSingleSelect, $isMultiSelect, $categoryTypeSaveButtons,
-            valueRadios, radioButtonsGroup, categoryCreateContainer, categoryTypeSelected, currentCategoryType;
+        let $typeNameRow;
+        let $isInherited;
+        let $isSingleSelect;
+        let $isMultiSelect;
+        let $categoryTypeSaveButtons;
+        let valueRadios;
+        let radioButtonsGroup;
+        let categoryCreateContainer;
+        let categoryTypeSelected;
+        let currentCategoryType;
 
         function buildTypeNameRow() {
-            $typeNameRow = components.texts.textBox('<div>', {
+            $typeNameRow = components.texts.textAreaField('<div>', {
                 text: texts.sections.createCategoryType.name
             });
             return $typeNameRow;
@@ -348,7 +356,7 @@ define(
 
         function buildCategoriesContainer(id) {
             return categoriesList = new BEM({
-                block: 'categories-block',
+                block: 'categories',
                 elements: {
                     'select-categories': buildDropDownListCategories(id),
                     'category-create-button': buildCategoryCreateButtonContainer()
@@ -433,7 +441,7 @@ define(
         function buildCategoryCreateContainer() {
 
             function buildCategoryNameRow() {
-                categoryNameRow = components.texts.textBox('<div>', {
+                categoryNameRow = components.texts.textAreaField('<div>', {
                     text: texts.sections.createCategory.name
                 });
                 return categoryNameRow;
