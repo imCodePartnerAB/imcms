@@ -15,15 +15,13 @@ public class CategoryDomainObject extends Category implements Comparable<Categor
     private Integer id;
     private String name;
     private String description;
-    private String imageUrl;
     private CategoryType type;
 
-    public CategoryDomainObject(int id, String name, String description, String imageUrl, CategoryTypeDomainObject type) {
+    public CategoryDomainObject(int id, String name, String description, CategoryTypeDomainObject type) {
         this.id = id;
         this.description = description;
         this.type = type;
         this.name = name;
-        this.imageUrl = imageUrl;
     }
 
     @Override

@@ -24,10 +24,6 @@ public abstract class CategoryType implements Serializable {
 
     public abstract void setInherited(boolean isInherited);
 
-    public abstract boolean isImageArchive();
-
-    public abstract void setImageArchive(boolean imageArchive);
-
     public abstract Integer getId();
 
     public abstract void setId(Integer id);

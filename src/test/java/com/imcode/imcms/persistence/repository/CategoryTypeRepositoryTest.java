@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @Transactional
 public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
@@ -63,7 +66,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
         categoryDataInitializer.createData(COUNT_DATA);
         final String testTypeName = "test_type_name";
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
-                null, testTypeName, 0, false, false
+                null, testTypeName, false, false
         );
         final CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
 

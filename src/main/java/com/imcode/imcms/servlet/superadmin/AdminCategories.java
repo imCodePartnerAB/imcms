@@ -39,15 +39,13 @@ public class AdminCategories extends HttpServlet {
     public static final String PARAMETER_MODE__VIEW_CATEGORY = "view_category";
     public static final String PARAMETER_MODE__DEFAULT = "default_mode";
     public static final String PARAMETER_BUTTON__CANCEL = "cancel";
-    public static final String PARAMETER__MAX_CHOICES = "max_choices";
+    public static final String PARAMETER__MULTI_SELECT = "is_multi_select";
     public static final String PARAMETER_CATEGORY_TYPE_SAVE = "category_type_save";
     public static final String PARAMETER_CATEGORY_TYPE_ADD = "category_type_add";
     public static final String PARAMETER__INHERITED = "inherited";
-    public static final String PARAMETER__IMAGE_ARCHIVE = "image_archive";
     public static final String PARAMETER__CATEGORY_DELETE = "category_delete";
     private static final String JSP_TEMPLATE = "category_admin.jsp";
     private static final String PARAMETER__DESCRIPTION = "description";
-    private static final String PARAMETER__ICON = "icon";
     private static final String PARAMETER__CATEGORIES = "categories";
     private static final String PARAMETER__OLD_NAME = "oldName";
     private static final String PARAMETER__CATEGORY_SAVE = "category_save";
@@ -185,7 +183,6 @@ public class AdminCategories extends HttpServlet {
                                         CategoryMapper categoryMapper) {
         category.setName(req.getParameter(PARAMETER__NAME));
         category.setDescription(req.getParameter(PARAMETER__DESCRIPTION));
-        category.setImageUrl(req.getParameter(PARAMETER__ICON));
         CategoryTypeDomainObject categoryTypeToAddTo = getCategoryTypeFromIdParameterInRequest(req, PARAMETER_SELECT__CATEGORY_TYPE_TO_ADD_TO, categoryMapper);
         category.setType(categoryTypeToAddTo);
     }
@@ -199,14 +196,13 @@ public class AdminCategories extends HttpServlet {
         CategoryDomainObject newCategory = new CategoryDomainObject(0,
                 req.getParameter(PARAMETER__NAME),
                 req.getParameter(PARAMETER__DESCRIPTION),
-                req.getParameter(PARAMETER__ICON),
                 categoryTypeToAddTo);
         adminCategoriesPage.setCategoryToEdit(newCategory);
         adminCategoriesPage.setCategoryTypeToEdit(categoryTypeToAddTo);
 
         if (null != req.getParameter(PARAMETER__ADD_CATEGORY_BUTTON) && StringUtils.isNotBlank(newCategory.getName())) {
             categoryMapper.addCategory(newCategory);
-            adminCategoriesPage.setCategoryToEdit(new CategoryDomainObject(0, null, "", "", null));
+            adminCategoriesPage.setCategoryToEdit(new CategoryDomainObject(0, null, "", null));
             adminCategoriesPage.setUniqueCategoryName(true);
         }
         return adminCategoriesPage;
@@ -303,12 +299,11 @@ public class AdminCategories extends HttpServlet {
                 formBean.setUniqueCategoryTypeName(categoryMapper.isUniqueCategoryTypeName(newName));
             }
             if (formBean.isUniqueCategoryTypeName()) {
-                int maxChoices = Integer.parseInt(req.getParameter(PARAMETER__MAX_CHOICES));
+                int maxChoices = Integer.parseInt(req.getParameter(PARAMETER__MULTI_SELECT));
                 categoryTypeToEdit.setName(newName);
                 categoryTypeToEdit.setMultiSelect(maxChoices == 0);
                 boolean inherited = getInheritedParameterFromRequest(req);
                 categoryTypeToEdit.setInherited(inherited);
-                categoryTypeToEdit.setImageArchive(getImageArchiveParameterFromRequest(req));
                 categoryMapper.updateCategoryType(categoryTypeToEdit);
             }
         }
@@ -334,19 +329,14 @@ public class AdminCategories extends HttpServlet {
 
     private CategoryTypeDomainObject createCategoryTypeFromRequest(HttpServletRequest req) {
         String categoryTypeName = req.getParameter(PARAMETER__NAME).trim();
-        boolean multiselect = Integer.parseInt(req.getParameter(PARAMETER__MAX_CHOICES)) == 0;
+        boolean multiselect = Integer.parseInt(req.getParameter(PARAMETER__MULTI_SELECT)) == 0;
         boolean inherited = getInheritedParameterFromRequest(req);
         CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(0, categoryTypeName, multiselect, inherited);
-        categoryType.setImageArchive(getImageArchiveParameterFromRequest(req));
         return categoryType;
     }
 
     private boolean getInheritedParameterFromRequest(HttpServletRequest request) {
         return null != request.getParameter(PARAMETER__INHERITED);
-    }
-
-    private boolean getImageArchiveParameterFromRequest(HttpServletRequest request) {
-        return request.getParameter(PARAMETER__IMAGE_ARCHIVE) != null;
     }
 
     public static class AdminCategoriesPage {

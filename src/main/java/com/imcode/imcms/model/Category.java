@@ -13,7 +13,6 @@ public abstract class Category implements Serializable {
         setId(from.getId());
         setName(from.getName());
         setDescription(from.getDescription());
-        setImageUrl(from.getImageUrl());
         setType(from.getType());
     }
 
@@ -28,10 +27,6 @@ public abstract class Category implements Serializable {
     public abstract String getDescription();
 
     public abstract void setDescription(String description);
-
-    public abstract String getImageUrl();
-
-    public abstract void setImageUrl(String imageUrl);
 
     public abstract CategoryType getType();
 

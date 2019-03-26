@@ -21,8 +21,6 @@ public class CategoryDTO extends Category {
 
     private String description;
 
-    private String imageUrl;
-
     private CategoryTypeDTO type;
 
     public CategoryDTO(Category from) {

@@ -23,14 +23,4 @@ public class CategoryTypeDTO extends CategoryType {
     public CategoryTypeDTO(CategoryType from) {
         super(from);
     }
-
-    @Override
-    public boolean isImageArchive() {
-        return false;
-    }
-
-    @Override
-    public void setImageArchive(boolean imageArchive) {
-        // not implemented
-    }
 }

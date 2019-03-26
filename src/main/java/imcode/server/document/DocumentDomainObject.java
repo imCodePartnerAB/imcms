@@ -432,7 +432,6 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
         final CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setId(category.getId());
         categoryDTO.setName(category.getName());
-        categoryDTO.setImageUrl(category.getImage());
         categoryDTO.setDescription(category.getDescription());
         categoryDTO.setType(category.getType());
 

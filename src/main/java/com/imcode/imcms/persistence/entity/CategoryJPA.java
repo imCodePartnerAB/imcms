@@ -44,25 +44,13 @@ public class CategoryJPA extends Category {
 
     private String description;
 
-    @Column(name = "image", nullable = false)
-    private String imageUrl;
-
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "category_type_id", nullable = false)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private CategoryTypeJPA type;
 
-    public CategoryJPA(String name, String description, String imageUrl, CategoryTypeJPA type) {
-        this(null, name, description, imageUrl, type);
-    }
-
     public CategoryJPA(Category from) {
         super(from);
-    }
-
-    @Override
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = (imageUrl == null) ? "" : imageUrl;
     }
 
     @Override

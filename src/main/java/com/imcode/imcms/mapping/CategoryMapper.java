@@ -173,8 +173,7 @@ public class CategoryMapper {
                 jpaType.getId(),
                 jpaType.getName(),
                 jpaType.isMultiSelect(),
-                jpaType.isInherited(),
-                jpaType.isImageArchive());
+                jpaType.isInherited());
     }
 
     private CategoryDomainObject toDomainObject(Category jpaCategory) {
@@ -184,19 +183,17 @@ public class CategoryMapper {
                 jpaCategory.getId(),
                 jpaCategory.getName(),
                 jpaCategory.getDescription(),
-                jpaCategory.getImageUrl(),
                 toDomainObject(jpaCategory.getType()));
     }
 
     private CategoryTypeJPA toJpaObject(CategoryType typeDO) {
         return new CategoryTypeJPA(
-                typeDO.getId(), typeDO.getName(), typeDO.isMultiSelect(), typeDO.isInherited(), typeDO.isImageArchive()
-        );
+                typeDO.getId(), typeDO.getName(), typeDO.isMultiSelect(), typeDO.isInherited());
     }
 
     private CategoryJPA toJpaObject(CategoryDomainObject categoryDO) {
         return new CategoryJPA(
-                categoryDO.getId(), categoryDO.getName(), categoryDO.getDescription(), categoryDO.getImageUrl(), toJpaObject(categoryDO.getType())
+                categoryDO.getId(), categoryDO.getName(), categoryDO.getDescription(), toJpaObject(categoryDO.getType())
         );
     }
 }

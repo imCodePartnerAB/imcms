@@ -70,7 +70,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
         assertEquals(3, typesData.size());
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
-                null, "name", 0, false, false
+                null, "name", false, false
         ));
         assertNotNull(categoryTypeService.create(categoryType));
         assertEquals(COUNT_DATA + 1, categoryTypeService.getAll().size());
@@ -81,8 +81,8 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
         assertEquals(3, typesData.size());
 
-        final CategoryType categoryType = new CategoryTypeJPA(
-                typesData.get(0).getName(), 0, false, false
+        final CategoryType categoryType = new CategoryTypeJPA(null,
+                typesData.get(0).getName(), false, false
         );
         assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.create(categoryType));
     }
@@ -90,7 +90,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     @Test
     public void create_When_CategoryTypeNameEmpty_Expected_CorrectException() {
         final CategoryType categoryType = new CategoryTypeJPA(
-                null, "", 0, false, false
+                null, "", false, false
         );
         assertThrows(IllegalArgumentException.class, () -> categoryTypeService.create(categoryType));
     }
@@ -150,7 +150,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
     private Category createCategory(CategoryTypeDTO categoryTypeDTO) {
         final CategoryDTO categoryDTO = new CategoryDTO(
-                null, "name", "description", "url", categoryTypeDTO
+                null, "name", "description", categoryTypeDTO
         );
         return categoryService.save(categoryDTO);
     }

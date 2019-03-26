@@ -10,7 +10,7 @@ public class Category implements Comparable<Category> {
     private final CategoryDomainObject internalCategory;
 
     public Category(String name, CategoryType categoryType) {
-        this.internalCategory = new CategoryDomainObject(0, name, "", "", categoryType.getInternal());
+        this.internalCategory = new CategoryDomainObject(0, name, "", categoryType.getInternal());
     }
 
     Category(CategoryDomainObject internalCategory) {
@@ -61,14 +61,6 @@ public class Category implements Comparable<Category> {
 
     public int getId() {
         return internalCategory.getId();
-    }
-
-    public String getImage() {
-        return internalCategory.getImageUrl();
-    }
-
-    public void setImage(String imageUrl) {
-        internalCategory.setImageUrl(imageUrl);
     }
 
     public com.imcode.imcms.model.CategoryType getType() {

@@ -29,7 +29,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class CategoryControllerTest extends AbstractControllerTest {
@@ -115,7 +118,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
         assertTrue(categoryController.getCategories().isEmpty());
         categoryDataInitializer.createData(2);
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
-                null, "other", 0, false, true
+                null, "other", false, true
         ));
         final CategoryType createdCategoryType = categoryTypeService.create(categoryType);
         final int categoryTypeId = createdCategoryType.getId();
@@ -132,7 +135,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
         assertTrue(categoryController.getCategories().isEmpty());
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
         final CategoryDTO category = new CategoryDTO(new CategoryJPA(
-                null, "name", "description", "url", typesData.get(0)
+                null, "name", "description", typesData.get(0)
         ));
         performPostWithContentExpectOk(category);
 
@@ -149,7 +152,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
 
         final String existsName = categories.get(0).getName();
         final CategoryDTO category = new CategoryDTO(new CategoryJPA(
-                null, existsName, "description", "url", typesData.get(0)
+                null, existsName, "description", typesData.get(0)
         ));
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(category);
 

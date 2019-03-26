@@ -102,7 +102,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(1);
         assertNotNull(typesData);
         final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(typesData.get(0));
-        final Category category = new CategoryJPA("name", "dummy", "/..", firstCategoryType);
+        final Category category = new CategoryJPA(null, "name", "dummy", firstCategoryType);
         final Category savedCategory = categoryService.save(category);
 
         assertTrue(categoryService.getAll().contains(savedCategory));
@@ -114,7 +114,7 @@ public class CategoryServiceTest extends WebAppSpringTestConfig {
         final List<CategoryJPA> categories = categoryDataInitializer.createData(COUNT_DATA);
         final Category firstCategory = categories.get(0);
         final CategoryTypeJPA firstCategoryType = categories.get(0).getType();
-        final Category category = new CategoryJPA(firstCategory.getName(), "dummy", "/..", firstCategoryType);
+        final Category category = new CategoryJPA(null, firstCategory.getName(), "/..", firstCategoryType);
 
         assertThrows(DataIntegrityViolationException.class, () -> categoryService.save(category));
     }

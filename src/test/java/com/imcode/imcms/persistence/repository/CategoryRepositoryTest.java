@@ -44,7 +44,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
         categoryDataInitializer.createData(4);
         final List<CategoryTypeJPA> categories = categoryDataInitializer.getTypes();
         final CategoryTypeJPA firstCategoryType = new CategoryTypeJPA(categories.get(0));
-        final CategoryJPA category = new CategoryJPA("name", "dummy", "", firstCategoryType);
+        final CategoryJPA category = new CategoryJPA(null, "name", "dummy", firstCategoryType);
         CategoryJPA savedCategory = categoryRepository.save(category);
 
         assertNotNull(savedCategory);
@@ -109,7 +109,7 @@ public class CategoryRepositoryTest extends WebAppSpringTestConfig {
     public void findByCategoryTypeId_When_CategoriesNotUsingCategoryType_Expected_EmptyResult() {
         final List<CategoryJPA> categories = categoryDataInitializer.createData(2);
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
-                null, "name1", 0, false, true
+                null, "name1", false, true
         );
         final CategoryTypeJPA saved = categoryTypeRepository.save(categoryType);
         assertNotEquals(categories, categoryRepository.findById(saved.getId()));
