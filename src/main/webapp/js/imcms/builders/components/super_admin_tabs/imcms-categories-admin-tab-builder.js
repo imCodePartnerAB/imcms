@@ -14,80 +14,94 @@ define(
 
         texts = texts.superAdmin.categories;
 
-        let createContainer;
-        let currentCtgType = null;
-        let editorContainer;
+        let $typeNameRow;
+        let $isInherited;
+        let $isSingleSelect;
+        let $isMultiSelect;
+        let $categoryTypeSaveButtons;
+        let valueRadios;
+        let radioButtonsGroup;
         let categoryCreateContainer;
-        let currentCategory;
+        let categoryTypeSelected;
+        let currentCategoryType;
 
-        function buildDropDownListCategoriesTypes() {
+        function buildTypeNameRow() {
+            $typeNameRow = components.texts.textAreaField('<div>', {
+                text: texts.sections.createCategoryType.name
+            });
+            return $typeNameRow;
+        }
 
-            const onCategorySelected = value => {
-                // categoriesRestApi.getById(value).done(function (category) {
-                //     currentCategory = category;
-                //     let edit = typeEditor.editCategoryType($('<div>'), { //change for this
-                //         id: currentCategory.id,
-                //         name: currentCategory.name,
-                //         description: currentCategory.description,
-                //         imageUrl: currentCategory.imageUrl,
-                //         type: currentCtgType,
-                //     });
-                //
-                //     return edit;
-                // })
-            };
+        function buildCategoryTypeProperty() {
 
-            const onSelected = values => {
+            return $isInherited = components.checkboxes.imcmsCheckbox("<div>", {
+                text: texts.sections.createCategoryType.inherited
+            })
+        }
 
-                typesRestApi.getById(values)
+        function buildCategoryTypeSelectionModes() {
+
+            valueRadios = [
+                $isSingleSelect = components.radios.imcmsRadio("<div>", {
+                    text: texts.sections.createCategoryType.singleSelect,
+                    name: 'select',
+                    value: 'single-select',
+                }),
+                $isMultiSelect = components.radios.imcmsRadio("<div>", {
+                    text: texts.sections.createCategoryType.multiSelect,
+                    name: 'select',
+                    value: 'multi-select',
+                }),
+            ];
+
+            radioButtonsGroup = components.radios.group($isSingleSelect, $isMultiSelect);
+
+
+            return components.radios.radioContainer(
+                '<div>', valueRadios, {}
+            );
+        }
+
+        function buildOnCategoryTypeSelected() {
+            return id => {
+                typesRestApi.getById(id)
                     .done(ctgType => {
-                        currentCtgType = ctgType;
-                        let edit = typeEditor.editCategoryType($('<div>'), {
-                            id: currentCtgType.id,
-                            name: currentCtgType.name,
-                            singleSelect: currentCtgType.singleSelect,
-                            multiSelect: currentCtgType.multiSelect,
-                            inherited: currentCtgType.inherited,
-                            imageArchive: currentCtgType.imageArchive
+                        currentCategoryType = ctgType;
+                        let categoryTypeObj = {
+                            name: $typeNameRow.setValue(ctgType.name),
+                            singleSelect: $isSingleSelect.setChecked(ctgType.multiSelect === false),
+                            multiSelect: $isMultiSelect.setChecked(ctgType.multiSelect),
+                            inherited: $isInherited.setChecked(ctgType.inherited)
+                        };
 
-                        });
-                        editorContainer.slideDown();
+                        categoryCreateContainer.slideUp();
 
-                        return edit;
+                        $categoryTypeCreateContainer.slideDown();
+
+                        if (id) {
+                            buildShowCategoryType.find('.category-editor').remove();
+                            buildShowCategoryType.append(categoryTypeBem.makeBlockElement('category', buildCategoriesSelection(id)));
+                            categoriesList.slideDown();
+                            $categoryTypeSaveButtons.find('.imcms-button--error').show();
+                            categoryCreateBtnContainer.slideDown();
+                        }
+
+                        return categoryTypeObj
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
-
-                let categorySelect = components.selects.selectContainer('<div>', {
-                    id: "category-filter",
-                    name: "category-filter",
-                    emptySelect: true,
-                    text: texts.chooseCategory,
-                    onCategorySelected: onCategorySelected
-                });
-
-                categoriesRestApi.getCategoriesByCategoryTypeId(values)
-                    .done(categories => {
-                        let categoriesDataMapped = categories.map(category => ({
-                            text: category.name,
-                            'data-value': category.id
-                        }));
-
-                        components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
-
-                    })
-                    .fail(() => modal.buildErrorWindow(texts.error.category.loadFailed));
-
-                return categorySelect;
             };
+        }
 
+        function buildDropDownListCategoriesTypes() {
             let categoryTypeSelect = components.selects.selectContainer('<div>', {
-                id: "types-filter",
-                name: "types-filter",
-                emptySelect: true,
-                text: texts.chooseType,
-                onSelected: onSelected
+                id: "types-id",
+                name: "types-name",
+                emptySelect: false,
+                text: texts.sections.createCategoryType.chooseType,
+                onSelected: buildOnCategoryTypeSelected
             });
 
+            categoryTypeSelected = categoryTypeSelect.getSelect();
 
             typesRestApi.read()
                 .done(ctgTypes => {
@@ -96,159 +110,322 @@ define(
                         'data-value': categoryType.id
                     }));
 
-                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), onSelected);
+                    components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelect.getSelect(), buildOnCategoryTypeSelected());
                 })
-                .fail(() => modal.buildErrorWindow(texts.folderNotEmptyMessage));
+                .fail(() => modal.buildErrorWindow(texts.error.categoryType.loadFailed));
 
             return categoryTypeSelect;
-
         }
 
-        function buildDropDownListCategories() {
 
-            // var onCategorySelected = function (value) {
-            //     categoriesRestApi.getById(value).done(function (category) {
-            //         currentCategory = category;
-            //         let edit = typeEditor.editCategoryType($('<div>'), { //change for this
-            //             id: currentCategory.id,
-            //             name: currentCategory.name,
-            //             description: currentCategory.description,
-            //             icon: currentCategory.icon,
-            //             type: currentCtgType,
-            //         });
-            //
-            //         return edit;
-            //     })
-            // };
-            //
-            // let categorySelect = components.selects.selectContainer('<div>', {
-            //     id: "category-filter",
-            //     name: "category-filter",
-            //     emptySelect: true,
-            //     text: texts.chooseCategory,
-            //     onSelected: onCategorySelected
-            // });
-            //
-            //     // categoriesRestApi.getCategoriesByCategoryTypeId().done(function (categories) {
-            //     //
-            //     //     let categoriesDataMapped = categories.map(function (category) {
-            //     //         return {
-            //     //             text: category.name,
-            //     //             'data-value': category.id
-            //     //         }
-            //     //     });
-            //     //
-            //     //     components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected);
-            //     //
-            //     // });
-            //
-            // return categorySelect;
+        let buildShowCategoryType;
+        const categoryTypeBem = new BEM({
+            block: 'category-admin',
+        });
+
+        function buildDropListCtgTypesContainer() {
+            return buildShowCategoryType = categoryTypeBem.buildBlock('<div>', [{
+                'category-type': buildCategoryTypeEditorContainer()
+            }]);
         }
 
-        let view;
-
-        function buildViewCtgTypesContainer() {
-            return view = new BEM({
-                block: 'shows-block',
+        function buildCategoryTypeEditorContainer() {
+            return new BEM({
+                block: 'category-type-editor',
                 elements: {
-                    'view': buildDropDownListCategoriesTypes()
+                    'type-container': buildCategoryTypeContainer(),
+                    'create-container': buildCreateCategoryTypeContainer()
                 }
             }).buildBlockStructure('<div>');
         }
 
+        function buildCategoryTypeContainer() {
+            return new BEM({
+                block: 'category-type',
+                elements: {
+                    'type-drop-list': buildDropDownListCategoriesTypes(),
+                    'type-create-button': buildCategoryTypeButtonContainer(),
+                }
+            }).buildBlockStructure('<div>');
+        }
+
+
         function onCreateNewCategoryType() {
-            createContainer.css('display', 'inline-block').slideDown();
-            typeEditor.viewCategoryType($('<div>'), {
+            currentCategoryType = null;
+            let createCategoryType = {
                 id: null,
                 name: '',
-                singleSelect: null,
-                multiSelect: null,
-                inherited: null,
-                imageArchive: null
+                singleSelect: true,
+                multiSelect: false,
+                inherited: false
+            };
 
+            $typeNameRow.setValue(createCategoryType.name);
+            $isSingleSelect.setChecked(createCategoryType.singleSelect);
+            $isMultiSelect.setChecked(createCategoryType.multiSelect);
+            $isInherited.setChecked(createCategoryType.inherited);
+
+            $categoryTypeSaveButtons.find('.imcms-button--error').hide();
+            hideCategoriesContainer();
+            $categoryTypeCreateContainer.slideDown();
+
+            return createCategoryType;
+        }
+
+        function hideCategoriesContainer() {
+            if (categoryCreateContainer) categoryCreateContainer.slideUp();
+            if (categoriesList) categoriesList.slideUp();
+            if (categoryCreateBtnContainer) categoryCreateBtnContainer.slideUp();
+        }
+
+        function buildCategoryTypeButtonContainer() {
+            let $button = components.buttons.positiveButton({
+                text: texts.createButtonName,
+                click: onCreateNewCategoryType
+            });
+            return components.buttons.buttonsContainer('<div>', [$button]);
+        }
+
+        function onDeleteCategoryType() {
+            modal.buildModalWindow(texts.confirmDelete, confirmed => {
+                if (!confirmed) return;
+
+                typesRestApi.remove(currentCategoryType)
+                    .done(() => {
+
+                        categoryTypeSelected.find(`[data-value='${currentCategoryType.id}']`).remove();
+                        currentCategoryType = null;
+                        categoryTypeSelected.selectFirst();
+                        hideCategoriesContainer();
+                    })
+                    .fail(() => modal.buildErrorWindow(texts.error.categoryType.removeFailed));
             });
         }
 
-        function showCtgTypeCreateContainer() {
-            createContainer = typeEditor.buildCategoryTypeCreateContainer();
-            return createContainer;
-        }
+        function onSaveCategoryType() {
+            let checkValue = radioButtonsGroup.getCheckedValue();
 
+            let name = $typeNameRow.getValue();
+            let inherited = $isInherited.isChecked();
 
-        function buildEditorCtgTypeButtonsContainer() {
-
-            function onEditCurrentCtgType() {
-
+            if (!name) {
+                modal.buildErrorWindow(texts.error.invalidName);
+                return;
             }
 
-            function buildCategoryTypeEditButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.editButtonName,
-                    click: onEditCurrentCtgType
-                });
+            let currentCtgTypeToSave = {
+                id: (currentCategoryType) ? currentCategoryType.id : null,
+                name: name,
+                singleSelect: (checkValue === 'single-select'),
+                multiSelect: (checkValue === 'multi-select'),
+                inherited: inherited,
+            };
 
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
+            if (currentCtgTypeToSave.id) {
+                typesRestApi.replace(currentCtgTypeToSave)
+                    .done(savedCategoryType => {
+                        currentCategoryType = savedCategoryType;
 
-            function onRemoveCtgType() {
+                        let categoriesTypesDataMapped = [{
+                            text: savedCategoryType.name,
+                            'data-value': savedCategoryType.id
+                        }];
 
-                typesRestApi.remove(currentCtgType)
-                    .done(() => {
-                        currentCtgType = null;
-                        editorContainer.slideUp();
-                        createContainer.slideUp();
+
+                        categoryTypeSelected.find(`[data-value='${savedCategoryType.id}']`).remove();
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
+
                     })
-                    .fail(() => modal.buildErrorWindow(texts.categoryType.error.removeFailed));
+                    .fail(() => {
+                        modal.buildErrorWindow(texts.error.invalidName);
+                    });
+            } else {
+                typesRestApi.create(currentCtgTypeToSave)
+                    .done(function (categoryType) {
+                        currentCategoryType = categoryType;
+
+                        let categoriesTypesDataMapped = [{
+                            text: categoryType.name,
+                            'data-value': categoryType.id
+                        }];
+
+                        components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
+                        categoryTypeSelected.selectLast();
+                    })
+                    .fail(() => {
+                        modal.buildErrorWindow(texts.error.invalidName);
+                    });
             }
-
-            function buildCategoryTypeRemoveButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.removeButtonName,
-                    click: onRemoveCtgType
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return editorContainer = new BEM({
-                block: 'upgrade-block',
-                elements: {
-                    'edit-button': buildCategoryTypeEditButton(),
-                    'remove-button': buildCategoryTypeRemoveButton()
-                }
-            }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
-        function buildCategoryTypeButtonsContainer() {
-
-            function buildCategoryTypeCreateButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.createButtonName,
-                    click: onCreateNewCategoryType
+        function onWarnCancel(onConfirm) {
+            return () => {
+                modal.buildModalWindow(texts.warnCancelMessage, confirmed => {
+                    if (!confirmed) return;
+                    onConfirm.call();
                 });
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
+            };
+        }
 
-            return new BEM({
-                block: 'type-buttons-block',
+        function buildCategoryTypeEditButtons() {
+            return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.saveButton({
+                    text: texts.saveButton,
+                    click: onSaveCategoryType
+                }),
+                components.buttons.negativeButton({
+                    text: texts.cancelButton,
+                    click: onWarnCancel(() => {
+                        $categoryTypeCreateContainer.slideUp();
+                    })
+                }),
+                components.buttons.errorButton({
+                    text: texts.removeButtonName,
+                    click: onDeleteCategoryType
+                })
+            ]);
+        }
+
+        let $categoryTypeCreateContainer;
+
+        function buildCreateCategoryTypeContainer() {
+
+            return $categoryTypeCreateContainer || ($categoryTypeCreateContainer = new BEM({
+                block: 'type-create-block',
                 elements: {
-                    'title': $('<div>', {text: texts.titleCategoryType}),
-                    'create': buildCategoryTypeCreateButton(),
+                    'field-name': buildTypeNameRow(),
+                    'selection-modes': buildCategoryTypeSelectionModes(),
+                    'properties': buildCategoryTypeProperty(),
+                    'ctg-type-edit-button': buildCategoryTypeEditButtons()
+                }
+            }).buildBlockStructure('<div>', {style: 'display: none;'}));
+        }
+
+        let categorySelected;
+        let currentCategory;
+        let categoriesList;
+
+
+        function onCategorySelected() {
+            return id => {
+                categoriesRestApi.getById(id).done(function (category) {
+                    currentCategory = category;
+                    let categoryObj = {
+                        name: categoryNameRow.setValue(currentCategory.name),
+                        description: categoryDescription.setValue(currentCategory.description),
+                        type: currentCategoryType
+                    };
+
+                    $categoryTypeCreateContainer.slideUp();
+
+                    categorySaveButtons.find('.imcms-button--error').show();
+                    categoryCreateContainer.slideDown();
+
+                    return categoryObj;
+
+                }).fail(() => modal.buildErrorWindow(texts.error.category.loadFailed));
+            };
+        }
+
+        function buildDropDownListCategories(id) {
+            let categorySelect = components.selects.selectContainer('<div>', {
+                id: "category-filter",
+                name: "category-filter",
+                emptySelect: false,
+                text: texts.sections.createCategory.chooseCategory,
+                onSelected: onCategorySelected
+            });
+
+            categorySelected = categorySelect.getSelect();
+
+            categoriesRestApi.getCategoriesByCategoryTypeId(id).done(function (categories) {
+
+                let categoriesDataMapped = categories.map(function (category) {
+                    return {
+                        text: category.name,
+                        'data-value': category.id
+                    }
+                });
+
+                components.selects.addOptionsToSelect(categoriesDataMapped, categorySelect.getSelect(), onCategorySelected());
+
+            });
+
+            return categorySelect;
+        }
+
+        function buildCategoriesContainer(id) {
+            return categoriesList = new BEM({
+                block: 'categories',
+                elements: {
+                    'select-categories': buildDropDownListCategories(id),
+                    'category-create-button': buildCategoryCreateButtonContainer()
                 }
             }).buildBlockStructure('<div>');
-
         }
 
-        function buildEditorCategoryButtonsContainer() {
-
+        function buildCategoriesSelection(id) {
+            return new BEM({
+                block: 'category-editor',
+                elements: {
+                    'select-container': buildCategoriesContainer(id),
+                    'create-container': buildCategoryCreateContainer()
+                }
+            }).buildBlockStructure('<div>');
         }
 
-        let $categoryNameRow;
+        let categoryNameRow;
         let categoryDescription;
-        let categoryUrlIcon;
-        let categorySaveButton;
+        let categorySaveButtons;
 
         function onSaveCategory() {
+            let name = categoryNameRow.getValue();
+            let description = categoryDescription.getValue();
+
+            let currentCategoryToSave = {
+                id: (currentCategory) ? currentCategory.id : null,
+                name: name ? name : '',
+                description: description,
+                type: currentCategoryType
+            };
+
+            if (currentCategoryToSave.id) {
+                categoriesRestApi.replace(currentCategoryToSave)
+                    .done(savedCategory => {
+                        currentCategory = savedCategory;
+
+                        let categoryDataMapped = [{
+                            text: savedCategory.name,
+                            'data-value': savedCategory.id
+                        }];
+
+                        categorySelected.find(`[data-value='${savedCategory.id}']`).remove();
+
+                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, onCategorySelected());
+
+                    })
+                    .fail(() => {
+                        modal.buildErrorWindow(texts.error.invalidName);
+                    });
+            } else {
+                categoriesRestApi.create(currentCategoryToSave)
+                    .done(category => {
+                        currentCategory = category;
+
+                        let categoryDataMapped = [{
+                            text: category.name,
+                            'data-value': category.id
+                        }];
+
+                        components.selects.addOptionsToSelect(categoryDataMapped, categorySelected, onCategorySelected());
+                        categorySelected.selectLast();
+                        categoryCreateContainer.slideUp();
+
+                    })
+                    .fail(() => {
+                        modal.buildErrorWindow(texts.error.invalidName);
+                    });
+            }
 
         }
 
@@ -264,31 +441,37 @@ define(
         function buildCategoryCreateContainer() {
 
             function buildCategoryNameRow() {
-                $categoryNameRow = components.texts.textBox('<div>', {
+                categoryNameRow = components.texts.textAreaField('<div>', {
                     text: texts.sections.createCategory.name
                 });
-
-                return $categoryNameRow;
+                return categoryNameRow;
             }
 
             function buildCategoryDescriptionTextField() {
                 categoryDescription = components.texts.textAreaField('<div>', {
                     text: texts.sections.createCategory.description
                 });
-
                 return categoryDescription;
             }
 
-            function buildCategoryIconRow() {
-                categoryUrlIcon = components.texts.textBox('<div>', {
-                    text: texts.sections.createCategory.icon
-                });
+            function onRemoveCategory() {
+                modal.buildModalWindow(texts.confirmDelete, confirmed => {
+                    if (!confirmed) return;
 
-                return categoryUrlIcon;
+                    categoriesRestApi.remove(currentCategory)
+                        .done(() => {
+
+                            categorySelected.find(`[data-value='${currentCategory.id}']`).remove();
+                            currentCategory = null;
+                            categorySelected.selectFirst();
+                            categoryCreateContainer.slideUp();
+                        })
+                        .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+                });
             }
 
-            function buildSaveAndCancelContainer() {
-                return categorySaveButton = components.buttons.buttonsContainer('<div>', [
+            function buildEditCategoryButtonContainer() {
+                return categorySaveButtons = components.buttons.buttonsContainer('<div>', [
                     components.buttons.saveButton({
                         text: texts.saveButton,
                         click: onSaveCategory
@@ -296,104 +479,66 @@ define(
                     components.buttons.negativeButton({
                         text: texts.cancelButton,
                         click: getOnWarnCancel(() => {
-                            //onCategoryTypeView = onCategoryTypeSimpleView;
-
-                            if (currentCategory.id) {
-                                // prepareCategoryTypeView();
-                                // $container.slideUp();
-
-                            } else {
-                                // currentCategory = null;
-                                // $container.slideUp();
-                            }
+                            categoryCreateContainer.slideUp();
                         })
+                    }),
+                    components.buttons.errorButton({
+                        text: texts.removeButtonName,
+                        click: onRemoveCategory
                     })
-                ]);
+                ])
             }
 
             return categoryCreateContainer = new BEM({
                 block: 'category-create-block',
                 elements: {
-                    'title-create': '',
                     'row-name': buildCategoryNameRow(),
                     'row-description': buildCategoryDescriptionTextField(),
-                    'row-url-image': buildCategoryIconRow(),
-                    'list-category-types': buildDropDownListCategoriesTypes(),
-                    'save-cancel-buttons': buildSaveAndCancelContainer()
+                    'edit-buttons': buildEditCategoryButtonContainer()
                 }
             }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
-        function buildCategoryButtonsContainer() {
+        function onCategoryCreate() {
+            currentCategory = null;
+            let createCategory = {
+                id: null,
+                name: '',
+                description: ''
+            };
+            categoryNameRow.setValue(createCategory.name);
+            categoryDescription.setValue(createCategory.description);
+            $categoryTypeCreateContainer.slideUp();
+            categorySaveButtons.find('.imcms-button--error').hide();
+            categoryCreateContainer.slideDown();
 
-            function openCreateContainer() {
-                return categoryCreateContainer.css('display', 'inline-block').slideDown();
-            }
+            return createCategory;
+        }
 
-            function buildCategoryCreateButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.createButtonName,
-                    click: openCreateContainer
-                });
+        function buildCategoryCreateButton() {
+            let $button = components.buttons.positiveButton({
+                text: texts.createButtonName,
+                click: onCategoryCreate
+            });
 
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
+            return components.buttons.buttonsContainer('<div>', [$button]);
+        }
 
-            function buildCategoryEditButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.editButtonName,
-                    click: () => {
+        let categoryCreateBtnContainer;
 
-                    }
-                });
+        function buildCategoryCreateButtonContainer() {
 
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-
-            function buildCategoryRemoveButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.removeButtonName,
-                    click: () => {
-
-                    }
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-
-            function buildCategoryViewButton() {
-                let $button = components.buttons.positiveButton({
-                    text: texts.viewButtonName,
-                    click: () => {
-
-                    }
-                });
-
-                return components.buttons.buttonsContainer('<div>', [$button]);
-            }
-
-            return new BEM({
-                block: 'category-buttons-block',
+            return categoryCreateBtnContainer = new BEM({
+                block: 'create-button-block',
                 elements: {
-                    'title': $('<div>', {text: texts.titleCategory}),
                     'create': buildCategoryCreateButton(),
-                    'edit': buildCategoryEditButton(),
-                    'remove': buildCategoryRemoveButton(),
-                    'view': buildCategoryViewButton()
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {style: 'display: none;'});
         }
 
         return new SuperAdminTab(texts.name, [
-            buildCategoryTypeButtonsContainer(),
-            buildCategoryButtonsContainer(),
-            buildViewCtgTypesContainer(),
-            showCtgTypeCreateContainer(),
-            buildEditorCtgTypeButtonsContainer(),
-            buildCategoryCreateContainer(),
-            //buildDropDownListCategories()
+            buildDropListCtgTypesContainer(),
+            buildCategoryCreateContainer()
         ]);
     }
 );

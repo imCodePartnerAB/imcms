@@ -54,7 +54,6 @@ class DefaultCategoryService implements CategoryService {
         receivedCategory.setId(updateMe.getId());
         receivedCategory.setName(updateMe.getName());
         receivedCategory.setDescription(updateMe.getDescription());
-        receivedCategory.setImageUrl(updateMe.getImageUrl());
         receivedCategory.setType(updateMe.getType());
         final Category updatedCategory = categoryRepository.saveAndFlush(modelMapper.map(receivedCategory, CategoryJPA.class));
         return new CategoryDTO(updatedCategory);

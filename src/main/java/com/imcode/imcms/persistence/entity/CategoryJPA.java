@@ -47,7 +47,7 @@ public class CategoryJPA extends Category {
     @Column(name = "image", nullable = false)
     private String imageUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REFRESH)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.REFRESH)
     @JoinColumn(name = "category_type_id", nullable = false)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private CategoryTypeJPA type;

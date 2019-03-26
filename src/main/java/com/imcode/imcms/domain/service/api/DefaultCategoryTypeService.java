@@ -1,6 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.api.exception.CategoryAlreadyExistsException;
+import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
@@ -65,7 +65,6 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         final CategoryType receivedCategoryType = categoryTypeRepository.findOne(updateMe.getId());
         receivedCategoryType.setId(updateMe.getId());
         receivedCategoryType.setName(updateMe.getName());
-        receivedCategoryType.setImageArchive(updateMe.isImageArchive());
         receivedCategoryType.setInherited(updateMe.isInherited());
         receivedCategoryType.setMultiSelect(updateMe.isMultiSelect());
         final CategoryTypeJPA updatedCategoryType = categoryTypeRepository.saveAndFlush(modelMapper.map(
@@ -80,7 +79,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         List<CategoryJPA> categories = categoryRepository.findAll();
         for (CategoryJPA category : categories) {
             if (category.getType().equals(categoryTypeRepository.findOne(id))) {
-                throw new CategoryAlreadyExistsException("CategoryType has categories!");
+                throw new CategoryTypeHasCategoryException("CategoryType has categories!");
             }
         }
         categoryTypeRepository.delete(id);

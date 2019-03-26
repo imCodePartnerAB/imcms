@@ -531,39 +531,31 @@ const texts = {
             },
             categories: {
                 name: 'Kategorier',
-                titleCategoryType: "Kategori typ",
-                titleCategory: "Kategori",
                 createButtonName: "Skapa",
-                editButtonName: "Redigera",
                 removeButtonName: "Ta bort",
-                viewButtonName: "Visa",
-                chooseType: 'Choose Category Type',
-                chooseCategory: 'Choose Category',
-                saveButton: 'Save',
-                cancelButton: 'Cancel',
-                warnCancelMessage: 'Do you really want to cancel this ?',
-                duplicateErrorName: 'There is already a category type with the name. Please choose a different name!',
+                saveButton: 'Spara',
+                cancelButton: 'Annullera',
+                warnCancelMessage: 'Vill du verkligen avbryta detta?',
+                confirmDelete: 'Radera?',
                 sections: {
                     createCategoryType: {
-                        title: 'Create category type',
-                        name: 'Category type name',
-                        inherited: 'Inherited to new documents',
-                        imageArchive: 'Used by image archive',
-                        singleSelect: 'Single select',
-                        multiSelect: 'Multi select'
-                    },
-                    removeCategoryType: {
-                        removeButton: 'Remove'
+                        title: 'Skapa kategori typ',
+                        name: 'Kategori typnamn',
+                        inherited: 'Erfaren av nya dokument',
+                        singleSelect: 'Singel välj',
+                        multiSelect: 'Flera val',
+                        chooseType: 'Välj kategori Typ',
                     },
                     createCategory: {
-                        title: 'Create category',
-                        name: 'Category name',
-                        description: 'Description',
-                        icon: 'Icon',
-                        categoryType: 'Add to category type'
+                        title: 'Skapa kategori',
+                        name: 'Kategori namn',
+                        description: 'Beskrivning',
+                        categoryType: 'Lägg till i kategoritypen',
+                        chooseCategory: 'Välj kategori',
                     }
                 },
                 error: {
+                    invalidName: 'Tomt namn är oacceptabelt! Vänligen välj ett annat namn!',
                     category: {
                         loadFailed: 'Misslyckades med att hämta kategori. Försök igen'
                     },
@@ -1171,39 +1163,31 @@ const texts = {
             },
             categories: {
                 name: 'Categories',
-                titleCategoryType: "Category type",
-                titleCategory: "Category",
                 createButtonName: "Create",
-                editButtonName: "Edit",
                 removeButtonName: "Remove",
-                viewButtonName: "View",
-                chooseType: 'Choose Category Type',
-                chooseCategory: 'Choose Category',
                 saveButton: 'Save',
                 cancelButton: 'Cancel',
                 warnCancelMessage: 'Do you really want to cancel this ?',
-                duplicateErrorName: 'There is already a category type with the name. Please choose a different name!',
+                confirmDelete: 'Delete?',
                 sections: {
                     createCategoryType: {
                         title: 'Create category type',
                         name: 'Category type name',
                         inherited: 'Inherited to new documents',
-                        imageArchive: 'Used by image archive',
                         singleSelect: 'Single select',
-                        multiSelect: 'Multi select'
-                    },
-                    removeCategoryType: {
-                        removeButton: 'Remove'
+                        multiSelect: 'Multi select',
+                        chooseType: 'Choose Category Type',
                     },
                     createCategory: {
                         title: 'Create category',
                         name: 'Category name',
                         description: 'Description',
-                        icon: 'Icon',
-                        categoryType: 'Add to category type'
+                        categoryType: 'Add to category type',
+                        chooseCategory: 'Choose Category',
                     }
                 },
                 error: {
+                    invalidName: 'This is name is unacceptable! Please choose a different name!',
                     category: {
                         loadFailed: 'Failed to fetch category. Try again'
                     },

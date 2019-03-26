@@ -182,14 +182,28 @@ define("imcms-selects-builder",
                 const $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
                     .find(DROP_DOWN_LIST__ITEM__CLASS_$).first();
 
-                if ($selectCandidate.length) {
-                    onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
-                    return $resultImcmsSelect;
+                selectItem($selectCandidate, $resultImcmsSelect);
 
-                } else {
-                    logger.log("%c Select is empty, nothing to choose", "color: red;");
-                    logger.log($resultImcmsSelect[0]);
-                }
+            }
+        }
+
+        function bindSelectLast($resultImcmsSelect) {
+            return () => {
+                const $selectCandidate = $resultImcmsSelect.find(DROP_DOWN_LIST__ITEMS__CLASS_$)
+                    .find(DROP_DOWN_LIST__ITEM__CLASS_$).last();
+
+                selectItem($selectCandidate, $resultImcmsSelect);
+            }
+        }
+
+        function selectItem($selectCandidate, $resultImcmsSelect) {
+            if ($selectCandidate.length) {
+                onOptionSelected.call($selectCandidate, $resultImcmsSelect.onSelected);
+                return $resultImcmsSelect;
+
+            } else {
+                logger.log("%c Select is empty, nothing to choose", "color: red;");
+                logger.log($resultImcmsSelect[0]);
             }
         }
 
@@ -224,6 +238,7 @@ define("imcms-selects-builder",
         function bindApi($select, $selectedValInput) {
             $select.selectValue = bindSelectValue($select, $selectedValInput);
             $select.selectFirst = bindSelectFirst($select);
+            $select.selectLast = bindSelectLast($select);
             $select.getSelectedValue = bindGetSelectedValue($selectedValInput);
             $select.selectedText = bindSelectedText($selectedValInput);
             $select.clearSelect = bindClearSelect($select, $selectedValInput);

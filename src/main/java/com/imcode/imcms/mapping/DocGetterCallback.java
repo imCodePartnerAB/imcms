@@ -59,6 +59,10 @@ public class DocGetterCallback implements Serializable {
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toCollection(ArrayList::new));
 
+            if (docLanguages.isEmpty()) {
+                docLanguages.add(doc.getLanguage());
+            }
+
             if (!docLanguages.contains(language)) { // current language is disabled for current document
                 doc = shouldDocBeShownWithDefaultLang(doc, docLanguages)
                         ? docMapper.getDefaultDocument(docId)

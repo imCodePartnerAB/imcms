@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.exception.CategoryAlreadyExistsException;
+import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
@@ -19,7 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
@@ -142,7 +145,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
 
         final CategoryTypeDTO firstCategoryType = categoryTypesAsDTO.get(0);
         createCategory(firstCategoryType);
-        assertThrows(CategoryAlreadyExistsException.class, () -> categoryTypeService.delete(firstCategoryType.getId()));
+        assertThrows(CategoryTypeHasCategoryException.class, () -> categoryTypeService.delete(firstCategoryType.getId()));
     }
 
     private Category createCategory(CategoryTypeDTO categoryTypeDTO) {

@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.exception.CategoryAlreadyExistsException;
+import com.imcode.imcms.api.exception.CategoryTypeHasCategoryException;
 import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
 import com.imcode.imcms.components.datainitializer.CategoryTypeDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class CategoryTypeControllerTest extends AbstractControllerTest {
@@ -148,7 +150,7 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
         final int id = firstCategoryType.getId();
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + id);
 
-        performRequestBuilderExpectException(CategoryAlreadyExistsException.class, requestBuilder);
+        performRequestBuilderExpectException(CategoryTypeHasCategoryException.class, requestBuilder);
     }
 
     @Test
