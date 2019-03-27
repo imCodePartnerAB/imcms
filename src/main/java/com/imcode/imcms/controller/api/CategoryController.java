@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.dto.CategoryDTO;
 import com.imcode.imcms.domain.service.CategoryService;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.persistence.entity.CategoryJPA;
+import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -43,16 +44,19 @@ public class CategoryController {
         return categoryService.getById(id).orElseThrow(() -> new EmptyResultDataAccessException(id));
     }
 
+    @CheckAccess
     @PostMapping
     public Category create(@RequestBody CategoryDTO category) {
         return categoryService.save(category);
     }
 
+    @CheckAccess
     @PutMapping
     public Category update(@RequestBody CategoryDTO category) {
         return categoryService.update(category);
     }
 
+    @CheckAccess
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Integer id) {
         categoryService.delete(id);

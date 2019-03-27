@@ -48,6 +48,7 @@ public class ProfilesController {
         return profileService.update(profile);
     }
 
+    @CheckAccess
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Integer id) {
         profileService.deleteById(id);

@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.ExternalRole;
 import com.imcode.imcms.domain.service.ExternalToLocalRoleLinkService;
 import com.imcode.imcms.model.Role;
+import com.imcode.imcms.security.CheckAccess;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ class ExternalToLocalRolesLinksController {
         return externalToLocalRoleLinkService.getLinkedLocalRoles(externalRole);
     }
 
+    @CheckAccess
     @PutMapping
     public void saveLinkedLocalRoles(@RequestBody ExternalRoleLinks externalRoleLinks) {
         externalToLocalRoleLinkService.setLinkedRoles(externalRoleLinks.externalRole, externalRoleLinks.localRolesId);
