@@ -1,8 +1,14 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.service.SystemPropertyService;
+import com.imcode.imcms.mapping.DocGetterCallback;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
+import com.imcode.imcms.model.Roles;
+import imcode.server.Imcms;
+import imcode.server.user.UserDomainObject;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -23,6 +29,19 @@ public class SystemPropertyControllerTest extends AbstractControllerTest {
     @Override
     protected String controllerPath() {
         return "/properties";
+    }
+
+    @BeforeEach
+    public void setUp() {
+        final UserDomainObject user = new UserDomainObject(1);
+        user.addRoleId(Roles.SUPER_ADMIN.getId());
+        DocGetterCallback docGetterCallback = user.getDocGetterCallback();
+        DocumentLanguage language = DocumentLanguage.builder()
+                .code("en")
+                .build();
+
+        docGetterCallback.setLanguage(language);
+        Imcms.setUser(user);
     }
 
     @Test
