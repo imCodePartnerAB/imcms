@@ -1,6 +1,5 @@
 package com.imcode.imcms.persistence.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.imcode.imcms.model.CategoryType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -46,20 +44,6 @@ public class CategoryTypeJPA extends CategoryType {
 
     public CategoryTypeJPA(CategoryType from) {
         super(from);
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public boolean isMultiSelect() {
-        return isMultiSelect;
-    }
-
-    @Override
-    @JsonIgnore
-    @Transient
-    public void setMultiSelect(boolean multiSelect) {
-        this.isMultiSelect = multiSelect;
     }
 
 }
