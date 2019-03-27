@@ -163,6 +163,14 @@
     <filter-mapping>
         <filter-name>SuperAdminFilter</filter-name>
         <url-pattern>/imcms/docs/apisamples/*</url-pattern>
+        <url-pattern>/api/category-types/*</url-pattern>
+        <url-pattern>/api/categories/*</url-pattern>
+        <url-pattern>/api/properties/*</url-pattern>
+        <url-pattern>/api/users/admins/*</url-pattern>
+        <url-pattern>/api/users/*</url-pattern>
+        <url-pattern>/api/roles/*</url-pattern>
+        <url-pattern>/api/ip-rules/*</url-pattern>
+        <url-pattern>/api/profiles/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
