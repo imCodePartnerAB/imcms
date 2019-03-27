@@ -2,7 +2,6 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.SystemPropertyService;
 import com.imcode.imcms.mapping.jpa.SystemProperty;
-import com.imcode.imcms.security.CheckAccess;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,13 +32,11 @@ public class SystemPropertyController {
         return systemPropertyService.findByName(name);
     }
 
-    @CheckAccess
     @PostMapping
     public SystemProperty update(@RequestBody SystemProperty systemProperty) {
         return systemPropertyService.update(systemProperty);
     }
 
-    @CheckAccess
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Integer id) {
         systemPropertyService.deleteById(id);
