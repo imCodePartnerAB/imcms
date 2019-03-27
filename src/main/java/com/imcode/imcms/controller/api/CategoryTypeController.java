@@ -3,7 +3,6 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.CategoryTypeDTO;
 import com.imcode.imcms.domain.service.CategoryTypeService;
 import com.imcode.imcms.model.CategoryType;
-import com.imcode.imcms.security.CheckAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,19 +37,16 @@ public class CategoryTypeController {
         return categoryTypeService.get(id).orElseThrow(() -> new EmptyResultDataAccessException(id));
     }
 
-    @CheckAccess
     @PostMapping
     public CategoryType create(@RequestBody CategoryTypeDTO categoryType) {
         return categoryTypeService.create(categoryType);
     }
 
-    @CheckAccess
     @PutMapping
     public CategoryType update(@RequestBody CategoryTypeDTO categoryType) {
         return categoryTypeService.update(categoryType);
     }
 
-    @CheckAccess
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Integer id) {
         categoryTypeService.delete(id);
