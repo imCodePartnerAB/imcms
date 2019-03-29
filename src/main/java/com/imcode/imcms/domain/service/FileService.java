@@ -1,20 +1,21 @@
 package com.imcode.imcms.domain.service;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
 public interface FileService {
-    List<Path> getFiles(Path file);
+    List<Path> getFiles(Path file) throws IOException;
 
     Path getFile(Path file);
 
-    void deleteFile(Path file);
+    void deleteFile(Path file) throws IOException;
 
-    Path moveFile(Path src, Path target);
+    Path moveFile(Path src, Path target) throws IOException;
 
-    Path copyFile(Path src, Path target);
+    Path copyFile(Path src, Path target) throws IOException;
 
     Path saveFile(Path file);
 
-    Path createFile(Path file);
+    Path createFile(Path file) throws IOException;
 }
