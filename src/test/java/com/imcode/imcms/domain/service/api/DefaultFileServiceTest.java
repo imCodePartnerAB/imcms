@@ -31,18 +31,15 @@ public class DefaultFileServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private DefaultFileService fileService;
 
-    @Value("#{imcmsProperties.FileAdminRootPaths}")
+    @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
 
     @AfterEach
     public void setUp() {
         for (Path path : testRootPaths) {
-            String[] paths = path.toString().split(";");
-            for (String pathFile : paths) {
-                FileUtils.deleteRecursive(new File(pathFile));
+            FileUtils.deleteRecursive(new File(path.toString()));
             }
-        }
     }
 
     @Test
