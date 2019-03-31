@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class DefaultFileServiceTest extends WebAppSpringTestConfig {
 
@@ -29,14 +31,17 @@ public class DefaultFileServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private DefaultFileService fileService;
 
-    @Value("#{'${FileAdminRootPaths}'.split(';')}")
+    @Value("#{imcmsProperties.FileAdminRootPaths}")
     private List<Path> testRootPaths;
 
-    @BeforeEach
+
     @AfterEach
     public void setUp() {
         for (Path path : testRootPaths) {
-            FileUtils.deleteRecursive(new File(path.toString()));
+            String[] paths = path.toString().split(";");
+            for (String pathFile : paths) {
+                FileUtils.deleteRecursive(new File(pathFile));
+            }
         }
     }
 
@@ -46,9 +51,6 @@ public class DefaultFileServiceTest extends WebAppSpringTestConfig {
         final Path pathRootDir = Paths.get(firstRootPath.toString());
         final Path pathDir = pathRootDir.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
-        assertFalse(Files.exists(pathRootDir));
-        assertFalse(Files.exists(pathDir));
-        assertFalse(Files.exists(pathFile));
 
         Files.createDirectory(pathRootDir);
         Files.createDirectory(pathDir);
@@ -65,10 +67,6 @@ public class DefaultFileServiceTest extends WebAppSpringTestConfig {
         final Path pathDir2 = pathDir.resolve(testDirectoryName2);
         final Path pathFile = pathDir2.resolve(testFileName);
         final Path pathFile2 = pathDir.resolve(testFileName2);
-
-        assertFalse(Files.exists(pathRootDir));
-        assertFalse(Files.exists(pathDir));
-        assertFalse(Files.exists(pathDir2));
 
         Files.createDirectory(pathRootDir);
         Files.createDirectory(pathDir);
@@ -111,7 +109,6 @@ public class DefaultFileServiceTest extends WebAppSpringTestConfig {
 
         final Path createdFile = fileService.createFile(pathFile);
 
-        assertNotNull(createdFile.getFileName());
         assertEquals(pathFile.getParent(), createdFile.getParent());
         assertEquals(pathFile.getFileName(), createdFile.getFileName());
     }
@@ -294,10 +291,10 @@ public class DefaultFileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathDir);
         Files.createDirectory(pathDir2ByDir);
         Files.createFile(pathFileByDir);
-        Files.createDirectory(pathDir3);
 
         assertEquals(pathFileByDir.getFileName().toString(), testFileName);
-        assertEquals(pathDir2ByDir.getFileName(), fileService.copyFile(pathDir2ByDir, pathDir3).getFileName());
+        assertEquals(pathDir3.getFileName(), fileService.copyFile(pathDir2ByDir, pathDir3).getFileName());
+        assertEquals(pathRootDir.getFileName(), fileService.copyFile(pathDir2ByDir, pathDir3).getParent().getFileName());
     }
 
     @Test

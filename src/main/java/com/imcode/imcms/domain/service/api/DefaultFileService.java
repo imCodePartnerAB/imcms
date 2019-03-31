@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DefaultFileService implements FileService {
@@ -16,8 +16,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public List<Path> getFiles(Path file) throws IOException {
-        List<Path> paths = new ArrayList<>();
-        Files.list(file).forEach(paths::add);
+        List<Path> paths = Files.list(file).collect(Collectors.toList());
         return paths;
     }
 
@@ -33,12 +32,12 @@ public class DefaultFileService implements FileService {
 
     @Override
     public Path moveFile(Path src, Path target) throws IOException {
-        return Files.move(src, target.resolve(src.getFileName()));
+        return Files.move(src, target);
     }
 
     @Override
     public Path copyFile(Path src, Path target) throws IOException {
-        return Files.copy(src, target.resolve(src.getFileName()));
+        return Files.copy(src, target);
     }
 
     @Override
