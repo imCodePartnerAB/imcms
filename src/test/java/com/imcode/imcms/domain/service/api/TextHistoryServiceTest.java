@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 @Transactional
-public class DefaultTextHistoryServiceTest extends WebAppSpringTestConfig {
+public class TextHistoryServiceTest extends WebAppSpringTestConfig {
 
     private final static int DOC_ID = 1001;
 

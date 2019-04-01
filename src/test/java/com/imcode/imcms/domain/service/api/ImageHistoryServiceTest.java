@@ -24,11 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 
 @Transactional
-public class DefaultImageHistoryServiceTest extends WebAppSpringTestConfig {
+public class ImageHistoryServiceTest extends WebAppSpringTestConfig {
 
     private static final int TEST_DOC_ID = 1001;
     private static final int TEST_IMAGE_INDEX = 1;

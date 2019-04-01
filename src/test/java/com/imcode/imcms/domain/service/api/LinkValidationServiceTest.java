@@ -42,10 +42,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.imcode.imcms.model.Text.Type.TEXT;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
-public class DefaultLinkValidationServiceTest extends WebAppSpringTestConfig {
+public class LinkValidationServiceTest extends WebAppSpringTestConfig {
 
     private static final String TEXTS = "test";
     private static final String TEXT_URL = "<a href=\"https://www.google.com\">Test</a>";
