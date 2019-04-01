@@ -152,7 +152,6 @@ module.exports = {
                                 'imcms-delete-docs-tab-builder',
                                 'imcms-templates-admin-tab-builder',
                                 'imcms-files-tab-builder',
-                                'imcms-search-tab-builder',
                                 'imcms-link-validator-tab-builder',
                                 'imcms-categories-admin-tab-builder',
                                 'imcms-profiles-tab-builder',

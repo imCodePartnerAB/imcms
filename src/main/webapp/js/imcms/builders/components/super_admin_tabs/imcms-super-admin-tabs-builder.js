@@ -13,7 +13,6 @@ module.exports = new WindowTabsBuilder({
         require('imcms-delete-docs-tab-builder'),
         require('imcms-templates-admin-tab-builder'),
         require('imcms-files-tab-builder'),
-        require('imcms-search-tab-builder'),
         require('imcms-link-validator-tab-builder'),
         require('imcms-categories-admin-tab-builder'),
         require('imcms-profiles-tab-builder'),
