@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -72,7 +71,7 @@ public class DefaultFileService implements FileService {
         if (isAllowablePath(src) && isAllowablePath(target)) {
             return Files.copy(src, target);
         } else {
-            throw new NoSuchFileException("File not allowed copy!");
+            throw new AccessDeniedException("File not allowed copy!");
         }
     }
 
@@ -90,7 +89,7 @@ public class DefaultFileService implements FileService {
                 return Files.createFile(file);
             }
         } else {
-            throw new NoSuchFileException("Do not allow to create file!");
+            throw new AccessDeniedException("Do not allow to create file!");
         }
     }
 }

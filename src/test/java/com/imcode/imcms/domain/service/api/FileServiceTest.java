@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -101,7 +102,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertFalse(Files.exists(pathFile));
 
-        assertThrows(NoSuchFileException.class, () -> fileService.createFile(pathFile));
+        assertThrows(AccessDeniedException.class, () -> fileService.createFile(pathFile));
         assertFalse(Files.exists(pathFile));
         Files.deleteIfExists(pathFile);
     }
@@ -213,7 +214,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(pathFile.getFileName().toString(), testFileName);
 
 
-        assertThrows(NoSuchFileException.class, () -> fileService.copyFile(pathFile, pathFakeFile2));
+        assertThrows(AccessDeniedException.class, () -> fileService.copyFile(pathFile, pathFakeFile2));
 
         Files.deleteIfExists(pathFakeFile2);
     }
@@ -259,8 +260,10 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathFakeDir);
         Files.createFile(pathFile);
 
-        assertThrows(NoSuchFileException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
+        assertThrows(AccessDeniedException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
 
+
+        Files.deleteIfExists(pathFakeFile2);
         Files.deleteIfExists(pathFakeDir);
     }
 
