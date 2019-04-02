@@ -2,12 +2,11 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import org.apache.uima.util.FileUtils;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -15,10 +14,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FileServiceTest extends WebAppSpringTestConfig {
 
@@ -34,104 +30,90 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
-    @AfterEach
+    @BeforeEach
     public void setUp() {
-        for (Path path : testRootPaths) {
-            FileUtils.deleteRecursive(new File(path.getFileName().toString()));
-        }
+        testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
     }
 
 
     @Test
     public void getAllFiles_When_FilesInDirectoryExist_Expected_CorrectFiles() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
 
-        assertEquals(Files.list(pathDir).count(), fileService.getFiles(pathDir).size());
+        assertEquals(1, fileService.getFiles(pathDir).size());
     }
 
     @Test
     public void getAllFiles_When_DirectoryHasFolderAndFile_Expected_CorrectFiles() throws IOException {
-        final Path secondRootPath = testRootPaths.get(1).getFileName();
-        final Path pathRootDir = Paths.get(secondRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path secondRootPath = testRootPaths.get(1);
+        final Path pathDir = secondRootPath.resolve(testDirectoryName);
         final Path pathDir2 = pathDir.resolve(testDirectoryName2);
         final Path pathFile = pathDir2.resolve(testFileName);
         final Path pathFile2 = pathDir.resolve(testFileName2);
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(secondRootPath);
         Files.createDirectory(pathDir);
         Files.createDirectory(pathDir2);
         Files.createFile(pathFile);
         Files.createFile(pathFile2);
 
-        assertEquals(pathFile.getFileName().toString(), testFileName);
-        assertEquals(pathFile2.getFileName().toString(), testFileName2);
-
-        assertEquals(Files.list(pathDir).count(), fileService.getFiles(pathDir).size());
+        assertEquals(2, fileService.getFiles(pathDir).size());
     }
 
     @Test
     public void getAllFiles_When_FilesInDirectoryNotExist_Expected_EmptyResult() throws IOException {
-        final Path secondRootPath = testRootPaths.get(1).getFileName();
-        final Path pathRootDir = Paths.get(secondRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path secondRootPath = testRootPaths.get(1);
+        final Path pathDir = secondRootPath.resolve(testDirectoryName);
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(secondRootPath);
         Files.createDirectory(pathDir);
 
-        assertEquals(Files.list(pathDir).count(), fileService.getFiles(pathDir).size()); // 0
+        assertEquals(0, fileService.getFiles(pathDir).size());
     }
 
     @Test
     public void createFile_Expected_CreatedFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
-        assertFalse(Files.exists(pathRootDir));
+        assertFalse(Files.exists(firstRootPath));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
-
-        assertEquals(pathFile.getFileName().toString(), testFileName);
 
         final Path createdFile = fileService.createFile(pathFile);
 
-        assertEquals(pathFile.getParent(), createdFile.getParent());
-        assertEquals(pathFile.getFileName(), createdFile.getFileName());
+        assertTrue(Files.exists(createdFile));
+        assertEquals(pathFile, createdFile);
     }
 
     @Test
     public void createFile_When_FileCreateToOutSideRootDir_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathFile = Paths.get("fake/" + pathRootDir);
+        final Path pathFile = Paths.get(testFileName);
 
-        assertFalse(Files.exists(pathRootDir));
-
-        Files.createDirectory(pathRootDir);
+        assertFalse(Files.exists(pathFile));
 
         assertThrows(NoSuchFileException.class, () -> fileService.createFile(pathFile));
+        assertFalse(Files.exists(pathFile));
+        Files.deleteIfExists(pathFile);
     }
 
     @Test
-    public void saveFile_When_Expected_SavedFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+    public void saveFile_When_Expected_SavedFile() throws IOException {  //todo fix in service too
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
 
         assertEquals(pathFile.getFileName().toString(), testFileName);
@@ -147,35 +129,28 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getFile_When_FileExists_Expected_CorrectFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
 
-        assertEquals(pathFile.getFileName().toString(), testFileName);
-
-        assertEquals(Paths.get(pathFile.toString()).toString(), fileService.getFile(pathFile).toString());
-        assertEquals(Paths.get(pathFile.toString()).getFileName(), fileService.getFile(pathFile).getFileName());
+        assertEquals(pathFile.toString(), fileService.getFile(pathFile).toString());
     }
 
     @Test
     public void deleteFile_When_FileExists_Expected_Delete() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
-
-        assertEquals(pathFile.getFileName().toString(), testFileName);
 
         fileService.deleteFile(pathFile);
 
@@ -184,16 +159,13 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteFile_When_FileNotExists_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
-
-        assertEquals(pathFile.getFileName().toString(), testFileName);
 
         final String fakeName = "fake.txt";
         final Path fakePathFile = pathDir.resolve(fakeName);
@@ -202,43 +174,39 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         Files.deleteIfExists(pathFile);
         Files.deleteIfExists(pathDir);
-        Files.deleteIfExists(pathRootDir);
+        Files.deleteIfExists(firstRootPath);
 
         assertFalse(Files.exists(pathDir));
         assertFalse(Files.exists(pathFile));
-        assertFalse(Files.exists(pathRootDir));
+        assertFalse(Files.exists(firstRootPath));
     }
 
     @Test
     public void copyFile_When_FileExists_Expected_CopyFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
-        final Path pathFile2 = pathRootDir.resolve(testFileName2);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFile2 = firstRootPath.resolve(testFileName2);
         final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
 
-        assertEquals(pathFile.getFileName().toString(), testFileName);
-
         final Path copiedFile = fileService.copyFile(pathFile, pathFile2);
 
-        assertEquals(pathFile2.getFileName(), copiedFile.getFileName());
+        assertEquals(pathFile2.toAbsolutePath(), copiedFile.toAbsolutePath());
     }
 
     @Test
-    public void copyFile_When_FileSentToOutSideRootDir_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+    public void copyFile_When_FileCopyToOutSideRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeFile2 = Paths.get("/fake/" + testRootPaths.get(0));
+        final Path pathFakeFile2 = Paths.get("test");
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
 
@@ -252,16 +220,15 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void moveFile_When_FileExist_Expected_moveCorrectFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
-        final Path pathDir2 = pathRootDir.resolve(testDirectoryName2);
-        final Path pathFileByDir = pathRootDir.resolve(testFileName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathDir2 = firstRootPath.resolve(testDirectoryName2);
+        final Path pathFileByDir = firstRootPath.resolve(testFileName);
         final Path pathFile2ByDir2 = pathDir2.resolve(testFileName2);
         assertFalse(Files.exists(pathDir));
         assertFalse(Files.exists(pathDir2));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createDirectory(pathDir2);
         Files.createFile(pathFileByDir);
@@ -269,63 +236,38 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(pathFileByDir.getFileName().toString(), testFileName);
         assertEquals(pathFile2ByDir2.getFileName().toString(), testFileName2);
 
-        assertEquals(3, fileService.getFiles(pathRootDir).size());
+        assertEquals(3, fileService.getFiles(firstRootPath).size());
         assertEquals(0, fileService.getFiles(pathDir2).size());
         final Path movedFile = fileService.moveFile(pathFileByDir, pathFile2ByDir2);
 
-        assertEquals(2, fileService.getFiles(pathRootDir).size());
+        assertEquals(2, fileService.getFiles(firstRootPath).size());
         assertEquals(1, fileService.getFiles(pathDir2).size());
-        assertEquals(pathFile2ByDir2.getFileName(), movedFile.getFileName());
-    }
-
-    @Test
-    public void moveFile_When_FileSentToOutSideRootDir_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeFile2 = Paths.get("/fake/" + testRootPaths.get(0).getFileName());
-        assertFalse(Files.exists(pathDir));
-
-        Files.createDirectory(pathRootDir);
-        Files.createDirectory(pathDir);
-        Files.createFile(pathFile);
-
-        assertEquals(pathFile.getFileName().toString(), testFileName);
-
-        assertThrows(NoSuchFileException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
-
-        Files.deleteIfExists(pathFakeFile2);
+        assertEquals(pathFile2ByDir2.toAbsolutePath(), movedFile.toAbsolutePath());
     }
 
     @Test
     public void moveFile_When_FileMoveToOutSideRootDir_Expected_CorrectException() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFakeDir = Paths.get("testFake");
-        final Path pathFakeFile2 = pathFakeDir.resolve("/fake/" + testRootPaths.get(0).getFileName());
+        final Path pathFakeDir = Paths.get("outSideDir");
+        final Path pathFakeFile2 = pathFakeDir.resolve(testRootPaths.get(0).getFileName());
         assertFalse(Files.exists(pathDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createDirectory(pathFakeDir);
         Files.createFile(pathFile);
 
-        assertEquals(pathFile.getFileName().toString(), testFileName);
-
         assertThrows(NoSuchFileException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
 
         Files.deleteIfExists(pathFakeDir);
-        Files.deleteIfExists(pathFakeFile2);
     }
 
     @Test
     public void getAllFiles_WhenFilesHaveSubFiles_Expected_CorrectSize() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2ByDir = pathDir.resolve(testDirectoryName2);
         final Path pathFileByDir = pathDir.resolve(testFileName);
         final Path pathFile2ByDir2 = pathDir2ByDir.resolve(testFileName2);
@@ -333,61 +275,50 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertFalse(Files.exists(pathDir));
         assertFalse(Files.exists(pathDir2ByDir));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createDirectory(pathDir2ByDir);
         Files.createFile(pathFileByDir);
         Files.createFile(pathFile2ByDir2);
 
-        assertEquals(pathFileByDir.getFileName().toString(), testFileName);
-        assertEquals(pathFile2ByDir2.getFileName().toString(), testFileName2);
-
         assertFalse(fileService.getFiles(pathDir).isEmpty());
-        assertEquals(Files.list(pathDir).count(), fileService.getFiles(pathDir).size());
+        assertEquals(2, fileService.getFiles(pathDir).size());
     }
 
     @Test
     public void copyDirectory_When_DirectoryExists_Expected_CopyDirectory() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2ByDir = pathDir.resolve(testDirectoryName2);
         final Path pathFileByDir = pathDir.resolve(testFileName);
-        final Path pathDir3 = pathRootDir.resolve(testDirectoryName3);
-        assertFalse(Files.exists(pathDir));
-        assertFalse(Files.exists(pathDir2ByDir));
-        assertFalse(Files.exists(pathDir3));
+        final Path pathDir3 = firstRootPath.resolve(testDirectoryName3);
 
-        Files.createDirectory(pathRootDir);
+        assertFalse(Files.exists(firstRootPath));
+
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createDirectory(pathDir2ByDir);
         Files.createFile(pathFileByDir);
 
-        assertEquals(pathFileByDir.getFileName().toString(), testFileName);
-        assertEquals(pathDir3.getFileName(), fileService.copyFile(pathDir2ByDir, pathDir3).getFileName());
+        assertEquals(pathDir3.toString(), fileService.copyFile(pathDir2ByDir, pathDir3).toString());
     }
 
     @Test
     public void moveDirectory_When_DirectoryExist_Expected_moveCorrectDirectory() throws IOException {
 
-        final Path firstRootPath = testRootPaths.get(0).getFileName();
-        final Path pathRootDir = Paths.get(firstRootPath.toString());
-        final Path pathDir = pathRootDir.resolve(testDirectoryName);
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2ByDir = pathDir.resolve(testDirectoryName3);
         final Path pathFileByDir = pathDir.resolve(testFileName);
-        final Path pathDir3 = pathRootDir.resolve(testDirectoryName3);
+        final Path pathDir3 = firstRootPath.resolve(testDirectoryName3);
 
-        assertFalse(Files.exists(pathDir));
-        assertFalse(Files.exists(pathDir2ByDir));
-        assertFalse(Files.exists(pathDir3));
+        assertFalse(Files.exists(firstRootPath));
 
-        Files.createDirectory(pathRootDir);
+        Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
         Files.createDirectory(pathDir2ByDir);
         Files.createFile(pathFileByDir);
 
-        assertEquals(pathFileByDir.getFileName().toString(), testFileName);
-
-        assertEquals(pathDir3.getFileName(), fileService.moveFile(pathDir2ByDir, pathDir3).getFileName());
+        assertEquals(pathDir3.toString(), fileService.moveFile(pathDir2ByDir, pathDir3).toString());
     }
 }
