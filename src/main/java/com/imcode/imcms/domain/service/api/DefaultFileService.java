@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -20,32 +21,41 @@ public class DefaultFileService implements FileService {
 
 
     private boolean isAllowablePath(Path path) {
-        List<String> rootFilesName = rootPaths.stream()
-                .map(Path::getFileName)
+        Path normalize = path.normalize();
+        long count = rootPaths.stream()
                 .map(Path::toString)
-                .collect(Collectors.toList());
-        for (String fileName : rootFilesName) {
-            if (path.toString().startsWith(fileName)) {
-                return true;
-            }
-        }
-        return false;
+                .filter(normalize::startsWith)
+                .count();
+
+        return count > 0;
     }
 
     @Override
     public List<Path> getFiles(Path file) throws IOException {
-        List<Path> paths = Files.list(file).collect(Collectors.toList());
-        return paths;
+        if (isAllowablePath(file)) {
+            List<Path> paths = Files.list(file).collect(Collectors.toList());
+            return paths;
+        } else {
+            throw new AccessDeniedException("Files not allowed show!");
+        }
     }
 
     @Override
-    public Path getFile(Path file) {
-        return Paths.get(file.toString());
+    public Path getFile(Path file) throws IOException {
+        if (isAllowablePath(file)) {
+            return Paths.get(file.toString());
+        } else {
+            throw new AccessDeniedException("File not allowed shows!");
+        }
     }
 
     @Override
     public void deleteFile(Path file) throws IOException {
-        Files.delete(file);
+        if (isAllowablePath(file)) {
+            Files.delete(file);
+        } else {
+            throw new AccessDeniedException("File not allowed delete!");
+        }
     }
 
     @Override
@@ -53,7 +63,7 @@ public class DefaultFileService implements FileService {
         if (isAllowablePath(src) && isAllowablePath(target)) {
             return Files.move(src, target);
         } else {
-            throw new NoSuchFileException("File not allowed move!");
+            throw new AccessDeniedException("File not allowed move!");
         }
     }
 
@@ -67,8 +77,7 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path saveFile(Path file) { // fix
-
+    public Path saveFile(Path file) { // todo fix
         return file.resolve(file.getFileName());
     }
 

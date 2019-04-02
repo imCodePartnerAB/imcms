@@ -7,7 +7,7 @@ import java.util.List;
 public interface FileService {
     List<Path> getFiles(Path file) throws IOException;
 
-    Path getFile(Path file);
+    Path getFile(Path file) throws IOException;
 
     void deleteFile(Path file) throws IOException;
 
