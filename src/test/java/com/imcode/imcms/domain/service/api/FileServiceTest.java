@@ -105,6 +105,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertFalse(Files.exists(pathFile));
 
         assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(pathFile));
+        assertFalse(Files.exists(pathFile));
     }
 
     @Test
@@ -228,7 +229,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void deleteFile_When_FileNotExists_Expected_CorrectException() throws IOException { //todo need that?
+    public void deleteFile_When_FileNotExists_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         assertFalse(Files.exists(pathDir));

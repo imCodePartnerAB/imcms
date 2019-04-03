@@ -51,9 +51,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public void deleteFile(Path file) throws IOException {
-
         Files.delete(isAllowablePath(file));
-
     }
 
     @Override
@@ -81,7 +79,7 @@ public class DefaultFileService implements FileService {
         if (Files.isDirectory(isAllowablePath(file))) {
             return Files.createDirectory(file);
         } else {
-            return Files.createFile(isAllowablePath(file));
+            return Files.createFile(file);
         }
     }
 }
