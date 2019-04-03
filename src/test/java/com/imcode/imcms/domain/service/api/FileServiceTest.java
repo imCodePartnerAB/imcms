@@ -1,14 +1,16 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import org.apache.uima.util.FileUtils;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -32,10 +34,10 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     private List<Path> testRootPaths;
 
     @BeforeEach
+    @AfterEach
     public void setUp() {
         testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
     }
-
 
     @Test
     public void getAllFiles_When_FilesInDirectoryExist_Expected_CorrectFiles() throws IOException {
@@ -97,18 +99,16 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void createFile_When_FileCreateToOutSideRootDir_Expected_CorrectException() throws IOException {
+    public void createFile_When_FileCreateToOutSideRootDir_Expected_CorrectException() {
         final Path pathFile = Paths.get(testFileName);
 
         assertFalse(Files.exists(pathFile));
 
-        assertThrows(AccessDeniedException.class, () -> fileService.createFile(pathFile));
-        assertFalse(Files.exists(pathFile));
-        Files.deleteIfExists(pathFile);
+        assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(pathFile));
     }
 
     @Test
-    public void saveFile_When_Expected_SavedFile() throws IOException {  //todo fix in service too
+    public void saveFile_When_FileExistAndOverWrite_Expected_SavedFile() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
@@ -117,15 +117,29 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
 
-        assertEquals(pathFile.getFileName().toString(), testFileName);
+        final Path currentCreatedFile = Files.createFile(pathFile);
+        final String testText = "bla-bla-bla";
+        final Path notEmptyFile = Files.write(currentCreatedFile, testText.getBytes());
+        final Path saved = fileService.saveFile(notEmptyFile, true);
 
-        final Path currentCreatedFile = fileService.createFile(pathFile);
-        final String newName = "newTestFileName";
-        final Path renameFile = currentCreatedFile.getParent().resolve(newName);
+        assertEquals(Files.readAllBytes(notEmptyFile).length, Files.readAllBytes(saved).length);
+    }
 
+    @Test
+    public void saveFile_When_FileExistAndNotOverWrite_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFile = pathDir.resolve(testFileName);
+        final Path pathFile2 = pathDir.resolve(testFileName);
+        assertFalse(Files.exists(pathDir));
 
-        assertNotEquals(currentCreatedFile.getFileName(), fileService.saveFile(renameFile).getFileName());
-        assertEquals(renameFile.getFileName(), fileService.saveFile(renameFile).getFileName());
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(pathDir);
+
+        final Path currentCreatedFile = Files.createFile(pathFile);
+        assertEquals(pathFile2.toString(), currentCreatedFile.toString());
+        final boolean canOverWrite = false;
+        assertThrows(FileAlreadyExistsException.class, () -> fileService.saveFile(pathFile2, canOverWrite));
     }
 
     @Test
@@ -140,6 +154,61 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile);
 
         assertEquals(pathFile.toString(), fileService.getFile(pathFile).toString());
+    }
+
+    @Test
+    public void getFile_When_PathFileUseOutSidePathRoot_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path testPath = Paths.get("../");
+
+        Files.createDirectory(firstRootPath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath));
+    }
+
+    @Test
+    public void getFile_When_PathFileInCurrentFile_Expected_CorrectFile() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path currentPath = firstRootPath.resolve("./");
+        final Path pathDir = firstRootPath.resolve(testDirectoryName + 1);
+        final Path pathFile = pathDir.resolve(testFileName);
+        assertFalse(Files.exists(pathDir));
+
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(pathDir);
+        Files.createFile(pathFile);
+
+        assertEquals(firstRootPath.toString(), fileService.getFile(currentPath).toString());
+    }
+
+    @Test
+    public void getFile_When_PathFileUseMainRoot_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path mainRootPath = firstRootPath.resolve("/~/");
+        final Path pathDir = firstRootPath.resolve(testDirectoryName + 1);
+        final Path pathFile = pathDir.resolve(testFileName);
+        assertFalse(Files.exists(pathDir));
+
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(pathDir);
+        Files.createFile(pathFile);
+
+        assertNotEquals(firstRootPath.toString(), mainRootPath.toString());
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(mainRootPath));
+    }
+
+    @Test
+    public void getFile_When_PathFileNotExist_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFile = pathDir.resolve(testFileName);
+        assertFalse(Files.exists(pathDir));
+
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(pathDir);
+
+        assertFalse(Files.exists(pathFile));
+        assertThrows(NoSuchFileException.class, () -> fileService.getFile(pathFile));
     }
 
     @Test
@@ -159,10 +228,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void deleteFile_When_FileNotExists_Expected_CorrectException() throws IOException {
+    public void deleteFile_When_FileNotExists_Expected_CorrectException() throws IOException { //todo need that?
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFile = pathDir.resolve(testFileName);
         assertFalse(Files.exists(pathDir));
 
         Files.createDirectory(firstRootPath);
@@ -172,14 +240,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final Path fakePathFile = pathDir.resolve(fakeName);
 
         assertThrows(NoSuchFileException.class, () -> fileService.deleteFile(fakePathFile));
-
-        Files.deleteIfExists(pathFile);
-        Files.deleteIfExists(pathDir);
-        Files.deleteIfExists(firstRootPath);
-
-        assertFalse(Files.exists(pathDir));
-        assertFalse(Files.exists(pathFile));
-        assertFalse(Files.exists(firstRootPath));
     }
 
     @Test
@@ -211,12 +271,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathDir);
         Files.createFile(pathFile);
 
-        assertEquals(pathFile.getFileName().toString(), testFileName);
-
-
-        assertThrows(AccessDeniedException.class, () -> fileService.copyFile(pathFile, pathFakeFile2));
-
-        Files.deleteIfExists(pathFakeFile2);
+        assertThrows(FileAccessDeniedException.class, () -> fileService.copyFile(pathFile, pathFakeFile2));
     }
 
     @Test
@@ -234,11 +289,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathDir2);
         Files.createFile(pathFileByDir);
 
-        assertEquals(pathFileByDir.getFileName().toString(), testFileName);
-        assertEquals(pathFile2ByDir2.getFileName().toString(), testFileName2);
-
         assertEquals(3, fileService.getFiles(firstRootPath).size());
         assertEquals(0, fileService.getFiles(pathDir2).size());
+
         final Path movedFile = fileService.moveFile(pathFileByDir, pathFile2ByDir2);
 
         assertEquals(2, fileService.getFiles(firstRootPath).size());
@@ -260,8 +313,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathFakeDir);
         Files.createFile(pathFile);
 
-        assertThrows(AccessDeniedException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
-
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
 
         Files.deleteIfExists(pathFakeFile2);
         Files.deleteIfExists(pathFakeDir);
