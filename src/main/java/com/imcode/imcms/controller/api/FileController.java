@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,9 +44,9 @@ public class FileController {
         return defaultFileService.createFile(file);
     }
 
-    @PutMapping
-    public Path saveFile(@RequestBody Path file) {
-        return defaultFileService.saveFile(file);
+    @PutMapping("/{canOverWrite}")
+    public Path saveFile(@RequestBody Path file, @PathVariable boolean canOverWrite) throws IOException {
+        return defaultFileService.saveFile(file, canOverWrite);
     }
 
     @DeleteMapping
