@@ -15,7 +15,7 @@ public interface FileService {
 
     Path copyFile(Path src, Path target) throws IOException;
 
-    Path saveFile(Path file);
+    Path saveFile(Path file, boolean canOverWrite) throws IOException;
 
     Path createFile(Path file) throws IOException;
 }
