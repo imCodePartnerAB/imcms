@@ -4,9 +4,7 @@ import com.imcode.imcms.domain.service.api.DefaultFileService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,18 +64,18 @@ public class FileController {
         return defaultFileService.saveFile(path, multipartFile.getBytes(), null);
     }
 
-    @DeleteMapping("/delete")
+    @DeleteMapping
     public void deleteFile(@RequestParam Path file) throws IOException {
         defaultFileService.deleteFile(file);
     }
 
-    @PutMapping("/move/{src}/{target}")
-    public Path moveFile(@PathVariable Path src, @PathVariable Path target) throws IOException {
+    @GetMapping("/move")
+    public Path moveFile(@RequestParam Path src, @RequestParam Path target) throws IOException {
         return defaultFileService.moveFile(src, target);
     }
 
-    @PutMapping("/copy/{src}/{target}")
-    public Path copyFile(@PathVariable Path src, @PathVariable Path target) throws IOException {
+    @GetMapping("/copy")
+    public Path copyFile(@RequestParam Path src, @RequestParam Path target) throws IOException {
         return defaultFileService.copyFile(src, target);
     }
 }
