@@ -360,6 +360,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFileByDir);
 
         assertEquals(pathDir3.toString(), fileService.copyFile(pathDir2ByDir, pathDir3).toString());
+        assertTrue(Files.exists(pathDir2ByDir));
+        assertTrue(Files.exists(pathDir3));
     }
 
     @Test
