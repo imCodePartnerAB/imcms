@@ -139,7 +139,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final Path saved = fileService.saveFile(pathFile, testText.getBytes(), null);
 
         assertTrue(Files.exists(saved));
-        assertEquals(testText.getBytes().length, Files.readAllBytes(saved).length);
+        String savedGetText = Files.readAllLines(saved).get(0);
+        assertEquals(testText, savedGetText);
     }
 
     @Test
@@ -171,12 +172,17 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getFile_When_PathFileUseOutSidePathRoot_Expected_CorrectException() throws IOException {
+    public void getFile_When_PathFileContainsCommandCharacters_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path testPath = Paths.get("../");
         final Path testPath2 = Paths.get("./");
         final Path testPath3 = Paths.get("/~/");
         final Path testPath4 = Paths.get(".././~/../.");
+
+        final Path testPath5 = firstRootPath.resolve("../");
+        final Path testPath6 = firstRootPath.resolve("./");
+        final Path testPath7 = firstRootPath.resolve("/~/");
+        final Path testPath8 = firstRootPath.resolve(".././~/../.");
 
 
         Files.createDirectory(firstRootPath);
@@ -185,6 +191,12 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath2));
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath3));
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath4));
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath5));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath7));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath8));
+
+        assertTrue(Files.exists(fileService.getFile(testPath6)));
     }
 
     @Test
