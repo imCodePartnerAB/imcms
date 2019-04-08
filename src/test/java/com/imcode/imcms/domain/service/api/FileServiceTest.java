@@ -139,7 +139,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final Path saved = fileService.saveFile(pathFile, testText.getBytes(), null);
 
         assertTrue(Files.exists(saved));
-        String savedGetText = Files.readAllLines(saved).get(0);
+        List<String> lines = Files.readAllLines(saved);
+        assertEquals(1, lines.size());
+        String savedGetText = lines.get(0);
         assertEquals(testText, savedGetText);
     }
 
