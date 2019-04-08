@@ -1,28 +1,34 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.api.DefaultFileService;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.nio.file.StandardOpenOption.CREATE_NEW;
+import static java.util.regex.Pattern.compile;
 
 @RestController
 @RequestMapping("/files")
 public class FileController {
 
-    private static final String DOWNLOAD_FOLDER = "/";
-    @Value("#{'${FileAdminRootPaths}'.split(';')}")
-    private List<Path> rootPaths;
+    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files\\/)(?<path>.*)");
 
     private final DefaultFileService defaultFileService;
 
@@ -30,52 +36,71 @@ public class FileController {
         this.defaultFileService = defaultFileService;
     }
 
-    @GetMapping("/paths/")
-    public List<Path> getFiles(@RequestParam Path file) throws IOException {
-        return defaultFileService.getFiles(file);
+    private String getFileName(String pathName, String removeStart) {
+        Matcher matcher = FILE_NAME_PATTERN.matcher(pathName);
+        String path = null;
+        if (matcher.matches()) {
+            if (removeStart.isEmpty()) {
+                path = matcher.group("path");
+            } else {
+                path = matcher.group("path").substring(removeStart.length() - 1);
+            }
+        }
+        return path;
     }
 
-    @GetMapping("/getFile/")
-    public Path getFile(@RequestParam Path file) throws IOException {
-        return defaultFileService.getFile(file);
+    @PostMapping("/upload/**")
+    public String uploadFile(@RequestParam MultipartFile file, HttpServletRequest request) throws IOException {
+        final String destination = getFileName(request.getRequestURI(), "/upload/");
+        final Path resolvePath = Paths.get(destination).resolve(file.getOriginalFilename());
+        return defaultFileService.saveFile(resolvePath, file.getBytes(), CREATE_NEW).toString();
     }
 
-    @PostMapping("/file")
-    public Path createFile(@RequestParam Path file) throws IOException {
-        return defaultFileService.createFile(file, false);
+    @GetMapping("/**")
+    public List<Path> getFiles(HttpServletRequest request) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "");
+        return defaultFileService.getFiles(Paths.get(file));
     }
 
-    @PostMapping("/directory")
-    public Path createDir(@RequestParam Path file) throws IOException {
-        return defaultFileService.createFile(file, true);
+    @PutMapping("/**")
+    public String saveFile(HttpServletRequest request) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "");
+        final Path path = defaultFileService.getFile(Paths.get(file));
+        final byte[] content = Files.readAllBytes(path);
+
+        return defaultFileService.saveFile(path, content, null).toString();
     }
 
-    @PostMapping("/upload") // TODO: 04.04.19 fix
-    public Path uploadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
-        Path path = Paths.get(DOWNLOAD_FOLDER, Objects.requireNonNull(multipartFile.getOriginalFilename()));
-
-        return defaultFileService.saveFile(path, multipartFile.getBytes(), null);
+    @PostMapping("/**")
+    public String createFile(HttpServletRequest request, @RequestParam boolean isDirectory) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "");
+        return defaultFileService.createFile(Paths.get(file), isDirectory).toString();
     }
 
-    @PostMapping("/download") // TODO: 04.04.19 fix
-    public Path downloadFile(@RequestParam("file") MultipartFile multipartFile) throws IOException {
-        Path path = Paths.get(DOWNLOAD_FOLDER, Objects.requireNonNull(multipartFile.getOriginalFilename()));
+    @GetMapping("/file/**")
+    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "/file/");
+        final Path path = defaultFileService.getFile(Paths.get(file));
+        final byte[] content = Files.readAllBytes(path);
 
-        return defaultFileService.saveFile(path, multipartFile.getBytes(), null);
+        return new ResponseEntity<>(content, HttpStatus.OK);
     }
 
-    @DeleteMapping
-    public void deleteFile(@RequestParam Path file) throws IOException {
-        defaultFileService.deleteFile(file);
+    @DeleteMapping("/**")
+    public void deleteFile(HttpServletRequest request) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "");
+        defaultFileService.deleteFile(Paths.get(file));
     }
 
-    @GetMapping("/move")
-    public Path moveFile(@RequestParam Path src, @RequestParam Path target) throws IOException {
-        return defaultFileService.moveFile(src, target);
+    @PutMapping("/move/**")
+    public String moveFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "/move/");
+        return defaultFileService.moveFile(Paths.get(file), target).toString();
     }
 
-    @GetMapping("/copy")
-    public Path copyFile(@RequestParam Path src, @RequestParam Path target) throws IOException {
-        return defaultFileService.copyFile(src, target);
+    @PostMapping("/copy/**")
+    public String copyFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "/copy/");
+        return defaultFileService.copyFile(Paths.get(file), target).toString();
     }
 }
