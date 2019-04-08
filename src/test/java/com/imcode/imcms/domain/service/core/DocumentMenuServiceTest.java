@@ -100,7 +100,10 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         meta.setLinkedForUnauthorizedUsers(false);
         metaRepository.save(meta);
 
-        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), Imcms.getUser()));
+        final UserDomainObject user = new UserDomainObject(2);
+        user.addRoleId(Roles.USER.getId());
+        user.setLanguageIso639_2(ImcmsConstants.ENG_CODE_ISO_639_2);
+        assertFalse(documentMenuService.hasUserAccessToDoc(meta.getId(), user));
     }
 
     @Test
