@@ -6,10 +6,14 @@ import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -18,9 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 public class FileControllerTest extends AbstractControllerTest {
 
@@ -29,12 +31,11 @@ public class FileControllerTest extends AbstractControllerTest {
     private final String testDirectoryName = "dirName";
     private final String testDirectoryName2 = testDirectoryName + "two";
 
+    @Value("classpath:img1.jpg")
+    private File testImageFile;
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
-
-    @Autowired
-    private FileController fileController;
 
     @BeforeEach
     @AfterEach
@@ -54,25 +55,26 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path pathFile = pathDir.resolve(testFileName);
 
         Files.createDirectories(pathDir);
-        fileController.createFile(pathFile);
+        Files.createFile(pathFile);
 
-        final MockHttpServletRequestBuilder requestBuilder = get(
-                controllerPath() + "/paths/").param("file", "" + pathDir);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
+                controllerPath() + "/" + pathDir);
 
         performRequestBuilderExpectedOk(requestBuilder);
     }
 
     @Test
-    public void getAllFiles_When_FilesExist_Expected_CorrectList() throws Exception {
+    public void getAllFiles_When_FilesExist_Expected_CorrectSize() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
 
         Files.createDirectories(pathDir);
-        fileController.createFile(pathFile);
+        Files.createFile(pathFile);
 
         final MockHttpServletRequestBuilder requestBuilder = get(
-                controllerPath() + "/paths/").param("file", "" + pathDir);
+                controllerPath() + "/" + pathDir);
 
         final String jsonResponse = getJsonResponse(requestBuilder);
         final List<Path> files = fromJson(jsonResponse, new TypeReference<List<Path>>() {
@@ -80,7 +82,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertNotNull(files);
         assertFalse(files.isEmpty());
-        assertEquals(files.size(), fileController.getFiles(pathDir).size());
+        assertEquals(1, files.size());
     }
 
     @Test
@@ -91,10 +93,10 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path pathFile = pathDir.resolve(testFileName);
 
         Files.createDirectories(pathDir2);
-        fileController.createFile(pathFile);
+        Files.createFile(pathFile);
 
         final MockHttpServletRequestBuilder requestBuilder = get(
-                controllerPath() + "/paths/").param("file", "" + pathDir2);
+                controllerPath() + "/" + pathDir2);
 
         final String jsonResponse = getJsonResponse(requestBuilder);
         final List<Path> files = fromJson(jsonResponse, new TypeReference<List<Path>>() {
@@ -102,6 +104,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertNotNull(files);
         assertTrue(files.isEmpty());
+        assertEquals(0, files.size());
         performRequestBuilderExpectedOk(requestBuilder);
     }
 
@@ -109,16 +112,19 @@ public class FileControllerTest extends AbstractControllerTest {
     public void createFile_When_FileNotExists_Expected_OkAndCreatedFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFile = firstRootPath.resolve(testFileName);
+        final Path pathFile2 = firstRootPath.resolve(testFileName2);
 
-        fileController.createDir(firstRootPath);
-
-        final MockHttpServletRequestBuilder requestBuilder = post(
-                controllerPath() + "/file").param("file", "" + pathFile);
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile2);
 
         assertFalse(Files.exists(pathFile));
+
+        final MockHttpServletRequestBuilder requestBuilder = post(
+                controllerPath() + "/" + pathFile).param("isDirectory", "" + false);
+
         performRequestBuilderExpectedOk(requestBuilder);
+
         assertTrue(Files.exists(pathFile));
-        assertFalse(Files.isDirectory(pathFile));
     }
 
     @Test
@@ -126,10 +132,10 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
 
-        fileController.createDir(firstRootPath);
+        Files.createDirectory(firstRootPath);
 
         final MockHttpServletRequestBuilder requestBuilder = post(
-                controllerPath() + "/directory").param("file", "" + pathDir);
+                controllerPath() + "/" + pathDir).param("isDirectory", "" + true);
 
         assertFalse(Files.exists(pathDir));
         performRequestBuilderExpectedOk(requestBuilder);
@@ -138,15 +144,35 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void saveFile_When_FileExists_Expected_OkAndSavedFile() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        String testText = "tesstttt text";
+        FileOutputStream fileOutputStream = new FileOutputStream(pathFile.toFile());
+        fileOutputStream.write(testText.getBytes());
+        fileOutputStream.close();
+
+        final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/" + pathFile);
+
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(testText, Files.readAllLines(pathFile).get(0));
+    }
+
+    @Test
     public void deleteFile_When_FileExists_Expected_OkAndDeleteFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFile = firstRootPath.resolve(testFileName);
 
-        fileController.createDir(firstRootPath);
-        fileController.createFile(pathFile);
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
 
         final MockHttpServletRequestBuilder requestBuilder = delete(
-                controllerPath()).param("file", "" + pathFile);
+                controllerPath() + "/" + pathFile);
 
         assertTrue(Files.exists(pathFile));
         performRequestBuilderExpectedOk(requestBuilder);
@@ -161,31 +187,11 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectories(pathDir);
 
         final MockHttpServletRequestBuilder requestBuilder = delete(
-                controllerPath()).param("file", "" + pathDir);
+                controllerPath() + "/" + pathDir);
 
         assertTrue(Files.exists(pathDir));
         performRequestBuilderExpectedOk(requestBuilder);
         assertFalse(Files.exists(pathDir));
-    }
-
-    @Test
-    public void getFile_When_FileExists_Expected_OkAndCorrectFile() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathFile = firstRootPath.resolve(testFileName);
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(pathFile);
-
-        final MockHttpServletRequestBuilder requestBuilder = get(
-                controllerPath() + "/getFile/").param("file", "" + pathFile);
-
-        final String jsonResponse = getJsonResponse(requestBuilder);
-        final Path file = fromJson(jsonResponse, new TypeReference<Path>() {
-        });
-
-        performRequestBuilderExpectedOk(requestBuilder);
-        assertNotNull(file);
-        assertEquals(file.toAbsolutePath(), fileController.getFile(pathFile).toAbsolutePath());
     }
 
     @Test
@@ -201,19 +207,13 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertFalse(Files.exists(pathFile2));
 
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/copy")
-                .param("src", "" + pathFile)
+        final MockHttpServletRequestBuilder requestBuilder = post(controllerPath() + "/copy/" + pathFile)
                 .param("target", "" + pathFile2);
 
-        final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, 200);
-        final Path file = fromJson(jsonResponse, new TypeReference<Path>() {
-        });
+        performRequestBuilderExpectedOk(requestBuilder);
 
-        assertNotNull(file);
-        assertTrue(Files.exists(file));
         assertTrue(Files.exists(pathFile));
         assertTrue(Files.exists(pathFile2));
-        assertEquals(file.toAbsolutePath(), pathFile2.toAbsolutePath());
     }
 
     @Test
@@ -228,16 +228,44 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createFile(pathFile);
 
         assertFalse(Files.exists(pathFile2));
-        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + "/move")
-                .param("src", "" + pathFile)
+
+        final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/move/" + pathFile)
                 .param("target", "" + pathFile2);
 
-        final String jsonResponse = getJsonResponseWithExpectedStatus(requestBuilder, 200);
-        final Path file = fromJson(jsonResponse, new TypeReference<Path>() {
-        });
+        performRequestBuilderExpectedOk(requestBuilder);
 
-        assertNotNull(file);
-        assertTrue(Files.exists(file));
+        assertTrue(Files.exists(pathFile2));
         assertFalse(Files.exists(pathFile));
+    }
+
+    @Test
+    public void downloadFile_When_FileExists_Expected_Ok() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final byte[] imageFileBytes = Files.readAllBytes(testImageFile.toPath());
+        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        final Path pathFile = firstRootPath.resolve(file.getOriginalFilename());
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        final MockHttpServletRequestBuilder fileDownloadRequestBuilder = get(controllerPath() + "/file/" + pathFile);
+
+        performRequestBuilderExpectedOk(fileDownloadRequestBuilder);
+    }
+
+    @Test
+    public void uploadFile_When_FileExistsAndUploadInRoot_Expected_OkAndUploadFile() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final byte[] imageFileBytes = Files.readAllBytes(testImageFile.toPath());
+        final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", "image/jpg", imageFileBytes);
+        final Path pathFile = firstRootPath.resolve(testFileName);
+        Files.createDirectory(firstRootPath);
+
+        final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
+                .file(file);
+
+        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+        file.transferTo(pathFile);
+        assertTrue(Files.exists(pathFile));
     }
 }
