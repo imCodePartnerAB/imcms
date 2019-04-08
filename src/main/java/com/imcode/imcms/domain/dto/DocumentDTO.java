@@ -47,6 +47,9 @@ public class DocumentDTO extends Document implements Cloneable {
     private AuditDTO latestVersion;
     private Set<String> keywords;
     private boolean searchDisabled;
+    //True is default value
+    private boolean linkableByOtherUsers = true;
+    private boolean linkableForUnauthorizedUsers;
     private Set<CategoryDTO> categories;
     private Set<RestrictedPermissionDTO> restrictedPermissions;
     private Map<String, String> properties;
@@ -129,6 +132,8 @@ public class DocumentDTO extends Document implements Cloneable {
             cloneDocumentDTO.setCategories(new HashSet<>(cloneDocumentDTO.categories));
             cloneDocumentDTO.setRestrictedPermissions(new HashSet<>(cloneDocumentDTO.restrictedPermissions));
             cloneDocumentDTO.setRoleIdToPermission(new HashMap<>(cloneDocumentDTO.roleIdToPermission));
+            cloneDocumentDTO.setLinkableByOtherUsers(cloneDocumentDTO.linkableByOtherUsers);
+            cloneDocumentDTO.setLinkableForUnauthorizedUsers(cloneDocumentDTO.linkableForUnauthorizedUsers);
 
             return cloneDocumentDTO;
         } catch (CloneNotSupportedException e) {

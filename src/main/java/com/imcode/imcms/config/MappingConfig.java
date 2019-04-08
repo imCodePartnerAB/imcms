@@ -410,8 +410,8 @@ class MappingConfig {
 
             meta.setCategories(categories);
 
-            meta.setLinkableByOtherUsers(true);         // fixme: not sure what to do with this
-            meta.setLinkedForUnauthorizedUsers(true);   // fixme: not sure what to do with this
+            meta.setLinkableByOtherUsers(documentDTO.isLinkableByOtherUsers());
+            meta.setLinkedForUnauthorizedUsers(documentDTO.isLinkableForUnauthorizedUsers());
 
             meta.setRoleIdToPermission(documentDTO.getRoleIdToPermission());
 
