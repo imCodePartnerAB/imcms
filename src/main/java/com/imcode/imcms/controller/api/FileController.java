@@ -84,7 +84,7 @@ public class FileController {
     public String copyFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/copy/");
         final Path src = Paths.get(file);
-        return defaultFileService.copyFile(src, target).toString();
+        return defaultFileService.copyFile(src, target.resolve(src.getFileName())).toString();
     }
 
     @PutMapping("/**")
@@ -98,7 +98,7 @@ public class FileController {
     public String moveFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/move/");
         final Path src = Paths.get(file);
-        return defaultFileService.moveFile(src, target).toString();
+        return defaultFileService.moveFile(src, target.resolve(src.getFileName())).toString();
     }
 
     @PutMapping("/rename/**")
