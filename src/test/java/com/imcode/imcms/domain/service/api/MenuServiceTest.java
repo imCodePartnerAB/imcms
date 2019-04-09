@@ -30,12 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.IntStream;
 
-import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.DO_NOT_SHOW;
-import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static imcode.server.ImcmsConstants.ENG_CODE;
-import static imcode.server.ImcmsConstants.ENG_CODE_ISO_639_2;
-import static imcode.server.ImcmsConstants.SWE_CODE;
-import static imcode.server.ImcmsConstants.SWE_CODE_ISO_639_2;
+import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.*;
+import static imcode.server.ImcmsConstants.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -218,7 +214,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -263,7 +259,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -287,7 +283,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -308,7 +304,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(2, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(1, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -329,7 +325,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(2, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(1, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test

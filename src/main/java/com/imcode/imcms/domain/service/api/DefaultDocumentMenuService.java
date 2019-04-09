@@ -56,12 +56,19 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         }
 
         final Map<Integer, Permission> docPermissions = meta.getRoleIdToPermission();
+        boolean hasAccess;
+        if (docPermissions.isEmpty()) {
+            hasAccess = user.isSuperAdmin();
+        } else {
+            hasAccess = user.getRoleIds()
+                    .stream()
+                    .map(docPermissions::get)
+                    .filter(Objects::nonNull)
+                    .anyMatch(permission -> permission.isAtLeastAsPrivilegedAs(Permission.VIEW));
 
-        return user.getRoleIds()
-                .stream()
-                .map(docPermissions::get)
-                .filter(Objects::nonNull)
-                .anyMatch(permission -> permission.isAtLeastAsPrivilegedAs(Permission.VIEW));
+        }
+
+        return hasAccess;
     }
 
     @Override
