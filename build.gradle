@@ -110,6 +110,7 @@ dependencies {
     compile "org.springframework:spring-webmvc:${springframeworkVersion}"
     compile "org.springframework.data:spring-data-jpa:1.11.18.RELEASE"
     compile 'org.modelmapper:modelmapper:2.3.2'
+    compile 'javax.interceptor:javax.interceptor-api:1.2.2'
 
     //Azure AD dependencies
     compile "com.microsoft.azure:adal4j:1.6.3"
