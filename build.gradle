@@ -209,6 +209,11 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     }
 }
 
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 tasks.war {
     it.dependsOn initParams
     it.dependsOn test
@@ -242,6 +247,10 @@ jar {
         }
     }
     archiveClassifier = 'classes'
+}
+
+javadoc {
+    source sourceSets.main.allJava
 }
 
 test {
@@ -357,6 +366,7 @@ publishing {
         mavenJava(MavenPublication) {
             from components.java
             artifact sourcesJar
+            artifact javadocJar
 
             //Ugly way to add war to publication with preserving correct final pom file
             //Haven't found solution with using components.web
