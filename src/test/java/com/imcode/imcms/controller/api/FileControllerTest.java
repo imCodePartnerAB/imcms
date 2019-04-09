@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
@@ -66,6 +67,38 @@ public class FileControllerTest extends AbstractControllerTest {
                 controllerPath() + pathDir);
 
         performRequestBuilderExpectedOk(requestBuilder);
+    }
+
+    @Test
+    public void getFile_When_FileOutSideRoot_Expected_CorrectException() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path testPath = Paths.get("../");
+        final Path testPath2 = Paths.get("./");
+        final Path testPath3 = Paths.get("/~/");
+        final Path testPath4 = Paths.get(".././~/../.");
+
+        final Path testPath5 = firstRootPath.resolve("../");
+        final Path testPath6 = firstRootPath.resolve("/~/");
+        final Path testPath7 = firstRootPath.resolve(".././~/../.");
+
+
+        Files.createDirectory(firstRootPath);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + testPath.toString());
+        final MockHttpServletRequestBuilder requestBuilder2 = MockMvcRequestBuilders.get(controllerPath() + testPath2.toString());
+        final MockHttpServletRequestBuilder requestBuilder3 = MockMvcRequestBuilders.get(controllerPath() + testPath3.toString());
+        final MockHttpServletRequestBuilder requestBuilder4 = MockMvcRequestBuilders.get(controllerPath() + testPath4.toString());
+        final MockHttpServletRequestBuilder requestBuilder5 = MockMvcRequestBuilders.get(controllerPath() + testPath5.toString());
+        final MockHttpServletRequestBuilder requestBuilder6 = MockMvcRequestBuilders.get(controllerPath() + testPath6.toString());
+        final MockHttpServletRequestBuilder requestBuilder7 = MockMvcRequestBuilders.get(controllerPath() + testPath7.toString());
+
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder2);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder3);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder4);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder5);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder6);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder7);
     }
 
     @Test
@@ -214,7 +247,7 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2 = pathDir.resolve(testDirectoryName2);
         final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFile2 = firstRootPath.resolve(testFileName2);
+        final Path pathFile2 = firstRootPath.resolve(testFileName);
 
         Files.createDirectories(pathDir2);
         Files.createFile(pathFile);
@@ -232,9 +265,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertTrue(Files.exists(pathFile));
         assertEquals(2, fileController.getFiles(request).size());
-        assertNotEquals(pathFile2.getFileName(), pathFile.getFileName());
-        assertNotEquals(pathFile2.toAbsolutePath(), pathFile.toAbsolutePath());
-        assertFalse(Files.exists(pathFile2));
+        assertTrue(Files.exists(pathFile2));
     }
 
     @Test
@@ -243,7 +274,7 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2 = pathDir.resolve(testDirectoryName2);
         final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFile2 = firstRootPath.resolve(testFileName2);
+        final Path pathFile2 = firstRootPath.resolve(testFileName);
 
         Files.createDirectories(pathDir2);
         Files.createFile(pathFile);
@@ -261,7 +292,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertEquals(2, fileController.getFiles(request).size());
         assertFalse(Files.exists(pathFile));
-        assertFalse(Files.exists(pathFile2));
+        assertTrue(Files.exists(pathFile2));
     }
 
     @Test
@@ -277,7 +308,7 @@ public class FileControllerTest extends AbstractControllerTest {
         given(request.getRequestURI()).willReturn(controllerPath() + firstRootPath);
 
         final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/rename/" + pathFile)
-                .param("name", "" + anotherName);
+                .param("name", anotherName);
 
         performRequestBuilderExpectedOk(requestBuilder);
         final Path renamedPath = fileController.getFiles(request).get(0);
@@ -300,9 +331,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         final MockHttpServletRequestBuilder fileDownloadRequestBuilder = get(controllerPath() + "/file/" + pathFile);
 
-        performRequestBuilderExpectedOk(fileDownloadRequestBuilder);
-        String lineFile = Files.readAllLines(pathFile).get(0);
-        assertEquals(testText, lineFile);
+        performRequestBuilderExpectedOkAndContentByteEquals(fileDownloadRequestBuilder, testText.getBytes());
     }
 
     @Test
@@ -315,6 +344,7 @@ public class FileControllerTest extends AbstractControllerTest {
         final MockMultipartHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
                 .file(file);
 
+        assertFalse(Files.exists(firstRootPath.resolve(file.getOriginalFilename())));
         performRequestBuilderExpectedOk(fileUploadRequestBuilder);
         assertTrue(Files.exists(firstRootPath.resolve(file.getOriginalFilename())));
     }
