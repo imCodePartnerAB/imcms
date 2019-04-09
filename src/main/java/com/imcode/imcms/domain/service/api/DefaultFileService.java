@@ -6,11 +6,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,14 +21,14 @@ public class DefaultFileService implements FileService {
     private List<Path> rootPaths;
 
 
-    private Path isAllowablePath(Path path) {
+    private boolean isAllowablePath(Path path) {
         Path normalize = path.normalize();
         long count = rootPaths.stream()
                 .map(Path::toString)
                 .filter(normalize::startsWith)
                 .count();
         if (count > 0) {
-            return normalize;
+            return true;
         } else {
             throw new FileAccessDeniedException("File access denied!");
         }
@@ -36,14 +36,19 @@ public class DefaultFileService implements FileService {
 
     @Override
     public List<Path> getFiles(Path file) throws IOException {
-        List<Path> paths = Files.list(isAllowablePath(file)).collect(Collectors.toList());
+        List<Path> paths;
+        if (isAllowablePath(file)) {
+            paths = Files.list(file).collect(Collectors.toList());
+        } else {
+            paths = Collections.EMPTY_LIST;
+        }
         return paths;
     }
 
     @Override
-    public Path getFile(Path file) throws IOException {
-        if (Files.exists(isAllowablePath(file))) {
-            return Paths.get(isAllowablePath(file).toString());
+    public Path getFile(Path file) throws IOException { //todo should we return byte[]
+        if (isAllowablePath(file) && Files.exists(file)) {
+            return file;
         } else {
             throw new NoSuchFileException("File is not exist!");
         }
@@ -51,35 +56,53 @@ public class DefaultFileService implements FileService {
 
     @Override
     public void deleteFile(Path file) throws IOException {
-        Files.delete(isAllowablePath(file));
+        if (isAllowablePath(file)) {
+            Files.delete(file);
+        }
     }
 
     @Override
     public Path moveFile(Path src, Path target) throws IOException {
-        return Files.move(isAllowablePath(src), isAllowablePath(target));
+        Path path = null;
+        if (isAllowablePath(src) && isAllowablePath(target)) {
+            path = Files.move(src, target);
+        }
+        return path;
     }
 
     @Override
     public Path copyFile(Path src, Path target) throws IOException {
-        return Files.copy(isAllowablePath(src), isAllowablePath(target));
+        Path path = null;
+        if (isAllowablePath(src) && isAllowablePath(target)) {
+            path = Files.copy(src, target);
+        }
+        return path;
     }
 
     @Override
-    public Path saveFile(Path file, boolean canOverWrite) throws IOException {
-        if (canOverWrite) {
-            byte[] bytesFile = Files.readAllBytes(file);
-            return Files.write(isAllowablePath(file), bytesFile);
-        } else {
-            throw new FileAlreadyExistsException("File already exists!");
+    public Path saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
+        Path path = null;
+        if (isAllowablePath(location)) {
+            if (null == writeMode) {
+                path = Files.write(location, content);
+            } else {
+                path = Files.write(location, content, writeMode);
+            }
         }
+        return path;
     }
 
     @Override
-    public Path createFile(Path file) throws IOException {
-        if (Files.isDirectory(isAllowablePath(file))) {
-            return Files.createDirectory(file);
-        } else {
-            return Files.createFile(file);
+    public Path createFile(Path file, boolean isDirectory) throws IOException {
+        Path path = null;
+        if (isAllowablePath(file)) {
+            if (isDirectory) {
+                path = Files.createDirectory(file);
+            } else {
+                path = Files.createFile(file);
+            }
         }
+
+        return path;
     }
 }
