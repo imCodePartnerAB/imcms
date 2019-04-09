@@ -50,32 +50,10 @@ public class FileController {
         return extractedPath;
     }
 
-    @PostMapping("/upload/**")
-    public String uploadFile(HttpServletRequest request,
-                             @RequestParam MultipartFile file) throws IOException {
-
-        final String destination = getFileName(request.getRequestURI(), "/upload/");
-        final Path resolvePath = Paths.get(destination).resolve(file.getOriginalFilename());
-        return defaultFileService.saveFile(resolvePath, file.getBytes(), CREATE_NEW).toString();
-    }
-
     @GetMapping("/**")
     public List<Path> getFiles(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "");
         return defaultFileService.getFiles(Paths.get(fileURI));
-    }
-
-    @PutMapping("/**")
-    public String saveFile(HttpServletRequest request, @RequestBody byte[] newContent) throws IOException {
-        final String fileURI = getFileName(request.getRequestURI(), "");
-        final Path path = defaultFileService.getFile(Paths.get(fileURI));
-        return defaultFileService.saveFile(path, newContent, null).toString();
-    }
-
-    @PostMapping("/**")
-    public String createFile(HttpServletRequest request, @RequestParam boolean isDirectory) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "");
-        return defaultFileService.createFile(Paths.get(file), isDirectory).toString();
     }
 
     @GetMapping("/file/**")
@@ -87,10 +65,33 @@ public class FileController {
                 .body(resource);
     }
 
-    @DeleteMapping("/**")
-    public void deleteFile(HttpServletRequest request) throws IOException {
+    @PostMapping("/upload/**")
+    public String uploadFile(HttpServletRequest request,
+                             @RequestParam MultipartFile file) throws IOException {
+
+        final String destination = getFileName(request.getRequestURI(), "/upload/");
+        final Path resolvePath = Paths.get(destination).resolve(file.getOriginalFilename());
+        return defaultFileService.saveFile(resolvePath, file.getBytes(), CREATE_NEW).toString();
+    }
+
+    @PostMapping("/**")
+    public String createFile(HttpServletRequest request, @RequestParam boolean isDirectory) throws IOException {
         final String file = getFileName(request.getRequestURI(), "");
-        defaultFileService.deleteFile(Paths.get(file));
+        return defaultFileService.createFile(Paths.get(file), isDirectory).toString();
+    }
+
+    @PostMapping("/copy/**")
+    public String copyFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "/copy/");
+        final Path src = Paths.get(file);
+        return defaultFileService.copyFile(src, target).toString();
+    }
+
+    @PutMapping("/**")
+    public String saveFile(HttpServletRequest request, @RequestBody byte[] newContent) throws IOException {
+        final String fileURI = getFileName(request.getRequestURI(), "");
+        final Path path = defaultFileService.getFile(Paths.get(fileURI));
+        return defaultFileService.saveFile(path, newContent, null).toString();
     }
 
     @PutMapping("/move/**")
@@ -107,10 +108,9 @@ public class FileController {
         return defaultFileService.moveFile(src, src.getParent().resolve(name)).toString();
     }
 
-    @PostMapping("/copy/**")
-    public String copyFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "/copy/");
-        final Path src = Paths.get(file);
-        return defaultFileService.copyFile(src, target).toString();
+    @DeleteMapping("/**")
+    public void deleteFile(HttpServletRequest request) throws IOException {
+        final String file = getFileName(request.getRequestURI(), "");
+        defaultFileService.deleteFile(Paths.get(file));
     }
 }
