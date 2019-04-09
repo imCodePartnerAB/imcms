@@ -6,22 +6,23 @@ import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 public class FileControllerTest extends AbstractControllerTest {
@@ -36,6 +37,9 @@ public class FileControllerTest extends AbstractControllerTest {
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
+
+    @Autowired
+    private FileController fileController;
 
     @BeforeEach
     @AfterEach
@@ -147,20 +151,29 @@ public class FileControllerTest extends AbstractControllerTest {
     public void saveFile_When_FileExists_Expected_OkAndSavedFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFile = firstRootPath.resolve(testFileName);
-
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        String testText = "tesstttt text";
-        FileOutputStream fileOutputStream = new FileOutputStream(pathFile.toFile());
-        fileOutputStream.write(testText.getBytes());
-        fileOutputStream.close();
+        given(request.getRequestURI()).willReturn(controllerPath() + "/" + pathFile.toString());
+        final List<String> linesFile = Files.readAllLines(pathFile);
+        assertEquals(0, linesFile.size());
 
-        final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/" + pathFile);
-
-        performRequestBuilderExpectedOk(requestBuilder);
+        final String testText = "tesstttt text";
+        final String saved = fileController.saveFile(request, testText.getBytes());
 
         assertEquals(testText, Files.readAllLines(pathFile).get(0));
+
+        final Path path = Paths.get(saved);
+        final String testText2 = "test2";
+        final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/" + path)
+                .content(testText2);
+
+        performRequestBuilderExpectedOk(requestBuilder);
+        final String newTestLine = Files.readAllLines(path).get(0);
+        assertNotEquals(testText, newTestLine);
+        assertEquals(testText2, newTestLine);
     }
 
     @Test
@@ -236,6 +249,27 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertTrue(Files.exists(pathFile2));
         assertFalse(Files.exists(pathFile));
+    }
+
+    @Test
+    public void renameFile_When_FileExists_Expected_OkAndReNameFile() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.resolve(testFileName);
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        final String anotherName = "another.txt";
+        given(request.getRequestURI()).willReturn(controllerPath() + "/" + firstRootPath);
+
+        final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/rename/" + pathFile)
+                .param("name", "" + anotherName);
+
+        performRequestBuilderExpectedOk(requestBuilder);
+        final Path renamedPath = fileController.getFiles(request).get(0);
+        assertNotNull(renamedPath);
+        assertEquals(anotherName, renamedPath.getFileName().toString());
     }
 
     @Test
