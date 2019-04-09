@@ -250,7 +250,7 @@ jar {
 }
 
 javadoc {
-    source sourceSets.main.allJava
+    options.encoding = projectBuildSourceEncoding
 }
 
 test {
