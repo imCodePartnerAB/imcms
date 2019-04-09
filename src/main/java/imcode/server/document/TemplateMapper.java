@@ -106,7 +106,9 @@ public class TemplateMapper {
     }
 
     /**
-     * delete template from db/disk
+     * Delete template from db/disk
+     *
+     * @param template Template object to delete
      */
     public void deleteTemplate(TemplateDomainObject template) {
 

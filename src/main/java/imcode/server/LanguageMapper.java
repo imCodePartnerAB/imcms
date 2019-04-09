@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class LanguageMapper {
     /**
-     * {@see <a href="http://www.loc.gov/standards/iso639-2/langhome.html">http://www.loc.gov/standards/iso639-2/langhome.html</a>} *
+     * @see <a href="http://www.loc.gov/standards/iso639-2/langhome.html"> ISO639.2 Standard</a>
      */
     public final static String ISO639_2 = "ISO 639-2";
     private final static Logger log = Logger.getLogger(LanguageMapper.class.getName());

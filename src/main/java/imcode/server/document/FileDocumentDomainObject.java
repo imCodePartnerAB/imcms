@@ -110,7 +110,7 @@ public class FileDocumentDomainObject extends DocumentDomainObject {
     }
 
     /**
-     * @param fileId
+     * @param fileId ID of file to get
      * @return file with fileId or default file if fileId is null or there is no file with a such id.
      */
     public FileDocumentFile getFileOrDefault(String fileId) {

@@ -70,7 +70,7 @@ public class RoleIdToDocumentPermissionSetTypeMappings implements Serializable, 
     }
 
     /**
-     * Map entry (2-tuple): roleId -> PermissionSetType
+     * Map entry (2-tuple): roleId -&gt; PermissionSetType
      */
     public static class Mapping {
 

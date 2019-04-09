@@ -69,6 +69,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
      * Factory method. Creates new document.
      *
      * @param documentTypeId document type id.
+     * @param <T> Corresponding docuemnt type
      * @return new document
      */
     public static <T extends DocumentDomainObject> T fromDocumentTypeId(int documentTypeId) {
@@ -187,6 +188,7 @@ public abstract class DocumentDomainObject implements Cloneable, Serializable {
 
     /**
      * Returns this document's version no.
+     * @return number of version
      */
     public int getVersionNo() {
         return versionNo;

@@ -43,15 +43,15 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private volatile ConcurrentHashMap<LoopItemRef, ImageDomainObject> loopImages = new ConcurrentHashMap<>();
     /**
      * Includes map.
-     * <p/>
+     *
      * Map key is an included doc's order index in this document.
-     * <p/>
+     *
      * Map value is an included doc's id.
      */
     private volatile ConcurrentHashMap<Integer, Integer> includesMap = new ConcurrentHashMap<>();
     /**
      * Menus map.
-     * <p/>
+     *
      * Map index is a menu's no in this document.
      */
     private volatile ConcurrentHashMap<Integer, MenuDTO> menus = new ConcurrentHashMap<>();
@@ -113,6 +113,9 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     /**
      * Returns menu.
      * If menu does not exists creates and adds menu to this document.
+     *
+     * @param menuNo Index of menu at document
+     * @return Requested menu or new object if no exits
      */
     public MenuDTO getMenu(int menuNo) {
         MenuDTO menu = menus.get(menuNo);
@@ -130,6 +133,8 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     }
 
     /**
+     *
+     * @param loopItemRef
      * @return TextDomainObject or null if text can not be found.
      */
     public TextDomainObject getText(LoopItemRef loopItemRef) {

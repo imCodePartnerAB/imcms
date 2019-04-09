@@ -23,7 +23,7 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
     List<Integer> findCategoryDocIds(int categoryId);
 
     /**
-     * Note: method will delete document->category relation but not the category itself
+     * Note: method will delete document-&gt; category relation but not the category itself
      */
     // todo: cover by tests
     @Modifying
@@ -31,7 +31,7 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
     void deleteByDocIdAndCategoryId(int docId, int categoryId);
 
     /**
-     * Note: method will delete document->category relation but not the category itself
+     * Note: method will delete document-&gt; category relation but not the category itself
      */
     // todo: cover by tests
     @Modifying

@@ -103,6 +103,9 @@ public class MenuDomainObject implements Cloneable, Serializable {
     }
 
     /**
+     * Show published menu items which user could access
+     *
+     * @param user User which accessing menu items
      * @return Menu items pointing to active documents.
      */
     public MenuItemDomainObject[] getPublishedMenuItemsUserCanSee(UserDomainObject user) {
@@ -204,6 +207,8 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     /**
      * Adds menu item to this menu only if it contains a document.
+     *
+     * @param menuItem MenuItem to add
      */
     public void addMenuItem(MenuItemDomainObject menuItem) {
         if (null == menuItem.getSortKey()) {
@@ -216,6 +221,8 @@ public class MenuDomainObject implements Cloneable, Serializable {
 
     /**
      * Adds menu item to this menu without checking if it references a document.
+     *
+     * @param menuItem MenuItem to add
      */
     public void addMenuItemUnchecked(MenuItemDomainObject menuItem) {
         if (null == menuItem.getSortKey()) {

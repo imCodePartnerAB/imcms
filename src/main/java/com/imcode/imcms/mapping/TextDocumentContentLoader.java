@@ -109,7 +109,7 @@ public class TextDocumentContentLoader {
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Set<TextHistoryJPA>} of text history
+     * @return {@link Set}&lt;{@link TextHistoryJPA}&lt; of text history
      * @see Version
      * @see LanguageJPA
      * @see DocRef
@@ -126,7 +126,7 @@ public class TextDocumentContentLoader {
      *
      * @param docRef {@link DocRef} item
      * @param textNo text id
-     * @return {@link Collection<TextHistoryJPA>} of text history
+     * @return {@link Collection}&lt;{@link TextHistoryJPA}&gt; of text history
      * @see Version
      * @see LanguageJPA
      * @see DocRef
