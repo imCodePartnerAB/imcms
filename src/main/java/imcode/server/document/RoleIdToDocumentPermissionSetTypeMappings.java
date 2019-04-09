@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 /**
  * Represents mapping between roles and permissions sets for a document.
- * <p/>
+ *
  * For any role which is not mapped explicitly
  * permission set type defaults to Permission.NONE.
  */

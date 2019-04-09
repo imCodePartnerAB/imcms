@@ -61,7 +61,7 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
     private volatile TemplateNames templateNames = new TemplateNames();
     /**
      * Content loops.
-     * <p/>
+     *
      * Map key is a content's no in this document.
      */
     private volatile ConcurrentHashMap<Integer, Loop> loops = new ConcurrentHashMap<>();
@@ -173,7 +173,6 @@ public class TextDocumentDomainObject extends DocumentDomainObject {
 
     /**
      * Inserts a text to this document.
-     * <p/>
      *
      * @param no   text position in the document.
      * @param text text being inserted.

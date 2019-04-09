@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Document's meta.
- * <p/>
+ *
  * Shared by all versions of the same document.
  */
 @Data

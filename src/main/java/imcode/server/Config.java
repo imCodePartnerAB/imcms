@@ -14,7 +14,7 @@ import java.util.StringTokenizer;
 
 /**
  * Base application configuration.
- * <p/>
+ *
  * Fields names matches properties names in server.properties configuration file.
  */
 public class Config {

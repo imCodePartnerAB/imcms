@@ -96,12 +96,12 @@ class DocumentStoringVisitor extends DocumentVisitor {
 
     /**
      * Returns FileDocumentFile filename.
-     * <p/>
+     *
      * File name is a unique combination of doc id, doc version no and fileId (when not a blank).
      * For backward compatibility a doc version no is omitted if it equals to 0 (working version).
-     * <p/>
+     *
      * If fieldId is not blank its added to filename as an extension.
-     * <p/>
+     *
      * Examples:
      * 1002.xxx - 1002 is a doc id, doc version no is 0 and xxx is fileId.
      * 1002_3.xxx - 1002 is a doc id, 3 is a version no and xxx is fileId.

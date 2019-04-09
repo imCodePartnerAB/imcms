@@ -51,7 +51,7 @@ public class GetDoc extends HttpServlet {
 
     /**
      * Renders document.
-     * <p/>
+     *
      */
     private static void viewDoc(String documentId, HttpServletRequest req,
                                 HttpServletResponse res) throws IOException {

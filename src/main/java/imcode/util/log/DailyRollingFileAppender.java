@@ -50,7 +50,7 @@ public class DailyRollingFileAppender extends FileAppender {
      * example, if the rollover period is one hour, the log file will be
      * renamed to the value of "scheduledFilename" at the beginning of
      * the next hour.
-     * <p/>
+     *
      * The precise time when a rollover occurs depends on logging
      * activity.
      */
@@ -243,7 +243,7 @@ public class DailyRollingFileAppender extends FileAppender {
     /**
      * This method differentiates DailyRollingFileAppender from its
      * super class.
-     * <p/>
+     *
      * <p>Before actually logging, this method will check whether it is
      * time to do a rollover. If it is, it will schedule the next
      * rollover time and then rollover.

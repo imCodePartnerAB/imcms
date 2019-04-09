@@ -14,7 +14,7 @@ public class DatabaseService {
 
     /**
      * Get a databaseconnection from the connectionpool.
-     * <p/>
+     *
      * <strong>IMPORTANT</strong>: Do not forget to make sure that the connection is closed
      * (inside a "finally" block!), otherwise it won't be returned to the pool.
      *

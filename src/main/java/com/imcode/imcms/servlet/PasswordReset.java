@@ -65,10 +65,10 @@ public class PasswordReset extends HttpServlet {
 
     /**
      * Forwards request to password reset or password edit view.
-     * <p/>
+     *
      * Password reset request does not expect any parameters.
      * Password edit request required valid reset-id parameter.
-     * <p/>
+     *
      * Forwards to 404 if request parameters do not met requirements.
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

@@ -188,12 +188,12 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
 
     /**
      * ETags are required to have double quotes around the value, unlike any other header.
-     * <p/>
+     *
      * The ehcache eTag is effectively the Expires time, but accurate to milliseconds, i.e.
      * no conversion to the nearest second is done as is done for the Expires tag. It therefore
      * is the most precise indicator of whether the client cached version is the same as the server
      * version.
-     * <p/>
+     *
      * MD5 is not used to calculate ETag, as it is in some implementations, because it does not
      * add any extra value in this situation, and it has a higher cost.
      *
