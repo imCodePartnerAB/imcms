@@ -134,14 +134,14 @@ dependencies {
     testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 }
 
-def mavenProps = new Properties() //Migrated maven properties
+final def mavenProps = new Properties() //Migrated maven properties
 //Used to merge build and server properties file with replacement of inplace variables usage
-def buildProps = new Properties()
-def serverProps = new Properties()
+final def buildProps = new Properties()
+final def serverProps = new Properties()
 
-def tmpDir = "${buildDir}/tmp/" //Directory to hold temporary data
+final def tmpDir = "${buildDir}/tmp/" //Directory to hold temporary data
 
-def localizationLanguages = new HashMap<String, String>() //Translation Languages
+final def localizationLanguages = new HashMap<String, String>() //Translation Languages
 
 task initParams() {
     mavenProps.setProperty("log4j.threshold", "info")
@@ -163,13 +163,13 @@ task explodedWar(type: Sync, dependsOn: war) {
 }
 
 task mergeProperties() {
-    def lines = file("src/main/resources-conf/server.properties").readLines()
+    final def lines = file("src/main/resources-conf/server.properties").readLines()
 
-    def mergedProperties = new ArrayList<String>()
-    def customProps = buildProps.clone()
+    final def mergedProperties = new ArrayList<String>()
+    final def customProps = buildProps.clone()
 
     lines.each {
-        buildProps.each { prop ->
+        buildProps.each { final prop ->
             if (it.matches("^" + prop.key + "\\s*= *.*\\s*\$")) {
                 it = prop.toString()
                 customProps.remove(prop.key)
@@ -182,8 +182,8 @@ task mergeProperties() {
     mergedProperties.addAll(customProps.findAll())
 
     doLast {
-        def mergedPropertiesFile = file("${buildDir}/libs/exploded/${project.name}-${project.version}.war/WEB-INF/conf/server.properties")
-        mergedPropertiesFile.withWriter { out ->
+        final def mergedPropertiesFile = file("${buildDir}/libs/exploded/${project.name}-${project.version}.war/WEB-INF/conf/server.properties")
+        mergedPropertiesFile.withWriter { final out ->
             mergedProperties.each {
                 out.println it
             }
@@ -203,7 +203,7 @@ task buildWeb(type: Exec, dependsOn: installWebDependencies) {
 
 task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allJava
-    classifier 'sources'
+    archiveClassifier = 'sources'
     manifest {
         from sharedManifest
     }
@@ -241,7 +241,7 @@ jar {
             from sharedManifest
         }
     }
-    classifier 'classes'
+    archiveClassifier = 'classes'
 }
 
 test {
@@ -300,10 +300,10 @@ war {
     }
 
     //Template localization
-    def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
-    def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
+    final def rootFolderForTemplates = "src/main/webapp/WEB-INF/templates/lang"
+    final def rootFolderForImcmsTemplates = "src/main/webapp/imcms/lang"
 
-    def templatePatterns = new ArrayList()
+    final def templatePatterns = new ArrayList()
 
     templatePatterns.add("**/*.jsp")
     templatePatterns.add("**/*.jspx")
@@ -311,7 +311,7 @@ war {
     templatePatterns.add("**/*.html")
 
     def langProperties
-    localizationLanguages.each { lang ->
+    localizationLanguages.each { final lang ->
         langProperties = new Properties()
         file("src/main/resources-conf/imcms${lang.key}.properties").withInputStream { langProperties.load(it) }
 
@@ -343,7 +343,7 @@ war {
     }
 
     webInf {
-        def versionFile = new File("${tmpDir}/version.txt")
+        final def versionFile = new File("${tmpDir}/version.txt")
         doFirst {
             versionFile.text = version
         }
