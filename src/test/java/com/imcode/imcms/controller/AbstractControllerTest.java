@@ -19,9 +19,11 @@ import org.springframework.web.util.NestedServletException;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebAppConfiguration
 @ExtendWith(SpringExtension.class)
@@ -58,6 +60,11 @@ public abstract class AbstractControllerTest {
     protected void performRequestBuilderExpectedOkAndJsonContentEquals(MockHttpServletRequestBuilder builder,
                                                                        String expectedJson) throws Exception {
         performRequestBuilderExpectedStatusAndContentJsonUtf8(builder, HttpStatus.OK.value()).andExpect(content().json(expectedJson));
+    }
+
+    protected void performRequestBuilderExpectedOkAndContentByteEquals(MockHttpServletRequestBuilder builder,
+                                                                       byte[] expectedByte) throws Exception {
+        performRequestBuilderExpectedStatusAndContentTextPlainValue(builder, HttpStatus.OK.value()).andExpect(content().bytes(expectedByte));
     }
 
     protected void getAllExpectedOkAndJsonContentEquals(String expectedJson) throws Exception {
@@ -141,4 +148,8 @@ public abstract class AbstractControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
     }
 
+    private ResultActions performRequestBuilderExpectedStatusAndContentTextPlainValue(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {
+        return performRequestBuilderExpectedStatus(builder, statusCode)
+                .andExpect(content().contentType(MediaType.TEXT_PLAIN_VALUE));
+    }
 }
