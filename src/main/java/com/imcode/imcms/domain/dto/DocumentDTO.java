@@ -48,7 +48,7 @@ public class DocumentDTO extends Document implements Cloneable {
     private Set<String> keywords;
     private boolean searchDisabled;
     //True is default value
-    private boolean linkableByOtherUsers = true;
+    private boolean linkableByOtherUsers;
     private boolean linkableForUnauthorizedUsers;
     private Set<CategoryDTO> categories;
     private Set<RestrictedPermissionDTO> restrictedPermissions;
