@@ -33,8 +33,10 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-import static com.imcode.imcms.servlet.VerifyUser.*;
-import static imcode.server.ImcmsConstants.*;
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__PASSWORD;
+import static com.imcode.imcms.servlet.VerifyUser.REQUEST_PARAMETER__USERNAME;
+import static imcode.server.ImcmsConstants.API_PREFIX;
+import static imcode.server.ImcmsConstants.LOGIN_URL;
 
 /**
  * Front filter.
@@ -177,6 +179,7 @@ public class ImcmsSetupFilter implements Filter {
 
             if (null == user) {
                 user = userAndRoleMapper.getDefaultUser();
+                user.setLanguageIso639_2(languageMapper.getDefaultLanguage());
                 assert user.isActive();
                 Utility.makeUserLoggedIn(request, user);
 
