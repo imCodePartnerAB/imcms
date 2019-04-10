@@ -465,6 +465,8 @@ class MappingConfig {
             dto.setRestrictedPermissions(new HashSet<>(meta.getRestrictedPermissions()));
             dto.setProperties(meta.getProperties());
             dto.setType(meta.getDocumentType());
+            dto.setLinkableByOtherUsers(meta.getLinkableByOtherUsers());
+            dto.setLinkableForUnauthorizedUsers(meta.getLinkedForUnauthorizedUsers());
 
             return dto;
         };
