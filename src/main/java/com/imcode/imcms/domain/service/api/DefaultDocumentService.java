@@ -137,7 +137,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         commonContentService.save(docId, saveMe.getCommonContents());
 
         if (!isNew && (!Imcms.isVersioningAllowed() || Meta.PublicationStatus.APPROVED == saveMe.getPublicationStatus())) {
-            documentsCache.invalidateDoc(docId, newAlias);
+            documentsCache.invalidateCache();
         }
 
         return saveMe;
