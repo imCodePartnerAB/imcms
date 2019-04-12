@@ -214,6 +214,17 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+
+task webZip(type: Zip) {
+    archiveClassifier = 'web'
+    archiveExtension = 'zip'
+    from 'src/main/webapp'
+    exclude "node_modules"
+    exclude "dist"
+    exclude "WEB-INF"
+    exclude "**/*.jsp"
+}
+
 tasks.war {
     it.dependsOn initParams
     it.dependsOn test
@@ -367,6 +378,7 @@ publishing {
             from components.java
             artifact sourcesJar
             artifact javadocJar
+            artifact webZip
 
             //Ugly way to add war to publication with preserving correct final pom file
             //Haven't found solution with using components.web
