@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.util.regex.Pattern.compile;
@@ -51,9 +52,21 @@ public class FileController {
     }
 
     @GetMapping("/**")
-    public List<Path> getFiles(HttpServletRequest request) throws IOException {
+    public List<String> getFiles(HttpServletRequest request) throws IOException {
+        List<String> paths;
         final String fileURI = getFileName(request.getRequestURI(), "");
-        return defaultFileService.getFiles(Paths.get(fileURI));
+        if (null == fileURI) {
+            paths = defaultFileService.getRootFiles()
+                    .stream()
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        } else {
+            paths = defaultFileService.getFiles(Paths.get(fileURI))
+                    .stream()
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+        }
+        return paths;
     }
 
     @GetMapping("/file/**")
