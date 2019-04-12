@@ -160,6 +160,20 @@
     vertical-align: top;
 }
 
+.files-table {
+    width: 35%;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    display: inline-block;
+}
+
+.files-second-table {
+    width: 35%;
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    display: inline-block;
+}
+
 .title-profile-row.table-title {
     display: flex;
     font-weight: 600;
