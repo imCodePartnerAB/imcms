@@ -1134,7 +1134,20 @@ const texts = {
                 name: 'Templates'
             },
             files: {
-                name: 'Files'
+                name: 'Files',
+                createFile: 'Create file',
+                upload: 'Upload',
+                rename: 'Change name',
+                moveRight: '<--',
+                moveLeft: '-->',
+                title: {
+                    createFileName: 'New file/directory name',
+                    delete: 'Delete',
+                    move: 'Move',
+                    copy: 'Copy',
+                    download: 'Download',
+                    edit: 'Edit',
+                },
             },
             search: {
                 name: 'Search'
