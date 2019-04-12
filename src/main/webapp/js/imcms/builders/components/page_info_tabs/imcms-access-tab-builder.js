@@ -151,6 +151,18 @@ define("imcms-access-tab-builder",
             tabData.$rolesBody = $rolesBody;
             tabData.$rolesField = $rolesField.css("display", "none");
 
+            tabData.$otherUsers = rolesBEM.makeBlockElement("row", components.checkboxes.imcmsCheckbox("<div>", {
+                name: 'linkableByOtherUsers',
+                text: texts.linkableByOtherUsers,
+                checked: undefined
+            }));
+
+            tabData.$unauthorizedUsers = rolesBEM.makeBlockElement("row", components.checkboxes.imcmsCheckbox("<div>", {
+                name: 'linkableForUnauthorizedUsers',
+                text: texts.linkableForUnauthorizedUsers,
+                checked: undefined
+            }));
+
             const $addRoleButton = components.buttons.neutralButton({
                     text: texts.addRole,
                     click: () => {
@@ -192,10 +204,18 @@ define("imcms-access-tab-builder",
                     elements: {
                         "access-role": $addRoleInnerBlock
                     }
+                }).buildBlockStructure("<div>"),
+
+                $linkAccessContainer = new BEM({
+                    block: "imcms-field",
+                    elements: {
+                        "access-other-users": tabData.$otherUsers,
+                        "access-unauthorized-users": tabData.$unauthorizedUsers
+                    }
                 }).buildBlockStructure("<div>")
             ;
 
-            return [$rolesField, $addRoleContainer];
+            return [$rolesField, $addRoleContainer, $linkAccessContainer];
         };
         AccessTab.prototype.fillTabDataFromDocument = document => {
             function documentContainsRole(document, role) {
@@ -233,6 +253,10 @@ define("imcms-access-tab-builder",
                 }
             }
 
+
+            tabData.$otherUsers.setChecked(document.linkableByOtherUsers ? "checked" : undefined);
+            tabData.$unauthorizedUsers.setChecked(document.linkableForUnauthorizedUsers ? "checked" : undefined);
+
             (storedRoles) ? buildRolesRows(storedRoles) : rolesRestApi.read(null)
                 .done(roles => {
                     storeRoles(roles);
@@ -258,6 +282,9 @@ define("imcms-access-tab-builder",
 
                     documentDTO.roleIdToPermission[id] = permission;
                 });
+
+            documentDTO.linkableByOtherUsers = tabData.$otherUsers.isChecked();
+            documentDTO.linkableForUnauthorizedUsers = tabData.$unauthorizedUsers.isChecked();
 
             return documentDTO;
         };

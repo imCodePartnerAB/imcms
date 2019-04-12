@@ -140,6 +140,8 @@ const texts = {
                 restricted_1: "begränsad 1",
                 restricted_2: "begränsad 2",
                 addRole: "Lägg till roll",
+                linkableByOtherUsers: "Länkbar av andra användare",
+                linkableForUnauthorizedUsers: "Länkbar för obehöriga användare",
                 error: {
                     loadFailed: "Misslyckades med att hämta roller. Försök få vinst"
                 }
@@ -772,6 +774,8 @@ const texts = {
                 restricted_1: "restricted 1",
                 restricted_2: "restricted 2",
                 addRole: "Add role",
+                linkableByOtherUsers: "Linkable By Other Users",
+                linkableForUnauthorizedUsers: "Linkable For Unauthorized Users",
                 error: {
                     loadFailed: "Failed to fetch roles. Try gain"
                 }

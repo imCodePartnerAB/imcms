@@ -214,7 +214,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -259,7 +259,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -283,7 +283,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(1, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(2, menuService.getMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -304,7 +304,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(1, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(2, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test
@@ -325,7 +325,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(1, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
+        assertEquals(2, menuService.getPublicMenuItems(menu.getMenuIndex(), menu.getDocId(), langUser).size());
     }
 
     @Test

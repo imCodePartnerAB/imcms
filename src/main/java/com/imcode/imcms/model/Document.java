@@ -45,6 +45,8 @@ public abstract class Document implements Serializable {
         setCategories(from.getCategories());
         setRestrictedPermissions(from.getRestrictedPermissions());
         setRoleIdToPermission(from.getRoleIdToPermission());
+        setLinkableByOtherUsers(from.isLinkableByOtherUsers());
+        setLinkableForUnauthorizedUsers(from.isLinkableForUnauthorizedUsers());
     }
 
     public abstract Integer getId();
@@ -126,6 +128,14 @@ public abstract class Document implements Serializable {
     public abstract Map<Integer, Permission> getRoleIdToPermission();
 
     public abstract void setRoleIdToPermission(Map<Integer, Permission> roleIdToPermission);
+
+    public abstract boolean isLinkableByOtherUsers();
+
+    public abstract void setLinkableByOtherUsers(boolean isLinkableByOtherUsers);
+
+    public abstract boolean isLinkableForUnauthorizedUsers();
+
+    public abstract void setLinkableForUnauthorizedUsers(boolean isLinkableForUnauthorizedUsers);
 
     @SuppressWarnings("unused") // used on client side
     public DocumentStatus getDocumentStatus() {
