@@ -504,7 +504,20 @@ const texts = {
                 name: 'Mallar'
             },
             files: {
-                name: 'Filer'
+                name: 'Filer',
+                createFile: 'Skapa fil',
+                upload: 'Ladda upp',
+                rename: 'Ändra namn',
+                moveRight: '<--',
+                moveLeft: '-->',
+                title: {
+                    createFileName: 'Ny fil / katalognamn',
+                    delete: 'Ta bort',
+                    move: 'Flytta',
+                    copy: 'Kopiera',
+                    download: 'Ladda ner',
+                    edit: 'Redigera',
+                },
             },
             search: {
                 name: 'Sök'
