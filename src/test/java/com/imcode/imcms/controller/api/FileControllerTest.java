@@ -311,11 +311,11 @@ public class FileControllerTest extends AbstractControllerTest {
                 .param("name", anotherName);
 
         performRequestBuilderExpectedOk(requestBuilder);
-        final Path renamedPath = fileController.getFiles(request).get(0);
+        final String renamedPath = fileController.getFiles(request).get(0);
         assertNotNull(renamedPath);
         assertTrue(Files.exists(pathFile.getParent().resolve(anotherName)));
         assertFalse(Files.exists(pathFile));
-        assertEquals(anotherName, renamedPath.getFileName().toString());
+        assertEquals(anotherName, Paths.get(renamedPath).getFileName().toString());
     }
 
     @Test

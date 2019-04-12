@@ -254,9 +254,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
         Files.createFile(pathFile);
 
-        final Path copiedFile = fileService.copyFile(pathFile, pathFile2);
+        final List<Path> copiedFile = fileService.copyFile(pathFile, pathFile2);
 
-        assertEquals(pathFile2.toAbsolutePath(), copiedFile.toAbsolutePath());
+        assertEquals(pathFile2.toAbsolutePath(), copiedFile.get(0).toAbsolutePath());
     }
 
     @Test
@@ -306,14 +306,14 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(2, fileService.getFiles(firstRootPath).size());
         assertEquals(0, fileService.getFiles(pathDir2).size());
 
-        final Path movedFile = fileService.moveFile(pathFileByDir, pathFile2ByDir2);
+        final List<Path> movedFile = fileService.moveFile(pathFileByDir, pathFile2ByDir2);
 
         assertFalse(Files.exists(pathFileByDir));
         assertTrue(Files.exists(pathFile2ByDir2));
         assertEquals(1, fileService.getFiles(firstRootPath).size());
         assertEquals(1, fileService.getFiles(pathDir2).size());
 
-        assertEquals(pathFile2ByDir2.toAbsolutePath(), movedFile.toAbsolutePath());
+        assertEquals(pathFile2ByDir2.toAbsolutePath(), movedFile.get(0).toAbsolutePath());
     }
 
     @Test
@@ -373,7 +373,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir2ByDir);
         Files.createFile(pathFileByDir);
 
-        assertEquals(pathDir3.toString(), fileService.copyFile(pathDir2ByDir, pathDir3).toString());
+        assertEquals(pathDir3.toString(), fileService.copyFile(pathDir2ByDir, pathDir3).get(0).toString());
         assertTrue(Files.exists(pathDir2ByDir));
         assertTrue(Files.exists(pathDir3));
     }
@@ -392,7 +392,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir2ByDir);
         Files.createFile(pathFileByDir);
 
-        assertEquals(pathDir3.toAbsolutePath(), fileService.moveFile(pathDir2ByDir, pathDir3).toAbsolutePath());
+        assertEquals(pathDir3.toAbsolutePath(), fileService.moveFile(pathDir2ByDir, pathDir3).get(0).toAbsolutePath());
         assertFalse(Files.exists(pathDir2ByDir));
         assertTrue(Files.exists(pathDir3));
     }
