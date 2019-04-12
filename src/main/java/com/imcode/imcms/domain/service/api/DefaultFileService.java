@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,21 +18,33 @@ import java.util.stream.Collectors;
 @Service
 public class DefaultFileService implements FileService {
 
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
+    private static final String SUB_PATH_REGEX = "(\\/.*)*";
+    @Value(".")
+    private Path rootPath;
 
     private boolean isAllowablePath(Path path) {
         Path normalize = path.normalize();
         long count = rootPaths.stream()
                 .map(Path::toString)
-                .filter(normalize::startsWith)
+                .filter(p -> normalize.toString().matches(p + SUB_PATH_REGEX))
                 .count();
         if (count > 0) {
             return true;
         } else {
             throw new FileAccessDeniedException("File access denied!");
         }
+    }
+
+    @Override
+    public List<Path> getRootFiles() {
+        return rootPaths.stream()
+                .filter(path -> Files.exists(path))
+                .map(path -> rootPath.relativize(path))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -62,19 +75,19 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path moveFile(Path src, Path target) throws IOException {
-        Path path = null;
+    public List<Path> moveFile(Path src, Path target) throws IOException {
+        List<Path> path = new ArrayList<>();
         if (isAllowablePath(src) && isAllowablePath(target)) {
-            path = Files.move(src, target);
+            path.add(Files.move(src, target));
         }
         return path;
     }
 
     @Override
-    public Path copyFile(Path src, Path target) throws IOException {
-        Path path = null;
+    public List<Path> copyFile(Path src, Path target) throws IOException {
+        List<Path> path = new ArrayList<>();
         if (isAllowablePath(src) && isAllowablePath(target)) {
-            path = Files.copy(src, target);
+            path.add(Files.copy(src, target));
         }
         return path;
     }
