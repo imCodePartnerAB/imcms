@@ -245,6 +245,7 @@ module.exports = {
                         'imcms-texts-history-rest-api',
                         'imcms-texts-validation-rest-api',
                         'imcms-file-doc-files-rest-api',
+                        'imcms-files-rest-api',
                         'imcms-profiles-rest-api',
                         'imcms-document-validation-rest-api',
                         'imcms-document-copy-rest-api',
