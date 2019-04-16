@@ -303,6 +303,9 @@ const texts = {
             },
             image: {
                 title: "Bild-redigerare",
+                proportion: "Läs proportioner",
+                presetCrop: "Förinställd gröda",
+                crop: "Gröda",
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
@@ -327,7 +330,7 @@ const texts = {
                     rotateRight: 'Vrid höger',
                     revert: 'Återställ till original',
                     cropping: 'Beskära bild',
-                    cancelText: "Annullera",
+                    cancelText: "Avbryt",
                     cancelTitle: "Avbryt ändringar",
                     applyChangeText: "Tillämpa",
                     applyChangeTitle: "Applicera förändringar",
@@ -438,7 +441,7 @@ const texts = {
                 createNewRole: 'Skapa ny roll',
                 roleName: 'Rollnamn',
                 save: 'Spara',
-                cancel: 'Annullera',
+                cancel: 'Avbryt',
                 externalRolesInfo: 'Du kan ställa in fjärrroller för att fungera som lokala',
                 permissions: {
                     title: 'Rollbehörigheter',
@@ -474,7 +477,7 @@ const texts = {
                 editRule: 'Redigera',
                 deleteRule: 'Radera',
                 save: 'Spara',
-                cancel: 'Annullera',
+                cancel: 'Avbryt',
                 deleteConfirm: 'Vill du verkligen ta bort den här regel?',
                 saveChanges: 'Spara ändringar',
                 discardChangesMessage: 'Ignorera ändringar?',
@@ -550,7 +553,7 @@ const texts = {
                 createButtonName: "Skapa",
                 removeButtonName: "Ta bort",
                 saveButton: 'Spara',
-                cancelButton: 'Annullera',
+                cancelButton: 'Avbryt',
                 warnCancelMessage: 'Vill du verkligen avbryta detta?',
                 confirmDelete: 'Radera?',
                 sections: {
@@ -951,6 +954,9 @@ const texts = {
             },
             image: {
                 title: "Image Editor",
+                proportion: "Proportions locked",
+                presetCrop: "Preset crop",
+                crop: "Crop",
                 panels: {
                     bottom: {
                         hide: "Hide bottom panel",
