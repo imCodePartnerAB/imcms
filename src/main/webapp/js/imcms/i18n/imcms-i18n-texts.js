@@ -59,6 +59,7 @@ const texts = {
         },
         pageInfo: {
             document: "Dokument",
+            URL: "Dokument URL",
             newDocument: "Nytt dokument",
             confirmMessage: "Spara ändringar?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
@@ -706,6 +707,7 @@ const texts = {
         },
         pageInfo: {
             document: "Document",
+            URL: "Document URL",
             newDocument: "New Document",
             confirmMessage: "Save changes?",
             confirmMessageOnCancel: "Do you really want to exit?",
