@@ -11,7 +11,7 @@ const $ = require('jquery');
 let $proportionsText;
 
 function getProportionsText() {
-    return $proportionsText || ($proportionsText = components.texts.infoText('<div>', 'Proportions locked', {
+    return $proportionsText || ($proportionsText = components.texts.infoText('<div>', texts.proportion, {
         style: 'line-height: 35px; vertical-align: top;'
     }))
 }
