@@ -7,114 +7,114 @@
 }
 
 .imcms-control--move {
-    background-image: url("/images_new/controls/icon_folder_controll_reverse_move.png");
+    background-image: url("../images_new/controls/icon_folder_controll_reverse_move.png");
 }
 
 .imcms-control--create {
-    background-image: url("/images_new/controls/icon_folder_controll_create.png");
+    background-image: url("../images_new/controls/icon_folder_controll_create.png");
 }
 
 .imcms-control--edit {
-    background-image: url("/images_new/controls/icon_folder_controll_reverse_edit.png");
+    background-image: url("../images_new/controls/icon_folder_controll_reverse_edit.png");
 }
 
 .imcms-control--archive {
-    background-image: url("/images_new/controls/icon_control_save_archive.png");
+    background-image: url("../images_new/controls/icon_control_save_archive.png");
 }
 
 .imcms-control--check {
-    background-image: url("/images_new/controls/icon_folder_controll_check.svg");
+    background-image: url("../images_new/controls/icon_folder_controll_check.svg");
 }
 
 .imcms-control--check:hover {
-    background-image: url("/images_new/controls/icon_folder_controll_check_hover.svg");
+    background-image: url("../images_new/controls/icon_folder_controll_check_hover.svg");
 }
 
 .imcms-control--edit.imcms-control--menu {
-    background-image: url("/images_new/controls/icon_menu_edit.png");
+    background-image: url("../images_new/controls/icon_menu_edit.png");
     background-size: contain;
 }
 
 .imcms-control--edit.imcms-control--menu:hover {
-    background-image: url("/images_new/controls/icon_menu_edit_hover.png");
+    background-image: url("../images_new/controls/icon_menu_edit_hover.png");
     background-size: contain;
 }
 
 .imcms-control--edit.imcms-control--loop {
-    background-image: url("/images_new/controls/icon_loop_edit.png");
+    background-image: url("../images_new/controls/icon_loop_edit.png");
     background-size: contain;
 }
 
 .imcms-control--edit.imcms-control--loop:hover {
-    background-image: url("/images_new/controls/icon_loop_edit_hover.png");
+    background-image: url("../images_new/controls/icon_loop_edit_hover.png");
     background-size: contain;
 }
 
 .imcms-control--edit.imcms-control--image {
-    background-image: url("/images_new/controls/icon_image_edit.png");
+    background-image: url("../images_new/controls/icon_image_edit.png");
     background-size: contain;
 }
 
 .imcms-control--edit.imcms-control--image:hover {
-    background-image: url("/images_new/controls/icon_image_edit_hover.png");
+    background-image: url("../images_new/controls/icon_image_edit_hover.png");
     background-size: contain;
 }
 
 .imcms-control--copy {
-    background-image: url("/images_new/controls/icon_folder_controll_copy.png");
+    background-image: url("../images_new/controls/icon_folder_controll_copy.png");
     background-size: cover;
 }
 
 .imcms-control--remove {
-    background-image: url("/images_new/controls/icon_folder_controll_reverse_remove.png");
+    background-image: url("../images_new/controls/icon_folder_controll_reverse_remove.png");
 }
 
 .imcms-control--warning {
-    background-image: url("/images_new/controls/icon_controll_warning.svg");
+    background-image: url("../images_new/controls/icon_controll_warning.svg");
 }
 
 .imcms-control--error {
-    background-image: url("/images_new/controls/icon_controll_error.svg");
+    background-image: url("../images_new/controls/icon_controll_error.svg");
 }
 
 .imcms-folder__controls .imcms-control--move {
-    background-image: url("/images_new/controls/icon_folder_controll_move.png");
+    background-image: url("../images_new/controls/icon_folder_controll_move.png");
 }
 
 .imcms-folder__controls .imcms-control--create {
-    background-image: url("/images_new/controls/icon_folder_controll_create.png");
+    background-image: url("../images_new/controls/icon_folder_controll_create.png");
 }
 
 .imcms-folder__controls .imcms-control--edit {
-    background-image: url("/images_new/controls/icon_folder_controll_edit.png");
+    background-image: url("../images_new/controls/icon_folder_controll_edit.png");
 }
 
 .imcms-folder__controls .imcms-control--remove {
-    background-image: url("/images_new/controls/icon_folder_controll_remove.png");
+    background-image: url("../images_new/controls/icon_folder_controll_remove.png");
 }
 
 .imcms-control--move:hover {
-    background-image: url("/images_new/controls/icon_folder_controll_move_hover.png");
+    background-image: url("../images_new/controls/icon_folder_controll_move_hover.png");
 }
 
 .imcms-control--create:hover {
-    background-image: url("/images_new/controls/icon_folder_controll_create_hover.png");
+    background-image: url("../images_new/controls/icon_folder_controll_create_hover.png");
 }
 
 .imcms-control--edit:hover {
-    background-image: url("/images_new/controls/icon_folder_controll_edit_hover.png");
+    background-image: url("../images_new/controls/icon_folder_controll_edit_hover.png");
 }
 
 .imcms-control--copy:hover {
-    background-image: url("/images_new/controls/icon_folder_controll_copy_hover.png");
+    background-image: url("../images_new/controls/icon_folder_controll_copy_hover.png");
     background-size: cover;
 }
 
 .imcms-control--remove:hover {
-    background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
+    background-image: url("../images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
 .imcms-control--archive:hover {
-    background-image: url("/images_new/controls/icon_control_save_archive_hover.png");
+    background-image: url("../images_new/controls/icon_control_save_archive_hover.png");
 }
 
