@@ -217,12 +217,12 @@ const texts = {
                     status: "Status"
                 },
                 status: {
-                    published: "Godkänd, publicerad",
+                    published: "Publicerad",
                     publishedWaiting: "Godkänd, väntar",
                     inProcess: "Nytt, under arbete",
                     disapproved: "Ej godkänd",
                     archived: "Arkiverat",
-                    passed: "Publiceringsänden"
+                    passed: "Avslutad"
                 },
                 error: {
                     searchFailed: 'Sökningen misslyckades. Försök igen',
@@ -255,6 +255,9 @@ const texts = {
             menu: {
                 newDoc: "Ny",
                 title: "Meny-redigerare",
+                remove: "ta bort ur menyn",
+                copy: "Kopiera",
+                edit: "Redigera Sid-info",
                 id: "ID",
                 docTitle: "Rubrik",
                 status: "Status",
@@ -906,6 +909,9 @@ const texts = {
             menu: {
                 newDoc: "New",
                 title: "Menu Editor",
+                remove: "Remove",
+                copy: "Copy",
+                edit: "Edit",
                 id: "ID",
                 docTitle: "Title",
                 status: "Status",
