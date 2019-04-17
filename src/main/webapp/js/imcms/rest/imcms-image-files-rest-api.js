@@ -4,4 +4,4 @@
  */
 const rest = require('imcms-rest-api');
 
-module.exports = new rest.API("../images/files");
+module.exports = new rest.API("/images/files");
