@@ -18,11 +18,11 @@ import java.util.stream.Collectors;
 @Service
 public class DefaultFileService implements FileService {
 
+    private static final String SUB_PATH_REGEX = "(\\/.*)*";
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
-    private static final String SUB_PATH_REGEX = "(\\/.*)*";
     @Value(".")
     private Path rootPath;
 
@@ -75,19 +75,23 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<Path> moveFile(Path src, Path target) throws IOException {
-        List<Path> path = new ArrayList<>();
-        if (isAllowablePath(src) && isAllowablePath(target)) {
-            path.add(Files.move(src, target));
+    public List<Path> moveFile(List<Path> src, Path target) throws IOException {
+        final List<Path> path = new ArrayList<>();
+        for (Path srcPath : src) {
+            if (isAllowablePath(srcPath) && isAllowablePath(target)) {
+                path.add(Files.move(srcPath, target.resolve(srcPath.getFileName())));
+            }
         }
         return path;
     }
 
     @Override
-    public List<Path> copyFile(Path src, Path target) throws IOException {
-        List<Path> path = new ArrayList<>();
-        if (isAllowablePath(src) && isAllowablePath(target)) {
-            path.add(Files.copy(src, target));
+    public List<Path> copyFile(List<Path> src, Path target) throws IOException {
+        final List<Path> path = new ArrayList<>();
+        for (Path srcPath : src) {
+            if (isAllowablePath(srcPath) && isAllowablePath(target)) {
+                path.add(Files.copy(srcPath, target.resolve(srcPath.getFileName())));
+            }
         }
         return path;
     }
