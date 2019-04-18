@@ -30,6 +30,7 @@ import com.imcode.imcms.domain.service.RoleService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
@@ -140,7 +141,8 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     @Qualifier("versionedContentServices")
     private List<VersionedContentService> versionedContentServices;
-
+    @Autowired
+    private DocumentMapper documentMapper;
 
     @Autowired
     private Config config;
@@ -170,6 +172,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 loopService,
                 new MockDocumentIndex(),
                 documentsCache,
+                documentMapper,
                 versionedContentServices
         );
         ((DefaultDocumentService) documentService).init();

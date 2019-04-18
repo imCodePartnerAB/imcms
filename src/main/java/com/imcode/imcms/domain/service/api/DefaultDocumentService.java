@@ -11,6 +11,7 @@ import com.imcode.imcms.domain.service.LoopService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
@@ -48,6 +49,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final LoopService loopService;
     private final DocumentIndex documentIndex;
     private final DocumentsCache documentsCache;
+    private final DocumentMapper documentMapper;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
 
@@ -63,8 +65,8 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            LoopService loopService,
                            DocumentIndex documentIndex,
                            DocumentsCache documentsCache,
-                           @Qualifier("versionedContentServices")
-                                   List<VersionedContentService> versionedContentServices) {
+                           DocumentMapper documentMapper,
+                           @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices) {
 
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
@@ -75,6 +77,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.loopService = loopService;
         this.documentIndex = documentIndex;
         this.documentsCache = documentsCache;
+        this.documentMapper = documentMapper;
         this.versionedContentServices = versionedContentServices;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
@@ -122,7 +125,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
             final String oldAlias = metaRepository.findOne(id).getAlias();
 
             if (!Objects.equals(oldAlias, newAlias)) {
-                documentsCache.invalidateDoc(id, oldAlias);
+                documentMapper.invalidateDocument(id);
             }
         }
 
@@ -137,7 +140,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         commonContentService.save(docId, saveMe.getCommonContents());
 
         if (!isNew && (!Imcms.isVersioningAllowed() || Meta.PublicationStatus.APPROVED == saveMe.getPublicationStatus())) {
-            documentsCache.invalidateCache();
+            documentMapper.invalidateDocument(id);
         }
 
         return saveMe;
@@ -259,11 +262,9 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     public void deleteByDocId(Integer docIdToDelete) {
         deleteDocumentContent(docIdToDelete);
 
-        final String alias = metaRepository.findOne(docIdToDelete).getAlias();
-
         metaRepository.delete(docIdToDelete);
         documentIndex.removeDocument(docIdToDelete);
-        documentsCache.invalidateDoc(docIdToDelete, alias);
+        documentMapper.invalidateDocument(docIdToDelete);
     }
 
     protected void deleteDocumentContent(Integer docIdToDelete) {
