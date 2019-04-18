@@ -11,6 +11,7 @@
 }
 
 .imcms-document-editor-head-tool__button {
+    text-align: center;
     padding: 13px 17px;
     width: 100%;
 }
