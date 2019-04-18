@@ -59,6 +59,7 @@ const texts = {
         },
         pageInfo: {
             document: "Dokument",
+            URL: "Dokument URL",
             newDocument: "Nytt dokument",
             confirmMessage: "Spara ändringar?",
             confirmMessageOnCancel: "Vill du verkligen avsluta?",
@@ -216,12 +217,12 @@ const texts = {
                     status: "Status"
                 },
                 status: {
-                    published: "Godkänd, publicerad",
+                    published: "Publicerad",
                     publishedWaiting: "Godkänd, väntar",
                     inProcess: "Nytt, under arbete",
                     disapproved: "Ej godkänd",
                     archived: "Arkiverat",
-                    passed: "Publiceringsänden"
+                    passed: "Avslutad"
                 },
                 error: {
                     searchFailed: 'Sökningen misslyckades. Försök igen',
@@ -254,6 +255,9 @@ const texts = {
             menu: {
                 newDoc: "Ny",
                 title: "Meny-redigerare",
+                remove: "Ta bort ur menyn",
+                copy: "Kopiera",
+                edit: "Redigera Sid-info",
                 id: "ID",
                 docTitle: "Rubrik",
                 status: "Status",
@@ -282,6 +286,7 @@ const texts = {
                 hideFolders: "Dölj mappar",
                 showFolders: "Visa mappar",
                 checkFolderImagesUsage: "Kontrollera efter använda bilder",
+                createFolderImage: "Läng till underkatalog",
                 cancel: "Avbryt",
                 upload: "Ladda upp",
                 useSelectedImage: "Använd vald bild",
@@ -302,6 +307,9 @@ const texts = {
             },
             image: {
                 title: "Bild-redigerare",
+                proportion: "Läs proportioner",
+                presetCrop: "Förinställd gröda",
+                crop: "Gröda",
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
@@ -326,7 +334,7 @@ const texts = {
                     rotateRight: 'Vrid höger',
                     revert: 'Återställ till original',
                     cropping: 'Beskära bild',
-                    cancelText: "Annullera",
+                    cancelText: "Avbryt",
                     cancelTitle: "Avbryt ändringar",
                     applyChangeText: "Tillämpa",
                     applyChangeTitle: "Applicera förändringar",
@@ -437,7 +445,7 @@ const texts = {
                 createNewRole: 'Skapa ny roll',
                 roleName: 'Rollnamn',
                 save: 'Spara',
-                cancel: 'Annullera',
+                cancel: 'Avbryt',
                 externalRolesInfo: 'Du kan ställa in fjärrroller för att fungera som lokala',
                 permissions: {
                     title: 'Rollbehörigheter',
@@ -473,7 +481,7 @@ const texts = {
                 editRule: 'Redigera',
                 deleteRule: 'Radera',
                 save: 'Spara',
-                cancel: 'Annullera',
+                cancel: 'Avbryt',
                 deleteConfirm: 'Vill du verkligen ta bort den här regel?',
                 saveChanges: 'Spara ändringar',
                 discardChangesMessage: 'Ignorera ändringar?',
@@ -504,7 +512,20 @@ const texts = {
                 name: 'Mallar'
             },
             files: {
-                name: 'Filer'
+                name: 'Filer',
+                createFile: 'Skapa fil',
+                upload: 'Ladda upp',
+                rename: 'Ändra namn',
+                moveRight: '<--',
+                moveLeft: '-->',
+                title: {
+                    createFileName: 'Ny fil / katalognamn',
+                    delete: 'Ta bort',
+                    move: 'Flytta',
+                    copy: 'Kopiera',
+                    download: 'Ladda ner',
+                    edit: 'Redigera',
+                },
             },
             search: {
                 name: 'Sök'
@@ -536,7 +557,7 @@ const texts = {
                 createButtonName: "Skapa",
                 removeButtonName: "Ta bort",
                 saveButton: 'Spara',
-                cancelButton: 'Annullera',
+                cancelButton: 'Avbryt',
                 warnCancelMessage: 'Vill du verkligen avbryta detta?',
                 confirmDelete: 'Radera?',
                 sections: {
@@ -693,6 +714,7 @@ const texts = {
         },
         pageInfo: {
             document: "Document",
+            URL: "Document URL",
             newDocument: "New Document",
             confirmMessage: "Save changes?",
             confirmMessageOnCancel: "Do you really want to exit?",
@@ -888,6 +910,9 @@ const texts = {
             menu: {
                 newDoc: "New",
                 title: "Menu Editor",
+                remove: "Remove",
+                copy: "Copy",
+                edit: "Edit",
                 id: "ID",
                 docTitle: "Title",
                 status: "Status",
@@ -916,6 +941,7 @@ const texts = {
                 hideFolders: "Hide folders",
                 showFolders: "Show folders",
                 checkFolderImagesUsage: "Check for used images",
+                createFolderImage: "Add subdirectory",
                 cancel: "Cancel",
                 upload: "Upload",
                 useSelectedImage: "Use selected image",
@@ -936,6 +962,9 @@ const texts = {
             },
             image: {
                 title: "Image Editor",
+                proportion: "Proportions locked",
+                presetCrop: "Preset crop",
+                crop: "Crop",
                 panels: {
                     bottom: {
                         hide: "Hide bottom panel",

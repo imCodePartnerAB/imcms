@@ -69,6 +69,10 @@
     width: 30%;
 }
 
+.imcms-menu-new-button__button {
+    text-align: center;
+}
+
 .imcms-menu-editor-body__right-side {
     border-left: 1px solid #d3d8de;
     padding-bottom: 0;

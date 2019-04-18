@@ -216,7 +216,7 @@ define(
         function getCroppingProportionsInfo() {
             return components.texts.infoText(
                 '<div>',
-                `${imageResize.isProportionsLockedByStyle() ? 'Preset crop' : 'Crop'} format: ${imageResize.getWidth()} x ${imageResize.getHeight()}`,
+                `${imageResize.isProportionsLockedByStyle() ? texts.presetCrop : texts.crop} format: ${imageResize.getWidth()} x ${imageResize.getHeight()}`,
                 {
                     'class': 'imcms-image-crop-proportions-info',
                     style: 'display: block;'

@@ -84,7 +84,8 @@ define("imcms-image-content-builder",
 
             edit: (folder, level) => components.controls.edit(setRenameFolder(folder, level)),
 
-            create: (folder, level) => components.controls.create(setCreateFolder(folder, level)),
+            create: (folder, level) =>
+                components.controls.create(setCreateFolder(folder, level)).attr("title", texts.createFolderImage),
 
             check: folder => {
                 return components.controls

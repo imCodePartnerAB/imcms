@@ -237,7 +237,7 @@ define(
                 }
 
                 const $checkbox = components.checkboxes.imcmsCheckbox('<div>', {
-                    text: 'Do not show again'
+                    text: texts.doNotShowAgain
                 });
 
                 const modalWindow = buildModalWindow(question, confirm => {

@@ -541,13 +541,14 @@ define("imcms-menu-editor-builder",
         }
 
         function buildMenuItemControls(menuElementTree) {
+
             const $controlRemove = components.controls.remove(function () {
                 removeMenuItem.call(this, menuElementTree.documentId);
-            });
+            }).attr("title", texts.remove);
 
             const $controlEdit = components.controls.edit(() => {
                 pageInfoBuilder.build(menuElementTree.documentId, refreshMenuItem, menuElementTree.type);
-            });
+            }).attr("title", texts.edit);
 
             const $controlCopy = components.controls.copy(() => {
                 docCopyRestApi.copy(menuElementTree.documentId)
@@ -563,7 +564,7 @@ define("imcms-menu-editor-builder",
                         appendNewMenuItem(copiedDocument);
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.copyDocumentFailed));
-            });
+            }).attr("title", texts.copy);
 
             return components.controls.buildControlsBlock("<div>", [$controlRemove, $controlCopy, $controlEdit]);
         }
