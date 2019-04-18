@@ -315,7 +315,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(3, fileService.getFiles(firstRootPath).size()); // +1 in firstroot
         assertEquals(0, fileService.getFiles(pathDir).size());
 
-        fileService.moveFile(paths, pathDir);
+        fileService.moveFile(paths, pathDir, null);
 
         assertFalse(Files.exists(pathFileByDir));
         assertEquals(2, fileService.getFiles(firstRootPath).size());
@@ -334,12 +334,13 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
         List<Path> paths = Collections.singletonList(Files.createFile(pathFile));
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(paths, pathFakeFile2));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(paths, pathFakeFile2, null));
 
         assertTrue(Files.exists(pathFile));
         assertFalse(Files.exists(pathFakeFile2));
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(Collections.singletonList(pathFakeFile2), pathFile));
+        assertThrows(FileAccessDeniedException.class,
+                () -> fileService.moveFile(Collections.singletonList(pathFakeFile2), pathFile, null));
 
         assertTrue(Files.exists(pathFile));
         assertFalse(Files.exists(pathFakeFile2));
@@ -429,7 +430,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathDir3);
         Files.createFile(pathFileByDir);
 
-        fileService.moveFile(Collections.singletonList(pathDir2ByDir), pathDir3);
+        fileService.moveFile(Collections.singletonList(pathDir2ByDir), pathDir3, null);
         assertFalse(Files.exists(pathDir2ByDir));
         assertTrue(Files.exists(pathDir3));
     }
@@ -452,7 +453,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(0, Files.list(pathDir2).count());
 
-        fileService.moveFile(src, pathDir2);
+        fileService.moveFile(src, pathDir2, null);
         assertFalse(Files.exists(pathFileByDir));
         assertFalse(Files.exists(pathFile3ByDir));
         assertEquals(2, Files.list(firstRootPath).count());
