@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,20 +54,16 @@ public class FileController {
 
     @GetMapping("/**")
     public List<String> getFiles(HttpServletRequest request) throws IOException {
-        List<String> paths;
         final String fileURI = getFileName(request.getRequestURI(), "");
+        List<Path> files;
         if (null == fileURI) {
-            paths = defaultFileService.getRootFiles()
-                    .stream()
-                    .map(Path::toString)
-                    .collect(Collectors.toList());
+            files = defaultFileService.getRootFiles();
         } else {
-            paths = defaultFileService.getFiles(Paths.get(fileURI))
-                    .stream()
-                    .map(Path::toString)
-                    .collect(Collectors.toList());
+            files = defaultFileService.getFiles(Paths.get(fileURI));
         }
-        return paths;
+        return files.stream()
+                .map(Path::toString)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/file/**")
@@ -97,7 +94,7 @@ public class FileController {
     public String copyFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/copy/");
         final Path src = Paths.get(file);
-        return defaultFileService.copyFile(src, target.resolve(src.getFileName())).toString();
+        return defaultFileService.copyFile(Collections.singletonList(src), target).toString();
     }
 
     @PutMapping("/**")
@@ -111,14 +108,14 @@ public class FileController {
     public String moveFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/move/");
         final Path src = Paths.get(file);
-        return defaultFileService.moveFile(src, target.resolve(src.getFileName())).toString();
+        return defaultFileService.moveFile(Collections.singletonList(src), target, null).toString();
     }
 
     @PutMapping("/rename/**")
     public String renameFile(HttpServletRequest request, @RequestParam String name) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/rename/");
         final Path src = Paths.get(file);
-        return defaultFileService.moveFile(src, src.getParent().resolve(name)).toString();
+        return defaultFileService.moveFile(Collections.singletonList(src), src.getParent(), name).toString();
     }
 
     @DeleteMapping("/**")
