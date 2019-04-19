@@ -11,7 +11,8 @@ define(
             transform: (file) => {
 
                 let infoRowAttributes = {
-                    click: getOnFileClicked(file)
+                    click: getOnFileClicked(file),
+                    style: "display: flex;"
                 };
 
                 return new BEM({
@@ -20,9 +21,9 @@ define(
                         'file-name': $('<div>', {
                             text: file
                         }),
-                        'delete': components.controls.remove(),
+                        'download': components.controls.download(),
                         'edit': components.controls.edit(),
-                        'upload': components.controls.upload()
+                        'delete': components.controls.remove()
                     }
                 }).buildBlockStructure("<div>", infoRowAttributes);
             }

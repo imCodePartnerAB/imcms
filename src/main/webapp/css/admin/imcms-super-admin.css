@@ -161,14 +161,8 @@
 }
 
 .files-table {
-    width: 35%;
-    background-color: ghostwhite;
-    border: 1px solid gainsboro;
-    display: inline-block;
-}
-
-.files-second-table {
-    width: 35%;
+    width: 90%;
+    height: 35%;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
     display: inline-block;

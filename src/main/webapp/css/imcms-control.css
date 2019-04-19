@@ -10,8 +10,8 @@
     background-image: url("/images_new/controls/icon_folder_controll_reverse_move.png");
 }
 
-.imcms-control--upload {
-    background-image: url("/images_new/controls/icon_upload.svg");
+.imcms-control--download {
+    background-image: url("/images_new/controls/icon_download.svg");
 }
 
 .imcms-control--create {
