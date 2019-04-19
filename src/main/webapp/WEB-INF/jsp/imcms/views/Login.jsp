@@ -84,14 +84,14 @@ ${"-->"}
                             key="templates/login/index.html/2002"/></a>
                 </div>
                 <div class="imcms-info-footer imcms-login__footer">
-                    <button type="submit" form="loginForm" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
-                            class="imcms-button imcms-button--save imcms-info-footer__button"
-                            style="position: absolute; left: 8%">
-                        <fmt:message key="templates/login/index.html/2006"/></button>
                     <button type="submit" form="loginForm"
                             class="imcms-button imcms-button--positive imcms-info-footer__button"
                             style="position: absolute; right: 8%">
                         <fmt:message key="templates/login/index.html/2005"/></button>
+                    <button type="submit" form="loginForm" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
+                            class="imcms-button imcms-button--save imcms-info-footer__button"
+                            style="position: absolute; left: 8%">
+                        <fmt:message key="templates/login/index.html/2006"/></button>
                 </div>
             </div>
         </div>
