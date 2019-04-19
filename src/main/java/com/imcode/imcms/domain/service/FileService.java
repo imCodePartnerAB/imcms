@@ -15,9 +15,9 @@ public interface FileService {
 
     void deleteFile(Path file) throws IOException;
 
-    List<Path> moveFile(Path src, Path target) throws IOException;
+    List<Path> moveFile(List<Path> src, Path target, String newName) throws IOException;
 
-    List<Path> copyFile(Path src, Path target) throws IOException;
+    List<Path> copyFile(List<Path> src, Path target) throws IOException;
 
     Path saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException;
 

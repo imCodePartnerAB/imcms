@@ -30,5 +30,11 @@ module.exports = {
 
     warning: onClick => buildControl("warning", onClick),
 
+    download: onclick => buildControl("download", onclick),
+
+    add: onclick => buildControl("add", onclick),
+
+    upload: onclick => buildControl("upload", onclick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };

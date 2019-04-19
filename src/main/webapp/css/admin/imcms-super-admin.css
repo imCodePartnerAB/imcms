@@ -161,17 +161,20 @@
 }
 
 .files-table {
-    width: 35%;
+    width: 90%;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
-    display: inline-block;
+    display: inline-flex;
+    justify-content: space-between;
 }
 
-.files-second-table {
-    width: 35%;
-    background-color: ghostwhite;
-    border: 1px solid gainsboro;
-    display: inline-block;
+.buttons-action {
+    display: inline-flex;
+}
+
+.second-files-action,
+.first-files-action {
+    display: flex;
 }
 
 .title-profile-row.table-title {
