@@ -181,6 +181,7 @@ module.exports = {
                                 'imcms-role-to-row-transformer',
                                 'imcms-profile-editor',
                                 'imcms-profile-to-row-transformer',
+                                'imcms-file-to-row-transformer',
                                 'imcms-rule-editor',
                                 'imcms-rule-to-row-transformer',
                                 'imcms-field-wrapper',
