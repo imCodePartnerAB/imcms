@@ -5,14 +5,13 @@
 define(
     'imcms-files-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-files-rest-api',
-        'imcms-modal-window-builder', 'imcms-field-wrapper', 'jquery', 'imcms-bem-builder'],
-    function (SuperAdminTab, texts, components, filesRestApi, modal, fieldWrapper, $, BEM) {
+        'imcms-modal-window-builder', 'imcms-field-wrapper', 'jquery', 'imcms-bem-builder', 'imcms-file-to-row-transformer'],
+    function (SuperAdminTab, texts, components, filesRestApi, modal, fieldWrapper, $, BEM, fileToRow) {
 
         texts = texts.superAdmin.files;
 
         let $typeNameRow;
-        let $firstFileContainer;
-        let $secondFileContainer;
+        let $fileContainer;
 
         const filesLoader = {
             files: false,
@@ -36,31 +35,19 @@ define(
             .fail(() => modal.buildErrorWindow('do not load files!'));
 
         function buildMainWindowContainerByFiles() {
-            $firstFileContainer = $('<div>', {
+            $fileContainer = $('<div>', {
                 'class': 'files-table'
             });
 
             filesLoader.whenFilesLoaded(files => {
-                // $fileContainer.append(files.map(file => fileToRow.transform(file, fileEditor)));
-                $firstFileContainer.append(files);
-
-                console.log(files.map(file => file + "NAME !!"));
-            });
-
-            return $firstFileContainer;
-        }
-
-        function buildSecondMainWindowContainerByFiles() {
-            $secondFileContainer = $('<div>', {
-                'class': 'files-second-table'
+                $fileContainer.append(files.map(file => fileToRow.transform(file)));
             });
 
             filesLoader.whenFilesLoaded(files => {
-                // $fileContainer.append(files.map(file => fileToRow.transform(file, fileEditor)));
-                $secondFileContainer.append(files);
+                $fileContainer.append(files.map(file => fileToRow.transform(file)));
             });
 
-            return fieldWrapper.wrap([$secondFileContainer]);
+            return $fileContainer;
         }
 
         function buildCreateFileNameRow() {
@@ -71,51 +58,15 @@ define(
         }
 
 
-        function buildToMoveFilesButtons() {
-            let $buttons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: texts.moveRight,
-                    click: function () {
-                    }
-                }),
-                components.buttons.positiveButton({
-                    text: texts.moveLeft,
-                    click: function () {
-
-                    }
-                })
-            ]);
-
-            return fieldWrapper.wrap([texts.title.move, $buttons]);
-        }
-
-        function buildToCopyFilesButtons() {
-            let $buttons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: texts.moveRight,
-                    click: function () {
-                    }
-                }),
-                components.buttons.positiveButton({
-                    text: texts.moveLeft,
-                    click: function () {
-
-                    }
-                })
-            ]);
-
-            return fieldWrapper.wrap([texts.title.copy, $buttons]);
-        }
-
         function buildToDownloadFilesButtons() {
             let $buttons = components.buttons.buttonsContainer('<div>', [
                 components.buttons.positiveButton({
-                    text: texts.moveRight,
+                    text: texts.title.download,
                     click: function () {
                     }
                 }),
                 components.buttons.positiveButton({
-                    text: texts.moveLeft,
+                    text: texts.title.download,
                     click: function () {
 
                     }
@@ -125,42 +76,20 @@ define(
             return fieldWrapper.wrap([texts.title.download, $buttons]);
         }
 
-        function buildToEditFilesButtons() {
-            let $buttons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: texts.moveRight,
-                    click: function () {
-                    }
-                }),
-                components.buttons.positiveButton({
-                    text: texts.moveLeft,
-                    click: function () {
-
-                    }
-                })
-            ]);
-
-            return fieldWrapper.wrap([texts.title.edit, $buttons]);
-        }
-
         let $actionButtonsContainer;
 
         function buildActionButtonsContainer() {
             return $actionButtonsContainer = new BEM({
                 block: 'buttons-action',
                 elements: {
-                    'move': buildToMoveFilesButtons(),
-                    'copy': buildToCopyFilesButtons(),
-                    'download': buildToDownloadFilesButtons(),
-                    'edit': buildToEditFilesButtons()
+                    'download': buildToDownloadFilesButtons()
                 }
-            }).buildBlockStructure('<div>', {/*style: 'display: none;'*/})
+            }).buildBlockStructure('<div>', {})
         }
 
 
         return new SuperAdminTab(texts.name, [
             buildMainWindowContainerByFiles(),
-            buildSecondMainWindowContainerByFiles(),
             buildActionButtonsContainer(),
             buildCreateFileNameRow()
         ]);

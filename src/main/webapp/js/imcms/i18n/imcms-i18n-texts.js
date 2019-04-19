@@ -521,8 +521,6 @@ const texts = {
                 title: {
                     createFileName: 'Ny fil / katalognamn',
                     delete: 'Ta bort',
-                    move: 'Flytta',
-                    copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
                 },
@@ -1171,8 +1169,6 @@ const texts = {
                 createFile: 'Create file',
                 upload: 'Upload',
                 rename: 'Change name',
-                moveRight: '<--',
-                moveLeft: '-->',
                 title: {
                     createFileName: 'New file/directory name',
                     delete: 'Delete',
