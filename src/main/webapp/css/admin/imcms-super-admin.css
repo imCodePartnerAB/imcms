@@ -164,7 +164,17 @@
     width: 90%;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
-    display: inline-block;
+    display: inline-flex;
+    justify-content: space-between;
+}
+
+.buttons-action {
+    display: inline-flex;
+}
+
+.second-files-action,
+.first-files-action {
+    display: flex;
 }
 
 .title-profile-row.table-title {
