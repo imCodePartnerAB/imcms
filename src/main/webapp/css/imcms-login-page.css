@@ -45,3 +45,17 @@
 .auth-provider-button__icon:hover {
     opacity: 1;
 }
+
+.imcms-button--positive {
+    position: absolute;
+    right: 8%;
+}
+
+.imcms-button--save {
+    position: absolute;
+    left: 8%;
+}
+
+.imcms-button--neutral {
+    float: right;
+}
