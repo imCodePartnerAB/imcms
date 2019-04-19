@@ -122,3 +122,11 @@
     background-image: url("/images_new/controls/icon_control_save_archive_hover.png");
 }
 
+.imcms-control--add {
+    background-image: url("/images_new/controls/icon_add_file.svg");
+}
+
+.imcms-control--upload {
+    background-image: url("/images_new/controls/icon_upload_file.svg");
+}
+

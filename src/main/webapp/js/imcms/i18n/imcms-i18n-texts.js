@@ -516,11 +516,12 @@ const texts = {
                 createFile: 'Skapa fil',
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
-                moveRight: '<--',
-                moveLeft: '-->',
+                add: 'Lägg till',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
                     delete: 'Ta bort',
+                    move: 'Flytta',
+                    copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
                 },
@@ -1169,6 +1170,7 @@ const texts = {
                 createFile: 'Create file',
                 upload: 'Upload',
                 rename: 'Change name',
+                add: 'Add',
                 title: {
                     createFileName: 'New file/directory name',
                     delete: 'Delete',
