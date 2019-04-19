@@ -80,17 +80,15 @@ ${"-->"}
                 </form>
                 <div class="imcms-field">
                     <a class="imcms-button imcms-button--neutral imcms-info-body__button"
-                       href="${cp}/servlet/PasswordReset" style="float: right"><fmt:message
+                       href="${cp}/servlet/PasswordReset"><fmt:message
                             key="templates/login/index.html/2002"/></a>
                 </div>
                 <div class="imcms-info-footer imcms-login__footer">
                     <button type="submit" form="loginForm"
-                            class="imcms-button imcms-button--positive imcms-info-footer__button"
-                            style="position: absolute; right: 8%">
+                            class="imcms-button imcms-button--positive imcms-info-footer__button">
                         <fmt:message key="templates/login/index.html/2005"/></button>
                     <button type="submit" form="loginForm" name="<%= VerifyUser.REQUEST_PARAMETER__EDIT_USER %>"
-                            class="imcms-button imcms-button--save imcms-info-footer__button"
-                            style="position: absolute; left: 8%">
+                            class="imcms-button imcms-button--save imcms-info-footer__button">
                         <fmt:message key="templates/login/index.html/2006"/></button>
                 </div>
             </div>
