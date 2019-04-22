@@ -1173,6 +1173,7 @@ const texts = {
                 add: 'Add',
                 title: {
                     createFileName: 'New file/directory name',
+                    createDirectory: 'Create Directory',
                     delete: 'Delete',
                     move: 'Move',
                     copy: 'Copy',
