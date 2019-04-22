@@ -23,12 +23,12 @@
 }
 
 .imcms-flag--en {
-    background: url("/images_new/icon_flag_en_active.png") no-repeat left top;
+    background: url("../images_new/icon_flag_en_active.png") no-repeat left top;
     background-size: 29px 17px;
 }
 
 .imcms-flag--sv {
-    background: url("/images_new/icon_flag_sw_active.png") no-repeat left top;
+    background: url("../images_new/icon_flag_sw_active.png") no-repeat left top;
     background-size: 29px 17px;
 }
 
