@@ -11,7 +11,7 @@
 }
 
 .imcms-control--download {
-    background-image: url("/images_new/controls/icon_download.svg");
+    background-image: url("../images_new/controls/icon_download.svg");
 }
 
 .imcms-control--create {
@@ -123,10 +123,10 @@
 }
 
 .imcms-control--add {
-    background-image: url("/images_new/controls/icon_add_file.svg");
+    background-image: url("../images_new/controls/icon_add_file.svg");
 }
 
 .imcms-control--upload {
-    background-image: url("/images_new/controls/icon_upload_file.svg");
+    background-image: url("../images_new/controls/icon_upload_file.svg");
 }
 
