@@ -15,7 +15,7 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.move = target => rest.ajax.call({url: `${url}/move/`, type: 'PUT', json: false}, target);
 
-    api.rename = name => rest.ajax.call({url: `${url}/rename/`, type: 'PUT', json: false}, name);
+    api.rename = target => rest.ajax.call({url: `${url}/rename/`, type: 'PUT', json: false}, target);
 
     api.remove = file => rest.ajax.call({url: `${url}/${file}`, type: 'DELETE', json: false});
 
