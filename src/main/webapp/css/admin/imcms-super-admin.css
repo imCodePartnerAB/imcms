@@ -161,11 +161,17 @@
 }
 
 .files-table {
-    width: 90%;
+    width: 95%;
+    height: 200px;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
     display: inline-flex;
     justify-content: space-between;
+}
+
+.files-table__first-instance,
+.files-table__second-instance {
+    width: 50%;
 }
 
 .buttons-action {
