@@ -8,7 +8,7 @@ define(
         }
 
         return {
-            transform: (file) => {
+            transform: (file, fileEditor) => {
 
                 let infoRowAttributes = {
                     click: getOnFileClicked(file),
@@ -22,8 +22,8 @@ define(
                             text: file
                         }),
                         'download': components.controls.download(),
-                        'edit': components.controls.edit(),
-                        'delete': components.controls.remove()
+                        'edit': components.controls.edit(fileEditor.editFile),
+                        'delete': components.controls.remove(fileEditor.deleteFile)
                     }
                 }).buildBlockStructure("<div>", infoRowAttributes);
             }
