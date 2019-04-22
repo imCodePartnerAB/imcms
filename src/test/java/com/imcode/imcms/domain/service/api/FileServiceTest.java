@@ -21,10 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FileServiceTest extends WebAppSpringTestConfig {
 
@@ -312,14 +309,39 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         List<Path> paths = Collections.singletonList(Files.createFile(pathFileByDir));
 
-        assertEquals(3, fileService.getFiles(firstRootPath).size()); // +1 in firstroot
+        assertEquals(3, fileService.getFiles(firstRootPath).size());
         assertEquals(0, fileService.getFiles(pathDir).size());
 
-        fileService.moveFile(paths, pathDir, null);
+        fileService.moveFile(paths, pathDir);
 
         assertFalse(Files.exists(pathFileByDir));
         assertEquals(2, fileService.getFiles(firstRootPath).size());
         assertEquals(1, fileService.getFiles(pathDir).size());
+    }
+
+    @Test
+    public void moveFile_When_FileExist_Expected_RenameFile() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFileByDir = firstRootPath.resolve(testFileName);
+        final Path pathFile2ByDir = pathDir.resolve(testFileName2);
+
+        assertFalse(Files.exists(pathDir));
+
+        Files.createDirectories(pathDir);
+        Files.createFile(pathFileByDir);
+
+
+        assertEquals(2, fileService.getFiles(firstRootPath).size());
+        assertEquals(0, fileService.getFiles(pathDir).size());
+
+        Path moved = fileService.moveFile(pathFileByDir, pathFile2ByDir);
+
+        assertFalse(Files.exists(pathFileByDir));
+        assertEquals(1, fileService.getFiles(firstRootPath).size());
+        assertEquals(1, fileService.getFiles(pathDir).size());
+        assertNotEquals(pathFileByDir.getFileName(), moved.getFileName());
+
     }
 
     @Test
@@ -334,13 +356,37 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
         List<Path> paths = Collections.singletonList(Files.createFile(pathFile));
 
-        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(paths, pathFakeFile2, null));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(paths, pathFakeFile2));
 
         assertTrue(Files.exists(pathFile));
         assertFalse(Files.exists(pathFakeFile2));
 
         assertThrows(FileAccessDeniedException.class,
-                () -> fileService.moveFile(Collections.singletonList(pathFakeFile2), pathFile, null));
+                () -> fileService.moveFile(Collections.singletonList(pathFakeFile2), pathFile));
+
+        assertTrue(Files.exists(pathFile));
+        assertFalse(Files.exists(pathFakeFile2));
+    }
+
+    @Test
+    public void moveFile_When_FileRenameToOutSideRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFile = pathDir.resolve(testFileName);
+        final Path pathFakeDir = Paths.get("outSideDir");
+        final Path pathFakeFile2 = pathFakeDir.resolve(testRootPaths.get(0).getFileName());
+        assertFalse(Files.exists(pathDir));
+
+        Files.createDirectories(pathDir);
+        Files.createFile(pathFile);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.moveFile(pathFile, pathFakeFile2));
+
+        assertTrue(Files.exists(pathFile));
+        assertFalse(Files.exists(pathFakeFile2));
+
+        assertThrows(FileAccessDeniedException.class,
+                () -> fileService.moveFile(pathFakeFile2, pathFile));
 
         assertTrue(Files.exists(pathFile));
         assertFalse(Files.exists(pathFakeFile2));
@@ -430,7 +476,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(pathDir3);
         Files.createFile(pathFileByDir);
 
-        fileService.moveFile(Collections.singletonList(pathDir2ByDir), pathDir3, null);
+        fileService.moveFile(Collections.singletonList(pathDir2ByDir), pathDir3);
         assertFalse(Files.exists(pathDir2ByDir));
         assertTrue(Files.exists(pathDir3));
     }
@@ -453,7 +499,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(0, Files.list(pathDir2).count());
 
-        fileService.moveFile(src, pathDir2, null);
+        fileService.moveFile(src, pathDir2);
         assertFalse(Files.exists(pathFileByDir));
         assertFalse(Files.exists(pathFile3ByDir));
         assertEquals(2, Files.list(firstRootPath).count());

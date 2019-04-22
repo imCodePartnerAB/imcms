@@ -75,16 +75,22 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<Path> moveFile(List<Path> src, Path target, String newName) throws IOException {
+    public List<Path> moveFile(List<Path> src, Path target) throws IOException {
         final List<Path> path = new ArrayList<>();
         for (Path srcPath : src) {
             if (isAllowablePath(srcPath) && isAllowablePath(target)) {
-                if (newName == null) {
-                    path.add(Files.move(srcPath, target.resolve(srcPath.getFileName())));
-                } else {
-                    path.add(Files.move(srcPath, target.resolve(newName)));
-                }
+                path.add(Files.move(srcPath, target.resolve(srcPath.getFileName())));
             }
+        }
+        return path;
+    }
+
+
+    @Override
+    public Path moveFile(Path src, Path target) throws IOException {
+        Path path = null;
+        if (isAllowablePath(src) && isAllowablePath(target)) {
+            path = Files.move(src, target);
         }
         return path;
     }

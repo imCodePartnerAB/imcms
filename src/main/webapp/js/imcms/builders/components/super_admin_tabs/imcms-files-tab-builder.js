@@ -6,12 +6,11 @@ define(
     'imcms-files-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts', 'imcms-components-builder', 'imcms-files-rest-api',
         'imcms-modal-window-builder', 'imcms-field-wrapper', 'jquery', 'imcms-bem-builder', 'imcms-file-to-row-transformer',
-        'imcms-modal-window-builder'],
-    function (SuperAdminTab, texts, components, filesRestApi, modal, fieldWrapper, $, BEM, fileToRow, modalWindow) {
+        'imcms-file-editor'],
+    function (SuperAdminTab, texts, components, filesRestApi, modal, fieldWrapper, $, BEM, fileToRow, fileEditor) {
 
         texts = texts.superAdmin.files;
 
-        let $typeNameRow;
         let $fileContainer;
         let $fileSecondContainer;
 
@@ -42,7 +41,7 @@ define(
             });
 
             filesLoader.whenFilesLoaded(files => {
-                $fileContainer.append(files.map(file => fileToRow.transform(file)));
+                $fileContainer.append(files.map(file => fileToRow.transform(file, fileEditor)));
             });
 
             return $fileContainer;
@@ -54,7 +53,7 @@ define(
             });
 
             filesLoader.whenFilesLoaded(files => {
-                $fileSecondContainer.append(files.map(file => fileToRow.transform(file)));
+                $fileSecondContainer.append(files.map(file => fileToRow.transform(file, fileEditor)));
             });
 
             return $fileSecondContainer;
@@ -94,20 +93,13 @@ define(
 
         }
 
-        function buildCreateFileNameRow() {
-            $typeNameRow = components.texts.textAreaField('<div>', {
-                text: texts.title.createFileName
-            });
-            return $typeNameRow;
-        }
-
         let $actionButtonsContainer;
 
         function buildFirstActionButtonsContainer() {
             return $actionButtonsContainer = new BEM({
                 block: 'first-files-action',
                 elements: {
-                    'add-file': components.controls.add().attr("title", texts.add),
+                    'add-file': components.controls.add(fileEditor.addFile).attr("title", texts.add),
                     'upload-file': components.controls.upload().attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
@@ -119,7 +111,7 @@ define(
             return $actionSecondButtonsContainer = new BEM({
                 block: 'second-files-action',
                 elements: {
-                    'add-file': components.controls.add().attr("title", texts.add),
+                    'add-file': components.controls.add(fileEditor.addFile).attr("title", texts.add),
                     'upload-file': components.controls.upload().attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
@@ -139,8 +131,7 @@ define(
         return new SuperAdminTab(texts.name, [
             buildTableFilesContainer(),
             buildMoveButtons(),
-            buildButtonsActionContainer(),
-            buildCreateFileNameRow()
+            buildButtonsActionContainer()
         ]);
     }
 );
