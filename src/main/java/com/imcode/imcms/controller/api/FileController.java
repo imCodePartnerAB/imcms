@@ -108,14 +108,14 @@ public class FileController {
     public String moveFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/move/");
         final Path src = Paths.get(file);
-        return defaultFileService.moveFile(Collections.singletonList(src), target, null).toString();
+        return defaultFileService.moveFile(Collections.singletonList(src), target).toString();
     }
 
     @PutMapping("/rename/**")
-    public String renameFile(HttpServletRequest request, @RequestParam String name) throws IOException {
+    public String renameFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
         final String file = getFileName(request.getRequestURI(), "/rename/");
         final Path src = Paths.get(file);
-        return defaultFileService.moveFile(Collections.singletonList(src), src.getParent(), name).toString();
+        return defaultFileService.moveFile(src, target).toString();
     }
 
     @DeleteMapping("/**")

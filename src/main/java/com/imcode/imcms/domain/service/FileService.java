@@ -15,7 +15,20 @@ public interface FileService {
 
     void deleteFile(Path file) throws IOException;
 
-    List<Path> moveFile(List<Path> src, Path target, String newName) throws IOException;
+    /**
+     * @param src    - list paths files
+     * @param target - path directory in which need move src
+     *               All files will be save their name !
+     */
+    List<Path> moveFile(List<Path> src, Path target) throws IOException;
+
+    /**
+     * @param src    - path file which need rename
+     * @param target - this is the final target path there will be a renamed src
+     *               the src has the ability to move or just change your name
+     */
+
+    Path moveFile(Path src, Path target) throws IOException;
 
     List<Path> copyFile(List<Path> src, Path target) throws IOException;
 
