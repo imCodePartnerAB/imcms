@@ -33,7 +33,7 @@ define(
             .done(files => {
                 filesLoader.runCallbacks(files);
             })
-            .fail(() => modal.buildErrorWindow('do not load files!'));
+            .fail(() => modal.buildErrorWindow(texts.error.loadError));
 
         function buildFirstInstanceFiles() {
             $fileContainer = $('<div>', {
