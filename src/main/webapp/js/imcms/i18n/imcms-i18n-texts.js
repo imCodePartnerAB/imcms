@@ -519,12 +519,16 @@ const texts = {
                 add: 'Lägg till',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
+                    createDirectory: 'Skapa katalog',
                     delete: 'Ta bort',
                     move: 'Flytta',
                     copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
                 },
+                error: {
+                    loadError: 'Misslyckades med att ladda filer. Försök igen!'
+                }
             },
             search: {
                 name: 'Sök'
@@ -1173,13 +1177,16 @@ const texts = {
                 add: 'Add',
                 title: {
                     createFileName: 'New file/directory name',
-                    createDirectory: 'Create Directory',
+                    createDirectory: 'Create directory',
                     delete: 'Delete',
                     move: 'Move',
                     copy: 'Copy',
                     download: 'Download',
                     edit: 'Edit',
                 },
+                error: {
+                    loadError: 'Failed to load files. Try again!'
+                }
             },
             search: {
                 name: 'Search'
