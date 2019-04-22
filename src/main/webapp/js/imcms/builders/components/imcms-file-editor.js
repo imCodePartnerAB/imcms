@@ -1,7 +1,7 @@
 define(
     'imcms-file-editor',
-    ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder', 'imcms-window-builder'],
-    function (modal, texts, BEM, components, WindowBuilder) {
+    ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder'],
+    function (modal, texts, BEM, components) {
 
         texts = texts.superAdmin.files;
 
@@ -23,32 +23,12 @@ define(
 
         function buildAddFile() {
 
-            function buildFlagIsDirectoryCheckBox() {
-                return $isDirectory = components.checkboxes.imcmsCheckbox("<div>", {
-                    text: texts.createFile
-                })
-            }
+            windowCreateFile =
+                modal.buildCreateFileModalWindow(
+                    texts.createFile, texts.title.createFileName, texts.title.createDirectory, confirmed => {
+                    });
 
-            function buildCreateFileNameRow() {
-                $typeNameRow = components.texts.textAreaField('<div>', {
-                    text: texts.title.createFileName
-                });
-                return $typeNameRow;
-            }
-
-            windowCreateFile = modal.buildModalWindow(texts.createFile, confirmed => {
-                if (!confirmed) return;
-
-                return new BEM({
-                    block: 'create-file',
-                    elements: {
-                        'name-file': buildCreateFileNameRow(),
-                        'flag-file': buildFlagIsDirectoryCheckBox()
-                    }
-                })
-            });
-
-            return windowCreateFile.buildWindow();
+            return windowCreateFile;
         }
 
         function downloadFile() {
