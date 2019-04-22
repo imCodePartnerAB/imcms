@@ -299,23 +299,23 @@ public class FileControllerTest extends AbstractControllerTest {
     public void renameFile_When_FileExists_Expected_OkAndReNameFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFile = firstRootPath.resolve(testFileName);
+        final Path pathFile2 = firstRootPath.resolve(testFileName2);
 
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        final String anotherName = "another.txt";
         final HttpServletRequest request = mock(HttpServletRequest.class);
         given(request.getRequestURI()).willReturn(controllerPath() + firstRootPath);
 
         final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + "/rename/" + pathFile)
-                .param("name", anotherName);
+                .param("target", "" + pathFile2);
 
         performRequestBuilderExpectedOk(requestBuilder);
         final String renamedPath = fileController.getFiles(request).get(0);
         assertNotNull(renamedPath);
-        assertTrue(Files.exists(pathFile.getParent().resolve(anotherName)));
+        assertTrue(Files.exists(pathFile.getParent().resolve(pathFile2.getFileName())));
         assertFalse(Files.exists(pathFile));
-        assertEquals(anotherName, Paths.get(renamedPath).getFileName().toString());
+        assertEquals(pathFile2.getFileName(), Paths.get(renamedPath).getFileName());
     }
 
     @Test
