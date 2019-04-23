@@ -156,6 +156,7 @@ module.exports = {
                                 'imcms-categories-admin-tab-builder',
                                 'imcms-profiles-tab-builder',
                                 'imcms-system-properties-tab-builder',
+                                'imcms-temporal-data-tab-builder'
                             ],
                             '': [
                                 'imcms-title-text-builder',
