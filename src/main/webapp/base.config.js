@@ -257,6 +257,7 @@ module.exports = {
                         'imcms-external-to-local-roles-links-rest-api',
                         'imcms-settings-rest-api',
                         'imcms-link-validator-rest-api',
+                        'imcms-temporal-data-rest-api'
                     ]
                 },
             }
