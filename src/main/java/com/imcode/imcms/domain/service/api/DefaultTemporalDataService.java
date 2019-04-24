@@ -5,6 +5,7 @@ import com.imcode.imcms.domain.service.TemporalDataService;
 import imcode.server.document.index.ResolvingQueryIndex;
 import org.springframework.stereotype.Service;
 
+import static imcode.server.ImcmsConstants.*;
 import static net.sf.ehcache.CacheManager.getCacheManager;
 
 //TODO cover by tests if possible
@@ -27,12 +28,12 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public void invalidateStaticContentCache() {
-        getCacheManager(null).getEhcache("StaticContentCachingFilter").removeAll();
+        getCacheManager(null).getEhcache(STATIC_CACHE_NAME).removeAll();
     }
 
     @Override
     public void invalidateOtherContentCache() {
-        getCacheManager(null).getEhcache("OtherContentCachingFilter").removeAll();
+        getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
     }
 
     @Override
