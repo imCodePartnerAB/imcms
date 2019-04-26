@@ -162,16 +162,39 @@
 
 .files-table {
     width: 95%;
-    height: 200px;
     background-color: ghostwhite;
     border: 1px solid gainsboro;
     display: inline-flex;
     justify-content: space-between;
 }
 
+.file-row {
+    padding: 5px;
+    cursor: pointer;
+    display: flex;
+}
+
+.file-row:hover {
+    background-color: #dfedff;
+}
+
+.file-row__file-name {
+    width: 60%;
+}
+
+.file-row__download,
+.file-row__edit,
+.file-row__delete {
+    width: 10%;
+}
+
 .files-table__first-instance,
 .files-table__second-instance {
     width: 50%;
+}
+
+.file-row.files-table__file-row--active {
+    background-color: #c3d9f5;
 }
 
 .buttons-action {
