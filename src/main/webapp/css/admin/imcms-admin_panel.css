@@ -38,7 +38,7 @@
 }
 
 .imcms-admin-panel__logo {
-    background: url("/images_new/icon_logo_main.png") no-repeat 0 0;
+    background: url("../images_new/icon_logo_main.png") no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;
     display: block;
@@ -211,39 +211,39 @@
 }
 
 .imcms-panel__item--settings {
-    background-image: url("/images_new/admin_panel/icon_settings.png");
+    background-image: url("../images_new/admin_panel/icon_settings.png");
     min-width: 25px;
     background-position-y: center;
 }
 
 .imcms-panel__item--admin {
-    background-image: url("/images_new/admin_panel/icon_admin.png");
+    background-image: url("../images_new/admin_panel/icon_admin.png");
 }
 
 .imcms-panel__item--document {
-    background-image: url("/images_new/admin_panel/icon_doc.png");
+    background-image: url("../images_new/admin_panel/icon_doc.png");
 }
 
 .imcms-panel__item--page-info {
-    background-image: url("/images_new/admin_panel/icon_pageinfo.png");
+    background-image: url("../images_new/admin_panel/icon_pageinfo.png");
 }
 
 .imcms-panel__item--publish-of {
     opacity: 0.4;
     cursor: not-allowed;
-    background-image: url("/images_new/admin_panel/icon_publish.png");
+    background-image: url("../images_new/admin_panel/icon_publish.png");
 }
 
 .imcms-panel__item--preview {
-    background-image: url("/images_new/admin_panel/icon_preview.png");
+    background-image: url("../images_new/admin_panel/icon_preview.png");
 }
 
 .imcms-panel__item--edit {
-    background-image: url("/images_new/admin_panel/icon_edit.png");
+    background-image: url("../images_new/admin_panel/icon_edit.png");
 }
 
 .imcms-panel__item--public {
-    background-image: url("/images_new/admin_panel/icon_public.png");
+    background-image: url("../images_new/admin_panel/icon_public.png");
 }
 
 .imcms-admin-panel__item:last-of-type {
@@ -252,35 +252,35 @@
 }
 
 .imcms-panel__item--settings:hover {
-    background-image: url("/images_new/admin_panel/icon_settings_active.png");
+    background-image: url("../images_new/admin_panel/icon_settings_active.png");
 }
 
 .imcms-panel__item--admin:hover {
-    background-image: url("/images_new/admin_panel/icon_admin_active.png");
+    background-image: url("../images_new/admin_panel/icon_admin_active.png");
 }
 
 .imcms-panel__item--document:hover {
-    background-image: url("/images_new/admin_panel/icon_doc_active.png");
+    background-image: url("../images_new/admin_panel/icon_doc_active.png");
 }
 
 .imcms-panel__item--page-info:hover {
-    background-image: url("/images_new/admin_panel/icon_pageinfo_active.png");
+    background-image: url("../images_new/admin_panel/icon_pageinfo_active.png");
 }
 
 .imcms-panel__item--publish-of:hover {
-    background-image: url("/images_new/admin_panel/icon_publish_active.png");
+    background-image: url("../images_new/admin_panel/icon_publish_active.png");
 }
 
 .imcms-panel__item--preview:hover {
-    background-image: url("/images_new/admin_panel/icon_preview_active.png");
+    background-image: url("../images_new/admin_panel/icon_preview_active.png");
 }
 
 .imcms-panel__item--edit:hover {
-    background-image: url("/images_new/admin_panel/icon_edit_active.png");
+    background-image: url("../images_new/admin_panel/icon_edit_active.png");
 }
 
 .imcms-panel__item--public:hover {
-    background-image: url("/images_new/admin_panel/icon_public_active.png");
+    background-image: url("../images_new/admin_panel/icon_public_active.png");
 }
 
 /* small panel mode */
@@ -406,7 +406,7 @@
     opacity: 0.7;
     background-repeat: no-repeat;
     background-position-x: center;
-    background-image: url("/images_new/admin_panel/icon_unlocked.png");
+    background-image: url("../images_new/admin_panel/icon_unlocked.png");
     background-color: #0b94d8;
 }
 

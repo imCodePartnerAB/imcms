@@ -477,7 +477,7 @@ define("imcms-menu-editor-builder",
         function getMenuElementTree(document) {
             const menuElementTree = {
                 documentId: document.id,
-                link: "/" + document.id,
+                link: `${imcms.contextPath}/${document.id}`,
                 target: document.target,
                 type: document.type,
                 documentStatus: document.documentStatus,

@@ -657,6 +657,16 @@ const texts = {
                 error: {
                     loadFailed: 'Misslyckades med att ladda egenskaper. Försök igen'
                 }
+            },
+            temporalContent: {
+                name: 'Temporalt innehåll',
+                actions: {
+                    rebuildIndex: 'Reindex-dokumen',
+                    deletePublicDocCache: 'Ta bort public documents cache',
+                    deleteOtherCache: 'Ta bort annan webbcache',
+                    deleteStaticCache: 'Ta bort statisk webbcache',
+                },
+                init: 'Init'
             }
         },
         login: {
@@ -1316,6 +1326,16 @@ const texts = {
                 error: {
                     loadFailed: 'Failed to load properties. Try again'
                 }
+            },
+            temporalContent: {
+                name: 'Temporal Content',
+                actions: {
+                    rebuildIndex: 'Reindex documents',
+                    deletePublicDocCache: 'Delete public documents cache',
+                    deleteOtherCache: 'Delete other web cache',
+                    deleteStaticCache: 'Delete static web cache',
+                },
+                init: 'Init'
             }
         },
         login: {

@@ -62,7 +62,7 @@
 
 .imcms-demo-menu__menu-item--parent > .imcms-demo-menu-item__text:after {
     content: "";
-    background: url(/images_new/controls/icon_sub_open_dark.png) no-repeat center;
+    background: url(../images_new/controls/icon_sub_open_dark.png) no-repeat center;
     display: block;
     position: absolute;
     right: 10px;

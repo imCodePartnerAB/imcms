@@ -156,6 +156,7 @@ module.exports = {
                                 'imcms-categories-admin-tab-builder',
                                 'imcms-profiles-tab-builder',
                                 'imcms-system-properties-tab-builder',
+                                'imcms-temporal-data-tab-builder'
                             ],
                             '': [
                                 'imcms-title-text-builder',
@@ -257,6 +258,7 @@ module.exports = {
                         'imcms-external-to-local-roles-links-rest-api',
                         'imcms-settings-rest-api',
                         'imcms-link-validator-rest-api',
+                        'imcms-temporal-data-rest-api'
                     ]
                 },
             }
