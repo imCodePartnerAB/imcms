@@ -14,7 +14,22 @@ define(
         let $fileContainer;
         let $fileSecondContainer;
 
-        const filesLoader = {
+        const firstFilesLoader = {
+            files: false,
+            callback: [],
+            whenFilesLoaded: function (callback) {
+                (this.files) ? callback(this.files) : this.callback.push(callback);
+            },
+            runCallbacks: function (files) {
+                this.files = files;
+
+                this.callback.forEach(callback => {
+                    callback(files);
+                });
+            }
+        };
+
+        const secondFilesLoader = {
             files: false,
             callback: [],
             whenFilesLoaded: function (callback) {
@@ -31,16 +46,19 @@ define(
 
         filesRestApi.read()
             .done(files => {
-                filesLoader.runCallbacks(files);
+                firstFilesLoader.runCallbacks(files);
+                secondFilesLoader.runCallbacks(files);
             })
             .fail(() => modal.buildErrorWindow(texts.error.loadError));
 
+        let currentFile;
+        let $fileUrl;
         function buildFirstInstanceFiles() {
             $fileContainer = $('<div>', {
                 'class': 'first-files'
             });
 
-            filesLoader.whenFilesLoaded(files => {
+            firstFilesLoader.whenFilesLoaded(files => {
                 $fileContainer.append(files.map(file => fileToRow.transform(file, fileEditor)));
             });
 
@@ -52,7 +70,7 @@ define(
                 'class': 'second-files'
             });
 
-            filesLoader.whenFilesLoaded(files => {
+            secondFilesLoader.whenFilesLoaded(files => {
                 $fileSecondContainer.append(files.map(file => fileToRow.transform(file, fileEditor)));
             });
 
@@ -87,10 +105,6 @@ define(
             ]);
 
             return fieldWrapper.wrap([$buttons]).attr("title", texts.title.move);
-        }
-
-        function buildModalWindowByCreateFile(isDirectory) {
-
         }
 
         let $actionButtonsContainer;
