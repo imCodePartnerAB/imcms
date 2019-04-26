@@ -15,18 +15,6 @@ define(
             });
         }
 
-        function buildCreateField(text) {
-            return components.texts.textField('<div>', {
-                text: text
-            });
-        }
-
-        function buildIsDirectoryCheckBox(text) {
-            return components.checkboxes.imcmsCheckbox("<div>", {
-                text: text
-            });
-        }
-
         function buildNoButton(callback) {
             return components.buttons.negativeButton({
                 text: texts.no,
@@ -104,13 +92,13 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function buildCreateBody(text, nameText, directoryTitle) {
+        function buildCreateBody(text, textField, checkBoxIsDir) {
             return new BEM({
                 block: "imcms-modal-body",
                 elements: {
                     "text": components.texts.infoText("<div>", text),
-                    "name": buildCreateField(nameText),
-                    "is-directory": buildIsDirectoryCheckBox(directoryTitle)
+                    "name": textField,
+                    "is-directory": checkBoxIsDir
                 }
             }).buildBlockStructure("<div>");
         }
@@ -135,12 +123,12 @@ define(
             }).buildBlockStructure("<div>");
         }
 
-        function fileCreateModalWindow(question, nameTitle, directoryTitle, onConfirmed, onDeclined) {
+        function fileCreateModalWindow(question, textField, checkBoxIsDir, onConfirmed, onDeclined) {
             return new BEM({
                 block: "imcms-create-modal-window",
                 elements: {
                     "modal-head": buildHead(texts.title),
-                    "modal-body": buildCreateBody(question, nameTitle, directoryTitle),
+                    "modal-body": buildCreateBody(question, textField, checkBoxIsDir),
                     "modal-footer": buildFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
@@ -174,10 +162,10 @@ define(
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
         };
 
-        const CreateModalWindow = function (question, nameTitle, directoryTitle, callback) {
+        const CreateModalWindow = function (question, textField, checkBoxIsDir, callback) {
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
-            this.$modal = fileCreateModalWindow(question, nameTitle, directoryTitle, this.onConfirmed, this.onDeclined);
+            this.$modal = fileCreateModalWindow(question, textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
         };
 
         const ModalWarningWindow = function (message, callback) {
@@ -278,8 +266,8 @@ define(
                 .appendTo($("body"));
         }
 
-        function buildCreateModalWindow(question, nameTitle, directoryTitle, callback) {
-            return new CreateModalWindow(question, nameTitle, directoryTitle, callback)
+        function buildCreateModalWindow(question, textField, checkBoxIsDir, callback) {
+            return new CreateModalWindow(question, textField, checkBoxIsDir, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
@@ -332,8 +320,8 @@ define(
             buildErrorWindow: (message, callback) => {
                 buildErrorWindow(message, callback);
             },
-            buildCreateFileModalWindow: (question, nameTitle, directoryTitle, onConfirm) => {
-                buildCreateModalWindow(question, nameTitle, directoryTitle, confirm => {
+            buildCreateFileModalWindow: (question, textField, checkBoxIsDir, onConfirm) => {
+                buildCreateModalWindow(question, textField, checkBoxIsDir, confirm => {
                     if (confirm) {
                         onConfirm.call();
                     }
