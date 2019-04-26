@@ -517,6 +517,7 @@ const texts = {
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
                 add: 'Lägg till',
+                warnChangeMessage: 'Vill du verkligen ändra fil?',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
                     createDirectory: 'Skapa katalog',
@@ -1175,6 +1176,7 @@ const texts = {
                 upload: 'Upload',
                 rename: 'Change name',
                 add: 'Add',
+                warnChangeMessage: 'Do you really want to change file?',
                 title: {
                     createFileName: 'New file/directory name',
                     createDirectory: 'Create directory',
