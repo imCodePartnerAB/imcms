@@ -69,7 +69,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         try {
             assertTrue(templateFile.createNewFile());
 
-            Template templateDTO = new TemplateDTO(templateName, false);
+            Template templateDTO = new TemplateDTO(templateName, false, null);
             templateService.save(templateDTO);
             final Optional<Template> oTemplate = templateService.getTemplateOptional(templateName);
             assertTrue(oTemplate.isPresent());
@@ -89,7 +89,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     @Test
     public void save_When_NoTemplate_Expect_Null() {
         final String dummyName = "test_" + System.currentTimeMillis();
-        final Template templateDTO = new TemplateDTO(dummyName, false);
+        final Template templateDTO = new TemplateDTO(dummyName, false, null);
 
         templateService.save(templateDTO);
 
