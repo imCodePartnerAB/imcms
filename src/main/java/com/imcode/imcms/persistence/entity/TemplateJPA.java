@@ -1,6 +1,7 @@
 package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,9 +9,13 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Data
@@ -18,7 +23,7 @@ import javax.persistence.Table;
 @Table(name = "template")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TemplateJPA extends Template {
 
@@ -31,8 +36,22 @@ public class TemplateJPA extends Template {
     @Column(name = "is_hidden", nullable = false)
     private boolean hidden;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "template_group_id")
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    private TemplateGroupJPA templateGroup;
+
     public TemplateJPA(Template templateFrom) {
         super(templateFrom);
+    }
+
+    @Override
+    public void setTemplateGroup(TemplateGroup templateGroup) {
+        if (templateGroup == null) {
+            this.templateGroup = null;
+            return;
+        }
+        this.templateGroup = new TemplateGroupJPA(templateGroup);
     }
 
 }

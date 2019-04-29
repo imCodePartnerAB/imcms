@@ -12,6 +12,7 @@ public abstract class Template implements Serializable {
     protected Template(Template templateFrom) {
         setName(templateFrom.getName());
         setHidden(templateFrom.isHidden());
+        setTemplateGroup(templateFrom.getTemplateGroup());
     }
 
     public abstract String getName();
@@ -21,4 +22,9 @@ public abstract class Template implements Serializable {
     public abstract boolean isHidden();
 
     public abstract void setHidden(boolean isHidden);
+
+    public abstract TemplateGroup getTemplateGroup();
+
+    public abstract void setTemplateGroup(TemplateGroup template);
+
 }

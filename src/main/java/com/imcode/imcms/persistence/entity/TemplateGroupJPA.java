@@ -13,19 +13,17 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "imcms_template_group")
+@Table(name = "template_group")
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TemplateGroupJPA extends TemplateGroup {
 
@@ -39,10 +37,7 @@ public class TemplateGroupJPA extends TemplateGroup {
     @Column(name = "group_name", unique = true, nullable = false)
     private String name;
 
-    @ManyToMany
-    @JoinTable(name = "imcms_template_group_crossref",
-            joinColumns = @JoinColumn(name = "group_id"),
-            inverseJoinColumns = @JoinColumn(name = "template_name"))
+    @OneToMany(mappedBy = "templateGroup")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<TemplateJPA> templates;
 
