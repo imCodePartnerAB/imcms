@@ -31,9 +31,9 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     }
 
     @Override
-    public void save(TemplateGroup templateGroup) {
+    public TemplateGroup save(TemplateGroup templateGroup) {
         final TemplateGroupJPA templateGroupJpa = new TemplateGroupJPA(templateGroup);
-        templateGroupRepository.saveAndFlush(templateGroupJpa);
+        return new TemplateGroupDTO(templateGroupRepository.saveAndFlush(templateGroupJpa));
     }
 
     @Override
@@ -45,5 +45,10 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     @Override
     public TemplateGroup get(Integer groupId) {
         return new TemplateGroupDTO(templateGroupRepository.findOne(groupId));
+    }
+
+    @Override
+    public void remove(String name) {
+        templateGroupRepository.deleteByName(name);
     }
 }
