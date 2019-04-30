@@ -1,9 +1,10 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
 
 import java.io.File;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,14 +17,11 @@ public interface TemplateService {
 
     void save(Template saveMe);
 
-    Optional<Template> getTemplateOptional(String templateName);
-
     File getTemplateDirectory();
 
-    @Deprecated
-    Template getTemplate(String templateName);
+    Optional<Template> get(String name);
 
-    TemplateGroup getTemplateGroupById(Integer groupId);
+    Path getPhysicalPath(String name);
 
-    List<Template> getTemplates(TemplateGroup templateGroup);
+    Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode);
 }

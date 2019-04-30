@@ -1,10 +1,8 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.TemplateDTO;
-import com.imcode.imcms.domain.service.TemplateGroupService;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -14,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.ArrayList;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -26,16 +25,13 @@ import java.util.stream.Collectors;
 @Transactional
 class DefaultTemplateService implements TemplateService {
 
-    private final TemplateGroupService templateGroupService;
     private final TemplateRepository templateRepository;
     private final File templateDirectory;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
 
-    DefaultTemplateService(TemplateGroupService templateGroupService,
-                           TemplateRepository templateRepository,
+    DefaultTemplateService(TemplateRepository templateRepository,
                            @Value("WEB-INF/templates/text") File templateDirectory) {
 
-        this.templateGroupService = templateGroupService;
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
     }
@@ -57,7 +53,7 @@ class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    public Optional<Template> getTemplateOptional(String templateName) {
+    public Optional<Template> get(String templateName) {
         if (isTemplateFileExist(templateName)) {
             final Template template = templateRepository.findOne(templateName);
             return Optional.ofNullable(template).map(TemplateDTO::new);
@@ -67,19 +63,22 @@ class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    @Deprecated
-    public Template getTemplate(String templateName) {
-        return getTemplateOptional(templateName).orElse(null);
+    public Path getPhysicalPath(String name) {
+        for (String extension : templateExtensions) {
+            final String templateFileName = name + "." + extension;
+            final File templateFile = new File(templateDirectory, templateFileName);
+
+            if (templateFile.exists()) {
+                return templateFile.toPath();
+            }
+        }
+
+        return null;
     }
 
     @Override
-    public TemplateGroup getTemplateGroupById(Integer groupId) {
-        return templateGroupService.get(groupId);
-    }
-
-    @Override
-    public List<Template> getTemplates(TemplateGroup templateGroup) {
-        return new ArrayList<>(templateGroupService.get(templateGroup.getId()).getTemplates());
+    public Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode) {
+        return null;
     }
 
     public File getTemplateDirectory() {
@@ -113,7 +112,8 @@ class DefaultTemplateService implements TemplateService {
 
         Arrays.stream(templateNamesToBeSaved)
                 .map(FilenameUtils::getBaseName)
-                .map(templateName -> new TemplateJPA(templateName, false))
+                // TODO: 26.04.19 Check if template already assigned to group at DB
+                .map(templateName -> new TemplateJPA(templateName, false, null))
                 .forEach(templateRepository::save);
     }
 

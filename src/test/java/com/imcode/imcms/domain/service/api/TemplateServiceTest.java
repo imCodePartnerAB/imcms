@@ -51,7 +51,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
 
         try {
             final Template templateDTO = dataInitializer.createData(templateName);
-            final Optional<Template> templateOptional = templateService.getTemplateOptional(templateName);
+            final Optional<Template> templateOptional = templateService.get(templateName);
             assertTrue(templateOptional.isPresent());
             final Template templateResult = templateOptional.get();
             assertEquals(templateDTO, templateResult);
@@ -71,11 +71,11 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
 
             Template templateDTO = new TemplateDTO(templateName, false, null);
             templateService.save(templateDTO);
-            final Optional<Template> oTemplate = templateService.getTemplateOptional(templateName);
+            final Optional<Template> oTemplate = templateService.get(templateName);
             assertTrue(oTemplate.isPresent());
 
             templateDTO = oTemplate.get();
-            final Optional<Template> templateOptional = templateService.getTemplateOptional(templateName);
+            final Optional<Template> templateOptional = templateService.get(templateName);
             assertTrue(templateOptional.isPresent());
             final Template templateResult = templateOptional.get();
             assertEquals(templateDTO.getName(), templateResult.getName());
@@ -93,7 +93,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
 
         templateService.save(templateDTO);
 
-        assertFalse(templateService.getTemplateOptional(dummyName).isPresent());
+        assertFalse(templateService.get(dummyName).isPresent());
     }
 
 }
