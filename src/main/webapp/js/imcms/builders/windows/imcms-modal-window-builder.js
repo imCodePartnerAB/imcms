@@ -92,6 +92,17 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function buildCreateBody(text, textField, checkBoxIsDir) {
+            return new BEM({
+                block: "imcms-modal-body",
+                elements: {
+                    "text": components.texts.infoText("<div>", text),
+                    "name": textField,
+                    "is-directory": checkBoxIsDir
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function buildHTMLBody(htmlText) {
             return new BEM({
                 block: "imcms-modal-body",
@@ -107,6 +118,17 @@ define(
                 elements: {
                     "modal-head": buildHead(texts.title),
                     "modal-body": buildBody(question),
+                    "modal-footer": buildFooter(onConfirmed, onDeclined)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function fileCreateModalWindow(question, textField, checkBoxIsDir, onConfirmed, onDeclined) {
+            return new BEM({
+                block: "imcms-create-modal-window",
+                elements: {
+                    "modal-head": buildHead(texts.title),
+                    "modal-body": buildCreateBody(question, textField, checkBoxIsDir),
                     "modal-footer": buildFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
@@ -140,6 +162,12 @@ define(
             this.$modal = createModalWindow(question, this.onConfirmed, this.onDeclined);
         };
 
+        const CreateModalWindow = function (question, textField, checkBoxIsDir, callback) {
+            this.onConfirmed = this.buildOnDecide(true, callback);
+            this.onDeclined = this.buildOnDecide(false, callback);
+            this.$modal = fileCreateModalWindow(question, textField, checkBoxIsDir, this.onConfirmed, this.onDeclined);
+        };
+
         const ModalWarningWindow = function (message, callback) {
             this.onConfirmed = this.confirmAction(callback);
             this.$modal = createModalWarningWindow(message, this.onConfirmed);
@@ -151,6 +179,35 @@ define(
         };
 
         ModalWindow.prototype = {
+            buildOnDecide: function (isConfirm, callback) {
+                const context = this;
+
+                return () => {
+                    callback(isConfirm);
+                    context.closeModal();
+                    return false;
+                };
+            },
+
+            addShadow: function () {
+                this.$shadow = createLayout();
+                return this;
+            },
+
+            closeModal: function () {
+                windowKeysController.unRegister();
+                this.$modal.remove();
+                this.$shadow && this.$shadow.remove();
+            },
+
+            appendTo: function ($appendToMe) {
+                $appendToMe.append(this.$modal, this.$shadow);
+                windowKeysController.registerWindow(this.onDeclined, this.onConfirmed);
+                return this;
+            }
+        };
+
+        CreateModalWindow.prototype = {
             buildOnDecide: function (isConfirm, callback) {
                 const context = this;
 
@@ -209,6 +266,12 @@ define(
                 .appendTo($("body"));
         }
 
+        function buildCreateModalWindow(question, textField, checkBoxIsDir, callback) {
+            return new CreateModalWindow(question, textField, checkBoxIsDir, callback)
+                .addShadow()
+                .appendTo($("body"));
+        }
+
         function buildWarningWindow(message, callback) {
             return new ModalWarningWindow(message, callback)
                 .addShadow()
@@ -256,6 +319,13 @@ define(
             },
             buildErrorWindow: (message, callback) => {
                 buildErrorWindow(message, callback);
+            },
+            buildCreateFileModalWindow: (question, textField, checkBoxIsDir, onConfirm) => {
+                buildCreateModalWindow(question, textField, checkBoxIsDir, confirm => {
+                    if (confirm) {
+                        onConfirm.call();
+                    }
+                });
             }
         };
     }

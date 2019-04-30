@@ -34,6 +34,36 @@
     z-index: 65535;
 }
 
+.imcms-create-modal-window {
+    -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    position: fixed;
+    top: -webkit-calc(50% - 100px);
+    top: -moz-calc(50% - 100px);
+    top: -ms-calc(50% - 100px);
+    top: -o-calc(50% - 100px);
+    top: calc(50% - 100px);
+    left: -webkit-calc(50% - 130px);
+    left: -moz-calc(50% - 130px);
+    left: -ms-calc(50% - 130px);
+    left: -o-calc(50% - 130px);
+    left: calc(50% - 130px);
+    height: 200px;
+    width: 360px;
+    z-index: 65535;
+}
+
+.imcms-modal-body__name {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.imcms-modal-body__is-directory {
+    padding-left: 30px;
+}
+
+
 .imcms-modal-window--warning,
 .imcms-modal-window--error {
     height: auto;
@@ -41,7 +71,8 @@
     max-height: 600px;
 }
 
-.imcms-modal-window__modal-head {
+.imcms-modal-window__modal-head,
+.imcms-create-modal-window__modal-head {
     background-color: #389ecf;
 }
 
@@ -58,6 +89,18 @@
     display: block;
     width: 100%;
     height: 100px;
+}
+
+.imcms-create-modal-window__modal-body {
+    background-color: #f3f5f7;
+    display: block;
+    width: 100%;
+}
+
+.imcms-create-modal-window__modal-footer {
+    background-color: #f3f5f7;
+    text-align: center;
+    width: 100%;
 }
 
 .imcms-modal-window--warning .imcms-modal-window__modal-body,

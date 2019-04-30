@@ -1,9 +1,13 @@
 define(
     'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder'],
     function (BEM, $, components) {
-        function getOnFileClicked(file) {
+        function getOnFileClicked(file, fileEditor) {
             return function () {
                 const $this = $(this);
+
+                if ($this.hasClass('files-table__file-row--active')) return;
+
+                fileEditor.viewFile($this, file);
             }
         }
 
@@ -11,8 +15,8 @@ define(
             transform: (file, fileEditor) => {
 
                 let infoRowAttributes = {
-                    click: getOnFileClicked(file),
-                    style: "display: flex;"
+                    name: file,
+                    click: getOnFileClicked(file, fileEditor)
                 };
 
                 return new BEM({

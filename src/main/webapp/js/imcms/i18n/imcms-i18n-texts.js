@@ -517,14 +517,19 @@ const texts = {
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
                 add: 'Lägg till',
+                warnChangeMessage: 'Vill du verkligen ändra fil?',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
+                    createDirectory: 'Skapa katalog',
                     delete: 'Ta bort',
                     move: 'Flytta',
                     copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
                 },
+                error: {
+                    loadError: 'Misslyckades med att ladda filer. Försök igen!'
+                }
             },
             search: {
                 name: 'Sök'
@@ -1181,14 +1186,19 @@ const texts = {
                 upload: 'Upload',
                 rename: 'Change name',
                 add: 'Add',
+                warnChangeMessage: 'Do you really want to change file?',
                 title: {
                     createFileName: 'New file/directory name',
+                    createDirectory: 'Create directory',
                     delete: 'Delete',
                     move: 'Move',
                     copy: 'Copy',
                     download: 'Download',
                     edit: 'Edit',
                 },
+                error: {
+                    loadError: 'Failed to load files. Try again!'
+                }
             },
             search: {
                 name: 'Search'
