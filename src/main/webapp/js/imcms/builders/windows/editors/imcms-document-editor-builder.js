@@ -57,6 +57,12 @@ define("imcms-document-editor-builder",
         };
 
         let sendSearchDocRequest = true;
+        let errorMsg;
+
+        function buildErrorBlock() {
+            errorMsg = components.texts.errorText("<div>", texts.error.searchFailed, {style: 'display: none;'});
+            return errorMsg;
+        }
 
         function appendDocuments(field, value, removeOldDocuments, setDefaultSort) {
             setField(field, value);
@@ -76,16 +82,20 @@ define("imcms-document-editor-builder",
                 .done(documentList => {
                     if (!documentList || (documentList.length === 0)) {
                         sendSearchDocRequest = false;
+                        errorMsg.slideDown();
                         return;
+                    } else {
+                        errorMsg.slideUp();
                     }
-
                     incrementDocumentNumber(documentList.length);
 
                     documentList.forEach(document => {
                         $documentsList.append(buildDocument(document, currentEditorOptions));
                     });
                 })
-                .fail(() => modal.buildErrorWindow(texts.error.searchFailed));
+                .fail(() => {
+                    errorMsg.slideDown();
+                });
         }
 
         function setField(field, value) {
@@ -242,7 +252,8 @@ define("imcms-document-editor-builder",
             return new BEM({
                 block: "imcms-document-editor-head",
                 elements: {
-                    "tools": buildBodyHeadTools()
+                    "tools": buildBodyHeadTools(),
+                    "error-search": buildErrorBlock()
                 }
             }).buildBlockStructure("<div>");
         }
@@ -873,7 +884,9 @@ define("imcms-document-editor-builder",
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
                 })
-                .fail(() => modal.buildErrorWindow(texts.error.searchFailed));
+                .fail(() => {
+                    errorMsg.slideDown();
+                });
         }
 
         function buildDocumentEditor() {
