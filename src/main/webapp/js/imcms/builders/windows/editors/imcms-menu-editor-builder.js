@@ -742,7 +742,8 @@ define("imcms-menu-editor-builder",
         }
 
         function addHeadData(opts) {
-            $title.append(": " + opts.docId + "-" + opts.menuIndex);
+            $title.append(": /api/admin/menu?meta-id=" + opts.docId + "&index=" + opts.menuIndex)
+                .css({'text-transform': 'lowercase'});
         }
 
         function buildMenuEditor(opts) {

@@ -225,7 +225,7 @@ const texts = {
                     passed: "Avslutad"
                 },
                 error: {
-                    searchFailed: 'Sökningen misslyckades. Försök igen',
+                    searchFailed: 'Inga sökresultat',
                     userLoadFailed: 'Misslyckades med att hämta användare. Försök igen',
                     categoriesLoadFailed: 'Misslyckades med att hämta kategorier. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
@@ -894,7 +894,7 @@ const texts = {
                     passed: "Publication end"
                 },
                 error: {
-                    searchFailed: 'Search failed. Try again',
+                    searchFailed: 'No search result',
                     userLoadFailed: 'Failed to fetch users. Try again',
                     categoriesLoadFailed: 'Failed to fetch categories. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
