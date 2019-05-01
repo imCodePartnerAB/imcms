@@ -84,6 +84,10 @@
     height: 10%;
 }
 
+.imcms-document-editor-head__error-search {
+    padding-left: 20%;
+}
+
 @media screen and (max-height: 800px) {
     .imcms-menu-editor__footer {
         padding: 15px 27px;
