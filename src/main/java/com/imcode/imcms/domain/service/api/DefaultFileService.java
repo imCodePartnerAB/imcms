@@ -2,15 +2,16 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.service.FileService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -22,27 +23,30 @@ public class DefaultFileService implements FileService {
     private static final String SUB_PATH_REGEX = "(\\/.*)*";
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
-    private List<Path> rootPaths;
+    private List<String> rootPaths;
 
     @Value(".")
     private Path rootPath;
 
-    private boolean isAllowablePath(Path childPath) throws IOException {
-        Path normalize = childPath.normalize();
+    private boolean isAllowablePath(Path path) throws IOException {
+        String normalizedPath = path.normalize().toString();
+        final String finalNormalize = StringUtils.isBlank(normalizedPath)
+                ? rootPath.toString()
+                : normalizedPath;
         long countMatches = 0;
-        for (Path pathRoot : rootPaths) {
+        for (String pathRoot : rootPaths) {
             try {
-                countMatches += Files.walk(pathRoot)
-                        .filter(file -> file.toString().contains(normalize.toString())
-                                || normalize.toString().contains(file.toString()))
+                countMatches += Files.walk(Paths.get(pathRoot))
+                        .filter(file -> {
+                            String filePath = file.toString();
+                            return filePath.contains(finalNormalize) || finalNormalize.contains(filePath);
+                        })
                         .count();
             } catch (IOException e) {
                 e.getMessage();
                 continue;
             }
         }
-//        File parent = childPath.toFile();
-//        FileUtils.directoryContains(parent, childPath.toFile());
 
         if (countMatches > 0) {
             return true;
@@ -51,15 +55,12 @@ public class DefaultFileService implements FileService {
         }
     }
 
-    private Path getRelativePath(Path path) throws IOException {
-        return new File(rootPath.toFile(), path.toString()).getCanonicalFile().toPath();
-    }
 
     @Override
     public List<Path> getRootFiles() {
         return rootPaths.stream()
-                .filter(path -> Files.exists(path))
-                .map(path -> rootPath.relativize(path))
+                .filter(path -> Files.exists(Paths.get(path)))
+                .map(Paths::get)
                 .collect(Collectors.toList());
     }
 
@@ -67,7 +68,7 @@ public class DefaultFileService implements FileService {
     public List<Path> getFiles(Path file) throws IOException {
         List<Path> paths;
         if (isAllowablePath(file)) {
-            paths = Files.list(getRelativePath(file))
+            paths = Files.list(file)
                     .map(Path::getFileName)
                     .collect(Collectors.toList());
         } else {
