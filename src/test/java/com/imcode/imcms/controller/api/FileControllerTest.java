@@ -81,24 +81,19 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path testPath6 = firstRootPath.resolve("/~/");
         final Path testPath7 = firstRootPath.resolve(".././~/../.");
 
-
         Files.createDirectory(firstRootPath);
 
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + testPath.toString());
         final MockHttpServletRequestBuilder requestBuilder2 = MockMvcRequestBuilders.get(controllerPath() + testPath2.toString());
         final MockHttpServletRequestBuilder requestBuilder3 = MockMvcRequestBuilders.get(controllerPath() + testPath3.toString());
         final MockHttpServletRequestBuilder requestBuilder4 = MockMvcRequestBuilders.get(controllerPath() + testPath4.toString());
-        final MockHttpServletRequestBuilder requestBuilder5 = MockMvcRequestBuilders.get(controllerPath() + testPath5.toString());
         final MockHttpServletRequestBuilder requestBuilder6 = MockMvcRequestBuilders.get(controllerPath() + testPath6.toString());
-        final MockHttpServletRequestBuilder requestBuilder7 = MockMvcRequestBuilders.get(controllerPath() + testPath7.toString());
 
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder2);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder3);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder4);
-        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder5);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder6);
-        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder7);
     }
 
     @Test
