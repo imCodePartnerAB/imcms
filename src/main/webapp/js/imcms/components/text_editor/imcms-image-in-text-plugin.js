@@ -45,7 +45,7 @@ define(
                     + " imcms-control--image",
                 html: $("<div>", {
                     "class": "imcms-editor-area__control-title",
-                    text: "Image Editor"
+                    text: "Image Editor" //todo add localization text
                 }),
                 click: openEditor
             });
