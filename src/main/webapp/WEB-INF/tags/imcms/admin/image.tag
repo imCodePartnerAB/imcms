@@ -92,7 +92,7 @@ ${"-->"}
     <c:choose>
         <c:when test="${isEditMode && editOptions.editImage}">
             <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
-            <c:set value="${isInternal ? 'Image Editor' : 'This image is edited on page '.concat(document)}"
+            <c:set value="${isInternal ? (language.equals('en') ? 'Image Editor' : 'Redigera Bild') : 'This image is edited on page '.concat(document)}"
                    var="label"/>
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\"'))}"/>

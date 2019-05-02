@@ -105,7 +105,7 @@ ${"-->"}
 
         <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
         <c:set var="editingLabel"
-               value="${isInternal ? 'Text Editor' : 'This text is edited on page '.concat(document)}"/>
+               value="${isInternal ? (language.equals('en') ? 'Text Editor' : 'Redigera Text') : 'This text is edited on page '.concat(document)}"/>
         <c:set var="externalPart"
                value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
