@@ -22,6 +22,7 @@
     border: 2px solid rgba(0, 149, 217, 0.58);
     border-bottom-width: 1px;
     border-radius: 5px 5px 0 0;
+    font-size: 20px;
 }
 
 .imcms-editor-area--text:hover .imcms-editor-area__text-label {
