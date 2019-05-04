@@ -8,12 +8,14 @@ define(
         'imcms-text-history-plugin', 'imcms-text-validation-plugin', 'imcms-text-full-screen-plugin', 'jquery',
         'imcms-text-discard-changes-plugin', 'imcms-text-editor-utils', 'imcms-text-editor-toolbar-button-builder',
         'imcms-switch-to-plain-text-plugin', 'imcms-switch-to-html-mode-plugin', 'imcms-switch-to-text-editor-plugin',
-        'imcms-html-filtering-policy-plugin'
+        'imcms-html-filtering-policy-plugin', 'imcms-i18n-texts'
     ],
     function (
         textHistory, textValidation, fullScreenPlugin, $, discardChangesPlugin, textEditorUtils, toolbarButtonBuilder,
-        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin, htmlFilteringPolicyPlugin
+        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin, htmlFilteringPolicyPlugin, texts
     ) {
+
+        texts = texts.toolTipText;
 
         function focusEditorOnControlClick($textEditor) {
             $textEditor.parent()
@@ -89,7 +91,7 @@ define(
             const onClick = () => {
                 if (activeTextEditor.isDirty()) textEditorUtils.saveContent(activeTextEditor);
             };
-            return toolbarButtonBuilder.buildButton('text-editor-save-button', 'Save', onClick, true);
+            return toolbarButtonBuilder.buildButton('text-editor-save-button', texts.save, onClick, true);
         }
 
         function buildToolbar($textEditor, buttons$) {

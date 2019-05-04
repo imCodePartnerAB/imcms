@@ -4,11 +4,14 @@
  */
 define(
     "imcms-text-discard-changes-plugin",
-    ["imcms-modal-window-builder", "tinymce", "imcms-events", 'imcms-text-editor-toolbar-button-builder'],
-    function (modalWindowBuilder, tinyMCE, events, toolbarButtonBuilder) {
+    ["imcms-modal-window-builder", "tinymce", "imcms-events", 'imcms-text-editor-toolbar-button-builder',
+        'imcms-i18n-texts'],
+    function (modalWindowBuilder, tinyMCE, events, toolbarButtonBuilder, texts) {
 
-        const title = 'Discard changes'; // todo: localize!
-        const discardChangesMessage = "Discard changes?"; // todo: localize!
+        texts = texts.toolTipText;
+
+        const title = texts.discardChange;
+        const discardChangesMessage = texts.discardChangesQuestion;
 
         function onDiscardChangesClick() {
             events.trigger("disable text editor blur");

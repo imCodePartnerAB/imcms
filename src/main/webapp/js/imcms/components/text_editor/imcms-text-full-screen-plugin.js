@@ -4,10 +4,13 @@
  */
 define(
     "imcms-text-full-screen-plugin",
-    ["jquery", "tinymce", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder'],
-    function ($, tinyMCE, adminPanelState, imcms, toolbarButtonBuilder) {
+    ["jquery", "tinymce", "imcms-admin-panel-state", "imcms", 'imcms-text-editor-toolbar-button-builder',
+        'imcms-i18n-texts'],
+    function ($, tinyMCE, adminPanelState, imcms, toolbarButtonBuilder, texts) {
 
-        const title = 'Fullscreen'; // todo: localize!
+        texts = texts.toolTipText;
+
+        const title = texts.fullScreen;
 
         function setEnablingStrategy() {
             if (imcms.textEditorFullScreenEnabled) {

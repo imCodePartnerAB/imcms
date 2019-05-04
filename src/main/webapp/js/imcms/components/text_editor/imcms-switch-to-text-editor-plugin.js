@@ -5,12 +5,15 @@
 
 define(
     'imcms-switch-to-text-editor-plugin',
-    ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils'],
-    function (toolbarButtonBuilder, $, textTypes, textUtils) {
+    ['imcms-text-editor-toolbar-button-builder', 'jquery', 'imcms-text-editor-types', 'imcms-text-editor-utils',
+        'imcms-i18n-texts'],
+    function (toolbarButtonBuilder, $, textTypes, textUtils, texts) {
 
         require('imcms-jquery-tag-replacer');
 
-        const title = 'Switch to text editor'; // todo: localize!!11
+        texts = texts.toolTipText;
+
+        const title = texts.switchTextEditor;
 
         function getOnSwitch(editor) {
             return () => {

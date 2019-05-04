@@ -6,11 +6,13 @@ define(
     'imcms-html-filtering-policy-plugin',
     [
         'imcms-text-editor-toolbar-button-builder', 'imcms-html-filtering-policies', 'imcms-bem-builder', 'jquery',
-        'imcms-text-editor-utils'
+        'imcms-text-editor-utils', 'imcms-i18n-texts'
     ],
-    function (toolbarButtonBuilder, filteringPolicies, BEM, $, textUtils) {
+    function (toolbarButtonBuilder, filteringPolicies, BEM, $, textUtils, texts) {
 
-        const title = 'HTML content filtering policy'; // todo: localize!!!11
+        texts = texts.toolTipText;
+
+        const title = texts.htmlContent;
 
         const policyToName = {}; // todo: localize!!1
         policyToName[filteringPolicies.restricted] = 'Restricted';

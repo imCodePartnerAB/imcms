@@ -6,10 +6,13 @@
  */
 define(
     "imcms-text-history-plugin",
-    ["imcms-text-history-window-builder", "jquery", 'imcms-text-editor-toolbar-button-builder'],
-    function (textHistoryBuilder, $, toolbarButtonBuilder) {
+    ["imcms-text-history-window-builder", "jquery", 'imcms-text-editor-toolbar-button-builder',
+        "imcms-i18n-texts"],
+    function (textHistoryBuilder, $, toolbarButtonBuilder, texts) {
 
-        const title = 'Show text history'; // todo: localize!
+        texts = texts.toolTipText;
+
+        const title = texts.textHistory;
 
         return {
             pluginName: 'text_history',
