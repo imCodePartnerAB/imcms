@@ -66,7 +66,7 @@ const texts = {
             sourceCode: "Källkod",
             boldText: "Fet",
             italicText: "Kursiv",
-            underlineText: "Underline",
+            underlineText: "Understrykning",
             bulletListText: "Bullet list",
             numberedListText: "Numrerad lista",
             horizontalLineText: "Horisontell linje",
@@ -79,7 +79,8 @@ const texts = {
             switchTextEditor: "Byt till textredigerare",
             switchTextMode: "Växla till vanligt textläge",
             switchHTMLMode: "Växla till HTML-läge",
-            discardChange: "Ändra ändringar"
+            discardChange: "Ändra ändringar",
+            discardChangesQuestion: 'Ignorera ändringar?',
         },
         pageInfo: {
             document: "Dokument",
@@ -773,6 +774,7 @@ const texts = {
             switchTextMode: "Switch to plain text mode",
             switchHTMLMode: "Switch to HTML mode",
             discardChange: "Discard changes",
+            discardChangesQuestion: 'Discard changes?',
         },
         pageInfo: {
             document: "Document",
