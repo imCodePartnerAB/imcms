@@ -117,7 +117,16 @@ ${"-->"}
             <div class="imcms-editor-area__text-toolbar"></div>
             <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
             data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
-            data-lang-code="${language}"${tagClose}${content}${tagEnd}
+            data-lang-code="${language}"${tagClose}
+            <c:choose>
+                <c:when test="${not empty content}">
+                    ${content}
+                </c:when>
+                <c:otherwise>
+                    ${placeholder}
+                </c:otherwise>
+            </c:choose>
+                ${tagEnd}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                     <div class="imcms-editor-area__control-title">${editingLabel}</div>
