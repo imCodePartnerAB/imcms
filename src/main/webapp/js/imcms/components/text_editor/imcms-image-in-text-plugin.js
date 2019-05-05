@@ -4,8 +4,10 @@
  */
 define(
     "imcms-image-in-text-plugin",
-    ["tinymce", "jquery", "imcms-image-editor-builder"],
-    function (tinyMCE, $, imageEditorBuilder) {
+    ["tinymce", "jquery", "imcms-image-editor-builder", "imcms-i18n-texts"],
+    function (tinyMCE, $, imageEditorBuilder, texts) {
+
+        texts = texts.toolTipText;
 
         function onPluginButtonClicked() {
             const uniqueId = Date.now();
@@ -68,7 +70,7 @@ define(
             initImageInText: function (editor) {
                 editor.addButton(this.pluginName, {
                     icon: 'imcms-image--in-text-editor-icon',
-                    tooltip: 'Add Image',
+                    tooltip: texts.addImageText,
                     onclick: onPluginButtonClicked
                 });
             }
