@@ -156,7 +156,7 @@ define("imcms-page-info-builder",
             documentsRestApi.read(requestData)
                 .done((document) => {
                     documentDTO = document;
-                    $title.text((document.id) ? (`${texts.URL} /${document.id}`) : texts.newDocument);
+                    $title.text((document.id) ? (`${texts.document}: /${document.id}`) : texts.newDocument);
 
                     pageInfoTabs.tabBuilders.forEach((tab) => {
                         if (tab.isDocumentTypeSupported(document.type)) {
