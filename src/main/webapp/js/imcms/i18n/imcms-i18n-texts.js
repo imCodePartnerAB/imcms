@@ -276,7 +276,7 @@ const texts = {
             },
             menu: {
                 newDoc: "Ny",
-                title: "Meny-redigerare",
+                title: "Meny-redigerare ",
                 remove: "Ta bort ur menyn",
                 copy: "Kopiera",
                 edit: "Redigera Sid-info",
@@ -967,7 +967,7 @@ const texts = {
             },
             menu: {
                 newDoc: "New",
-                title: "Menu Editor",
+                title: "Menu Editor ",
                 remove: "Remove",
                 copy: "Copy",
                 edit: "Edit",
