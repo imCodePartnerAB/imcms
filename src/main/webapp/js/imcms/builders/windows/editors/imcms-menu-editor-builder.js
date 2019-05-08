@@ -15,8 +15,9 @@ define("imcms-menu-editor-builder",
 
         texts = texts.editors.menu;
 
-        let $title, $menuElementsContainer, $documentsContainer, $documentEditor;
+        let $menuElementsContainer, $documentsContainer, $documentEditor;
         let docId, menuIndex;
+        let $title = $('<span>');
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -74,7 +75,7 @@ define("imcms-menu-editor-builder",
 
         function buildHead() {
             const $head = menuWindowBuilder.buildHead(texts.title);
-            $title = $head.find(".imcms-title");
+            $head.find('.imcms-title').append($title);
 
             return $head;
         }
@@ -742,7 +743,7 @@ define("imcms-menu-editor-builder",
         }
 
         function addHeadData(opts) {
-            $title.append(opts.docId + "-" + opts.menuIndex +
+            $title.text(opts.docId + "-" + opts.menuIndex +
                 ": /api/admin/menu?meta-id=" + opts.docId + "&index=" + opts.menuIndex)
                 .css({'text-transform': 'lowercase'});
         }
