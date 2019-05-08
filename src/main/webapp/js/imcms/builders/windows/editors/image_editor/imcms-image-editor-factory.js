@@ -27,7 +27,9 @@ module.exports = {
         }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
     },
     updateImageData: ($tag, imageData) => {
-        $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index'));
+        $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index')
+            + ': ' + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id') + '&index=' + $tag.attr('data-index'))
+            .css({'text-transform': 'lowercase'});
         rightSideBuilder.updateImageData($tag, imageData);
     }
 };
