@@ -332,7 +332,7 @@ const texts = {
                 title: "Bild-redigerare",
                 proportion: "Läs proportioner",
                 presetCrop: "Förinställd gröda",
-                crop: "Gröda",
+                crop: "Förinställt",
                 panels: {
                     bottom: {
                         hide: "Dölj bottenpanelen",
