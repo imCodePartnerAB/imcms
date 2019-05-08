@@ -6,7 +6,7 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;
+    user-select: auto;
 }
 
 .imcms-image_editor__head {
