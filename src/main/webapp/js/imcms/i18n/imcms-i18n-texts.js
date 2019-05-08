@@ -239,7 +239,7 @@ const texts = {
                 },
                 status: {
                     published: "Publicerad",
-                    publishedWaiting: "Godkänd",
+                    publishedWaiting: "Godkänd, väntar",
                     inProcess: "Nytt, under arbete",
                     disapproved: "Ej godkänd",
                     archived: "Arkiverat",
@@ -931,7 +931,7 @@ const texts = {
                 },
                 status: {
                     published: "Approved, published",
-                    publishedWaiting: "Approved",
+                    publishedWaiting: "Approved, waiting",
                     inProcess: "New",
                     disapproved: "Disapproved",
                     archived: "Archived",
