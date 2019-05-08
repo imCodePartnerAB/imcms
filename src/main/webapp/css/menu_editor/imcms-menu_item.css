@@ -46,6 +46,7 @@
     width: 22%;
     height: 100%;
     max-height: 45px;
+    min-width: fit-content;
     line-height: 45px;
 }
 
