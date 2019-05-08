@@ -80,9 +80,11 @@ define("imcms-image-content-builder",
         const folderControlsBuilder = {
             move: folder => components.controls.move(moveFolder.bind(folder)),
 
-            remove: folder => components.controls.remove(removeFolder.bind(folder)),
+            remove: folder => components.controls.remove(removeFolder.bind(folder))
+                .attr("title", texts.deleteFolderImage),
 
-            edit: (folder, level) => components.controls.edit(setRenameFolder(folder, level)),
+            edit: (folder, level) => components.controls.edit(setRenameFolder(folder, level))
+                .attr("title", texts.editFolderImage),
 
             create: (folder, level) =>
                 components.controls.create(setCreateFolder(folder, level)).attr("title", texts.createFolderImage),
