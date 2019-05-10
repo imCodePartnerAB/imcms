@@ -1,6 +1,4 @@
-${"<!--"}
 <%@ page trimDirectiveWhitespaces="true" %>
-${"-->"}
 <%@ page import="com.imcode.imcms.flow.OkCancelPage" %>
 <%@ page import="imcode.server.user.PhoneNumberType" %>
 <%@ page import="imcode.util.DateConstants" %>

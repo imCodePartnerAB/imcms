@@ -1,6 +1,4 @@
-${"<!--"}
 <%@ tag trimDirectiveWhitespaces="true" %>
-${"-->"}
 <%@ taglib prefix="imcms" uri="imcms" %>
 <%@ tag body-content="empty" %>
 
