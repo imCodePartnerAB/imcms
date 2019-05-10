@@ -38,6 +38,9 @@ ${"-->"}
         </c:if>
         ${pre}${content}${post}
     </c:if>
+    <c:if test="${empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">
+        ${placeholder}
+    </c:if>
 
     <c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
 
@@ -117,15 +120,10 @@ ${"-->"}
             <div class="imcms-editor-area__text-toolbar"></div>
             <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
             data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
-            data-lang-code="${language}"${tagClose}
-            <c:choose>
-                <c:when test="${not empty content}">
+            data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
+            <c:if test="${not empty content}">
                     ${content}
-                </c:when>
-                <c:otherwise>
-                    ${placeholder}
-                </c:otherwise>
-            </c:choose>
+            </c:if>
                 ${tagEnd}
             <div class="imcms-editor-area__control-wrap">
                 <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
