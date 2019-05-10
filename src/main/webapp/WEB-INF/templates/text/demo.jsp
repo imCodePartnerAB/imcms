@@ -67,14 +67,15 @@
 
         <div>Text editor, mode="write" example:</div>
         <imcms:text no="4" label="Write mode example" mode="write" post="<br/>"/>
+        <%--if need that be placeholder works need add any formats--%>
 
         <br/>
         <div>Text editor, formats="text" example:</div>
         <imcms:text no="5" label="Text format example" formats="text" post="<br/>" rows="4"/>
 
         <br/>
-        <div>Text editor, formats="html", rows="1" example:</div>
-        <imcms:text no="6" label="HTML format 1 row example" formats="html" rows="1" post="<br/>"/>
+        <div>Text editor, formats="html", rows="1", placeholder="text2" example:</div>
+        <imcms:text no="6" label="HTML format 1 row example" formats="html" rows="1" post="<br/>" placeholder="text2"/>
 
         <br/>
         <div>Text editor, rows="1" example:</div>
