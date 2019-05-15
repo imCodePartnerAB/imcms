@@ -13,11 +13,12 @@ define("imcms-page-info-builder",
 
         texts = texts.pageInfo;
 
-        let panels$, $title, documentDTO, $saveAndPublishBtn;
+        let panels$, documentDTO, $saveAndPublishBtn;
+        let $title = $('<span>');
 
         function buildPageInfoHead() {
-            const $head = pageInfoWindowBuilder.buildHead("", closePageInfo);
-            $title = $head.find(".imcms-head__title");
+            const $head = pageInfoWindowBuilder.buildHead(texts.document, closePageInfo);
+            $head.find(".imcms-head__title").append($title);
 
             return $head;
         }
@@ -156,7 +157,9 @@ define("imcms-page-info-builder",
             documentsRestApi.read(requestData)
                 .done((document) => {
                     documentDTO = document;
-                    $title.text((document.id) ? (`${texts.document}: /${document.id}`) : texts.newDocument);
+                    $title.text((document.id)
+                        ? (`: /api/admin/page-info?meta-id=${document.id}`)
+                        : texts.newDocument).css({'text-transform': 'lowercase'});
 
                     pageInfoTabs.tabBuilders.forEach((tab) => {
                         if (tab.isDocumentTypeSupported(document.type)) {
