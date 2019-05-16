@@ -78,6 +78,7 @@ const texts = {
             switchHTMLMode: "Växla till HTML-läge",
             discardChange: "Ändra ändringar",
             discardChangesQuestion: 'Ignorera ändringar?',
+            textEditor: 'Textredigerare'
         },
         pageInfo: {
             document: "Dokument",
@@ -770,6 +771,7 @@ const texts = {
             switchHTMLMode: "Switch to HTML mode",
             discardChange: "Discard changes",
             discardChangesQuestion: 'Discard changes?',
+            textEditor: 'Text Editor'
         },
         pageInfo: {
             document: "Document",

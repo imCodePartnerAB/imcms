@@ -8,11 +8,11 @@ define(
         'imcms-text-history-plugin', 'imcms-text-validation-plugin', 'imcms-text-full-screen-plugin', 'jquery',
         'imcms-text-discard-changes-plugin', 'imcms-text-editor-utils', 'imcms-text-editor-toolbar-button-builder',
         'imcms-switch-to-plain-text-plugin', 'imcms-switch-to-html-mode-plugin', 'imcms-switch-to-text-editor-plugin',
-        'imcms-html-filtering-policy-plugin', 'imcms-i18n-texts'
+        'imcms-html-filtering-policy-plugin', 'imcms-i18n-texts', 'imcms'
     ],
     function (
         textHistory, textValidation, fullScreenPlugin, $, discardChangesPlugin, textEditorUtils, toolbarButtonBuilder,
-        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin, htmlFilteringPolicyPlugin, texts
+        switchToPlainTextPlugin, switchToHtmlModePlugin, switchToTextEditorPlugin, htmlFilteringPolicyPlugin, texts, imcms
     ) {
 
         texts = texts.toolTipText;
@@ -94,12 +94,22 @@ define(
             return toolbarButtonBuilder.buildButton('text-editor-save-button', texts.save, onClick, true);
         }
 
+
         function buildToolbar($textEditor, buttons$) {
             const $toolbarWrapper = $('<div>', {
                 'class': 'text-toolbar-wrapper'
             });
 
+            let $title = $('<div>', {
+                'class': 'url-view-title'
+            });
+
+            $title.text('/api/admin/text?meta-id='
+                + $textEditor.attr('data-doc-id')
+                + '&index=' + $textEditor.attr('data-index'));
+
             $toolbarWrapper.append(buttons$);
+            $toolbarWrapper.append($title);
 
             $textEditor.parent()
                 .find('.imcms-editor-area__text-toolbar')

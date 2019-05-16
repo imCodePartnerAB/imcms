@@ -35,6 +35,7 @@ define(
 
                         $editorBody.removeClass('imcms-mce-fullscreen-inline');
                         $toolBar.removeClass("mce-fullscreen-toolbar");
+                        $('.title-url-text-editor').css('display', 'none');
                         $body.css('overflow', 'auto');
 
                     } else {
@@ -42,8 +43,17 @@ define(
                             adminPanelState.disablePanelAppearance();
                         }
 
+                        let viewUrl = $('<div>', {
+                            'class': 'title-url-text-editor'
+                        });
+
+                        viewUrl.text(texts.textEditor
+                            + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                            + '&index=' + $editorBody.attr('data-index'));
+
                         $editorBody.addClass('imcms-mce-fullscreen-inline');
                         $toolBar.addClass("mce-fullscreen-toolbar");
+                        $('.mce-stack-layout').append(viewUrl);
                         $body.css('overflow', 'hidden');
                     }
                     editor.focus();
