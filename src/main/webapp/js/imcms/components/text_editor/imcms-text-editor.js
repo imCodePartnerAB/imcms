@@ -100,16 +100,7 @@ define(
                 'class': 'text-toolbar-wrapper'
             });
 
-            let $title = $('<div>', {
-                'class': 'url-view-title'
-            });
-
-            $title.text('/api/admin/text?meta-id='
-                + $textEditor.attr('data-doc-id')
-                + '&index=' + $textEditor.attr('data-index'));
-
             $toolbarWrapper.append(buttons$);
-            $toolbarWrapper.append($title);
 
             $textEditor.parent()
                 .find('.imcms-editor-area__text-toolbar')
