@@ -19,6 +19,10 @@ define(
             }
         }
 
+        let viewUrl = $('<div>', {
+            'class': 'title-url-text-editor'
+        });
+
         return {
             pluginName: 'fullscreen',
             initFullScreen: function (editor) {
@@ -35,17 +39,13 @@ define(
 
                         $editorBody.removeClass('imcms-mce-fullscreen-inline');
                         $toolBar.removeClass("mce-fullscreen-toolbar");
-                        $('.title-url-text-editor').css('display', 'none');
+                        viewUrl.css('display', 'none');
                         $body.css('overflow', 'auto');
 
                     } else {
                         if (adminPanelState.state === "auto") {
                             adminPanelState.disablePanelAppearance();
                         }
-
-                        let viewUrl = $('<div>', {
-                            'class': 'title-url-text-editor'
-                        });
 
                         viewUrl.text(texts.textEditor
                             + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
@@ -54,6 +54,7 @@ define(
                         $editorBody.addClass('imcms-mce-fullscreen-inline');
                         $toolBar.addClass("mce-fullscreen-toolbar");
                         $('.mce-stack-layout').append(viewUrl);
+                        viewUrl.css('display', 'inline-block');
                         $body.css('overflow', 'hidden');
                     }
                     editor.focus();
@@ -83,6 +84,17 @@ define(
 
                     isActive ? $textEditor.addClass('imcms-mce-fullscreen-inline')
                         : $textEditor.toggleClass('imcms-mce-fullscreen-inline');
+
+                    viewUrl.text(texts.textEditor
+                        + ': /api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                        + '&index=' + $textEditor.attr('data-index'));
+
+                    if ($toolbar.hasClass('mce-fullscreen-toolbar')) {
+                        $toolbar.find('.text-toolbar-wrapper').append(viewUrl);
+                        viewUrl.css('display', 'inline-block');
+                    } else {
+                        viewUrl.css('display', 'none');
+                    }
 
                     $textEditor.focus();
                 };
