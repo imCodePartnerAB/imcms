@@ -3,9 +3,11 @@ package com.imcode.imcms.api;
 import com.imcode.imcms.domain.dto.DocumentStatus;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.mapping.DocumentGetter;
 import com.imcode.imcms.model.Loop;
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.Text;
 import com.imcode.imcms.persistence.entity.Meta;
 import imcode.server.Imcms;
 import imcode.server.document.DocumentDomainObject;
@@ -84,10 +86,15 @@ public class TextDocument extends Document {
     }
 
     public TextField getTextField(int textFieldIndexInDocument) {
-        TextDomainObject imcmsText = getInternalTextDocument().getText(textFieldIndexInDocument);
-        if (null == imcmsText) {
-            imcmsText = new TextDomainObject("");
+        Text text = Imcms.getServices().getManagedBean(TextService.class)
+                .getText(getInternalTextDocument().getId(),
+                        textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
+        TextDomainObject imcmsText = new TextDomainObject("");
+        if (null == text) {
             getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
+        } else {
+            imcmsText.setText(text.getText());
+            imcmsText.setType(text.getType().ordinal());
         }
         return new TextField(imcmsText);
     }
