@@ -214,17 +214,9 @@
 .title-url-text-editor {
     display: flex;
     color: #0b94d8;
-    margin-left: 40%;
+    margin-left: 10%;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 15px;
-    font-weight: 600;
-}
-
-.url-view-title {
-    width: inherit;
-    color: #0b94d8;
-    font-size: 15px;
-    font-family: 'Source Sans Pro', sans-serif;
     font-weight: 600;
 }
 
