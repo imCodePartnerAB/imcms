@@ -90,7 +90,7 @@ public class TextDocument extends Document {
                 .getText(getInternalTextDocument().getId(),
                         textFieldIndexInDocument, Imcms.getLanguage().getCode(), null);
         TextDomainObject imcmsText = new TextDomainObject("");
-        if (null == text) {
+        if (null == text.getText()) {
             getInternalTextDocument().setText(textFieldIndexInDocument, imcmsText);
         } else {
             imcmsText.setText(text.getText());
