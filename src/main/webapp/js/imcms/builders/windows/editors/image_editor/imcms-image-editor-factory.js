@@ -27,9 +27,19 @@ module.exports = {
         }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
     },
     updateImageData: ($tag, imageData) => {
-        $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index')
-            + ': ' + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id') + '&index=' + $tag.attr('data-index'))
-            .css({'text-transform': 'lowercase'});
+        if ($tag.attr('data-loop-index')) {
+            $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index')
+                + ': '
+                + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
+                + '&index=' + $tag.attr('data-index')
+                + '&loop-index=' + $tag.attr('data-loop-index')
+                + '&loop-entry-index=' + $tag.attr('data-loop-entry-index'))
+                .css({'text-transform': 'lowercase'});
+        } else {
+            $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index')
+                + ': ' + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id') + '&index=' + $tag.attr('data-index'))
+                .css({'text-transform': 'lowercase'});
+        }
         rightSideBuilder.updateImageData($tag, imageData);
     }
 };

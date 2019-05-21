@@ -47,9 +47,17 @@ define(
                             adminPanelState.disablePanelAppearance();
                         }
 
-                        viewUrl.text(texts.textEditor
-                            + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
-                            + '&index=' + $editorBody.attr('data-index'));
+                        if ($editorBody.attr('data-loop-entry-ref.loop-index')) {
+                            viewUrl.text(texts.textEditor
+                                + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                                + '&index=' + $editorBody.attr('data-index')
+                                + '&loop-index=' + $editorBody.attr('data-loop-entry-ref.loop-index')
+                                + '&loop-entry-index=' + $editorBody.attr('data-loop-entry-ref.loop-entry-index'));
+                        } else {
+                            viewUrl.text(texts.textEditor
+                                + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                                + '&index=' + $editorBody.attr('data-index'));
+                        }
 
                         $editorBody.addClass('imcms-mce-fullscreen-inline');
                         $toolBar.addClass("mce-fullscreen-toolbar");
@@ -85,9 +93,17 @@ define(
                     isActive ? $textEditor.addClass('imcms-mce-fullscreen-inline')
                         : $textEditor.toggleClass('imcms-mce-fullscreen-inline');
 
-                    viewUrl.text(texts.textEditor
-                        + ': /api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
-                        + '&index=' + $textEditor.attr('data-index'));
+                    if ($textEditor.attr('data-loop-entry-ref.loop-index')) {
+                        viewUrl.text(texts.textEditor
+                            + ': /api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                            + '&index=' + $textEditor.attr('data-index')
+                            + '&loop-index=' + $textEditor.attr('data-loop-entry-ref.loop-index')
+                            + '&loop-entry-index=' + $textEditor.attr('data-loop-entry-ref.loop-entry-index'));
+                    } else {
+                        viewUrl.text(texts.textEditor
+                            + ': /api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                            + '&index=' + $textEditor.attr('data-index'));
+                    }
 
                     if ($toolbar.hasClass('mce-fullscreen-toolbar')) {
                         $toolbar.find('.text-toolbar-wrapper').append(viewUrl);
