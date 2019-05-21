@@ -14,15 +14,15 @@ define(
 
         const title = texts.htmlContent;
 
-        const policyToName = {}; // todo: localize!!1
-        policyToName[filteringPolicies.restricted] = 'Restricted';
-        policyToName[filteringPolicies.relaxed] = 'Relaxed';
-        policyToName[filteringPolicies.allowAll] = 'Everything is allowed';
+        const policyToName = {};
+        policyToName[filteringPolicies.restricted] = texts.filterPolicy.restricted;
+        policyToName[filteringPolicies.relaxed] = texts.filterPolicy.relaxed;
+        policyToName[filteringPolicies.allowAll] = texts.filterPolicy.allowedAll;
 
-        const policyToTitle = {};  // todo: localize!!1
-        policyToTitle[filteringPolicies.restricted] = 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. Not allowed attributes (class, style, etc.) are removed.';
-        policyToTitle[filteringPolicies.relaxed] = 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. All attributes are allowed.';
-        policyToTitle[filteringPolicies.allowAll] = 'Everything is allowed';
+        const policyToTitle = {};
+        policyToTitle[filteringPolicies.restricted] = texts.filterPolicy.titleRestricted;
+        policyToTitle[filteringPolicies.relaxed] = texts.filterPolicy.titleRelaxed;
+        policyToTitle[filteringPolicies.allowAll] = texts.filterPolicy.titleAllowedAll;
 
         function getOnClick(editor, $btn) {
             const $textEditor = $(editor.$());

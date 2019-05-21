@@ -78,7 +78,15 @@ const texts = {
             switchHTMLMode: "Växla till HTML-läge",
             discardChange: "Ändra ändringar",
             discardChangesQuestion: 'Ignorera ändringar?',
-            textEditor: 'Textredigerare'
+            textEditor: 'Textredigerare',
+            filterPolicy: {
+                restricted: 'Regränsad',
+                relaxed: 'Avslappnad',
+                allowedAll: 'Allt är tillåtet',
+                titleRestricted: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll, ej tillåtna taggar (html, body, doctype) kommer att tas bort men innehållet hålls. Ej tillåtna attribut (klass, stil, etc.) tas bort.',
+                titleRelaxed: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll, ej tillåtna taggar (html, body, doctype) kommer att tas bort men innehållet hålls. Alla attribut är tillåtna.',
+                titleAllowedAll: 'Allt är tillåtet'
+            }
         },
         pageInfo: {
             document: "Dokument",
@@ -771,7 +779,15 @@ const texts = {
             switchHTMLMode: "Switch to HTML mode",
             discardChange: "Discard changes",
             discardChangesQuestion: 'Discard changes?',
-            textEditor: 'Text Editor'
+            textEditor: 'Text Editor',
+            filterPolicy: {
+                restricted: 'Restricted',
+                relaxed: 'Relaxed',
+                allowedAll: 'Everything is allowed',
+                titleRestricted: 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. Not allowed attributes (class, style, etc.) are removed.',
+                titleRelaxed: 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. All attributes are allowed.',
+                titleAllowedAll: 'Everything is allowed'
+            }
         },
         pageInfo: {
             document: "Document",
