@@ -195,9 +195,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath3));
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath4));
 
-//        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath5));todo: fix on service that!
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath5));
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath7));
-//        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath8));
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath8));
 
         assertTrue(Files.exists(fileService.getFile(testPath6)));
     }
