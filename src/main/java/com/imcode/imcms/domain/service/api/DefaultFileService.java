@@ -37,10 +37,7 @@ public class DefaultFileService implements FileService {
         for (String pathRoot : rootPaths) {
             try {
                 countMatches += Files.walk(Paths.get(pathRoot))
-                        .filter(file -> {
-                            String filePath = file.toString();
-                            return filePath.contains(finalNormalize) || finalNormalize.contains(filePath);
-                        })
+                        .filter(pathWalk -> finalNormalize.contains(pathWalk.toString()))
                         .count();
             } catch (IOException e) {
                 e.getMessage();
