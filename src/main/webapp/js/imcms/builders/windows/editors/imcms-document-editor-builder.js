@@ -860,7 +860,14 @@ define("imcms-document-editor-builder",
         }
 
         function buildHead() {
-            return documentWindowBuilder.buildHead(texts.title);
+            let $head = documentWindowBuilder.buildHead(texts.title);
+
+            const titleUrl = $('<span>');
+            titleUrl.text(' : /api/admin/documents').css({'text-transform': 'lowercase'});
+
+            $head.find('.imcms-title').append(titleUrl);
+
+            return $head;
         }
 
         function buildFooter() {
