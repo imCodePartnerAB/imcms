@@ -34,7 +34,7 @@ import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.
 
 @Service
 @Transactional
-class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
+public class DefaultMenuService extends AbstractVersionedContentService<Menu, MenuRepository>
         implements IdDeleterMenuService {
 
     private final VersionService versionService;

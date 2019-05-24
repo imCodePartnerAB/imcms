@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-class DefaultSearchDocumentService implements SearchDocumentService {
+public class DefaultSearchDocumentService implements SearchDocumentService {
 
     private final ResolvingQueryIndex documentIndex;
 

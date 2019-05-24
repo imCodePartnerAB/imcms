@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service("loopService")
 @Transactional
-class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, LoopRepository> implements LoopService {
+public class DefaultLoopService extends AbstractVersionedContentService<LoopJPA, LoopRepository> implements LoopService {
 
     private final VersionService versionService;
 
