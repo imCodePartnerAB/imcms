@@ -216,6 +216,16 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getFile_When_PathFileFromToOutSideRootDir_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = Paths.get(testRootPaths.get(0));
+        final Path outDirRoot = Paths.get(firstRootPath.getParent().toString());
+
+        Files.createDirectory(firstRootPath);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(outDirRoot));
+    }
+
+    @Test
     public void deleteFile_When_FileExists_Expected_Delete() throws IOException {
         final Path firstRootPath = Paths.get(testRootPaths.get(0));
         final Path pathDir = firstRootPath.resolve(testDirectoryName);

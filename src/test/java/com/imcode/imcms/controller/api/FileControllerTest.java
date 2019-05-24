@@ -87,13 +87,17 @@ public class FileControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder2 = MockMvcRequestBuilders.get(controllerPath() + testPath2.toString());
         final MockHttpServletRequestBuilder requestBuilder3 = MockMvcRequestBuilders.get(controllerPath() + testPath3.toString());
         final MockHttpServletRequestBuilder requestBuilder4 = MockMvcRequestBuilders.get(controllerPath() + testPath4.toString());
+        final MockHttpServletRequestBuilder requestBuilder5 = MockMvcRequestBuilders.get(controllerPath() + testPath5.toString());
         final MockHttpServletRequestBuilder requestBuilder6 = MockMvcRequestBuilders.get(controllerPath() + testPath6.toString());
+        final MockHttpServletRequestBuilder requestBuilder7 = MockMvcRequestBuilders.get(controllerPath() + testPath7.toString());
 
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder2);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder3);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder4);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder5);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder6);
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder7);
     }
 
     @Test
@@ -152,7 +156,7 @@ public class FileControllerTest extends AbstractControllerTest {
         assertFalse(Files.exists(pathFile));
 
         final MockHttpServletRequestBuilder requestBuilder = post(
-                controllerPath() + pathFile).param("isDirectory", "" + false);
+                controllerPath() + pathFile).param("isDirectory", String.valueOf(false));
 
         performRequestBuilderExpectedOk(requestBuilder);
 
@@ -167,7 +171,7 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectory(firstRootPath);
 
         final MockHttpServletRequestBuilder requestBuilder = post(
-                controllerPath() + pathDir).param("isDirectory", "" + true);
+                controllerPath() + pathDir).param("isDirectory", String.valueOf(true));
 
         assertFalse(Files.exists(pathDir));
         performRequestBuilderExpectedOk(requestBuilder);
