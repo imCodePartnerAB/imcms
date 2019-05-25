@@ -22,7 +22,7 @@ import java.util.Optional;
  * 22.12.17.
  */
 @Service
-class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocumentService {
+public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocumentService {
 
     private final DocumentService<TextDocumentDTO> textDocumentService;
     private final DocumentService<FileDocumentDTO> fileDocumentService;
