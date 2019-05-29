@@ -15,7 +15,7 @@ define(
             transform: (file, fileEditor) => {
 
                 let infoRowAttributes = {
-                    name: file,
+                    name: file.replace(/^.*[\\\/]/, ''),
                     click: getOnFileClicked(file, fileEditor)
                 };
 
@@ -23,7 +23,7 @@ define(
                     block: "file-row",
                     elements: {
                         'file-name': $('<div>', {
-                            text: file
+                            text: file.replace(/^.*[\\\/]/, '')
                         }),
                         'download': components.controls.download(),
                         'edit': components.controls.edit(fileEditor.editFile),
