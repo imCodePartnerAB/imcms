@@ -20,10 +20,8 @@ import java.util.stream.Collectors;
 @Service
 public class DefaultFileService implements FileService {
 
-    private static final String SUB_PATH_REGEX = "(\\/.*)*";
-
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
-    private List<String> rootPaths;
+    private List<Path> rootPaths;
 
     @Value(".")
     private Path rootPath;
@@ -34,10 +32,10 @@ public class DefaultFileService implements FileService {
                 ? rootPath.toString()
                 : normalizedPath;
         long countMatches = 0;
-        for (String pathRoot : rootPaths) {
+        for (Path pathRoot : rootPaths) {
             try {
-                countMatches += Files.walk(Paths.get(pathRoot))
-                        .filter(pathWalk -> finalNormalize.contains(pathWalk.toString()))
+                countMatches += Files.walk(pathRoot)
+                        .filter(pathWalk -> Paths.get(finalNormalize).startsWith(pathWalk))
                         .count();
             } catch (IOException e) {
                 e.getMessage();
@@ -56,8 +54,7 @@ public class DefaultFileService implements FileService {
     @Override
     public List<Path> getRootFiles() {
         return rootPaths.stream()
-                .filter(path -> Files.exists(Paths.get(path)))
-                .map(Paths::get)
+                .filter(path -> Files.exists(Paths.get(path.toString())))
                 .collect(Collectors.toList());
     }
 
@@ -66,7 +63,6 @@ public class DefaultFileService implements FileService {
         List<Path> paths;
         if (isAllowablePath(file)) {
             paths = Files.list(file)
-                    .map(Path::getFileName)
                     .collect(Collectors.toList());
         } else {
             paths = Collections.EMPTY_LIST;
