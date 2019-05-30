@@ -16,12 +16,17 @@ define(
                 'class': 'first-sub-files'
             });
 
-            fileRestApi.get(file).done(files => {
+            if (file === '/..') {
                 $('.files-table__first-instance').find('.first-sub-files').remove();
-                $('.files-table__first-instance')
-                    .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
-                }
-            ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            } else {
+                fileRestApi.get(file).done(files => {
+                        $('.files-table__first-instance').find('.first-sub-files').remove();
+                        $('.files-table__first-instance')
+                            .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
+                        firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
+                    }
+                ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            }
         }
 
         function buildViewTwoFile($fileRow, file) {
