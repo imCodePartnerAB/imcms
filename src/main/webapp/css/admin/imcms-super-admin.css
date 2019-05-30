@@ -168,17 +168,32 @@
     justify-content: space-between;
 }
 
-.file-row {
+.first-sub-files {
+    background-color: #b94a48;
+    border: 1px solid gainsboro;
+    justify-content: space-between;
+}
+
+.second-sub-files {
+    background-color: aqua;
+    border: 1px solid gainsboro;
+    justify-content: space-between;
+}
+
+.file-row,
+.file-second-row {
     padding: 5px;
     cursor: pointer;
     display: flex;
 }
 
-.file-row:hover {
+.file-row:hover,
+.file-second-row:hover {
     background-color: #dfedff;
 }
 
-.file-row__file-name {
+.file-row__file-name,
+.file-second-row__file-name {
     width: 60%;
 }
 
@@ -318,13 +333,13 @@
 .imcms-control.imcms-control--check.link-info-row__link-host-found,
 .imcms-control.imcms-control--check.link-info-row__link-host-reachable,
 .imcms-control.imcms-control--check.link-info-row__link-page-found {
-    background-image: url("../images_new/controls/icon_folder_controll_check_hover.svg");
+    background-image: url("/images_new/controls/icon_folder_controll_check_hover.svg");
 }
 
 .imcms-control.imcms-control--remove.link-info-row__link-host-reachable,
 .imcms-control.imcms-control--remove.link-info-row__link-page-found,
 .imcms-control.imcms-control--remove.link-info-row__link-host-found {
-    background-image: url("../images_new/controls/icon_folder_controll_remove_hover.png");
+    background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
 }
 
 .category-type-editor,
