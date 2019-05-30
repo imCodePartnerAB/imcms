@@ -11,8 +11,20 @@ define(
             }
         }
 
+        function getOnSecondFileClicked(file, fileEditor) {
+            return function () {
+                const $this = $(this);
+
+                if ($this.hasClass('files-table__file-row-second--active')) return;
+
+                fileEditor.viewSecondFile($this, file);
+            }
+        }
+
+
+
         return {
-            transform: (file, fileEditor) => {
+            transformFirstColumn: (file, fileEditor) => {
 
                 let infoRowAttributes = {
                     name: file.replace(/^.*[\\\/]/, ''),
@@ -21,6 +33,25 @@ define(
 
                 return new BEM({
                     block: "file-row",
+                    elements: {
+                        'file-name': $('<div>', {
+                            text: file.replace(/^.*[\\\/]/, '')
+                        }),
+                        'download': components.controls.download(),
+                        'edit': components.controls.edit(fileEditor.editFile),
+                        'delete': components.controls.remove(fileEditor.deleteFile)
+                    }
+                }).buildBlockStructure("<div>", infoRowAttributes);
+            },
+            transformSecondColumn: (file, fileEditor) => {
+
+                let infoRowAttributes = {
+                    name: file.replace(/^.*[\\\/]/, ''),
+                    click: getOnSecondFileClicked(file, fileEditor)
+                };
+
+                return new BEM({
+                    block: "file-second-row",
                     elements: {
                         'file-name': $('<div>', {
                             text: file.replace(/^.*[\\\/]/, '')

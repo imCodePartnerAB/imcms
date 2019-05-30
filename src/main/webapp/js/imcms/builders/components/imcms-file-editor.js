@@ -16,9 +16,23 @@ define(
                 'class': 'first-sub-files'
             });
 
-            onFileView($fileRow, file);
             fileRestApi.get(file).done(files => {
-                    $('.files-table__first-instance').append(files.map(file => fileToRow.transform(file, this)));
+                $('.files-table__first-instance').find('.first-sub-files').remove();
+                $('.files-table__first-instance')
+                    .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
+                }
+            ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+        }
+
+        function buildViewTwoFile($fileRow, file) {
+            secondSubFilesContainer = $('<div>', {
+                'class': 'second-sub-files'
+            });
+
+            fileRestApi.get(file).done(files => {
+                    $('.files-table__second-instance').find('.second-sub-files').remove();
+                    $('.files-table__second-instance')
+                        .append(secondSubFilesContainer.append(files.map(file => fileToRow.transformSecondColumn(file, this))));
                 }
             ).fail(() => modal.buildErrorWindow(texts.error.loadError));
         }
@@ -60,7 +74,7 @@ define(
             };
 
             fileRestApi.create(fileToSave).done(newFile => {
-                $fileRow = fileToRow.transform((currentFile = newFile), fileEditor);
+                $fileRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
 
                 // $container.parent().find('.files-table').append($fileRow);
                 $('.first-files').append($fileRow);
@@ -162,6 +176,7 @@ define(
         let fileEditor = {
             addFile: buildAddFile,
             viewFile: buildViewFile,
+            viewSecondFile: buildViewTwoFile,
             editFile: buildEditFile,
             deleteFile: buildDeleteFile,
             downloadFile: downloadFile,
