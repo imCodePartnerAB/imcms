@@ -71,7 +71,7 @@ define(
             });
 
             secondFilesLoader.whenFilesLoaded(files => {
-                $fileSecondContainer.append(files.map(file => fileToRow.transformSecondColumn(file, fileEditor)));
+                $fileSecondContainer.append(files.map(file => fileToRow.transformSecondColumn(file.fullPath, fileEditor)));
             });
 
             return $fileSecondContainer;

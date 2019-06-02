@@ -26,22 +26,35 @@ define(
         return {
             transformFirstColumn: (file, fileEditor) => {
 
+                let fullName = file.fullPath;
+
                 let infoRowAttributes = {
-                    name: file.replace(/^.*[\\\/]/, ''),
+                    name: fullName.replace(/^.*[\\\/]/, ''),
                     click: getOnFileClicked(file, fileEditor)
                 };
 
-                return new BEM({
-                    block: "file-row",
-                    elements: {
-                        'file-name': $('<div>', {
-                            text: file.replace(/^.*[\\\/]/, '')
-                        }),
-                        'download': components.controls.download(),
-                        'edit': components.controls.edit(fileEditor.editFile),
-                        'delete': components.controls.remove(fileEditor.deleteFile)
-                    }
-                }).buildBlockStructure("<div>", infoRowAttributes);
+                if (file.fileType === 'FILE') {
+                    return new BEM({
+                        block: "file-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: fullName.replace(/^.*[\\\/]/, '')
+                            }),
+                            'download': components.controls.download(),
+                            'edit': components.controls.edit(fileEditor.editFile),
+                            'delete': components.controls.remove(fileEditor.deleteFile)
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                } else {
+                    return new BEM({
+                        block: "directory-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: fullName.replace(/^.*[\\\/]/, '')
+                            })
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                }
             },
             transformSecondColumn: (file, fileEditor) => {
 
