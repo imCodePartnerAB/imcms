@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,13 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.util.regex.Pattern.compile;
@@ -53,17 +55,34 @@ public class FileController {
     }
 
     @GetMapping("/**")
-    public List<String> getFiles(HttpServletRequest request) throws IOException {
+    public List<SourceFile> getFiles(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "");
         List<Path> files;
+        List<SourceFile> sourceFiles = new ArrayList<>();
         if (null == fileURI) {
             files = defaultFileService.getRootFiles();
         } else {
             files = defaultFileService.getFiles(Paths.get(fileURI));
         }
-        return files.stream()
-                .map(Path::toString)
-                .collect(Collectors.toList());
+
+        for (Path path : files) {
+            if (Files.isDirectory(path)) {
+                sourceFiles.add(
+                        new SourceFile(path.getFileName().toString(),
+                                path.toString(),
+                                SourceFile.FileType.DIRECTORY)
+                );
+            } else {
+                sourceFiles.add(
+                        new SourceFile(path.getFileName().toString(),
+                                path.toString(),
+                                SourceFile.FileType.FILE)
+                );
+            }
+        }
+
+        return sourceFiles;
+
     }
 
     @GetMapping("/file/**")
