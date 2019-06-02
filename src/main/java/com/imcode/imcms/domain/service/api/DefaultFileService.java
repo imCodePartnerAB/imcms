@@ -61,7 +61,7 @@ public class DefaultFileService implements FileService {
     @Override
     public List<Path> getFiles(Path file) throws IOException {
         List<Path> paths;
-        if (isAllowablePath(file)) {
+        if (isAllowablePath(file) && Files.isDirectory(file)) {
             paths = Files.list(file)
                     .collect(Collectors.toList());
         } else {
