@@ -16,16 +16,21 @@ define(
                 'class': 'first-sub-files'
             });
 
-            if (file === '/..') {
+            let path = file.fullPath;
+
+            if (path === '/..') {
                 $('.files-table__first-instance').find('.first-sub-files').remove();
-            } else {
-                fileRestApi.get(file).done(files => {
-                        $('.files-table__first-instance').find('.first-sub-files').remove();
-                        $('.files-table__first-instance')
-                            .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
-                        firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
-                    }
-                ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            }
+            else {
+                if (file.fileType === 'DIRECTORY') {
+                    fileRestApi.get(path).done(files => {
+                            $('.files-table__first-instance').find('.first-sub-files').remove();
+                            $('.files-table__first-instance')
+                                .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
+                            firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
+                        }
+                    ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+                }
             }
         }
 
