@@ -181,6 +181,7 @@
 }
 
 .file-row,
+.directory-row,
 .file-second-row {
     padding: 5px;
     cursor: pointer;
@@ -188,11 +189,13 @@
 }
 
 .file-row:hover,
+.directory-row:hover,
 .file-second-row:hover {
     background-color: #dfedff;
 }
 
 .file-row__file-name,
+.directory-row__file-name,
 .file-second-row__file-name {
     width: 60%;
 }
