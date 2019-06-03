@@ -25,7 +25,16 @@ public class DefaultResolvingQueryIndex extends DocumentIndexWrapper implements 
         return super.search(fixQuery(searchQuery), searchingUser);
     }
 
+    @Override
+    public IndexSearchResult search(String searchQuery, UserDomainObject searchingUser) throws IndexException {
+        return super.search(fixQuery(searchQuery), searchingUser);
+    }
+
     private SolrQuery fixQuery(SearchQueryDTO searchQuery) {
+        return documentSearchQueryConverter.convertToSolrQuery(searchQuery);
+    }
+
+    private SolrQuery fixQuery(String searchQuery) {
         return documentSearchQueryConverter.convertToSolrQuery(searchQuery);
     }
 }

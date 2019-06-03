@@ -14,7 +14,8 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static org.springframework.data.domain.Sort.*;
+import static org.springframework.data.domain.Sort.Direction;
+import static org.springframework.data.domain.Sort.Order;
 
 @Component
 public class DocumentSearchQueryConverter {
@@ -61,22 +62,24 @@ public class DocumentSearchQueryConverter {
 
         prepareSolrQueryPaging(searchQuery, solrQuery);
 
-        if (!searchingUser.isSuperAdmin()) {
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":true");
+        prepareSolrIsSuperAdminQuery(searchingUser, solrQuery);
 
-            final String userRoleIdsFormatted = searchingUser.getRoleIds()
-                    .stream()
-                    .map(Object::toString)
-                    .collect(Collectors.joining(" ", "(", ")"));
+        return solrQuery;
+    }
 
-            solrQuery.addFilterQuery(DocumentIndex.FIELD__ROLE_ID + ":" + userRoleIdsFormatted);
-        }
+    public SolrQuery convertToSolrQuery(String searchQuery) {
+        final SolrQuery solrQuery = new SolrQuery(searchQuery);
+        prepareSolrQueryPaging(null, solrQuery);
+        prepareSolrIsSuperAdminQuery(Imcms.getUser(), solrQuery);
 
         return solrQuery;
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
-        PageRequestDTO page = searchQuery.getPage();
+        PageRequestDTO page = null;
+        if (searchQuery != null) {
+            page = searchQuery.getPage();
+        }
 
         if (page == null) {
             page = new PageRequestDTO();
@@ -91,5 +94,19 @@ public class DocumentSearchQueryConverter {
                 .next();
 
         solrQuery.addSort(order.getProperty(), SolrQuery.ORDER.valueOf(order.getDirection().name().toLowerCase()));
+    }
+
+    private void prepareSolrIsSuperAdminQuery(UserDomainObject searchingUser, SolrQuery solrQuery) {
+
+        if (!searchingUser.isSuperAdmin()) {
+            solrQuery.addFilterQuery(DocumentIndex.FIELD__SEARCH_ENABLED + ":true");
+
+            final String userRoleIdsFormatted = searchingUser.getRoleIds()
+                    .stream()
+                    .map(Object::toString)
+                    .collect(Collectors.joining(" ", "(", ")"));
+
+            solrQuery.addFilterQuery(DocumentIndex.FIELD__ROLE_ID + ":" + userRoleIdsFormatted);
+        }
     }
 }

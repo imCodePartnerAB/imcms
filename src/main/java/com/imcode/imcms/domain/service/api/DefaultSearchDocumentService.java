@@ -27,4 +27,13 @@ public class DefaultSearchDocumentService implements SearchDocumentService {
                 .map(DocumentStoredFieldsDTO::new)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<DocumentStoredFieldsDTO> searchDocuments(String searchQuery) {
+        return documentIndex.search(searchQuery, Imcms.getUser())
+                .documentStoredFieldsList()
+                .stream()
+                .map(DocumentStoredFieldsDTO::new)
+                .collect(Collectors.toList());
+    }
 }
