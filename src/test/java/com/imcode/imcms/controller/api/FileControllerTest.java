@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import org.apache.uima.util.FileUtils;
@@ -113,7 +114,7 @@ public class FileControllerTest extends AbstractControllerTest {
                 controllerPath() + pathDir);
 
         final String jsonResponse = getJsonResponse(requestBuilder);
-        final List<Path> files = fromJson(jsonResponse, new TypeReference<List<Path>>() {
+        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
         });
 
         assertNotNull(files);
@@ -135,7 +136,7 @@ public class FileControllerTest extends AbstractControllerTest {
                 controllerPath() + pathDir2);
 
         final String jsonResponse = getJsonResponse(requestBuilder);
-        final List<Path> files = fromJson(jsonResponse, new TypeReference<List<Path>>() {
+        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
         });
 
         assertNotNull(files);
@@ -310,7 +311,7 @@ public class FileControllerTest extends AbstractControllerTest {
                 .param("target", "" + pathFile2);
 
         performRequestBuilderExpectedOk(requestBuilder);
-        final String renamedPath = fileController.getFiles(request).get(0);
+        final String renamedPath = fileController.getFiles(request).get(0).getFullPath();
         assertNotNull(renamedPath);
         assertTrue(Files.exists(pathFile.getParent().resolve(pathFile2.getFileName())));
         assertFalse(Files.exists(pathFile));
