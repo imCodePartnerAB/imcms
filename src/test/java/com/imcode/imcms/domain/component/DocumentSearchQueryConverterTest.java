@@ -1,6 +1,8 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.Document;
+import com.imcode.imcms.api.TextDocument;
 import com.imcode.imcms.domain.dto.PageRequestDTO;
 import com.imcode.imcms.domain.dto.SearchQueryDTO;
 import com.imcode.imcms.model.Roles;
@@ -22,7 +24,8 @@ import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
 
@@ -74,6 +77,15 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
                 .collect(Collectors.joining(" "));
 
         assertThat(solrQuery.get(CommonParams.Q), is(expected));
+    }
+
+    @Test
+    public void convert_When_QueryIsExist_Expect_SearchBySpecifiedSimpleQuery() {
+        final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
+                "+status:" + Document.PublicationStatus.APPROVED;
+        final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(query);
+
+        assertThat(solrQuery.get(CommonParams.Q), is(query));
     }
 
     @Test
