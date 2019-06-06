@@ -26,10 +26,10 @@ define(
         return {
             transformFirstColumn: (file, fileEditor) => {
 
-                let fullName = file.fullPath;
+                let fullName = (file === "/..") ? "/.." : file.fullPath;
 
                 let infoRowAttributes = {
-                    name: fullName.replace(/^.*[\\\/]/, ''),
+                    name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
                     click: getOnFileClicked(file, fileEditor)
                 };
 
@@ -38,7 +38,7 @@ define(
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {
-                                text: fullName.replace(/^.*[\\\/]/, '')
+                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
                             }),
                             'download': components.controls.download(),
                             'edit': components.controls.edit(fileEditor.editFile),
@@ -50,7 +50,7 @@ define(
                         block: "directory-row",
                         elements: {
                             'file-name': $('<div>', {
-                                text: fullName.replace(/^.*[\\\/]/, '')
+                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
                             })
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
