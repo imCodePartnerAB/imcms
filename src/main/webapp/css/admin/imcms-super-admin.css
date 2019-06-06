@@ -295,6 +295,26 @@
     padding-right: 10px;
 }
 
+.link-params-block__loading-animation {
+    border: 6px solid #d4d4d4;
+    border-top: 6px solid #0b94d8;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1.5s linear infinite;
+    margin-top: 30px;
+    margin-left: 50px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 .link-title-row__page-alias,
 .link-info-row__link-page-alias {
     width: 10%;
