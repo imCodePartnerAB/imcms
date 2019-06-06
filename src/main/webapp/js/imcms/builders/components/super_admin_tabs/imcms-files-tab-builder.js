@@ -89,22 +89,34 @@ define(
             }).buildBlockStructure('<div>', {})
         }
 
+        function clickActionMoveRight() {
+
+        }
+
+        function clickActionMoveLeft() {
+
+        }
+
         function buildMoveButtons() {
-            let $buttons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.positiveButton({
-                    text: "<--",
-                    click: function () {
-                    }
-                }),
-                components.buttons.positiveButton({
-                    text: "-->",
-                    click: function () {
+            let $buttonMoveLeft = components.buttons.positiveButton({
+                text: texts.moveLeft,
+                click: function () {
+                }
+            });
+            let buttonMoveRight = components.buttons.positiveButton({
+                text: texts.moveRight,
+                click: function () {
 
-                    }
-                })
-            ]);
+                }
+            });
 
-            return fieldWrapper.wrap([$buttons]).attr("title", texts.title.move);
+            return new BEM({
+                block: 'buttons-move',
+                elements: {
+                    'left-move': $buttonMoveLeft,
+                    'right-move': buttonMoveRight,
+                }
+            }).buildBlockStructure('<div>')
         }
 
         let $actionButtonsContainer;
