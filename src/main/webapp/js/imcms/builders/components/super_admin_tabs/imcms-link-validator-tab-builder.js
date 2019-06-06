@@ -10,6 +10,7 @@ define(
 
         let $startIdInput;
         let $endIdInput;
+        let $loadingAnimation;
         let $filterBrokenLinksCheckbox;
         let $resultContainer;
 
@@ -63,8 +64,7 @@ define(
                     } else {
                         reference = `text?meta-id=${metaId}&index=${index}&loop-index=${loopEntry.loopIndex}&loop-entry-index=${loopEntry.loopEntryIndex}`
                     }
-                }
-                else if (type === "IMAGE") {
+                } else if (type === "IMAGE") {
                     if (loopEntry === null) {
                         reference = `image?meta-id=${metaId}&index=${index}`
                     } else {
@@ -155,6 +155,7 @@ define(
                 appendLinks: function (validationLinks) {
                     this.prepareTitleRow()
                         .rowsAddToList(validationLinks.map(this.linkToRow));
+                    displayLoading(false);
                 }
             };
 
@@ -165,6 +166,7 @@ define(
                     endDocumentId: $endIdInput.getInput().val()
                 };
                 if (linksValidationParams.startDocumentId !== '' && linksValidationParams.endDocumentId !== '') {
+                    displayLoading(true);
                     const tableBuilder = new linkListBuilder($resultContainer).clearList();
                     linksValidatorRestApi.validate(linksValidationParams)
                         .done(tableBuilder.linkAppender)
@@ -181,12 +183,26 @@ define(
                 return components.buttons.buttonsContainer('<div>', [$button]);
             }
 
+            function displayLoading(flag) {
+                // let display = flag ? 'inline-block' : 'none';
+                // $loadingAnimation.css('display', display);
+                flag ? $loadingAnimation.show()
+                    : $loadingAnimation.hide();
+            }
+
+            function buildLoadingAnimation() {
+                $loadingAnimation = $('<div>');
+                displayLoading(false);
+                return $loadingAnimation;
+            }
+
             return new BEM({
                 block: 'link-params-block',
                 elements: {
                     'links-field-start': buildFieldStartId(),
                     'links-field-end': buildFieldEndId(),
-                    'button-validation': buildValidationButton()
+                    'button-validation': buildValidationButton(),
+                    'loading-animation': buildLoadingAnimation()
                 }
             }).buildBlockStructure('<div>');
         }
