@@ -26,7 +26,7 @@
         <tr>
             <td>
                 <table border="0" cellpadding="0" cellspacing="0">
-                    <form action="${pageContext.servletContext.contextPath}/servlet/StartDoc">
+                    <form action="${pageContext.servletContext.contextPath}">
                         <tr>
                             <td><input type="Submit" value="<fmt:message key="templates/Startpage"/>" class="imcmsFormBtn"></td>
                         </tr>
