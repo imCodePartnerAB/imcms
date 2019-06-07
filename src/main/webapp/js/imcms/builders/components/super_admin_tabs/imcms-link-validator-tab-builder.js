@@ -184,8 +184,6 @@ define(
             }
 
             function displayLoading(flag) {
-                // let display = flag ? 'inline-block' : 'none';
-                // $loadingAnimation.css('display', display);
                 flag ? $loadingAnimation.show()
                     : $loadingAnimation.hide();
             }
