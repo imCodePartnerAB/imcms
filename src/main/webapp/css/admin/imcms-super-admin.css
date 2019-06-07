@@ -217,6 +217,24 @@
 
 .buttons-action {
     display: inline-flex;
+    width: 100%;
+}
+
+.buttons-move {
+    display: inline-flex;
+    float: right;
+    padding-right: 48%;
+
+}
+
+.buttons-action__first-action {
+    width: 50%;
+    padding-left: 30%;
+}
+
+.buttons-action__second-action {
+    width: 50%;
+    padding-right: 25%;
 }
 
 .second-files-action,

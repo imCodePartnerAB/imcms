@@ -10,6 +10,19 @@ define(
         let currentFile;
         let firstSubFilesContainer;
         let secondSubFilesContainer;
+        let currentPath;
+
+        function getFilesByPath(pathFile) {
+            fileRestApi.get(pathFile).done(files => {
+                    $('.files-table__first-instance').find('.first-sub-files').remove();
+                    firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
+                    $('.files-table__first-instance')
+                        .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
+                    let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
+                    currentPath = files[0].fullPath.replace(sub, '');
+                }
+            ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+        }
 
         function buildViewFile($fileRow, file) {
             firstSubFilesContainer = $('<div>', {
@@ -18,16 +31,27 @@ define(
 
             let path = file.fullPath;
 
-            if (path === '/..') {
-                $('.files-table__first-instance').find('.first-sub-files').remove();
+
+            if (file === '/..') {
+                fileRestApi.get(currentPath + "..").done(files => {
+                        $('.files-table__first-instance').find('.first-sub-files').remove();
+                        firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
+                        $('.files-table__first-instance')
+                            .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
+                        let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
+                        currentPath = files[0].fullPath.replace(sub, '');
+                    }
+                ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             }
             else {
                 if (file.fileType === 'DIRECTORY') {
                     fileRestApi.get(path).done(files => {
+                        let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
+                        currentPath = files[0].fullPath.replace(sub, '');
                             $('.files-table__first-instance').find('.first-sub-files').remove();
+                        firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
                             $('.files-table__first-instance')
                                 .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
-                            firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
                         }
                     ).fail(() => modal.buildErrorWindow(texts.error.loadError));
                 }
