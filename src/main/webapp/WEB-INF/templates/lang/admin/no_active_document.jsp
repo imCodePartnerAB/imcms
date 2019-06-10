@@ -22,7 +22,7 @@
     <tr>
         <td>
             <table border="0" cellpadding="0" cellspacing="0">
-                <form action="${contextPath}/servlet/StartDoc">
+                <form action="${contextPath}">
                     <tr>
                         <td><input type="Submit" value="<? templates/sv/no_active_document.html/3 ?>"
                                    class="imcmsFormBtn"></td>

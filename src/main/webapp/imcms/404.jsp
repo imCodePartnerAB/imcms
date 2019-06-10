@@ -23,10 +23,10 @@
     <div class="imcms-page-error-body">
         <div class="imcms-field">
             <form class="imcms-page-error-body__form"
-                  action="${contextPath}/servlet/StartDoc">
+                  action="${contextPath}">
                 <button type="Submit"
                         class="imcms-button imcms-button--neutral imcms-page-error-body__button"
-                        onClick="top.location='${contextPath}/servlet/StartDoc';">
+                        onClick="top.location='${contextPath}';">
                     <fmt:message key="templates/Startpage"/>
                 </button>
             </form>

@@ -31,11 +31,7 @@ import org.w3c.dom.Document;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import javax.servlet.jsp.PageContext;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.TransformerException;
@@ -55,19 +51,7 @@ import java.security.cert.Certificate;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.StringTokenizer;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,7 +184,7 @@ public class Utility {
     }
 
     public static void redirectToStartDocument(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        res.sendRedirect(req.getContextPath() + "/servlet/StartDoc");
+        res.sendRedirect(req.getContextPath());
     }
 
     public static boolean isValidEmail(String email) {

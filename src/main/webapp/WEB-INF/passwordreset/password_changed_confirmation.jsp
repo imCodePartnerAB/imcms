@@ -14,7 +14,7 @@
     <p><%= confirmation.toLocalizedString(request) %>
     </p>
 
-    <a href="<%= request.getContextPath() %>/servlet/StartDoc"><%= lnkStartPage.toLocalizedString(request) %>
+    <a href="<%= request.getContextPath() %>"><%= lnkStartPage.toLocalizedString(request) %>
     </a>
 </div>
 

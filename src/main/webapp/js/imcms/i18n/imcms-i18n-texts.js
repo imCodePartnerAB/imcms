@@ -467,7 +467,7 @@ const texts = {
                     email: 'E-post',
                     archived: 'arkiveras'
                 },
-                createNewUser: 'Create new user',
+                createNewUser: 'Skapa ny användare',
                 error: {
                     loadRolesFailed: 'Misslyckades med att hämta roller. Försök igen',
                     updateFailed: 'Misslyckades med att uppdatera användaren. Försök igen',

@@ -18,7 +18,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.API_PREFIX;
+import static imcode.server.ImcmsConstants.LOGIN_URL;
 
 public class VerifyUser extends HttpServlet {
 
@@ -106,7 +107,7 @@ public class VerifyUser extends HttpServlet {
     private static class GoToLoginSuccessfulPageCommand implements DispatchCommand {
         public void dispatch(HttpServletRequest request,
                              HttpServletResponse response) throws IOException {
-            String nexturl = "StartDoc";
+            String nexturl = "/";
             HttpSession session = request.getSession(true);
             if (session.getAttribute(SESSION_ATTRIBUTE__NEXT_META) != null) {
                 nexturl = "GetDoc?meta_id=" + session.getAttribute(SESSION_ATTRIBUTE__NEXT_META);
