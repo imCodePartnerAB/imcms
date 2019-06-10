@@ -63,22 +63,35 @@ define(
             },
             transformSecondColumn: (file, fileEditor) => {
 
+                let fullName = (file === "/..") ? "/.." : file.fullPath;
+
                 let infoRowAttributes = {
-                    name: file.replace(/^.*[\\\/]/, ''),
+                    name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
                     click: getOnSecondFileClicked(file, fileEditor)
                 };
 
-                return new BEM({
-                    block: "file-second-row",
-                    elements: {
-                        'file-name': $('<div>', {
-                            text: file.replace(/^.*[\\\/]/, '')
-                        }),
-                        'download': components.controls.download(),
-                        'edit': components.controls.edit(fileEditor.editFile),
-                        'delete': components.controls.remove(fileEditor.deleteFile)
-                    }
-                }).buildBlockStructure("<div>", infoRowAttributes);
+                if (file.fileType === 'FILE') {
+                    return new BEM({
+                        block: "file-second-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
+                            }),
+                            'download': components.controls.download().attr("title", texts.download),
+                            'edit': components.controls.edit(fileEditor.editFile).attr("title", texts.edit),
+                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                } else {
+                    return new BEM({
+                        block: "directory-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
+                            })
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                }
             }
         }
     }

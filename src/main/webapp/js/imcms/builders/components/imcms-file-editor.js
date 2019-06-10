@@ -11,38 +11,25 @@ define(
         let firstSubFilesContainer;
         let secondSubFilesContainer;
         let currentPath;
+        let currentSecondPath;
 
         function buildViewFile($fileRow, file) {
             firstSubFilesContainer = $('<div>', {
                 'class': 'first-sub-files'
             });
 
-            let path = file.fullPath;
+            let path = (file === '/..') ? currentPath + file : file.fullPath;
 
 
-            if (file === '/..') {
-                fileRestApi.get(currentPath + "..").done(files => {
+            if (file === '/..' || file.fileType === 'DIRECTORY') {
+                fileRestApi.get(path).done(files => {
                         $('.files-table__first-instance').find('.first-sub-files').remove();
                         firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
                         $('.files-table__first-instance')
                             .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
-                        let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
-                        currentPath = files[0].fullPath.replace(sub, '');
+                    currentPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
-            }
-            else {
-                if (file.fileType === 'DIRECTORY') {
-                    fileRestApi.get(path).done(files => {
-                        // let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
-                        currentPath = path;
-                            $('.files-table__first-instance').find('.first-sub-files').remove();
-                        firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
-                            $('.files-table__first-instance')
-                                .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
-                        }
-                    ).fail(() => modal.buildErrorWindow(texts.error.loadError));
-                }
             }
         }
 
@@ -51,12 +38,19 @@ define(
                 'class': 'second-sub-files'
             });
 
-            fileRestApi.get(file).done(files => {
-                    $('.files-table__second-instance').find('.second-sub-files').remove();
-                    $('.files-table__second-instance')
-                        .append(secondSubFilesContainer.append(files.map(file => fileToRow.transformSecondColumn(file, this))));
-                }
-            ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            let path = (file === '/..') ? currentSecondPath + file : file.fullPath;
+
+
+            if (file === '/..' || file.fileType === 'DIRECTORY') {
+                fileRestApi.get(path).done(files => {
+                        $('.files-table__second-instance').find('.second-sub-files').remove();
+                        secondSubFilesContainer.append(fileToRow.transformSecondColumn('/..', this));
+                        $('.files-table__second-instance')
+                            .append(secondSubFilesContainer.append(files.map(file => fileToRow.transformSecondColumn(file, this))));
+                        currentSecondPath = path;
+                    }
+                ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            }
         }
 
         function buildEditFile($fileRow, file) {
