@@ -203,11 +203,15 @@
 .directory-row__file-name,
 .file-second-row__file-name {
     width: 60%;
+    word-break: break-all;
 }
 
 .file-row__download,
 .file-row__edit,
-.file-row__delete {
+.file-row__delete,
+.file-second-row__download,
+.file-second-row__edit,
+.file-second-row__delete {
     width: 10%;
 }
 
