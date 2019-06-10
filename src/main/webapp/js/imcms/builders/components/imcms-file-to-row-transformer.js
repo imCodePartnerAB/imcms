@@ -1,11 +1,15 @@
 define(
-    'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder'],
-    function (BEM, $, components) {
+    'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts'],
+    function (BEM, $, components, texts) {
+
+        texts = texts.superAdmin.files.title;
+
         function getOnFileClicked(file, fileEditor) {
             return function () {
                 const $this = $(this);
 
                 if ($this.hasClass('files-table__file-row--active')) return;
+                else if ($this.hasClass('files-table__directory-row--active')) return;
 
                 fileEditor.viewFile($this, file);
             }
@@ -16,6 +20,7 @@ define(
                 const $this = $(this);
 
                 if ($this.hasClass('files-table__file-row-second--active')) return;
+                else if ($this.hasClass('files-table__directory-row-second--active')) return;
 
                 fileEditor.viewSecondFile($this, file);
             }
@@ -40,9 +45,9 @@ define(
                             'file-name': $('<div>', {
                                 text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
                             }),
-                            'download': components.controls.download(),
-                            'edit': components.controls.edit(fileEditor.editFile),
-                            'delete': components.controls.remove(fileEditor.deleteFile)
+                            'download': components.controls.download().attr("title", texts.download),
+                            'edit': components.controls.edit(fileEditor.editFile).attr("title", texts.edit),
+                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else {
