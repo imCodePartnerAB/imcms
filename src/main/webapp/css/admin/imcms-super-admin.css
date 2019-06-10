@@ -188,6 +188,11 @@
     display: flex;
 }
 
+.files-table__directory-row--active,
+.files-table__file-row--active {
+    background-color: #c3d9f5;
+}
+
 .file-row:hover,
 .directory-row:hover,
 .file-second-row:hover {

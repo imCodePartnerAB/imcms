@@ -12,18 +12,6 @@ define(
         let secondSubFilesContainer;
         let currentPath;
 
-        function getFilesByPath(pathFile) {
-            fileRestApi.get(pathFile).done(files => {
-                    $('.files-table__first-instance').find('.first-sub-files').remove();
-                    firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
-                    $('.files-table__first-instance')
-                        .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
-                    let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
-                    currentPath = files[0].fullPath.replace(sub, '');
-                }
-            ).fail(() => modal.buildErrorWindow(texts.error.loadError));
-        }
-
         function buildViewFile($fileRow, file) {
             firstSubFilesContainer = $('<div>', {
                 'class': 'first-sub-files'
@@ -46,8 +34,8 @@ define(
             else {
                 if (file.fileType === 'DIRECTORY') {
                     fileRestApi.get(path).done(files => {
-                        let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
-                        currentPath = files[0].fullPath.replace(sub, '');
+                        // let sub = files[0].fullPath.replace(/^.*[\\\/]/, '');
+                        currentPath = path;
                             $('.files-table__first-instance').find('.first-sub-files').remove();
                         firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
                             $('.files-table__first-instance')
@@ -102,31 +90,37 @@ define(
 
             if (!name) return;
 
+            let currentFullPath = currentPath + name;
+
             let fileToSave = {
-                name: name,
-                isDirectory: isDirectory
+                fileName: name,
+                fullPath: currentFullPath,
+                fileType: isDirectory ? 'DIRECTORY' : 'FILE'
             };
+
 
             fileRestApi.create(fileToSave).done(newFile => {
                 $fileRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
 
                 // $container.parent().find('.files-table').append($fileRow);
                 $('.first-files').append($fileRow);
-                $('.second-files').append($fileRow);
+                // $('.second-files').append($fileRow);
 
-                onFileView = onFileSimpleView;
-                prepareFileView();
-            })
+                // onFileView = onFileSimpleView;
+                // prepareFileView();
+            }).fail(() => modal.buildErrorWindow("Do not create!"));
         }
 
 
         function buildAddFile() {
-
             windowCreateFile =
                 modal.buildCreateFileModalWindow(
                     texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
-
+                        if (!confirmed) {
+                            onSaveFile()
+                        }
                     });
+
 
             return windowCreateFile;
         }

@@ -89,11 +89,11 @@ define(
             }).buildBlockStructure('<div>', {})
         }
 
-        function clickActionMoveRight() {
+        function clickActionMoveRight(currentPosition) {
 
         }
 
-        function clickActionMoveLeft() {
+        function clickActionMoveLeft(currentPosition) {
 
         }
 
