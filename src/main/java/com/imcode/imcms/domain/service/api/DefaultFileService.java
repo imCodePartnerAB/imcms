@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.service.FileService;
 import org.apache.commons.lang3.StringUtils;
@@ -132,15 +133,23 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path createFile(Path file, boolean isDirectory) throws IOException {
-        Path path = null;
-        if (isAllowablePath(file)) {
+    public SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException {
+        Path path;
+        Path filePath = Paths.get(file.getFullPath());
+        SourceFile newSrcFile = new SourceFile();
+        if (isAllowablePath(filePath)) {
             if (isDirectory) {
-                path = Files.createDirectory(file);
+                path = Files.createDirectory(filePath);
+                newSrcFile.setFileName(path.getFileName().toString());
+                newSrcFile.setFullPath(path.toString());
+                newSrcFile.setFileType(SourceFile.FileType.DIRECTORY);
             } else {
-                path = Files.createFile(file);
+                path = Files.createFile(filePath);
+                newSrcFile.setFileName(path.getFileName().toString());
+                newSrcFile.setFullPath(path.toString());
+                newSrcFile.setFileType(SourceFile.FileType.FILE);
             }
         }
-        return path;
+        return newSrcFile;
     }
 }

@@ -1,5 +1,7 @@
 package com.imcode.imcms.domain.service;
 
+import com.imcode.imcms.api.SourceFile;
+
 import java.io.IOException;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -34,5 +36,5 @@ public interface FileService {
 
     Path saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException;
 
-    Path createFile(Path file, boolean isDirectory) throws IOException;
+    SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
 }
