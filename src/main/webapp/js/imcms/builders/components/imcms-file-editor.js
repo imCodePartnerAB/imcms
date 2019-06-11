@@ -19,7 +19,8 @@ define(
             });
 
             let path = (file === '/..') ? currentPath + file : file.fullPath;
-
+            currentFile = file;
+            $fileSourceRow = $fileRow;
 
             if (file === '/..' || file.fileType === 'DIRECTORY') {
                 fileRestApi.get(path).done(files => {
@@ -30,6 +31,8 @@ define(
                     currentPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            } else {
+                currentPath = path;
             }
         }
 
@@ -58,7 +61,15 @@ define(
         }
 
         function buildDeleteFile() {
-            return alert("delete!=)");
+            modal.buildModalWindow(texts.warnDeleteMessage, confirmed => {
+                if (!confirmed) return;
+
+                fileRestApi.delete(currentFile.fullPath).done(() => {
+                        $fileSourceRow.remove();
+                        currentFile = null;
+                    }
+                ).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
+            });
         }
 
         let newFileNameField = buildCreateField();
@@ -84,7 +95,7 @@ define(
 
             if (!name) return;
 
-            let currentFullPath = currentPath + name;
+            let currentFullPath = currentPath + "/" + name;
 
             let fileToSave = {
                 fileName: name,
@@ -94,14 +105,10 @@ define(
 
 
             fileRestApi.create(fileToSave).done(newFile => {
-                $fileRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
+                $fileSourceRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
 
-                // $container.parent().find('.files-table').append($fileRow);
-                $('.first-files').append($fileRow);
-                // $('.second-files').append($fileRow);
+                firstSubFilesContainer.append($fileSourceRow);
 
-                // onFileView = onFileSimpleView;
-                // prepareFileView();
             }).fail(() => modal.buildErrorWindow("Do not create!"));
         }
 
@@ -132,7 +139,7 @@ define(
             getOnDiscardChanges(() => {
                 onFileView = onFileSimpleView;
                 currentFile = file;
-                $fileRow = $fileRowElement;
+                $fileSourceRow = $fileRowElement;
                 prepareFileView();
             }).call();
         }
@@ -150,13 +157,9 @@ define(
                 isDirectory: isDirectory
             };
 
-            fileRestApi.replace(fileToSave).done(savedFile => {
+            fileRestApi.rename(fileToSave).done(savedFile => {
                 currentFile = savedFile;
             })
-            // $profileEditButtons.slideDown();
-            //
-            // $profileNameRow.$input.focus();
-            // $profileDocNameRow.$input.focus();
         }
 
         function getOnDiscardChanges(onConfirm) {
@@ -170,16 +173,16 @@ define(
 
         let onEditDelegate = onSimpleEdit;
         let onFileView = onFileSimpleView;
-        let $fileRow;
+        let $fileSourceRow;
 
         function prepareFileView() {
             onEditDelegate = onSimpleEdit;
 
-            $fileRow.parent()
+            $fileSourceRow.parent()
                 .find('.files-table__file-row--active')
                 .removeClass('files-table__file-row--active');
 
-            $fileRow.addClass('files-table__file-row--active');
+            $fileSourceRow.addClass('files-table__file-row--active');
         }
 
         function onSimpleEdit($fileRow, file) {
@@ -188,9 +191,9 @@ define(
         }
 
         function onFileSimpleView($fileRowElement, file) {
-            if (currentFile) return;
+            if (currentFile && currentFile.fullPath === file.fullPath) return;
             currentFile = file;
-            $fileRow = $fileRowElement;
+            $fileSourceRow = $fileRowElement;
 
             prepareFileView();
         }
