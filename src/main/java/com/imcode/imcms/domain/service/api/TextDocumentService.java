@@ -17,6 +17,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -137,4 +138,10 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
         final TextDocumentTemplateDTO template = document.getTemplate();
         template.setTemplateName(template.getChildrenTemplateName());
     }
+
+    @Override
+    public List<TextDocumentDTO> getDocumentsByTemplateName(String templateName) {
+        return null;
+    }
+
 }

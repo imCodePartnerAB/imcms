@@ -3,19 +3,13 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DeleterByDocumentId;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MetaRepository;
+import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
@@ -31,6 +25,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Service for work with common document entities.
@@ -40,6 +35,7 @@ import java.util.function.Function;
 @Transactional
 class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
+    private final TextDocumentTemplateRepository textDocumentTemplateRepository;
     private final MetaRepository metaRepository;
     private final TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> documentMapping;
     private final CommonContentService commonContentService;
@@ -55,7 +51,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     private DeleterByDocumentId[] docContentServices = {};
 
-    DefaultDocumentService(MetaRepository metaRepository,
+    DefaultDocumentService(TextDocumentTemplateRepository textDocumentTemplateRepository, MetaRepository metaRepository,
                            TernaryFunction<Meta, Version, List<CommonContent>, DocumentDTO> metaToDocumentDTO,
                            Function<DocumentDTO, Meta> documentDtoToMeta,
                            CommonContentService commonContentService,
@@ -68,6 +64,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            DocumentMapper documentMapper,
                            @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices) {
 
+        this.textDocumentTemplateRepository = textDocumentTemplateRepository;
         this.metaRepository = metaRepository;
         this.documentMapping = metaToDocumentDTO;
         this.commonContentService = commonContentService;
@@ -265,6 +262,15 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         metaRepository.delete(docIdToDelete);
         documentIndex.removeDocument(docIdToDelete);
         documentMapper.invalidateDocument(docIdToDelete);
+    }
+
+    @Override
+    public List<DocumentDTO> getDocumentsByTemplateName(String templateName) {
+        List<Integer> documentIds = textDocumentTemplateRepository.findDocIdByTemplateName(templateName);
+
+        return documentIds.stream()
+                .map(this::get)
+                .collect(Collectors.toList());
     }
 
     protected void deleteDocumentContent(Integer docIdToDelete) {

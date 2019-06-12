@@ -164,4 +164,10 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
                 fileDocumentDTO -> fileDocumentDTO.setFiles(new ArrayList<>())
         );
     }
+
+    @Override
+    public List<FileDocumentDTO> getDocumentsByTemplateName(String templateName) {
+        return null;
+    }
+
 }

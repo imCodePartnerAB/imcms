@@ -11,6 +11,7 @@ import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -89,4 +90,10 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
 
         return saveMe;
     }
+
+    @Override
+    public List<UrlDocumentDTO> getDocumentsByTemplateName(String templateName) {
+        return null;
+    }
+
 }
