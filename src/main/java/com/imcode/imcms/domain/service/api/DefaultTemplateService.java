@@ -12,13 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,7 +76,15 @@ public class DefaultTemplateService implements TemplateService {
 
     @Override
     public Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode) {
-        return null;
+        final File templateFile = new File(templateDirectory, template.getName() + ".jsp");
+
+        try {
+            Files.write(templateFile.toPath(), content, writeMode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return templateFile.toPath();
     }
 
     public File getTemplateDirectory() {
