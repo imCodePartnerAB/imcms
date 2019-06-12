@@ -42,15 +42,6 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void get() {
-        final String name = "TEST";
-        final TemplateGroup test = dataInitializer.createData(name, 5, false);
-        final TemplateGroup persistedByName = templateGroupService.get(name);
-
-        assertEquals(test, persistedByName);
-    }
-
-    @Test
     public void save() {
         final TemplateGroup test = dataInitializer.createData("test", 5, true);
 
@@ -59,5 +50,24 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
         final TemplateGroup persisted = templateGroupService.get("test");
         persisted.setId(null);
         assertEquals(test, persisted);
+    }
+
+    @Test
+    public void getByName_When_TemplateGroupNameExist_Expected_CorrectTemplateGroup() {
+        final String name = "TEST";
+        final TemplateGroup test = dataInitializer.createData(name, 5, false);
+        final TemplateGroup persistedByName = templateGroupService.get(name);
+
+        assertNotNull(persistedByName);
+        assertEquals(test, persistedByName);
+    }
+
+    @Test
+    public void getById_When_TemplateGroupIdExist_Expected_CorrectTemplateGroup() {
+        final TemplateGroup expectedTemplateGroup = dataInitializer.createData("TEST", 5, false);
+        final TemplateGroup actualTemplateGroup = templateGroupService.get(expectedTemplateGroup.getId());
+
+        assertNotNull(actualTemplateGroup);
+        assertEquals(expectedTemplateGroup, actualTemplateGroup);
     }
 }
