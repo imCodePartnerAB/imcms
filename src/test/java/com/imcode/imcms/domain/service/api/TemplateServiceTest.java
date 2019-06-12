@@ -13,9 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -32,22 +36,35 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
 
     private List<Template> templatesExpected;
 
+    private Template defaultTemplate;
+    private File defaultTemplateFile;
+
     @BeforeEach
     public void setUp() {
+        defaultTemplate = new TemplateDTO("testttt123", false, null);
+        defaultTemplateFile = new File(templateDirectory, defaultTemplate.getName() + ".jsp");
+
         dataInitializer.cleanRepositories();
         templatesExpected = dataInitializer.createData(5);
     }
 
     @Test
-    public void getAllTest() {
+    public void getAll() {
         assertEquals(templatesExpected, templateService.getAll());
+    }
+
+    @Test
+    public void save_When_NoTemplate_Expect_Null() {
+        templateService.save(defaultTemplate);
+
+        assertFalse(templateService.get(defaultTemplate.getName()).isPresent());
     }
 
     @Test
     public void getByName() throws IOException {
         final String templateName = "testttt123";
         final File templateFile = new File(templateDirectory, templateName + ".jsp");
-        templateFile.createNewFile();
+        assertTrue(templateFile.createNewFile());
 
         try {
             final Template templateDTO = dataInitializer.createData(templateName);
@@ -87,13 +104,32 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void save_When_NoTemplate_Expect_Null() {
-        final String dummyName = "test_" + System.currentTimeMillis();
-        final Template templateDTO = new TemplateDTO(dummyName, false, null);
+    public void saveTemplateFile_with_option_CREATE_NEW() throws IOException {
+        final OpenOption writeMode = StandardOpenOption.CREATE_NEW;
+        saveAndAssertTemplateFile(writeMode);
+    }
 
-        templateService.save(templateDTO);
+    @Test
+    public void saveTemplateFile_with_option_WRITE() throws IOException {
+        assertTrue(defaultTemplateFile.createNewFile());
 
-        assertFalse(templateService.get(dummyName).isPresent());
+        final OpenOption writeMode = StandardOpenOption.WRITE;
+
+        saveAndAssertTemplateFile(writeMode);
+    }
+
+    private void saveAndAssertTemplateFile(OpenOption writeMode) throws IOException {
+        final byte[] exceptedContent = "Some content".getBytes();
+
+        try {
+            templateService.saveTemplateFile(defaultTemplate, exceptedContent, writeMode);
+
+            final byte[] actualContent = Files.readAllBytes(defaultTemplateFile.toPath());
+            assertArrayEquals(exceptedContent, actualContent);
+
+        } finally {
+            assertTrue(defaultTemplateFile.delete());
+        }
     }
 
 }
