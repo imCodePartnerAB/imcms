@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.util.regex.Pattern.compile;
 
@@ -76,7 +78,7 @@ public class FileController {
                 sourceFiles.add(
                         new SourceFile(path.getFileName().toString(),
                                 path.toString(),
-                                SourceFile.FileType.FILE)
+                                FILE)
                 );
             }
         }
@@ -104,9 +106,10 @@ public class FileController {
     }
 
     @PostMapping("/**")
-    public String createFile(HttpServletRequest request, @RequestParam boolean isDirectory) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "");
-        return defaultFileService.createFile(Paths.get(file), isDirectory).toString();
+    public String createFile(@RequestBody SourceFile sourceFile) throws IOException {
+//        final String file = getFileName(request.getRequestURI(), "");
+        boolean isDirectory = sourceFile.getFileType().equals(DIRECTORY);
+        return defaultFileService.createFile(Paths.get(sourceFile.getFullPath()), isDirectory).toString();
     }
 
     @PostMapping("/copy/**")

@@ -9,8 +9,6 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.upload = file => rest.ajax.call({url: `${url}/upload/`, type: 'POST', json: false}, file);
 
-    api.create = isDirectory => rest.ajax.call({url: `${url}/`, type: 'POST', json: false}, isDirectory);
-
     api.copy = target => rest.ajax.call({url: `${url}/copy/`, type: 'POST', json: false}, target);
 
     api.replace = content => rest.ajax.call({url: `${url}/${content}`, type: 'PUT', json: false});

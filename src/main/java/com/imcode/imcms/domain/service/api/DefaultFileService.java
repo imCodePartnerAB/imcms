@@ -26,7 +26,7 @@ public class DefaultFileService implements FileService {
     @Value(".")
     private Path rootPath;
 
-    private boolean isAllowablePath(Path path) throws IOException {
+    private boolean isAllowablePath(Path path) {
         String normalizedPath = path.normalize().toString();
         final String finalNormalize = StringUtils.isBlank(normalizedPath)
                 ? rootPath.toString()
