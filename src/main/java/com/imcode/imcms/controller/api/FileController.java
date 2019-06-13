@@ -106,10 +106,9 @@ public class FileController {
     }
 
     @PostMapping("/**")
-    public String createFile(@RequestBody SourceFile sourceFile) throws IOException {
-//        final String file = getFileName(request.getRequestURI(), "");
+    public SourceFile createFile(@RequestBody SourceFile sourceFile) throws IOException {
         boolean isDirectory = sourceFile.getFileType().equals(DIRECTORY);
-        return defaultFileService.createFile(Paths.get(sourceFile.getFullPath()), isDirectory).toString();
+        return defaultFileService.createFile(sourceFile, isDirectory);
     }
 
     @PostMapping("/copy/**")

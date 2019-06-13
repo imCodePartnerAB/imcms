@@ -2,11 +2,13 @@ package com.imcode.imcms.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class SourceFile implements Cloneable, Serializable {
 
     private String fileName;

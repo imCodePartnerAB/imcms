@@ -11,13 +11,13 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.copy = target => rest.ajax.call({url: `${url}/copy/`, type: 'POST', json: false}, target);
 
-    api.replace = content => rest.ajax.call({url: `${url}/${content}`, type: 'PUT', json: false});
+    api.change = content => rest.ajax.call({url: `${url}/${content}`, type: 'PUT', json: false});
 
     api.move = target => rest.ajax.call({url: `${url}/move/`, type: 'PUT', json: false}, target);
 
     api.rename = target => rest.ajax.call({url: `${url}/rename/`, type: 'PUT', json: false}, target);
 
-    api.remove = file => rest.ajax.call({url: `${url}/${file}`, type: 'DELETE', json: false});
+    api.delete = filePath => rest.ajax.call({url: `${url}/${filePath}`, type: 'DELETE', json: false});
 
     return api;
 });
