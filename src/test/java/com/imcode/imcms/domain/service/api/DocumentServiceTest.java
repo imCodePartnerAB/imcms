@@ -818,7 +818,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getDocumentsByTemplateName_When_TemplateNameExist_Expect_CorrectListDocuments() {
+    public void getDocumentsByTemplateName_When_TemplateNameExist_Expected_CorrectListDocuments() {
         final int docId = 1001;
         final DocumentDTO document = documentService.get(docId);
 
@@ -832,7 +832,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getDocumentsByTemplateName_When_NameIsUnknown_Expected_EmptyList() {
+    public void getDocumentsByTemplateName_When_TemplateNameUnknown_Expected_EmptyList() {
         final String fakeName = "unknown";
         assertEquals(Collections.emptyList(), documentService.getDocumentsByTemplateName(fakeName));
     }

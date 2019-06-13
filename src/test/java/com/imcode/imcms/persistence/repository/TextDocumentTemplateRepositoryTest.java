@@ -37,7 +37,7 @@ public class TextDocumentTemplateRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findDocIdByTemplateName() {
+    public void findDocIdByTemplateName_When_DocumentsExist_Expected_DocIdsList() {
         String templateName = "demo";
 
         List<Integer> docIds = saved.stream()
@@ -48,7 +48,7 @@ public class TextDocumentTemplateRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findDocIdByTemplateName_When_NameIsUnknown_Expected_EmptyList() {
+    public void findDocIdByTemplateName_When_NameUnknown_Expected_EmptyList() {
         final String templateName = "testttt123";
         assertTrue(repository.findDocIdByTemplateName(templateName).isEmpty());
     }

@@ -49,19 +49,19 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getAll() {
+    public void getAll_When_TemplatesExist_Expected_AllTemplates() {
         assertEquals(templatesExpected, templateService.getAll());
     }
 
     @Test
-    public void save_When_NoTemplate_Expect_Null() {
+    public void save_When_NoTemplate_Expected_Null() {
         templateService.save(defaultTemplate);
 
         assertFalse(templateService.get(defaultTemplate.getName()).isPresent());
     }
 
     @Test
-    public void getByName() throws IOException {
+    public void getByName_When_NameExist_Expected_CorrectResult() throws IOException {
         final String templateName = "testttt123";
         final File templateFile = new File(templateDirectory, templateName + ".jsp");
         assertTrue(templateFile.createNewFile());
@@ -79,7 +79,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void save() throws Exception {
+    public void save_When_TemplateDoesntExistAndFileExist_Expected_SuccessfulSaving() throws Exception {
         final String templateName = "testttt123";
         final File templateFile = new File(templateDirectory, templateName + ".jsp");
 
@@ -104,13 +104,13 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveTemplateFile_with_option_CREATE_NEW() throws IOException {
+    public void saveTemplateFile_When_OptionIsCreateNewAndFileDoesntExist_Expected_SuccessfulCreating() throws IOException {
         final OpenOption writeMode = StandardOpenOption.CREATE_NEW;
         saveAndAssertTemplateFile(writeMode);
     }
 
     @Test
-    public void saveTemplateFile_with_option_WRITE() throws IOException {
+    public void saveTemplateFile_When_OptionIsWriteAndFileExist_Expected_SuccessfulRewriting() throws IOException {
         assertTrue(defaultTemplateFile.createNewFile());
 
         final OpenOption writeMode = StandardOpenOption.WRITE;
