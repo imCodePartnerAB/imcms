@@ -549,6 +549,7 @@ const texts = {
             files: {
                 name: 'Filer',
                 createFile: 'Skapa fil',
+                editorFile: 'Redigera fil',
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
                 add: 'Lägg till',
@@ -1257,6 +1258,7 @@ const texts = {
             files: {
                 name: 'Files',
                 createFile: 'Create file',
+                editorFile: 'Edit file',
                 upload: 'Upload',
                 rename: 'Change name',
                 add: 'Add',

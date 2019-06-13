@@ -12,6 +12,7 @@ define(
         let secondSubFilesContainer;
         let currentPath;
         let currentSecondPath;
+        let windowEditFile;
 
         function buildViewFile($fileRow, file) {
             firstSubFilesContainer = $('<div>', {
@@ -31,8 +32,6 @@ define(
                     currentPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
-            } else {
-                currentPath = path;
             }
         }
 
@@ -56,8 +55,43 @@ define(
             }
         }
 
-        function buildEditFile($fileRow, file) {
+        function prepareOnEditFile() {
 
+            modal.buildModalWindow(texts.warnDeleteMessage, confirmed => {
+                if (!confirmed) return;
+
+                let isDirectory = 'DIRECTORY' === currentFile.fileType;
+                newFileNameField.setValue(currentFile.fileName);
+                checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
+
+                buildEditFile();
+            });
+            // let name ;
+            // let isDirectory = currentFile.fileType;
+            // let currentFullPath = currentPath + "/" + name;
+            //
+            // let fileToSave = {
+            //     fileName: name,
+            //     fullPath: currentFullPath,
+            //     fileType: isDirectory ? 'DIRECTORY' : 'FILE'
+            // };
+            //
+            // fileRestApi.rename(fileToSave).done(savedFile => {
+            //     currentFile = savedFile;
+            // })
+        }
+
+        function buildEditFile() {
+            windowEditFile =
+                modal.buildCreateFileModalWindow(
+                    texts.editorFile, newFileNameField, checkBoxIsDirectory, confirmed => {
+                        if (!confirmed) {
+                            onEditFile()
+                        }
+                    });
+
+
+            return windowEditFile;
         }
 
         function buildDeleteFile() {
@@ -114,6 +148,8 @@ define(
 
 
         function buildAddFile() {
+            newFileNameField.setValue('');
+            checkBoxIsDirectory.setChecked(false);
             windowCreateFile =
                 modal.buildCreateFileModalWindow(
                     texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
@@ -145,21 +181,28 @@ define(
         }
 
         function onEditFile() {
-            onFileView = onCancelChanges;
 
             let name = newFileNameField.getValue();
             let isDirectory = checkBoxIsDirectory.isChecked();
 
             if (!name) return;
 
+            let currentFullPath = currentPath + "/" + name;
+
             let fileToSave = {
-                name: name,
-                isDirectory: isDirectory
+                // fileName: name,
+                // target: currentFullPath,
+                // fileType: isDirectory ? 'DIRECTORY' : 'FILE'
+                src: currentFile.fullPath,
+                target: currentFullPath
             };
 
-            fileRestApi.rename(fileToSave).done(savedFile => {
-                currentFile = savedFile;
-            })
+            fileRestApi.rename(fileToSave).done(newFile => {
+                $fileSourceRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
+
+                firstSubFilesContainer.append($fileSourceRow);
+
+            }).fail(() => modal.buildErrorWindow("Do not edit FILE! Localize"));
         }
 
         function getOnDiscardChanges(onConfirm) {
@@ -187,7 +230,7 @@ define(
 
         function onSimpleEdit($fileRow, file) {
             buildViewFile($fileRow, file);
-            onEditFile();
+            // onEditFile();
         }
 
         function onFileSimpleView($fileRowElement, file) {
@@ -202,7 +245,7 @@ define(
             addFile: buildAddFile,
             viewFile: buildViewFile,
             viewSecondFile: buildViewTwoFile,
-            editFile: buildEditFile,
+            editFile: prepareOnEditFile,
             deleteFile: buildDeleteFile,
             downloadFile: downloadFile,
             uploadFile: uploadFile
