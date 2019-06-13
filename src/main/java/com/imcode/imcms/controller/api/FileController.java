@@ -23,6 +23,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,9 +134,9 @@ public class FileController {
     }
 
     @PutMapping("/rename/**")
-    public String renameFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "/rename/");
-        final Path src = Paths.get(file);
+    public String renameFile(@RequestBody Properties pathParam) throws IOException {
+        final Path src = Paths.get(pathParam.getProperty("src"));
+        final Path target = Paths.get(pathParam.getProperty("target"));
         return defaultFileService.moveFile(src, target).toString();
     }
 
