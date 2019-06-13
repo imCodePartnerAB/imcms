@@ -57,7 +57,7 @@ define(
 
         function prepareOnEditFile() {
 
-            modal.buildModalWindow(texts.warnDeleteMessage, confirmed => {
+            modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
                 if (!confirmed) return;
 
                 let isDirectory = 'DIRECTORY' === currentFile.fileType;
@@ -66,19 +66,6 @@ define(
 
                 buildEditFile();
             });
-            // let name ;
-            // let isDirectory = currentFile.fileType;
-            // let currentFullPath = currentPath + "/" + name;
-            //
-            // let fileToSave = {
-            //     fileName: name,
-            //     fullPath: currentFullPath,
-            //     fileType: isDirectory ? 'DIRECTORY' : 'FILE'
-            // };
-            //
-            // fileRestApi.rename(fileToSave).done(savedFile => {
-            //     currentFile = savedFile;
-            // })
         }
 
         function buildEditFile() {
@@ -181,24 +168,21 @@ define(
         }
 
         function onEditFile() {
-
             let name = newFileNameField.getValue();
-
             if (!name) return;
-
             let currentFullPath = currentPath + "/" + name;
-
             let fileToSave = {
                 src: currentFile.fullPath,
                 target: currentFullPath
             };
 
-            fileRestApi.rename(fileToSave).done(newFile => {
+            fileRestApi.rename(fileToSave).done(newPath => {
+                let newFile = {fullPath: newPath};
                 $fileSourceRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
 
                 firstSubFilesContainer.append($fileSourceRow);
 
-            }).fail(() => modal.buildErrorWindow("Do not edit FILE! Localize"));
+            }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
         }
 
         function getOnDiscardChanges(onConfirm) {

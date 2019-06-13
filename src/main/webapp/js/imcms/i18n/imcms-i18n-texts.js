@@ -557,6 +557,7 @@ const texts = {
                 moveLeft: 'Vänster',
                 warnChangeMessage: 'Vill du verkligen ändra fil?',
                 warnDeleteMessage: 'Ta du verkligen bort fil?',
+                warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
                     createDirectory: 'Skapa katalog',
@@ -568,7 +569,8 @@ const texts = {
                 },
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
-                    deleteFailed: 'Misslyckades radera!'
+                    deleteFailed: 'Misslyckades radera!',
+                    editFailed: 'Misslyckades med att byta namn på filen. Försök igen!'
                 }
             },
             search: {
@@ -1266,6 +1268,7 @@ const texts = {
                 moveLeft: 'Left',
                 warnChangeMessage: 'Do you really want to change file?',
                 warnDeleteMessage: 'Do you really delete file?',
+                warnEditMessage: 'Do you really edit content file?',
                 title: {
                     createFileName: 'New file/directory name',
                     createDirectory: 'Create directory',
@@ -1277,7 +1280,8 @@ const texts = {
                 },
                 error: {
                     loadError: 'Failed to load files. Try again!',
-                    deleteFailed: 'Failed delete!'
+                    deleteFailed: 'Failed delete!',
+                    editFailed: 'Failed to rename file. Try again!'
                 }
             },
             search: {
