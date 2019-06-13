@@ -183,16 +183,12 @@ define(
         function onEditFile() {
 
             let name = newFileNameField.getValue();
-            let isDirectory = checkBoxIsDirectory.isChecked();
 
             if (!name) return;
 
             let currentFullPath = currentPath + "/" + name;
 
             let fileToSave = {
-                // fileName: name,
-                // target: currentFullPath,
-                // fileType: isDirectory ? 'DIRECTORY' : 'FILE'
                 src: currentFile.fullPath,
                 target: currentFullPath
             };
