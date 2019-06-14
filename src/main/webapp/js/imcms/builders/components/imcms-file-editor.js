@@ -15,15 +15,14 @@ define(
         let windowEditFile;
 
         function buildViewFile($fileRow, file) {
-            firstSubFilesContainer = $('<div>', {
-                'class': 'first-sub-files'
-            });
-
             let path = (file === '/..') ? currentPath + file : file.fullPath;
             currentFile = file;
             $fileSourceRow = $fileRow;
 
             if (file === '/..' || file.fileType === 'DIRECTORY') {
+                firstSubFilesContainer = $('<div>', {
+                    'class': 'first-sub-files'
+                });
                 fileRestApi.get(path).done(files => {
                         $('.files-table__first-instance').find('.first-sub-files').remove();
                         firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
@@ -130,7 +129,7 @@ define(
 
                 firstSubFilesContainer.append($fileSourceRow);
 
-            }).fail(() => modal.buildErrorWindow("Do not create!"));
+            }).fail(() => modal.buildErrorWindow(texts.error.createError));
         }
 
 
@@ -151,6 +150,13 @@ define(
 
         function downloadFile() {
 
+            modal.buildModalWindow('Download?', confirmed => {
+                if (!confirmed) return;
+
+                fileRestApi.download(currentFile.fullPath).done(
+
+                ).fail(() => modal.buildErrorWindow(texts.error.downloadError))
+            });
         }
 
         function uploadFile() {

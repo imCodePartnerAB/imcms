@@ -45,7 +45,7 @@ define(
                             'file-name': $('<div>', {
                                 text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
                             }),
-                            'download': components.controls.download().attr("title", texts.download),
+                            'download': components.controls.download(fileEditor.downloadFile).attr("title", texts.download),
                             'edit': components.controls.edit(fileEditor.editFile).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
