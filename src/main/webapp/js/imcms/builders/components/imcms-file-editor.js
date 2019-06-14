@@ -20,14 +20,18 @@ define(
             $fileSourceRow = $fileRow;
 
             if (file === '/..' || file.fileType === 'DIRECTORY') {
-                firstSubFilesContainer = $('<div>', {
-                    'class': 'first-sub-files'
-                });
                 fileRestApi.get(path).done(files => {
-                        $('.files-table__first-instance').find('.first-sub-files').remove();
-                        firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
-                        $('.files-table__first-instance')
-                            .append(firstSubFilesContainer.append(files.map(file => fileToRow.transformFirstColumn(file, this))));
+                    let filesRows = files.map(file => fileToRow.transformFirstColumn(file, this));
+
+                    firstSubFilesContainer = $('<div>').addClass('first-sub-files');
+                    firstSubFilesContainer
+                        .append(fileToRow.transformFirstColumn('/..', this))
+                        .append(filesRows);
+
+                    let $firstFilesContainer = $('.files-table__first-instance');
+                    $firstFilesContainer.find('.first-sub-files').remove();
+                    $firstFilesContainer.append(firstSubFilesContainer);
+
                     currentPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
@@ -182,10 +186,11 @@ define(
                 target: currentFullPath
             };
 
-            fileRestApi.rename(fileToSave).done(newPath => {
-                let newFile = {fullPath: newPath};
-                $fileSourceRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
+            fileRestApi.rename(fileToSave).done(newFile => {
+                currentFile = newFile;
 
+                $fileSourceRow.remove();
+                $fileSourceRow = fileToRow.transformFirstColumn(currentFile, fileEditor);
                 firstSubFilesContainer.append($fileSourceRow);
 
             }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
