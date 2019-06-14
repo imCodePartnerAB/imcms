@@ -139,7 +139,7 @@ define(
 
         function buildAddFile() {
             newFileNameField.setValue('');
-            checkBoxIsDirectory.setChecked(false);
+            checkBoxIsDirectory.$input.removeAttr('disabled');
             windowCreateFile =
                 modal.buildCreateFileModalWindow(
                     texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
