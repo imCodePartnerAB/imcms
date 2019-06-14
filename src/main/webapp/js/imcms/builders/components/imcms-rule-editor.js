@@ -73,7 +73,9 @@ define(
         }
 
         function buildRuleRange1Row() {
-            $ruleRange1Row = components.texts.textBox('<div>', {});
+            $ruleRange1Row = components.texts.textBox('<div>', {
+                text: texts.fromIp
+            });
             $ruleRange1Row.$input
                 .blur(event => {
                     event.target.checkValidity();
@@ -84,7 +86,9 @@ define(
         }
 
         function buildRuleRange2Row() {
-            $ruleRange2Row = components.texts.textBox('<div>', {});
+            $ruleRange2Row = components.texts.textBox('<div>', {
+                text: texts.tillIp
+            });
             $ruleRange2Row.$input
                 .blur(event => {
                     event.target.checkValidity();

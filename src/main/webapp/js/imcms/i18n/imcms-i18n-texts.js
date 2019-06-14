@@ -520,6 +520,8 @@ const texts = {
                 deleteConfirm: 'Vill du verkligen ta bort den här regel?',
                 saveChanges: 'Spara ändringar',
                 discardChangesMessage: 'Ignorera ändringar?',
+                fromIp: 'Från IP-nummer',
+                tillIp: 'Till IP-nummer',
                 fields: {
                     enabled: 'Aktiverad',
                     restricted: 'Begränsad',
@@ -1233,6 +1235,8 @@ const texts = {
                 deleteConfirm: 'Do you really want to delete this rule?',
                 saveChanges: 'Save changes',
                 discardChangesMessage: 'Discard changes?',
+                fromIp: 'From IP-number',
+                tillIp: 'Till IP-number',
                 fields: {
                     enabled: 'Enabled',
                     restricted: 'Restricted',
