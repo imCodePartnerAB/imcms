@@ -30,7 +30,7 @@ public interface FileService {
      *               the src has the ability to move or just change your name
      */
 
-    Path moveFile(Path src, Path target) throws IOException;
+    SourceFile moveFile(Path src, Path target) throws IOException;
 
     List<Path> copyFile(List<Path> src, Path target) throws IOException;
 

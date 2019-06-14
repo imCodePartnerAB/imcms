@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
+import static com.imcode.imcms.api.SourceFile.FileType.FILE;
+
 @Service
 public class DefaultFileService implements FileService {
 
@@ -100,12 +103,16 @@ public class DefaultFileService implements FileService {
 
 
     @Override
-    public Path moveFile(Path src, Path target) throws IOException {
-        Path path = null;
+    public SourceFile moveFile(Path src, Path target) throws IOException {
+        final Path path;
+        SourceFile sourceFile = new SourceFile();
         if (isAllowablePath(src) && isAllowablePath(target)) {
             path = Files.move(src, target);
+            sourceFile.setFileName(path.getFileName().toString());
+            sourceFile.setFullPath(path.toString());
+            sourceFile.setFileType(Files.isDirectory(path) ? DIRECTORY : FILE);
         }
-        return path;
+        return sourceFile;
     }
 
     @Override
@@ -142,7 +149,7 @@ public class DefaultFileService implements FileService {
                 path = Files.createDirectory(filePath);
                 newSrcFile.setFileName(path.getFileName().toString());
                 newSrcFile.setFullPath(path.toString());
-                newSrcFile.setFileType(SourceFile.FileType.DIRECTORY);
+                newSrcFile.setFileType(DIRECTORY);
             } else {
                 path = Files.createFile(filePath);
                 newSrcFile.setFileName(path.getFileName().toString());
