@@ -2,8 +2,6 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -37,6 +36,8 @@ import static java.util.regex.Pattern.compile;
 public class FileController {
 
     private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files\\/)(?<path>.*)");
+
+    private static final String APPLICATION_OCTET_STREAM_VALUE = "application/octet-stream";
 
     private final DefaultFileService defaultFileService;
 
@@ -88,13 +89,18 @@ public class FileController {
 
     }
 
-    @GetMapping("/file/**")
-    public ResponseEntity<Resource> downloadFile(HttpServletRequest request) throws IOException {
+    @GetMapping(value = "/file/**", produces = APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
         final Path path = defaultFileService.getFile(Paths.get(fileURI));
-        final Resource resource = new UrlResource(path.toUri());
+
+        byte[] content = Files.readAllBytes(path);
+
         return ResponseEntity.ok()
-                .body(resource);
+                .contentLength(content.length)
+                .header(HttpHeaders.CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
+                .build();
     }
 
     @PostMapping("/upload/**")
@@ -113,9 +119,9 @@ public class FileController {
     }
 
     @PostMapping("/copy/**")
-    public String copyFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "/copy/");
-        final Path src = Paths.get(file);
+    public String copyFile(@RequestBody Properties pathParam) throws IOException {
+        final Path src = Paths.get(pathParam.getProperty("src"));
+        final Path target = Paths.get(pathParam.getProperty("target"));
         return defaultFileService.copyFile(Collections.singletonList(src), target).toString();
     }
 
@@ -127,17 +133,17 @@ public class FileController {
     }
 
     @PutMapping("/move/**")
-    public String moveFile(HttpServletRequest request, @RequestParam Path target) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "/move/");
-        final Path src = Paths.get(file);
+    public String moveFile(@RequestBody Properties pathParam) throws IOException {
+        final Path src = Paths.get(pathParam.getProperty("src"));
+        final Path target = Paths.get(pathParam.getProperty("target"));
         return defaultFileService.moveFile(Collections.singletonList(src), target).toString();
     }
 
     @PutMapping("/rename/**")
-    public String renameFile(@RequestBody Properties pathParam) throws IOException {
+    public SourceFile renameFile(@RequestBody Properties pathParam) throws IOException {
         final Path src = Paths.get(pathParam.getProperty("src"));
         final Path target = Paths.get(pathParam.getProperty("target"));
-        return defaultFileService.moveFile(src, target).toString();
+        return defaultFileService.moveFile(src, target);
     }
 
     @DeleteMapping("/**")
