@@ -486,6 +486,10 @@
     padding: 10px;
 }
 
+.imcms-settings-row {
+    margin-top: 25px;
+}
+
 .imcms-content-action-row {
     margin-top: 25px;
 }
