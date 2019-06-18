@@ -16,7 +16,8 @@ define(
             editRule: editRule,
             deleteRule: onDeleteRule,
             getUserRoles: getRoles,
-            getUsers: getUsers
+            getUsers: getUsers,
+            getLoadedData: getLoadedData
         };
         texts = texts.superAdmin.ipAccess;
 
@@ -41,10 +42,13 @@ define(
 
         let $ruleEditButtons;
 
+        let rolesReadAjax = rolesRestApi.read();
+        let usersReadAjax = usersRestApi.read();
+
         initRequiredData();
 
         function initRequiredData() {
-            rolesRestApi.read()
+            rolesReadAjax
                 .done((roles) => {
                     receivedRoles = roles;
 
@@ -57,7 +61,7 @@ define(
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.loadRolesFailed));
 
-            usersRestApi.read()
+            usersReadAjax
                 .done((users) => {
                     receivedUsers = users;
 
@@ -70,6 +74,10 @@ define(
                     components.selects.addOptionsToSelect(usersDataMapped, $userSelect);
                 })
                 .fail(() => modal.buildErrorWindow(texts.error.loadUsersFailed));
+        }
+
+        function getLoadedData() {
+            return {rolesReadAjax, usersReadAjax};
         }
 
         function buildRuleRange1Row() {

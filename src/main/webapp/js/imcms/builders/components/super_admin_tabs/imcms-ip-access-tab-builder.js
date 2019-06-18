@@ -28,11 +28,20 @@ define(
             }
         };
 
-        rulesApi.read()
-            .done(rules => {
-                ruleLoader.runCallbacks(rules);
-            })
-            .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+        runCallbacksWithReadRulesWhenRuleEditorLoaded();
+
+        function runCallbacksWithReadRulesWhenRuleEditorLoaded() {
+            let loadedData = ruleEditor.getLoadedData();
+            $.when(loadedData.rolesReadAjax, loadedData.usersReadAjax).then(runCallbacksWithReadRules);
+        }
+
+        function runCallbacksWithReadRules() {
+            rulesApi.read()
+                .done(rules => {
+                    ruleLoader.runCallbacks(rules);
+                })
+                .fail(() => modal.buildErrorWindow(texts.error.loadFailed))
+        }
 
         let $rulesContainer;
 
@@ -88,19 +97,6 @@ define(
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-title'
-            });
-            return $titleRow;
-        }
-
-        function buildTitleRow() {
-            let $titleRow = new BEM({
-                block: 'title-profile-row',
-                elements: {
-                    'name': $('<div>', {text: texts.titleTextName}),
-                    'doc-name': $('<div>', {text: texts.titleTextDocName})
-                }
-            }).buildBlockStructure('<div>', {
-                'class': 'table-title'
             });
             return $titleRow;
         }
