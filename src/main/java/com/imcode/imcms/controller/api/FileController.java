@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,7 +90,7 @@ public class FileController {
 
     }
 
-    @GetMapping(value = "/file/**", produces = APPLICATION_OCTET_STREAM_VALUE)
+    @GetMapping("/file/**")
     public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
         final Path path = defaultFileService.getFile(Paths.get(fileURI));
@@ -98,9 +99,9 @@ public class FileController {
 
         return ResponseEntity.ok()
                 .contentLength(content.length)
-                .header(HttpHeaders.CONTENT_TYPE, APPLICATION_OCTET_STREAM_VALUE)
+                .header(HttpHeaders.CONTENT_TYPE, new MimetypesFileTypeMap().getContentType(path.toFile()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
-                .build();
+                .body(content);
     }
 
     @PostMapping("/upload/**")
