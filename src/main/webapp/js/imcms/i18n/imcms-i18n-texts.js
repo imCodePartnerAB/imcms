@@ -699,7 +699,7 @@ const texts = {
                         inputEmail: "Webmaster e-postinmatning"
                     }
                 },
-                changeButton: "Byta",
+                changeButton: "Spara",
                 error: {
                     loadFailed: 'Misslyckades med att ladda egenskaper. Försök igen'
                 }
