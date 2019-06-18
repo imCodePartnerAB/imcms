@@ -707,12 +707,12 @@ const texts = {
             temporalContent: {
                 name: 'Temporalt innehåll',
                 actions: {
-                    rebuildIndex: 'Reindex-dokumen',
-                    deletePublicDocCache: 'Ta bort public documents cache',
-                    deleteOtherCache: 'Ta bort annan webbcache',
-                    deleteStaticCache: 'Ta bort statisk webbcache',
+                    rebuildIndex: 'Indexera om innehållet',
+                    deletePublicDocCache: 'Radera publik dokumentcache',
+                    deleteOtherCache: 'Ta bort annan cache',
+                    deleteStaticCache: 'Radera statisk cache',
                 },
-                init: 'Init'
+                init: 'Verkställ'
             }
         },
         login: {
