@@ -546,6 +546,14 @@
     border: solid 1px #d1d2c6;
 }
 
+.rule-title-row__rule-enabled,
+.rule-title-row__rule-restricted,
+.rule-title-row__rule-ip-range,
+.rule-title-row__rule-role,
+.rule-title-row__rule-user {
+    text-align: center;
+}
+
 .rule-row__rule-enabled,
 .rule-row__rule-restricted,
 .rule-row__rule-ip-range,
@@ -553,6 +561,7 @@
 .rule-row__rule-user {
     padding-top: 5px;
     padding-bottom: 5px;
+    text-align: center;
 }
 
 .rule-row__rule-delete .imcms-control .imcms-control--remove {
@@ -560,16 +569,25 @@
     width: 5%;
 }
 
+.rule-row__rule-delete {
+    margin-left: 15px;
+}
+
 .rule-row__rule-enabled,
 .rule-row__rule-restricted,
 .rule-title-row__rule-enabled,
 .rule-title-row__rule-restricted {
-    width: 7%;
+    width: 11%;
+}
+
+.rule-row__rule-enabled > .imcms-checkbox__label,
+.rule-row__rule-restricted > .imcms-checkbox__label {
+    width: 0;
 }
 
 .rule-row__rule-ip-range,
 .rule-title-row__rule-ip-range {
-    width: 55%;
+    width: 47%;
 }
 
 .rule-row__rule-role,
@@ -597,6 +615,10 @@
     float: left;
     margin-right: 5px;
 
+}
+
+.ip-range__ip-range-divider {
+    margin-top: 35px;
 }
 
 .rules-editor > div {
