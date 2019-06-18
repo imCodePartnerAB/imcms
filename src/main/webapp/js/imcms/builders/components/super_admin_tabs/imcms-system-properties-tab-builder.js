@@ -21,13 +21,10 @@ define(
 
         function buildPageRow() {
 
-            function buildTitleTextStartPage() {
-                return components.texts.titleText('<div>', texts.sections.startPage.name, {});
-            }
-
             function buildCreateFiledInputNumberPage() {
                 let $pageNumberBox = components.texts.textBox('<div>', {
-                    name: 'startDocument'
+                    name: 'startDocument',
+                    text: texts.sections.startPage.name
                 });
                 inputNumberPage = $pageNumberBox.$input;
                 return $pageNumberBox;
@@ -50,7 +47,6 @@ define(
             return new BEM({
                 block: 'imcms-settings-row',
                 elements: {
-                    'settings-title': buildTitleTextStartPage(),
                     'settings-input': buildCreateFiledInputNumberPage(),
                     'settings-button': buildPageNumberButton(),
                 }
@@ -95,14 +91,11 @@ define(
             .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
         function buildSystemMessageRow() {
-            function buildCreateTitleSystemMessage() {
-                return components.texts.titleText('<div>', texts.sections.systemMessage.name, {});
-
-            }
 
             function buildCreateSystemMessageInput() {
                 let $fieldForSystemMessage = components.texts.textBox('<div>', {
-                    name: 'systemMessage'
+                    name: 'systemMessage',
+                    text: texts.sections.systemMessage.name
                 });
                 systemMessage = $fieldForSystemMessage.$input;
 
@@ -127,7 +120,6 @@ define(
             return new BEM({
                 block: 'imcms-settings-row',
                 elements: {
-                    'settings-title': buildCreateTitleSystemMessage(),
                     'settings-input': buildCreateSystemMessageInput(),
                     'settings-button': buildCreateSystemMessageButton(),
                 }
@@ -135,14 +127,11 @@ define(
         }
 
         function buildServerMasterRow() {
-            function buildCreateTitleServerMaster() {
-                return components.texts.titleText('<div>', texts.sections.serverMaster.name, {});
-
-            }
 
             function buildServerMasterNameInput() {
                 let $serverMasterName = components.texts.textBox('<div>', {
-                    name: 'ServerMaster'
+                    name: 'ServerMaster',
+                    text: texts.sections.serverMaster.name
                 });
                 serverMasterName = $serverMasterName.$input;
 
@@ -182,7 +171,6 @@ define(
             return new BEM({
                 block: 'imcms-settings-row',
                 elements: {
-                    'settings-title': buildCreateTitleServerMaster(),
                     'settings-input-name': buildServerMasterNameInput(),
                     'settings-input-email': buildServerMasterEmailInput(),
                     'settings-button': buildCreateServerMasterButton(),
@@ -191,14 +179,11 @@ define(
         }
 
         function buildWebMasterRow() {
-            function buildCreateTilteWebMaster() {
-                return components.texts.titleText('<div>', texts.sections.webMaster.name, {});
-
-            }
 
             function buildCreateInputWebMasterName() {
                 let $nameWebMasterInput = components.texts.textBox('<div>', {
-                    name: 'WebMaster'
+                    name: 'WebMaster',
+                    text: texts.sections.webMaster.name
                 });
                 webMasterFieldName = $nameWebMasterInput.$input;
 
@@ -239,7 +224,6 @@ define(
             return new BEM({
                 block: 'imcms-settings-row',
                 elements: {
-                    'settings-title': buildCreateTilteWebMaster(),
                     'settings-input-name': buildCreateInputWebMasterName(),
                     'settings-input-email': buildCreateInputWebMasterEmail(),
                     'settings-button': buildCreateMasterWebButton(),
