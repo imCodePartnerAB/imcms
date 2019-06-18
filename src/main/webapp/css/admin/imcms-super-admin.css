@@ -486,6 +486,14 @@
     padding: 10px;
 }
 
+.imcms-content-action-row {
+    margin-top: 25px;
+}
+
+.imcms-content-action-row > .imcms-title {
+    margin-bottom: 5px;
+}
+
 .auth-provider-icon {
     width: 30px;
     padding-left: 10px;
