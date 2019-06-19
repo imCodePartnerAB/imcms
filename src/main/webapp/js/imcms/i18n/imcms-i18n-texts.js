@@ -574,7 +574,8 @@ const texts = {
                     deleteFailed: 'Misslyckades radera!',
                     editFailed: 'Misslyckades med att byta namn på filen. Försök igen!',
                     createError: 'Misslyckades att skapa fil!',
-                    downloadError: 'Misslyckades med att skapa nedladdningsfil. Försök igen!'
+                    downloadError: 'Misslyckades med att skapa nedladdningsfil. Försök igen!',
+                    moveError: 'Misslyckades med att flytta filen. Försök igen!'
                 }
             },
             search: {
@@ -1289,7 +1290,8 @@ const texts = {
                     deleteFailed: 'Failed delete!',
                     editFailed: 'Failed to rename file. Try again!',
                     createError: 'Failed to create file!',
-                    downloadError: 'Failed to create download file. Try again!'
+                    downloadError: 'Failed to create download file. Try again!',
+                    moveError: 'Failed to move file. Try again!'
                 }
             },
             search: {
