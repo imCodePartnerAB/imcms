@@ -10,12 +10,12 @@ define(
         let currentFile;
         let firstSubFilesContainer;
         let secondSubFilesContainer;
-        let currentPath;
+        let currentFirstPath;
         let currentSecondPath;
         let windowEditFile;
 
-        function buildViewFile($fileRow, file) {
-            let path = (file === '/..') ? currentPath + file : file.fullPath;
+        function buildViewFirstFilesContainer($fileRow, file) {
+            let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
             currentFile = file;
             $fileSourceRow = $fileRow;
 
@@ -28,30 +28,34 @@ define(
                         .append(fileToRow.transformFirstColumn('/..', this))
                         .append(filesRows);
 
-                    let $firstFilesContainer = $('.files-table__first-instance');
-                    $firstFilesContainer.find('.first-sub-files').remove();
-                    $firstFilesContainer.append(firstSubFilesContainer);
+                    let $filesContainer = $('.files-table__first-instance');
+                    $filesContainer.find('.first-sub-files').remove();
+                    $filesContainer.append(firstSubFilesContainer);
 
-                    currentPath = path;
+                    currentFirstPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             }
         }
 
-        function buildViewTwoFile($fileRow, file) {
-            secondSubFilesContainer = $('<div>', {
-                'class': 'second-sub-files'
-            });
-
+        function buildViewSecondFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentSecondPath + file : file.fullPath;
-
+            currentFile = file;
+            $fileSourceRow = $fileRow;
 
             if (file === '/..' || file.fileType === 'DIRECTORY') {
                 fileRestApi.get(path).done(files => {
-                        $('.files-table__second-instance').find('.second-sub-files').remove();
-                        secondSubFilesContainer.append(fileToRow.transformSecondColumn('/..', this));
-                        $('.files-table__second-instance')
-                            .append(secondSubFilesContainer.append(files.map(file => fileToRow.transformSecondColumn(file, this))));
+                    let filesRows = files.map(file => fileToRow.transformSecondColumn(file, this));
+
+                    secondSubFilesContainer = $('<div>').addClass('second-sub-files');
+                    secondSubFilesContainer
+                        .append(fileToRow.transformSecondColumn('/..', this))
+                        .append(filesRows);
+
+                    let $filesContainer = $('.files-table__second-instance');
+                    $filesContainer.find('.second-sub-files').remove();
+                    $filesContainer.append(secondSubFilesContainer);
+
                         currentSecondPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
@@ -113,7 +117,29 @@ define(
 
         }
 
-        function onSaveFile() {
+        function buildAddFileInFirstColumn() {
+            confirmAddFile(() => onSaveFile(currentFirstPath, fileToRow.transformFirstColumn, firstSubFilesContainer));
+            return windowCreateFile;
+        }
+
+        function buildAddFileInSecondColumn() {
+            confirmAddFile(() => onSaveFile(currentSecondPath, fileToRow.transformSecondColumn, secondSubFilesContainer));
+            return windowCreateFile;
+        }
+
+        function confirmAddFile(onConfirm) {
+            newFileNameField.setValue('');
+            checkBoxIsDirectory.$input.removeAttr('disabled');
+            windowCreateFile =
+                modal.buildCreateFileModalWindow(
+                    texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
+                        if (!confirmed) {
+                            onConfirm();
+                        }
+                    });
+        }
+
+        function onSaveFile(currentPath, transformColumn, subFilesContainer) {
             let name = newFileNameField.getValue();
             let isDirectory = checkBoxIsDirectory.isChecked();
 
@@ -127,29 +153,12 @@ define(
                 fileType: isDirectory ? 'DIRECTORY' : 'FILE'
             };
 
-
             fileRestApi.create(fileToSave).done(newFile => {
-                $fileSourceRow = fileToRow.transformFirstColumn((currentFile = newFile), fileEditor);
+                $fileSourceRow = transformColumn((currentFile = newFile), fileEditor);
 
-                firstSubFilesContainer.append($fileSourceRow);
+                subFilesContainer.append($fileSourceRow);
 
             }).fail(() => modal.buildErrorWindow(texts.error.createError));
-        }
-
-
-        function buildAddFile() {
-            newFileNameField.setValue('');
-            checkBoxIsDirectory.$input.removeAttr('disabled');
-            windowCreateFile =
-                modal.buildCreateFileModalWindow(
-                    texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
-                        if (!confirmed) {
-                            onSaveFile()
-                        }
-                    });
-
-
-            return windowCreateFile;
         }
 
         function downloadFile() {
@@ -180,7 +189,7 @@ define(
         function onEditFile() {
             let name = newFileNameField.getValue();
             if (!name) return;
-            let currentFullPath = currentPath + "/" + name;
+            let currentFullPath = currentFirstPath + "/" + name;
             let fileToSave = {
                 src: currentFile.fullPath,
                 target: currentFullPath
@@ -220,7 +229,7 @@ define(
         }
 
         function onSimpleEdit($fileRow, file) {
-            buildViewFile($fileRow, file);
+            buildViewFirstFilesContainer($fileRow, file);
             // onEditFile();
         }
 
@@ -232,14 +241,46 @@ define(
             prepareFileView();
         }
 
+        function moveFileRight() {
+            moveFile(currentSecondPath, secondSubFilesContainer);
+        }
+
+        function moveFileLeft() {
+            moveFile(currentFirstPath, firstSubFilesContainer);
+        }
+
+        function moveFile(targetPath, targetSubFilesContainer) {
+            if (currentFile.fileType !== 'FILE') return;
+
+            let newFileFullPath = targetPath + "/" + currentFile.fileName;
+
+            if (newFileFullPath === currentFile.fullPath) return;
+
+            let paths = {
+                src: currentFile.fullPath,
+                target: newFileFullPath
+            };
+
+            fileRestApi.move(paths).done(() => {
+                currentFile.fullPath = newFileFullPath;
+
+                $fileSourceRow.remove();
+                $fileSourceRow = fileToRow.transformFirstColumn(currentFile, fileEditor);
+                targetSubFilesContainer.append($fileSourceRow);
+            }).fail(() => modal.buildErrorWindow(texts.error.moveError));
+        }
+
         let fileEditor = {
-            addFile: buildAddFile,
-            viewFile: buildViewFile,
-            viewSecondFile: buildViewTwoFile,
+            addFileInFirstColumn: buildAddFileInFirstColumn,
+            addFileInSecondColumn: buildAddFileInSecondColumn,
+            viewFile: buildViewFirstFilesContainer,
+            viewSecondFile: buildViewSecondFilesContainer,
             editFile: prepareOnEditFile,
             deleteFile: buildDeleteFile,
             downloadFile: downloadFile,
-            uploadFile: uploadFile
+            uploadFile: uploadFile,
+            moveFileRight: moveFileRight,
+            moveFileLeft: moveFileLeft
         };
 
         return fileEditor;

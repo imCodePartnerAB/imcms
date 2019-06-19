@@ -51,8 +51,6 @@ define(
             })
             .fail(() => modal.buildErrorWindow(texts.error.loadError));
 
-        let currentFile;
-        let $fileUrl;
         function buildFirstInstanceFiles() {
             $fileContainer = $('<div>', {
                 'class': 'first-files'
@@ -89,32 +87,21 @@ define(
             }).buildBlockStructure('<div>', {})
         }
 
-        function clickActionMoveRight(currentPosition) {
-
-        }
-
-        function clickActionMoveLeft(currentPosition) {
-
-        }
-
         function buildMoveButtons() {
             let $buttonMoveLeft = components.buttons.positiveButton({
                 text: texts.moveLeft,
-                click: function () {
-                }
+                click: fileEditor.moveFileLeft
             });
-            let buttonMoveRight = components.buttons.positiveButton({
+            let $buttonMoveRight = components.buttons.positiveButton({
                 text: texts.moveRight,
-                click: function () {
-
-                }
+                click: fileEditor.moveFileRight
             });
 
             return new BEM({
                 block: 'buttons-move',
                 elements: {
                     'left-move': $buttonMoveLeft,
-                    'right-move': buttonMoveRight,
+                    'right-move': $buttonMoveRight,
                 }
             }).buildBlockStructure('<div>')
         }
@@ -137,7 +124,7 @@ define(
             return $actionSecondButtonsContainer = new BEM({
                 block: 'second-files-action',
                 elements: {
-                    'add-file': components.controls.add(fileEditor.addFile).attr("title", texts.add),
+                    'add-file': components.controls.add(fileEditor.addFileInSecondColumn).attr("title", texts.add),
                     'upload-file': components.controls.upload().attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
