@@ -1,8 +1,9 @@
 define(
-    'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts'],
-    function (BEM, $, components, texts) {
+    'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms'],
+    function (BEM, $, components, texts, imcms) {
 
         texts = texts.superAdmin.files.title;
+        let contextUrl = '/api/files/file/';
 
         function getOnFileClicked(file, fileEditor) {
             return function () {
@@ -27,7 +28,6 @@ define(
         }
 
 
-
         return {
             transformFirstColumn: (file, fileEditor) => {
 
@@ -45,7 +45,11 @@ define(
                             'file-name': $('<div>', {
                                 text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
                             }),
-                            'download': components.controls.download(fileEditor.downloadFile).attr("title", texts.download),
+                            'download': $('<a>', {
+                                html: components.controls.download(),
+                                href: imcms.contextPath + contextUrl + fullName,
+                                title: texts.download
+                            }),
                             'edit': components.controls.edit(fileEditor.editFile).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
