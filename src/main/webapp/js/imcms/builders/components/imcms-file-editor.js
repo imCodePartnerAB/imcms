@@ -152,17 +152,6 @@ define(
             return windowCreateFile;
         }
 
-        function downloadFile() {
-
-            modal.buildModalWindow('Download?', confirmed => {
-                if (!confirmed) return;
-
-                fileRestApi.download(currentFile.fullPath).done(
-
-                ).fail(() => modal.buildErrorWindow(texts.error.downloadError))
-            });
-        }
-
         function uploadFile() {
 
         }
@@ -238,7 +227,6 @@ define(
             viewSecondFile: buildViewTwoFile,
             editFile: prepareOnEditFile,
             deleteFile: buildDeleteFile,
-            downloadFile: downloadFile,
             uploadFile: uploadFile
         };
 
