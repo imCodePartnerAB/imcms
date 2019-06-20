@@ -161,16 +161,6 @@ define(
             }).fail(() => modal.buildErrorWindow(texts.error.createError));
         }
 
-        function downloadFile() {
-
-            modal.buildModalWindow('Download?', confirmed => {
-                if (!confirmed) return;
-
-                fileRestApi.download(currentFile.fullPath).done(
-
-                ).fail(() => modal.buildErrorWindow(texts.error.downloadError))
-            });
-        }
 
         function uploadFile() {
 
@@ -277,7 +267,6 @@ define(
             viewSecondFile: buildViewSecondFilesContainer,
             editFile: prepareOnEditFile,
             deleteFile: buildDeleteFile,
-            downloadFile: downloadFile,
             uploadFile: uploadFile,
             moveFileRight: moveFileRight,
             moveFileLeft: moveFileLeft
