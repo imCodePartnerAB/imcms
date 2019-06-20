@@ -575,7 +575,8 @@ const texts = {
                     editFailed: 'Misslyckades med att byta namn på filen. Försök igen!',
                     createError: 'Misslyckades att skapa fil!',
                     downloadError: 'Misslyckades med att skapa nedladdningsfil. Försök igen!',
-                    moveError: 'Misslyckades med att flytta filen. Försök igen!'
+                    moveError: 'Misslyckades med att flytta filen. Försök igen!',
+                    uploadError: 'Det gick inte att ladda upp filen. Försök igen!'
                 }
             },
             search: {
@@ -1291,7 +1292,8 @@ const texts = {
                     editFailed: 'Failed to rename file. Try again!',
                     createError: 'Failed to create file!',
                     downloadError: 'Failed to create download file. Try again!',
-                    moveError: 'Failed to move file. Try again!'
+                    moveError: 'Failed to move file. Try again!',
+                    uploadError: 'Failed to upload file. Try again!'
                 }
             },
             search: {
