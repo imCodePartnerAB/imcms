@@ -112,7 +112,7 @@ define(
             return $actionButtonsContainer = new BEM({
                 block: 'first-files-action',
                 elements: {
-                    'add-file': components.controls.add(fileEditor.addFile).attr("title", texts.add),
+                    'add-file': components.controls.add(fileEditor.addFileInFirstColumn).attr("title", texts.add),
                     'upload-file': components.controls.upload().attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
