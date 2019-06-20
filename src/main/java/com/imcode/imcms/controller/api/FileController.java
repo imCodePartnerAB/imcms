@@ -6,6 +6,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
@@ -98,12 +99,22 @@ public class FileController {
     }
 
     @PostMapping("/upload/**")
-    public String uploadFile(HttpServletRequest request,
-                             @RequestParam MultipartFile file) throws IOException {
+    public List<SourceFile> uploadFile(MultipartHttpServletRequest request) throws IOException {
+        final List<MultipartFile> files = new ArrayList<>(request.getFileMap().values());
+        final String targetDirectory = request.getParameter("targetDirectory");
 
-        final String destination = getFileName(request.getRequestURI(), "/upload/");
-        final Path resolvePath = Paths.get(destination).resolve(file.getOriginalFilename());
-        return defaultFileService.saveFile(resolvePath, file.getBytes(), CREATE_NEW).toString();
+        final List<SourceFile> sourceFiles = new ArrayList<>();
+
+        for (MultipartFile file : files) {
+            final String fileName = file.getName();
+            SourceFile sourceFile = new SourceFile(fileName, targetDirectory + "/" + fileName, FILE);
+
+            defaultFileService.saveFile(Paths.get(sourceFile.getFullPath()), file.getBytes(), CREATE_NEW);
+
+            sourceFiles.add(sourceFile);
+        }
+
+        return sourceFiles;
     }
 
     @PostMapping("/**")
