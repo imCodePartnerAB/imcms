@@ -12,7 +12,7 @@ define(
                 if ($this.hasClass('files-table__file-row--active')) return;
                 else if ($this.hasClass('files-table__directory-row--active')) return;
 
-                fileEditor.viewFile($this, file);
+                fileEditor.viewFirstFilesContainer($this, file);
             }
         }
 
@@ -23,7 +23,7 @@ define(
                 if ($this.hasClass('files-table__file-row-second--active')) return;
                 else if ($this.hasClass('files-table__directory-row-second--active')) return;
 
-                fileEditor.viewSecondFile($this, file);
+                fileEditor.viewSecondFilesContainer($this, file);
             }
         }
 
@@ -50,7 +50,7 @@ define(
                                 href: imcms.contextPath + contextUrl + fullName,
                                 title: texts.download
                             }),
-                            'edit': components.controls.edit(fileEditor.editFile).attr("title", texts.edit),
+                            'edit': components.controls.edit(fileEditor.editFileInFirstColumn).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
@@ -81,8 +81,12 @@ define(
                             'file-name': $('<div>', {
                                 text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
                             }),
-                            'download': components.controls.download().attr("title", texts.download),
-                            'edit': components.controls.edit(fileEditor.editFile).attr("title", texts.edit),
+                            'download': $('<a>', {
+                                html: components.controls.download(),
+                                href: imcms.contextPath + contextUrl + fullName,
+                                title: texts.download
+                            }),
+                            'edit': components.controls.edit(fileEditor.editFileInSecondColumn).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);

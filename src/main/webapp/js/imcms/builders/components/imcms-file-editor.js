@@ -62,7 +62,15 @@ define(
             }
         }
 
-        function prepareOnEditFile() {
+        function prepareOnEditFileInFirstColumn() {
+            prepareOnEditFile(() => buildEditFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn));
+        }
+
+        function prepareOnEditFileInSecondColumn() {
+            prepareOnEditFile(() => buildEditFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn));
+        }
+
+        function prepareOnEditFile(buildEditFile) {
 
             modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
                 if (!confirmed) return;
@@ -75,17 +83,36 @@ define(
             });
         }
 
-        function buildEditFile() {
+        function buildEditFile(currentPath, subFilesContainer, transformColumn) {
             windowEditFile =
                 modal.buildCreateFileModalWindow(
                     texts.editorFile, newFileNameField, checkBoxIsDirectory, confirmed => {
                         if (!confirmed) {
-                            onEditFile()
+                            onEditFile(currentPath, subFilesContainer, transformColumn)
                         }
                     });
 
 
             return windowEditFile;
+        }
+
+        function onEditFile(currentPath, subFilesContainer, transformColumn) {
+            let name = newFileNameField.getValue();
+            if (!name) return;
+            let currentFullPath = currentPath + "/" + name;
+            let fileToSave = {
+                src: currentFile.fullPath,
+                target: currentFullPath
+            };
+
+            fileRestApi.rename(fileToSave).done(newFile => {
+                currentFile = newFile;
+
+                $fileSourceRow.remove();
+                $fileSourceRow = transformColumn(currentFile, fileEditor);
+                subFilesContainer.append($fileSourceRow);
+
+            }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
         }
 
         function buildDeleteFile() {
@@ -205,25 +232,6 @@ define(
             }).call();
         }
 
-        function onEditFile() {
-            let name = newFileNameField.getValue();
-            if (!name) return;
-            let currentFullPath = currentFirstPath + "/" + name;
-            let fileToSave = {
-                src: currentFile.fullPath,
-                target: currentFullPath
-            };
-
-            fileRestApi.rename(fileToSave).done(newFile => {
-                currentFile = newFile;
-
-                $fileSourceRow.remove();
-                $fileSourceRow = fileToRow.transformFirstColumn(currentFile, fileEditor);
-                firstSubFilesContainer.append($fileSourceRow);
-
-            }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
-        }
-
         function getOnDiscardChanges(onConfirm) {
             return () => {
                 modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
@@ -292,9 +300,10 @@ define(
         let fileEditor = {
             addFileInFirstColumn: buildAddFileInFirstColumn,
             addFileInSecondColumn: buildAddFileInSecondColumn,
-            viewFile: buildViewFirstFilesContainer,
-            viewSecondFile: buildViewSecondFilesContainer,
-            editFile: prepareOnEditFile,
+            viewFirstFilesContainer: buildViewFirstFilesContainer,
+            viewSecondFilesContainer: buildViewSecondFilesContainer,
+            editFileInFirstColumn: prepareOnEditFileInFirstColumn,
+            editFileInSecondColumn: prepareOnEditFileInSecondColumn,
             deleteFile: buildDeleteFile,
             uploadFileInFirstColumn: uploadFileInFirstColumn,
             uploadFileInSecondColumn: uploadFileInSecondColumn,
