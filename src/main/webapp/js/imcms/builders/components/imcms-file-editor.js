@@ -118,12 +118,12 @@ define(
         }
 
         function buildAddFileInFirstColumn() {
-            confirmAddFile(() => onSaveFile(currentFirstPath, fileToRow.transformFirstColumn, firstSubFilesContainer));
+            confirmAddFile(() => onSaveFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn));
             return windowCreateFile;
         }
 
         function buildAddFileInSecondColumn() {
-            confirmAddFile(() => onSaveFile(currentSecondPath, fileToRow.transformSecondColumn, secondSubFilesContainer));
+            confirmAddFile(() => onSaveFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn));
             return windowCreateFile;
         }
 
@@ -139,7 +139,7 @@ define(
                     });
         }
 
-        function onSaveFile(currentPath, transformColumn, subFilesContainer) {
+        function onSaveFile(currentPath, subFilesContainer, transformColumn) {
             let name = newFileNameField.getValue();
             let isDirectory = checkBoxIsDirectory.isChecked();
 
@@ -161,9 +161,38 @@ define(
             }).fail(() => modal.buildErrorWindow(texts.error.createError));
         }
 
+        function uploadFileInFirstColumn() {
+            uploadFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn);
+        }
 
-        function uploadFile() {
+        function uploadFileInSecondColumn() {
+            uploadFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn);
+        }
 
+        function uploadFile(targetDirectory, subFilesContainer, transformColumn) {
+            let $fileInput = $('<input>', {
+                type: 'file',
+                multiple: ''
+            });
+            $fileInput.click();
+
+            $fileInput.change(() => {
+                let formData = new FormData();
+
+                let files = $fileInput.prop('files');
+                Array.from(files).forEach(file => formData.append(file.name, file));
+
+                formData.append("targetDirectory", targetDirectory);
+
+                fileRestApi.upload(formData).done(uploadedFiles => {
+                    currentFile = null;
+
+                    uploadedFiles.forEach(file => {
+                        $fileSourceRow = transformColumn(file, fileEditor);
+                        subFilesContainer.append($fileSourceRow);
+                    });
+                }).fail(() => modal.buildErrorWindow(texts.error.uploadError));
+            });
         }
 
         function onCancelChanges($fileRowElement, file) {
@@ -267,7 +296,8 @@ define(
             viewSecondFile: buildViewSecondFilesContainer,
             editFile: prepareOnEditFile,
             deleteFile: buildDeleteFile,
-            uploadFile: uploadFile,
+            uploadFileInFirstColumn: uploadFileInFirstColumn,
+            uploadFileInSecondColumn: uploadFileInSecondColumn,
             moveFileRight: moveFileRight,
             moveFileLeft: moveFileLeft
         };

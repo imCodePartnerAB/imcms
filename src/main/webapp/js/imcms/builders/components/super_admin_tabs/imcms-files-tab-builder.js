@@ -113,7 +113,7 @@ define(
                 block: 'first-files-action',
                 elements: {
                     'add-file': components.controls.add(fileEditor.addFileInFirstColumn).attr("title", texts.add),
-                    'upload-file': components.controls.upload().attr("title", texts.upload)
+                    'upload-file': components.controls.upload(fileEditor.uploadFileInFirstColumn).attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
         }
@@ -125,7 +125,7 @@ define(
                 block: 'second-files-action',
                 elements: {
                     'add-file': components.controls.add(fileEditor.addFileInSecondColumn).attr("title", texts.add),
-                    'upload-file': components.controls.upload().attr("title", texts.upload)
+                    'upload-file': components.controls.upload(fileEditor.uploadFileInSecondColumn).attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
         }
