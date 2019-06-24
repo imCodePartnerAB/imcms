@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface FileService {
 
-    List<Path> getRootFiles();
+    List<SourceFile> getRootFiles();
 
-    List<Path> getFiles(Path file) throws IOException;
+    List<SourceFile> getFiles(Path file) throws IOException;
 
     Path getFile(Path file) throws IOException;
 

@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,24 +50,31 @@ public class DefaultFileService implements FileService {
         }
     }
 
+    private SourceFile toSourceFile(Path path) {
+        final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
+        return new SourceFile(path.getFileName().toString(), path.toString(), fileType);
+    }
 
     @Override
-    public List<Path> getRootFiles() {
+    public List<SourceFile> getRootFiles() {
         return rootPaths.stream()
                 .filter(path -> Files.exists(Paths.get(path.toString())))
+                .map(this::toSourceFile)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<Path> getFiles(Path file) throws IOException {
+    public List<SourceFile> getFiles(Path directory) throws IOException {
         List<Path> paths;
-        if (isAllowablePath(file) && Files.isDirectory(file)) {
-            paths = Files.list(file)
+        if (isAllowablePath(directory) && Files.isDirectory(directory)) {
+            paths = Files.list(directory)
                     .collect(Collectors.toList());
         } else {
             paths = Collections.EMPTY_LIST;
         }
-        return paths;
+        return paths.stream()
+                .map(this::toSourceFile)
+                .collect(Collectors.toList());
     }
 
     @Override

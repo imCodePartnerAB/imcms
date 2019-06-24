@@ -56,32 +56,14 @@ public class FileController {
     @GetMapping("/**")
     public List<SourceFile> getFiles(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "");
-        List<Path> files;
-        List<SourceFile> sourceFiles = new ArrayList<>();
+        List<SourceFile> files;
         if (null == fileURI) {
             files = defaultFileService.getRootFiles();
         } else {
             files = defaultFileService.getFiles(Paths.get(fileURI));
         }
 
-        for (Path path : files) {
-            if (Files.isDirectory(path)) {
-                sourceFiles.add(
-                        new SourceFile(path.getFileName().toString(),
-                                path.toString(),
-                                SourceFile.FileType.DIRECTORY)
-                );
-            } else {
-                sourceFiles.add(
-                        new SourceFile(path.getFileName().toString(),
-                                path.toString(),
-                                FILE)
-                );
-            }
-        }
-
-        return sourceFiles;
-
+        return files;
     }
 
     @GetMapping("/file/**")
