@@ -3,6 +3,8 @@ package com.imcode.imcms.mapping;
 import com.imcode.imcms.api.DocumentLanguage;
 import com.imcode.imcms.api.DocumentVersion;
 import com.imcode.imcms.controller.exception.NoPermissionInternalException;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.mapping.container.MenuContainer;
 import com.imcode.imcms.mapping.container.TextDocImageContainer;
@@ -30,7 +32,6 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,21 +55,23 @@ public class DocumentSaver {
     private final VersionService versionService;
     private final LanguageRepository languageRepository;
     private final CommonContentRepository commonContentRepository;
+    private final CommonContentService commonContentService;
     private final MetaRepository metaRepository;
     private final TextDocumentContentSaver textDocumentContentSaver;
     private final DocumentContentMapper documentContentMapper;
     private final DocumentVersionMapper versionMapper;
     private final PropertyRepository propertyRepository;
+    private final PropertyService propertyService;
     private final DocumentCreatingVisitor documentCreatingVisitor;
     private final DocumentSavingVisitor documentSavingVisitor;
     private DefaultDocumentMapper documentMapper;
 
     public DocumentSaver(DocRepository docRepository, VersionRepository versionRepository,
                          VersionService versionService, LanguageRepository languageRepository,
-                         CommonContentRepository commonContentRepository, MetaRepository metaRepository,
+                         CommonContentRepository commonContentRepository, CommonContentService commonContentService, MetaRepository metaRepository,
                          TextDocumentContentSaver textDocumentContentSaver, DocumentContentMapper documentContentMapper,
                          DocumentVersionMapper versionMapper, PropertyRepository propertyRepository,
-                         DocumentCreatingVisitor documentCreatingVisitor,
+                         PropertyService propertyService, DocumentCreatingVisitor documentCreatingVisitor,
                          DocumentSavingVisitor documentSavingVisitor) {
 
         this.docRepository = docRepository;
@@ -76,11 +79,13 @@ public class DocumentSaver {
         this.versionService = versionService;
         this.languageRepository = languageRepository;
         this.commonContentRepository = commonContentRepository;
+        this.commonContentService = commonContentService;
         this.metaRepository = metaRepository;
         this.textDocumentContentSaver = textDocumentContentSaver;
         this.documentContentMapper = documentContentMapper;
         this.versionMapper = versionMapper;
         this.propertyRepository = propertyRepository;
+        this.propertyService = propertyService;
         this.documentCreatingVisitor = documentCreatingVisitor;
         this.documentSavingVisitor = documentSavingVisitor;
     }
@@ -286,20 +291,12 @@ public class DocumentSaver {
         metaDO.setDocumentTypeId(doc.getDocumentTypeId());
 
         Meta jpaMeta = toJpaObject(metaDO);
+        jpaMeta.setModifierId(user.getId());
         int newDocId = metaRepository.saveAndFlush(jpaMeta).getId();
 
         dccMap.forEach((language, dcc) -> {
-            CommonContentJPA jpaDcc = new CommonContentJPA();
             LanguageJPA jpaLanguage = languageRepository.findByCode(language.getCode());
-
-            jpaDcc.setDocId(newDocId);
-            jpaDcc.setHeadline(dcc.getHeadline());
-            jpaDcc.setMenuText(dcc.getMenuText());
-            jpaDcc.setLanguage(jpaLanguage);
-            jpaDcc.setEnabled(dcc.getEnabled());
-            jpaDcc.setVersionNo(DocumentVersion.WORKING_VERSION_NO);
-
-            commonContentRepository.save(jpaDcc);
+            commonContentService.getOrCreate(newDocId, DocumentVersion.WORKING_VERSION_NO, jpaLanguage);
         });
 
         docRepository.insertPropertyIfNotExists(
@@ -350,8 +347,8 @@ public class DocumentSaver {
     private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
         String alias = document.getAlias();
 
-        if (StringUtils.isNotBlank(alias)) {
-            Integer documentId = propertyRepository.findDocIdByAlias(alias);
+        if (alias != null) {
+            Integer documentId = propertyService.getDocIdByAlias(alias);
             if (documentId != null && !documentId.equals(document.getId())) {
                 throw new AliasAlreadyExistsInternalException(
                         String.format("Alias %s is already in use by document %d.", alias, documentId));
