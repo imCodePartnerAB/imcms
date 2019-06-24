@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static imcode.server.ImcmsConstants.ENG_CODE;
 import static imcode.server.ImcmsConstants.SWE_CODE;
@@ -31,4 +32,13 @@ public class LanguageDataInitializer extends TestDataCleaner {
         return Arrays.asList(englishLanguage, swedishLanguage);
     }
 
+    public List<LanguageDTO> createData(List<String> availableLanguagesCodes) {
+        return availableLanguagesCodes.stream()
+                .map(code -> {
+                    LanguageDTO language = new LanguageDTO(languageRepository.findByCode(code));
+                    language.setEnabled(true);
+                    return language;
+                })
+                .collect(Collectors.toList());
+    }
 }
