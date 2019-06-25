@@ -168,16 +168,20 @@
     justify-content: space-between;
 }
 
-.first-sub-files {
-    background-color: #b94a48;
+.first-sub-files,
+.second-sub-files {
+    height: 200px;
+    overflow-y: auto;
     border: 1px solid gainsboro;
     justify-content: space-between;
 }
 
+.first-sub-files {
+    background-color: #b94a48;
+}
+
 .second-sub-files {
     background-color: aqua;
-    border: 1px solid gainsboro;
-    justify-content: space-between;
 }
 
 .file-row,
