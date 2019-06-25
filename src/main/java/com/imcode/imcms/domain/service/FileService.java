@@ -32,7 +32,7 @@ public interface FileService {
 
     SourceFile moveFile(Path src, Path target) throws IOException;
 
-    List<Path> copyFile(List<Path> src, Path target) throws IOException;
+    SourceFile copyFile(Path src, Path target) throws IOException;
 
     Path saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException;
 

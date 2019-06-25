@@ -107,26 +107,22 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile moveFile(Path src, Path target) throws IOException {
-        final Path path;
         SourceFile sourceFile = new SourceFile();
         if (isAllowablePath(src) && isAllowablePath(target)) {
-            path = Files.move(src, target);
-            sourceFile.setFileName(path.getFileName().toString());
-            sourceFile.setFullPath(path.toString());
-            sourceFile.setFileType(Files.isDirectory(path) ? DIRECTORY : FILE);
+            final Path path = Files.move(src, target);
+            sourceFile = toSourceFile(path);
         }
         return sourceFile;
     }
 
     @Override
-    public List<Path> copyFile(List<Path> src, Path target) throws IOException {
-        final List<Path> path = new ArrayList<>();
-        for (Path srcPath : src) {
-            if (isAllowablePath(srcPath) && isAllowablePath(target)) {
-                path.add(Files.copy(srcPath, target.resolve(srcPath.getFileName())));
-            }
+    public SourceFile copyFile(Path src, Path target) throws IOException {
+        SourceFile newFile = new SourceFile();
+        if (isAllowablePath(src) && isAllowablePath(target)) {
+            Path path = Files.copy(src, target);
+            newFile = toSourceFile(path);
         }
-        return path;
+        return newFile;
     }
 
     @Override
@@ -144,22 +140,19 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException {
-        Path path;
         Path filePath = Paths.get(file.getFullPath());
         SourceFile newSrcFile = new SourceFile();
+
         if (isAllowablePath(filePath)) {
+            Path newSrcFilePath;
             if (isDirectory) {
-                path = Files.createDirectory(filePath);
-                newSrcFile.setFileName(path.getFileName().toString());
-                newSrcFile.setFullPath(path.toString());
-                newSrcFile.setFileType(DIRECTORY);
+                newSrcFilePath = Files.createDirectory(filePath);
             } else {
-                path = Files.createFile(filePath);
-                newSrcFile.setFileName(path.getFileName().toString());
-                newSrcFile.setFullPath(path.toString());
-                newSrcFile.setFileType(SourceFile.FileType.FILE);
+                newSrcFilePath = Files.createFile(filePath);
             }
+            newSrcFile = toSourceFile(newSrcFilePath);
         }
+
         return newSrcFile;
     }
 }

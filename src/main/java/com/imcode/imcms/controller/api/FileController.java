@@ -15,7 +15,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -106,10 +105,10 @@ public class FileController {
     }
 
     @PostMapping("/copy/**")
-    public String copyFile(@RequestBody Properties pathParam) throws IOException {
+    public SourceFile copyFile(@RequestBody Properties pathParam) throws IOException {
         final Path src = Paths.get(pathParam.getProperty("src"));
         final Path target = Paths.get(pathParam.getProperty("target"));
-        return defaultFileService.copyFile(Collections.singletonList(src), target).toString();
+        return defaultFileService.copyFile(src, target);
     }
 
     @PutMapping("/**")
