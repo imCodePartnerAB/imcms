@@ -14,13 +14,13 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
         processData: false
     }, formData);
 
-    api.copy = pathParam => rest.ajax.call({url: `${url}/copy/`, type: 'POST', json: false}, pathParam);
+    api.copy = pathParam => rest.ajax.call({url: `${url}/copy/`, type: 'POST', json: true}, pathParam);
 
     api.change = content => rest.ajax.call({url: `${url}/${content}`, type: 'PUT', json: false});
 
-    api.move = target => rest.ajax.call({url: `${url}/move/`, type: 'PUT', json: true}, target);
+    api.move = pathParam => rest.ajax.call({url: `${url}/move/`, type: 'PUT', json: true}, pathParam);
 
-    api.rename = path => rest.ajax.call({url: `${url}/rename/`, type: 'PUT', json: true}, path);
+    api.rename = pathParam => rest.ajax.call({url: `${url}/rename/`, type: 'PUT', json: true}, pathParam);
 
     api.delete = filePath => rest.ajax.call({url: `${url}/${filePath}`, type: 'DELETE', json: false});
 
