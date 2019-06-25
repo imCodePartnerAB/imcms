@@ -297,6 +297,32 @@ define(
             }).fail(() => modal.buildErrorWindow(texts.error.moveError));
         }
 
+        function copyFileRight() {
+            copyFile(currentSecondPath, secondSubFilesContainer);
+        }
+
+        function copyFileLeft() {
+            copyFile(currentFirstPath, firstSubFilesContainer);
+        }
+
+        function copyFile(targetPath, targetSubFilesContainer) {
+            if (currentFile.fileType !== 'FILE') return;
+
+            let newFileFullPath = targetPath + "/" + currentFile.fileName;
+
+            if (newFileFullPath === currentFile.fullPath) return;
+
+            let paths = {
+                src: currentFile.fullPath,
+                target: newFileFullPath
+            };
+
+            fileRestApi.copy(paths).done(newFile => {
+                $fileSourceRow = fileToRow.transformFirstColumn(newFile, fileEditor);
+                targetSubFilesContainer.append($fileSourceRow);
+            }).fail(() => modal.buildErrorWindow(texts.error.copyError));
+        }
+
         let fileEditor = {
             addFileInFirstColumn: buildAddFileInFirstColumn,
             addFileInSecondColumn: buildAddFileInSecondColumn,
@@ -308,7 +334,9 @@ define(
             uploadFileInFirstColumn: uploadFileInFirstColumn,
             uploadFileInSecondColumn: uploadFileInSecondColumn,
             moveFileRight: moveFileRight,
-            moveFileLeft: moveFileLeft
+            moveFileLeft: moveFileLeft,
+            copyFileRight: copyFileRight,
+            copyFileLeft: copyFileLeft
         };
 
         return fileEditor;

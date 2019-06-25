@@ -229,11 +229,11 @@
     width: 100%;
 }
 
-.buttons-move {
+.buttons-move,
+.buttons-copy {
     display: inline-flex;
     float: right;
     padding-right: 48%;
-
 }
 
 .buttons-action__first-action {

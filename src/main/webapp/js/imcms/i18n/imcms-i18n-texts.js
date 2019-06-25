@@ -555,8 +555,10 @@ const texts = {
                 upload: 'Ladda upp',
                 rename: 'Ändra namn',
                 add: 'Lägg till',
-                moveRight: 'Höger',
-                moveLeft: 'Vänster',
+                moveRight: 'Flytta höger',
+                moveLeft: 'flytta vänster',
+                copyRight: 'Kopiera till höger',
+                copyLeft: 'Kopiera till vänster',
                 warnChangeMessage: 'Vill du verkligen ändra fil?',
                 warnDeleteMessage: 'Ta du verkligen bort fil?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
@@ -576,6 +578,7 @@ const texts = {
                     createError: 'Misslyckades att skapa fil!',
                     downloadError: 'Misslyckades med att skapa nedladdningsfil. Försök igen!',
                     moveError: 'Misslyckades med att flytta filen. Försök igen!',
+                    copyError: 'Misslyckades med att kopiera filen. Försök igen!',
                     uploadError: 'Det gick inte att ladda upp filen. Försök igen!'
                 }
             },
@@ -1272,8 +1275,10 @@ const texts = {
                 upload: 'Upload',
                 rename: 'Change name',
                 add: 'Add',
-                moveRight: 'Right',
-                moveLeft: 'Left',
+                moveRight: 'Move right',
+                moveLeft: 'Move left',
+                copyRight: 'Copy right',
+                copyLeft: 'Copy left',
                 warnChangeMessage: 'Do you really want to change file?',
                 warnDeleteMessage: 'Do you really delete file?',
                 warnEditMessage: 'Do you really edit content file?',
@@ -1293,6 +1298,7 @@ const texts = {
                     createError: 'Failed to create file!',
                     downloadError: 'Failed to create download file. Try again!',
                     moveError: 'Failed to move file. Try again!',
+                    copyError: 'Failed to copy file. Try again!',
                     uploadError: 'Failed to upload file. Try again!'
                 }
             },

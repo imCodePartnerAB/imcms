@@ -106,6 +106,25 @@ define(
             }).buildBlockStructure('<div>')
         }
 
+        function buildCopyButtons() {
+            let $buttonCopyLeft = components.buttons.positiveButton({
+                text: texts.copyLeft,
+                click: fileEditor.copyFileLeft
+            });
+            let $buttonCopyRight = components.buttons.positiveButton({
+                text: texts.copyRight,
+                click: fileEditor.copyFileRight
+            });
+
+            return new BEM({
+                block: 'buttons-copy',
+                elements: {
+                    'left-copy': $buttonCopyLeft,
+                    'right-copy': $buttonCopyRight,
+                }
+            }).buildBlockStructure('<div>');
+        }
+
         let $actionButtonsContainer;
 
         function buildFirstActionButtonsContainer() {
@@ -144,6 +163,7 @@ define(
         return new SuperAdminTab(texts.name, [
             buildTableFilesContainer(),
             buildMoveButtons(),
+            buildCopyButtons(),
             buildButtonsActionContainer()
         ]);
     }
