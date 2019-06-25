@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -119,7 +123,7 @@ public class DefaultFileService implements FileService {
     public SourceFile copyFile(Path src, Path target) throws IOException {
         SourceFile newFile = new SourceFile();
         if (isAllowablePath(src) && isAllowablePath(target)) {
-            Path path = Files.copy(src, target);
+            Path path = Files.copy(src, target.resolve(src.getFileName()));
             newFile = toSourceFile(path);
         }
         return newFile;
