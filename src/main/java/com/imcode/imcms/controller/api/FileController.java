@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -81,6 +83,11 @@ public class FileController {
                 .header(HttpHeaders.CONTENT_TYPE, new MimetypesFileTypeMap().getContentType(path.toFile()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
                 .body(content);
+    }
+
+    @GetMapping("/documents")
+    public List<DocumentDTO> getDocumentsByTemplatePath(@RequestParam Path template) throws IOException {
+        return defaultFileService.getDocumentsByTemplatePath(template);
     }
 
     @PostMapping("/upload/**")

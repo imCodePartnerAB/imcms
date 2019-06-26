@@ -35,7 +35,25 @@ define(
                     currentFirstPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            } else {
+                let templateName = {
+                    template: currentFile.fullPath
+                };
+                fileRestApi.getDocuments(templateName).done(
+
+
+                ).fail(() => modal.buildErrorMessage("localize!"));
             }
+        }
+
+        let $documentsContainer;
+
+        function buildDocumentsContainer() {
+            $documentsContainer = $('<div>', {
+                'class': 'table-documents'
+            });
+
+
         }
 
         function buildViewSecondFilesContainer($fileRow, file) {

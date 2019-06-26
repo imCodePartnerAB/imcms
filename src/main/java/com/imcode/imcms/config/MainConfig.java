@@ -17,6 +17,7 @@ import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.service.api.DefaultFileService;
 import com.imcode.imcms.domain.service.api.FileDocumentService;
 import com.imcode.imcms.domain.service.api.TextDocumentService;
 import com.imcode.imcms.domain.service.api.UrlDocumentService;
@@ -215,6 +216,11 @@ public class MainConfig {
                                                               DocumentUrlService documentUrlService) {
 
         return new UrlDocumentService(documentService, documentUrlService);
+    }
+
+    @Bean
+    public DefaultFileService fileService(DocumentService<DocumentDTO> documentService) {
+        return new DefaultFileService(documentService);
     }
 
     @Bean

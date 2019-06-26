@@ -2,7 +2,10 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -24,11 +27,17 @@ import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 @Service
 public class DefaultFileService implements FileService {
 
+    private final DocumentService<DocumentDTO> documentService;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
     @Value(".")
     private Path rootPath;
+
+    public DefaultFileService(DocumentService<DocumentDTO> documentService) {
+        this.documentService = documentService;
+    }
 
     private boolean isAllowablePath(Path path) {
         String normalizedPath = path.normalize().toString();
@@ -82,9 +91,19 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path getFile(Path file) throws IOException { //todo should we return byte[]
+    public Path getFile(Path file) throws IOException {
         if (isAllowablePath(file) && Files.exists(file)) {
             return file;
+        } else {
+            throw new NoSuchFileException("File is not exist!");
+        }
+    }
+
+    @Override
+    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException {
+        if (isAllowablePath(template) && Files.exists(template)) {
+            final String templateName = FilenameUtils.removeExtension(template.getFileName().toString());
+            return documentService.getDocumentsByTemplateName(templateName);
         } else {
             throw new NoSuchFileException("File is not exist!");
         }
