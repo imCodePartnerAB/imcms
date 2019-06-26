@@ -5,6 +5,7 @@ import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -99,9 +100,9 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<DocumentDTO> getDocumentsByTemplate(Path template) throws IOException {
+    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException {
         if (isAllowablePath(template) && Files.exists(template)) {
-            final String templateName = template.getFileName().toString();
+            final String templateName = FilenameUtils.removeExtension(template.getFileName().toString());
             return documentService.getDocumentsByTemplateName(templateName);
         } else {
             throw new NoSuchFileException("File is not exist!");

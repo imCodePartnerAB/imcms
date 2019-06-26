@@ -86,8 +86,8 @@ public class FileController {
     }
 
     @GetMapping("/documents")
-    public List<DocumentDTO> getDocumentsByTemplate(@RequestParam Path template) throws IOException {
-        return defaultFileService.getDocumentsByTemplate(template);
+    public List<DocumentDTO> getDocumentsByTemplatePath(@RequestParam Path template) throws IOException {
+        return defaultFileService.getDocumentsByTemplatePath(template);
     }
 
     @PostMapping("/upload/**")

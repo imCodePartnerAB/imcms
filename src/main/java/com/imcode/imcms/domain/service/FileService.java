@@ -16,7 +16,7 @@ public interface FileService {
 
     Path getFile(Path file) throws IOException;
 
-    List<DocumentDTO> getDocumentsByTemplate(Path template) throws IOException;
+    List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException;
 
     void deleteFile(Path file) throws IOException;
 
