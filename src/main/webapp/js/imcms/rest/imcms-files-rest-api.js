@@ -24,5 +24,7 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.delete = filePath => rest.ajax.call({url: `${url}/${filePath}`, type: 'DELETE', json: false});
 
+    api.getDocuments = template => rest.ajax.call({url: `${url}/documents`, type: 'GET', json: false}, template);
+
     return api;
 });
