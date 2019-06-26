@@ -82,7 +82,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getFiles_When_DirectoryHasFolderAndFile_Expected_CorrectFiles() throws IOException {
+    public void getFiles_When_DirectoryHasFolderAndFile_Expected_CorrectSize() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathFile = pathDir.resolve(testFileName);
@@ -98,7 +98,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
 
         assertEquals(expectedFiles.size(), foundFiles.size());
-        assertEquals(expectedFiles, foundFiles);
     }
 
     @Test
