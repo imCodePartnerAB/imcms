@@ -674,6 +674,8 @@ const texts = {
             },
             systemProperties: {
                 name: 'Systemegenskaper',
+                nameInputTitle: 'Namn',
+                emailInputTitle: 'E-post',
                 sections: {
                     startPage: {
                         name: "Startsida",
@@ -1394,6 +1396,8 @@ const texts = {
             },
             systemProperties: {
                 name: 'System Properties',
+                nameInputTitle: 'Name',
+                emailInputTitle: 'E-mail',
                 sections: {
                     startPage: {
                         name: "Start page",
