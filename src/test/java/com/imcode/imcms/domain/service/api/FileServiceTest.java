@@ -85,13 +85,11 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     public void getFiles_When_DirectoryHasFolderAndFile_Expected_CorrectFiles() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathDir2 = pathDir.resolve(testDirectoryName2);
         final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFile2 = pathDir2.resolve(testFileName2);
+        final Path pathDir2 = pathDir.resolve(testDirectoryName2);
 
         Files.createDirectories(pathDir2);
         Files.createFile(pathFile);
-        Files.createFile(pathFile2);
 
         final List<SourceFile> expectedFiles = Arrays.asList(
                 new SourceFile(pathDir2.getFileName().toString(), pathDir2.toString(), DIRECTORY),
