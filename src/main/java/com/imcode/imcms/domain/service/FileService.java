@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 
 import java.io.IOException;
 import java.nio.file.OpenOption;
@@ -14,6 +15,8 @@ public interface FileService {
     List<SourceFile> getFiles(Path file) throws IOException;
 
     Path getFile(Path file) throws IOException;
+
+    List<DocumentDTO> getDocumentsByTemplate(Path template) throws IOException;
 
     void deleteFile(Path file) throws IOException;
 
