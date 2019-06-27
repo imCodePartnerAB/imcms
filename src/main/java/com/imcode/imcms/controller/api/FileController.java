@@ -72,11 +72,11 @@ public class FileController {
     }
 
     @GetMapping("/file/**")
-    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
+    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException { //todo fix bug with png and image
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
-        final Path path = defaultFileService.getFile(Paths.get(fileURI));
-
-        byte[] content = Files.readAllBytes(path);
+        final Path pathFile = Paths.get(fileURI);
+        byte[] content = Files.readAllBytes(pathFile);
+        final Path path = defaultFileService.getFile(pathFile, null);
 
         return ResponseEntity.ok()
                 .contentLength(content.length)
@@ -125,7 +125,8 @@ public class FileController {
     @PutMapping("/**")
     public String saveFile(HttpServletRequest request, @RequestBody byte[] newContent) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "");
-        final Path path = defaultFileService.getFile(Paths.get(fileURI));
+        byte[] content = Files.readAllBytes(Paths.get(fileURI));
+        final Path path = defaultFileService.getFile(Paths.get(fileURI), content);
         return defaultFileService.saveFile(path, newContent, null).toString();
     }
 
