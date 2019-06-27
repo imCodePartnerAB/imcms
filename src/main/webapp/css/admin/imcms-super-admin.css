@@ -593,6 +593,10 @@
     border: solid 1px #d1d2c6;
 }
 
+.rule-title-row {
+    margin-top: 20px;
+}
+
 .rule-title-row__rule-enabled,
 .rule-title-row__rule-restricted,
 .rule-title-row__rule-ip-range,
@@ -654,35 +658,46 @@
     padding-bottom: 10px;
 }
 
-.rules-editor .imcms-select {
-    width: 45%;
+.rules-editor > * {
+    padding: 10px;
+}
+
+.ip-range__ip-range1,
+.ip-range__ip-range2,
+.rules-editor__rule-user-row,
+.rules-editor__rule-role-row {
+    width: 49%;
 }
 
 .rules-editor__rule-range-row > div {
     float: left;
-    margin-right: 5px;
-
 }
 
 .ip-range__ip-range-divider {
     margin-top: 35px;
+    width: 2%;
+    text-align: center;
 }
 
-.rules-editor > div {
-    padding: 10px;
+.rules-editor__rule-user-row {
+    padding-right: 0;
 }
 
-.rules-editor__rule-range-row > .imcms-text-box {
-    width: 45%;
-}
-
-.rules-editor .imcms-error-msg {
-    width: 47%;
-    float: left;
+.rules-editor__rule-role-row {
+    float: right;
+    padding-left: 0;
 }
 
 .rules-editor__rule-range-error-row:after {
     content: "";
     clear: both;
     display: table;
+}
+
+.rules-editor__rule-edit-buttons > .imcms-button--negative {
+    float: left;
+}
+
+.rules-editor__rule-edit-buttons > .imcms-button--save {
+    float: right;
 }
