@@ -91,7 +91,7 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path getFile(Path file) throws IOException {
+    public Path getFile(Path file, byte[] content) throws IOException {
         if (isAllowablePath(file) && Files.exists(file)) {
             return file;
         } else {
