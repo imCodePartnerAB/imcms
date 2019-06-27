@@ -492,6 +492,37 @@
 
 .imcms-settings-row {
     margin-top: 25px;
+    width: 400px;
+}
+
+.imcms-settings-row > .imcms-buttons {
+    float: right;
+    margin-top: 10px;
+}
+
+.page-number > * {
+    display: inline-block;
+}
+
+.page-number > .imcms-buttons {
+    margin-top: 20px;
+}
+
+.system-message__settings-input > .imcms-text-area__input {
+    height: 110px;
+    width: 100%;
+}
+
+.server-master > .imcms-text-box > *,
+.web-master > .imcms-text-box > * {
+    display: inline-block;
+    width: 60%;
+}
+
+.server-master > .imcms-text-box > .imcms-label,
+.web-master > .imcms-text-box > .imcms-label {
+    width: 40%;
+    color: #0b4b89;
 }
 
 .imcms-content-action-row {

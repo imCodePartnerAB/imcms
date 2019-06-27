@@ -6,9 +6,9 @@ define(
     'imcms-system-properties-tab-builder',
     [
         'imcms-super-admin-tab', 'imcms-bem-builder', 'imcms-i18n-texts', 'imcms-settings-rest-api',
-        'imcms-components-builder', "imcms-modal-window-builder"
+        'imcms-components-builder', "imcms-modal-window-builder", "jquery"
     ],
-    function (SuperAdminTab, BEM, texts, propertyRestApi, components, modal) {
+    function (SuperAdminTab, BEM, texts, propertyRestApi, components, modal, $) {
 
         texts = texts.superAdmin.systemProperties;
 
@@ -45,12 +45,14 @@ define(
             }
 
             return new BEM({
-                block: 'imcms-settings-row',
+                block: 'page-number',
                 elements: {
                     'settings-input': buildCreateFiledInputNumberPage(),
                     'settings-button': buildPageNumberButton(),
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {
+                'class': 'imcms-settings-row'
+            });
         }
 
         function updateProperty(property) {
@@ -93,7 +95,7 @@ define(
         function buildSystemMessageRow() {
 
             function buildCreateSystemMessageInput() {
-                let $fieldForSystemMessage = components.texts.textBox('<div>', {
+                let $fieldForSystemMessage = components.texts.textArea('<div>', {
                     name: 'systemMessage',
                     text: texts.sections.systemMessage.name
                 });
@@ -118,20 +120,29 @@ define(
             }
 
             return new BEM({
-                block: 'imcms-settings-row',
+                block: 'system-message',
                 elements: {
                     'settings-input': buildCreateSystemMessageInput(),
                     'settings-button': buildCreateSystemMessageButton(),
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {
+                'class': 'imcms-settings-row'
+            });
         }
 
         function buildServerMasterRow() {
 
+            function buildServerMasterTitle() {
+                return $('<div>', {
+                    'class': 'imcms-title',
+                    text: texts.sections.serverMaster.name
+                });
+            }
+
             function buildServerMasterNameInput() {
                 let $serverMasterName = components.texts.textBox('<div>', {
                     name: 'ServerMaster',
-                    text: texts.sections.serverMaster.name
+                    text: texts.nameInputTitle
                 });
                 serverMasterName = $serverMasterName.$input;
 
@@ -140,11 +151,12 @@ define(
 
             function buildServerMasterEmailInput() {
                 let $serverMasterEmailInput = components.texts.textBox('<div>', {
-                    name: 'ServerMasterAddress'
+                    name: 'ServerMasterAddress',
+                    text: texts.emailInputTitle
                 });
                 serverMasterEmail = $serverMasterEmailInput.$input;
 
-                return serverMasterEmail;
+                return $serverMasterEmailInput;
             }
 
             function buildCreateServerMasterButton() {
@@ -169,21 +181,31 @@ define(
             }
 
             return new BEM({
-                block: 'imcms-settings-row',
+                block: 'server-master',
                 elements: {
+                    'settings-title': buildServerMasterTitle(),
                     'settings-input-name': buildServerMasterNameInput(),
                     'settings-input-email': buildServerMasterEmailInput(),
                     'settings-button': buildCreateServerMasterButton(),
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {
+                'class': 'imcms-settings-row'
+            });
         }
 
         function buildWebMasterRow() {
 
+            function buildWebMasterTitle() {
+                return $('<div>', {
+                    'class': 'imcms-title',
+                    text: texts.sections.webMaster.name
+                })
+            }
+
             function buildCreateInputWebMasterName() {
                 let $nameWebMasterInput = components.texts.textBox('<div>', {
                     name: 'WebMaster',
-                    text: texts.sections.webMaster.name
+                    text: texts.nameInputTitle
                 });
                 webMasterFieldName = $nameWebMasterInput.$input;
 
@@ -192,7 +214,8 @@ define(
 
             function buildCreateInputWebMasterEmail() {
                 let $emailWebMasterInput = components.texts.textBox('<div>', {
-                    name: 'WebMasterAddress'
+                    name: 'WebMasterAddress',
+                    text: texts.emailInputTitle
                 });
                 webMasterFieldEmail = $emailWebMasterInput.$input;
 
@@ -222,13 +245,16 @@ define(
             }
 
             return new BEM({
-                block: 'imcms-settings-row',
+                block: 'web-master',
                 elements: {
+                    'settings-title': buildWebMasterTitle(),
                     'settings-input-name': buildCreateInputWebMasterName(),
                     'settings-input-email': buildCreateInputWebMasterEmail(),
                     'settings-button': buildCreateMasterWebButton(),
                 }
-            }).buildBlockStructure('<div>');
+            }).buildBlockStructure('<div>', {
+                'class': 'imcms-settings-row'
+            });
         }
 
         return new SuperAdminTab(texts.name, [
