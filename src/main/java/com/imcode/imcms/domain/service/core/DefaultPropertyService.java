@@ -32,4 +32,9 @@ public class DefaultPropertyService implements PropertyService {
     public List<String> findAllAliases() {
         return propertyRepository.findAllAliases();
     }
+
+    @Override
+    public List<Property> findByDocId(int docId) {
+        return propertyRepository.findByDocId(docId);
+    }
 }

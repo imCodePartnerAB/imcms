@@ -14,4 +14,6 @@ public interface PropertyService {
     Integer getDocIdByAlias(String alias);
 
     List<String> findAllAliases();
+
+    List<Property> findByDocId(int docId);
 }
