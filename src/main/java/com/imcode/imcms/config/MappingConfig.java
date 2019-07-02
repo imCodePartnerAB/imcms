@@ -19,6 +19,8 @@ import com.imcode.imcms.domain.service.DocumentMenuService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.UserService;
 import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.mapping.jpa.doc.Property;
+import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
@@ -58,6 +60,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -348,7 +351,7 @@ class MappingConfig {
     }
 
     @Bean
-    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService) {
+    public Function<DocumentDTO, Meta> documentDtoToMeta(CategoryService categoryService, PropertyRepository propertyRepository) {
         return documentDTO -> {
             final Meta meta = new Meta();
             final Integer version = documentDTO.getCurrentVersion().getId();
@@ -396,7 +399,12 @@ class MappingConfig {
 
             meta.setModifiedDatetime(modifiedDatetime);
 
-            meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+            List<Property> properties = propertyRepository.findByDocId(documentDTO.getId());
+            Map<String, String> propertiesMap = properties.stream().collect((Collectors.toMap(Property::getName, Property::getValue)));
+            meta.setProperties(propertiesMap);
+            if (meta.getProperties().containsKey(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) {
+                meta.getProperties().replace(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+            }
 
             meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
             meta.setSearchDisabled(documentDTO.isSearchDisabled());
