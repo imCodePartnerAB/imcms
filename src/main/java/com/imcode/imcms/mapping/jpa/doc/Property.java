@@ -31,7 +31,7 @@ public class Property implements Serializable {
     @Column(name = "key_name", nullable = false)
     private String name;
 
-    @Column(name = "value", nullable = false, unique = true)
+    @Column(name = "value", nullable = false)
     private String value;
 
     public Integer getId() {
