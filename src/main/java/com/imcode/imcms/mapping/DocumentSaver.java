@@ -32,6 +32,7 @@ import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.document.textdocument.TextDomainObject;
 import imcode.server.user.UserDomainObject;
 import imcode.util.Utility;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -347,7 +348,7 @@ public class DocumentSaver {
     private void checkIfAliasAlreadyExist(DocumentDomainObject document) throws AliasAlreadyExistsInternalException {
         String alias = document.getAlias();
 
-        if (alias != null) {
+        if (StringUtils.isNotBlank(alias)) {
             Integer documentId = propertyService.getDocIdByAlias(alias);
             if (documentId != null && !documentId.equals(document.getId())) {
                 throw new AliasAlreadyExistsInternalException(
