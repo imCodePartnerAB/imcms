@@ -399,12 +399,21 @@ class MappingConfig {
 
             meta.setModifiedDatetime(modifiedDatetime);
 
-            List<Property> properties = propertyRepository.findByDocId(documentDTO.getId());
-            Map<String, String> propertiesMap = properties.stream().collect((Collectors.toMap(Property::getName, Property::getValue)));
-            meta.setProperties(propertiesMap);
-            if (meta.getProperties().containsKey(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) {
-                meta.getProperties().replace(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+            if (null == documentDTO.getId()) {
+                meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+            } else {
+                List<Property> properties = propertyRepository.findByDocId(documentDTO.getId());
+                if (properties.isEmpty()) {
+                    meta.getProperties().put(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+                } else {
+                    Map<String, String> propertiesMap = properties.stream().collect((Collectors.toMap(Property::getName, Property::getValue)));
+                    meta.setProperties(propertiesMap);
+                    if (meta.getProperties().containsKey(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS)) {
+                        meta.getProperties().replace(DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS, documentDTO.getAlias());
+                    }
+                }
             }
+
 
             meta.setDisabledLanguageShowMode(documentDTO.getDisabledLanguageShowMode());
             meta.setSearchDisabled(documentDTO.isSearchDisabled());
