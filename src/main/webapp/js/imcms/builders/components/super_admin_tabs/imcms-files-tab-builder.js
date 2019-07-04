@@ -75,6 +75,10 @@ define(
             return $fileSecondContainer;
         }
 
+        function buildDocumentsContainer() {
+            return fileEditor.displayDoc();
+        }
+
         let filesContainer;
 
         function buildTableFilesContainer() {
@@ -164,7 +168,8 @@ define(
             buildTableFilesContainer(),
             buildMoveButtons(),
             buildCopyButtons(),
-            buildButtonsActionContainer()
+            buildButtonsActionContainer(),
+            buildDocumentsContainer()
         ]);
     }
 );

@@ -1,8 +1,8 @@
 define(
     'imcms-file-editor',
     ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery'],
-    function (modal, texts, BEM, components, fileRestApi, fileToRow, $) {
+        'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer'],
+    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow) {
 
         texts = texts.superAdmin.files;
 
@@ -13,12 +13,51 @@ define(
         let currentFirstPath;
         let currentSecondPath;
         let windowEditFile;
+        let $documentsContainer;
+
+
+        const docContainer = {
+            documents: false,
+            callback: [],
+            whenFilesLoaded: function (callback) {
+                (this.documents) ? callback(this.documents) : this.callback.push(callback);
+            },
+            runCallbacks: function (documents) {
+                this.documents = documents;
+
+                this.callback.forEach(callback => {
+                    callback(documents);
+                });
+            }
+        };
+
+        function buildDocumentsContainer() {
+            $documentsContainer = $('<div>', {
+                'class': 'table-documents',
+                'style': 'display: none;'
+            });
+
+
+            return $documentsContainer;
+        }
+
+        function buildTitleRow() {
+            return new BEM({
+                block: 'title-doc-row',
+                elements: {
+                    'doc-id': $('<div>', {text: 'Document Id'}), //todo localize!
+                    'doc-type': $('<div>', {text: 'Type'})
+                }
+            }).buildBlockStructure('<div>', {
+                'class': 'table-title'
+            });
+        }
 
         function buildViewFirstFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
             currentFile = file;
-            $fileSourceRow = $fileRow;
 
+            $fileSourceRow = $fileRow;
             if (file === '/..' || file.fileType === 'DIRECTORY') {
                 fileRestApi.get(path).done(files => {
                     let filesRows = files.map(file => fileToRow.transformFirstColumn(file, this));
@@ -39,20 +78,13 @@ define(
                 let templateName = {
                     template: currentFile.fullPath
                 };
-                fileRestApi.getDocuments(templateName).done(
-
-
-                ).fail(() => modal.buildErrorMessage("localize!"));
+                fileRestApi.getDocuments(templateName).done(documents => {
+                        let documentsRows = documents.map(doc => docToRow.transform(doc, this));
+                        $documentsContainer.append(buildTitleRow());
+                        $documentsContainer.append(documentsRows).show();
+                    }
+                ).fail(() => modal.buildErrorWindow("localize!"));
             }
-        }
-
-        let $documentsContainer;
-
-        function buildDocumentsContainer() {
-            $documentsContainer = $('<div>', {
-                'class': 'table-documents'
-            });
-
 
         }
 
@@ -240,25 +272,6 @@ define(
             });
         }
 
-        function onCancelChanges($fileRowElement, file) {
-
-            getOnDiscardChanges(() => {
-                onFileView = onFileSimpleView;
-                currentFile = file;
-                $fileSourceRow = $fileRowElement;
-                prepareFileView();
-            }).call();
-        }
-
-        function getOnDiscardChanges(onConfirm) {
-            return () => {
-                modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
-                    if (!confirmed) return;
-                    onConfirm.call();
-                });
-            }
-        }
-
         let onEditDelegate = onSimpleEdit;
         let onFileView = onFileSimpleView;
         let $fileSourceRow;
@@ -354,7 +367,8 @@ define(
             moveFileRight: moveFileRight,
             moveFileLeft: moveFileLeft,
             copyFileRight: copyFileRight,
-            copyFileLeft: copyFileLeft
+            copyFileLeft: copyFileLeft,
+            displayDoc: buildDocumentsContainer,
         };
 
         return fileEditor;

@@ -168,6 +168,23 @@
     justify-content: space-between;
 }
 
+.table-documents {
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid gainsboro;
+}
+
+.doc-info-row {
+    display: flex;
+}
+
+.title-doc-row.table-title {
+    display: flex;
+    font-weight: 600;
+    margin-bottom: 10px;
+    padding: 5px;
+}
+
 .first-sub-files,
 .second-sub-files {
     height: 200px;
