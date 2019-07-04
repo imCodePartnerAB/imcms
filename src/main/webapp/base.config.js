@@ -183,6 +183,7 @@ module.exports = {
                                 'imcms-profile-editor',
                                 'imcms-profile-to-row-transformer',
                                 'imcms-file-to-row-transformer',
+                                'imcms-document-transformer',
                                 'imcms-file-editor',
                                 'imcms-rule-editor',
                                 'imcms-rule-to-row-transformer',
