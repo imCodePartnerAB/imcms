@@ -3,12 +3,16 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
+import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
+import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
+import com.imcode.imcms.domain.dto.DocumentDTO;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -26,10 +30,12 @@ import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 public class FileServiceTest extends WebAppSpringTestConfig {
 
-    private final String testFileName = "fileName.txt";
+    private final String testFileName = "fileName.jsp";
     private final String testFileName2 = "fileName2.txt";
+    private final String testTemplateName = "templateTest";
     private final String testDirectoryName = "dirName";
     private final String testDirectoryName2 = testDirectoryName + "two";
     private final String testDirectoryName3 = testDirectoryName + "three";
@@ -37,14 +43,73 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private DefaultFileService fileService;
 
+    @Autowired
+    private TemplateDataInitializer templateDataInitializer;
+
+    @Autowired
+    private DocumentDataInitializer documentDataInitializer;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
     @BeforeEach
     @AfterEach
     public void setUp() {
+        templateDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
         testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
     }
+
+
+    @Test
+    public void getDocumentsByTemplateName_When_TemplateHasDocuments_Expected_CorrectSize() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path template = firstRootPath.resolve(testTemplateName);
+        final String templateName = template.getFileName().toString();
+        DocumentDTO document = documentDataInitializer.createData();
+        Files.createDirectory(firstRootPath);
+        Files.createFile(template);
+        templateDataInitializer.createData(document.getId(), templateName, templateName);
+
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(template);
+        assertEquals(1, documents.size());
+    }
+
+    @Test
+    public void getDocumentsByTemplateName_When_TemplateHasNotDocuments_Expected_EmptyResult() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path template = firstRootPath.resolve(testTemplateName);
+        final String templateName = template.getFileName().toString();
+        Files.createDirectory(firstRootPath);
+        Files.createFile(template);
+        templateDataInitializer.createData(templateName);
+
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(template);
+        assertTrue(documents.isEmpty());
+        assertEquals(0, documents.size());
+    }
+
+    @Test
+    public void getDocumentsByTemplateName_When_TemplateToOutSideRootDir_Expected_CorrectException() {
+        final Path pathOutSide = Paths.get(testTemplateName);
+        final String templateName = pathOutSide.getFileName().toString();
+        DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), templateName, templateName);
+
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getDocumentsByTemplatePath(pathOutSide));
+
+    }
+
+    @Test
+    public void getDocumentsByTemplateName_When_GetImage_Expected_EmptyResult() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path imagePath = firstRootPath.resolve("image.png");
+        Files.createDirectory(firstRootPath);
+        Files.createFile(imagePath);
+
+        assertTrue(fileService.getDocumentsByTemplatePath(imagePath).isEmpty());
+    }
+
 
     @Test
     public void getRootPaths_When_PathsCorrect_Expected_CorrectSourceFiles() throws IOException {
