@@ -98,14 +98,14 @@ public class FileController {
         final List<SourceFile> sourceFiles = new ArrayList<>();
 
         for (MultipartFile file : files) {
-            final String fileName = file.getName();
-            SourceFile sourceFile = new SourceFile(fileName, targetDirectory + "/" + fileName, FILE);
+            final Path fileName = Paths.get(file.getName());
+            final Path target = Paths.get(targetDirectory);
+            SourceFile sourceFile = new SourceFile(fileName.toString(), target.resolve(fileName).toString(), FILE);
 
             defaultFileService.saveFile(Paths.get(sourceFile.getFullPath()), file.getBytes(), CREATE_NEW);
 
             sourceFiles.add(sourceFile);
         }
-
         return sourceFiles;
     }
 
