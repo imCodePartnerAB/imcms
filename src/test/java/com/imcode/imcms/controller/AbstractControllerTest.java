@@ -143,6 +143,18 @@ public abstract class AbstractControllerTest {
                 .content(asJson(content));
     }
 
+    protected MockHttpServletRequestBuilder getPutRequestBuilderWithContent(Object content, String path) {
+        return MockMvcRequestBuilders.put(controllerPath() + path)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(content));
+    }
+
+    protected MockHttpServletRequestBuilder getPostRequestBuilderWithContent(Object content, String path) {
+        return MockMvcRequestBuilders.post(controllerPath() + path)
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(asJson(content));
+    }
+
     private ResultActions performRequestBuilderExpectedStatusAndContentJsonUtf8(MockHttpServletRequestBuilder builder, int statusCode) throws Exception {
         return performRequestBuilderExpectedStatus(builder, statusCode)
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
