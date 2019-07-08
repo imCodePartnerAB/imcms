@@ -354,11 +354,9 @@ public class FileControllerTest extends AbstractControllerTest {
     @Test
     public void uploadFile_When_FileExistsAndUploadInRoot_Expected_OkAndUploadFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path target = firstRootPath.resolve(testDirectoryName);
         final byte[] imageFileBytes = Files.readAllBytes(testImageFile.toPath());
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
         Files.createDirectory(firstRootPath);
-        Files.createDirectory(target);
 
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
                 .file(file)
