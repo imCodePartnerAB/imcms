@@ -1,8 +1,9 @@
 define(
     'imcms-file-editor',
     ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder',
-        'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer'],
-    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow) {
+        'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer',
+        "imcms-modal-window-builder"],
+    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, modalWindow) {
 
         texts = texts.superAdmin.files;
 
@@ -14,22 +15,7 @@ define(
         let currentSecondPath;
         let windowEditFile;
         let $documentsContainer;
-
-
-        const docContainer = {
-            documents: false,
-            callback: [],
-            whenFilesLoaded: function (callback) {
-                (this.documents) ? callback(this.documents) : this.callback.push(callback);
-            },
-            runCallbacks: function (documents) {
-                this.documents = documents;
-
-                this.callback.forEach(callback => {
-                    callback(documents);
-                });
-            }
-        };
+        let $documentsData;
 
         function buildDocumentsContainer() {
             $documentsContainer = $('<div>', {
@@ -41,12 +27,24 @@ define(
             return $documentsContainer;
         }
 
+        function getViewDocById($docRow, doc) {
+            let question = texts.warnViewDocMessage;
+
+            modalWindow.buildModalWindow(question, function (answer) {
+                if (!answer) {
+                    return;
+                }
+
+                window.location.replace("/" + doc.id);
+            });
+        }
+
         function buildTitleRow() {
             return new BEM({
                 block: 'title-doc-row',
                 elements: {
-                    'doc-id': $('<div>', {text: 'Document Id'}), //todo localize!
-                    'doc-type': $('<div>', {text: 'Type'})
+                    'doc-id': $('<div>', {text: texts.documentData.docId}),
+                    'doc-type': $('<div>', {text: texts.documentData.docType})
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'table-title'
@@ -71,6 +69,8 @@ define(
                     $filesContainer.find('.first-sub-files').remove();
                     $filesContainer.append(firstSubFilesContainer);
 
+                    $documentsContainer.hide();
+
                     currentFirstPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
@@ -79,9 +79,14 @@ define(
                     template: currentFile.fullPath
                 };
                 fileRestApi.getDocuments(templateName).done(documents => {
+                    if (documents.length > 0) {
+                        $documentsData = $('<div>').addClass('documents-data');
                         let documentsRows = documents.map(doc => docToRow.transform(doc, this));
-                        $documentsContainer.append(buildTitleRow());
-                        $documentsContainer.append(documentsRows).show();
+                        $documentsContainer.find('.documents-data').remove();
+                        $documentsData.append(buildTitleRow());
+                        $documentsData.append(documentsRows);
+                        $documentsContainer.append($documentsData).show();
+                    }
                     }
                 ).fail(() => modal.buildErrorWindow("localize!"));
             }
@@ -288,7 +293,6 @@ define(
 
         function onSimpleEdit($fileRow, file) {
             buildViewFirstFilesContainer($fileRow, file);
-            // onEditFile();
         }
 
         function onFileSimpleView($fileRowElement, file) {
@@ -368,7 +372,8 @@ define(
             moveFileLeft: moveFileLeft,
             copyFileRight: copyFileRight,
             copyFileLeft: copyFileLeft,
-            displayDoc: buildDocumentsContainer,
+            displayDocs: buildDocumentsContainer,
+            viewDoc: getViewDocById
         };
 
         return fileEditor;
