@@ -176,6 +176,8 @@
 
 .doc-info-row {
     display: flex;
+    padding: 5px;
+    cursor: pointer;
 }
 
 .title-doc-row.table-title {
@@ -216,8 +218,16 @@
 
 .file-row:hover,
 .directory-row:hover,
-.file-second-row:hover {
+.file-second-row:hover,
+.doc-info-row:hover {
     background-color: #dfedff;
+}
+
+.doc-info-row__document-id,
+.doc-info-row__document-type,
+.title-doc-row__doc-id,
+.title-doc-row__doc-type {
+    width: 40%;
 }
 
 .file-row__file-name,
