@@ -580,7 +580,8 @@ const texts = {
                     downloadError: 'Misslyckades med att skapa nedladdningsfil. Försök igen!',
                     moveError: 'Misslyckades med att flytta filen. Försök igen!',
                     copyError: 'Misslyckades med att kopiera filen. Försök igen!',
-                    uploadError: 'Det gick inte att ladda upp filen. Försök igen!'
+                    uploadError: 'Det gick inte att ladda upp filen. Försök igen!',
+                    loadDocError: 'Misslyckades med att ladda dokument!'
                 },
                 documentData: {
                     docId: 'Document id',
@@ -1307,7 +1308,8 @@ const texts = {
                     downloadError: 'Failed to create download file. Try again!',
                     moveError: 'Failed to move file. Try again!',
                     copyError: 'Failed to copy file. Try again!',
-                    uploadError: 'Failed to upload file. Try again!'
+                    uploadError: 'Failed to upload file. Try again!',
+                    loadDocError: 'Failed to load documents!'
                 }
             },
             search: {
