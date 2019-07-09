@@ -562,6 +562,7 @@ const texts = {
                 warnChangeMessage: 'Vill du verkligen ändra fil?',
                 warnDeleteMessage: 'Ta du verkligen bort fil?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
+                warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
                     createDirectory: 'Skapa katalog',
@@ -580,6 +581,10 @@ const texts = {
                     moveError: 'Misslyckades med att flytta filen. Försök igen!',
                     copyError: 'Misslyckades med att kopiera filen. Försök igen!',
                     uploadError: 'Det gick inte att ladda upp filen. Försök igen!'
+                },
+                documentData: {
+                    docId: 'Document id',
+                    docType: 'Document Type',
                 }
             },
             search: {
@@ -1284,6 +1289,7 @@ const texts = {
                 warnChangeMessage: 'Do you really want to change file?',
                 warnDeleteMessage: 'Do you really delete file?',
                 warnEditMessage: 'Do you really edit content file?',
+                warnViewDocMessage: 'Do you want to redirect on current document?',
                 title: {
                     createFileName: 'New file/directory name',
                     createDirectory: 'Create directory',
