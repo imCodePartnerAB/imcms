@@ -76,7 +76,7 @@ define(
         }
 
         function buildDocumentsContainer() {
-            return fileEditor.displayDoc();
+            return fileEditor.displayDocs();
         }
 
         let filesContainer;

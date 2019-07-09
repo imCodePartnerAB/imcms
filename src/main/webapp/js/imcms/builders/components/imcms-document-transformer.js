@@ -1,15 +1,12 @@
 define(
-    'imcms-document-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms'],
-    function (BEM, $, components, texts, imcms) {
-        texts = texts.files;
+    'imcms-document-transformer', ['imcms-bem-builder', 'jquery'],
+    function (BEM, $) {
 
         function getDocumentOnClicked(document, fileEditor) {
             return function () {
                 const $this = $(this);
 
-                if ($this.hasClass('documents-table__document-row--active')) return;
-
-                // fileEditor.viewFirstFilesContainer($this, document);
+                fileEditor.viewDoc($this, document);
             }
         }
 
