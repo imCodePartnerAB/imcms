@@ -163,10 +163,26 @@ define(
             }).buildBlockStructure('<div>')
         }
 
+        function buildTitleMove() {
+            return $('<div>', {
+                'class': 'title-move',
+                text: texts.title.titleByMove
+            });
+        }
+
+        function buildTitleCopy() {
+            return $('<div>', {
+                'class': 'title-copy',
+                text: texts.title.titleByCopy
+            });
+        }
+
 
         return new SuperAdminTab(texts.name, [
             buildTableFilesContainer(),
+            buildTitleMove(),
             buildMoveButtons(),
+            buildTitleCopy(),
             buildCopyButtons(),
             buildButtonsActionContainer(),
             buildDocumentsContainer()
