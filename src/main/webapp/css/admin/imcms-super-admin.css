@@ -196,11 +196,11 @@
 }
 
 .first-sub-files {
-    background-color: #b94a48;
+    background-color: #a1a1a1;
 }
 
 .second-sub-files {
-    background-color: aqua;
+    background-color: #bfe6ff;
 }
 
 .file-row,
@@ -263,8 +263,18 @@
 .buttons-move,
 .buttons-copy {
     display: inline-flex;
-    float: right;
-    padding-right: 48%;
+    justify-content: center;
+    width: 85%;
+
+}
+
+.title-move,
+.title-copy {
+    width: 85%;
+    text-align: center;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    padding-top: 3%;
 }
 
 .buttons-action__first-action {
