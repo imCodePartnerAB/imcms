@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
+import static ucar.httpservices.HTTPAuthStore.log;
 
 @Service
 public class DefaultFileService implements FileService {
@@ -59,6 +60,8 @@ public class DefaultFileService implements FileService {
         if (countMatches > 0) {
             return true;
         } else {
+            log.error(finalNormalize);
+            log.error("ROOT PATH ON CHECK! " + rootPaths.get(0));
             throw new FileAccessDeniedException("File access denied!");
         }
     }
