@@ -556,7 +556,7 @@ const texts = {
                 rename: 'Ändra namn',
                 add: 'Lägg till',
                 moveRight: 'Flytta höger',
-                moveLeft: 'flytta vänster',
+                moveLeft: 'Flytta vänster',
                 copyRight: 'Kopiera till höger',
                 copyLeft: 'Kopiera till vänster',
                 warnChangeMessage: 'Vill du verkligen ändra fil?',
@@ -571,6 +571,8 @@ const texts = {
                     copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
+                    titleByMove: 'Knappar för flyttfil',
+                    titleByCopy: 'Knappar för kopieringsfilen'
                 },
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
@@ -584,8 +586,8 @@ const texts = {
                     loadDocError: 'Misslyckades med att ladda dokument!'
                 },
                 documentData: {
-                    docId: 'Document id',
-                    docType: 'Document Type',
+                    docId: 'Dokument-id',
+                    docType: 'Dokumenttyp',
                 }
             },
             search: {
@@ -1299,6 +1301,8 @@ const texts = {
                     copy: 'Copy',
                     download: 'Download',
                     edit: 'Edit',
+                    titleByMove: 'Buttons for move file',
+                    titleByCopy: 'Buttons for copy file'
                 },
                 error: {
                     loadError: 'Failed to load files. Try again!',
@@ -1310,6 +1314,10 @@ const texts = {
                     copyError: 'Failed to copy file. Try again!',
                     uploadError: 'Failed to upload file. Try again!',
                     loadDocError: 'Failed to load documents!'
+                },
+                documentData: {
+                    docId: 'Document id',
+                    docType: 'Document Type',
                 }
             },
             search: {
