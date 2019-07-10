@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.controller.AbstractControllerTest;
