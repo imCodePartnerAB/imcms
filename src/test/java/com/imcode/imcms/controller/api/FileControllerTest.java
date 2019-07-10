@@ -23,10 +23,7 @@ import java.util.Properties;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -74,7 +71,7 @@ public class FileControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
                 controllerPath() + pathDir);
 
-//        performRequestBuilderExpectedOk(requestBuilder);
+        performRequestBuilderExpectedOk(requestBuilder);
     }
 
     @Test
@@ -120,13 +117,13 @@ public class FileControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = get(
                 controllerPath() + pathDir);
 
-//        final String jsonResponse = getJsonResponse(requestBuilder);
-//        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
-//        });
-//
-//        assertNotNull(files);
-//        assertFalse(files.isEmpty());
-//        assertEquals(1, files.size());
+        final String jsonResponse = getJsonResponse(requestBuilder);
+        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
+        });
+
+        assertNotNull(files);
+        assertFalse(files.isEmpty());
+        assertEquals(1, files.size());
     }
 
     @Test
@@ -142,14 +139,14 @@ public class FileControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = get(
                 controllerPath() + pathDir2);
 
-//        final String jsonResponse = getJsonResponse(requestBuilder);
-//        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
-//        });
-//
-//        assertNotNull(files);
-//        assertTrue(files.isEmpty());
-//        assertEquals(0, files.size());
-//        performRequestBuilderExpectedOk(requestBuilder);
+        final String jsonResponse = getJsonResponse(requestBuilder);
+        final List<SourceFile> files = fromJson(jsonResponse, new TypeReference<List<SourceFile>>() {
+        });
+
+        assertNotNull(files);
+        assertTrue(files.isEmpty());
+        assertEquals(0, files.size());
+        performRequestBuilderExpectedOk(requestBuilder);
     }
 
     @Test
@@ -266,19 +263,19 @@ public class FileControllerTest extends AbstractControllerTest {
 
         final HttpServletRequest request = mock(HttpServletRequest.class);
         given(request.getRequestURI()).willReturn(controllerPath() + pathDir.toString());
-//        assertEquals(2, fileController.getFiles(request).size());
-//
-//        Properties properties = new Properties();
-//        properties.setProperty("src", pathFile.toString());
-//        properties.setProperty("target", pathDir3.toString());
-//
-//        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(properties, "copy");
-//
-//        performRequestBuilderExpectedOk(requestBuilder);
-//
-//        assertTrue(Files.exists(pathFile));
-//        assertEquals(2, fileController.getFiles(request).size());
-//        assertTrue(Files.exists(pathDir3));
+        assertEquals(2, fileController.getFiles(request).size());
+
+        Properties properties = new Properties();
+        properties.setProperty("src", pathFile.toString());
+        properties.setProperty("target", pathDir3.toString());
+
+        final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(properties, "copy");
+
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertTrue(Files.exists(pathFile));
+        assertEquals(2, fileController.getFiles(request).size());
+        assertTrue(Files.exists(pathDir3));
     }
 
     @Test
@@ -294,21 +291,21 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertFalse(Files.exists(pathFile2));
 
-//        final HttpServletRequest request = mock(HttpServletRequest.class);
-//        given(request.getRequestURI()).willReturn(controllerPath() + pathFile2.getParent().toString());
-//        assertEquals(1, fileController.getFiles(request).size());
-//
-//        Properties properties = new Properties();
-//        properties.setProperty("src", pathFile.toString());
-//        properties.setProperty("target", pathFile2.toString());
-//
-//        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(properties, "move");
-//
-//        performRequestBuilderExpectedOk(requestBuilder);
-//
-//        assertEquals(2, fileController.getFiles(request).size());
-//        assertFalse(Files.exists(pathFile));
-//        assertTrue(Files.exists(pathFile2));
+        final HttpServletRequest request = mock(HttpServletRequest.class);
+        given(request.getRequestURI()).willReturn(controllerPath() + pathFile2.getParent().toString());
+        assertEquals(1, fileController.getFiles(request).size());
+
+        Properties properties = new Properties();
+        properties.setProperty("src", pathFile.toString());
+        properties.setProperty("target", pathFile2.toString());
+
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(properties, "move");
+
+        performRequestBuilderExpectedOk(requestBuilder);
+
+        assertEquals(2, fileController.getFiles(request).size());
+        assertFalse(Files.exists(pathFile));
+        assertTrue(Files.exists(pathFile2));
     }
 
     @Test
@@ -330,11 +327,11 @@ public class FileControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(properties, "rename");
 
         performRequestBuilderExpectedOk(requestBuilder);
-//        final String renamedPath = fileController.getFiles(request).get(0).getFullPath();
-//        assertNotNull(renamedPath);
-//        assertTrue(Files.exists(pathFile.getParent().resolve(pathFile2.getFileName())));
-//        assertFalse(Files.exists(pathFile));
-//        assertEquals(pathFile2.getFileName(), Paths.get(renamedPath).getFileName());
+        final String renamedPath = fileController.getFiles(request).get(0).getFullPath();
+        assertNotNull(renamedPath);
+        assertTrue(Files.exists(pathFile.getParent().resolve(pathFile2.getFileName())));
+        assertFalse(Files.exists(pathFile));
+        assertEquals(pathFile2.getFileName(), Paths.get(renamedPath).getFileName());
     }
 
     @Test

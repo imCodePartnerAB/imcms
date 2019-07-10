@@ -28,10 +28,7 @@ import java.util.List;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
 public class FileServiceTest extends WebAppSpringTestConfig {
@@ -143,10 +140,10 @@ public class FileServiceTest extends WebAppSpringTestConfig {
                 new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE)
         );
 
-//        final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
-//
-//        assertEquals(files.size(), foundFiles.size());
-//        assertEquals(files, foundFiles);
+        final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
+
+        assertEquals(files.size(), foundFiles.size());
+        assertEquals(files, foundFiles);
     }
 
     @Test
@@ -163,9 +160,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
                 new SourceFile(pathDir2.getFileName().toString(), pathDir2.toString(), DIRECTORY),
                 new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE)
         );
-//        final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
-//
-//        assertEquals(expectedFiles.size(), foundFiles.size());
+        final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
+
+        assertEquals(expectedFiles.size(), foundFiles.size());
     }
 
     @Test
@@ -176,7 +173,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootPath);
         Files.createDirectory(pathDir);
 
-//        assertEquals(0, fileService.getFiles(pathDir).size());
+        assertEquals(0, fileService.getFiles(pathDir).size());
     }
 
     @Test
@@ -390,14 +387,14 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         List<Path> paths = Collections.singletonList(Files.createFile(pathFileByDir));
 
-//        assertEquals(3, fileService.getFiles(firstRootPath).size());
-//        assertEquals(0, fileService.getFiles(pathDir).size());
-//
-//        fileService.moveFile(paths, pathDir);
-//
-//        assertFalse(Files.exists(pathFileByDir));
-//        assertEquals(2, fileService.getFiles(firstRootPath).size());
-//        assertEquals(1, fileService.getFiles(pathDir).size());
+        assertEquals(3, fileService.getFiles(firstRootPath).size());
+        assertEquals(0, fileService.getFiles(pathDir).size());
+
+        fileService.moveFile(paths, pathDir);
+
+        assertFalse(Files.exists(pathFileByDir));
+        assertEquals(2, fileService.getFiles(firstRootPath).size());
+        assertEquals(1, fileService.getFiles(pathDir).size());
     }
 
     @Test
@@ -413,15 +410,15 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFileByDir);
 
 
-//        assertEquals(2, fileService.getFiles(firstRootPath).size());
-//        assertEquals(0, fileService.getFiles(pathDir).size());
-//
-//        SourceFile moved = fileService.moveFile(pathFileByDir, pathFile2ByDir);
-//
-//        assertFalse(Files.exists(pathFileByDir));
-//        assertEquals(1, fileService.getFiles(firstRootPath).size());
-//        assertEquals(1, fileService.getFiles(pathDir).size());
-//        assertNotEquals(pathFileByDir.getFileName(), moved.getFileName());
+        assertEquals(2, fileService.getFiles(firstRootPath).size());
+        assertEquals(0, fileService.getFiles(pathDir).size());
+
+        SourceFile moved = fileService.moveFile(pathFileByDir, pathFile2ByDir);
+
+        assertFalse(Files.exists(pathFileByDir));
+        assertEquals(1, fileService.getFiles(firstRootPath).size());
+        assertEquals(1, fileService.getFiles(pathDir).size());
+        assertNotEquals(pathFileByDir.getFileName(), moved.getFileName());
 
     }
 
@@ -512,8 +509,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFileByDir);
         Files.createFile(pathFile2ByDir2);
 
-//        assertFalse(fileService.getFiles(pathDir).isEmpty());
-//        assertEquals(2, fileService.getFiles(pathDir).size());
+        assertFalse(fileService.getFiles(pathDir).isEmpty());
+        assertEquals(2, fileService.getFiles(pathDir).size());
     }
 
     @Test
