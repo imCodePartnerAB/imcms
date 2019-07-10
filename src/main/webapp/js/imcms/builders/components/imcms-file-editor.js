@@ -86,6 +86,8 @@ define(
                         $documentsData.append(buildTitleRow());
                         $documentsData.append(documentsRows);
                         $documentsContainer.append($documentsData).show();
+                    } else {
+                        $documentsContainer.find('.documents-data').remove();
                     }
                     }
                 ).fail(() => modal.buildErrorWindow("localize!"));
@@ -238,6 +240,7 @@ define(
             fileRestApi.create(fileToSave).done(newFile => {
                 $fileSourceRow = transformColumn((currentFile = newFile), fileEditor);
 
+                $fileSourceRow.addClass('files-table__file-row--active');
                 subFilesContainer.append($fileSourceRow);
 
             }).fail(() => modal.buildErrorWindow(texts.error.createError));
