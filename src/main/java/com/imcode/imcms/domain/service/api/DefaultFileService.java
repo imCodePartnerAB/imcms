@@ -82,14 +82,8 @@ public class DefaultFileService implements FileService {
     @Override
     public List<SourceFile> getFiles(Path path) throws IOException {
         List<Path> paths;
-        String normalizedPath;
-        if (!path.toString().startsWith("/")) {
-            normalizedPath = "/" + path.normalize().toString();
-        } else {
-            normalizedPath = path.normalize().toString();
-        }
-        if (isAllowablePath(Paths.get(normalizedPath)) && Files.isDirectory(Paths.get(normalizedPath))) {
-            paths = Files.list(Paths.get(normalizedPath))
+        if (isAllowablePath(path) && Files.isDirectory(path)) {
+            paths = Files.list(path)
                     .collect(Collectors.toList());
         } else {
             paths = Collections.EMPTY_LIST;

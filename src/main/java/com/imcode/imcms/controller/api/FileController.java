@@ -37,7 +37,7 @@ import static java.util.regex.Pattern.compile;
 @RequestMapping("/files")
 public class FileController {
 
-    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files)(?<path>.*)");
+    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files\\/)(?<path>.*)");
 
     private final DefaultFileService defaultFileService;
 
