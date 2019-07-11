@@ -37,7 +37,7 @@ import static java.util.regex.Pattern.compile;
 @RequestMapping("/files")
 public class FileController {
 
-    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files\\/)(?<path>.*)");
+    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files)(?<path>.*)");
 
     private final DefaultFileService defaultFileService;
 
@@ -62,7 +62,7 @@ public class FileController {
     public List<SourceFile> getFiles(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "");
         List<SourceFile> files;
-        if (null == fileURI) {
+        if (null == fileURI || fileURI.isEmpty()) {
             files = defaultFileService.getRootFiles();
         } else {
             files = defaultFileService.getFiles(Paths.get(fileURI));
