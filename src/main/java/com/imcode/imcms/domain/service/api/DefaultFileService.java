@@ -60,11 +60,7 @@ public class DefaultFileService implements FileService {
         if (countMatches > 0) {
             return true;
         } else {
-            log.error("FINALNORMALIZE " + finalNormalize);
-            log.error("ROOT PATH ON CHECK! " + rootPaths.get(0));
-            log.error("FILE EXIST GET path from client?? " + Files.exists(Paths.get(finalNormalize)));
-            log.error("FILE EXIST GET path from WITH / exists?? " + Files.exists(Paths.get("/" + finalNormalize)));
-            log.error("ROOT FILE EXIST ??" + Files.exists(rootPaths.get(0)));
+            log.error("File access denied ! Got path: " + path);
             throw new FileAccessDeniedException("File access denied!");
         }
     }
@@ -101,6 +97,7 @@ public class DefaultFileService implements FileService {
         if (isAllowablePath(file) && Files.exists(file)) {
             return file;
         } else {
+            log.error("File doesn't exist: " + file);
             throw new NoSuchFileException("File is not exist!");
         }
     }
@@ -111,6 +108,7 @@ public class DefaultFileService implements FileService {
             final String templateName = FilenameUtils.removeExtension(template.getFileName().toString());
             return documentService.getDocumentsByTemplateName(templateName);
         } else {
+            log.error("Template file doesn't exist: " + template);
             throw new NoSuchFileException("File is not exist!");
         }
     }

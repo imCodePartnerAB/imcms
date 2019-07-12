@@ -32,7 +32,6 @@ import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.util.regex.Pattern.compile;
-import static ucar.httpservices.HTTPAuthStore.log;
 
 @RestController
 @RequestMapping("/files")
@@ -47,8 +46,6 @@ public class FileController {
     }
 
     private String getFileName(String path, String endPointName) {
-
-        log.info("GET FILE NAME uri request: " + path);
         Matcher matcher = FILE_NAME_PATTERN.matcher(path);
         String extractedPath = null;
         if (matcher.matches()) {
@@ -60,10 +57,9 @@ public class FileController {
         }
         if (extractedPath != null) {
             if (!Files.exists(Paths.get(extractedPath))) { //if regex or something else remove "/" separator, so need add again
-                extractedPath = "/" + extractedPath;
+                extractedPath = System.getProperty("file.separator") + extractedPath;
             }
         }
-        log.info("EXTRACT PATH form controller " + extractedPath);
         return extractedPath;
     }
 
@@ -94,7 +90,7 @@ public class FileController {
                 .body(content);
     }
 
-    @GetMapping("/documents")
+    @GetMapping("/docs")
     public List<DocumentDTO> getDocumentsByTemplatePath(@RequestParam Path template) throws IOException {
         return defaultFileService.getDocumentsByTemplatePath(template);
     }
