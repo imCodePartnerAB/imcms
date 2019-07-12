@@ -32,6 +32,11 @@ define(
             transformFirstColumn: (file, fileEditor) => {
 
                 let fullName = (file === "/..") ? "/.." : file.fullPath;
+                if (!fullName.startsWith("/")) {
+                    fullName = "/" + fullName;
+                }
+
+                console.log("FULL NAME! " + fullName);
 
                 let infoRowAttributes = {
                     name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
@@ -68,6 +73,12 @@ define(
             transformSecondColumn: (file, fileEditor) => {
 
                 let fullName = (file === "/..") ? "/.." : file.fullPath;
+
+                if (!fullName.startsWith("/")) {
+                    fullName = "/" + fullName;
+                }
+
+                console.log("FULL NAME! " + fullName);
 
                 let infoRowAttributes = {
                     name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),

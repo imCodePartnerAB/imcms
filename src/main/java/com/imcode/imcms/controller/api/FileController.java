@@ -47,9 +47,8 @@ public class FileController {
     }
 
     private String getFileName(String path, String endPointName) {
-        if (!path.startsWith("/")) {
-            log.error("GET FILE NAME WITHOUT SEPARATOR " + path);
-        }
+
+        log.info("GET FILE NAME uri request: " + path);
         Matcher matcher = FILE_NAME_PATTERN.matcher(path);
         String extractedPath = null;
         if (matcher.matches()) {
