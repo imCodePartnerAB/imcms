@@ -60,10 +60,11 @@ public class DefaultFileService implements FileService {
         if (countMatches > 0) {
             return true;
         } else {
-            log.error(finalNormalize);
+            log.error("FINALNORMALIZE " + finalNormalize);
             log.error("ROOT PATH ON CHECK! " + rootPaths.get(0));
             log.error("FILE EXIST GET path from client?? " + Files.exists(Paths.get(finalNormalize)));
-            log.error("ROOT FILE EXIST ??" + Files.exists(rootPaths.get(1)));
+            log.error("FILE EXIST GET path from WITH / exists?? " + Files.exists(Paths.get("/" + finalNormalize)));
+            log.error("ROOT FILE EXIST ??" + Files.exists(rootPaths.get(0)));
             throw new FileAccessDeniedException("File access denied!");
         }
     }

@@ -32,12 +32,13 @@ import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.util.regex.Pattern.compile;
+import static ucar.httpservices.HTTPAuthStore.log;
 
 @RestController
 @RequestMapping("/files")
 public class FileController {
 
-    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files)(?<path>.*)");
+    private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files\\/)(?<path>.*)");
 
     private final DefaultFileService defaultFileService;
 
@@ -46,6 +47,9 @@ public class FileController {
     }
 
     private String getFileName(String path, String endPointName) {
+        if (!path.startsWith("/")) {
+            log.error("GET FILE NAME WITHOUT SEPARATOR " + path);
+        }
         Matcher matcher = FILE_NAME_PATTERN.matcher(path);
         String extractedPath = null;
         if (matcher.matches()) {
@@ -55,6 +59,7 @@ public class FileController {
                 extractedPath = matcher.group("path").substring(endPointName.length() - 1);
             }
         }
+        log.info("EXTRACT PATH form controller " + extractedPath);
         return extractedPath;
     }
 
@@ -72,7 +77,7 @@ public class FileController {
     }
 
     @GetMapping("/file/**")
-    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException { //todo fix bug with png and image
+    public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
         final Path pathFile = Paths.get(fileURI);
         byte[] content = Files.readAllBytes(pathFile);
