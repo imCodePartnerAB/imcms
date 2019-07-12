@@ -53,9 +53,14 @@ define(
 
         function buildViewFirstFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
-            currentFile = file;
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            console.log("PATH FULL IN FIRST: " + path);
 
+            currentFile = file;
             $fileSourceRow = $fileRow;
+
             if (file === '/..' || file.fileType === 'DIRECTORY') {
                 fileRestApi.get(path).done(files => {
                     let filesRows = files.map(file => fileToRow.transformFirstColumn(file, this));
@@ -97,6 +102,12 @@ define(
 
         function buildViewSecondFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentSecondPath + file : file.fullPath;
+
+            if (!path.startsWith("/")) {
+                path = "/" + path;
+            }
+            console.log("PATH FULL IN SECOND: " + path);
+
             currentFile = file;
             $fileSourceRow = $fileRow;
 
