@@ -64,11 +64,14 @@ public class FileController {
 
     @GetMapping("/**")
     public List<SourceFile> getFiles(HttpServletRequest request) throws IOException {
-        final String fileURI = getFileName(request.getRequestURI(), "");
+        String fileURI = getFileName(request.getRequestURI(), "");
         List<SourceFile> files;
         if (null == fileURI || fileURI.isEmpty()) {
             files = defaultFileService.getRootFiles();
         } else {
+            if (!Files.exists(Paths.get(fileURI))) {
+                fileURI = "/" + fileURI;
+            }
             files = defaultFileService.getFiles(Paths.get(fileURI));
         }
 
