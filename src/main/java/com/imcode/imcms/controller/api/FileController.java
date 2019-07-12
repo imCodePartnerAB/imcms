@@ -58,6 +58,11 @@ public class FileController {
                 extractedPath = matcher.group("path").substring(endPointName.length() - 1);
             }
         }
+        if (extractedPath != null) {
+            if (!Files.exists(Paths.get(extractedPath))) { //if regex or something else remove "/" separator, so need add again
+                extractedPath = "/" + extractedPath;
+            }
+        }
         log.info("EXTRACT PATH form controller " + extractedPath);
         return extractedPath;
     }
@@ -69,9 +74,6 @@ public class FileController {
         if (null == fileURI || fileURI.isEmpty()) {
             files = defaultFileService.getRootFiles();
         } else {
-            if (!Files.exists(Paths.get(fileURI))) {
-                fileURI = "/" + fileURI;
-            }
             files = defaultFileService.getFiles(Paths.get(fileURI));
         }
 
