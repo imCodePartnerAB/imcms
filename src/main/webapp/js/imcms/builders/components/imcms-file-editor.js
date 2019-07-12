@@ -53,10 +53,6 @@ define(
 
         function buildViewFirstFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
-            if (!path.startsWith("/")) {
-                path = "/" + path;
-            }
-            console.log("PATH FULL IN FIRST: " + path);
 
             currentFile = file;
             $fileSourceRow = $fileRow;
@@ -95,18 +91,13 @@ define(
                         $documentsContainer.find('.documents-data').remove();
                     }
                     }
-                ).fail(() => modal.buildErrorWindow("localize!"));
+                ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
             }
 
         }
 
         function buildViewSecondFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentSecondPath + file : file.fullPath;
-
-            if (!path.startsWith("/")) {
-                path = "/" + path;
-            }
-            console.log("PATH FULL IN SECOND: " + path);
 
             currentFile = file;
             $fileSourceRow = $fileRow;
@@ -127,6 +118,23 @@ define(
                         currentSecondPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            } else {
+                let templateName = {
+                    template: currentFile.fullPath
+                };
+                fileRestApi.getDocuments(templateName).done(documents => {
+                        if (documents.length > 0) {
+                            $documentsData = $('<div>').addClass('documents-data');
+                            let documentsRows = documents.map(doc => docToRow.transform(doc, this));
+                            $documentsContainer.find('.documents-data').remove();
+                            $documentsData.append(buildTitleRow());
+                            $documentsData.append(documentsRows);
+                            $documentsContainer.append($documentsData).show();
+                        } else {
+                            $documentsContainer.find('.documents-data').remove();
+                        }
+                    }
+                ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
             }
         }
 
@@ -291,31 +299,7 @@ define(
             });
         }
 
-        let onEditDelegate = onSimpleEdit;
-        let onFileView = onFileSimpleView;
         let $fileSourceRow;
-
-        function prepareFileView() {
-            onEditDelegate = onSimpleEdit;
-
-            $fileSourceRow.parent()
-                .find('.files-table__file-row--active')
-                .removeClass('files-table__file-row--active');
-
-            $fileSourceRow.addClass('files-table__file-row--active');
-        }
-
-        function onSimpleEdit($fileRow, file) {
-            buildViewFirstFilesContainer($fileRow, file);
-        }
-
-        function onFileSimpleView($fileRowElement, file) {
-            if (currentFile && currentFile.fullPath === file.fullPath) return;
-            currentFile = file;
-            $fileSourceRow = $fileRowElement;
-
-            prepareFileView();
-        }
 
         function moveFileRight() {
             moveFile(currentSecondPath, secondSubFilesContainer);
