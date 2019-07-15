@@ -67,7 +67,14 @@ public class DefaultFileService implements FileService {
 
     private SourceFile toSourceFile(Path path) {
         final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
-        return new SourceFile(path.getFileName().toString(), path.toString(), fileType);
+        List<String> contents;
+        try {
+            contents = Files.readAllLines(path);
+        } catch (IOException e) {
+            log.info("File has not content!!!");
+            contents = null;
+        }
+        return new SourceFile(path.getFileName().toString(), path.toString(), fileType, contents);
     }
 
     @Override
