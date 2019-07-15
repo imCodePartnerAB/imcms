@@ -2,8 +2,8 @@ define(
     'imcms-file-editor',
     ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder',
         'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer',
-        "imcms-modal-window-builder"],
-    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, modalWindow) {
+        'imcms-super-admin-page-builder', 'imcms'],
+    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow) {
 
         texts = texts.superAdmin.files;
 
@@ -30,7 +30,7 @@ define(
         function getViewDocById($docRow, doc) {
             let question = texts.warnViewDocMessage;
 
-            modalWindow.buildModalWindow(question, function (answer) {
+            modal.buildModalWindow(question, function (answer) {
                 if (!answer) {
                     return;
                 }
@@ -154,6 +154,15 @@ define(
                 let isDirectory = 'DIRECTORY' === currentFile.fileType;
                 newFileNameField.setValue(currentFile.fileName);
                 checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
+                let contentsLine = currentFile.contents;
+                if (contentsLine != null) {
+                    contentTextArea.setValue(
+                        contentsLine.map(line => line + "\n")
+                    );
+                } else {
+                    contentTextArea.setValue(contentsLine);
+                    // contentTextArea.$input.attr('disabled', 'disabled');
+                }
 
                 buildEditFile();
             });
@@ -161,8 +170,8 @@ define(
 
         function buildEditFile(currentPath, subFilesContainer, transformColumn) {
             windowEditFile =
-                modal.buildCreateFileModalWindow(
-                    texts.editorFile, newFileNameField, checkBoxIsDirectory, confirmed => {
+                modal.buildEditFileModalWindow(
+                    texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
                         if (!confirmed) {
                             onEditFile(currentPath, subFilesContainer, transformColumn)
                         }
@@ -174,6 +183,7 @@ define(
 
         function onEditFile(currentPath, subFilesContainer, transformColumn) {
             let name = newFileNameField.getValue();
+            let content = contentTextArea.val();
             if (!name) return;
             let currentFullPath = currentPath + "/" + name;
             let fileToSave = {
@@ -187,6 +197,7 @@ define(
                 $fileSourceRow.remove();
                 $fileSourceRow = transformColumn(currentFile, fileEditor);
                 subFilesContainer.append($fileSourceRow);
+                $fileSourceRow.addClass('files-table__file-row--active');
 
             }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
         }
@@ -205,12 +216,27 @@ define(
 
         let newFileNameField = buildCreateField();
         let checkBoxIsDirectory = buildIsDirectoryCheckBox();
+        let contentTextArea = buildContentTextArea();
+        let editCheckBox = buildIsEditCheckBox();
 
         function buildCreateField() {
             return components.texts.textField('<div>', {
                 text: texts.title.createFileName
             });
 
+        }
+
+        function buildContentTextArea() {
+            return components.texts.textAreaField('<div>', {
+                id: 'content',
+                text: "Contents Localize!",
+            })
+        }
+
+        function buildIsEditCheckBox() {
+            return components.checkboxes.imcmsCheckbox('<div>', {
+                text: 'Edit Content Localize!'
+            })
         }
 
         function buildIsDirectoryCheckBox() {
