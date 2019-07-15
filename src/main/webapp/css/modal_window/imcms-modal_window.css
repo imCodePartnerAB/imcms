@@ -54,12 +54,43 @@
     z-index: 65535;
 }
 
-.imcms-modal-body__name {
-    padding-left: 30px;
-    padding-right: 30px;
+.imcms-edit-modal-window {
+    -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    position: inherit;
+    top: -webkit-calc(50% - 100px);
+    top: -moz-calc(50% - 100px);
+    top: -ms-calc(50% - 100px);
+    top: -o-calc(50% - 100px);
+    top: calc(50% - 100px);
+    left: -webkit-calc(50% - 130px);
+    left: -moz-calc(50% - 130px);
+    left: -ms-calc(50% - 130px);
+    left: -o-calc(50% - 130px);
+    left: calc(50% - 130px);
+    width: 1000px;
+    z-index: 65535;
+    background-color: #d9edf7;
+    display: table-cell;
 }
 
-.imcms-modal-body__is-directory {
+.imcms-modal-body__content {
+    margin-left: 5%
+}
+
+#content {
+    height: 500px;
+    width: 90%;
+}
+
+.imcms-modal-body__name {
+    width: 90%;
+    padding-left: 30px;
+}
+
+.imcms-modal-body__is-directory,
+.imcms-modal-body__edit-content {
     padding-left: 30px;
 }
 
@@ -72,6 +103,7 @@
 }
 
 .imcms-modal-window__modal-head,
+.imcms-edit-modal-window__modal-head,
 .imcms-create-modal-window__modal-head {
     background-color: #389ecf;
 }
