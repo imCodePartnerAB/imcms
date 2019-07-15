@@ -105,7 +105,10 @@ public class FileController {
         for (MultipartFile file : files) {
             final Path fileName = Paths.get(file.getName());
             final Path target = Paths.get(targetDirectory);
-            SourceFile sourceFile = new SourceFile(fileName.toString(), target.resolve(fileName).toString(), FILE);
+            final List<String> content = Files.readAllLines(fileName);
+            SourceFile sourceFile = new SourceFile(
+                    fileName.toString(), target.resolve(fileName).toString(), FILE, content
+            );//todo upload only file? Check!
 
             defaultFileService.saveFile(Paths.get(sourceFile.getFullPath()), file.getBytes(), CREATE_NEW);
 

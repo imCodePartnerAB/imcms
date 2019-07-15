@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -14,6 +15,7 @@ public class SourceFile implements Cloneable, Serializable {
     private String fileName;
     private String fullPath;
     private FileType fileType;
+    private List<String> contents;
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
