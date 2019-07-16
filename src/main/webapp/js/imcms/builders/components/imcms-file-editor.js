@@ -138,6 +138,17 @@ define(
             }
         }
 
+        function setEnableEditContent() {
+            if (!editCheckBox.isChecked()) {
+                contentTextArea.$input.removeAttr('disabled');
+                newFileNameField.$input.attr('disabled', 'disabled');
+                checkBoxIsDirectory.$input.attr('disabled', 'disabled');
+            } else {
+                contentTextArea.$input.attr('disabled', 'disabled');
+                newFileNameField.$input.removeAttr('disabled');
+            }
+        }
+
         function prepareOnEditFileInFirstColumn() {
             prepareOnEditFile(() => buildEditFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn));
         }
@@ -152,8 +163,11 @@ define(
                 if (!confirmed) return;
 
                 let isDirectory = 'DIRECTORY' === currentFile.fileType;
-                newFileNameField.setValue(currentFile.fileName);
+                newFileNameField.setValue(currentFile.fileName).removeAttr('disabled');
                 checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
+                (!editCheckBox.isChecked())
+                    ? contentTextArea.$input.attr('disabled', 'disabled')
+                    : contentTextArea.$input.removeAttr('disabled');
                 let contentsLine = currentFile.contents;
                 if (contentsLine != null) {
                     contentTextArea.setValue(
@@ -161,7 +175,6 @@ define(
                     );
                 } else {
                     contentTextArea.setValue(contentsLine);
-                    // contentTextArea.$input.attr('disabled', 'disabled');
                 }
 
                 buildEditFile();
@@ -172,7 +185,7 @@ define(
             windowEditFile =
                 modal.buildEditFileModalWindow(
                     texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
-                        if (!confirmed) {
+                        if (!confirmed && !editCheckBox.isChecked()) {
                             onEditFile(currentPath, subFilesContainer, transformColumn)
                         }
                     });
@@ -181,15 +194,31 @@ define(
             return windowEditFile;
         }
 
+        // function onEditFileContent(currentPath) {
+        //     let name = newFileNameField.getValue();
+        //     if (!name) return;
+        //     let currentFullPath = currentPath + "/" + name;
+        //
+        //     let fileToSaveWithContent = {
+        //         src: currentFile.fullPath,
+        //         target: currentFullPath,
+        //         content: contentTextArea.getValue()
+        //     };
+        //
+        //     fileRestApi.change(fileToSaveWithContent).done(
+        //         alert("Change content!!")
+        //     ).fail(() => modal.buildErrorWindow(texts.error.editFailed));
+        // }
+
         function onEditFile(currentPath, subFilesContainer, transformColumn) {
             let name = newFileNameField.getValue();
-            let content = contentTextArea.val();
             if (!name) return;
             let currentFullPath = currentPath + "/" + name;
             let fileToSave = {
                 src: currentFile.fullPath,
-                target: currentFullPath
+                target: currentFullPath,
             };
+
 
             fileRestApi.rename(fileToSave).done(newFile => {
                 currentFile = newFile;
@@ -235,7 +264,8 @@ define(
 
         function buildIsEditCheckBox() {
             return components.checkboxes.imcmsCheckbox('<div>', {
-                text: 'Edit Content Localize!'
+                text: 'Edit Content Localize!',
+                click: setEnableEditContent
             })
         }
 
