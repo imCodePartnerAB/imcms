@@ -16,7 +16,7 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.copy = pathParam => rest.ajax.call({url: `${url}/copy/`, type: 'POST', json: true}, pathParam);
 
-    api.change = content => rest.ajax.call({url: `${url}/${content}`, type: 'PUT', json: false});
+    api.change = content => rest.ajax.call({url: `${url}/`, type: 'PUT', json: true}, content);
 
     api.move = pathParam => rest.ajax.call({url: `${url}/move/`, type: 'PUT', json: true}, pathParam);
 
