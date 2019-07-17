@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -105,12 +106,13 @@ public class FileController {
         for (MultipartFile file : files) {
             final Path fileName = Paths.get(file.getName());
             final Path target = Paths.get(targetDirectory);
-            final List<String> content = Files.readAllLines(fileName);
+            final String content = new String(file.getBytes());
+
             SourceFile sourceFile = new SourceFile(
-                    fileName.toString(), target.resolve(fileName).toString(), FILE, content
+                    fileName.toString(), target.resolve(fileName).toString(), FILE, Collections.singletonList(content)
             );//todo upload only file? Check!
 
-            defaultFileService.saveFile(Paths.get(sourceFile.getFullPath()), file.getBytes(), CREATE_NEW);
+            defaultFileService.saveFile(Paths.get(sourceFile.getFullPath()), Collections.singletonList(content), CREATE_NEW);
 
             sourceFiles.add(sourceFile);
         }
@@ -131,11 +133,11 @@ public class FileController {
     }
 
     @PutMapping("/**")
-    public String saveFile(HttpServletRequest request, @RequestBody byte[] newContent) throws IOException {
-        final String fileURI = getFileName(request.getRequestURI(), "");
-        byte[] content = Files.readAllBytes(Paths.get(fileURI));
-        final Path path = defaultFileService.getFile(Paths.get(fileURI), content);
-        return defaultFileService.saveFile(path, newContent, null).toString();
+    public SourceFile saveFile(@RequestBody Properties propertiesFile) throws IOException {
+        byte[] content = Files.readAllBytes(Paths.get(propertiesFile.getProperty("fullPath")));
+        final Path path = defaultFileService.getFile(Paths.get(propertiesFile.getProperty("fullPath")), content);
+        final String newContent = propertiesFile.getProperty("content");
+        return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
     }
 
     @PutMapping("/move/**")
