@@ -577,7 +577,8 @@ const texts = {
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
                     deleteFailed: 'Misslyckades radera!',
-                    editFailed: 'Misslyckades med att byta namn på filen. Försök igen!',
+                    renameFailed: 'Misslyckades med att byta namn på filen. Försök igen!',
+                    editFailed: 'Misslyckades med att redigera filinnehåll. Försök igen!',
                     createError: 'Misslyckades att skapa fil!',
                     downloadError: 'Misslyckades med att skapa nedladdningsfil. Försök igen!',
                     moveError: 'Misslyckades med att flytta filen. Försök igen!',
@@ -1307,7 +1308,8 @@ const texts = {
                 error: {
                     loadError: 'Failed to load files. Try again!',
                     deleteFailed: 'Failed delete!',
-                    editFailed: 'Failed to rename file. Try again!',
+                    renameFailed: 'Failed to rename file. Try again!',
+                    editFailed: 'Failed to edit file content. Try again!',
                     createError: 'Failed to create file!',
                     downloadError: 'Failed to create download file. Try again!',
                     moveError: 'Failed to move file. Try again!',
