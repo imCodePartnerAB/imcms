@@ -170,7 +170,7 @@ define(
                 let contentsLine = currentFile.contents;
                 if (contentsLine) {
                     contentTextArea.setValue(
-                        contentsLine.map(line => line + "\n")
+                        contentsLine.join("\n")
                     );
                 } else {
                     contentTextArea.setValue(contentsLine);
