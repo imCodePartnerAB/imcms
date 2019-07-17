@@ -37,7 +37,7 @@ public interface FileService {
 
     SourceFile copyFile(Path src, Path target) throws IOException;
 
-    Path saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException;
+    Path saveFile(Path location, List<String> contents, OpenOption writeMode) throws IOException;
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
 }

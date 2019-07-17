@@ -160,7 +160,7 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
+    public Path saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
         Path path = null;
         if (isAllowablePath(location)) {
             if (null == writeMode) {
