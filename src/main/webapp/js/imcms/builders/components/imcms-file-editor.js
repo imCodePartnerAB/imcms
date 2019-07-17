@@ -183,31 +183,32 @@ define(
         function buildEditFile(currentPath, subFilesContainer, transformColumn) {
             windowEditFile =
                 modal.buildEditFileModalWindow(
-                    texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
-                        if (!confirmed && !editCheckBox.isChecked()) {
+                    texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, unconfirmed => {
+                        if (!unconfirmed && !editCheckBox.isChecked()) {
                             onEditFile(currentPath, subFilesContainer, transformColumn)
                         }
+                        if (!unconfirmed && editCheckBox.isChecked()) {
+                            onEditFileContent(currentPath)
+                        }
                     });
-
 
             return windowEditFile;
         }
 
-        // function onEditFileContent(currentPath) {
-        //     let name = newFileNameField.getValue();
-        //     if (!name) return;
-        //     let currentFullPath = currentPath + "/" + name;
-        //
-        //     let fileToSaveWithContent = {
-        //         src: currentFile.fullPath,
-        //         target: currentFullPath,
-        //         content: contentTextArea.getValue()
-        //     };
-        //
-        //     fileRestApi.change(fileToSaveWithContent).done(
-        //         alert("Change content!!")
-        //     ).fail(() => modal.buildErrorWindow(texts.error.editFailed));
-        // }
+        function onEditFileContent(currentPath) {
+            let name = newFileNameField.getValue();
+            let currentFullPath = currentPath + "/" + name;
+
+            let fileToSaveWithContent = {
+                fileName: name,
+                fullPath: currentFullPath,
+                content: contentTextArea.getValue()
+            };
+
+            fileRestApi.change(fileToSaveWithContent)
+                .done()
+                .fail(() => modal.buildErrorWindow(texts.error.editFailed));
+        }
 
         function onEditFile(currentPath, subFilesContainer, transformColumn) {
             let name = newFileNameField.getValue();
@@ -227,7 +228,7 @@ define(
                 subFilesContainer.append($fileSourceRow);
                 $fileSourceRow.addClass('files-table__file-row--active');
 
-            }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
+            }).fail(() => modal.buildErrorWindow(texts.error.renameFailed));
         }
 
         function buildDeleteFile() {
