@@ -251,6 +251,10 @@
     width: 50%;
 }
 
+.imcms-modal-body__edit-content {
+    margin-left: 73%;
+}
+
 .file-row.files-table__file-row--active {
     background-color: #59a5e1;
 }

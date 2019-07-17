@@ -259,13 +259,13 @@ define(
         function buildContentTextArea() {
             return components.texts.textAreaField('<div>', {
                 id: 'content',
-                text: "Contents Localize!",
+                text: texts.title.titleContent,
             })
         }
 
         function buildIsEditCheckBox() {
             return components.checkboxes.imcmsCheckbox('<div>', {
-                text: 'Edit Content Localize!',
+                text: texts.title.titleEditContent,
                 change: setEnableEditContent
             })
         }

@@ -565,14 +565,16 @@ const texts = {
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
                 title: {
                     createFileName: 'Ny fil / katalognamn',
-                    createDirectory: 'Skapa katalog',
+                    createDirectory: 'Katalog',
                     delete: 'Ta bort',
                     move: 'Flytta',
                     copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
                     titleByMove: 'Knappar för flyttfil',
-                    titleByCopy: 'Knappar för kopieringsfilen'
+                    titleByCopy: 'Knappar för kopieringsfilen',
+                    titleContent: 'Filinnehåll',
+                    titleEditContent: 'Redigera filinnehåll!'
                 },
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
@@ -1296,14 +1298,16 @@ const texts = {
                 warnViewDocMessage: 'Do you want to redirect on current document?',
                 title: {
                     createFileName: 'New file/directory name',
-                    createDirectory: 'Create directory',
+                    createDirectory: 'Directory',
                     delete: 'Delete',
                     move: 'Move',
                     copy: 'Copy',
                     download: 'Download',
                     edit: 'Edit',
                     titleByMove: 'Buttons for move file',
-                    titleByCopy: 'Buttons for copy file'
+                    titleByCopy: 'Buttons for copy file',
+                    titleContent: 'File content',
+                    titleEditContent: 'Edit file content!'
                 },
                 error: {
                     loadError: 'Failed to load files. Try again!',
