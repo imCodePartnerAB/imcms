@@ -160,16 +160,24 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
-        Path path = null;
+    public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
+        SourceFile file = new SourceFile();
         if (isAllowablePath(location)) {
             if (null == writeMode) {
-                path = Files.write(location, content);
+                final Path path = Files.write(location, content);
+                file.setFullPath(path.toString());
+                file.setFileName(path.getFileName().toString());
+                file.setFileType(FILE);//write content can only file
+                file.setContents(content);
             } else {
-                path = Files.write(location, content, writeMode);
+                final Path path = Files.write(location, content, writeMode);
+                file.setFullPath(path.toString());
+                file.setFileName(path.getFileName().toString());
+                file.setFileType(FILE); //write content can only file
+                file.setContents(content);
             }
         }
-        return path;
+        return file;
     }
 
     @Override
