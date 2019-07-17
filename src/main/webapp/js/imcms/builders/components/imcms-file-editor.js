@@ -168,7 +168,7 @@ define(
                 checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
                 setEnableEditContent();
                 let contentsLine = currentFile.contents;
-                if (contentsLine != null) {
+                if (contentsLine) {
                     contentTextArea.setValue(
                         contentsLine.map(line => line + "\n")
                     );
@@ -205,9 +205,10 @@ define(
                 content: contentTextArea.getValue()
             };
 
-            fileRestApi.change(fileToSaveWithContent)
-                .done()
-                .fail(() => modal.buildErrorWindow(texts.error.editFailed));
+            fileRestApi.change(fileToSaveWithContent).done(file => {
+                currentFile.contents = file.contents;
+                contentTextArea.setValue(file.contents);
+            }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
         }
 
         function onEditFile(currentPath, subFilesContainer, transformColumn) {
