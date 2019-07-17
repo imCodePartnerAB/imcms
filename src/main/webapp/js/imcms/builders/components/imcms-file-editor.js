@@ -139,7 +139,7 @@ define(
         }
 
         function setEnableEditContent() {
-            if (!editCheckBox.isChecked()) {
+            if (editCheckBox.isChecked()) {
                 contentTextArea.$input.removeAttr('disabled');
                 newFileNameField.$input.attr('disabled', 'disabled');
                 checkBoxIsDirectory.$input.attr('disabled', 'disabled');
@@ -162,12 +162,11 @@ define(
             modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
                 if (!confirmed) return;
 
+                editCheckBox = buildIsEditCheckBox();
                 let isDirectory = 'DIRECTORY' === currentFile.fileType;
-                newFileNameField.setValue(currentFile.fileName).removeAttr('disabled');
+                newFileNameField.setValue(currentFile.fileName);
                 checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
-                (!editCheckBox.isChecked())
-                    ? contentTextArea.$input.attr('disabled', 'disabled')
-                    : contentTextArea.$input.removeAttr('disabled');
+                setEnableEditContent();
                 let contentsLine = currentFile.contents;
                 if (contentsLine != null) {
                     contentTextArea.setValue(
@@ -246,7 +245,7 @@ define(
         let newFileNameField = buildCreateField();
         let checkBoxIsDirectory = buildIsDirectoryCheckBox();
         let contentTextArea = buildContentTextArea();
-        let editCheckBox = buildIsEditCheckBox();
+        let editCheckBox;
 
         function buildCreateField() {
             return components.texts.textField('<div>', {
@@ -265,7 +264,7 @@ define(
         function buildIsEditCheckBox() {
             return components.checkboxes.imcmsCheckbox('<div>', {
                 text: 'Edit Content Localize!',
-                click: setEnableEditContent
+                change: setEnableEditContent
             })
         }
 
