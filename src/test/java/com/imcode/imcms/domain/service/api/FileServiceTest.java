@@ -118,8 +118,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectory(firstRootDir);
         Files.createDirectory(secondRootDir);
         final List<SourceFile> files = Arrays.asList(
-                new SourceFile(firstRootDir.getFileName().toString(), firstRootDir.toString(), DIRECTORY),
-                new SourceFile(secondRootDir.getFileName().toString(), secondRootDir.toString(), DIRECTORY)
+                new SourceFile(firstRootDir.getFileName().toString(), firstRootDir.toString(), DIRECTORY, null),
+                new SourceFile(secondRootDir.getFileName().toString(), secondRootDir.toString(), DIRECTORY, null)
         );
 
         assertEquals(files.size(), fileService.getRootFiles().size());
@@ -137,7 +137,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile);
 
         final List<SourceFile> files = Collections.singletonList(
-                new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE)
+                new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE, Collections.EMPTY_LIST)
         );
 
         final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
@@ -157,8 +157,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile);
 
         final List<SourceFile> expectedFiles = Arrays.asList(
-                new SourceFile(pathDir2.getFileName().toString(), pathDir2.toString(), DIRECTORY),
-                new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE)
+                new SourceFile(pathDir2.getFileName().toString(), pathDir2.toString(), DIRECTORY, null),
+                new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE, Collections.EMPTY_LIST)
         );
         final List<SourceFile> foundFiles = fileService.getFiles(pathDir);
 
@@ -184,7 +184,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
 
         final Path pathNewFile = pathDir.resolve(testFileName);
-        final SourceFile newFile = new SourceFile(pathNewFile.getFileName().toString(), pathNewFile.toString(), FILE);
+        final SourceFile newFile = new SourceFile(pathNewFile.getFileName().toString(), pathNewFile.toString(), FILE, Collections.EMPTY_LIST);
 
         final SourceFile createdFile = fileService.createFile(newFile, false);
 
@@ -201,8 +201,8 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertFalse(Files.exists(pathFile));
 
-        final SourceFile newFile = new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE);
-        final SourceFile newDir = new SourceFile(pathDir.getFileName().toString(), pathDir.toString(), DIRECTORY);
+        final SourceFile newFile = new SourceFile(pathFile.getFileName().toString(), pathFile.toString(), FILE, Collections.EMPTY_LIST);
+        final SourceFile newDir = new SourceFile(pathDir.getFileName().toString(), pathDir.toString(), DIRECTORY, null);
 
         assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(newFile, false));
         assertThrows(FileAccessDeniedException.class, () -> fileService.createFile(newDir, true));
@@ -221,13 +221,14 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
 
         final String testText = "bla-bla-bla";
-        final Path saved = fileService.saveFile(pathFile, testText.getBytes(), null);
+        final SourceFile saved = fileService.saveFile(pathFile, Collections.singletonList(testText), null);
 
-        assertTrue(Files.exists(saved));
-        List<String> lines = Files.readAllLines(saved);
-        assertEquals(1, lines.size());
-        String savedGetText = lines.get(0);
-        assertEquals(testText, savedGetText);
+        assertNotNull(saved);
+        assertTrue(Files.exists(Paths.get(saved.getFullPath())));
+        List<String> line = saved.getContents();
+        assertEquals(1, line.size());
+        String savedContent = line.get(0);
+        assertEquals(testText, savedContent);
     }
 
     @Test
@@ -242,7 +243,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         final String testText = "bla-bla-bla";
         assertThrows(FileAlreadyExistsException.class, () -> fileService.saveFile(
-                pathFile2, testText.getBytes(), StandardOpenOption.CREATE_NEW));
+                pathFile2, Collections.singletonList(testText), StandardOpenOption.CREATE_NEW));
     }
 
     @Test

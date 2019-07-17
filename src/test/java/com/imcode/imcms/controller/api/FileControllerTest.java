@@ -19,6 +19,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -30,7 +31,6 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 public class FileControllerTest extends AbstractControllerTest {
 
@@ -164,7 +164,8 @@ public class FileControllerTest extends AbstractControllerTest {
         SourceFile sourceFile = new SourceFile(
                 pathFile.getFileName().toString(),
                 pathFile.toString(),
-                FILE);
+                FILE,
+                Collections.EMPTY_LIST);
 
         performPostWithContentExpectOk(sourceFile);
 
@@ -182,7 +183,8 @@ public class FileControllerTest extends AbstractControllerTest {
         SourceFile sourceFile = new SourceFile(
                 pathDir.getFileName().toString(),
                 pathDir.toString(),
-                DIRECTORY);
+                DIRECTORY,
+                null);
 
         assertFalse(Files.exists(pathDir));
         performPostWithContentExpectOk(sourceFile);
@@ -198,26 +200,26 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        given(request.getRequestURI()).willReturn(controllerPath() + pathFile.toString());
-
         final List<String> linesFile = Files.readAllLines(pathFile);
         assertEquals(0, linesFile.size());
 
         final String testText = "tesstttt text";
-        final String saved = fileController.saveFile(request, testText.getBytes());
+        Properties properties = new Properties();
+        properties.setProperty("fullPath", pathFile.toString());
+        properties.setProperty("content", testText);
+        final SourceFile saved = fileController.saveFile(properties);
 
         assertEquals(testText, Files.readAllLines(pathFile).get(0));
 
-        final Path path = Paths.get(saved);
-        final String testText2 = "test2";
-        final MockHttpServletRequestBuilder requestBuilder = put(controllerPath() + path)
-                .content(testText2);
+        final Path path = Paths.get(saved.getFullPath());
+        final String changedText = "test2";
+        properties.setProperty("content", changedText);
+        final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(properties, controllerPath());
 
         performRequestBuilderExpectedOk(requestBuilder);
         final String newTestLine = Files.readAllLines(path).get(0);
         assertNotEquals(testText, newTestLine);
-        assertEquals(testText2, newTestLine);
+        assertEquals(changedText, newTestLine);
     }
 
     @Test
