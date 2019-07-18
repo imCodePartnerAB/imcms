@@ -51,6 +51,20 @@ define(
             });
         }
 
+        function addActiveForFile(type) {
+            if (type === 'DIRECTORY') {
+                $fileSourceRow.parent()
+                    .find('.files-table__directory-row--active')
+                    .removeClass('files-table__directory-row--active');
+                $fileSourceRow.addClass('files-table__directory-row--active');
+            } else {
+                $fileSourceRow.parent()
+                    .find('.files-table__file-row--active')
+                    .removeClass('files-table__file-row--active');
+                $fileSourceRow.addClass('files-table__file-row--active');
+            }
+        }
+
         function buildViewFirstFilesContainer($fileRow, file) {
             let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
 
@@ -60,6 +74,9 @@ define(
             if (file === '/..' || file.fileType === 'DIRECTORY') {
                 fileRestApi.get(path).done(files => {
                     let filesRows = files.map(file => fileToRow.transformFirstColumn(file, this));
+
+                    addActiveForFile(file.fileType);
+
 
                     firstSubFilesContainer = $('<div>').addClass('first-sub-files');
                     firstSubFilesContainer
@@ -76,6 +93,9 @@ define(
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
+
+                addActiveForFile(file.fileType);
+
                 let templateName = {
                     template: currentFile.fullPath
                 };
