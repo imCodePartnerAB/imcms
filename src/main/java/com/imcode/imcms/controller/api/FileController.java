@@ -82,7 +82,7 @@ public class FileController {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
         final Path pathFile = Paths.get(fileURI);
         byte[] content = Files.readAllBytes(pathFile);
-        final Path path = defaultFileService.getFile(pathFile, null);
+        final Path path = defaultFileService.getFile(pathFile);
 
         return ResponseEntity.ok()
                 .contentLength(content.length)
@@ -134,8 +134,7 @@ public class FileController {
 
     @PutMapping("/**")
     public SourceFile saveFile(@RequestBody Properties propertiesFile) throws IOException {
-        byte[] content = Files.readAllBytes(Paths.get(propertiesFile.getProperty("fullPath")));
-        final Path path = defaultFileService.getFile(Paths.get(propertiesFile.getProperty("fullPath")), content);
+        final Path path = defaultFileService.getFile(Paths.get(propertiesFile.getProperty("fullPath")));
         final String newContent = propertiesFile.getProperty("content");
         return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
     }

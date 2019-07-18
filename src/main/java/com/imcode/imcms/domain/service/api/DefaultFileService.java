@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.exception.FileDoesNotHaveContentException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import org.apache.commons.io.FilenameUtils;
@@ -100,7 +101,7 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Path getFile(Path file, byte[] content) throws IOException {
+    public Path getFile(Path file) throws IOException {
         if (isAllowablePath(file) && Files.exists(file)) {
             return file;
         } else {
@@ -162,12 +163,18 @@ public class DefaultFileService implements FileService {
     @Override
     public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
         SourceFile file = null;
+        Path writeFilePath;
         if (isAllowablePath(location)) {
-            Path writeFilePath;
-            if (null == writeMode) {
-                writeFilePath = Files.write(location, content);
-            } else {
-                writeFilePath = Files.write(location, content, writeMode);
+            try {
+                Files.readAllLines(location);
+                if (null == writeMode) {
+                    writeFilePath = Files.write(location, content);
+                } else {
+                    writeFilePath = Files.write(location, content, writeMode);
+                }
+            } catch (FileDoesNotHaveContentException e) {
+                log.error("Current File does not has content !" + location);
+                throw new FileDoesNotHaveContentException("File can not has content!");
             }
             file = toSourceFile(writeFilePath);
         }
