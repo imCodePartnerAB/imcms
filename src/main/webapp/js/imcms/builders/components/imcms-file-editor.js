@@ -77,7 +77,6 @@ define(
 
                     addActiveForFile(file.fileType);
 
-
                     firstSubFilesContainer = $('<div>').addClass('first-sub-files');
                     firstSubFilesContainer
                         .append(fileToRow.transformFirstColumn('/..', this))
@@ -261,6 +260,7 @@ define(
                 if (!confirmed) return;
 
                 fileRestApi.delete(currentFile.fullPath).done(() => {
+                    $documentsContainer.remove();
                         $fileSourceRow.remove();
                         currentFile = null;
                     }
