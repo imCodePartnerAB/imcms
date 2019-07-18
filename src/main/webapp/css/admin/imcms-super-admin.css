@@ -211,9 +211,8 @@
     display: flex;
 }
 
-.files-table__directory-row--active,
-.files-table__file-row--active {
-    background-color: #c3d9f5;
+.files-table__directory-row--active {
+    background-color: #FFCC99;
 }
 
 .file-row:hover,
@@ -255,7 +254,8 @@
     margin-left: 73%;
 }
 
-.file-row.files-table__file-row--active {
+.file-row.files-table__file-row--active,
+.file-second-row.files-table__file-row--active {
     background-color: #59a5e1;
 }
 

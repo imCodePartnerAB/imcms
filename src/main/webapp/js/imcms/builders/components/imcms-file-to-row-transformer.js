@@ -20,8 +20,8 @@ define(
             return function () {
                 const $this = $(this);
 
-                if ($this.hasClass('files-table__file-row-second--active')) return;
-                else if ($this.hasClass('files-table__directory-row-second--active')) return;
+                if ($this.hasClass('files-table__file-row--active')) return;
+                else if ($this.hasClass('files-table__directory-row--active')) return;
 
                 fileEditor.viewSecondFilesContainer($this, file);
             }
