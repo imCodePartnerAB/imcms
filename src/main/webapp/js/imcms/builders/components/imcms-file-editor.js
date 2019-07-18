@@ -365,7 +365,10 @@ define(
                 let formData = new FormData();
 
                 let files = $fileInput.prop('files');
-                Array.from(files).forEach(file => formData.append(file.name, file));
+                Array.from(files).forEach(file => {
+                    const fileName = file.name.split(' ');
+                    formData.append(fileName.join('_'), file)
+                });
 
                 formData.append("targetDirectory", targetDirectory);
 
