@@ -166,7 +166,9 @@ public class DefaultFileService implements FileService {
         Path writeFilePath;
         if (isAllowablePath(location)) {
             try {
-                Files.readAllLines(location);
+                if (Files.exists(location)) {
+                    Files.readAllLines(location);
+                }
                 if (null == writeMode) {
                     writeFilePath = Files.write(location, content);
                 } else {
