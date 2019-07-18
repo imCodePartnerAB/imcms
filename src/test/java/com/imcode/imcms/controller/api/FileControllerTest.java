@@ -364,8 +364,8 @@ public class FileControllerTest extends AbstractControllerTest {
                 .file(file)
                 .param("targetDirectory", firstRootPath.toString());
 
-//        assertFalse(Files.exists(firstRootPath.resolve(file.getName())));
-//        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-//        assertTrue(Files.exists(firstRootPath.resolve(file.getName())));
+        assertFalse(Files.exists(firstRootPath.resolve(file.getName())));
+        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+        assertTrue(Files.exists(firstRootPath.resolve(file.getName())));
     }
 }
