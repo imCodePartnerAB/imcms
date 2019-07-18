@@ -163,13 +163,13 @@ public class DefaultFileService implements FileService {
     public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
         SourceFile file = null;
         if (isAllowablePath(location)) {
+            Path writeFilePath;
             if (null == writeMode) {
-                final Path path = Files.write(location, content);
-                file = toSourceFile(path);
+                writeFilePath = Files.write(location, content);
             } else {
-                final Path path = Files.write(location, content, writeMode);
-                file = toSourceFile(path);
+                writeFilePath = Files.write(location, content, writeMode);
             }
+            file = toSourceFile(writeFilePath);
         }
         return file;
     }
