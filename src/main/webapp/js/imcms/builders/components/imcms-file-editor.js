@@ -126,6 +126,8 @@ define(
                 fileRestApi.get(path).done(files => {
                     let filesRows = files.map(file => fileToRow.transformSecondColumn(file, this));
 
+                    addActiveForFile(file.fileType);
+
                     secondSubFilesContainer = $('<div>').addClass('second-sub-files');
                     secondSubFilesContainer
                         .append(fileToRow.transformSecondColumn('/..', this))
@@ -139,6 +141,8 @@ define(
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
+                addActiveForFile(file.fileType);
+
                 let templateName = {
                     template: currentFile.fullPath
                 };
