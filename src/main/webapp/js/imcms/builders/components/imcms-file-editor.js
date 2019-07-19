@@ -5,6 +5,10 @@ define(
         'imcms-super-admin-page-builder', 'imcms'],
     function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow) {
 
+        const selectedFileHighlightingClassName = 'files-table__file-row--selected';
+        const selectedDirHighlightingClassName = 'files-table__directory-row--selected';
+        const newFileHighlightingClassName = 'files-table__file-row--active';
+
         texts = texts.superAdmin.files;
 
         let windowCreateFile;
@@ -16,6 +20,61 @@ define(
         let windowEditFile;
         let $documentsContainer;
         let $documentsData;
+        let selectedFiles;
+        let selectedFilesRows;
+
+        function integrateFileInContainerAsRow(file, filesContainer, transformColumnFunction) {
+            let row = transformColumnFunction(file, fileEditor);
+            filesContainer.append(row);
+
+            row.click(event => {
+                if (!event.ctrlKey) {
+                    selectedFilesRows = [];
+                    selectedFiles = [];
+                } else if (event.ctrlKey && $fileSourceRow.hasClass(selectedFileHighlightingClassName)) {
+                    deleteHighlighting($fileSourceRow);
+                    return;
+                }
+                deleteAllHighlighting(firstSubFilesContainer, newFileHighlightingClassName);
+                deleteAllHighlighting(secondSubFilesContainer, newFileHighlightingClassName);
+
+                selectedFilesRows.push($fileSourceRow);
+                selectedFiles.push(currentFile);
+
+                updateHighlighting(firstSubFilesContainer, selectedFilesRows);
+                updateHighlighting(secondSubFilesContainer, selectedFilesRows);
+            });
+
+            return row;
+        }
+
+        function updateHighlighting(container, rows) {
+            deleteAllHighlighting(container);
+            rows.forEach(elem => addHighlighting(elem));
+        }
+
+        function deleteAllHighlighting(container, highlightingClassName = selectedFileHighlightingClassName) {
+            if (!container) {
+                return;
+            }
+
+            const selector = '.' + container.attr('class') + ' .' + highlightingClassName;
+            $(selector).removeClass(highlightingClassName);
+        }
+
+        function addHighlighting(elem) {
+            const $elem = $(elem);
+
+            if ($elem.hasClass(selectedFileHighlightingClassName)) {
+                return;
+            }
+
+            $elem.addClass(selectedFileHighlightingClassName);
+        }
+
+        function deleteHighlighting(elem) {
+            $(elem).removeClass(selectedFileHighlightingClassName);
+        }
 
         function buildDocumentsContainer() {
             $documentsContainer = $('<div>', {
@@ -51,18 +110,11 @@ define(
             });
         }
 
-        function addActiveForFile(type) {
-            if (type === 'DIRECTORY') {
-                $fileSourceRow.parent()
-                    .find('.files-table__directory-row--active')
-                    .removeClass('files-table__directory-row--active');
-                $fileSourceRow.addClass('files-table__directory-row--active');
-            } else {
-                $fileSourceRow.parent()
-                    .find('.files-table__file-row--active')
-                    .removeClass('files-table__file-row--active');
-                $fileSourceRow.addClass('files-table__file-row--active');
-            }
+        function addHighlightingClassForParentDir(elem) {
+            elem.parent()
+                .find('.' + selectedDirHighlightingClassName)
+                .removeClass(selectedDirHighlightingClassName);
+            elem.addClass(selectedDirHighlightingClassName);
         }
 
         function buildViewFirstFilesContainer($fileRow, file) {
@@ -72,15 +124,18 @@ define(
             $fileSourceRow = $fileRow;
 
             if (file === '/..' || file.fileType === 'DIRECTORY') {
-                fileRestApi.get(path).done(files => {
-                    let filesRows = files.map(file => fileToRow.transformFirstColumn(file, this));
+                deleteAllHighlighting(firstSubFilesContainer);
+                deleteAllHighlighting(secondSubFilesContainer);
+                selectedFilesRows = [];
+                selectedFiles = [];
+                addHighlightingClassForParentDir($fileSourceRow);
 
-                    addActiveForFile(file.fileType);
+                fileRestApi.get(path).done(files => {
 
                     firstSubFilesContainer = $('<div>').addClass('first-sub-files');
-                    firstSubFilesContainer
-                        .append(fileToRow.transformFirstColumn('/..', this))
-                        .append(filesRows);
+                    firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
+
+                    files.forEach(file => integrateFileInContainerAsRow(file, firstSubFilesContainer, fileToRow.transformFirstColumn));
 
                     let $filesContainer = $('.files-table__first-instance');
                     $filesContainer.find('.first-sub-files').remove();
@@ -92,8 +147,6 @@ define(
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
-
-                addActiveForFile(file.fileType);
 
                 let templateName = {
                     template: currentFile.fullPath
@@ -122,25 +175,27 @@ define(
             $fileSourceRow = $fileRow;
 
             if (file === '/..' || file.fileType === 'DIRECTORY') {
-                fileRestApi.get(path).done(files => {
-                    let filesRows = files.map(file => fileToRow.transformSecondColumn(file, this));
+                deleteAllHighlighting(firstSubFilesContainer);
+                deleteAllHighlighting(secondSubFilesContainer);
+                selectedFilesRows = [];
+                selectedFiles = [];
+                addHighlightingClassForParentDir($fileSourceRow);
 
-                    addActiveForFile(file.fileType);
+                fileRestApi.get(path).done(files => {
 
                     secondSubFilesContainer = $('<div>').addClass('second-sub-files');
-                    secondSubFilesContainer
-                        .append(fileToRow.transformSecondColumn('/..', this))
-                        .append(filesRows);
+                    secondSubFilesContainer.append(fileToRow.transformSecondColumn('/..', this));
+
+                    files.forEach(file => integrateFileInContainerAsRow(file, secondSubFilesContainer, fileToRow.transformSecondColumn));
 
                     let $filesContainer = $('.files-table__second-instance');
                     $filesContainer.find('.second-sub-files').remove();
                     $filesContainer.append(secondSubFilesContainer);
 
-                        currentSecondPath = path;
+                    currentSecondPath = path;
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
-                addActiveForFile(file.fileType);
 
                 let templateName = {
                     template: currentFile.fullPath
@@ -338,11 +393,9 @@ define(
             };
 
             fileRestApi.create(fileToSave).done(newFile => {
-                $fileSourceRow = transformColumn((currentFile = newFile), fileEditor);
-
-                $fileSourceRow.addClass('files-table__file-row--active');
-                subFilesContainer.append($fileSourceRow);
-
+                currentFile = newFile;
+                $fileSourceRow = integrateFileInContainerAsRow(newFile, subFilesContainer, transformColumn);
+                $fileSourceRow.addClass(newFileHighlightingClassName);
             }).fail(() => modal.buildErrorWindow(texts.error.createError));
         }
 
@@ -394,23 +447,28 @@ define(
         }
 
         function moveFile(targetPath, targetSubFilesContainer) {
-            if (currentFile.fileType !== 'FILE') return;
-
-            let newFileFullPath = targetPath + "/" + currentFile.fileName;
-
-            if (newFileFullPath === currentFile.fullPath) return;
-
             let paths = {
-                src: currentFile.fullPath,
-                target: newFileFullPath
+                src: selectedFiles.map(file => file.fullPath).toString(),
+                target: targetPath
             };
 
-            fileRestApi.move(paths).done(() => {
-                currentFile.fullPath = newFileFullPath;
+            fileRestApi.move(paths).done(files => {
+                currentFile = null;
+                $fileSourceRow = null;
 
-                $fileSourceRow.remove();
-                $fileSourceRow = fileToRow.transformFirstColumn(currentFile, fileEditor);
-                targetSubFilesContainer.append($fileSourceRow);
+                selectedFiles = files;
+
+                selectedFilesRows.forEach(row => row.remove());
+                selectedFilesRows = [];
+
+                files.forEach(file =>
+                    selectedFilesRows.push(
+                        integrateFileInContainerAsRow(file, targetSubFilesContainer, fileToRow.transformFirstColumn)
+                    )
+                );
+
+                updateHighlighting(firstSubFilesContainer, selectedFilesRows);
+                updateHighlighting(secondSubFilesContainer, selectedFilesRows);
             }).fail(() => modal.buildErrorWindow(texts.error.moveError));
         }
 

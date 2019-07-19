@@ -9,9 +9,6 @@ define(
             return function () {
                 const $this = $(this);
 
-                if ($this.hasClass('files-table__file-row--active')) return;
-                else if ($this.hasClass('files-table__directory-row--active')) return;
-
                 fileEditor.viewFirstFilesContainer($this, file);
             }
         }
@@ -19,9 +16,6 @@ define(
         function getOnSecondFileClicked(file, fileEditor) {
             return function () {
                 const $this = $(this);
-
-                if ($this.hasClass('files-table__file-row--active')) return;
-                else if ($this.hasClass('files-table__directory-row--active')) return;
 
                 fileEditor.viewSecondFilesContainer($this, file);
             }
