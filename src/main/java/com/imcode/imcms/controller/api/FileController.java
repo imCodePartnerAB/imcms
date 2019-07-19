@@ -19,6 +19,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,7 +83,8 @@ public class FileController {
     @GetMapping("/file/**")
     public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
-        final Path pathFile = Paths.get(fileURI);
+        final String decodePathURI = URLDecoder.decode(fileURI, StandardCharsets.UTF_8.name());
+        final Path pathFile = Paths.get(decodePathURI);
         byte[] content = Files.readAllBytes(pathFile);
         final Path path = defaultFileService.getFile(pathFile);
 
