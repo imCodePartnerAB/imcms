@@ -12,11 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -129,14 +125,16 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<Path> moveFile(List<Path> src, Path target) throws IOException {
-        final List<Path> path = new ArrayList<>();
+    public List<SourceFile> moveFile(List<Path> src, Path target) throws IOException {
+        final List<SourceFile> files = new ArrayList<>();
         for (Path srcPath : src) {
             if (isAllowablePath(srcPath) && isAllowablePath(target)) {
-                path.add(Files.move(srcPath, target.resolve(srcPath.getFileName())));
+                files.add(toSourceFile(
+                        Files.move(srcPath, target.resolve(srcPath.getFileName()))
+                ));
             }
         }
-        return path;
+        return files;
     }
 
 

@@ -5,14 +5,7 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -22,12 +15,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
@@ -140,8 +131,10 @@ public class FileController {
     }
 
     @PutMapping("/move/**")
-    public SourceFile moveFile(@RequestBody Properties pathParam) throws IOException {
-        final Path src = Paths.get(pathParam.getProperty("src"));
+    public List<SourceFile> moveFile(@RequestBody Properties pathParam) throws IOException {
+        final List<Path> src = Arrays.stream(pathParam.getProperty("src").split(","))
+                .map(Paths::get)
+                .collect(Collectors.toList());
         final Path target = Paths.get(pathParam.getProperty("target"));
         return defaultFileService.moveFile(src, target);
     }

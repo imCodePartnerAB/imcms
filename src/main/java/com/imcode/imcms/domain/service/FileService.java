@@ -25,7 +25,7 @@ public interface FileService {
      * @param target - path directory in which need move src
      *               All files will be save their name !
      */
-    List<Path> moveFile(List<Path> src, Path target) throws IOException;
+    List<SourceFile> moveFile(List<Path> src, Path target) throws IOException;
 
     /**
      * @param src    - path file which need rename
