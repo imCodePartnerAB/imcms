@@ -211,7 +211,7 @@
     display: flex;
 }
 
-.files-table__directory-row--active {
+.files-table__directory-row--selected {
     background-color: #FFCC99;
 }
 
@@ -254,9 +254,14 @@
     margin-left: 73%;
 }
 
+.file-row.files-table__file-row--selected,
+.file-second-row.files-table__file-row--selected {
+    background-color: #59a5e1;
+}
+
 .file-row.files-table__file-row--active,
 .file-second-row.files-table__file-row--active {
-    background-color: #59a5e1;
+    background-color: #00a607;
 }
 
 .buttons-action {
