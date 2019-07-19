@@ -5,7 +5,14 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.api.DefaultFileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -15,13 +22,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
-import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 import static java.util.regex.Pattern.compile;
 
@@ -97,17 +107,12 @@ public class FileController {
         for (MultipartFile file : files) {
             final Path fileName = Paths.get(file.getName());
             final Path target = Paths.get(targetDirectory);
-            final String content = new String(file.getBytes());
 
-            SourceFile sourceFile = new SourceFile(
-                    fileName.toString(), target.resolve(fileName).toString(), FILE, Collections.singletonList(content)
-            );//todo upload only file? Check!
-
-            defaultFileService.saveFile(Paths.get(sourceFile.getFullPath()), Collections.singletonList(content), CREATE_NEW);
+            SourceFile sourceFile = defaultFileService.saveFile(target.resolve(fileName), file.getBytes(), CREATE_NEW);
 
             sourceFiles.add(sourceFile);
         }
-        return sourceFiles;
+        return sourceFiles;//todo upload only file? Check!
     }
 
     @PostMapping("/**")
@@ -147,8 +152,8 @@ public class FileController {
     }
 
     @DeleteMapping("/**")
-    public void deleteFile(HttpServletRequest request) throws IOException {
-        final String file = getFileName(request.getRequestURI(), "");
-        defaultFileService.deleteFile(Paths.get(file));
+    public void deleteFile(@RequestBody SourceFile file) throws IOException {
+        final Path path = Paths.get(file.getFullPath());
+        defaultFileService.deleteFile(path);
     }
 }
