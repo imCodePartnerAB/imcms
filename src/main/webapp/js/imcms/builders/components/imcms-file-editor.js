@@ -217,6 +217,11 @@ define(
         }
 
         function setEnableEditContent() {
+            const isImage = new RegExp('.(GIF|JPE?G|PNG)$', 'gi');
+            if (isImage.test(currentFile.fullPath)) {
+                editCheckBox.$input.attr('disabled', 'disabled');
+                contentTextArea.slideUp();
+            }
             if (editCheckBox.isChecked()) {
                 contentTextArea.$input.removeAttr('disabled');
                 newFileNameField.$input.attr('disabled', 'disabled');
@@ -314,7 +319,12 @@ define(
             modal.buildModalWindow(texts.warnDeleteMessage, confirmed => {
                 if (!confirmed) return;
 
-                fileRestApi.delete(currentFile.fullPath).done(() => {
+                let sourceFile = {
+                    fileName: currentFile.fileName,
+                    fullPath: currentFile.fullPath
+                };
+
+                fileRestApi.deleteFile(sourceFile).done(() => {
                     $documentsContainer.remove();
                         $fileSourceRow.remove();
                         currentFile = null;
