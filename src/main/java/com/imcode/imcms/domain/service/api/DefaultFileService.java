@@ -12,7 +12,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -175,6 +179,21 @@ public class DefaultFileService implements FileService {
             } catch (FileDoesNotHaveContentException e) {
                 log.error("Current File does not has content !" + location);
                 throw new FileDoesNotHaveContentException("File can not has content!");
+            }
+            file = toSourceFile(writeFilePath);
+        }
+        return file;
+    }
+
+    @Override
+    public SourceFile saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
+        SourceFile file = null;
+        Path writeFilePath;
+        if (isAllowablePath(location)) {
+            if (null == writeMode) {
+                writeFilePath = Files.write(location, content);
+            } else {
+                writeFilePath = Files.write(location, content, writeMode);
             }
             file = toSourceFile(writeFilePath);
         }
