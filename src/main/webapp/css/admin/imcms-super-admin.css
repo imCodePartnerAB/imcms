@@ -205,7 +205,8 @@
 
 .file-row,
 .directory-row,
-.file-second-row {
+.file-second-row,
+.exits-row {
     padding: 5px;
     cursor: pointer;
     display: flex;
@@ -218,7 +219,8 @@
 .file-row:hover,
 .directory-row:hover,
 .file-second-row:hover,
-.doc-info-row:hover {
+.doc-info-row:hover,
+.exits-row:hover {
     background-color: #dfedff;
 }
 

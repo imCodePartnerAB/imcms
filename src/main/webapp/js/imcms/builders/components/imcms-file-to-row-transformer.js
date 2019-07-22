@@ -48,6 +48,15 @@ define(
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
+                } else if (file === "/..") {
+                    return new BEM({
+                        block: "exits-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: file
+                            }),
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
                 } else {
                     return new BEM({
                         block: "directory-row",
@@ -84,6 +93,15 @@ define(
                             }),
                             'edit': components.controls.edit(fileEditor.editFileInSecondColumn).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                        }
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                } else if (file === "/..") {
+                    return new BEM({
+                        block: "exits-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: file
+                            }),
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else {
