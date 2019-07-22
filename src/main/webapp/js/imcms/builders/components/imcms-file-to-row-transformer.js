@@ -37,7 +37,7 @@ define(
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {
-                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
+                                text: fullName.replace(/^.*[\\\/]/, '')
                             }),
                             'download': $('<a>', {
                                 html: components.controls.download(),
@@ -54,7 +54,9 @@ define(
                         elements: {
                             'file-name': $('<div>', {
                                 text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
-                            })
+                            }),
+                            'edit': components.controls.edit(fileEditor.editFileInFirstColumn).attr("title", texts.edit),
+                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }
