@@ -28,7 +28,6 @@ import static com.imcode.imcms.api.SourceFile.FileType.FILE;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
@@ -230,8 +229,11 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        final MockHttpServletRequestBuilder requestBuilder = delete(
-                controllerPath() + pathFile);
+        final SourceFile file = new SourceFile(
+                pathFile.getFileName().toString(), pathFile.toString(), FILE, Collections.EMPTY_LIST
+        );
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(file);
 
         assertTrue(Files.exists(pathFile));
         performRequestBuilderExpectedOk(requestBuilder);
@@ -245,8 +247,11 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Files.createDirectories(pathDir);
 
-        final MockHttpServletRequestBuilder requestBuilder = delete(
-                controllerPath() + pathDir);
+        final SourceFile directory = new SourceFile(
+                pathDir.getFileName().toString(), pathDir.toString(), DIRECTORY, null
+        );
+
+        final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(directory);
 
         assertTrue(Files.exists(pathDir));
         performRequestBuilderExpectedOk(requestBuilder);
@@ -285,30 +290,26 @@ public class FileControllerTest extends AbstractControllerTest {
     public void moveFile_When_SrcFileExist_Expected_OkAndMoveFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathDir2 = pathDir.resolve(testDirectoryName2);
+        final Path pathDirTarget = pathDir.resolve(testDirectoryName2);
         final Path pathFile = pathDir.resolve(testFileName);
-        final Path pathFile2 = firstRootPath.resolve(testFileName);
 
-        Files.createDirectories(pathDir2);
+        Files.createDirectories(pathDirTarget);
         Files.createFile(pathFile);
 
-        assertFalse(Files.exists(pathFile2));
-
-        final HttpServletRequest request = mock(HttpServletRequest.class);
-        given(request.getRequestURI()).willReturn(controllerPath() + pathFile2.getParent().toString());
-        assertEquals(1, fileController.getFiles(request).size());
 
         Properties properties = new Properties();
         properties.setProperty("src", pathFile.toString());
-        properties.setProperty("target", pathFile2.toString());
+        properties.setProperty("target", pathDirTarget.toString());
 
+        assertEquals(2, Files.list(pathDir).count());
+        assertEquals(0, Files.list(pathDirTarget).count());
         final MockHttpServletRequestBuilder requestBuilder = getPutRequestBuilderWithContent(properties, "move");
 
         performRequestBuilderExpectedOk(requestBuilder);
 
-        assertEquals(2, fileController.getFiles(request).size());
+        assertEquals(1, Files.list(pathDir).count());
+        assertEquals(1, Files.list(pathDirTarget).count());
         assertFalse(Files.exists(pathFile));
-        assertTrue(Files.exists(pathFile2));
     }
 
     @Test
