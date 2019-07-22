@@ -125,8 +125,10 @@ public class FileController {
     }
 
     @PostMapping("/copy/**")
-    public SourceFile copyFile(@RequestBody Properties pathParam) throws IOException {
-        final Path src = Paths.get(pathParam.getProperty("src"));
+    public List<SourceFile> copyFile(@RequestBody Properties pathParam) throws IOException {
+        final List<Path> src = Arrays.stream(pathParam.getProperty("src").split(","))
+                .map(Paths::get)
+                .collect(Collectors.toList());
         final Path target = Paths.get(pathParam.getProperty("target"));
         return defaultFileService.copyFile(src, target);
     }
