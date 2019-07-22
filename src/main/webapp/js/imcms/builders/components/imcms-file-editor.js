@@ -120,18 +120,19 @@ define(
             elem.addClass(selectedDirHighlightingClassName);
         }
 
-        function buildViewFirstFilesContainer($fileRow, file) {
+        function buildViewFirstFilesContainer($fileRow, file, isDblClick) {
             let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
 
             currentFile = file;
             $fileSourceRow = $fileRow;
-
-            if (file === '/..' || file.fileType === 'DIRECTORY') {
+            if (file.fileType === 'DIRECTORY') {
+                addHighlightingClassForParentDir($fileSourceRow);
+            }
+            if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
                 deleteAllHighlighting(firstSubFilesContainer);
                 deleteAllHighlighting(secondSubFilesContainer);
                 selectedFilesRows = [];
                 selectedFiles = [];
-                addHighlightingClassForParentDir($fileSourceRow);
 
                 fileRestApi.get(path).done(files => {
 
@@ -172,13 +173,15 @@ define(
 
         }
 
-        function buildViewSecondFilesContainer($fileRow, file) {
+        function buildViewSecondFilesContainer($fileRow, file, isDblClick) {
             let path = (file === '/..') ? currentSecondPath + file : file.fullPath;
 
             currentFile = file;
             $fileSourceRow = $fileRow;
-
-            if (file === '/..' || file.fileType === 'DIRECTORY') {
+            if (file.fileType === 'DIRECTORY') {
+                addHighlightingClassForParentDir($fileSourceRow);
+            }
+            if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
                 deleteAllHighlighting(firstSubFilesContainer);
                 deleteAllHighlighting(secondSubFilesContainer);
                 selectedFilesRows = [];
@@ -469,8 +472,6 @@ define(
             };
 
             fileRestApi.move(paths).done(files => {
-                currentFile = null;
-                $fileSourceRow = null;
 
                 selectedFiles = files;
 
@@ -497,7 +498,6 @@ define(
         }
 
         function copyFile(targetPath, targetSubFilesContainer, transformColumnFunction) {
-            if (currentFile === null || currentFile.fileType !== 'FILE') return;
 
             let paths = {
                 src: selectedFiles.map(file => file.fullPath).toString(),
@@ -505,9 +505,6 @@ define(
             };
 
             fileRestApi.copy(paths).done(newFiles => {
-                currentFile = null;
-                $fileSourceRow = null;
-
                 selectedFiles = newFiles;
 
                 selectedFilesRows = [];
