@@ -22,6 +22,7 @@ define(
         let $documentsData;
         let selectedFiles;
         let selectedFilesRows;
+        const isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
 
         function integrateFileInContainerAsRow(file, filesContainer, transformColumnFunction) {
             let row = transformColumnFunction(file, fileEditor);
@@ -149,23 +150,24 @@ define(
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
-
                 let templateName = {
                     template: currentFile.fullPath
                 };
-                fileRestApi.getDocuments(templateName).done(documents => {
-                    if (documents.length > 0) {
-                        $documentsData = $('<div>').addClass('documents-data');
-                        let documentsRows = documents.map(doc => docToRow.transform(doc, this));
-                        $documentsContainer.find('.documents-data').remove();
-                        $documentsData.append(buildTitleRow());
-                        $documentsData.append(documentsRows);
-                        $documentsContainer.append($documentsData).show();
-                    } else {
-                        $documentsContainer.find('.documents-data').remove();
-                    }
-                    }
-                ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
+                if (isTemplate.test(currentFile.fullPath)) {
+                    fileRestApi.getDocuments(templateName).done(documents => {
+                            if (documents.length > 0) {
+                                $documentsData = $('<div>').addClass('documents-data');
+                                let documentsRows = documents.map(doc => docToRow.transform(doc, this));
+                                $documentsContainer.find('.documents-data').remove();
+                                $documentsData.append(buildTitleRow());
+                                $documentsData.append(documentsRows);
+                                $documentsContainer.append($documentsData).show();
+                            } else {
+                                $documentsContainer.find('.documents-data').remove();
+                            }
+                        }
+                    ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
+                }
             }
 
         }
@@ -202,27 +204,29 @@ define(
                 let templateName = {
                     template: currentFile.fullPath
                 };
-                fileRestApi.getDocuments(templateName).done(documents => {
-                        if (documents.length > 0) {
-                            $documentsData = $('<div>').addClass('documents-data');
-                            let documentsRows = documents.map(doc => docToRow.transform(doc, this));
-                            $documentsContainer.find('.documents-data').remove();
-                            $documentsData.append(buildTitleRow());
-                            $documentsData.append(documentsRows);
-                            $documentsContainer.append($documentsData).show();
-                        } else {
-                            $documentsContainer.find('.documents-data').remove();
+                if (isTemplate.test(currentFile.fullPath)) {
+                    fileRestApi.getDocuments(templateName).done(documents => {
+                            if (documents.length > 0) {
+                                $documentsData = $('<div>').addClass('documents-data');
+                                let documentsRows = documents.map(doc => docToRow.transform(doc, this));
+                                $documentsContainer.find('.documents-data').remove();
+                                $documentsData.append(buildTitleRow());
+                                $documentsData.append(documentsRows);
+                                $documentsContainer.append($documentsData).show();
+                            } else {
+                                $documentsContainer.find('.documents-data').remove();
+                            }
                         }
-                    }
-                ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
+                    ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
+                }
             }
         }
 
         function setEnableEditContent() {
-            const isImage = new RegExp('.(GIF|JPE?G|PNG)$', 'gi');
-            if (isImage.test(currentFile.fullPath)) {
+            const isImage = new RegExp('.(GIF|JPE?G|PNG|PDF)$', 'gi');
+            if (isImage.test(currentFile.fullPath) || checkBoxIsDirectory.isChecked()) {
                 editCheckBox.$input.attr('disabled', 'disabled');
-                contentTextArea.slideUp();
+                contentTextArea.hide();
             }
             if (editCheckBox.isChecked()) {
                 contentTextArea.$input.removeAttr('disabled');
@@ -379,7 +383,7 @@ define(
         }
 
         function confirmAddFile(onConfirm) {
-            newFileNameField.setValue('');
+            newFileNameField.setValue('').$input.removeAttr('disabled');
             checkBoxIsDirectory.$input.removeAttr('disabled');
             windowCreateFile =
                 modal.buildCreateFileModalWindow(
@@ -496,18 +500,26 @@ define(
             if (currentFile === null || currentFile.fileType !== 'FILE') return;
 
             let paths = {
-                src: currentFile.fullPath,
+                src: selectedFiles.map(file => file.fullPath).toString(),
                 target: targetPath
             };
 
-            fileRestApi.copy(paths).done(newFile => {
-                Array.from(targetSubFilesContainer.children()).forEach(file => {
-                    if (file.innerText === $fileSourceRow.text()) {
-                        file.remove();
-                    }
-                });
+            fileRestApi.copy(paths).done(newFiles => {
+                currentFile = null;
+                $fileSourceRow = null;
 
-                integrateFileInContainerAsRow(newFile, targetSubFilesContainer, transformColumnFunction);
+                selectedFiles = newFiles;
+
+                selectedFilesRows = [];
+
+                newFiles.forEach(file =>
+                    selectedFilesRows.push(
+                        integrateFileInContainerAsRow(file, targetSubFilesContainer, transformColumnFunction)
+                    )
+                );
+
+                updateHighlighting(firstSubFilesContainer, selectedFilesRows);
+                updateHighlighting(secondSubFilesContainer, selectedFilesRows);
             }).fail(() => modal.buildErrorWindow(texts.error.copyError));
         }
 
