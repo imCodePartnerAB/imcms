@@ -5,19 +5,36 @@ define(
         texts = texts.superAdmin.files.title;
         let contextUrl = '/api/files/file/';
 
+        function getOnFileDblClicked(file, fileEditor) {
+            return function () {
+                const $this = $(this);
+                let isDblClick = true;
+
+                fileEditor.viewFirstFilesContainer($this, file, isDblClick);
+            }
+        }
+
         function getOnFileClicked(file, fileEditor) {
             return function () {
                 const $this = $(this);
-
-                fileEditor.viewFirstFilesContainer($this, file);
+                let isDblClick = false;
+                fileEditor.viewFirstFilesContainer($this, file, isDblClick);
             }
         }
 
         function getOnSecondFileClicked(file, fileEditor) {
             return function () {
                 const $this = $(this);
+                fileEditor.viewFirstFilesContainer($this, file);
+            }
+        }
 
-                fileEditor.viewSecondFilesContainer($this, file);
+        function getOnSecondFileDblClicked(file, fileEditor) {
+            return function () {
+                const $this = $(this);
+                let isDblClick = true;
+
+                fileEditor.viewSecondFilesContainer($this, file, isDblClick);
             }
         }
 
@@ -29,6 +46,7 @@ define(
 
                 let infoRowAttributes = {
                     name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
+                    dblclick: getOnFileDblClicked(file, fileEditor),
                     click: getOnFileClicked(file, fileEditor)
                 };
 
@@ -76,7 +94,8 @@ define(
 
                 let infoRowAttributes = {
                     name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
-                    click: getOnSecondFileClicked(file, fileEditor)
+                    dblclick: getOnSecondFileClicked(file, fileEditor),
+                    click: getOnSecondFileDblClicked(file, fileEditor)
                 };
 
                 if (file.fileType === 'FILE') {
