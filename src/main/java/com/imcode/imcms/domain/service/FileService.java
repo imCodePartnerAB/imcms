@@ -35,7 +35,8 @@ public interface FileService {
 
     SourceFile moveFile(Path src, Path target) throws IOException;
 
-    SourceFile copyFile(Path src, Path target) throws IOException;
+    // Multiple copy files
+    List<SourceFile> copyFile(List<Path> src, Path target) throws IOException;
 
     /**
      * saveFile with param List<String> need for edit content files, which could have content.

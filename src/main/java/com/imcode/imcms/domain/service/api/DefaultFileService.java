@@ -3,7 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.exception.FileDoesNotHaveContentException;
+import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import org.apache.commons.io.FilenameUtils;
@@ -144,50 +144,46 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile moveFile(Path src, Path target) throws IOException {
-        SourceFile sourceFile = new SourceFile();
-        if (isAllowablePath(src) && isAllowablePath(target)) {
+        final String fileName = src.getFileName().toString();
+        if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(fileName)) {
             final Path path = Files.move(src, target);
-            sourceFile = toSourceFile(path);
+            return toSourceFile(path);
+        } else {
+            final String errorMessage = "File couldn't has empty Name !";
+            log.error(errorMessage);
+            throw new EmptyFileNameException(errorMessage);
         }
-        return sourceFile;
     }
 
     @Override
-    public SourceFile copyFile(Path src, Path target) throws IOException {
-        SourceFile newFile = new SourceFile();
-        if (isAllowablePath(src) && isAllowablePath(target)) {
-            Path path = Files.copy(src, target.resolve(src.getFileName()));
-            newFile = toSourceFile(path);
+    public List<SourceFile> copyFile(List<Path> src, Path target) throws IOException {
+        final List<SourceFile> files = new ArrayList<>();
+        for (Path srcPath : src) {
+            if (isAllowablePath(srcPath) && isAllowablePath(target)) {
+                files.add(toSourceFile(
+                        Files.copy(srcPath, target.resolve(srcPath.getFileName()))
+                ));
+            }
         }
-        return newFile;
+        return files;
     }
 
     @Override
     public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
-        SourceFile file = null;
-        Path writeFilePath;
+        Path writeFilePath = null;
         if (isAllowablePath(location)) {
-            try {
-                if (Files.exists(location)) {
-                    Files.readAllLines(location);
-                }
                 if (null == writeMode) {
                     writeFilePath = Files.write(location, content);
                 } else {
                     writeFilePath = Files.write(location, content, writeMode);
                 }
-            } catch (FileDoesNotHaveContentException e) {
-                log.error("Current File does not has content !" + location);
-                throw new FileDoesNotHaveContentException("File can not has content!");
             }
-            file = toSourceFile(writeFilePath);
-        }
-        return file;
+
+        return toSourceFile(writeFilePath);
     }
 
     @Override
     public SourceFile saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
-        SourceFile file = null;
         Path writeFilePath;
         if (isAllowablePath(location)) {
             if (null == writeMode) {
@@ -195,26 +191,31 @@ public class DefaultFileService implements FileService {
             } else {
                 writeFilePath = Files.write(location, content, writeMode);
             }
-            file = toSourceFile(writeFilePath);
+            return toSourceFile(writeFilePath);
+        } else {
+            final String errorMessage = "File name is empty! Can't save empty file name!";
+            log.error(errorMessage);
+            throw new EmptyFileNameException(errorMessage);
         }
-        return file;
     }
 
     @Override
     public SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException {
-        Path filePath = Paths.get(file.getFullPath());
-        SourceFile newSrcFile = new SourceFile();
+        final Path filePath = Paths.get(file.getFullPath());
+        final String fileName = FilenameUtils.removeExtension(filePath.getFileName().normalize().toString());
 
-        if (isAllowablePath(filePath)) {
+        if (isAllowablePath(filePath) && StringUtils.isNotBlank(fileName)) {
             Path newSrcFilePath;
             if (isDirectory) {
                 newSrcFilePath = Files.createDirectory(filePath);
             } else {
                 newSrcFilePath = Files.createFile(filePath);
             }
-            newSrcFile = toSourceFile(newSrcFilePath);
+            return toSourceFile(newSrcFilePath);
+        } else {
+            final String errorMessage = "File name is empty! Can't create empty file name!";
+            log.error(errorMessage);
+            throw new EmptyFileNameException(errorMessage);
         }
-
-        return newSrcFile;
     }
 }
