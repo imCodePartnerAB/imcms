@@ -37,8 +37,22 @@ public interface FileService {
 
     SourceFile copyFile(Path src, Path target) throws IOException;
 
+    /**
+     * saveFile with param List<String> need for edit content files, which could have content.
+     * Each rows in content in file will reading like String if it possible to;
+     */
+
     SourceFile saveFile(Path location, List<String> contents, OpenOption writeMode) throws IOException;
 
+    /**saveFile with param byte array need for download file any type files, as
+     * saveFile with param List<String> can't save any contents different files.
+     * For example:  image, gif, pdf and etc..
+     *
+     * @param location - path where is the file
+     * @param contents - current content file
+     * @return
+     * @throws IOException
+     */
     SourceFile saveFile(Path location, byte[] contents, OpenOption writeMode) throws IOException;
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
