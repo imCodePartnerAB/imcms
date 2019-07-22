@@ -33,6 +33,8 @@ define(
                     selectedFiles = [];
                 } else if (event.ctrlKey && $fileSourceRow.hasClass(selectedFileHighlightingClassName)) {
                     deleteHighlighting($fileSourceRow);
+                    selectedFilesRows.pop($fileSourceRow);
+                    selectedFiles.pop(currentFile);
                     return;
                 }
                 deleteAllHighlighting(firstSubFilesContainer, newFileHighlightingClassName);
@@ -449,14 +451,14 @@ define(
         let $fileSourceRow;
 
         function moveFileRight() {
-            moveFile(currentSecondPath, secondSubFilesContainer);
+            moveFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn);
         }
 
         function moveFileLeft() {
-            moveFile(currentFirstPath, firstSubFilesContainer);
+            moveFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn);
         }
 
-        function moveFile(targetPath, targetSubFilesContainer) {
+        function moveFile(targetPath, targetSubFilesContainer, transformColumnFunction) {
             let paths = {
                 src: selectedFiles.map(file => file.fullPath).toString(),
                 target: targetPath
@@ -473,7 +475,7 @@ define(
 
                 files.forEach(file =>
                     selectedFilesRows.push(
-                        integrateFileInContainerAsRow(file, targetSubFilesContainer, fileToRow.transformFirstColumn)
+                        integrateFileInContainerAsRow(file, targetSubFilesContainer, transformColumnFunction)
                     )
                 );
 
@@ -483,28 +485,29 @@ define(
         }
 
         function copyFileRight() {
-            copyFile(currentSecondPath, secondSubFilesContainer);
+            copyFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn);
         }
 
         function copyFileLeft() {
-            copyFile(currentFirstPath, firstSubFilesContainer);
+            copyFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn);
         }
 
-        function copyFile(targetPath, targetSubFilesContainer) {
-            if (currentFile.fileType !== 'FILE') return;
-
-            let newFileFullPath = targetPath + "/" + currentFile.fileName;
-
-            if (newFileFullPath === currentFile.fullPath) return;
+        function copyFile(targetPath, targetSubFilesContainer, transformColumnFunction) {
+            if (currentFile === null || currentFile.fileType !== 'FILE') return;
 
             let paths = {
                 src: currentFile.fullPath,
-                target: newFileFullPath
+                target: targetPath
             };
 
             fileRestApi.copy(paths).done(newFile => {
-                $fileSourceRow = fileToRow.transformFirstColumn(newFile, fileEditor);
-                targetSubFilesContainer.append($fileSourceRow);
+                Array.from(targetSubFilesContainer.children()).forEach(file => {
+                    if (file.innerText === $fileSourceRow.text()) {
+                        file.remove();
+                    }
+                });
+
+                integrateFileInContainerAsRow(newFile, targetSubFilesContainer, transformColumnFunction);
             }).fail(() => modal.buildErrorWindow(texts.error.copyError));
         }
 
