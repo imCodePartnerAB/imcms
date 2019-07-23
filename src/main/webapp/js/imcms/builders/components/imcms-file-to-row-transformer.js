@@ -26,7 +26,7 @@ define(
             return function () {
                 const $this = $(this);
                 let isDblClick = false;
-                fileEditor.viewFirstFilesContainer($this, file, isDblClick);
+                fileEditor.viewSecondFilesContainer($this, file, isDblClick);
             }
         }
 
