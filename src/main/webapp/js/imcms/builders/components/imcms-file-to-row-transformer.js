@@ -68,7 +68,7 @@ define(
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file === "/..") {
                     return new BEM({
-                        block: "exits-row",
+                        block: "symbol-row",
                         elements: {
                             'file-name': $('<div>', {
                                 text: file
