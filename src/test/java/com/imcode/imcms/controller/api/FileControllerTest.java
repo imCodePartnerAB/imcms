@@ -42,9 +42,6 @@ public class FileControllerTest extends AbstractControllerTest {
     @Value("classpath:img1.jpg")
     private File testImageFile;
 
-    @Value("classpath:картинка2.jpg")
-    private File testImageFile2;
-
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
@@ -379,22 +376,6 @@ public class FileControllerTest extends AbstractControllerTest {
         final Path firstRootPath = testRootPaths.get(0);
         final byte[] imageFileBytes = Files.readAllBytes(testImageFile.toPath());
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
-        Files.createDirectory(firstRootPath);
-
-        final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
-                .file(file)
-                .param("targetDirectory", firstRootPath.toString());
-
-        assertFalse(Files.exists(firstRootPath.resolve(file.getName())));
-        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
-        assertTrue(Files.exists(firstRootPath.resolve(file.getName())));
-    }
-
-    @Test
-    public void uploadFile_When_FileNameNonEnglish_Expected_OkAndUploadFile() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final byte[] imageFileBytes = Files.readAllBytes(testImageFile2.toPath());
-        final MockMultipartFile file = new MockMultipartFile(testImageFile2.getName(), "test.jpg", null, imageFileBytes);
         Files.createDirectory(firstRootPath);
 
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
