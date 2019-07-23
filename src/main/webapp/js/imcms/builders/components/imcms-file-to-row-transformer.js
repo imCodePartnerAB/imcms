@@ -136,6 +136,40 @@ define(
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }
+            },
+            transformDirToFirstRootColumn: (file, fileEditor) => {
+                let infoRowAttributes = {
+                    name: file.fullPath.replace(/^.*[\\\/]/, ''),
+                    dblclick: getOnFileDblClicked(file, fileEditor),
+                    click: getOnFileClicked(file, fileEditor)
+                };
+
+                return new BEM({
+                    block: 'directory-row',
+                    elements: {
+                        'file-name': $('<div>', {
+                            text: file.fullPath.replace(/^.*[\\\/]/, '')
+                        }),
+                        'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                    },
+                }).buildBlockStructure("<div>", infoRowAttributes);
+            },
+            transformDirToSecondRootColumn: (file, fileEditor) => {
+                let infoRowAttributes = {
+                    name: file.fullPath.replace(/^.*[\\\/]/, ''),
+                    dblclick: getOnSecondFileDblClicked(file, fileEditor),
+                    click: getOnSecondFileClicked(file, fileEditor)
+                };
+
+                return new BEM({
+                    block: 'directory-row',
+                    elements: {
+                        'file-name': $('<div>', {
+                            text: file.fullPath.replace(/^.*[\\\/]/, '')
+                        }),
+                        'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                    },
+                }).buildBlockStructure("<div>", infoRowAttributes);
             }
         }
     }

@@ -57,7 +57,7 @@ define(
             });
 
             firstFilesLoader.whenFilesLoaded(files => {
-                $fileContainer.append(files.map(file => fileToRow.transformFirstColumn(file, fileEditor)));
+                $fileContainer.append(files.map(file => fileToRow.transformDirToFirstRootColumn(file, fileEditor)));
             });
 
             return $fileContainer;
@@ -69,7 +69,7 @@ define(
             });
 
             secondFilesLoader.whenFilesLoaded(files => {
-                $fileSecondContainer.append(files.map(file => fileToRow.transformSecondColumn(file, fileEditor)));
+                $fileSecondContainer.append(files.map(file => fileToRow.transformDirToSecondRootColumn(file, fileEditor)));
             });
 
             return $fileSecondContainer;
