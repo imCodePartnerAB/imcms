@@ -127,6 +127,7 @@ define(
             $fileSourceRow = $fileRow;
             if (file.fileType === 'DIRECTORY') {
                 addHighlightingClassForParentDir($fileSourceRow);
+                currentFirstPath = path;
             }
             if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
                 deleteAllHighlighting(firstSubFilesContainer);
@@ -180,6 +181,7 @@ define(
             $fileSourceRow = $fileRow;
             if (file.fileType === 'DIRECTORY') {
                 addHighlightingClassForParentDir($fileSourceRow);
+                currentSecondPath = path;
             }
             if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
                 deleteAllHighlighting(firstSubFilesContainer);
@@ -275,11 +277,11 @@ define(
         function buildEditFile(currentPath, subFilesContainer, transformColumn) {
             windowEditFile =
                 modal.buildEditFileModalWindow(
-                    texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, unconfirmed => {
-                        if (!unconfirmed && !editCheckBox.isChecked()) {
+                    texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
+                        if (!confirmed && !editCheckBox.isChecked()) {
                             onEditFile(currentPath, subFilesContainer, transformColumn)
                         }
-                        if (!unconfirmed && editCheckBox.isChecked()) {
+                        if (!confirmed && editCheckBox.isChecked()) {
                             onEditFileContent(currentPath)
                         }
                     });
@@ -306,10 +308,11 @@ define(
         function onEditFile(currentPath, subFilesContainer, transformColumn) {
             let name = newFileNameField.getValue();
             if (!name) return;
-            let currentFullPath = currentPath + "/" + name;
+            let currentFullByFilePath = currentPath + "/" + name;
+            let currentFullByDirPath = currentPath.replace(/\w+$/, name);
             let fileToSave = {
                 src: currentFile.fullPath,
-                target: currentFullPath,
+                target: (currentFile.fileType === 'DIRECTORY') ? currentFullByDirPath : currentFullByFilePath,
             };
 
 
