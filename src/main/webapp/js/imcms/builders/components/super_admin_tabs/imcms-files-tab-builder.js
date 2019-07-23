@@ -180,11 +180,11 @@ define(
 
         return new SuperAdminTab(texts.name, [
             buildTableFilesContainer(),
+            buildButtonsActionContainer(),
             buildTitleMove(),
             buildMoveButtons(),
             buildTitleCopy(),
             buildCopyButtons(),
-            buildButtonsActionContainer(),
             buildDocumentsContainer()
         ]);
     }
