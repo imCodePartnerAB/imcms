@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.uima.util.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +124,13 @@ public class DefaultFileService implements FileService {
 
     @Override
     public void deleteFile(Path file) throws IOException {
-        if (isAllowablePath(file)) {
+        if (isAllowablePath(file) && Files.isDirectory(file)) {
+            Files.list(file)
+                    .map(Path::toFile)
+                    .forEach(FileUtils::deleteRecursive);
+
+            Files.delete(file);
+        } else {
             Files.delete(file);
         }
     }
