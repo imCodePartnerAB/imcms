@@ -113,7 +113,7 @@ define(
             });
         }
 
-        function addHighlightingClassForParentDir(elem) {
+        function updateHighlightingForDir(elem) {
             elem.parent()
                 .find('.' + selectedDirHighlightingClassName)
                 .removeClass(selectedDirHighlightingClassName);
@@ -126,7 +126,8 @@ define(
             currentFile = file;
             $fileSourceRow = $fileRow;
             if (file.fileType === 'DIRECTORY') {
-                addHighlightingClassForParentDir($fileSourceRow);
+                updateHighlightingForDir($fileSourceRow);
+                deleteAllHighlighting(firstSubFilesContainer, selectedDirHighlightingClassName);
                 currentFirstPath = path;
             }
             if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
@@ -180,7 +181,8 @@ define(
             currentFile = file;
             $fileSourceRow = $fileRow;
             if (file.fileType === 'DIRECTORY') {
-                addHighlightingClassForParentDir($fileSourceRow);
+                updateHighlightingForDir($fileSourceRow);
+                deleteAllHighlighting(secondSubFilesContainer, selectedDirHighlightingClassName);
                 currentSecondPath = path;
             }
             if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
@@ -188,7 +190,6 @@ define(
                 deleteAllHighlighting(secondSubFilesContainer);
                 selectedFilesRows = [];
                 selectedFiles = [];
-                addHighlightingClassForParentDir($fileSourceRow);
 
                 fileRestApi.get(path).done(files => {
 

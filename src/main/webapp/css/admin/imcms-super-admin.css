@@ -256,8 +256,8 @@
     margin-left: 73%;
 }
 
-.file-row.files-table__file-row--selected,
-.file-second-row.files-table__file-row--selected {
+.files-table__file-row--selected,
+.files-table__file-row--selected {
     background-color: #59a5e1;
 }
 
