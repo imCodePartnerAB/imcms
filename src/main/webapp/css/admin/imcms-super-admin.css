@@ -206,13 +206,15 @@
 .file-row,
 .directory-row,
 .file-second-row,
-.symbol-row {
+.symbol-row,
+.root-directory-row {
     padding: 5px;
     cursor: pointer;
     display: flex;
 }
 
-.files-table__directory-row--selected {
+.files-table__directory-row--selected,
+.files-table__root-directory-row--selected {
     background-color: #FFCC99;
 }
 
@@ -220,7 +222,8 @@
 .directory-row:hover,
 .file-second-row:hover,
 .doc-info-row:hover,
-.symbol-row:hover {
+.symbol-row:hover,
+.root-directory-row:hover {
     background-color: #dfedff;
 }
 
@@ -238,12 +241,18 @@
     word-break: break-all;
 }
 
+.root-directory-row__file-name {
+    width: 78%;
+    word-break: break-all;
+}
+
 .file-row__download,
 .file-row__edit,
 .file-row__delete,
 .file-second-row__download,
 .file-second-row__edit,
-.file-second-row__delete {
+.file-second-row__delete,
+.root-directory-row__delete {
     width: 10%;
 }
 

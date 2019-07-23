@@ -117,7 +117,7 @@ define(
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file === "/..") {
                     return new BEM({
-                        block: "exits-row",
+                        block: "symbol-row",
                         elements: {
                             'file-name': $('<div>', {
                                 text: file
@@ -145,7 +145,7 @@ define(
                 };
 
                 return new BEM({
-                    block: 'directory-row',
+                    block: 'root-directory-row',
                     elements: {
                         'file-name': $('<div>', {
                             text: file.fullPath.replace(/^.*[\\\/]/, '')
@@ -162,7 +162,7 @@ define(
                 };
 
                 return new BEM({
-                    block: 'directory-row',
+                    block: 'root-directory-row',
                     elements: {
                         'file-name': $('<div>', {
                             text: file.fullPath.replace(/^.*[\\\/]/, '')
