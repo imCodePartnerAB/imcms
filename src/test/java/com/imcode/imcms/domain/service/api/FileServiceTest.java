@@ -385,6 +385,26 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void deleteDir_When_DirHasFiles_Expected_Delete() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathFile = pathDir.resolve(testFileName);
+        final Path pathFile2 = pathDir.resolve(testFileName2);
+        final Path pathDir2 = pathDir.resolve(testDirectoryName2);
+        final Path pathFile3 = pathDir2.resolve("test" + testFileName2);
+
+        Files.createDirectories(pathDir2);
+        Files.createFile(pathFile);
+        Files.createFile(pathFile2);
+        Files.createFile(pathFile3);
+
+        fileService.deleteFile(pathDir);
+
+        assertFalse(Files.exists(pathDir));
+        assertFalse(Files.exists(pathDir2));
+    }
+
+    @Test
     public void deleteFile_When_FileNotExists_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -697,7 +717,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void moveDirectory_When_DirectoryExist_Expected_moveCorrectDirectory() throws IOException {
+    public void moveDirectory_When_DirectoryNotEmpty_Expected_moveCorrectDirectory() throws IOException {
 
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -714,6 +734,36 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         fileService.moveFile(Collections.singletonList(pathDir2ByDir), pathDir3);
         assertFalse(Files.exists(pathDir2ByDir));
         assertTrue(Files.exists(pathDir3));
+    }
+
+    @Test
+    public void moveDirectory_When_SelectedTwoDirectories_Expected_moveDirectories() throws IOException {
+
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathDir = firstRootPath.resolve(testDirectoryName);
+        final Path pathDir2 = pathDir.resolve(testDirectoryName2);
+        final Path pathDirTarget = firstRootPath.resolve(testDirectoryName3);
+        final Path pathFileByDir = pathDir.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createDirectory(pathDir);
+        Files.createDirectory(pathDir2);
+        Files.createDirectory(pathDirTarget);
+        Files.createFile(pathFileByDir);
+
+        List<Path> testPaths = new ArrayList<>();
+        testPaths.add(pathDir2);
+        testPaths.add(pathDir);
+
+        assertEquals(2, Files.list(firstRootPath).count());
+        assertEquals(0, Files.list(pathDirTarget).count());
+
+        fileService.moveFile(testPaths, pathDirTarget);
+
+        assertFalse(Files.exists(pathDir));
+        assertFalse(Files.exists(pathDir2));
+        assertEquals(1, Files.list(firstRootPath).count());
+        assertEquals(2, Files.list(pathDirTarget).count());
     }
 
     @Test
@@ -739,5 +789,19 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertFalse(Files.exists(pathFile3ByDir));
         assertEquals(2, Files.list(firstRootPath).count());
         assertEquals(2, Files.list(pathDir2).count());
+    }
+
+    @Test
+    public void renameFile_When_FileNameEmpty_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathTest = firstRootPath.resolve(testDirectoryName);
+        final Path pathTarget = firstRootPath.resolve(" ");
+
+        Files.createDirectories(pathTest);
+
+        assertThrows(EmptyFileNameException.class, () -> fileService.moveFile(pathTest, pathTarget));
+
+        assertFalse(Files.exists(pathTarget));
+
     }
 }
