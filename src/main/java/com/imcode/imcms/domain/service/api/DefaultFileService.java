@@ -144,7 +144,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public SourceFile moveFile(Path src, Path target) throws IOException {
-        final String fileName = src.getFileName().toString();
+        final String fileName = target.getFileName().toString();
         if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(fileName)) {
             final Path path = Files.move(src, target);
             return toSourceFile(path);
