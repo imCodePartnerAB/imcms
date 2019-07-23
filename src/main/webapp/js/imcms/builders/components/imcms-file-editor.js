@@ -22,7 +22,6 @@ define(
         let $documentsData;
         let selectedFiles;
         let selectedFilesRows;
-        const isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
 
         function integrateFileInContainerAsRow(file, filesContainer, transformColumnFunction) {
             let row = transformColumnFunction(file, fileEditor);
@@ -153,6 +152,7 @@ define(
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
+                let isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
                 let templateName = {
                     template: currentFile.fullPath
                 };
@@ -206,7 +206,7 @@ define(
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadError));
             } else {
-
+                let isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
                 let templateName = {
                     template: currentFile.fullPath
                 };
