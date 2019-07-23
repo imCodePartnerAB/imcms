@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import javax.activation.MimetypesFileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,7 +50,7 @@ public class FileController {
         this.defaultFileService = defaultFileService;
     }
 
-    private String getFileName(String path, String endPointName) {
+    private String getFileName(String path, String endPointName) throws UnsupportedEncodingException {
         Matcher matcher = FILE_NAME_PATTERN.matcher(path);
         String extractedPath = null;
         if (matcher.matches()) {
@@ -60,11 +61,15 @@ public class FileController {
             }
         }
         if (extractedPath != null) {
-            if (!Files.exists(Paths.get(extractedPath))) { //if regex or something else remove "/" separator, so need add again
+            if (!Files.exists(Paths.get(getDecodePath(extractedPath)))) { //if regex or something else remove "/" separator, so need add again
                 extractedPath = System.getProperty("file.separator") + extractedPath;
             }
         }
         return extractedPath;
+    }
+
+    private String getDecodePath(String path) throws UnsupportedEncodingException {
+        return URLDecoder.decode(path, StandardCharsets.UTF_8.name());
     }
 
     @GetMapping("/**")
@@ -83,8 +88,7 @@ public class FileController {
     @GetMapping("/file/**")
     public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
-        final String decodePathURI = URLDecoder.decode(fileURI, StandardCharsets.UTF_8.name());
-        final Path pathFile = Paths.get(decodePathURI);
+        final Path pathFile = Paths.get(getDecodePath(fileURI));
         byte[] content = Files.readAllBytes(pathFile);
         final Path path = defaultFileService.getFile(pathFile);
 

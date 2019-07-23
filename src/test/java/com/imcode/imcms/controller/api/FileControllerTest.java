@@ -35,11 +35,15 @@ public class FileControllerTest extends AbstractControllerTest {
 
     private final String testFileName = "fileName.txt";
     private final String testFileName2 = "fileName2.txt";
+    private final String testNotEngFileName = "тест.txt";
     private final String testDirectoryName = "dirName";
     private final String testDirectoryName2 = testDirectoryName + "two";
 
     @Value("classpath:img1.jpg")
     private File testImageFile;
+
+    @Value("classpath:картинка2.jpg")
+    private File testImageFile2;
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
@@ -355,10 +359,42 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void downloadFile_When_FileNameNotEnglish_Expected_Ok() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.resolve(testNotEngFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        final String testText = "test text!";
+        Files.write(pathFile, testText.getBytes());
+
+        final MockHttpServletRequestBuilder fileDownloadRequestBuilder = get(controllerPath() + "/file/" + pathFile);
+
+        performRequestBuilderExpectedOkAndContentByteEquals(fileDownloadRequestBuilder, testText.getBytes());
+    }
+
+    @Test
     public void uploadFile_When_FileExistsAndUploadInRoot_Expected_OkAndUploadFile() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final byte[] imageFileBytes = Files.readAllBytes(testImageFile.toPath());
         final MockMultipartFile file = new MockMultipartFile("file", "img1-test.jpg", null, imageFileBytes);
+        Files.createDirectory(firstRootPath);
+
+        final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
+                .file(file)
+                .param("targetDirectory", firstRootPath.toString());
+
+        assertFalse(Files.exists(firstRootPath.resolve(file.getName())));
+        performRequestBuilderExpectedOk(fileUploadRequestBuilder);
+        assertTrue(Files.exists(firstRootPath.resolve(file.getName())));
+    }
+
+    @Test
+    public void uploadFile_When_FileNameNonEnglish_Expected_OkAndUploadFile() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final byte[] imageFileBytes = Files.readAllBytes(testImageFile2.toPath());
+        final MockMultipartFile file = new MockMultipartFile(testImageFile2.getName(), "test.jpg", null, imageFileBytes);
         Files.createDirectory(firstRootPath);
 
         final MockHttpServletRequestBuilder fileUploadRequestBuilder = multipart(controllerPath() + "/upload/" + firstRootPath)
