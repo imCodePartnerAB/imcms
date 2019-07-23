@@ -25,7 +25,8 @@ define(
         function getOnSecondFileClicked(file, fileEditor) {
             return function () {
                 const $this = $(this);
-                fileEditor.viewFirstFilesContainer($this, file);
+                let isDblClick = false;
+                fileEditor.viewFirstFilesContainer($this, file, isDblClick);
             }
         }
 
@@ -94,8 +95,8 @@ define(
 
                 let infoRowAttributes = {
                     name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
-                    dblclick: getOnSecondFileClicked(file, fileEditor),
-                    click: getOnSecondFileDblClicked(file, fileEditor)
+                    dblclick: getOnSecondFileDblClicked(file, fileEditor),
+                    click: getOnSecondFileClicked(file, fileEditor)
                 };
 
                 if (file.fileType === 'FILE') {
@@ -129,7 +130,9 @@ define(
                         elements: {
                             'file-name': $('<div>', {
                                 text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
-                            })
+                            }),
+                            'edit': components.controls.edit(fileEditor.editFileInFirstColumn).attr("title", texts.edit),
+                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }
