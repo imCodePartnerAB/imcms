@@ -197,43 +197,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void createFile_WhenFileNameNotEngWord_Expected_CreateFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-
-        Files.createDirectories(pathDir);
-
-        final Path pathNewFile = pathDir.resolve(testNotEngName);
-        final SourceFile newFile = new SourceFile(
-                pathNewFile.getFileName().toString(), pathNewFile.toString(), FILE, Collections.EMPTY_LIST
-        );
-        assertEquals(0, Files.list(pathDir).count());
-        fileService.createFile(newFile, false);
-        assertTrue(Files.exists(pathNewFile));
-        assertEquals(1, Files.list(pathDir).count());
-
-    }
-
-    @Test
-    public void createFile_WhenDirNameHasSpaceBetweenLetter_Expected_CreateDir() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-
-        Files.createDirectories(pathDir);
-
-        final Path pathNewDir = pathDir.resolve(testSpaceDirName);
-        final SourceFile newFile = new SourceFile(
-                pathNewDir.getFileName().toString(), pathNewDir.toString(), DIRECTORY, null
-        );
-
-        assertEquals(0, Files.list(pathDir).count());
-        fileService.createFile(newFile, true);
-        assertTrue(Files.exists(pathNewDir));
-        assertEquals(1, Files.list(pathDir).count());
-    }
-
-
-    @Test
     public void createFile_WhenFileNotExist_Expected_CreatedFile() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -449,24 +412,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, Files.list(pathDir2).count());
     }
 
-    @Test
-    public void copyFile_When_SrcFileHasNotEngLetter_Expected_CopyFile() throws IOException {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathDir = firstRootPath.resolve(testDirectoryName);
-        final Path pathFileInDir = pathDir.resolve(testNotEngName);
-        final Path pathDirTarget = firstRootPath.resolve(testDirectoryName2);
-        assertFalse(Files.exists(pathDir));
-
-        Files.createDirectories(pathDir);
-        Files.createDirectory(pathDirTarget);
-        Files.createFile(pathFileInDir);
-
-        assertEquals(1, Files.list(pathDir).count());
-        assertEquals(0, Files.list(pathDirTarget).count());
-        fileService.copyFile(Collections.singletonList(pathFileInDir), pathDirTarget);
-        assertEquals(1, Files.list(pathDir).count());
-        assertEquals(1, Files.list(pathDirTarget).count());
-    }
 
     @Test
     public void copyFiles_When_FilesExist_Expected_CopyFiles() throws IOException {

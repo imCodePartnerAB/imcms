@@ -35,7 +35,6 @@ public class FileControllerTest extends AbstractControllerTest {
 
     private final String testFileName = "fileName.txt";
     private final String testFileName2 = "fileName2.txt";
-    private final String testNotEngFileName = "тест.txt";
     private final String testDirectoryName = "dirName";
     private final String testDirectoryName2 = testDirectoryName + "two";
 
@@ -348,22 +347,6 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createFile(pathFile);
 
         final String testText = "some text...";
-        Files.write(pathFile, testText.getBytes());
-
-        final MockHttpServletRequestBuilder fileDownloadRequestBuilder = get(controllerPath() + "/file/" + pathFile);
-
-        performRequestBuilderExpectedOkAndContentByteEquals(fileDownloadRequestBuilder, testText.getBytes());
-    }
-
-    @Test
-    public void downloadFile_When_FileNameNotEnglish_Expected_Ok() throws Exception {
-        final Path firstRootPath = testRootPaths.get(0);
-        final Path pathFile = firstRootPath.resolve(testNotEngFileName);
-
-        Files.createDirectory(firstRootPath);
-        Files.createFile(pathFile);
-
-        final String testText = "test text!";
         Files.write(pathFile, testText.getBytes());
 
         final MockHttpServletRequestBuilder fileDownloadRequestBuilder = get(controllerPath() + "/file/" + pathFile);
