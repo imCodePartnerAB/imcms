@@ -171,6 +171,7 @@
         <url-pattern>/api/roles/*</url-pattern>
         <url-pattern>/api/ip-rules/*</url-pattern>
         <url-pattern>/api/profiles/*</url-pattern>
+        <url-pattern>/api/files/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
