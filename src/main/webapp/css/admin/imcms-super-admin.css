@@ -555,6 +555,7 @@
 
 .imcms-buttons.profiles-editor__profile-button-edit {
     padding: 10px;
+    display: flex;
 }
 
 .imcms-settings-row {
