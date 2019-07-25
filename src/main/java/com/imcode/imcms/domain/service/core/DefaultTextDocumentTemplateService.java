@@ -8,7 +8,9 @@ import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,6 +33,14 @@ public class DefaultTextDocumentTemplateService implements TextDocumentTemplateS
     public Optional<TextDocumentTemplate> get(int docId) {
         return Optional.ofNullable(textDocumentTemplateRepository.findOne(docId)).map(TextDocumentTemplateDTO::new);
     }
+
+    @Override
+    public List<TextDocumentTemplateDTO> getByTemplateName(String templateName) {
+        return textDocumentTemplateRepository.findTextDocumentTemplateByTemplateName(templateName).stream()
+                .map(TextDocumentTemplateDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public void copy(int fromDocId, int toDocId) {
