@@ -15,4 +15,7 @@ public interface TextDocumentTemplateRepository extends JpaRepository<TextDocume
     @Query(value = "SELECT meta_id FROM text_docs WHERE template_name = ?1", nativeQuery = true)
     List<Integer> findDocIdByTemplateName(String templateName);
 
+    @Query(value = "SELECT * FROM text_docs WHERE template_name = ?1", nativeQuery = true)
+    List<TextDocumentTemplateJPA> findTextDocumentTemplateByTemplateName(String templateName);
+
 }
