@@ -6,7 +6,10 @@ import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
+import com.imcode.imcms.model.Template;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +38,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FileServiceTest extends WebAppSpringTestConfig {
 
     private final String testFileName = "fileName.jsp";
-    private final String testNotEngName = "Тест.jsp";
-    private final String testSpaceFileName = "Тест test.txt";
-    private final String testSpaceDirName = "Тест test";
     private final String testFileName2 = "fileName2.txt";
     private final String testTemplateName = "templateTest";
     private final String testDirectoryName = "dirName";
@@ -52,6 +52,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private DocumentDataInitializer documentDataInitializer;
+
+    @Autowired
+    private TextDocumentTemplateService documentTemplateService;
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
@@ -748,5 +751,27 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertFalse(Files.exists(pathTarget));
 
+    }
+
+    @Test
+    public void renameTemplateFile_When_TemplateUseDocuments_Expected_Rename() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathTest = firstRootPath.resolve(testDirectoryName);
+        final Path pathTarget = firstRootPath.resolve(testDirectoryName2);
+        final String namePathTest = pathTest.getFileName().toString();
+        final String namePathTarget = pathTarget.getFileName().toString();
+        final DocumentDTO document = documentDataInitializer.createData();
+        final Template template = templateDataInitializer.createData(namePathTest);
+        templateDataInitializer.createData(document.getId(), template.getName(), template.getName());
+
+        Files.createDirectories(pathTest);
+
+        fileService.moveFile(pathTest, pathTarget);
+
+        final List<TextDocumentTemplateDTO> docsByTemplNameTarget = documentTemplateService.getByTemplateName(namePathTarget);
+        assertTrue(documentTemplateService.getByTemplateName(namePathTest).isEmpty());
+        assertFalse(docsByTemplNameTarget.isEmpty());
+        assertEquals(1, docsByTemplNameTarget.size());
+        assertFalse(Files.exists(pathTest));
     }
 }
