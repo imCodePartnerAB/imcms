@@ -2,9 +2,10 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -21,7 +22,8 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "template_group")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

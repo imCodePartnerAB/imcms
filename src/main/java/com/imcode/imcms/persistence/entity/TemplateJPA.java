@@ -3,9 +3,10 @@ package com.imcode.imcms.persistence.entity;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -18,7 +19,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "template")
 @AllArgsConstructor
@@ -36,7 +38,7 @@ public class TemplateJPA extends Template {
     @Column(name = "is_hidden", nullable = false)
     private boolean hidden;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "template_group_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private TemplateGroupJPA templateGroup;
