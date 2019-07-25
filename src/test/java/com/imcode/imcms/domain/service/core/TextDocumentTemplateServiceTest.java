@@ -10,9 +10,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
@@ -40,6 +43,30 @@ public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
 
         final TextDocumentTemplate receivedTextDocumentTemplateDTO = oTemplate.get();
         assertEquals(receivedTextDocumentTemplateDTO, saved);
+    }
+
+    @Test
+    public void getByTemplateName_When_TemplateNameExist_Expected_CorrectSize() {
+        final Optional<TextDocumentTemplate> oTemplate = textDocumentTemplateService.get(DOC_ID);
+        assertTrue(oTemplate.isPresent());
+
+        final TextDocumentTemplate receivedTextDocumentTemplate = oTemplate.get();
+
+        List<TextDocumentTemplateDTO> receivTextDocumentTemplateDTOs = textDocumentTemplateService.getByTemplateName(
+                receivedTextDocumentTemplate.getTemplateName());
+
+        assertEquals(1, receivTextDocumentTemplateDTOs.size());
+    }
+
+    @Test
+    public void getByTemplateName_When_TemplateNameNotExist_Expected_EmptyResult() {
+        final String fakeName = "fake";
+
+        List<TextDocumentTemplateDTO> receiveTextDocumentTemplateDTOs = textDocumentTemplateService.getByTemplateName(
+                fakeName);
+
+        assertEquals(0, receiveTextDocumentTemplateDTOs.size());
+        assertTrue(receiveTextDocumentTemplateDTOs.isEmpty());
     }
 
     @Test

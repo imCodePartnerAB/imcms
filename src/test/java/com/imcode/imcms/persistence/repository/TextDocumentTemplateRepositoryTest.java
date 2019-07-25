@@ -4,6 +4,7 @@ package com.imcode.imcms.persistence.repository;
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.model.TextDocumentTemplate;
+import com.imcode.imcms.persistence.entity.TextDocumentTemplateJPA;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +53,23 @@ public class TextDocumentTemplateRepositoryTest extends WebAppSpringTestConfig {
         final String templateName = "testttt123";
         assertTrue(repository.findDocIdByTemplateName(templateName).isEmpty());
     }
+
+    @Test
+    public void findTextDocumentTemplateByTemplateName_When_TemplateNameExist_Expected_CorrectSize() {
+        final TextDocumentTemplate template = saved.get(0);
+        final List<TextDocumentTemplateJPA> textDocumentsByName = repository.findTextDocumentTemplateByTemplateName(template.getTemplateName());
+
+        assertEquals(1, textDocumentsByName.size());
+    }
+
+    @Test
+    public void findTextDocumentTemplateByTemplateName_When_TemplateNameNotExist_Expected_EmptyResult() {
+        final String fakeName = "fake";
+        final List<TextDocumentTemplateJPA> textDocumentsByName = repository.findTextDocumentTemplateByTemplateName(fakeName);
+
+        assertEquals(0, textDocumentsByName.size());
+        assertTrue(textDocumentsByName.isEmpty());
+    }
+
 
 }
