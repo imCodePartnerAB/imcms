@@ -6,11 +6,15 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
+import com.imcode.imcms.persistence.entity.TemplateJPA;
+import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.uima.util.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,14 +36,20 @@ public class DefaultFileService implements FileService {
 
     private final DocumentService<DocumentDTO> documentService;
 
+    private final TemplateRepository templateRepository;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
     @Value(".")
     private Path rootPath;
 
-    public DefaultFileService(DocumentService<DocumentDTO> documentService) {
+    @Autowired
+    public DefaultFileService(DocumentService<DocumentDTO> documentService,
+                              TemplateRepository templateRepository) {
         this.documentService = documentService;
+        this.templateRepository = templateRepository;
+
     }
 
     private boolean isAllowablePath(Path path) {
@@ -79,6 +89,10 @@ public class DefaultFileService implements FileService {
         return new SourceFile(path.getFileName().toString(), path.toString(), fileType, contents);
     }
 
+    private String getPathWithoutExtension(String fileName) {
+        return FilenameUtils.removeExtension(fileName);
+    }
+
     @Override
     public List<SourceFile> getRootFiles() {
         return rootPaths.stream()
@@ -114,7 +128,7 @@ public class DefaultFileService implements FileService {
     @Override
     public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException {
         if (isAllowablePath(template) && Files.exists(template)) {
-            final String templateName = FilenameUtils.removeExtension(template.getFileName().toString());
+            final String templateName = getPathWithoutExtension(template.getFileName().toString());
             return documentService.getDocumentsByTemplateName(templateName);
         } else {
             log.error("Template file doesn't exist: " + template);
@@ -149,10 +163,20 @@ public class DefaultFileService implements FileService {
     }
 
 
+    @Transactional
     @Override
     public SourceFile moveFile(Path src, Path target) throws IOException {
-        final String fileName = target.getFileName().toString();
-        if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(fileName)) {
+        final String targetFileName = target.getFileName().toString();
+        final String srcFileName = src.getFileName().toString();
+        final String originalSrcName = getPathWithoutExtension(srcFileName);
+        final String originalTargetName = getPathWithoutExtension(targetFileName);
+
+        TemplateJPA templateJPA = templateRepository.findOne(originalSrcName);
+        if (null != templateJPA) {
+            templateRepository.updateTemplateName(originalTargetName, originalSrcName);
+        }
+
+        if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(targetFileName)) {
             final Path path = Files.move(src, target);
             return toSourceFile(path);
         } else {
@@ -179,12 +203,12 @@ public class DefaultFileService implements FileService {
     public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
         Path writeFilePath = null;
         if (isAllowablePath(location)) {
-                if (null == writeMode) {
-                    writeFilePath = Files.write(location, content);
-                } else {
-                    writeFilePath = Files.write(location, content, writeMode);
-                }
+            if (null == writeMode) {
+                writeFilePath = Files.write(location, content);
+            } else {
+                writeFilePath = Files.write(location, content, writeMode);
             }
+        }
 
         return toSourceFile(writeFilePath);
     }
@@ -226,3 +250,4 @@ public class DefaultFileService implements FileService {
         }
     }
 }
+
