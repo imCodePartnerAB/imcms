@@ -25,7 +25,6 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
     /**
      * Note: method will delete document-&gt; category relation but not the category itself
      */
-    // todo: cover by tests
     @Modifying
     @Query(value = "DELETE FROM document_categories WHERE meta_id = ?1 and category_id = ?2", nativeQuery = true)
     void deleteByDocIdAndCategoryId(int docId, int categoryId);
@@ -33,7 +32,6 @@ public interface CategoryRepository extends JpaRepository<CategoryJPA, Integer> 
     /**
      * Note: method will delete document-&gt; category relation but not the category itself
      */
-    // todo: cover by tests
     @Modifying
     @Query(value = "DELETE FROM document_categories WHERE category_id = ?1", nativeQuery = true)
     void deleteDocumentCategory(int categoryId);
