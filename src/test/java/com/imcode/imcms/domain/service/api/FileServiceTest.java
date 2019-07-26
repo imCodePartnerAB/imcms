@@ -8,6 +8,7 @@ import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
+import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.Template;
 import org.apache.uima.util.FileUtils;
@@ -45,7 +46,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     private final String testDirectoryName3 = testDirectoryName + "three";
 
     @Autowired
-    private DefaultFileService fileService;
+    private FileService fileService;
 
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
