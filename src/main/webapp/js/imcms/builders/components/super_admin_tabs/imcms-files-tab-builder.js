@@ -11,9 +11,6 @@ define(
 
         texts = texts.superAdmin.files;
 
-        let $fileContainer;
-        let $fileSecondContainer;
-
         const firstFilesLoader = {
             files: false,
             callback: [],
@@ -52,24 +49,28 @@ define(
             .fail(() => modal.buildErrorWindow(texts.error.loadError));
 
         function buildFirstInstanceFiles() {
-            $fileContainer = $('<div>', {
+            const $fileContainer = $('<div>', {
                 'class': 'first-files'
             });
 
             firstFilesLoader.whenFilesLoaded(files => {
-                $fileContainer.append(files.map(file => fileToRow.transformDirToFirstRootColumn(file, fileEditor)));
+                $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
+                    {subFilesContainerIndex: 0}, file, fileEditor))
+                );
             });
 
             return $fileContainer;
         }
 
         function buildSecondInstanceFiles() {
-            $fileSecondContainer = $('<div>', {
+            const $fileSecondContainer = $('<div>', {
                 'class': 'second-files'
             });
 
             secondFilesLoader.whenFilesLoaded(files => {
-                $fileSecondContainer.append(files.map(file => fileToRow.transformDirToSecondRootColumn(file, fileEditor)));
+                $fileSecondContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
+                    {subFilesContainerIndex: 1}, file, fileEditor))
+                );
             });
 
             return $fileSecondContainer;
@@ -79,10 +80,8 @@ define(
             return fileEditor.displayDocs();
         }
 
-        let filesContainer;
-
         function buildTableFilesContainer() {
-            return filesContainer = new BEM({
+            return new BEM({
                 block: 'files-table',
                 elements: {
                     'first-instance': buildFirstInstanceFiles(),
@@ -94,11 +93,11 @@ define(
         function buildMoveButtons() {
             let $buttonMoveLeft = components.buttons.positiveButton({
                 text: texts.moveLeft,
-                click: fileEditor.moveFileLeft
+                click: fileEditor.buildMoveFile(1)
             });
             let $buttonMoveRight = components.buttons.positiveButton({
                 text: texts.moveRight,
-                click: fileEditor.moveFileRight
+                click: fileEditor.buildMoveFile(0)
             });
 
             return new BEM({
@@ -113,11 +112,11 @@ define(
         function buildCopyButtons() {
             let $buttonCopyLeft = components.buttons.positiveButton({
                 text: texts.copyLeft,
-                click: fileEditor.copyFileLeft
+                click: fileEditor.buildCopyFile(1)
             });
             let $buttonCopyRight = components.buttons.positiveButton({
                 text: texts.copyRight,
-                click: fileEditor.copyFileRight
+                click: fileEditor.buildCopyFile(0)
             });
 
             return new BEM({
@@ -129,26 +128,22 @@ define(
             }).buildBlockStructure('<div>');
         }
 
-        let $actionButtonsContainer;
-
         function buildFirstActionButtonsContainer() {
-            return $actionButtonsContainer = new BEM({
+            return new BEM({
                 block: 'first-files-action',
                 elements: {
-                    'add-file': components.controls.add(fileEditor.addFileInFirstColumn).attr("title", texts.add),
-                    'upload-file': components.controls.upload(fileEditor.uploadFileInFirstColumn).attr("title", texts.upload)
+                    'add-file': components.controls.add(fileEditor.buildAddFile(0)).attr("title", texts.add),
+                    'upload-file': components.controls.upload(fileEditor.buildUploadFile(0)).attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
         }
 
-        let $actionSecondButtonsContainer;
-
         function buildSecondActionButtonsContainer() {
-            return $actionSecondButtonsContainer = new BEM({
+            return new BEM({
                 block: 'second-files-action',
                 elements: {
-                    'add-file': components.controls.add(fileEditor.addFileInSecondColumn).attr("title", texts.add),
-                    'upload-file': components.controls.upload(fileEditor.uploadFileInSecondColumn).attr("title", texts.upload)
+                    'add-file': components.controls.add(fileEditor.buildAddFile(1)).attr("title", texts.add),
+                    'upload-file': components.controls.upload(fileEditor.buildUploadFile(1)).attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
         }
@@ -176,7 +171,6 @@ define(
                 text: texts.title.titleByCopy
             });
         }
-
 
         return new SuperAdminTab(texts.name, [
             buildTableFilesContainer(),

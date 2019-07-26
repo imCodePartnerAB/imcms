@@ -5,26 +5,86 @@ define(
         'imcms-super-admin-page-builder', 'imcms'],
     function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow) {
 
+        texts = texts.superAdmin.files;
+
         const selectedFileHighlightingClassName = 'files-table__file-row--selected';
         const selectedDirHighlightingClassName = 'files-table__directory-row--selected';
         const newFileHighlightingClassName = 'files-table__file-row--active';
 
-        texts = texts.superAdmin.files;
-
-        let windowCreateFile;
+        let $fileSourceRow;
         let currentFile;
-        let firstSubFilesContainer;
-        let secondSubFilesContainer;
-        let currentFirstPath;
-        let currentSecondPath;
-        let windowEditFile;
         let $documentsContainer;
         let $documentsData;
         let selectedFiles;
         let selectedFilesRows;
 
-        function integrateFileInContainerAsRow(file, filesContainer, transformColumnFunction) {
-            let row = transformColumnFunction(file, fileEditor);
+        function getMainContainer() {
+            return $('.imcms-form').find('.files-table');
+        }
+
+        function getSubFilesContainerByChildRow(childRow) {
+            const parent = childRow.parent();
+
+            if (parent.parent().hasClass(getMainContainer().attr('class'))) {
+                return $(childRow.get(-1));
+            }
+            return getSubFilesContainerByChildRow(parent);
+        }
+
+        function getAllSubFilesContainers() {
+            const columns = Array.from(getMainContainer().children());
+            return columns
+                .map(column => $(column))
+                .flatMap(column => column.children().get(-1))
+                .map(container => $(container))
+                .filter(container => !container.hasClass('root-directory-row'));
+        }
+
+        function getSubFilesContainerByIndex(index) {
+            return $(getAllSubFilesContainers()[index]);
+        }
+
+        function getPathFromElement(element) {
+            return element.attr('path');
+        }
+
+        function getDirPathFromFullPath(path) {
+            return path.substring(0, path.lastIndexOf('/'));
+        }
+
+        function getDirPathBySubFilesContainer(container) {
+            return getPathFromElement(container);
+        }
+
+        function getDirPathBySubFilesContainerIndex(index) {
+            return getDirPathBySubFilesContainer(getSubFilesContainerByIndex(index));
+        }
+
+        function createBackDir(currentPath) {
+            return {
+                fileName: '/..',
+                fullPath: getDirPathFromFullPath(currentPath),
+                fileType: 'DIRECTORY'
+            }
+        }
+
+        function getIndexOfSubFilesContainer(container) {
+            const containers = getAllSubFilesContainers();
+
+            for (let i = 0; i < containers.length; i++) {
+                if (container.attr('class') === $(containers[i]).attr('class')) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        function isDirsInSubFilesContainersEquals(container1, container2) {
+            return container1.attr('path') === container2.attr('path');
+        }
+
+        function integrateFileInContainerAsRow(file, filesContainer, transformFileToRowFunction) {
+            let row = transformFileToRowFunction(file, fileEditor);
             filesContainer.append(row);
 
             row.click(event => {
@@ -37,29 +97,33 @@ define(
                     selectedFiles.pop(currentFile);
                     return;
                 }
-                deleteAllHighlighting(firstSubFilesContainer, newFileHighlightingClassName);
-                deleteAllHighlighting(secondSubFilesContainer, newFileHighlightingClassName);
+
+                const allSubFilesContainers = getAllSubFilesContainers();
+
+                allSubFilesContainers.forEach(container =>
+                    deleteAllHighlightingInSubFilesContainer(container, newFileHighlightingClassName)
+                );
 
                 selectedFilesRows.push($fileSourceRow);
                 selectedFiles.push(currentFile);
 
-                updateHighlighting(firstSubFilesContainer, selectedFilesRows);
-                updateHighlighting(secondSubFilesContainer, selectedFilesRows);
+                allSubFilesContainers.forEach(container =>
+                    updateHighlighting(container, selectedFilesRows)
+                );
             });
 
             return row;
         }
 
         function updateHighlighting(container, rows) {
-            deleteAllHighlighting(container);
+            deleteAllHighlightingInSubFilesContainer(container);
             rows.forEach(elem => addHighlighting(elem));
         }
 
-        function deleteAllHighlighting(container, highlightingClassName = selectedFileHighlightingClassName) {
+        function deleteAllHighlightingInSubFilesContainer(container, highlightingClassName = selectedFileHighlightingClassName) {
             if (!container) {
                 return;
             }
-
             const selector = '.' + container.attr('class') + ' .' + highlightingClassName;
             $(selector).removeClass(highlightingClassName);
         }
@@ -70,7 +134,6 @@ define(
             if ($elem.hasClass(selectedFileHighlightingClassName)) {
                 return;
             }
-
             $elem.addClass(selectedFileHighlightingClassName);
         }
 
@@ -83,8 +146,6 @@ define(
                 'class': 'table-documents',
                 'style': 'display: none;'
             });
-
-
             return $documentsContainer;
         }
 
@@ -95,7 +156,6 @@ define(
                 if (!answer) {
                     return;
                 }
-
                 window.location.replace("/" + doc.id);
             });
         }
@@ -119,117 +179,78 @@ define(
             elem.addClass(selectedDirHighlightingClassName);
         }
 
-        function buildViewFirstFilesContainer($fileRow, file, isDblClick) {
-            let path = (file === '/..') ? currentFirstPath + file : file.fullPath;
-
+        function buildViewFilesContainer($fileRow, file, isDblClick) {
             currentFile = file;
             $fileSourceRow = $fileRow;
             if (file.fileType === 'DIRECTORY') {
                 updateHighlightingForDir($fileSourceRow);
-                deleteAllHighlighting(firstSubFilesContainer, selectedDirHighlightingClassName);
-                currentFirstPath = path;
+                deleteAllHighlightingInSubFilesContainer(getSubFilesContainerByChildRow($fileSourceRow), selectedDirHighlightingClassName);
             }
-            if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
-                deleteAllHighlighting(firstSubFilesContainer);
-                deleteAllHighlighting(secondSubFilesContainer);
-                selectedFilesRows = [];
-                selectedFiles = [];
-
-                fileRestApi.get(path).done(files => {
-
-                    firstSubFilesContainer = $('<div>').addClass('first-sub-files');
-                    firstSubFilesContainer.append(fileToRow.transformFirstColumn('/..', this));
-
-                    files.forEach(file => integrateFileInContainerAsRow(file, firstSubFilesContainer, fileToRow.transformFirstColumn));
-
-                    let $filesContainer = $('.files-table__first-instance');
-                    $filesContainer.find('.first-sub-files').remove();
-                    $filesContainer.append(firstSubFilesContainer);
-
-                    $documentsContainer.hide();
-
-                    currentFirstPath = path;
-                    }
-                ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+            if (file.fileType === 'DIRECTORY' && isDblClick) {
+                onDirectoryDblClick.call(this, $fileRow, file);
             } else {
-                let isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
-                let templateName = {
-                    template: currentFile.fullPath
-                };
-                if (isTemplate.test(currentFile.fullPath)) {
-                    fileRestApi.getDocuments(templateName).done(documents => {
-                            if (documents.length > 0) {
-                                $documentsData = $('<div>').addClass('documents-data');
-                                let documentsRows = documents.map(doc => docToRow.transform(doc, this));
-                                $documentsContainer.find('.documents-data').remove();
-                                $documentsData.append(buildTitleRow());
-                                $documentsData.append(documentsRows);
-                                $documentsContainer.append($documentsData).show();
-                            } else {
-                                $documentsContainer.find('.documents-data').remove();
-                            }
-                        }
-                    ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
-                }
+                onTemplateClick();
             }
-
         }
 
-        function buildViewSecondFilesContainer($fileRow, file, isDblClick) {
-            let path = (file === '/..') ? currentSecondPath + file : file.fullPath;
+        function onDirectoryDblClick($fileRow, file) {
+            getAllSubFilesContainers().forEach(container =>
+                deleteAllHighlightingInSubFilesContainer(container)
+            );
+            selectedFilesRows = [];
+            selectedFiles = [];
 
-            currentFile = file;
-            $fileSourceRow = $fileRow;
-            if (file.fileType === 'DIRECTORY') {
-                updateHighlightingForDir($fileSourceRow);
-                deleteAllHighlighting(secondSubFilesContainer, selectedDirHighlightingClassName);
-                currentSecondPath = path;
-            }
-            if (file === '/..' || file.fileType === 'DIRECTORY' && isDblClick) {
-                deleteAllHighlighting(firstSubFilesContainer);
-                deleteAllHighlighting(secondSubFilesContainer);
-                selectedFilesRows = [];
-                selectedFiles = [];
+            const path = file.fullPath;
 
-                fileRestApi.get(path).done(files => {
+            fileRestApi.get(path).done(files => {
+                    const $subFilesContainer = $('<div>', {
+                        class: this.subFilesClassName,
+                        path: path
+                    });
+                    const $filesContainer = $('.' + this.columnClassName);
+                    $filesContainer.find('.' + this.subFilesClassName).remove();
+                    $filesContainer.append($subFilesContainer);
 
-                    secondSubFilesContainer = $('<div>').addClass('second-sub-files');
-                    secondSubFilesContainer.append(fileToRow.transformSecondColumn('/..', this));
+                    const transformFileToRow = fileToRow.transformFileToRow.bind({
+                        subFilesContainerIndex: getIndexOfSubFilesContainer($subFilesContainer)
+                    });
+                    $subFilesContainer.append(transformFileToRow(createBackDir(path), fileEditor));
 
-                    files.forEach(file => integrateFileInContainerAsRow(file, secondSubFilesContainer, fileToRow.transformSecondColumn));
-
-                    let $filesContainer = $('.files-table__second-instance');
-                    $filesContainer.find('.second-sub-files').remove();
-                    $filesContainer.append(secondSubFilesContainer);
-
-                    currentSecondPath = path;
-                    }
-                ).fail(() => modal.buildErrorWindow(texts.error.loadError));
-            } else {
-                let isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
-                let templateName = {
-                    template: currentFile.fullPath
-                };
-                if (isTemplate.test(currentFile.fullPath)) {
-                    fileRestApi.getDocuments(templateName).done(documents => {
-                            if (documents.length > 0) {
-                                $documentsData = $('<div>').addClass('documents-data');
-                                let documentsRows = documents.map(doc => docToRow.transform(doc, this));
-                                $documentsContainer.find('.documents-data').remove();
-                                $documentsData.append(buildTitleRow());
-                                $documentsData.append(documentsRows);
-                                $documentsContainer.append($documentsData).show();
-                            } else {
-                                $documentsContainer.find('.documents-data').remove();
-                            }
-                        }
-                    ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
+                    files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
                 }
+            ).fail(() => modal.buildErrorWindow(texts.error.loadError));
+        }
+
+        function onTemplateClick() {
+            const isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
+            const templateName = {
+                template: currentFile.fullPath
+            };
+            if (isTemplate.test(currentFile.fullPath)) {
+                fileRestApi.getDocuments(templateName).done(documents => {
+                        if (documents.length > 0) {
+                            $documentsData = $('<div>').addClass('documents-data');
+                            let documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
+                            $documentsContainer.find('.documents-data').remove();
+                            $documentsData.append(buildTitleRow());
+                            $documentsData.append(documentsRows);
+                            $documentsContainer.append($documentsData).show();
+                        } else {
+                            $documentsContainer.find('.documents-data').remove();
+                        }
+                    }
+                ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
             }
         }
+
+        const newFileNameField = buildCreateField();
+        const checkBoxIsDirectory = buildIsDirectoryCheckBox();
+        const contentTextArea = buildContentTextArea();
+        let editCheckBox;
 
         function setEnableEditContent() {
             const isImage = new RegExp('.(GIF|JPE?G|PNG|PDF)$', 'gi');
+            contentTextArea.show();
             if (isImage.test(currentFile.fullPath) || checkBoxIsDirectory.isChecked()) {
                 editCheckBox.$input.attr('disabled', 'disabled');
                 contentTextArea.hide();
@@ -244,16 +265,7 @@ define(
             }
         }
 
-        function prepareOnEditFileInFirstColumn() {
-            prepareOnEditFile(() => buildEditFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn));
-        }
-
-        function prepareOnEditFileInSecondColumn() {
-            prepareOnEditFile(() => buildEditFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn));
-        }
-
-        function prepareOnEditFile(buildEditFile) {
-
+        function prepareOnEditFile(confirmEditFile) {
             modal.buildModalWindow(texts.warnChangeMessage, confirmed => {
                 if (!confirmed) return;
 
@@ -271,28 +283,25 @@ define(
                     contentTextArea.setValue(contentsLine);
                 }
 
-                buildEditFile();
+                confirmEditFile();
             });
         }
 
-        function buildEditFile(currentPath, subFilesContainer, transformColumn) {
-            windowEditFile =
-                modal.buildEditFileModalWindow(
-                    texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
-                        if (!confirmed && !editCheckBox.isChecked()) {
-                            onEditFile(currentPath, subFilesContainer, transformColumn)
-                        }
-                        if (!confirmed && editCheckBox.isChecked()) {
-                            onEditFileContent(currentPath)
-                        }
-                    });
-
-            return windowEditFile;
+        function confirmEditFile(onRenameFile, onEditFileContent) {
+            return modal.buildEditFileModalWindow(
+                texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
+                    if (!confirmed && !editCheckBox.isChecked()) {
+                        onRenameFile()
+                    }
+                    if (!confirmed && editCheckBox.isChecked()) {
+                        onEditFileContent()
+                    }
+                });
         }
 
-        function onEditFileContent(currentPath) {
+        function onEditFileContent() {
             let name = newFileNameField.getValue();
-            let currentFullPath = currentPath + "/" + name;
+            let currentFullPath = this.getTargetDirectoryPath() + "/" + name;
 
             let fileToSaveWithContent = {
                 fileName: name,
@@ -306,29 +315,27 @@ define(
             }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
         }
 
-        function onEditFile(currentPath, subFilesContainer, transformColumn) {
-            let name = newFileNameField.getValue();
+        function onRenameFile() {
+            const name = newFileNameField.getValue();
             if (!name) return;
-            let currentFullByFilePath = currentPath + "/" + name;
-            let currentFullByDirPath = currentPath.replace(/\w+$/, name);
-            let fileToSave = {
+
+            const targetSubFilesContainer = this.getTargetSubFilesContainer();
+            const targetDirectoryPath = getDirPathBySubFilesContainer(targetSubFilesContainer);
+
+            const targetPath = targetDirectoryPath + "/" + name;
+            const fileToSave = {
                 src: currentFile.fullPath,
-                target: (currentFile.fileType === 'DIRECTORY') ? currentFullByDirPath : currentFullByFilePath,
+                target: targetPath,
             };
 
-
-            fileRestApi.rename(fileToSave).done(newFile => {
-                currentFile = newFile;
-
+            fileRestApi.rename(fileToSave).done(file => {
+                currentFile = file;
                 $fileSourceRow.remove();
-                $fileSourceRow = transformColumn(currentFile, fileEditor);
-                subFilesContainer.append($fileSourceRow);
-                $fileSourceRow.addClass('files-table__file-row--active');
-
+                $fileSourceRow = integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow);
             }).fail(() => modal.buildErrorWindow(texts.error.renameFailed));
         }
 
-        function buildDeleteFile() {
+        function deleteFile() {
             modal.buildModalWindow(texts.warnDeleteMessage, confirmed => {
                 if (!confirmed) return;
 
@@ -345,11 +352,6 @@ define(
                 ).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
             });
         }
-
-        let newFileNameField = buildCreateField();
-        let checkBoxIsDirectory = buildIsDirectoryCheckBox();
-        let contentTextArea = buildContentTextArea();
-        let editCheckBox;
 
         function buildCreateField() {
             return components.texts.textField('<div>', {
@@ -376,38 +378,28 @@ define(
             return components.checkboxes.imcmsCheckbox("<div>", {
                 text: texts.title.createDirectory
             });
-
-        }
-
-        function buildAddFileInFirstColumn() {
-            confirmAddFile(() => onSaveFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn));
-            return windowCreateFile;
-        }
-
-        function buildAddFileInSecondColumn() {
-            confirmAddFile(() => onSaveFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn));
-            return windowCreateFile;
         }
 
         function confirmAddFile(onConfirm) {
             newFileNameField.setValue('').$input.removeAttr('disabled');
             checkBoxIsDirectory.$input.removeAttr('disabled');
-            windowCreateFile =
-                modal.buildCreateFileModalWindow(
-                    texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
-                        if (!confirmed) {
-                            onConfirm();
-                        }
-                    });
+            return modal.buildCreateFileModalWindow(
+                texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
+                    if (!confirmed) {
+                        onConfirm();
+                    }
+                });
         }
 
-        function onSaveFile(currentPath, subFilesContainer, transformColumn) {
+        function onSaveFile() {
             let name = newFileNameField.getValue();
             let isDirectory = checkBoxIsDirectory.isChecked();
 
             if (!name) return;
 
-            let currentFullPath = currentPath + "/" + name;
+            const targetSubFilesContainer = this.getTargetSubFilesContainer();
+            const targetDirectoryPath = getDirPathBySubFilesContainer(targetSubFilesContainer);
+            const currentFullPath = targetDirectoryPath + "/" + name;
 
             let fileToSave = {
                 fileName: name,
@@ -417,20 +409,12 @@ define(
 
             fileRestApi.create(fileToSave).done(newFile => {
                 currentFile = newFile;
-                $fileSourceRow = integrateFileInContainerAsRow(newFile, subFilesContainer, transformColumn);
+                $fileSourceRow = integrateFileInContainerAsRow(newFile, targetSubFilesContainer, this.transformFileToRow);
                 $fileSourceRow.addClass(newFileHighlightingClassName);
             }).fail(() => modal.buildErrorWindow(texts.error.createError));
         }
 
-        function uploadFileInFirstColumn() {
-            uploadFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn);
-        }
-
-        function uploadFileInSecondColumn() {
-            uploadFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn);
-        }
-
-        function uploadFile(targetDirectory, subFilesContainer, transformColumn) {
+        function uploadFile() {
             let $fileInput = $('<input>', {
                 type: 'file',
                 multiple: ''
@@ -446,98 +430,133 @@ define(
                     formData.append(fileName.join('_'), file)
                 });
 
-                formData.append("targetDirectory", targetDirectory);
+                const targetSubFilesContainer = this.getTargetSubFilesContainer();
+                const targetDirectoryPath = getDirPathBySubFilesContainer(targetSubFilesContainer);
+                formData.append("targetDirectory", targetDirectoryPath);
 
                 fileRestApi.upload(formData).done(uploadedFiles => {
-                    currentFile = null;
-
                     uploadedFiles.forEach(file => {
-                        $fileSourceRow = transformColumn(file, fileEditor);
-                        subFilesContainer.append($fileSourceRow);
+                        currentFile = file;
+                        $fileSourceRow = integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow);
+                        $fileSourceRow.addClass(newFileHighlightingClassName);
                     });
                 }).fail(() => modal.buildErrorWindow(texts.error.uploadError));
             });
         }
 
-        let $fileSourceRow;
+        function moveFile() {
+            const targetSubFilesContainer = this.getTargetSubFilesContainer();
 
-        function moveFileRight() {
-            moveFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn);
-        }
-
-        function moveFileLeft() {
-            moveFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn);
-        }
-
-        function moveFile(targetPath, targetSubFilesContainer, transformColumnFunction) {
             let paths = {
                 src: selectedFiles.map(file => file.fullPath).toString(),
-                target: targetPath
+                target: getDirPathBySubFilesContainer(targetSubFilesContainer)
             };
 
             fileRestApi.move(paths).done(files => {
-
                 selectedFiles = files;
 
-                selectedFilesRows.forEach(row => row.remove());
-                selectedFilesRows = [];
+                const allSubFilesContainers = getAllSubFilesContainers();
+                if (isDirsInSubFilesContainersEquals(allSubFilesContainers[0], allSubFilesContainers[1])) {
+                    selectedFilesRows = [];
+                } else {
+                    selectedFilesRows.forEach(row => row.remove());
+                    selectedFilesRows = [];
 
-                files.forEach(file =>
-                    selectedFilesRows.push(
-                        integrateFileInContainerAsRow(file, targetSubFilesContainer, transformColumnFunction)
-                    )
+                    files.forEach(file =>
+                        selectedFilesRows.push(
+                            integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow)
+                        )
+                    );
+                }
+
+                allSubFilesContainers.forEach(container =>
+                    updateHighlighting(container, selectedFilesRows)
                 );
-
-                updateHighlighting(firstSubFilesContainer, selectedFilesRows);
-                updateHighlighting(secondSubFilesContainer, selectedFilesRows);
             }).fail(() => modal.buildErrorWindow(texts.error.moveError));
         }
 
-        function copyFileRight() {
-            copyFile(currentSecondPath, secondSubFilesContainer, fileToRow.transformSecondColumn);
-        }
-
-        function copyFileLeft() {
-            copyFile(currentFirstPath, firstSubFilesContainer, fileToRow.transformFirstColumn);
-        }
-
-        function copyFile(targetPath, targetSubFilesContainer, transformColumnFunction) {
+        function copyFile() {
+            const targetSubFilesContainer = this.getTargetSubFilesContainer();
 
             let paths = {
                 src: selectedFiles.map(file => file.fullPath).toString(),
-                target: targetPath
+                target: getDirPathBySubFilesContainer(targetSubFilesContainer)
             };
 
             fileRestApi.copy(paths).done(newFiles => {
                 selectedFiles = newFiles;
-
                 selectedFilesRows = [];
 
-                newFiles.forEach(file =>
-                    selectedFilesRows.push(
-                        integrateFileInContainerAsRow(file, targetSubFilesContainer, transformColumnFunction)
-                    )
-                );
+                const allSubFilesContainers = getAllSubFilesContainers();
+                if (!isDirsInSubFilesContainersEquals(allSubFilesContainers[0], allSubFilesContainers[1])) {
+                    newFiles.forEach(file =>
+                        selectedFilesRows.push(
+                            integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow)
+                        )
+                    );
+                }
 
-                updateHighlighting(firstSubFilesContainer, selectedFilesRows);
-                updateHighlighting(secondSubFilesContainer, selectedFilesRows);
+                allSubFilesContainers.forEach(container =>
+                    updateHighlighting(container, selectedFilesRows)
+                );
             }).fail(() => modal.buildErrorWindow(texts.error.copyError));
         }
 
-        let fileEditor = {
-            addFileInFirstColumn: buildAddFileInFirstColumn,
-            addFileInSecondColumn: buildAddFileInSecondColumn,
-            viewFirstFilesContainer: buildViewFirstFilesContainer,
-            viewSecondFilesContainer: buildViewSecondFilesContainer,
-            editFileInFirstColumn: prepareOnEditFileInFirstColumn,
-            editFileInSecondColumn: prepareOnEditFileInSecondColumn,
-            deleteFile: buildDeleteFile,
-            uploadFileInFirstColumn: uploadFileInFirstColumn,
-            uploadFileInSecondColumn: uploadFileInSecondColumn,
-            moveFileRight: moveFileRight,
-            moveFileLeft: moveFileLeft,
-            copyFileRight: copyFileRight,
-            copyFileLeft: copyFileLeft,
+        function buildBoundData(targetSubFilesContainerIndex) {
+            return {
+                getTargetSubFilesContainer: () => getSubFilesContainerByIndex(targetSubFilesContainerIndex),
+                transformFileToRow: buildTransformFileToRow(targetSubFilesContainerIndex)
+            }
+        }
+
+        function buildTransformFileToRow(subFilesContainerIndex) {
+            return fileToRow.transformFileToRow.bind({subFilesContainerIndex});
+        }
+
+        function buildViewSubFilesContainer(subFilesContainerIndex) {
+            const classes = {
+                subFilesClassName: subFilesContainerIndex === 0 ? 'first-sub-files' : 'second-sub-files',
+                columnClassName: subFilesContainerIndex === 0 ? 'files-table__first-instance' : 'files-table__second-instance'
+            };
+            return buildViewFilesContainer.bind(classes);
+        }
+
+        function buildUploadFile(subFilesContainerIndex) {
+            return uploadFile.bind(buildBoundData(subFilesContainerIndex))
+        }
+
+        function buildAddFile(subFilesContainerIndex) {
+            const saveFile = onSaveFile.bind(buildBoundData(subFilesContainerIndex));
+            return () => confirmAddFile(saveFile);
+        }
+
+        function buildEditFile(subFilesContainerIndex) {
+            const renameFile = onRenameFile.bind(buildBoundData(subFilesContainerIndex));
+            const editFileContent = onEditFileContent.bind({
+                getTargetDirectoryPath: () => getDirPathBySubFilesContainerIndex(subFilesContainerIndex)
+            });
+            const buildConfirmEditIn = () => confirmEditFile(renameFile, editFileContent);
+            return () => prepareOnEditFile(buildConfirmEditIn);
+        }
+
+        function buildMoveFile(subFilesContainerIndex) {
+            const index = subFilesContainerIndex === 0 ? 1 : 0;
+            return moveFile.bind(buildBoundData(index));
+        }
+
+        function buildCopyFile(subFilesContainerIndex) {
+            const index = subFilesContainerIndex === 0 ? 1 : 0;
+            return copyFile.bind(buildBoundData(index));
+        }
+
+        const fileEditor = {
+            buildViewSubFilesContainer,
+            buildUploadFile,
+            buildAddFile,
+            buildEditFile,
+            buildMoveFile,
+            buildCopyFile,
+            deleteFile,
             displayDocs: buildDocumentsContainer,
             viewDoc: getViewDocById
         };

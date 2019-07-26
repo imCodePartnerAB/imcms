@@ -3,52 +3,34 @@ define(
     function (BEM, $, components, texts, imcms) {
 
         texts = texts.superAdmin.files.title;
-        let contextUrl = '/api/files/file/';
+        const contextUrl = '/api/files/file/';
 
-        function getOnFileDblClicked(file, fileEditor) {
+        function getOnFileDblClicked(file, buildViewFunc) {
             return function () {
                 const $this = $(this);
-                let isDblClick = true;
+                const isDblClick = true;
 
-                fileEditor.viewFirstFilesContainer($this, file, isDblClick);
+                buildViewFunc($this, file, isDblClick);
             }
         }
 
-        function getOnFileClicked(file, fileEditor) {
+        function getOnFileClicked(file, buildViewFunc) {
             return function () {
                 const $this = $(this);
-                let isDblClick = false;
-                fileEditor.viewFirstFilesContainer($this, file, isDblClick);
+                const isDblClick = false;
+
+                buildViewFunc($this, file, isDblClick);
             }
         }
-
-        function getOnSecondFileClicked(file, fileEditor) {
-            return function () {
-                const $this = $(this);
-                let isDblClick = false;
-                fileEditor.viewSecondFilesContainer($this, file, isDblClick);
-            }
-        }
-
-        function getOnSecondFileDblClicked(file, fileEditor) {
-            return function () {
-                const $this = $(this);
-                let isDblClick = true;
-
-                fileEditor.viewSecondFilesContainer($this, file, isDblClick);
-            }
-        }
-
 
         return {
-            transformFirstColumn: (file, fileEditor) => {
+            transformFileToRow: function (file, fileEditor) {
+                const buildViewFunc = fileEditor.buildViewSubFilesContainer(this.subFilesContainerIndex);
 
-                let fullName = (file === "/..") ? "/.." : file.fullPath;
-
-                let infoRowAttributes = {
-                    name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
-                    dblclick: getOnFileDblClicked(file, fileEditor),
-                    click: getOnFileClicked(file, fileEditor)
+                const infoRowAttributes = {
+                    name: file.fileName,
+                    dblclick: getOnFileDblClicked(file, buildViewFunc),
+                    click: getOnFileClicked(file, buildViewFunc),
                 };
 
                 if (file.fileType === 'FILE') {
@@ -56,23 +38,23 @@ define(
                         block: "file-row",
                         elements: {
                             'file-name': $('<div>', {
-                                text: fullName.replace(/^.*[\\\/]/, '')
+                                text: file.fileName
                             }),
                             'download': $('<a>', {
                                 html: components.controls.download(),
-                                href: imcms.contextPath + contextUrl + fullName,
+                                href: imcms.contextPath + contextUrl + file.fullPath,
                                 title: texts.download
                             }),
-                            'edit': components.controls.edit(fileEditor.editFileInFirstColumn).attr("title", texts.edit),
+                            'edit': components.controls.edit(fileEditor.buildEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
-                        }
+                        },
                     }).buildBlockStructure("<div>", infoRowAttributes);
-                } else if (file === "/..") {
+                } else if (file.fileType === 'DIRECTORY' && file.fileName === "/..") {
                     return new BEM({
-                        block: "symbol-row",
+                        block: "directory-row",
                         elements: {
                             'file-name': $('<div>', {
-                                text: file
+                                text: file.fileName
                             }),
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
@@ -81,96 +63,33 @@ define(
                         block: "directory-row",
                         elements: {
                             'file-name': $('<div>', {
-                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
+                                text: file.fileName
                             }),
-                            'edit': components.controls.edit(fileEditor.editFileInFirstColumn).attr("title", texts.edit),
+                            'edit': components.controls.edit(fileEditor.buildEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }
             },
-            transformSecondColumn: (file, fileEditor) => {
-
-                let fullName = (file === "/..") ? "/.." : file.fullPath;
+            transformRootDirToRow: function (file, fileEditor) {
+                const buildViewFunc = fileEditor.buildViewSubFilesContainer(this.subFilesContainerIndex);
 
                 let infoRowAttributes = {
-                    name: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, ''),
-                    dblclick: getOnSecondFileDblClicked(file, fileEditor),
-                    click: getOnSecondFileClicked(file, fileEditor)
-                };
-
-                if (file.fileType === 'FILE') {
-                    return new BEM({
-                        block: "file-second-row",
-                        elements: {
-                            'file-name': $('<div>', {
-                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
-                            }),
-                            'download': $('<a>', {
-                                html: components.controls.download(),
-                                href: imcms.contextPath + contextUrl + fullName,
-                                title: texts.download
-                            }),
-                            'edit': components.controls.edit(fileEditor.editFileInSecondColumn).attr("title", texts.edit),
-                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
-                        }
-                    }).buildBlockStructure("<div>", infoRowAttributes);
-                } else if (file === "/..") {
-                    return new BEM({
-                        block: "symbol-row",
-                        elements: {
-                            'file-name': $('<div>', {
-                                text: file
-                            }),
-                        }
-                    }).buildBlockStructure("<div>", infoRowAttributes);
-                } else {
-                    return new BEM({
-                        block: "directory-row",
-                        elements: {
-                            'file-name': $('<div>', {
-                                text: ("/.." === fullName) ? "/.." : fullName.replace(/^.*[\\\/]/, '')
-                            }),
-                            'edit': components.controls.edit(fileEditor.editFileInFirstColumn).attr("title", texts.edit),
-                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
-                        }
-                    }).buildBlockStructure("<div>", infoRowAttributes);
-                }
-            },
-            transformDirToFirstRootColumn: (file, fileEditor) => {
-                let infoRowAttributes = {
-                    name: file.fullPath.replace(/^.*[\\\/]/, ''),
-                    dblclick: getOnFileDblClicked(file, fileEditor),
-                    click: getOnFileClicked(file, fileEditor)
+                    name: file.fileName,
+                    dblclick: getOnFileDblClicked(file, buildViewFunc),
+                    click: getOnFileClicked(file, buildViewFunc)
                 };
 
                 return new BEM({
                     block: 'root-directory-row',
                     elements: {
                         'file-name': $('<div>', {
-                            text: file.fullPath.replace(/^.*[\\\/]/, '')
+                            text: file.fileName,
                         }),
                         'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                     },
                 }).buildBlockStructure("<div>", infoRowAttributes);
             },
-            transformDirToSecondRootColumn: (file, fileEditor) => {
-                let infoRowAttributes = {
-                    name: file.fullPath.replace(/^.*[\\\/]/, ''),
-                    dblclick: getOnSecondFileDblClicked(file, fileEditor),
-                    click: getOnSecondFileClicked(file, fileEditor)
-                };
-
-                return new BEM({
-                    block: 'root-directory-row',
-                    elements: {
-                        'file-name': $('<div>', {
-                            text: file.fullPath.replace(/^.*[\\\/]/, '')
-                        }),
-                        'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
-                    },
-                }).buildBlockStructure("<div>", infoRowAttributes);
-            }
         }
     }
 );
