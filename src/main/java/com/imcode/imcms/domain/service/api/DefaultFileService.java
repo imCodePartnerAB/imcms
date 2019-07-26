@@ -6,7 +6,6 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
-import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -171,8 +170,7 @@ public class DefaultFileService implements FileService {
         final String originalSrcName = getPathWithoutExtension(srcFileName);
         final String originalTargetName = getPathWithoutExtension(targetFileName);
 
-        TemplateJPA templateJPA = templateRepository.findOne(originalSrcName);
-        if (null != templateJPA) {
+        if (templateRepository.exists(originalSrcName)) {
             templateRepository.updateTemplateName(originalTargetName, originalSrcName);
         }
 
