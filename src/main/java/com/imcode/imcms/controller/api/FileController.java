@@ -2,7 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.api.DefaultFileService;
+import com.imcode.imcms.domain.service.FileService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,9 +44,9 @@ public class FileController {
 
     private static final Pattern FILE_NAME_PATTERN = compile("(.*?\\/files\\/)(?<path>.*)");
 
-    private final DefaultFileService defaultFileService;
+    private final FileService defaultFileService;
 
-    public FileController(DefaultFileService defaultFileService) {
+    public FileController(FileService defaultFileService) {
         this.defaultFileService = defaultFileService;
     }
 
