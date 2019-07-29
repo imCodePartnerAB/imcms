@@ -12,7 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
@@ -62,17 +65,6 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
 
         assertNotEquals(test.getName(), saved.getName());
     }
-
-    @Test
-    public void edit_WhenTemplateGroupNameEmpty_Expected_CorrectException() {
-        final TemplateGroup test = dataInitializer.createData("test", 5, true);
-        final TemplateGroup saved = templateGroupService.save(test);
-        saved.setName("");
-
-
-        assertThrows(IllegalArgumentException.class, () -> templateGroupService.edit(saved));
-    }
-
 
     @Test
     public void getByName_When_TemplateGroupNameExist_Expected_CorrectTemplateGroup() {
