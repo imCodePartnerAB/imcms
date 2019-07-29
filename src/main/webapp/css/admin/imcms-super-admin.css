@@ -303,6 +303,8 @@
     direction: rtl;
 }
 
+.buttons-copy > *,
+.buttons-move > *,
 .buttons-action__second-action > *,
 .buttons-action__first-action > * {
     width: 25px;
