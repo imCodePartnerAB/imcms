@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ucar.httpservices.HTTPAuthStore.log;
-
 @Service
 @Transactional(propagation = Propagation.SUPPORTS)
 class DefaultTemplateGroupService implements TemplateGroupService {
@@ -41,12 +39,8 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     @Override
     public TemplateGroup edit(TemplateGroup templateGroup) { //todo it necessary or delete it ?
         final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findOne(templateGroup.getId());
-        if (templateGroup.getName().isEmpty()) {
-            log.error("TemplateGroup name is empty ! With id: " + templateGroup.getId());
-            throw new IllegalArgumentException();
-        }
         receivedTemplateGroup.setName(templateGroup.getName());
-        return new TemplateGroupDTO(templateGroupRepository.save(receivedTemplateGroup));
+        return new TemplateGroupDTO(templateGroupRepository.save(new TemplateGroupJPA(receivedTemplateGroup)));
     }
 
     @Override
