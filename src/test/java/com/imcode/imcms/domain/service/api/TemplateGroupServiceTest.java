@@ -53,6 +53,28 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void edit_WhenTemplateGroupExist_Expected_EditEntity() {
+        final TemplateGroup test = dataInitializer.createData("test", 5, true);
+        final TemplateGroup saved = templateGroupService.save(test);
+        final String anotherName = "Another";
+        saved.setName(anotherName);
+        templateGroupService.edit(saved);
+
+        assertNotEquals(test.getName(), saved.getName());
+    }
+
+    @Test
+    public void edit_WhenTemplateGroupNameEmpty_Expected_CorrectException() {
+        final TemplateGroup test = dataInitializer.createData("test", 5, true);
+        final TemplateGroup saved = templateGroupService.save(test);
+        saved.setName("");
+
+
+        assertThrows(IllegalArgumentException.class, () -> templateGroupService.edit(saved));
+    }
+
+
+    @Test
     public void getByName_When_TemplateGroupNameExist_Expected_CorrectTemplateGroup() {
         final String name = "TEST";
         final TemplateGroup test = dataInitializer.createData(name, 5, false);
