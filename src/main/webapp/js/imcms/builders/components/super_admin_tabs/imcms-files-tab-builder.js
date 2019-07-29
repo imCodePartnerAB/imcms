@@ -91,39 +91,21 @@ define(
         }
 
         function buildMoveButtons() {
-            let $buttonMoveLeft = components.buttons.positiveButton({
-                text: texts.moveLeft,
-                click: fileEditor.buildMoveFile(1)
-            });
-            let $buttonMoveRight = components.buttons.positiveButton({
-                text: texts.moveRight,
-                click: fileEditor.buildMoveFile(0)
-            });
-
             return new BEM({
                 block: 'buttons-move',
                 elements: {
-                    'left-move': $buttonMoveLeft,
-                    'right-move': $buttonMoveRight,
+                    'left-move': components.controls.left(fileEditor.buildMoveFile(1)).attr("title", texts.moveLeft),
+                    'right-move': components.controls.right(fileEditor.buildMoveFile(0)).attr("title", texts.moveRight)
                 }
             }).buildBlockStructure('<div>')
         }
 
         function buildCopyButtons() {
-            let $buttonCopyLeft = components.buttons.positiveButton({
-                text: texts.copyLeft,
-                click: fileEditor.buildCopyFile(1)
-            });
-            let $buttonCopyRight = components.buttons.positiveButton({
-                text: texts.copyRight,
-                click: fileEditor.buildCopyFile(0)
-            });
-
             return new BEM({
                 block: 'buttons-copy',
                 elements: {
-                    'left-copy': $buttonCopyLeft,
-                    'right-copy': $buttonCopyRight,
+                    'left-copy': components.controls.left(fileEditor.buildCopyFile(1)).attr("title", texts.copyLeft),
+                    'right-copy': components.controls.right(fileEditor.buildCopyFile(0)).attr("title", texts.copyRight)
                 }
             }).buildBlockStructure('<div>');
         }
