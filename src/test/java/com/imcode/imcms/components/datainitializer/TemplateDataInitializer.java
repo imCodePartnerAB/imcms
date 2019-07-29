@@ -13,6 +13,7 @@ import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.util.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -66,6 +67,18 @@ public class TemplateDataInitializer extends TestDataCleaner {
 
         return textDocumentTemplateRepository.save(textDocumentTemplate);
     }
+
+    public List<TemplateGroup> createTemplateGroups(Integer howMuch) {
+        return IntStream.range(0, howMuch)
+                .mapToObj(i -> Value.with(new TemplateGroupJPA(), templateGroup -> {
+                    templateGroup.setName("templateGroup" + i);
+                    templateGroup.setTemplates(new HashSet<>(createData(2)));
+                }))
+                .map(templateGroupRepository::saveAndFlush)
+                .map(TemplateGroupDTO::new)
+                .collect(Collectors.toList());
+    }
+
 
     public TemplateGroup createData(String name, int howMuchContainsTemplates, boolean withoutSaving) {
         final TemplateGroupJPA templateGroupJPA = Value.apply(new TemplateGroupJPA(), templateGroupJpa -> {
