@@ -81,6 +81,14 @@
     background-image: url("/images_new/controls/icon_controll_error.svg");
 }
 
+.imcms-control--left {
+    background-image: url("/images_new/controls/icon_arrow_action_left.svg");
+}
+
+.imcms-control--right {
+    background-image: url("/images_new/controls/icon_arrow_action_right.svg");
+}
+
 .imcms-folder__controls .imcms-control--move {
     background-image: url("/images_new/controls/icon_folder_controll_move.png");
 }
