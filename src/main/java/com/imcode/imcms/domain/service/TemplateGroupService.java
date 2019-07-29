@@ -10,6 +10,8 @@ public interface TemplateGroupService {
 
     TemplateGroup save(TemplateGroup templateGroup);
 
+    TemplateGroup edit(TemplateGroup templateGroup);
+
     TemplateGroup get(String name);
 
     TemplateGroup get(Integer groupId);
