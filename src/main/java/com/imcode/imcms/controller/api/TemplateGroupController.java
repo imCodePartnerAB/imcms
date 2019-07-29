@@ -1,5 +1,6 @@
 package com.imcode.imcms.controller.api;
 
+import com.imcode.imcms.domain.dto.TemplateGroupDTO;
 import com.imcode.imcms.domain.service.TemplateGroupService;
 import com.imcode.imcms.model.TemplateGroup;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,12 +37,12 @@ public class TemplateGroupController {
     }
 
     @PostMapping
-    public TemplateGroup create(@RequestBody TemplateGroup templateGroup) {
+    public TemplateGroup create(@RequestBody TemplateGroupDTO templateGroup) {
         return templateGroupService.save(templateGroup);
     }
 
     @PutMapping
-    public TemplateGroup edit(@RequestBody TemplateGroup templateGroup) {
+    public TemplateGroup edit(@RequestBody TemplateGroupDTO templateGroup) {
         return templateGroupService.edit(templateGroup);
     }
 
