@@ -36,5 +36,9 @@ module.exports = {
 
     upload: onclick => buildControl("upload", onclick),
 
+    left: onclick => buildControl("left", onclick),
+
+    right: onclick => buildControl("right", onclick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };
