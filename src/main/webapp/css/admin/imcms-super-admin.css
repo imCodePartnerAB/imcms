@@ -168,8 +168,13 @@
     justify-content: space-between;
 }
 
-.table-documents {
+.documents-container {
     height: 200px;
+}
+
+.table-documents {
+    height: inherit;
+    width: 50%;
     overflow-y: auto;
     border: 1px solid gainsboro;
 }
