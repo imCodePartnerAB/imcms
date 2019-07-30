@@ -168,13 +168,33 @@
     justify-content: space-between;
 }
 
-.documents-container {
+.templates-table {
+    width: 100%;
+    display: inline-flex;
     height: 200px;
+}
+
+.files-table > *,
+.templates-table > * {
+    width: 50%;
+}
+
+.group-editor > *:not(.group-editor__templates-group-create-button) {
+    width: 95%;
+    padding-top: 7px;
+}
+
+.group-editor__templates-group-create-button {
+    margin-bottom: 10px;
+}
+
+.group-editor .imcms-select__drop-down-list,
+.group-editor .imcms-text-box__input {
+    width: 100%;
 }
 
 .table-documents {
     height: inherit;
-    width: 50%;
     overflow-y: auto;
     border: 1px solid gainsboro;
 }
@@ -258,11 +278,6 @@
 .directory-row__edit,
 .directory-row__delete {
     width: 10%;
-}
-
-.files-table__first-instance,
-.files-table__second-instance {
-    width: 50%;
 }
 
 .imcms-modal-body__edit-content {

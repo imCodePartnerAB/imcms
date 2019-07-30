@@ -28,6 +28,15 @@
     top: 0;
 }
 
+.imcms-select[disabled] .imcms-drop-down-list__select-item {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.imcms-select[disabled] .imcms-select__label {
+    cursor: default;
+}
+
 .imcms-select[disabled] .imcms-drop-down-list__button {
     display: none;
 }
