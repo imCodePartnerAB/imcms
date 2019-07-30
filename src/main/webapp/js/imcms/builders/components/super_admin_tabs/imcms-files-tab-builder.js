@@ -78,7 +78,7 @@ define(
 
         function buildDocumentsContainer() {
             return new BEM({
-                block: 'documents-container',
+                block: 'templates-table',
                 elements: {
                     'group-editor': fileEditor.getTemplateGroupEditor(),
                     'table-documents': fileEditor.displayDocs()
