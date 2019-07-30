@@ -587,7 +587,10 @@ const texts = {
                     copyError: 'Misslyckades med att kopiera filen. Försök igen!',
                     uploadError: 'Det gick inte att ladda upp filen. Försök igen!',
                     loadDocError: 'Misslyckades med att ladda dokument!',
-                    loadGroupsError: 'Det gick inte att ladda mallgrupper!'
+                    loadGroupsError: 'Det gick inte att ladda mallgrupper!',
+                    deleteGroup: 'Det gick inte att ta bort mallgrupp!',
+                    createGroup: 'Det gick inte att skapa mallgrupp!',
+                    editGroup: 'Det gick inte att redigera mallgruppen!'
                 },
                 documentData: {
                     docId: 'Dokument-id',
@@ -598,7 +601,11 @@ const texts = {
                     edit: 'Redigera grupp',
                     delete: 'Radera grupp',
                     save: 'Spara grupp',
-                    cancel: 'Annullera'
+                    cancel: 'Annullera',
+                    create: 'Skapa mallgrupp',
+                    deleteConfirm: 'Vill du verkligen ta bort mallgrupp?',
+                    saveConfirm: 'Vill du verkligen spara mallgrupp?',
+                    cancelConfirm: 'Vill du verkligen avbryta ändringar?'
                 }
             },
             search: {
@@ -1328,7 +1335,10 @@ const texts = {
                     copyError: 'Failed to copy file. Try again!',
                     uploadError: 'Failed to upload file. Try again!',
                     loadDocError: 'Failed to load documents!',
-                    loadGroupsError: 'Failed to load template groups!'
+                    loadGroups: 'Failed to load template groups!',
+                    deleteGroup: 'Failed to delete template group!',
+                    createGroup: 'Failed to create template group!',
+                    editGroup: 'Failed to edit template group!'
                 },
                 documentData: {
                     docId: 'Document id',
@@ -1339,7 +1349,11 @@ const texts = {
                     edit: 'Edit group',
                     delete: 'Delete group',
                     save: 'Save group',
-                    cancel: 'Cancel'
+                    cancel: 'Cancel',
+                    create: 'Create template group',
+                    deleteConfirm: 'Do you really want to delete template group?',
+                    saveConfirm: 'Do you really want to save template group?',
+                    cancelConfirm: 'Do you really want to cancel changes?'
                 }
             },
             search: {
