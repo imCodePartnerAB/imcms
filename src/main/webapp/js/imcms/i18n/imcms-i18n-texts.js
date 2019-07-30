@@ -586,11 +586,19 @@ const texts = {
                     moveError: 'Misslyckades med att flytta filen. Försök igen!',
                     copyError: 'Misslyckades med att kopiera filen. Försök igen!',
                     uploadError: 'Det gick inte att ladda upp filen. Försök igen!',
-                    loadDocError: 'Misslyckades med att ladda dokument!'
+                    loadDocError: 'Misslyckades med att ladda dokument!',
+                    loadGroupsError: 'Det gick inte att ladda mallgrupper!'
                 },
                 documentData: {
                     docId: 'Dokument-id',
                     docType: 'Dokumenttyp',
+                },
+                groupData: {
+                    title: 'Mallgrupp',
+                    edit: 'Redigera grupp',
+                    delete: 'Radera grupp',
+                    save: 'Spara grupp',
+                    cancel: 'Annullera'
                 }
             },
             search: {
@@ -1319,11 +1327,19 @@ const texts = {
                     moveError: 'Failed to move file. Try again!',
                     copyError: 'Failed to copy file. Try again!',
                     uploadError: 'Failed to upload file. Try again!',
-                    loadDocError: 'Failed to load documents!'
+                    loadDocError: 'Failed to load documents!',
+                    loadGroupsError: 'Failed to load template groups!'
                 },
                 documentData: {
                     docId: 'Document id',
                     docType: 'Document Type',
+                },
+                groupData: {
+                    title: 'Template group',
+                    edit: 'Edit group',
+                    delete: 'Delete group',
+                    save: 'Save group',
+                    cancel: 'Cancel'
                 }
             },
             search: {
