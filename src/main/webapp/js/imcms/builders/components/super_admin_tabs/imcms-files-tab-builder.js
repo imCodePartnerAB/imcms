@@ -77,7 +77,13 @@ define(
         }
 
         function buildDocumentsContainer() {
-            return fileEditor.displayDocs();
+            return new BEM({
+                block: 'documents-container',
+                elements: {
+                    'group-editor': fileEditor.getTemplateGroupEditor(),
+                    'table-documents': fileEditor.displayDocs()
+                }
+            }).buildBlockStructure('<div>', {});
         }
 
         function buildTableFilesContainer() {

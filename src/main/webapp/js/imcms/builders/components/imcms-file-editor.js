@@ -2,8 +2,8 @@ define(
     'imcms-file-editor',
     ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder',
         'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer',
-        'imcms-super-admin-page-builder', 'imcms'],
-    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow) {
+        'imcms-template-groups-rest-api', 'imcms-super-admin-page-builder', 'imcms'],
+    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, groupsRestApi) {
 
         texts = texts.superAdmin.files;
 
@@ -17,6 +17,8 @@ define(
         let $documentsData;
         let selectedFiles;
         let selectedFilesRows;
+
+        initData();
 
         function getMainContainer() {
             return $('.imcms-form').find('.files-table');
@@ -149,6 +151,100 @@ define(
             return $documentsContainer;
         }
 
+        function initData() {
+            groupsRestApi.read().done(templateGroups => {
+                const mappedData = templateGroups.map(group => ({
+                    text: group.name,
+                    "data-value": group.id
+                }));
+
+                components.selects.addOptionsToSelect(mappedData, $templateGroupSelect);
+            }).fail(() => modal.buildErrorWindow(texts.error.loadGroupsError));
+        }
+
+        const $templateGroupSelect = components.selects.imcmsSelect('<div>', {
+            id: 'template-group',
+            name: 'template-group',
+            text: texts.groupData.title,
+            emptySelect: true,
+            change: onChangeTemplateGroup
+        });
+
+        function onChangeTemplateGroup() {
+            $templateGroupNameTextField.setValue(1);
+        }
+
+        const $templateGroupNameTextField = components.texts.textBox('<div>', {});
+
+        const $templateGroupDefaultButtons = components.buttons.buttonsContainer('<div>', [
+            components.buttons.positiveButton({
+                text: texts.groupData.edit,
+                click: onEditTemplateGroup
+            }),
+            components.buttons.negativeButton({
+                text: texts.groupData.delete,
+                click: onDeleteTemplateGroup
+            })
+        ]);
+
+        function onEditTemplateGroup() {
+            $templateGroupDefaultButtons.slideUp();
+            $templateGroupEditButtons.slideDown();
+
+            $templateGroupNameTextField.$input.removeAttr('disabled').focus();
+        }
+
+        function onDeleteTemplateGroup() {
+            modal.buildModalWindow(texts.deleteConfirm, confirmed => {
+                if (!confirmed) return;
+
+                // rolesRestAPI.remove(currentRole)
+                //     .done(() => {
+                //         $roleRow.remove();
+                //         currentRole = null;
+                //         onEditDelegate = onSimpleEdit;
+                //         $container.slideUp();
+                //     })
+                //     .fail(() => modal.buildErrorWindow(texts.error.removeFailed));
+            });
+        }
+
+        const $templateGroupEditButtons = components.buttons.buttonsContainer('<div>', [
+            components.buttons.saveButton({
+                text: texts.groupData.save,
+                click: onSaveTemplateGroup
+            }),
+            components.buttons.negativeButton({
+                text: texts.groupData.cancel,
+                click: onCancelTemplateGroup
+            })
+        ], {
+            style: 'display: none;'
+        });
+
+        function onSaveTemplateGroup() {
+
+        }
+
+        function onCancelTemplateGroup() {
+
+        }
+
+        function getTemplateGroupEditor() {
+            $templateGroupNameTextField.$input.attr('disabled', 'disabled');
+
+            return new BEM({
+                block: 'group-editor',
+                elements: {
+                    // components.selects.addOptionsToSelect(rolesDataMapped, $userRoleSelect);
+                    'template-group-select': $templateGroupSelect,
+                    'template-group-name-row': $templateGroupNameTextField,
+                    'template-group-default-buttons': $templateGroupDefaultButtons,
+                    'template-group-edit-buttons': $templateGroupEditButtons
+                }
+            }).buildBlockStructure('<div>', {});
+        }
+        
         function getViewDocById($docRow, doc) {
             let question = texts.warnViewDocMessage;
 
@@ -557,6 +653,7 @@ define(
             buildMoveFile,
             buildCopyFile,
             deleteFile,
+            getTemplateGroupEditor,
             displayDocs: buildDocumentsContainer,
             viewDoc: getViewDocById
         };
