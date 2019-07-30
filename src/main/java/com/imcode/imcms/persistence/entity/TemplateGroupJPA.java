@@ -16,7 +16,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -49,7 +48,8 @@ public class TemplateGroupJPA extends TemplateGroup {
 
     @Override
     public Set<Template> getTemplates() {
-        return (templates == null) ? null : new HashSet<>(templates);
+//        return (templates == null) ? null : new HashSet<>(templates);
+        return null;
     }
 
     @Override
