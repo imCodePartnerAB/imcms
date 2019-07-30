@@ -240,6 +240,7 @@ module.exports = {
                         'imcms-roles-rest-api',
                         'imcms-ip-rules-rest-api',
                         'imcms-templates-rest-api',
+                        'imcms-template-groups-rest-api',
                         'imcms-category-types-rest-api',
                         'imcms-loops-rest-api',
                         'imcms-menus-rest-api',
