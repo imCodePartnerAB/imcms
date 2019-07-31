@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +23,7 @@ public class TemplateGroupDTO extends TemplateGroup {
 
     private String name;
 
-    private List<TemplateDTO> templates;
+    private Set<TemplateDTO> templates;
 
     public TemplateGroupDTO(TemplateGroup from) {
         super(from);
@@ -38,6 +37,6 @@ public class TemplateGroupDTO extends TemplateGroup {
     @Override
     public void setTemplates(Set<Template> templates) {
         this.templates = (templates == null) ? null
-                : templates.stream().map(TemplateDTO::new).collect(Collectors.toList());
+                : templates.stream().map(TemplateDTO::new).collect(Collectors.toSet());
     }
 }
