@@ -151,31 +151,17 @@ define(
             return $documentsContainer;
         }
 
-        const $templateGroupCreateButton = components.buttons.positiveButton({
-            text: texts.groupData.create,
-            click: onCreateTemplateGroup
-        });
-
-        function onCreateTemplateGroup() {
-            setEnabledEditMode(true);
-
-            $templateGroupSelect.selectFirst();
-            $templateGroupNameTextField.setValue('');
-        }
-
         function setEnabledEditMode(isEnabled) {
             if (isEnabled) {
                 $templateGroupDefaultButtons.slideUp();
                 $templateGroupEditButtons.slideDown();
 
                 $templateGroupNameTextField.$input.removeAttr('disabled').focus();
-                $templateGroupSelect.attr('disabled', 'disabled');
             } else {
                 $templateGroupDefaultButtons.slideDown();
                 $templateGroupEditButtons.slideUp();
 
                 $templateGroupNameTextField.$input.attr('disabled', 'disabled');
-                $templateGroupSelect.removeAttr('disabled', 'disabled');
             }
         }
 
@@ -190,28 +176,38 @@ define(
         function mapGroupToOption(group) {
             return {
                 text: group.name,
-                "data-value": group.id
+                'data-value': group.id
             };
+        }
+
+        const $templateGroupCreateButton = components.buttons.positiveButton({
+            text: texts.groupData.create,
+            click: onCreateTemplateGroup
+        });
+
+        function onCreateTemplateGroup() {
+            $templateGroupNameTextField.attr('mode', 'create');
+            $templateGroupNameTextField.setValue('');
+            setEnabledEditMode(true);
         }
 
         const $templateGroupSelect = components.selects.imcmsSelect('<div>', {
             id: 'template-group',
             name: 'template-group',
-            text: texts.groupData.title,
-            emptySelect: true,
-            onSelected: onSelectTemplateGroup
+            text: texts.groupData.title
         });
 
         function onSelectTemplateGroup() {
-            const templateName = getCorrectTemplateName($templateGroupSelect.selectedText());
-            $templateGroupNameTextField.setValue(templateName);
+            if ($templateGroupEditButtons.css('display') !== 'none') {
+                onCancelTemplateGroup()
+            } else {
+                $templateGroupNameTextField.setValue($templateGroupSelect.selectedText());
+                $templateGroupNameTextField.slideDown();
+                $templateGroupDefaultButtons.slideDown();
+            }
         }
 
-        function getCorrectTemplateName(name) {
-            return name === 'None' ? '' : name;
-        }
-
-        const $templateGroupNameTextField = components.texts.textBox('<div>', {});
+        const $templateGroupNameTextField = components.texts.textField('<div>', {});
 
         const $templateGroupDefaultButtons = components.buttons.buttonsContainer('<div>', [
             components.buttons.positiveButton({
@@ -222,14 +218,17 @@ define(
                 text: texts.groupData.delete,
                 click: onDeleteTemplateGroup
             })
-        ]);
+        ], {
+            style: 'display: none'
+        });
 
         function onEditTemplateGroup() {
-            const templateName = getCorrectTemplateName($templateGroupSelect.selectedText());
+            const templateName = $templateGroupSelect.selectedText();
             if (!templateName) {
                 return;
             }
 
+            $templateGroupNameTextField.attr('mode', 'edit');
             setEnabledEditMode(true);
         }
 
@@ -269,43 +268,54 @@ define(
             modal.buildModalWindow(texts.groupData.saveConfirm, confirmed => {
                 if (!confirmed) return;
 
-                const editedGroup = {
-                    id: $templateGroupSelect.getSelectedValue(),
-                    name: $templateGroupNameTextField.getValue()
-                };
-
-                if (editedGroup.id) {
-                    groupsRestApi.replace(editedGroup).done(group => {
-                        $templateGroupSelect.deleteOption($templateGroupSelect.getSelectedValue());
-                        $templateGroupSelect.addOptionsToSelect(mapGroupToOption(group), $templateGroupSelect, onSelectTemplateGroup);
-                        $templateGroupSelect.selectValue(group.id);
-
-                        setEnabledEditMode(false);
-                    }).fail(() => modal.buildErrorWindow(texts.error.editGroup));
-                } else {
-                    groupsRestApi.create(editedGroup).done(group => {
-                        $templateGroupSelect.addOptionsToSelect(mapGroupToOption(group), $templateGroupSelect, onSelectTemplateGroup);
-                        $templateGroupSelect.selectValue(group.id);
-
-                        setEnabledEditMode(false);
-                    }).fail(() => modal.buildErrorWindow(texts.error.createGroup));
+                if ($templateGroupNameTextField.attr('mode') === 'edit') {
+                    editTemplateGroup();
+                } else if ($templateGroupNameTextField.attr('mode') === 'create') {
+                    createTemplateGroup();
                 }
             });
+        }
+
+        function editTemplateGroup() {
+            const editedGroup = {
+                id: $templateGroupSelect.getSelectedValue(),
+                name: $templateGroupNameTextField.getValue()
+            };
+
+            groupsRestApi.replace(editedGroup).done(group => {
+                $templateGroupSelect.deleteOption($templateGroupSelect.getSelectedValue());
+                $templateGroupSelect.addOptionsToSelect(mapGroupToOption(group), $templateGroupSelect, onSelectTemplateGroup);
+                $templateGroupSelect.selectValue(group.id);
+
+                setEnabledEditMode(false);
+            }).fail(() => modal.buildErrorWindow(texts.error.editGroup));
+        }
+
+        function createTemplateGroup() {
+            const created = {
+                name: $templateGroupNameTextField.getValue()
+            };
+
+            groupsRestApi.create(created).done(group => {
+                $templateGroupSelect.addOptionsToSelect(mapGroupToOption(group), $templateGroupSelect, onSelectTemplateGroup);
+                $templateGroupSelect.selectValue(group.id);
+
+                setEnabledEditMode(false);
+            }).fail(() => modal.buildErrorWindow(texts.error.createGroup));
         }
 
         function onCancelTemplateGroup() {
             modal.buildModalWindow(texts.groupData.cancelConfirm, confirmed => {
                 if (!confirmed) return;
 
-                const templateName = getCorrectTemplateName($templateGroupSelect.selectedText());
-                $templateGroupNameTextField.setValue(templateName);
-
+                $templateGroupNameTextField.setValue($templateGroupSelect.selectedText());
                 setEnabledEditMode(false);
             });
         }
 
         function getTemplateGroupEditor() {
             $templateGroupNameTextField.$input.attr('disabled', 'disabled');
+            $templateGroupNameTextField.css('display', 'none');
 
             return new BEM({
                 block: 'group-editor',
@@ -318,7 +328,7 @@ define(
                 }
             }).buildBlockStructure('<div>', {});
         }
-        
+
         function getViewDocById($docRow, doc) {
             let question = texts.warnViewDocMessage;
 
