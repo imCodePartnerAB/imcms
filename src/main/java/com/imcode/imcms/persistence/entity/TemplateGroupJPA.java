@@ -2,7 +2,6 @@ package com.imcode.imcms.persistence.entity;
 
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,11 +10,13 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class TemplateGroupJPA extends TemplateGroup {
 
@@ -38,7 +38,7 @@ public class TemplateGroupJPA extends TemplateGroup {
     @Column(name = "group_name", unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "templateGroup")
+    @OneToMany(mappedBy = "templateGroup", fetch = FetchType.EAGER)
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<TemplateJPA> templates;
 
@@ -48,8 +48,7 @@ public class TemplateGroupJPA extends TemplateGroup {
 
     @Override
     public Set<Template> getTemplates() {
-//        return (templates == null) ? null : new HashSet<>(templates);
-        return null;
+        return (templates == null) ? null : new HashSet<>(templates);
     }
 
     @Override
