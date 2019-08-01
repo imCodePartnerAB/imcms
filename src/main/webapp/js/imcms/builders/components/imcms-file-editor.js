@@ -14,7 +14,6 @@ define(
         let $fileSourceRow;
         let currentFile;
         let $documentsContainer;
-        let $documentsData;
         let selectedFiles;
         let selectedFilesRows;
 
@@ -189,6 +188,7 @@ define(
             $templateGroupNameTextField.attr('mode', 'create');
             $templateGroupNameTextField.setValue('');
             setEnabledEditMode(true);
+            $templateGroupNameTextField.slideDown();
         }
 
         const $templateGroupSelect = components.selects.imcmsSelect('<div>', {
@@ -199,9 +199,11 @@ define(
 
         function onSelectTemplateGroup() {
             if ($templateGroupEditButtons.css('display') !== 'none') {
-                onCancelTemplateGroup()
+                onCancelTemplateGroup();
             } else {
-                $templateGroupNameTextField.setValue($templateGroupSelect.selectedText());
+                const templateName = $templateGroupSelect.selectedText();
+                fillTemplatesTableByTemplateGroup(templateName);
+                $templateGroupNameTextField.setValue(templateName);
                 $templateGroupNameTextField.slideDown();
                 $templateGroupDefaultButtons.slideDown();
             }
@@ -284,7 +286,7 @@ define(
 
             groupsRestApi.replace(editedGroup).done(group => {
                 $templateGroupSelect.deleteOption($templateGroupSelect.getSelectedValue());
-                $templateGroupSelect.addOptionsToSelect(mapGroupToOption(group), $templateGroupSelect, onSelectTemplateGroup);
+                components.selects.addOptionsToSelect([mapGroupToOption(group)], $templateGroupSelect, onSelectTemplateGroup);
                 $templateGroupSelect.selectValue(group.id);
 
                 setEnabledEditMode(false);
@@ -297,7 +299,7 @@ define(
             };
 
             groupsRestApi.create(created).done(group => {
-                $templateGroupSelect.addOptionsToSelect(mapGroupToOption(group), $templateGroupSelect, onSelectTemplateGroup);
+                components.selects.addOptionsToSelect([mapGroupToOption(group)], $templateGroupSelect, onSelectTemplateGroup);
                 $templateGroupSelect.selectValue(group.id);
 
                 setEnabledEditMode(false);
@@ -308,9 +310,40 @@ define(
             modal.buildModalWindow(texts.groupData.cancelConfirm, confirmed => {
                 if (!confirmed) return;
 
-                $templateGroupNameTextField.setValue($templateGroupSelect.selectedText());
+                const templateName = $templateGroupSelect.selectedText();
+                fillTemplatesTableByTemplateGroup(templateName);
+                $templateGroupNameTextField.setValue(templateName);
                 setEnabledEditMode(false);
             });
+        }
+
+        const $templatesTableTitle = $('<div>', {
+            text: texts.groupData.templatesTableTitle,
+            class: 'imcms-label',
+            style: 'display: none'
+        });
+
+        const $templatesTable = $('<div>', {
+            class: 'table-templates',
+            style: 'display: none;'
+        });
+
+        function fillTemplatesTableByTemplateGroup(groupName) {
+            groupsRestApi.get(groupName).done(group => {
+                $templatesTableTitle.show();
+                $templatesTable.show();
+                $templatesTable.children().remove();
+                group.templates.forEach(template => $templatesTable.append(templateToRow(template)));
+            }).fail(() => modal.buildErrorWindow('...'));
+        }
+
+        function templateToRow(template) {
+            return new BEM({
+                block: 'template-row',
+                elements: {
+                    'template-name': $('<div>').text(template.name)
+                }
+            }).buildBlockStructure('<div>');
         }
 
         function getTemplateGroupEditor() {
@@ -324,7 +357,9 @@ define(
                     'template-group-select': $templateGroupSelect,
                     'template-group-name-row': $templateGroupNameTextField,
                     'template-group-default-buttons': $templateGroupDefaultButtons,
-                    'template-group-edit-buttons': $templateGroupEditButtons
+                    'template-group-edit-buttons': $templateGroupEditButtons,
+                    'table-templates-title': $templatesTableTitle,
+                    'table-templates': $templatesTable
                 }
             }).buildBlockStructure('<div>', {});
         }
@@ -409,8 +444,8 @@ define(
             if (isTemplate.test(currentFile.fullPath)) {
                 fileRestApi.getDocuments(templateName).done(documents => {
                         if (documents.length > 0) {
-                            $documentsData = $('<div>').addClass('documents-data');
-                            let documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
+                            const $documentsData = $('<div>').addClass('documents-data');
+                            const documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
                             $documentsContainer.find('.documents-data').remove();
                             $documentsData.append(buildTitleRow());
                             $documentsData.append(documentsRows);

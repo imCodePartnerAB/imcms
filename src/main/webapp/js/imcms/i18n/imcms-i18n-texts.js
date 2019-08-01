@@ -590,7 +590,8 @@ const texts = {
                     loadGroupsError: 'Det gick inte att ladda mallgrupper!',
                     deleteGroup: 'Det gick inte att ta bort mallgrupp!',
                     createGroup: 'Det gick inte att skapa mallgrupp!',
-                    editGroup: 'Det gick inte att redigera mallgruppen!'
+                    editGroup: 'Det gick inte att redigera mallgruppen!',
+                    loadTemplates: 'Det gick inte att ladda mallar!'
                 },
                 documentData: {
                     docId: 'Dokument-id',
@@ -598,6 +599,7 @@ const texts = {
                 },
                 groupData: {
                     title: 'Mallgrupp',
+                    templatesTableTitle: 'Mallar i gruppen:',
                     edit: 'Redigera grupp',
                     delete: 'Radera grupp',
                     save: 'Spara grupp',
@@ -1338,7 +1340,8 @@ const texts = {
                     loadGroups: 'Failed to load template groups!',
                     deleteGroup: 'Failed to delete template group!',
                     createGroup: 'Failed to create template group!',
-                    editGroup: 'Failed to edit template group!'
+                    editGroup: 'Failed to edit template group!',
+                    loadTemplates: 'Failed to load templates!'
                 },
                 documentData: {
                     docId: 'Document id',
@@ -1346,6 +1349,7 @@ const texts = {
                 },
                 groupData: {
                     title: 'Template group',
+                    templatesTableTitle: 'Templates in the group:',
                     edit: 'Edit group',
                     delete: 'Delete group',
                     save: 'Save group',
