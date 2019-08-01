@@ -171,7 +171,7 @@
 .templates-table {
     width: 100%;
     display: inline-flex;
-    height: 200px;
+    height: 400px;
 }
 
 .files-table > *,
@@ -180,8 +180,7 @@
 }
 
 .group-editor > *:not(.group-editor__templates-group-create-button) {
-    width: 95%;
-    padding-top: 7px;
+    width: 98%;
 }
 
 .group-editor__templates-group-create-button {
@@ -193,13 +192,15 @@
     width: 100%;
 }
 
-.table-documents {
+.table-documents,
+.table-templates {
     height: inherit;
     overflow-y: auto;
     border: 1px solid gainsboro;
 }
 
-.doc-info-row {
+.doc-info-row,
+.template-row {
     display: flex;
     padding: 5px;
     cursor: pointer;
@@ -210,6 +211,10 @@
     font-weight: 600;
     margin-bottom: 10px;
     padding: 5px;
+}
+
+.group-editor__table-templates-title {
+    margin: 10px 0;
 }
 
 .first-sub-files,
@@ -244,7 +249,8 @@
 .file-row:hover,
 .directory-row:hover,
 .doc-info-row:hover,
-.root-directory-row:hover {
+.root-directory-row:hover,
+.template-row:hover {
     background-color: #dfedff;
 }
 
