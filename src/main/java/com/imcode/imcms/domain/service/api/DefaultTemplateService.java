@@ -16,7 +16,11 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -53,7 +57,7 @@ public class DefaultTemplateService implements TemplateService {
     @Override
     public Optional<Template> get(String templateName) {
         if (isTemplateFileExist(templateName)) {
-            final Template template = templateRepository.findOne(templateName);
+            final Template template = templateRepository.findByName(templateName);
             return Optional.ofNullable(template).map(TemplateDTO::new);
         }
 
@@ -119,7 +123,7 @@ public class DefaultTemplateService implements TemplateService {
         Arrays.stream(templateNamesToBeSaved)
                 .map(FilenameUtils::getBaseName)
                 // TODO: 26.04.19 Check if template already assigned to group at DB
-                .map(templateName -> new TemplateJPA(templateName, false, null))
+                .map(templateName -> new TemplateJPA(null, templateName, false, null))
                 .forEach(templateRepository::save);
     }
 
