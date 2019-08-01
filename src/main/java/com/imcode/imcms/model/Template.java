@@ -10,10 +10,15 @@ public abstract class Template implements Serializable {
     private static final long serialVersionUID = -9018871628940459460L;
 
     protected Template(Template templateFrom) {
+        setId(templateFrom.getId());
         setName(templateFrom.getName());
         setHidden(templateFrom.isHidden());
         setTemplateGroup(templateFrom.getTemplateGroup());
     }
+
+    public abstract Integer getId();
+
+    public abstract void setId(Integer id);
 
     public abstract String getName();
 

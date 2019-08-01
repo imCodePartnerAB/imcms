@@ -18,6 +18,8 @@ public class TemplateDTO extends Template {
 
     private static final long serialVersionUID = 441290133487733989L;
 
+    private Integer id;
+
     private String name;
 
     private boolean hidden;
