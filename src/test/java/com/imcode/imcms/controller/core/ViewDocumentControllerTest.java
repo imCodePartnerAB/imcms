@@ -24,9 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Transactional
 public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
@@ -53,6 +56,8 @@ public class ViewDocumentControllerTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() {
+        documentDataInitializer.cleanRepositories();
+        languageDataInitializer.cleanRepositories();
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         user.addRoleId(Roles.SUPER_ADMIN.getId());

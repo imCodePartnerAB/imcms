@@ -29,7 +29,7 @@ public class TextDocumentDataInitializer extends DocumentDataInitializer {
     }
 
     public TextDocumentDTO createTextDocument() {
-//        templateDataInitializer.cleanRepositories();
+        templateDataInitializer.cleanRepositories();
         final DocumentDTO documentDTO = createData(Meta.DocumentType.TEXT);
         final TextDocumentTemplateJPA template = templateDataInitializer.createData(
                 documentDTO.getId(), "demo", "demo"

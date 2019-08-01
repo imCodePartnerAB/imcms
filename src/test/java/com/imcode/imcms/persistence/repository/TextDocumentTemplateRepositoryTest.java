@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
-public class TextDocumentTemplateRepositoryTest extends WebAppSpringTestConfig {
+public class TextDocumentTemplateRepositoryTest extends WebAppSpringTestConfig { //test
 
     @Autowired
     private TemplateDataInitializer templateDataInitializer;

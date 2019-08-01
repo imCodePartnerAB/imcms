@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertTrue;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Transactional
 public class TemplateServiceTest extends WebAppSpringTestConfig {
@@ -41,7 +43,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() {
-        defaultTemplate = new TemplateDTO("testttt123", false, null);
+        defaultTemplate = new TemplateDTO(null, "testttt123", false, null);
         defaultTemplateFile = new File(templateDirectory, defaultTemplate.getName() + ".jsp");
 
         dataInitializer.cleanRepositories();
@@ -67,11 +69,12 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         assertTrue(templateFile.createNewFile());
 
         try {
-            final Template templateDTO = dataInitializer.createData(templateName);
-            final Optional<Template> templateOptional = templateService.get(templateName);
+            templateService.save(defaultTemplate);
+            final Optional<Template> templateOptional = templateService.get(defaultTemplate.getName());
             assertTrue(templateOptional.isPresent());
             final Template templateResult = templateOptional.get();
-            assertEquals(templateDTO, templateResult);
+            templateResult.setId(null);
+            assertEquals(defaultTemplate, templateResult);
 
         } finally {
             assertTrue(templateFile.delete());
@@ -86,7 +89,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         try {
             assertTrue(templateFile.createNewFile());
 
-            Template templateDTO = new TemplateDTO(templateName, false, null);
+            Template templateDTO = new TemplateDTO(null, templateName, false, null);
             templateService.save(templateDTO);
             final Optional<Template> oTemplate = templateService.get(templateName);
             assertTrue(oTemplate.isPresent());

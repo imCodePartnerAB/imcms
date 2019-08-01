@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,13 +32,7 @@ public class TemplateGroupServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getAll_When_templateGroupsWithTemplates_Expect_theyAllPersisted() {
-        int i = 1;
-        final List<TemplateGroup> expected = Arrays.asList(dataInitializer.createData("test " + i++, i++, false),
-                dataInitializer.createData("test " + i++, i++, false),
-                dataInitializer.createData("test " + i++, i++, false),
-                dataInitializer.createData("test " + i++, i++, false),
-                dataInitializer.createData("test " + i++, i, false)
-        );
+        final List<TemplateGroup> expected = dataInitializer.createTemplateGroups(6);
 
         assertTrue(templateGroupService.getAll().containsAll(expected));
     }

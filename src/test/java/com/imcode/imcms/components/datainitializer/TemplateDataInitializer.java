@@ -38,7 +38,7 @@ public class TemplateDataInitializer extends TestDataCleaner {
     public List<Template> createData(Integer howMuch) {
         return IntStream.range(0, howMuch)
                 .mapToObj(i -> Value.with(new TemplateJPA(), template -> {
-                    template.setName("template" + i);
+                    template.setName("template" + Math.random() + i);
                     template.setHidden(Math.random() < 0.5);
                 }))
                 .map(templateRepository::saveAndFlush)
@@ -46,19 +46,22 @@ public class TemplateDataInitializer extends TestDataCleaner {
                 .collect(Collectors.toList());
     }
 
-    public Template createData(final String name) {
-        return Value.apply(new TemplateJPA(), template -> {
-            template.setName(name);
-            template.setHidden(Math.random() < 0.5);
-
-            templateRepository.saveAndFlush(template);
-            return new TemplateDTO(template);
-        });
+    public Template createData(final String name) { //todo improve: delete condition on exist
+        if (templateRepository.findByName(name) != null) {
+            return new TemplateDTO(templateRepository.findByName(name));
+        } else {
+            return Value.apply(new TemplateJPA(), template -> {
+                template.setName(name);
+                template.setHidden(Math.random() < 0.5);
+                templateRepository.saveAndFlush(template);
+                return new TemplateDTO(template);
+            });
+        }
     }
 
     public TextDocumentTemplateJPA createData(int docId, String templateName, String childrenTemplate) {
         createData(templateName);
-        createData(childrenTemplate);
+//        createData(childrenTemplate);
 
         final TextDocumentTemplateJPA textDocumentTemplate = new TextDocumentTemplateJPA();
         textDocumentTemplate.setTemplateName(templateName);

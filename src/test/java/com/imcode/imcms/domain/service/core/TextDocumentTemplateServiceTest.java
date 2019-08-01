@@ -31,6 +31,7 @@ public class TextDocumentTemplateServiceTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() {
+        templateDataInitializer.cleanRepositories();
         saved = new TextDocumentTemplateDTO(
                 templateDataInitializer.createData(DOC_ID, "demo", "demo")
         );

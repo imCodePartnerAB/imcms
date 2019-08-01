@@ -192,6 +192,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
 
     @BeforeEach
     public void setUp() throws Exception {
+        templateDataInitializer.cleanRepositories();
         createdDoc = documentDataInitializer.createData();
 
         testSolrFolder = new File(config.getSolrHome());

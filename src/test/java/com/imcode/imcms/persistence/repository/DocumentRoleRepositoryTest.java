@@ -12,6 +12,7 @@ import com.imcode.imcms.persistence.entity.User;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,14 +22,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.imcode.imcms.persistence.entity.Meta.Permission.*;
+import static com.imcode.imcms.persistence.entity.Meta.Permission.EDIT;
+import static com.imcode.imcms.persistence.entity.Meta.Permission.VIEW;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
-public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig {
+public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig { //test
 
     @Autowired
     private DocumentRolesRepository documentRolesRepository;
@@ -44,6 +47,11 @@ public class DocumentRoleRepositoryTest extends WebAppSpringTestConfig {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    @BeforeEach
+    public void setUp() {
+        textDocumentDataInitializer.cleanRepositories();
+    }
 
     @BeforeAll
     public static void setUser() {

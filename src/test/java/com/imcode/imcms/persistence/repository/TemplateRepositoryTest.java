@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class TemplateRepositoryTest extends WebAppSpringTestConfig {
+public class TemplateRepositoryTest extends WebAppSpringTestConfig { //test
 
     @Autowired
     private TemplateDataInitializer templateDataInitializer;
@@ -30,8 +30,8 @@ public class TemplateRepositoryTest extends WebAppSpringTestConfig {
 
         templateRepository.updateTemplateName(newName, templateName);
 
-        assertEquals(newName, templateRepository.findOne(newName).getName());
-        assertNull(templateRepository.findOne(templateName));
+        assertEquals(newName, templateRepository.findByName(newName).getName());
+        assertNull(templateRepository.findByName(templateName));
     }
 
     @Test
@@ -43,6 +43,6 @@ public class TemplateRepositoryTest extends WebAppSpringTestConfig {
 
         templateRepository.updateTemplateName(newName, fakeName);
 
-        assertNull(templateRepository.findOne(fakeName));
+        assertNull(templateRepository.findByName(fakeName));
     }
 }

@@ -46,8 +46,13 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class TextDocumentServiceTest extends WebAppSpringTestConfig {
@@ -109,6 +114,8 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
     @BeforeEach
     public void setUp() throws Exception {
         commonContentDataInitializer.cleanRepositories();
+        templateDataInitializer.cleanRepositories();
+        documentDataInitializer.cleanRepositories();
         createdDoc = documentDataInitializer.createTextDocument();
 
         testSolrFolder = new File(config.getSolrHome());
@@ -202,7 +209,7 @@ public class TextDocumentServiceTest extends WebAppSpringTestConfig {
         try {
             assertTrue(templateFile.createNewFile());
 
-            final TemplateDTO template = new TemplateDTO(templateName, false, null);
+            final TemplateDTO template = new TemplateDTO(null, templateName, false, null);
             templateService.save(template);
 
             final TextDocumentTemplateDTO templateDTO = new TextDocumentTemplateDTO(docId, templateName, templateName);
