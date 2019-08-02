@@ -179,7 +179,7 @@ public class DefaultFileService implements FileService {
             if (null != templateRepository.findByName(originalSrcName)) {
                 TemplateJPA template = templateRepository.findByName(originalSrcName);
                 template.setName(originalTargetName);
-                templateRepository.save(new TemplateJPA(template));
+                templateRepository.save(template);
             }
             final Path path = Files.move(src, target);
             return toSourceFile(path);
