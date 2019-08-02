@@ -26,6 +26,7 @@ import com.imcode.imcms.mapping.DocumentLoader;
 import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.mapping.DocumentVersionMapper;
+import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import com.imcode.imcms.util.l10n.CachingLocalizedMessageProvider;
 import com.imcode.imcms.util.l10n.ImcmsPrefsLocalizedMessageProvider;
@@ -221,8 +222,9 @@ public class MainConfig {
 
     @Bean
     public DefaultFileService fileService(DocumentService<DocumentDTO> documentService,
-                                          TemplateRepository templateRepository) {
-        return new DefaultFileService(documentService, templateRepository);
+                                          TemplateRepository templateRepository,
+                                          TemplateGroupRepository templateGroupRepository) {
+        return new DefaultFileService(documentService, templateRepository, templateGroupRepository);
     }
 
     @Bean
