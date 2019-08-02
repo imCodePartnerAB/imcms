@@ -334,7 +334,7 @@ define(
                 $templatesTable.show();
                 $templatesTable.children().remove();
                 group.templates.forEach(template => $templatesTable.append(templateToRow(template)));
-            }).fail(() => modal.buildErrorWindow('...'));
+            }).fail(() => modal.buildErrorWindow(texts.error.loadGroup));
         }
 
         function templateToRow(template) {
@@ -437,11 +437,11 @@ define(
         }
 
         function onTemplateClick() {
-            const isTemplate = new RegExp('.(JSP|HTML)$', 'gi');
+            const templatePattern = new RegExp('.(JSP|HTML)$', 'gi');
             const templateName = {
                 template: currentFile.fullPath
             };
-            if (isTemplate.test(currentFile.fullPath)) {
+            if (templatePattern.test(currentFile.fullPath)) {
                 fileRestApi.getDocuments(templateName).done(documents => {
                         if (documents.length > 0) {
                             const $documentsData = $('<div>').addClass('documents-data');
@@ -717,6 +717,25 @@ define(
             }).fail(() => modal.buildErrorWindow(texts.error.copyError));
         }
 
+        function addTemplateToGroup() {
+            modal.buildModalWindow(texts.groupData.addToGroupConfirm, confirmed => {
+                if (!confirmed) return;
+
+                const templateGroupName = $templateGroupSelect.selectedText();
+
+                const transferData = {
+                    templateGroupName,
+                    templatePath: currentFile.fullPath,
+                };
+
+                fileRestApi.addTemplateToGroup(transferData).done(template => {
+                    if ($templatesTable.css('display') !== 'none') {
+                        fillTemplatesTableByTemplateGroup(templateGroupName);
+                    }
+                }).fail(() => modal.buildErrorWindow(texts.error.addTemplateToGroup));
+            });
+        }
+
         function buildBoundData(targetSubFilesContainerIndex) {
             return {
                 getTargetSubFilesContainer: () => getSubFilesContainerByIndex(targetSubFilesContainerIndex),
@@ -773,6 +792,7 @@ define(
             buildCopyFile,
             deleteFile,
             getTemplateGroupEditor,
+            addTemplateToGroup,
             displayDocs: buildDocumentsContainer,
             viewDoc: getViewDocById
         };

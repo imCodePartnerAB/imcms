@@ -33,7 +33,26 @@ define(
                     click: getOnFileClicked(file, buildViewFunc),
                 };
 
-                if (file.fileType === 'FILE') {
+                const templatePattern = new RegExp('.(JSP|HTML)$', 'gi');
+
+                if (file.fileType === 'FILE' && templatePattern.test(file.fullPath)) {
+                    return new BEM({
+                        block: "file-row",
+                        elements: {
+                            'file-name': $('<div>', {
+                                text: file.fileName
+                            }),
+                            'add-to-group': components.controls.plus(fileEditor.addTemplateToGroup).attr("title", texts.addToGroup),
+                            'download': $('<a>', {
+                                html: components.controls.download(),
+                                href: imcms.contextPath + contextUrl + file.fullPath,
+                                title: texts.download
+                            }),
+                            'edit': components.controls.edit(fileEditor.buildEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
+                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                        },
+                    }).buildBlockStructure("<div>", infoRowAttributes);
+                } else if (file.fileType === 'FILE') {
                     return new BEM({
                         block: "file-row",
                         elements: {
