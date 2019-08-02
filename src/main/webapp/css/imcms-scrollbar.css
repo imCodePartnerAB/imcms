@@ -26,23 +26,23 @@
 
 .first-sub-files::-webkit-scrollbar-track,
 .second-sub-files::-webkit-scrollbar-track,
-.table-documents::-webkit-scrollbar-track,
-.table-templates::-webkit-scrollbar-track {
+.templates-data::-webkit-scrollbar-track,
+.documents-data::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
 .first-sub-files::-webkit-scrollbar,
 .second-sub-files::-webkit-scrollbar,
-.table-documents::-webkit-scrollbar,
-.table-templates::-webkit-scrollbar {
+.templates-data::-webkit-scrollbar,
+.documents-data::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
 }
 
 .first-sub-files::-webkit-scrollbar-thumb,
 .second-sub-files::-webkit-scrollbar-thumb,
-.table-documents::-webkit-scrollbar-thumb,
-.table-templates::-webkit-scrollbar-thumb {
+.templates-data::-webkit-scrollbar-thumb,
+.documents-data::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }
 
