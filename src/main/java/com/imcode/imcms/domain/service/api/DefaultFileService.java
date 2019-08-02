@@ -3,6 +3,7 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
@@ -240,13 +241,13 @@ public class DefaultFileService implements FileService {
         final TemplateJPA templateJPA = templateRepository.findByName(originalName);
         if (templateJPA != null) {
             templateJPA.setTemplateGroup(templateGroup);
-            return templateRepository.save(templateJPA);
+            return new TemplateDTO(templateRepository.save(templateJPA));
         } else {
             TemplateJPA newTemplateJPA = new TemplateJPA();
             newTemplateJPA.setName(originalName);
             newTemplateJPA.setHidden(false);
             newTemplateJPA.setTemplateGroup(templateGroup);
-            return templateRepository.save(newTemplateJPA);
+            return new TemplateDTO(templateRepository.save(newTemplateJPA));
         }
     }
 
