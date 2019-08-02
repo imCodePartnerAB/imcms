@@ -58,10 +58,15 @@ public interface FileService {
      */
     SourceFile saveFile(Path location, byte[] contents, OpenOption writeMode) throws IOException;
 
-    /**
-     * @param template
-     * @param templateGroup
-     * @return
+    /** saveTemplateInGroup was created for save template file in template group,
+     * if template file does not exist in db , so will create new templateJPA and will save in db,
+     * with current set template group, else just will change template group from template file
+     *
+     * saved only original file name without extension!
+     *
+     * @param template - path template file
+     * @param templateGroup - template group which will be save template file
+     *
      */
     Template saveTemplateInGroup(Path template, TemplateGroup templateGroup);
 
