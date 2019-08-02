@@ -280,10 +280,16 @@
 .file-row__download,
 .file-row__edit,
 .file-row__delete,
+.file-row__add-to-group,
 .root-directory-row__delete,
 .directory-row__edit,
 .directory-row__delete {
     width: 10%;
+}
+
+.file-row__download {
+    display: flex;
+    justify-content: center;
 }
 
 .imcms-modal-body__edit-content {
