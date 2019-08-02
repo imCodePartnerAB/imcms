@@ -571,6 +571,7 @@ const texts = {
                     copy: 'Kopiera',
                     download: 'Ladda ner',
                     edit: 'Redigera',
+                    addToGroup: 'Lägg till i gruppen',
                     titleByMove: 'Knappar för flyttfil',
                     titleByCopy: 'Knappar för kopieringsfilen',
                     titleContent: 'Filinnehåll',
@@ -591,7 +592,8 @@ const texts = {
                     deleteGroup: 'Det gick inte att ta bort mallgrupp!',
                     createGroup: 'Det gick inte att skapa mallgrupp!',
                     editGroup: 'Det gick inte att redigera mallgruppen!',
-                    loadTemplates: 'Det gick inte att ladda mallar!'
+                    loadGroup: 'Det gick inte att mallgrupp!',
+                    addTemplateToGroup: 'Det gick inte att lägga till mall i mallgruppen!'
                 },
                 documentData: {
                     docId: 'Dokument-id',
@@ -607,7 +609,8 @@ const texts = {
                     create: 'Skapa mallgrupp',
                     deleteConfirm: 'Vill du verkligen ta bort mallgrupp?',
                     saveConfirm: 'Vill du verkligen spara mallgrupp?',
-                    cancelConfirm: 'Vill du verkligen avbryta ändringar?'
+                    cancelConfirm: 'Vill du verkligen avbryta ändringar?',
+                    addToGroupConfirm: 'Vill du verkligen lägga till den här mallen i den aktuella mallgruppen?'
                 }
             },
             search: {
@@ -1321,6 +1324,7 @@ const texts = {
                     copy: 'Copy',
                     download: 'Download',
                     edit: 'Edit',
+                    addToGroup: 'Add to group',
                     titleByMove: 'Buttons for move file',
                     titleByCopy: 'Buttons for copy file',
                     titleContent: 'File content',
@@ -1341,7 +1345,8 @@ const texts = {
                     deleteGroup: 'Failed to delete template group!',
                     createGroup: 'Failed to create template group!',
                     editGroup: 'Failed to edit template group!',
-                    loadTemplates: 'Failed to load templates!'
+                    loadGroup: 'Failed to load template group!',
+                    addTemplateToGroup: 'Failed to add template to template group!'
                 },
                 documentData: {
                     docId: 'Document id',
@@ -1357,7 +1362,8 @@ const texts = {
                     create: 'Create template group',
                     deleteConfirm: 'Do you really want to delete template group?',
                     saveConfirm: 'Do you really want to save template group?',
-                    cancelConfirm: 'Do you really want to cancel changes?'
+                    cancelConfirm: 'Do you really want to cancel changes?',
+                    addToGroupConfirm: 'Do you really want to add this template to the current template group?'
                 }
             },
             search: {
