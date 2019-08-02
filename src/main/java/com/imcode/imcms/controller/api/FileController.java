@@ -4,7 +4,6 @@ import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -147,10 +146,10 @@ public class FileController {
     }
 
     @PostMapping("/template/**")
-    public Template saveTemplateInGroup(HttpServletRequest request, @RequestBody TemplateGroup templateGroup) throws IOException {
-        final String fileURI = getFileName(request.getRequestURI(), "/template/");
-        final Path templatePath = Paths.get(fileURI);
-        return defaultFileService.saveTemplateInGroup(templatePath, templateGroup);
+    public Template saveTemplateInGroup(@RequestBody Properties data) {
+        final Path templatePath = Paths.get(data.getProperty("templatePath"));
+        final String templateGroupName = data.getProperty("templateGroupName");
+        return defaultFileService.saveTemplateInGroup(templatePath, templateGroupName);
     }
 
     @PutMapping("/move/**")
