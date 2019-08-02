@@ -26,5 +26,7 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.getDocuments = template => rest.ajax.call({url: `${url}/docs`, type: 'GET', json: false}, template);
 
+    api.addTemplateToGroup = pathParam => rest.ajax.call({url: `${url}/template`, type: 'POST', json: true}, pathParam);
+
     return api;
 });
