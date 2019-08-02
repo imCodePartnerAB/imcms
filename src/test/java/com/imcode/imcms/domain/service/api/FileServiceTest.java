@@ -11,6 +11,10 @@ import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
+import com.imcode.imcms.persistence.entity.TemplateJPA;
+import com.imcode.imcms.persistence.repository.TemplateRepository;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.uima.util.FileUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,6 +60,9 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Autowired
     private TextDocumentTemplateService documentTemplateService;
+
+    @Autowired
+    private TemplateRepository templateRepository;
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
@@ -774,5 +781,63 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertFalse(docsByTemplNameTarget.isEmpty());
         assertEquals(1, docsByTemplNameTarget.size());
         assertFalse(Files.exists(pathTest));
+    }
+
+    @Test
+    public void saveTemplateFileInGroup_When_templateFileNotExistsInGroup_Expected_ChangeTemplateGroup() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFileByRoot = firstRootPath.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFileByRoot);
+
+        final String originalFileName = FilenameUtils.removeExtension(pathFileByRoot.getFileName().toString());
+
+        Template template = templateDataInitializer.createData(originalFileName);
+        TemplateGroup testGroup = templateDataInitializer.createData("testGroup", 2, true);
+
+        assertNull(template.getTemplateGroup());
+
+        Template savedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, testGroup);
+
+        assertNotNull(savedTemplate.getTemplateGroup());
+        assertEquals(testGroup.getName(), savedTemplate.getTemplateGroup().getName());
+
+    }
+
+    @Test
+    public void saveTemplateFileInGroup_When_templateFileExistsInGroup_Expected_ChangeTemplateGroup() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFileByRoot = firstRootPath.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFileByRoot);
+
+        final String originalFileName = FilenameUtils.removeExtension(pathFileByRoot.getFileName().toString());
+
+        TemplateJPA template = new TemplateJPA(templateDataInitializer.createData(originalFileName));
+        List<TemplateGroup> testGroups = templateDataInitializer.createTemplateGroups(2);
+        TemplateGroup testTemplateGroup = testGroups.get(0);
+        template.setTemplateGroup(testTemplateGroup);
+        TemplateJPA saved = templateRepository.save(template);
+
+        assertNotNull(saved.getTemplateGroup());
+        assertEquals(testTemplateGroup.getName(), saved.getTemplateGroup().getName());
+
+        final TemplateGroup expectedTemplateGroup = testGroups.get(1);
+        final Template changedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, expectedTemplateGroup);
+
+        assertNotNull(changedTemplate.getTemplateGroup());
+        assertNotEquals(testTemplateGroup.getName(), changedTemplate.getTemplateGroup().getName());
+    }
+
+    @Test
+    public void saveTemplateFileInGroup_When_templateFileNotExist_Expected_ChangeTemplateGroup() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFileByRoot = firstRootPath.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+
+
     }
 }
