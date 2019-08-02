@@ -794,11 +794,11 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         final String originalFileName = FilenameUtils.removeExtension(pathFileByRoot.getFileName().toString());
 
         Template template = templateDataInitializer.createData(originalFileName);
-        TemplateGroup testGroup = templateDataInitializer.createData("testGroup", 2, true);
+        TemplateGroup testGroup = templateDataInitializer.createData("testGroup", 2, false);
 
         assertNull(template.getTemplateGroup());
 
-        Template savedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, testGroup);
+        Template savedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, testGroup.getName());
 
         assertNotNull(savedTemplate.getTemplateGroup());
         assertEquals(testGroup.getName(), savedTemplate.getTemplateGroup().getName());
@@ -825,14 +825,14 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(testTemplateGroup.getName(), saved.getTemplateGroup().getName());
 
         final TemplateGroup expectedTemplateGroup = testGroups.get(1);
-        final Template changedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, expectedTemplateGroup);
+        final Template changedTemplate = fileService.saveTemplateInGroup(pathFileByRoot, expectedTemplateGroup.getName());
 
         assertNotNull(changedTemplate.getTemplateGroup());
         assertNotEquals(testTemplateGroup.getName(), changedTemplate.getTemplateGroup().getName());
     }
 
     @Test
-    public void saveTemplateFileInGroup_When_templateFileNotExist_Expected_ChangeTemplateGroup() throws IOException {
+    public void saveTemplateFileInGroup_When_templateFileNotExist_Expected_Exception() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathFileByRoot = firstRootPath.resolve(testFileName);
 
