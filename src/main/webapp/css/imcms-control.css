@@ -22,6 +22,10 @@
     background-image: url("/images_new/controls/icon_folder_controll_reverse_edit.png");
 }
 
+.imcms-control--plus {
+    background-image: url("/images_new/controls/icon-controls-add.svg");
+}
+
 .imcms-control--archive {
     background-image: url("/images_new/controls/icon_control_save_archive.png");
 }

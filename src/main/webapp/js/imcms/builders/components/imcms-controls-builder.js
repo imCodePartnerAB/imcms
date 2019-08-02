@@ -14,6 +14,8 @@ function buildControl(modifier, onClick) {
 }
 
 module.exports = {
+    plus: onClick => buildControl("plus", onClick),
+
     move: onClick => buildControl("move", onClick),
 
     remove: onClick => buildControl("remove", onClick),
