@@ -2,6 +2,8 @@ package com.imcode.imcms.domain.service;
 
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 
 import java.io.IOException;
 import java.nio.file.OpenOption;
@@ -55,6 +57,13 @@ public interface FileService {
      * @throws IOException
      */
     SourceFile saveFile(Path location, byte[] contents, OpenOption writeMode) throws IOException;
+
+    /**
+     * @param template
+     * @param templateGroup
+     * @return
+     */
+    Template saveTemplateInGroup(Path template, TemplateGroup templateGroup);
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
 }

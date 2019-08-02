@@ -6,6 +6,8 @@ import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
+import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -230,6 +232,24 @@ public class DefaultFileService implements FileService {
             throw new EmptyFileNameException(errorMessage);
         }
     }
+
+    @Override
+    public Template saveTemplateInGroup(Path template, TemplateGroup templateGroup) {
+        final String templateName = template.getFileName().normalize().toString();
+        final String originalName = getPathWithoutExtension(templateName);
+        final TemplateJPA templateJPA = templateRepository.findByName(originalName);
+        if (templateJPA != null) {
+            templateJPA.setTemplateGroup(templateGroup);
+            return templateRepository.save(templateJPA);
+        } else {
+            TemplateJPA newTemplateJPA = new TemplateJPA();
+            newTemplateJPA.setName(originalName);
+            newTemplateJPA.setHidden(false);
+            newTemplateJPA.setTemplateGroup(templateGroup);
+            return templateRepository.save(newTemplateJPA);
+        }
+    }
+
 
     @Override
     public SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException {
