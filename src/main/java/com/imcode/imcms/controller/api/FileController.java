@@ -147,8 +147,9 @@ public class FileController {
     }
 
     @PostMapping("/template/**")
-    public Template saveTemplateInGroup(@RequestBody SourceFile templateFile, @RequestBody TemplateGroup templateGroup) {
-        final Path templatePath = Paths.get(templateFile.getFullPath());
+    public Template saveTemplateInGroup(HttpServletRequest request, @RequestBody TemplateGroup templateGroup) throws IOException {
+        final String fileURI = getFileName(request.getRequestURI(), "/template/");
+        final Path templatePath = Paths.get(fileURI);
         return defaultFileService.saveTemplateInGroup(templatePath, templateGroup);
     }
 
