@@ -3,6 +3,8 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.service.FileService;
+import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -142,6 +144,12 @@ public class FileController {
         final Path path = defaultFileService.getFile(Paths.get(propertiesFile.getProperty("fullPath")));
         final String newContent = propertiesFile.getProperty("content");
         return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
+    }
+
+    @PostMapping("/template/**")
+    public Template saveTemplateInGroup(@RequestBody SourceFile templateFile, @RequestBody TemplateGroup templateGroup) {
+        final Path templatePath = Paths.get(templateFile.getFullPath());
+        return defaultFileService.saveTemplateInGroup(templatePath, templateGroup);
     }
 
     @PutMapping("/move/**")
