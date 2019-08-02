@@ -3,7 +3,6 @@ package com.imcode.imcms.domain.service;
 import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
 
 import java.io.IOException;
 import java.nio.file.OpenOption;
@@ -65,10 +64,10 @@ public interface FileService {
      * saved only original file name without extension!
      *
      * @param template - path template file
-     * @param templateGroup - template group which will be save template file
+     * @param templateGroupName - template group name which will be save template file
      *
      */
-    Template saveTemplateInGroup(Path template, TemplateGroup templateGroup);
+    Template saveTemplateInGroup(Path template, String templateGroupName);
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
 }

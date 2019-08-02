@@ -8,8 +8,9 @@ import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.model.Template;
-import com.imcode.imcms.model.TemplateGroup;
+import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
+import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +42,8 @@ public class DefaultFileService implements FileService {
 
     private final TemplateRepository templateRepository;
 
+    private final TemplateGroupRepository templateGroupRepository;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
@@ -49,10 +52,10 @@ public class DefaultFileService implements FileService {
 
     @Autowired
     public DefaultFileService(DocumentService<DocumentDTO> documentService,
-                              TemplateRepository templateRepository) {
+                              TemplateRepository templateRepository, TemplateGroupRepository templateGroupRepository) {
         this.documentService = documentService;
         this.templateRepository = templateRepository;
-
+        this.templateGroupRepository = templateGroupRepository;
     }
 
     private boolean isAllowablePath(Path path) {
@@ -235,18 +238,19 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Template saveTemplateInGroup(Path template, TemplateGroup templateGroup) {
+    public Template saveTemplateInGroup(Path template, String templateGroupName) {
         final String templateName = template.getFileName().normalize().toString();
         final String originalName = getPathWithoutExtension(templateName);
         final TemplateJPA templateJPA = templateRepository.findByName(originalName);
+        final TemplateGroupJPA templateGroupJPA = templateGroupRepository.findByName(templateGroupName);
         if (templateJPA != null) {
-            templateJPA.setTemplateGroup(templateGroup);
+            templateJPA.setTemplateGroup(templateGroupJPA);
             return new TemplateDTO(templateRepository.save(templateJPA));
         } else {
             TemplateJPA newTemplateJPA = new TemplateJPA();
             newTemplateJPA.setName(originalName);
             newTemplateJPA.setHidden(false);
-            newTemplateJPA.setTemplateGroup(templateGroup);
+            newTemplateJPA.setTemplateGroup(templateGroupJPA);
             return new TemplateDTO(templateRepository.save(newTemplateJPA));
         }
     }
