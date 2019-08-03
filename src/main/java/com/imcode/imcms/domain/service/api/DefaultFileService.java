@@ -237,12 +237,14 @@ public class DefaultFileService implements FileService {
         }
     }
 
+    @Transactional
     @Override
     public Template saveTemplateInGroup(Path template, String templateGroupName) {
         final String templateName = template.getFileName().normalize().toString();
         final String originalName = getPathWithoutExtension(templateName);
         final TemplateJPA templateJPA = templateRepository.findByName(originalName);
         final TemplateGroupJPA templateGroupJPA = templateGroupRepository.findByName(templateGroupName);
+        templateGroupJPA.setTemplates(Collections.EMPTY_SET);
         if (templateJPA != null) {
             templateJPA.setTemplateGroup(templateGroupJPA);
             return new TemplateDTO(templateRepository.save(templateJPA));
@@ -251,7 +253,7 @@ public class DefaultFileService implements FileService {
             newTemplateJPA.setName(originalName);
             newTemplateJPA.setHidden(false);
             newTemplateJPA.setTemplateGroup(templateGroupJPA);
-            return new TemplateDTO(templateRepository.save(newTemplateJPA));
+            return new TemplateDTO(templateRepository.saveAndFlush(newTemplateJPA));
         }
     }
 
