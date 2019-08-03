@@ -44,7 +44,7 @@ public class TemplateJPA extends Template {
     @Column(name = "is_hidden", nullable = false)
     private boolean hidden;
 
-    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinColumn(name = "template_group_id")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private TemplateGroupJPA templateGroup;
