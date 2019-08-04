@@ -47,6 +47,7 @@ import org.apache.commons.beanutils.Converter;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -223,8 +224,9 @@ public class MainConfig {
     @Bean
     public DefaultFileService fileService(DocumentService<DocumentDTO> documentService,
                                           TemplateRepository templateRepository,
-                                          TemplateGroupRepository templateGroupRepository) {
-        return new DefaultFileService(documentService, templateRepository, templateGroupRepository);
+                                          TemplateGroupRepository templateGroupRepository,
+                                          ModelMapper modelMapper) {
+        return new DefaultFileService(documentService, templateRepository, templateGroupRepository, modelMapper);
     }
 
     @Bean
