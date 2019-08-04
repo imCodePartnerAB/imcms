@@ -192,11 +192,18 @@
     width: 100%;
 }
 
-.table-documents,
-.table-templates {
-    height: inherit;
+.templates-data,
+.documents-data {
     overflow-y: auto;
     border: 1px solid gainsboro;
+}
+
+.templates-data {
+    height: 140px;
+}
+
+.documents-data {
+    height: 400px;
 }
 
 .doc-info-row,
@@ -213,7 +220,7 @@
     padding: 5px;
 }
 
-.group-editor__table-templates-title {
+.group-editor__templates-data-title {
     margin: 10px 0;
 }
 

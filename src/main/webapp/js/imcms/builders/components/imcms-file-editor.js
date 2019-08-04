@@ -324,7 +324,7 @@ define(
         });
 
         const $templatesTable = $('<div>', {
-            class: 'table-templates',
+            class: 'templates-data',
             style: 'display: none;'
         });
 
@@ -358,8 +358,8 @@ define(
                     'template-group-name-row': $templateGroupNameTextField,
                     'template-group-default-buttons': $templateGroupDefaultButtons,
                     'template-group-edit-buttons': $templateGroupEditButtons,
-                    'table-templates-title': $templatesTableTitle,
-                    'table-templates': $templatesTable
+                    'templates-data-title': $templatesTableTitle,
+                    'templates-data': $templatesTable
                 }
             }).buildBlockStructure('<div>', {});
         }
