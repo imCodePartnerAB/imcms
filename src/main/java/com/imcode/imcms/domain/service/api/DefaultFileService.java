@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.model.Template;
+import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateGroupRepository;
@@ -15,6 +16,7 @@ import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.uima.util.FileUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,8 @@ public class DefaultFileService implements FileService {
 
     private final TemplateGroupRepository templateGroupRepository;
 
+    private final ModelMapper modelMapper;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
@@ -52,10 +56,13 @@ public class DefaultFileService implements FileService {
 
     @Autowired
     public DefaultFileService(DocumentService<DocumentDTO> documentService,
-                              TemplateRepository templateRepository, TemplateGroupRepository templateGroupRepository) {
+                              TemplateRepository templateRepository,
+                              TemplateGroupRepository templateGroupRepository,
+                              ModelMapper modelMapper) {
         this.documentService = documentService;
         this.templateRepository = templateRepository;
         this.templateGroupRepository = templateGroupRepository;
+        this.modelMapper = modelMapper;
     }
 
     private boolean isAllowablePath(Path path) {
@@ -176,13 +183,16 @@ public class DefaultFileService implements FileService {
         final String srcFileName = src.getFileName().toString();
         final String originalSrcName = getPathWithoutExtension(srcFileName);
         final String originalTargetName = getPathWithoutExtension(targetFileName);
-
-
+        final Template receivedTemplate = templateRepository.findByName(originalSrcName);
         if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(targetFileName)) {
-            if (null != templateRepository.findByName(originalSrcName)) {
-                TemplateJPA template = templateRepository.findByName(originalSrcName);
-                template.setName(originalTargetName);
-                templateRepository.save(template);
+            if (null != receivedTemplate) {
+                TemplateGroup gotTemplateGroup = receivedTemplate.getTemplateGroup();
+                gotTemplateGroup.setTemplates(Collections.EMPTY_SET); // in order to avoid recursive error
+                receivedTemplate.setId(receivedTemplate.getId());
+                receivedTemplate.setName(originalTargetName);
+                receivedTemplate.setHidden(receivedTemplate.isHidden());
+                receivedTemplate.setTemplateGroup(gotTemplateGroup);
+                templateRepository.saveAndFlush(modelMapper.map(receivedTemplate, TemplateJPA.class));
             }
             final Path path = Files.move(src, target);
             return toSourceFile(path);
@@ -244,7 +254,7 @@ public class DefaultFileService implements FileService {
         final String originalName = getPathWithoutExtension(templateName);
         final TemplateJPA templateJPA = templateRepository.findByName(originalName);
         final TemplateGroupJPA templateGroupJPA = templateGroupRepository.findByName(templateGroupName);
-        templateGroupJPA.setTemplates(Collections.EMPTY_SET);
+        templateGroupJPA.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
         if (templateJPA != null) {
             templateJPA.setTemplateGroup(templateGroupJPA);
             return new TemplateDTO(templateRepository.save(templateJPA));
