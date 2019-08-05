@@ -187,7 +187,8 @@ public class DefaultFileService implements FileService {
         if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(targetFileName)) {
             if (null != receivedTemplate) {
                 TemplateGroup gotTemplateGroup = receivedTemplate.getTemplateGroup();
-                gotTemplateGroup.setTemplates(Collections.EMPTY_SET); // in order to avoid recursive error
+                if (gotTemplateGroup != null)
+                    gotTemplateGroup.setTemplates(Collections.EMPTY_SET); // in order to avoid recursive error
                 receivedTemplate.setId(receivedTemplate.getId());
                 receivedTemplate.setName(originalTargetName);
                 receivedTemplate.setHidden(receivedTemplate.isHidden());
@@ -251,19 +252,25 @@ public class DefaultFileService implements FileService {
     @Override
     public Template saveTemplateInGroup(Path template, String templateGroupName) {
         final String templateName = template.getFileName().normalize().toString();
-        final String originalName = getPathWithoutExtension(templateName);
-        final TemplateJPA templateJPA = templateRepository.findByName(originalName);
-        final TemplateGroupJPA templateGroupJPA = templateGroupRepository.findByName(templateGroupName);
-        templateGroupJPA.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
-        if (templateJPA != null) {
-            templateJPA.setTemplateGroup(templateGroupJPA);
-            return new TemplateDTO(templateRepository.save(templateJPA));
+        final String originalTemplateName = getPathWithoutExtension(templateName);
+        if (isAllowablePath(template) && StringUtils.isNotBlank(templateName)) {
+            final TemplateJPA receivedTemplate = templateRepository.findByName(originalTemplateName);
+            final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findByName(templateGroupName);
+            receivedTemplateGroup.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
+            if (receivedTemplate != null) {
+                receivedTemplate.setTemplateGroup(receivedTemplateGroup);
+                return new TemplateDTO(templateRepository.save(receivedTemplate));
+            } else {
+                TemplateJPA newTemplateJPA = new TemplateJPA();
+                newTemplateJPA.setName(originalTemplateName);
+                newTemplateJPA.setHidden(false);
+                newTemplateJPA.setTemplateGroup(receivedTemplateGroup);
+                return new TemplateDTO(templateRepository.saveAndFlush(newTemplateJPA));
+            }
         } else {
-            TemplateJPA newTemplateJPA = new TemplateJPA();
-            newTemplateJPA.setName(originalName);
-            newTemplateJPA.setHidden(false);
-            newTemplateJPA.setTemplateGroup(templateGroupJPA);
-            return new TemplateDTO(templateRepository.saveAndFlush(newTemplateJPA));
+            final String errorMessage = "File name is empty! Can't save empty file name template in group!";
+            log.error(errorMessage);
+            throw new EmptyFileNameException(errorMessage);
         }
     }
 

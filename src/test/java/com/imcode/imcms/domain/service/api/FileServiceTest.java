@@ -832,12 +832,27 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void saveTemplateFileInGroup_When_templateFileNotExist_Expected_Exception() throws IOException {
+    public void saveTemplateFileInGroup_When_templateFileNameEmpty_Expected_CorrectException() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
-        final Path pathFileByRoot = firstRootPath.resolve(testFileName);
+        final Path emptyFileName = firstRootPath.resolve(" ");
+        Files.createDirectory(firstRootPath);
+        final TemplateGroup testGroup = templateDataInitializer.createData(
+                "testGroup", 2, false);
+
+        assertThrows(EmptyFileNameException.class, () -> fileService.saveTemplateInGroup(emptyFileName, testGroup.getName()));
+        assertEquals(2, testGroup.getTemplates().size());
+    }
+
+    @Test
+    public void saveTemplateFileInGroup_When_templateFileInOutSideRoot_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathTemplateFile = firstRootPath.getParent().resolve(testFileName);
 
         Files.createDirectory(firstRootPath);
+        Files.createFile(pathTemplateFile);
+        final TemplateGroup testGroup = templateDataInitializer.createData(
+                "testGroup", 2, false);
 
-
+        assertThrows(FileAccessDeniedException.class, () -> fileService.saveTemplateInGroup(pathTemplateFile, testGroup.getName()));
     }
 }
