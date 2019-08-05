@@ -157,8 +157,11 @@ define(
 
                 $templateGroupNameTextField.$input.removeAttr('disabled').focus();
             } else {
-                $templateGroupDefaultButtons.slideDown();
+                $templateGroupDefaultButtons.slideUp();
                 $templateGroupEditButtons.slideUp();
+                $templateGroupNameTextField.slideUp();
+                $templatesTableTitle.hide();
+                $templatesTable.hide();
 
                 $templateGroupNameTextField.$input.attr('disabled', 'disabled');
             }
@@ -184,11 +187,18 @@ define(
             click: onCreateTemplateGroup
         });
 
+        let selectedValueBeforeSaving;
+
         function onCreateTemplateGroup() {
             $templateGroupNameTextField.attr('mode', 'create');
             $templateGroupNameTextField.setValue('');
+
             setEnabledEditMode(true);
             $templateGroupNameTextField.slideDown();
+            $templatesTableTitle.hide();
+            $templatesTable.hide();
+
+            selectedValueBeforeSaving = $templateGroupSelect.getSelectedValue();
         }
 
         const $templateGroupSelect = components.selects.imcmsSelect('<div>', {
@@ -225,13 +235,10 @@ define(
         });
 
         function onEditTemplateGroup() {
-            const templateName = $templateGroupSelect.selectedText();
-            if (!templateName) {
-                return;
-            }
-
             $templateGroupNameTextField.attr('mode', 'edit');
             setEnabledEditMode(true);
+
+            selectedValueBeforeSaving = $templateGroupSelect.getSelectedValue()
         }
 
         function onDeleteTemplateGroup() {
@@ -308,11 +315,11 @@ define(
 
         function onCancelTemplateGroup() {
             modal.buildModalWindow(texts.groupData.cancelConfirm, confirmed => {
-                if (!confirmed) return;
+                if (!confirmed) {
+                    $templateGroupSelect.selectValue(selectedValueBeforeSaving);
+                    return;
+                }
 
-                const templateName = $templateGroupSelect.selectedText();
-                fillTemplatesTableByTemplateGroup(templateName);
-                $templateGroupNameTextField.setValue(templateName);
                 setEnabledEditMode(false);
             });
         }
