@@ -256,7 +256,8 @@ public class DefaultFileService implements FileService {
         if (isAllowablePath(template) && StringUtils.isNotBlank(templateName)) {
             final TemplateJPA receivedTemplate = templateRepository.findByName(originalTemplateName);
             final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findByName(templateGroupName);
-            receivedTemplateGroup.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
+            if (receivedTemplateGroup != null)
+                receivedTemplateGroup.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
             if (receivedTemplate != null) {
                 receivedTemplate.setTemplateGroup(receivedTemplateGroup);
                 return new TemplateDTO(templateRepository.save(receivedTemplate));
