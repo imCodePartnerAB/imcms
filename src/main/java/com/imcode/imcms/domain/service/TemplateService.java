@@ -24,4 +24,6 @@ public interface TemplateService {
     Path getPhysicalPath(String name);
 
     Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode);
+
+    void delete(String templateName);
 }

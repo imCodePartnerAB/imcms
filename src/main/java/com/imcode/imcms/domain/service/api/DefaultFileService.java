@@ -164,6 +164,8 @@ public class DefaultFileService implements FileService {
 
             Files.delete(file);
         } else {
+            final String orgTemplateName = getPathWithoutExtension(file.getFileName().toString());
+            templateService.delete(orgTemplateName);
             Files.delete(file);
         }
     }

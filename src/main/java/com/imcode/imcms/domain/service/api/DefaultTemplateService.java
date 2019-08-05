@@ -91,6 +91,12 @@ public class DefaultTemplateService implements TemplateService {
         return templateFile.toPath();
     }
 
+    @Override
+    public void delete(String templateName) {
+        TemplateJPA template = templateRepository.findByName(templateName);
+        templateRepository.delete(template.getId());
+    }
+
     public File getTemplateDirectory() {
         return templateDirectory;
     }
