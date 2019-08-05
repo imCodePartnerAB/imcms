@@ -257,9 +257,12 @@ define(
             modal.buildModalWindow(texts.groupData.deleteConfirm, confirmed => {
                 if (!confirmed) return;
 
-                groupsRestApi.remove($templateGroupSelect.selectedText()).done(() => {
-                    $templateGroupSelect.deleteOption($templateGroupSelect.getSelectedValue());
+                const id = $templateGroupSelect.getSelectedValue();
+
+                groupsRestApi.remove(id).done(() => {
+                    $templateGroupSelect.deleteOption(id);
                     $templateGroupSelect.selectFirst();
+                    setEnabledEditMode(false);
                 }).fail(() => modal.buildErrorWindow(texts.error.deleteGroup));
             });
         }
