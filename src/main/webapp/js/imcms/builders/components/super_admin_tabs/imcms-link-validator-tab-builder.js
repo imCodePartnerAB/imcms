@@ -189,7 +189,7 @@ define(
             }
 
             function buildLoadingAnimation() {
-                $loadingAnimation = $('<div>');
+                $loadingAnimation = $('<div>').addClass('loading-animation');
                 displayLoading(false);
                 return $loadingAnimation;
             }

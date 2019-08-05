@@ -142,11 +142,19 @@ define(
             $(elem).removeClass(selectedFileHighlightingClassName);
         }
 
+        const $loadingAnimation = $('<div>', {
+            class: 'loading-animation',
+            style: 'display: none'
+        });
+
         function buildDocumentsContainer() {
-            $documentsContainer = $('<div>', {
-                'class': 'table-documents',
-                'style': 'display: none;'
-            });
+            $documentsContainer = new BEM({
+                block: 'table-documents',
+                elements: {
+                    'loading-animation': $loadingAnimation
+                }
+            }).buildBlockStructure('<div>');
+
             return $documentsContainer;
         }
 
@@ -449,17 +457,23 @@ define(
                 template: currentFile.fullPath
             };
             if (templatePattern.test(currentFile.fullPath)) {
+
+                $documentsContainer.find('.documents-data').remove();
+                $loadingAnimation.show();
+
                 fileRestApi.getDocuments(templateName).done(documents => {
+                    $documentsContainer.find('.documents-data').remove();
+
                         if (documents.length > 0) {
                             const $documentsData = $('<div>').addClass('documents-data');
-                            const documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
-                            $documentsContainer.find('.documents-data').remove();
                             $documentsData.append(buildTitleRow());
+
+                            const documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
                             $documentsData.append(documentsRows);
+
                             $documentsContainer.append($documentsData).show();
-                        } else {
-                            $documentsContainer.find('.documents-data').remove();
                         }
+                    $loadingAnimation.hide();
                     }
                 ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
             }
