@@ -53,7 +53,8 @@ public class TemplateGroupJPA extends TemplateGroup {
 
     @Override
     public void setTemplates(Set<Template> templates) {
-        this.templates = templates.stream().map(TemplateJPA::new).collect(Collectors.toSet());
+        this.templates = (templates == null) ? null :
+                templates.stream().map(TemplateJPA::new).collect(Collectors.toSet());
     }
 }
 
