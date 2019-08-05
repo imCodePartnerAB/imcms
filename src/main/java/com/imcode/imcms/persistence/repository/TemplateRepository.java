@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface TemplateRepository extends JpaRepository<TemplateJPA, String> {
+public interface TemplateRepository extends JpaRepository<TemplateJPA, Integer> {
 
     @Transactional
     @Modifying
