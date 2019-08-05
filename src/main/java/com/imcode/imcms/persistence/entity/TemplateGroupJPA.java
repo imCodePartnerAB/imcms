@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +39,7 @@ public class TemplateGroupJPA extends TemplateGroup {
     @Column(name = "group_name", unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "templateGroup", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "templateGroup", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<TemplateJPA> templates;
 
