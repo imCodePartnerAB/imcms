@@ -40,7 +40,7 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     public TemplateGroup edit(TemplateGroup templateGroup) { //todo it necessary or delete it ?
         final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findOne(templateGroup.getId());
         receivedTemplateGroup.setName(templateGroup.getName());
-        return new TemplateGroupDTO(templateGroupRepository.save(new TemplateGroupJPA(receivedTemplateGroup)));
+        return new TemplateGroupDTO(templateGroupRepository.save(receivedTemplateGroup));
     }
 
     @Override
