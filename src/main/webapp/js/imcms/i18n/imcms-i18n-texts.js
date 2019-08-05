@@ -82,6 +82,7 @@ const texts = {
             discardChange: "Ändra ändringar",
             discardChangesQuestion: 'Ignorera ändringar?',
             textEditor: 'Textredigerare',
+            imageEditor: 'Bildredigerare',
             filterPolicy: {
                 restricted: 'Regränsad',
                 relaxed: 'Avslappnad',
@@ -835,6 +836,7 @@ const texts = {
             discardChange: "Discard changes",
             discardChangesQuestion: 'Discard changes?',
             textEditor: 'Text Editor',
+            imageEditor: 'Image Editor',
             filterPolicy: {
                 restricted: 'Restricted',
                 relaxed: 'Relaxed',
