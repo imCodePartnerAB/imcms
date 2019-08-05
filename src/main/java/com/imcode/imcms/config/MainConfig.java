@@ -14,6 +14,7 @@ import com.imcode.imcms.domain.service.DocumentUrlService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.domain.service.PropertyService;
+import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionedContentService;
@@ -225,8 +226,9 @@ public class MainConfig {
     public DefaultFileService fileService(DocumentService<DocumentDTO> documentService,
                                           TemplateRepository templateRepository,
                                           TemplateGroupRepository templateGroupRepository,
-                                          ModelMapper modelMapper) {
-        return new DefaultFileService(documentService, templateRepository, templateGroupRepository, modelMapper);
+                                          ModelMapper modelMapper,
+                                          TemplateService templateService) {
+        return new DefaultFileService(documentService, templateRepository, templateGroupRepository, modelMapper, templateService);
     }
 
     @Bean
