@@ -224,6 +224,10 @@
     margin: 10px 0;
 }
 
+.table-documents__loading-animation {
+    margin: 0 50%;
+}
+
 .first-sub-files,
 .second-sub-files {
     height: 200px;
@@ -407,13 +411,16 @@
     padding-right: 10px;
 }
 
-.link-params-block__loading-animation {
+.loading-animation {
     border: 6px solid #d4d4d4;
     border-top: 6px solid #0b94d8;
     border-radius: 50%;
     width: 40px;
     height: 40px;
     animation: spin 1.5s linear infinite;
+}
+
+.link-params-block__loading-animation {
     margin-top: 30px;
     margin-left: 50px;
 }
