@@ -55,7 +55,7 @@ class DefaultTemplateGroupService implements TemplateGroupService {
     }
 
     @Override
-    public void remove(String name) {
-        templateGroupRepository.deleteByName(name);
+    public void remove(Integer id) {
+        templateGroupRepository.delete(id);
     }
 }

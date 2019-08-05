@@ -46,8 +46,8 @@ public class TemplateGroupController {
         return templateGroupService.edit(templateGroup);
     }
 
-    @DeleteMapping("/{name}")
-    public void delete(@PathVariable String name) {
-        templateGroupService.remove(name);
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        templateGroupService.remove(id);
     }
 }

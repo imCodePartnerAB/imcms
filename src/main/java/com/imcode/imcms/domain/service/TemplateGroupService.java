@@ -16,5 +16,5 @@ public interface TemplateGroupService {
 
     TemplateGroup get(Integer groupId);
 
-    void remove(String name);
+    void remove(Integer id);
 }
