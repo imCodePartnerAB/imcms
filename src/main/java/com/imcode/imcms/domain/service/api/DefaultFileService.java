@@ -7,6 +7,7 @@ import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
+import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
@@ -35,6 +36,7 @@ import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
 import static com.imcode.imcms.api.SourceFile.FileType.FILE;
+import static java.nio.file.StandardOpenOption.CREATE;
 import static ucar.httpservices.HTTPAuthStore.log;
 
 @Service
@@ -48,6 +50,8 @@ public class DefaultFileService implements FileService {
 
     private final ModelMapper modelMapper;
 
+    private final TemplateService templateService;
+
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
@@ -58,11 +62,13 @@ public class DefaultFileService implements FileService {
     public DefaultFileService(DocumentService<DocumentDTO> documentService,
                               TemplateRepository templateRepository,
                               TemplateGroupRepository templateGroupRepository,
-                              ModelMapper modelMapper) {
+                              ModelMapper modelMapper,
+                              TemplateService templateService) {
         this.documentService = documentService;
         this.templateRepository = templateRepository;
         this.templateGroupRepository = templateGroupRepository;
         this.modelMapper = modelMapper;
+        this.templateService = templateService;
     }
 
     private boolean isAllowablePath(Path path) {
@@ -250,22 +256,25 @@ public class DefaultFileService implements FileService {
 
     @Transactional
     @Override
-    public Template saveTemplateInGroup(Path template, String templateGroupName) {
+    public Template saveTemplateInGroup(Path template, String templateGroupName) throws IOException {
         final String templateName = template.getFileName().normalize().toString();
         final String originalTemplateName = getPathWithoutExtension(templateName);
         if (isAllowablePath(template) && StringUtils.isNotBlank(templateName)) {
             final TemplateJPA receivedTemplate = templateRepository.findByName(originalTemplateName);
             final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findByName(templateGroupName);
+            byte[] contentTemplate = Files.readAllBytes(template);
             if (receivedTemplateGroup != null)
                 receivedTemplateGroup.setTemplates(Collections.EMPTY_SET);// in order to avoid recursive error
             if (receivedTemplate != null) {
                 receivedTemplate.setTemplateGroup(receivedTemplateGroup);
+                templateService.saveTemplateFile(receivedTemplate, contentTemplate, CREATE);
                 return new TemplateDTO(templateRepository.save(receivedTemplate));
             } else {
                 TemplateJPA newTemplateJPA = new TemplateJPA();
                 newTemplateJPA.setName(originalTemplateName);
                 newTemplateJPA.setHidden(false);
                 newTemplateJPA.setTemplateGroup(receivedTemplateGroup);
+                templateService.saveTemplateFile(newTemplateJPA, contentTemplate, CREATE);
                 return new TemplateDTO(templateRepository.saveAndFlush(newTemplateJPA));
             }
         } else {

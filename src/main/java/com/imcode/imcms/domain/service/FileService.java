@@ -67,7 +67,7 @@ public interface FileService {
      * @param templateGroupName - template group name which will be save template file
      *
      */
-    Template saveTemplateInGroup(Path template, String templateGroupName);
+    Template saveTemplateInGroup(Path template, String templateGroupName) throws IOException;
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
 }
