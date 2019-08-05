@@ -5,5 +5,7 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.get = name => rest.ajax.call({url: `${url}/${name}`, type: 'GET', json: false});
 
+    api.remove = name => rest.ajax.call({url: `${url}/${name}`, type: 'DELETE', json: false});
+
     return api;
 });
