@@ -585,10 +585,13 @@ define(
 
                 fileRestApi.deleteFile(sourceFile).done(() => {
                     $documentsContainer.remove();
-                        $fileSourceRow.remove();
-                        currentFile = null;
+                    $fileSourceRow.remove();
+                    currentFile = null;
+
+                    if ($templatesTable.css('display') !== 'none') {
+                        fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
                     }
-                ).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
+                }).fail(() => modal.buildErrorWindow(texts.error.deleteFailed));
             });
         }
 
