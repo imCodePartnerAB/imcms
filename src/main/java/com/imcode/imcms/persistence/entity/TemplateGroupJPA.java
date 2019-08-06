@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,7 +19,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,7 @@ public class TemplateGroupJPA extends TemplateGroup {
     @Column(name = "group_name", unique = true, nullable = false)
     private String name;
 
+    @NotFound(action = NotFoundAction.IGNORE)
     @OneToMany(mappedBy = "templateGroup", fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.REFRESH})
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<TemplateJPA> templates;
@@ -49,7 +51,11 @@ public class TemplateGroupJPA extends TemplateGroup {
 
     @Override
     public Set<Template> getTemplates() {
-        return (templates == null) ? null : new HashSet<>(templates);
+        return (templates == null)
+                ? null
+                : templates.stream()
+                .filter(templateJPA -> this.getId().equals(templateJPA.getTemplateGroup().getId()))
+                .collect(Collectors.toSet()); // get all templates which have same id like this group
     }
 
     @Override
