@@ -19,6 +19,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,11 +52,21 @@ public class TemplateGroupJPA extends TemplateGroup {
 
     @Override
     public Set<Template> getTemplates() {
-        return (templates == null)
-                ? null
-                : templates.stream()
-                .filter(templateJPA -> this.getId().equals(templateJPA.getTemplateGroup().getId()))
-                .collect(Collectors.toSet()); // get all templates which have same id like this group
+        Set<Template> temp = new HashSet<>();
+        if (templates == null) {
+            return null;
+        } else {
+            for (Template template : templates) {
+                if (template.getTemplateGroup() == null) {
+                    temp.add(template);
+                } else {
+                    if (this.getId().equals(template.getTemplateGroup().getId())) {
+                        temp.add(template);// add all templates which have same id like this group
+                    }
+                }
+            }
+        }
+        return temp;
     }
 
     @Override
