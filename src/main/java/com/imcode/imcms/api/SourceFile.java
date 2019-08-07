@@ -22,7 +22,7 @@ public class SourceFile implements Cloneable, Serializable {
     }
 
     public enum FileType {
-        FILE,
-        DIRECTORY
+        DIRECTORY,
+        FILE
     }
 }
