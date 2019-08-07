@@ -24,12 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -854,5 +849,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
                 "testGroup", 2, false);
 
         assertThrows(FileAccessDeniedException.class, () -> fileService.saveTemplateInGroup(pathTemplateFile, testGroup.getName()));
+        Files.delete(pathTemplateFile);
     }
 }
