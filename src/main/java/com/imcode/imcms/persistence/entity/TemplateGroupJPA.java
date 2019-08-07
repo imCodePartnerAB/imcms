@@ -56,15 +56,15 @@ public class TemplateGroupJPA extends TemplateGroup {
         if (templates == null) {
             return null;
         } else {
-            for (Template template : templates) {
-                if (template.getTemplateGroup() == null) {
-                    temp.add(template);
+            templates.stream().forEach(templateJPA -> {
+                if (templateJPA.getTemplateGroup() == null) {
+                    temp.add(templateJPA);
                 } else {
-                    if (this.getId().equals(template.getTemplateGroup().getId())) {
-                        temp.add(template);// add all templates which have same id like this group
+                    if (this.getId().equals(templateJPA.getTemplateGroup().getId())) {
+                        temp.add(templateJPA);
                     }
                 }
-            }
+            });
         }
         return temp;
     }
