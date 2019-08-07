@@ -96,5 +96,10 @@ public class TemplateDataInitializer extends TestDataCleaner {
         return new TemplateGroupDTO(templateGroupJPA);
     }
 
-
+    public void clearTemplateGroupRepository(Integer id) {
+        TemplateGroupJPA receivedGroup = templateGroupRepository.findOne(id);
+        if (receivedGroup != null) {
+            templateGroupRepository.delete(id);
+        }
+    }
 }

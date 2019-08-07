@@ -9,6 +9,7 @@ import com.imcode.imcms.model.TemplateGroup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +31,7 @@ public class TemplateGroupControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     public void setUp() {
+        dataInitializer.clearTemplateGroupRepository(0); // in database exist group with id = 0
         dataInitializer.cleanRepositories();
     }
 
@@ -141,7 +143,7 @@ public class TemplateGroupControllerTest extends AbstractControllerTest {
         final List<TemplateGroup> templateGroups = dataInitializer.createTemplateGroups(2);
         final TemplateGroup templateGroup = templateGroups.get(0);
         assertEquals(2, templateGroupService.getAll().size());
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + templateGroup.getName());
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + templateGroup.getId());
         performRequestBuilderExpectedOk(requestBuilder);
         assertEquals(1, templateGroupService.getAll().size());
     }
@@ -149,10 +151,10 @@ public class TemplateGroupControllerTest extends AbstractControllerTest {
     @Test
     public void delete_When_TemplateGroupNotExist_Expected_NothingAndCorrectSize() throws Exception {
         dataInitializer.createTemplateGroups(2);
-        final String fakeName = "fake";
+        final Integer fakeId = -10;
         assertEquals(2, templateGroupService.getAll().size());
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + fakeName);
-        performRequestBuilderExpectedOk(requestBuilder);
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(controllerPath() + "/" + fakeId);
+        performRequestBuilderExpectException(EmptyResultDataAccessException.class, requestBuilder);
         assertEquals(2, templateGroupService.getAll().size());
     }
 }
