@@ -57,23 +57,33 @@ define(
                 $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 0}, file, fileEditor))
                 );
+
+                $fileContainer.append($('<div>', {
+                    class: 'path-row',
+                    text: '/'
+                }));
             });
 
             return $fileContainer;
         }
 
         function buildSecondInstanceFiles() {
-            const $fileSecondContainer = $('<div>', {
+            const $fileContainer = $('<div>', {
                 'class': 'second-files'
             });
 
             secondFilesLoader.whenFilesLoaded(files => {
-                $fileSecondContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
+                $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 1}, file, fileEditor))
                 );
+
+                $fileContainer.append($('<div>', {
+                    class: 'path-row',
+                    text: '/'
+                }));
             });
 
-            return $fileSecondContainer;
+            return $fileContainer;
         }
 
         function buildDocumentsContainer() {

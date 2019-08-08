@@ -45,8 +45,9 @@ define(
             return $(getAllSubFilesContainers()[index]);
         }
 
-        function getPathFromElement(element) {
-            return element.attr('path');
+        function getPathRowByIndex(index) {
+            const $column = $(getMainContainer().children()[index]);
+            return $column.find('.path-row');
         }
 
         function getDirPathFromFullPath(path) {
@@ -54,11 +55,12 @@ define(
         }
 
         function getDirPathBySubFilesContainer(container) {
-            return getPathFromElement(container);
+            const index = getIndexOfSubFilesContainer(container);
+            return getDirPathByIndex(index);
         }
 
-        function getDirPathBySubFilesContainerIndex(index) {
-            return getDirPathBySubFilesContainer(getSubFilesContainerByIndex(index));
+        function getDirPathByIndex(index) {
+            return getPathRowByIndex(index).text();
         }
 
         function createBackDir(currentPath) {
@@ -78,10 +80,6 @@ define(
                 }
             }
             return -1;
-        }
-
-        function isDirsInSubFilesContainersEquals(container1, container2) {
-            return container1.attr('path') === container2.attr('path');
         }
 
         function integrateFileInContainerAsRow(file, filesContainer, transformFileToRowFunction) {
@@ -415,14 +413,17 @@ define(
         function buildViewFilesContainer($fileRow, file, isDblClick) {
             currentFile = file;
             $fileSourceRow = $fileRow;
+
             if (file.fileType === 'DIRECTORY') {
                 updateHighlightingForDir($fileSourceRow);
                 deleteAllHighlightingInSubFilesContainer(getSubFilesContainerByChildRow($fileSourceRow), selectedDirHighlightingClassName);
             }
             if (file.fileType === 'DIRECTORY' && isDblClick) {
                 onDirectoryDblClick.call(this, $fileRow, file);
-            } else {
-                onTemplateClick();
+            } else if (file.fileType === 'FILE' && isDblClick) {
+                onFileDblClick(file);
+            } else if (file.fileType === 'FILE' && isTemplate(file.fullPath)) {
+                onTemplateClick(file);
             }
         }
 
@@ -436,17 +437,16 @@ define(
             const path = file.fullPath;
 
             fileRestApi.get(path).done(files => {
-                    const $subFilesContainer = $('<div>', {
-                        class: this.subFilesClassName,
-                        path: path
-                    });
+                const $subFilesContainer = $('<div>').addClass(this.subFilesClassName);
                     const $filesContainer = $('.' + this.columnClassName);
                     $filesContainer.find('.' + this.subFilesClassName).remove();
                     $filesContainer.append($subFilesContainer);
 
-                    const transformFileToRow = fileToRow.transformFileToRow.bind({
-                        subFilesContainerIndex: getIndexOfSubFilesContainer($subFilesContainer)
-                    });
+                const index = getIndexOfSubFilesContainer($subFilesContainer);
+
+                getPathRowByIndex(index).text(path);
+
+                const transformFileToRow = fileToRow.transformFileToRow.bind({subFilesContainerIndex: index});
                     $subFilesContainer.append(transformFileToRow(createBackDir(path), fileEditor));
 
                     files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
@@ -454,32 +454,38 @@ define(
             ).fail(() => modal.buildErrorWindow(texts.error.loadError));
         }
 
-        function onTemplateClick() {
+        function onFileDblClick(file) {
+
+        }
+
+        function isTemplate(fileName) {
             const templatePattern = new RegExp('.(JSP|HTML)$', 'gi');
+            return templatePattern.test(fileName);
+        }
+
+        function onTemplateClick(file) {
+            $documentsContainer.find('.documents-data').remove();
+            $loadingAnimation.show();
+
             const templateName = {
-                template: currentFile.fullPath
+                template: file.fullPath
             };
-            if (templatePattern.test(currentFile.fullPath)) {
 
-                $documentsContainer.find('.documents-data').remove();
-                $loadingAnimation.show();
-
-                fileRestApi.getDocuments(templateName).done(documents => {
+            fileRestApi.getDocuments(templateName).done(documents => {
                     $documentsContainer.find('.documents-data').remove();
 
-                        if (documents.length > 0) {
-                            const $documentsData = $('<div>').addClass('documents-data');
-                            $documentsData.append(buildTitleRow());
+                    if (documents.length > 0) {
+                        const $documentsData = $('<div>').addClass('documents-data');
+                        $documentsData.append(buildTitleRow());
 
-                            const documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
-                            $documentsData.append(documentsRows);
+                        const documentsRows = documents.map(doc => docToRow.transform(doc, fileEditor));
+                        $documentsData.append(documentsRows);
 
-                            $documentsContainer.append($documentsData).show();
-                        }
-                    $loadingAnimation.hide();
+                        $documentsContainer.append($documentsData).show();
                     }
-                ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
-            }
+                    $loadingAnimation.hide();
+                }
+            ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
         }
 
         const newFileNameField = buildCreateField();
@@ -698,7 +704,7 @@ define(
                 selectedFiles = files;
 
                 const allSubFilesContainers = getAllSubFilesContainers();
-                if (isDirsInSubFilesContainersEquals(allSubFilesContainers[0], allSubFilesContainers[1])) {
+                if (getDirPathByIndex(0) === getDirPathByIndex(1)) {
                     selectedFilesRows = [];
                 } else {
                     selectedFilesRows.forEach(row => row.remove());
@@ -730,7 +736,7 @@ define(
                 selectedFilesRows = [];
 
                 const allSubFilesContainers = getAllSubFilesContainers();
-                if (!isDirsInSubFilesContainersEquals(allSubFilesContainers[0], allSubFilesContainers[1])) {
+                if (getDirPathByIndex(0) !== getDirPathByIndex(1)) {
                     newFiles.forEach(file =>
                         selectedFilesRows.push(
                             integrateFileInContainerAsRow(file, targetSubFilesContainer, this.transformFileToRow)
@@ -794,7 +800,7 @@ define(
         function bindEditFile(subFilesContainerIndex) {
             const renameFile = onRenameFile.bind(buildBoundData(subFilesContainerIndex));
             const editFileContent = onEditFileContent.bind({
-                getTargetDirectoryPath: () => getDirPathBySubFilesContainerIndex(subFilesContainerIndex)
+                getTargetDirectoryPath: () => getDirPathByIndex(subFilesContainerIndex)
             });
             const buildConfirmEditIn = () => confirmEditFile(renameFile, editFileContent);
             return () => prepareOnEditFile(buildConfirmEditIn);
