@@ -603,7 +603,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getAllFiles_WhenFilesHaveSubFiles_Expected_CorrectSize() throws IOException {
+    public void getFiles_WhenFilesHaveSubFiles_Expected_CorrectSize() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
         final Path pathDir2ByDir = pathDir.resolve(testDirectoryName2);
@@ -621,6 +621,30 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertFalse(fileService.getFiles(pathDir).isEmpty());
         assertEquals(2, fileService.getFiles(pathDir).size());
+    }
+
+    @Test
+    public void getFiles_When_OrderNotCorrect_Expected_CorrectOrder() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+
+        Files.createDirectory(firstRootPath);
+
+        final Path file1 = firstRootPath.resolve(testFileName);
+        final Path file2 = firstRootPath.resolve(testFileName2);
+        final Path directory1 = firstRootPath.resolve(testDirectoryName);
+        final Path directory2 = firstRootPath.resolve(testDirectoryName2);
+
+        Files.createFile(file1);
+        Files.createDirectory(directory1);
+        Files.createFile(file2);
+        Files.createDirectory(directory2);
+
+        List<SourceFile> receivedFiles = fileService.getFiles(firstRootPath);
+
+        assertEquals(DIRECTORY, receivedFiles.get(0).getFileType());
+        assertEquals(DIRECTORY, receivedFiles.get(1).getFileType());
+        assertEquals(FILE, receivedFiles.get(2).getFileType());
+        assertEquals(FILE, receivedFiles.get(3).getFileType());
     }
 
     @Test
