@@ -37,7 +37,7 @@ define(
 
                 if (file.fileType === 'FILE' && templatePattern.test(file.fullPath)) {
                     return new BEM({
-                        block: "file-row",
+                        block: "template-row",
                         elements: {
                             'file-name': $('<div>', {
                                 text: file.fileName

@@ -357,7 +357,7 @@ define(
 
         function templateToRow(template) {
             return new BEM({
-                block: 'template-row',
+                block: 'template-info-row',
                 elements: {
                     'template-name': $('<div>').text(template.name)
                 }

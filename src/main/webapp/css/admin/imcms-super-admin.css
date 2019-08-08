@@ -207,7 +207,7 @@
 }
 
 .doc-info-row,
-.template-row {
+.template-info-row {
     display: flex;
     padding: 5px;
     cursor: pointer;
@@ -237,16 +237,17 @@
 }
 
 .first-sub-files {
-    background-color: #a1a1a1;
+    background-color: #dcdada;
 }
 
 .second-sub-files {
-    background-color: #bfe6ff;
+    background-color: #dcdada;
 }
 
 .file-row,
 .directory-row,
-.root-directory-row {
+.root-directory-row,
+.template-row {
     padding: 5px;
     cursor: pointer;
     display: flex;
@@ -261,6 +262,7 @@
 .directory-row:hover,
 .doc-info-row:hover,
 .root-directory-row:hover,
+.template-info-row:hover,
 .template-row:hover {
     background-color: #dfedff;
 }
@@ -272,8 +274,7 @@
     width: 50%;
 }
 
-.file-row__file-name,
-.directory-row__file-name {
+.file-row__file-name {
     width: 60%;
     word-break: break-all;
 }
@@ -284,20 +285,29 @@
 }
 
 .root-directory-row__file-name {
-    width: 78%;
+    width: 80%;
+    word-break: break-all;
+}
+
+.template-row__file-name {
+    width: 50%;
     word-break: break-all;
 }
 
 .file-row__download,
 .file-row__edit,
 .file-row__delete,
-.file-row__add-to-group,
+.template-row__add-to-group,
+.template-row__download,
+.template-row__edit,
+.template-row__delete,
 .root-directory-row__delete,
 .directory-row__edit,
 .directory-row__delete {
     width: 10%;
 }
 
+.template-row__download,
 .file-row__download {
     display: flex;
     justify-content: center;
