@@ -57,23 +57,33 @@ define(
                 $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 0}, file, fileEditor))
                 );
+
+                $fileContainer.append($('<div>', {
+                    class: 'path-row',
+                    text: '/'
+                }));
             });
 
             return $fileContainer;
         }
 
         function buildSecondInstanceFiles() {
-            const $fileSecondContainer = $('<div>', {
+            const $fileContainer = $('<div>', {
                 'class': 'second-files'
             });
 
             secondFilesLoader.whenFilesLoaded(files => {
-                $fileSecondContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
+                $fileContainer.append(files.map(file => fileToRow.transformRootDirToRow.call(
                     {subFilesContainerIndex: 1}, file, fileEditor))
                 );
+
+                $fileContainer.append($('<div>', {
+                    class: 'path-row',
+                    text: '/'
+                }));
             });
 
-            return $fileSecondContainer;
+            return $fileContainer;
         }
 
         function buildDocumentsContainer() {
@@ -100,8 +110,8 @@ define(
             return new BEM({
                 block: 'buttons-move',
                 elements: {
-                    'left-move': components.controls.left(fileEditor.buildMoveFile(1)).attr("title", texts.moveLeft),
-                    'right-move': components.controls.right(fileEditor.buildMoveFile(0)).attr("title", texts.moveRight)
+                    'left-move': components.controls.left(fileEditor.bindMoveFile(1)).attr("title", texts.moveLeft),
+                    'right-move': components.controls.right(fileEditor.bindMoveFile(0)).attr("title", texts.moveRight)
                 }
             }).buildBlockStructure('<div>')
         }
@@ -110,8 +120,8 @@ define(
             return new BEM({
                 block: 'buttons-copy',
                 elements: {
-                    'left-copy': components.controls.left(fileEditor.buildCopyFile(1)).attr("title", texts.copyLeft),
-                    'right-copy': components.controls.right(fileEditor.buildCopyFile(0)).attr("title", texts.copyRight)
+                    'left-copy': components.controls.left(fileEditor.bindCopyFile(1)).attr("title", texts.copyLeft),
+                    'right-copy': components.controls.right(fileEditor.bindCopyFile(0)).attr("title", texts.copyRight)
                 }
             }).buildBlockStructure('<div>');
         }
@@ -120,8 +130,8 @@ define(
             return new BEM({
                 block: 'first-files-action',
                 elements: {
-                    'add-file': components.controls.add(fileEditor.buildAddFile(0)).attr("title", texts.add),
-                    'upload-file': components.controls.upload(fileEditor.buildUploadFile(0)).attr("title", texts.upload)
+                    'add-file': components.controls.add(fileEditor.bindAddFile(0)).attr("title", texts.add),
+                    'upload-file': components.controls.upload(fileEditor.bindUploadFile(0)).attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
         }
@@ -130,8 +140,8 @@ define(
             return new BEM({
                 block: 'second-files-action',
                 elements: {
-                    'add-file': components.controls.add(fileEditor.buildAddFile(1)).attr("title", texts.add),
-                    'upload-file': components.controls.upload(fileEditor.buildUploadFile(1)).attr("title", texts.upload)
+                    'add-file': components.controls.add(fileEditor.bindAddFile(1)).attr("title", texts.add),
+                    'upload-file': components.controls.upload(fileEditor.bindUploadFile(1)).attr("title", texts.upload)
                 }
             }).buildBlockStructure('<div>', {})
         }

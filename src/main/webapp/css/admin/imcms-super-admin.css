@@ -236,10 +236,7 @@
     justify-content: space-between;
 }
 
-.first-sub-files {
-    background-color: #dcdada;
-}
-
+.first-sub-files,
 .second-sub-files {
     background-color: #dcdada;
 }
@@ -247,10 +244,15 @@
 .file-row,
 .directory-row,
 .root-directory-row,
-.template-row {
+.template-row,
+.path-row {
     padding: 5px;
     cursor: pointer;
     display: flex;
+}
+
+.path-row {
+    background-color: #ffffe0;
 }
 
 .files-table__directory-row--selected,
