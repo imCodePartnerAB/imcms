@@ -766,15 +766,15 @@ define(
         function buildBoundData(targetSubFilesContainerIndex) {
             return {
                 getTargetSubFilesContainer: () => getSubFilesContainerByIndex(targetSubFilesContainerIndex),
-                transformFileToRow: buildTransformFileToRow(targetSubFilesContainerIndex)
+                transformFileToRow: bindTransformFileToRow(targetSubFilesContainerIndex)
             }
         }
 
-        function buildTransformFileToRow(subFilesContainerIndex) {
+        function bindTransformFileToRow(subFilesContainerIndex) {
             return fileToRow.transformFileToRow.bind({subFilesContainerIndex});
         }
 
-        function buildViewSubFilesContainer(subFilesContainerIndex) {
+        function bindViewSubFilesContainer(subFilesContainerIndex) {
             const classes = {
                 subFilesClassName: subFilesContainerIndex === 0 ? 'first-sub-files' : 'second-sub-files',
                 columnClassName: subFilesContainerIndex === 0 ? 'files-table__first-instance' : 'files-table__second-instance'
@@ -782,16 +782,16 @@ define(
             return buildViewFilesContainer.bind(classes);
         }
 
-        function buildUploadFile(subFilesContainerIndex) {
+        function bindUploadFile(subFilesContainerIndex) {
             return uploadFile.bind(buildBoundData(subFilesContainerIndex))
         }
 
-        function buildAddFile(subFilesContainerIndex) {
+        function bindAddFile(subFilesContainerIndex) {
             const saveFile = onSaveFile.bind(buildBoundData(subFilesContainerIndex));
             return () => confirmAddFile(saveFile);
         }
 
-        function buildEditFile(subFilesContainerIndex) {
+        function bindEditFile(subFilesContainerIndex) {
             const renameFile = onRenameFile.bind(buildBoundData(subFilesContainerIndex));
             const editFileContent = onEditFileContent.bind({
                 getTargetDirectoryPath: () => getDirPathBySubFilesContainerIndex(subFilesContainerIndex)
@@ -800,23 +800,23 @@ define(
             return () => prepareOnEditFile(buildConfirmEditIn);
         }
 
-        function buildMoveFile(subFilesContainerIndex) {
+        function bindMoveFile(subFilesContainerIndex) {
             const index = subFilesContainerIndex === 0 ? 1 : 0;
             return moveFile.bind(buildBoundData(index));
         }
 
-        function buildCopyFile(subFilesContainerIndex) {
+        function bindCopyFile(subFilesContainerIndex) {
             const index = subFilesContainerIndex === 0 ? 1 : 0;
             return copyFile.bind(buildBoundData(index));
         }
 
         const fileEditor = {
-            buildViewSubFilesContainer,
-            buildUploadFile,
-            buildAddFile,
-            buildEditFile,
-            buildMoveFile,
-            buildCopyFile,
+            bindViewSubFilesContainer,
+            bindUploadFile,
+            bindAddFile,
+            bindEditFile,
+            bindMoveFile,
+            bindCopyFile,
             deleteFile,
             getTemplateGroupEditor,
             addTemplateToGroup,

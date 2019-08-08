@@ -25,7 +25,7 @@ define(
 
         return {
             transformFileToRow: function (file, fileEditor) {
-                const buildViewFunc = fileEditor.buildViewSubFilesContainer(this.subFilesContainerIndex);
+                const buildViewFunc = fileEditor.bindViewSubFilesContainer(this.subFilesContainerIndex);
 
                 const infoRowAttributes = {
                     name: file.fileName,
@@ -48,7 +48,7 @@ define(
                                 href: imcms.contextPath + contextUrl + file.fullPath,
                                 title: texts.download
                             }),
-                            'edit': components.controls.edit(fileEditor.buildEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
+                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
@@ -64,7 +64,7 @@ define(
                                 href: imcms.contextPath + contextUrl + file.fullPath,
                                 title: texts.download
                             }),
-                            'edit': components.controls.edit(fileEditor.buildEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
+                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
@@ -84,14 +84,14 @@ define(
                             'file-name': $('<div>', {
                                 text: file.fileName
                             }),
-                            'edit': components.controls.edit(fileEditor.buildEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
+                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
                             'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }
             },
             transformRootDirToRow: function (file, fileEditor) {
-                const buildViewFunc = fileEditor.buildViewSubFilesContainer(this.subFilesContainerIndex);
+                const buildViewFunc = fileEditor.bindViewSubFilesContainer(this.subFilesContainerIndex);
 
                 let infoRowAttributes = {
                     name: file.fileName,
