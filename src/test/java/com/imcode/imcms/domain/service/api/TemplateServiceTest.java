@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
+import com.imcode.imcms.api.exception.AloneTemplateInDbException;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -23,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 public class TemplateServiceTest extends WebAppSpringTestConfig {
@@ -119,6 +122,32 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         final OpenOption writeMode = StandardOpenOption.WRITE;
 
         saveAndAssertTemplateFile(writeMode);
+    }
+
+    @Test
+    public void deleteTemplate_When_TemplateExist_Expected_DeleteEntity() {
+        final Template testTemplate = templatesExpected.get(0);
+        assertEquals(5, templateService.getAll().size());
+        templateService.delete(testTemplate.getId());
+        assertFalse(templateService.get(testTemplate.getName()).isPresent());
+        assertEquals(4, templateService.getAll().size());
+    }
+
+    @Test
+    public void deleteTemplate_When_TemplateNotExist_Expected_CorrectException() {
+        final Integer fakeId = -10;
+        assertEquals(5, templateService.getAll().size());
+        assertThrows(EmptyResultDataAccessException.class, () -> templateService.delete(fakeId));
+        assertEquals(5, templateService.getAll().size());
+    }
+
+    @Test
+    public void deleteTemplate_When_InGroupOneTemplate_Expected_CorrectException() {
+        dataInitializer.cleanRepositories();
+        final List<Template> template = dataInitializer.createData(1);
+        assertEquals(1, templateService.getAll().size());
+        assertThrows(AloneTemplateInDbException.class, () -> templateService.delete(template.get(0).getId()));
+        assertEquals(1, templateService.getAll().size());
     }
 
     private void saveAndAssertTemplateFile(OpenOption writeMode) throws IOException {
