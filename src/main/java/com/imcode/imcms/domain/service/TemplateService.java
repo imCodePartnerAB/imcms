@@ -25,5 +25,5 @@ public interface TemplateService {
 
     Path saveTemplateFile(Template template, byte[] content, OpenOption writeMode);
 
-    void delete(String templateName);
+    void delete(Integer id);
 }

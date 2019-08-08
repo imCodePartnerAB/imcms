@@ -1,5 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
+import com.imcode.imcms.api.exception.AloneTemplateInDbException;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
 import com.imcode.imcms.model.Template;
@@ -22,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static ucar.httpservices.HTTPAuthStore.log;
 
 @Service
 @Transactional
@@ -92,9 +95,15 @@ public class DefaultTemplateService implements TemplateService {
     }
 
     @Override
-    public void delete(String templateName) {
-        TemplateJPA template = templateRepository.findByName(templateName);
-        if (template != null) templateRepository.delete(template.getId());
+    public void delete(Integer id) {
+        List<TemplateJPA> allTemplates = templateRepository.findAll();
+        if (allTemplates.size() > 1) {
+            templateRepository.delete(id);
+        } else {
+            String errorMessage = "Templates less then 1 count in db!";
+            log.error(errorMessage);
+            throw new AloneTemplateInDbException(errorMessage);
+        }
     }
 
     public File getTemplateDirectory() {

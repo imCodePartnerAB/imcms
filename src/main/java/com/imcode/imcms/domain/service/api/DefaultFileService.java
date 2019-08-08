@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
@@ -167,7 +168,8 @@ public class DefaultFileService implements FileService {
             Files.delete(file);
         } else {
             final String orgTemplateName = getPathWithoutExtension(file.getFileName().toString());
-            templateService.delete(orgTemplateName);
+            Optional<Template> receivedTemplate = templateService.get(orgTemplateName);
+            templateService.delete(receivedTemplate.get().getId());
             Files.delete(file);
         }
     }
