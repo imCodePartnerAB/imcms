@@ -122,7 +122,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void getDocumentsByTemplateName_When_TemplateToOutSideRootDir_Expected_CorrectException() {
-        final Path pathOutSide = Paths.get(testTemplateName);
+        final Path pathOutSide = testRootPaths.get(0).resolve(testTemplateName);
         final String templateName = pathOutSide.getFileName().toString();
         DocumentDTO document = documentDataInitializer.createData();
         templateDataInitializer.createData(document.getId(), templateName, templateName);
