@@ -212,11 +212,13 @@ public class DefaultFileService implements FileService {
         final String originalSrcName = getPathWithoutExtension(srcFileName);
         final String originalTargetName = getPathWithoutExtension(targetFileName);
         final Template receivedTemplate = templateRepository.findByName(originalSrcName);
+        final Path physicalTemplatePath = templateService.getPhysicalPath(originalSrcName);
         if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(targetFileName)) {
-            if (null != receivedTemplate) {
+            if (null != receivedTemplate && src.equals(physicalTemplatePath)) {
                 TemplateGroup gotTemplateGroup = receivedTemplate.getTemplateGroup();
-                if (gotTemplateGroup != null)
+                if (gotTemplateGroup != null) {
                     gotTemplateGroup.setTemplates(Collections.EMPTY_SET); // in order to avoid recursive error
+                }
                 receivedTemplate.setId(receivedTemplate.getId());
                 receivedTemplate.setName(originalTargetName);
                 receivedTemplate.setHidden(receivedTemplate.isHidden());
