@@ -70,4 +70,6 @@ public interface FileService {
     Template saveTemplateInGroup(Path template, String templateGroupName) throws IOException;
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
+
+    Template replaceTemplate(Path oldTemplate, Path newTemplate);
 }

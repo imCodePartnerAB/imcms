@@ -148,10 +148,14 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException {
-        if (isAllowablePath(template) && Files.exists(template)) {
-            final String templateName = getPathWithoutExtension(template.getFileName().toString());
+    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException { //test
+        final String templateName = template.getFileName().toString();
+        final Template receivedTemplate = templateRepository.findByName(templateName);
+        if (receivedTemplate != null) {
             return documentService.getDocumentsByTemplateName(templateName);
+        } else if (isAllowablePath(template) && Files.exists(template)) {
+            final String originalTemplateName = getPathWithoutExtension(templateName);
+            return documentService.getDocumentsByTemplateName(originalTemplateName);
         } else {
             log.error("Template file doesn't exist: " + template);
             throw new NoSuchFileException("File is not exist!");
@@ -309,6 +313,11 @@ public class DefaultFileService implements FileService {
             log.error(errorMessage);
             throw new EmptyFileNameException(errorMessage);
         }
+    }
+
+    @Override
+    public Template replaceTemplate(Path oldTemplate, Path newTemplate) {
+        return null;
     }
 }
 
