@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
 import com.imcode.imcms.api.SourceFile;
+import com.imcode.imcms.api.exception.AloneTemplateInDbException;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
@@ -895,4 +897,98 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertThrows(FileAccessDeniedException.class, () -> fileService.saveTemplateInGroup(pathTemplateFile, testGroup.getName()));
         Files.delete(pathTemplateFile);
     }
+
+    @Test
+    public void replaceTemplate_When_oldTemplateFileNameExists_Expected_ReplacedTemplateAndPathExist() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path deletedTemplatePath = firstRootPath.resolve(testTemplateName);
+        final Path newTemplatePath = firstRootPath.resolve(testTemplateName + "2");
+        final String deletedTemplateName = deletedTemplatePath.getFileName().toString();
+        final String replaceTemplateName = newTemplatePath.getFileName().toString();
+        final DocumentDTO document = documentDataInitializer.createData();
+        Files.createDirectory(firstRootPath);
+        Files.createFile(deletedTemplatePath);
+        Files.createFile(newTemplatePath);
+        templateDataInitializer.createData(deletedTemplateName);
+        templateDataInitializer.createData(replaceTemplateName);
+        templateDataInitializer.createData(document.getId(), deletedTemplateName, deletedTemplateName);
+
+        assertEquals(1, fileService.getDocumentsByTemplatePath(deletedTemplatePath).size());
+        assertEquals(0, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
+
+        fileService.replaceTemplate(deletedTemplatePath, newTemplatePath);
+        assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
+        assertNull(templateRepository.findByName(deletedTemplateName));
+        assertTrue(Files.exists(deletedTemplatePath));
+    }
+
+    @Test
+    public void replaceTemplate_When_oldTemplateNotFileButNameExists_Expected_ReplacedTemplate() throws IOException {
+        final Template deletedTemplate = templateDataInitializer.createData(testTemplateName);
+        final Template newTemplate = templateDataInitializer.createData(testTemplateName + "2");
+        final DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), deletedTemplate.getName(), deletedTemplate.getName());
+        final Path deletedTemplatePath = Paths.get(deletedTemplate.getName());
+        final Path newTemplatePath = Paths.get(newTemplate.getName());
+        assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(deletedTemplate.getName())).size());
+        assertEquals(0, fileService.getDocumentsByTemplatePath(Paths.get(newTemplate.getName())).size());
+
+        fileService.replaceTemplate(deletedTemplatePath, newTemplatePath);
+        assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
+        assertNull(templateRepository.findByName(deletedTemplate.getName()));
+    }
+
+    @Test
+    public void replaceTemplate_When_oldTemplateFileButNameNotExists_Expected_CorrectException() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path deletedTemplatePath = firstRootPath.resolve("fakeTest");
+        final Path newTemplatePath = firstRootPath.resolve(testTemplateName);
+        final String replaceTemplateName = newTemplatePath.getFileName().toString();
+        final DocumentDTO document = documentDataInitializer.createData();
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(newTemplatePath);
+        templateDataInitializer.createData("testTemplateName");
+        templateDataInitializer.createData(replaceTemplateName);
+        templateDataInitializer.createData(document.getId(), replaceTemplateName, replaceTemplateName);
+
+        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceTemplate(deletedTemplatePath, newTemplatePath));
+    }
+
+    @Test
+    public void replaceTemplate_When_newTemplateFileButNameNotExists_Expected_Exception() throws IOException {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path deletedTemplatePath = firstRootPath.resolve("fakeTest");
+        final Path newTemplatePath = firstRootPath.resolve(testTemplateName);
+        final String deletedTemplateName = deletedTemplatePath.getFileName().toString();
+        final DocumentDTO document = documentDataInitializer.createData();
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(deletedTemplatePath);
+        templateDataInitializer.createData("testTemplateName");
+        templateDataInitializer.createData(document.getId(), deletedTemplateName, deletedTemplateName);
+
+        assertEquals(1, fileService.getDocumentsByTemplatePath(deletedTemplatePath).size());
+
+        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceTemplate(deletedTemplatePath, newTemplatePath));
+
+        assertEquals(1, fileService.getDocumentsByTemplatePath(deletedTemplatePath).size());
+    }
+
+    @Test
+    public void replaceTemplate_When_AllTemplatesInDbOnlyOne_Expected_Exception() throws IOException {
+        final DocumentDTO document = documentDataInitializer.createData();
+
+        templateDataInitializer.createData(document.getId(), testTemplateName, testTemplateName);
+        assertNotNull(templateRepository.findByName(testTemplateName));
+        assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
+
+        assertThrows(AloneTemplateInDbException.class,
+                () -> fileService.replaceTemplate(Paths.get(testTemplateName), Paths.get(testTemplateName)));
+
+        assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
+
+    }
+
+
 }
