@@ -145,7 +145,7 @@ public class FileController {
         return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
     }
 
-    @PutMapping("/template/replace/")
+    @PutMapping("/template/replace")
     public void replaceTemplate(@RequestBody Properties data) {
         final String oldTemplate = data.getProperty("oldTemplate");
         final String newTemplate = data.getProperty("newTemplate");
