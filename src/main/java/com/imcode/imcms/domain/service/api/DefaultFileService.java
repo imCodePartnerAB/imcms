@@ -148,10 +148,10 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException { //test
+    public List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException {
         final String templateName = template.getFileName().toString();
         final Template receivedTemplate = templateRepository.findByName(templateName);
-        if (receivedTemplate != null) {
+        if (receivedTemplate != null && template.getParent() == null) {
             return documentService.getDocumentsByTemplateName(templateName);
         } else if (isAllowablePath(template) && Files.exists(template)) {
             final String originalTemplateName = getPathWithoutExtension(templateName);
@@ -173,7 +173,7 @@ public class DefaultFileService implements FileService {
         } else {
             final String orgTemplateName = getPathWithoutExtension(file.getFileName().toString());
             Optional<Template> receivedTemplate = templateService.get(orgTemplateName);
-            templateService.delete(receivedTemplate.get().getId());
+            receivedTemplate.ifPresent(template -> templateService.delete(template.getId()));
             Files.delete(file);
         }
     }
