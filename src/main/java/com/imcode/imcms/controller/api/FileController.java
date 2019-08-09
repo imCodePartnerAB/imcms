@@ -145,6 +145,13 @@ public class FileController {
         return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
     }
 
+    @PutMapping("/template/replace/")
+    public void replaceTemplate(@RequestBody Properties data) {
+        final String oldTemplate = data.getProperty("oldTemplate");
+        final String newTemplate = data.getProperty("newTemplate");
+        defaultFileService.replaceTemplate(Paths.get(oldTemplate), Paths.get(newTemplate));
+    }
+
     @PostMapping("/template/**")
     public Template saveTemplateInGroup(@RequestBody Properties data) throws IOException {
         final Path templatePath = Paths.get(data.getProperty("templatePath"));
