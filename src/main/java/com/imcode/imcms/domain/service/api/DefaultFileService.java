@@ -327,7 +327,7 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public void replaceTemplate(Path deletingTemplate, Path newTemplate) {
+    public void replaceTemplateFile(Path deletingTemplate, Path newTemplate) {
         final String deleteTemplateName = deletingTemplate.getFileName().toString();
         final String orgDeleteTemplateName = getPathWithoutExtension(deleteTemplateName);
         final String newTemplateName = newTemplate.getFileName().toString();

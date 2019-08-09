@@ -149,7 +149,7 @@ public class FileController {
     public void replaceTemplate(@RequestBody Properties data) {
         final String oldTemplate = data.getProperty("oldTemplate");
         final String newTemplate = data.getProperty("newTemplate");
-        defaultFileService.replaceTemplate(Paths.get(oldTemplate), Paths.get(newTemplate));
+        defaultFileService.replaceTemplateFile(Paths.get(oldTemplate), Paths.get(newTemplate));
     }
 
     @PostMapping("/template/**")

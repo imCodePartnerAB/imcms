@@ -916,7 +916,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, fileService.getDocumentsByTemplatePath(deletedTemplatePath).size());
         assertEquals(0, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
 
-        fileService.replaceTemplate(deletedTemplatePath, newTemplatePath);
+        fileService.replaceTemplateFile(deletedTemplatePath, newTemplatePath);
         assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
         assertNull(templateRepository.findByName(deletedTemplateName));
         assertTrue(Files.exists(deletedTemplatePath));
@@ -933,7 +933,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(deletedTemplate.getName())).size());
         assertEquals(0, fileService.getDocumentsByTemplatePath(Paths.get(newTemplate.getName())).size());
 
-        fileService.replaceTemplate(deletedTemplatePath, newTemplatePath);
+        fileService.replaceTemplateFile(deletedTemplatePath, newTemplatePath);
         assertEquals(1, fileService.getDocumentsByTemplatePath(newTemplatePath).size());
         assertNull(templateRepository.findByName(deletedTemplate.getName()));
     }
@@ -952,7 +952,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         templateDataInitializer.createData(replaceTemplateName);
         templateDataInitializer.createData(document.getId(), replaceTemplateName, replaceTemplateName);
 
-        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceTemplate(deletedTemplatePath, newTemplatePath));
+        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceTemplateFile(deletedTemplatePath, newTemplatePath));
     }
 
     @Test
@@ -970,7 +970,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertEquals(1, fileService.getDocumentsByTemplatePath(deletedTemplatePath).size());
 
-        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceTemplate(deletedTemplatePath, newTemplatePath));
+        assertThrows(EmptyResultDataAccessException.class, () -> fileService.replaceTemplateFile(deletedTemplatePath, newTemplatePath));
 
         assertEquals(1, fileService.getDocumentsByTemplatePath(deletedTemplatePath).size());
     }
@@ -984,7 +984,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
 
         assertThrows(AloneTemplateInDbException.class,
-                () -> fileService.replaceTemplate(Paths.get(testTemplateName), Paths.get(testTemplateName)));
+                () -> fileService.replaceTemplateFile(Paths.get(testTemplateName), Paths.get(testTemplateName)));
 
         assertEquals(1, fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)).size());
 
