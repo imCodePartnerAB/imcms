@@ -803,7 +803,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void renameTemplateFile_When_TemplateUseDocuments_Expected_Rename() throws IOException {
+    public void renameTemplateFile_When_TemplateUseDocumentsButLocatedNotDirTemplate_Expected_RenameFile() throws IOException {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathTest = firstRootPath.resolve(testDirectoryName);
         final Path pathTarget = firstRootPath.resolve(testDirectoryName2);
@@ -818,9 +818,10 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         fileService.moveFile(pathTest, pathTarget);
 
         final List<TextDocumentTemplateDTO> docsByTemplNameTarget = documentTemplateService.getByTemplateName(namePathTarget);
-        assertTrue(documentTemplateService.getByTemplateName(namePathTest).isEmpty());
-        assertFalse(docsByTemplNameTarget.isEmpty());
-        assertEquals(1, docsByTemplNameTarget.size());
+        final List<TextDocumentTemplateDTO> docsByTemplateSrc = documentTemplateService.getByTemplateName(namePathTest);
+        assertFalse(documentTemplateService.getByTemplateName(namePathTest).isEmpty());
+        assertTrue(docsByTemplNameTarget.isEmpty());
+        assertEquals(1, docsByTemplateSrc.size());
         assertFalse(Files.exists(pathTest));
     }
 
