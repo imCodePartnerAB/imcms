@@ -24,7 +24,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -100,6 +105,22 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
+    public void getDocumentsByTemplateName_When_TemplateNotFileButNameExists_Expected_CorrectSize() throws IOException {
+        final String testTemplateName = "test";
+        DocumentDTO document = documentDataInitializer.createData();
+        templateDataInitializer.createData(document.getId(), testTemplateName, testTemplateName);
+
+        List<DocumentDTO> documents = fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName));
+        assertEquals(1, documents.size());
+    }
+
+    @Test
+    public void getDocumentsByTemplateName_When_TemplateNotFileButNameNotExists_Expected_CorrectException() {
+        final String testTemplateName = "fakeTest";
+        assertThrows(FileAccessDeniedException.class, () -> fileService.getDocumentsByTemplatePath(Paths.get(testTemplateName)));
+    }
+
+    @Test
     public void getDocumentsByTemplateName_When_TemplateToOutSideRootDir_Expected_CorrectException() {
         final Path pathOutSide = Paths.get(testTemplateName);
         final String templateName = pathOutSide.getFileName().toString();
@@ -107,7 +128,6 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         templateDataInitializer.createData(document.getId(), templateName, templateName);
 
         assertThrows(FileAccessDeniedException.class, () -> fileService.getDocumentsByTemplatePath(pathOutSide));
-
     }
 
     @Test
