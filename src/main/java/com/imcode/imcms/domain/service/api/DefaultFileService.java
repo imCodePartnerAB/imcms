@@ -4,10 +4,12 @@ import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
@@ -20,6 +22,7 @@ import org.apache.uima.util.FileUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,17 +45,21 @@ import static java.nio.file.StandardOpenOption.CREATE;
 import static ucar.httpservices.HTTPAuthStore.log;
 
 @Service
+@Transactional
 public class DefaultFileService implements FileService {
 
     private final DocumentService<DocumentDTO> documentService;
 
-    private final TemplateRepository templateRepository;
+    private final TemplateRepository templateRepository; //todo maybe use only repo or service?
 
     private final TemplateGroupRepository templateGroupRepository;
 
     private final ModelMapper modelMapper;
 
     private final TemplateService templateService;
+
+    private final TextDocumentTemplateService textDocumentTemplateService;
+
 
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
@@ -65,12 +72,13 @@ public class DefaultFileService implements FileService {
                               TemplateRepository templateRepository,
                               TemplateGroupRepository templateGroupRepository,
                               ModelMapper modelMapper,
-                              TemplateService templateService) {
+                              TemplateService templateService, TextDocumentTemplateService textDocumentTemplateService) {
         this.documentService = documentService;
         this.templateRepository = templateRepository;
         this.templateGroupRepository = templateGroupRepository;
         this.modelMapper = modelMapper;
         this.templateService = templateService;
+        this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
     private boolean isAllowablePath(Path path) {
@@ -192,7 +200,6 @@ public class DefaultFileService implements FileService {
     }
 
 
-    @Transactional
     @Override
     public SourceFile moveFile(Path src, Path target) throws IOException {
         final String targetFileName = target.getFileName().toString();
@@ -264,7 +271,6 @@ public class DefaultFileService implements FileService {
         }
     }
 
-    @Transactional
     @Override
     public Template saveTemplateInGroup(Path template, String templateGroupName) throws IOException {
         final String templateName = template.getFileName().normalize().toString();
@@ -316,8 +322,28 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public Template replaceTemplate(Path oldTemplate, Path newTemplate) {
-        return null;
+    public void replaceTemplate(Path deletingTemplate, Path newTemplate) {
+        final String deleteTemplateName = deletingTemplate.getFileName().toString();
+        final String orgDeleteTemplateName = getPathWithoutExtension(deleteTemplateName);
+        final String newTemplateName = newTemplate.getFileName().toString();
+        final String orgNewTemplateName = getPathWithoutExtension(newTemplateName);
+        final Template deletedTemplate = templateRepository.findByName(orgDeleteTemplateName);
+        final Template replaceReceivedTemplate = templateRepository.findByName(orgNewTemplateName);
+        if (deletedTemplate != null && replaceReceivedTemplate != null) {
+            List<TextDocumentTemplateDTO> docsDeletedTemplate = textDocumentTemplateService.getByTemplateName(deleteTemplateName);
+
+            docsDeletedTemplate.forEach(textDoc -> {
+                textDoc.setTemplateName(orgNewTemplateName);
+                textDoc.setChildrenTemplateName(orgNewTemplateName);
+                textDocumentTemplateService.save(textDoc);
+            });
+
+            templateService.delete(deletedTemplate.getId());
+        } else {
+            final String errorMessage = "Template not exist " + orgDeleteTemplateName + " " + orgNewTemplateName;
+            log.error(errorMessage);
+            throw new EmptyResultDataAccessException(errorMessage, -1);
+        }
     }
 }
 
