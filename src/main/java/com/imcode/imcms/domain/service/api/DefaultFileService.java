@@ -180,8 +180,13 @@ public class DefaultFileService implements FileService {
             Files.delete(file);
         } else {
             final String orgTemplateName = getPathWithoutExtension(file.getFileName().toString());
-            Optional<Template> receivedTemplate = templateService.get(orgTemplateName);
-            receivedTemplate.ifPresent(template -> templateService.delete(template.getId()));
+            final Optional<Template> receivedTemplate = templateService.get(orgTemplateName);
+            receivedTemplate.ifPresent(template -> {
+                final Path pathInTemplateDir = templateService.getPhysicalPath(template.getName());
+                if (pathInTemplateDir != null && pathInTemplateDir.equals(file)) {
+                    templateService.delete(template.getId());
+                }
+            });
             Files.delete(file);
         }
     }
