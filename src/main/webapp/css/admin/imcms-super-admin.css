@@ -228,6 +228,10 @@
     margin: 0 50%;
 }
 
+.templates-radios-container {
+    padding: 5px 10px;
+}
+
 .first-sub-files,
 .second-sub-files {
     height: 200px;
@@ -286,6 +290,7 @@
     word-break: break-all;
 }
 
+.template-info-row__template-name,
 .root-directory-row__file-name {
     width: 80%;
     word-break: break-all;
@@ -313,10 +318,6 @@
 .file-row__download {
     display: flex;
     justify-content: center;
-}
-
-.imcms-modal-body__edit-content {
-    margin-left: 73%;
 }
 
 .files-table__file-row--selected,

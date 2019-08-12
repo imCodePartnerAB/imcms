@@ -28,5 +28,11 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.addTemplateToGroup = pathParam => rest.ajax.call({url: `${url}/template`, type: 'POST', json: true}, pathParam);
 
+    api.replaceTemplateOnDoc = pathParam => rest.ajax.call({
+        url: `${url}/template/replace`,
+        type: 'PUT',
+        json: true
+    }, pathParam);
+
     return api;
 });
