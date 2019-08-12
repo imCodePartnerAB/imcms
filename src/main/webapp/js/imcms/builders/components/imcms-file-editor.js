@@ -2,8 +2,8 @@ define(
     'imcms-file-editor',
     ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder',
         'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer',
-        'imcms-template-groups-rest-api', 'imcms-super-admin-page-builder', 'imcms'],
-    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, groupsRestApi) {
+        'imcms-template-groups-rest-api', "imcms-templates-rest-api", 'imcms-super-admin-page-builder', 'imcms'],
+    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, groupsRestApi, templatesRestApi) {
 
         texts = texts.superAdmin.files;
 
@@ -354,12 +354,92 @@ define(
         }
 
         function templateToRow(template) {
+            const $removeButton = components.controls
+                .remove(onClickDeleteTemplate.bind({template}))
+                .attr("title", texts.title.delete);
+
             return new BEM({
                 block: 'template-info-row',
                 elements: {
-                    'template-name': $('<div>').text(template.name)
+                    'template-name': $('<div>').text(template.name),
+                    'delete': $removeButton
                 }
             }).buildBlockStructure('<div>');
+        }
+
+        function onClickDeleteTemplate() {
+            const templateName = {
+                template: this.template.name
+            };
+
+            fileRestApi.getDocuments(templateName).done(documents => {
+                if (documents.length === 0) {
+                    deleteTemplate(this.template.id);
+                } else {
+                    confirmDeleteTemplate(() => showDeleteTemplateModalWindow(this.template));
+                }
+            }).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
+        }
+
+        function deleteTemplate(id) {
+            templatesRestApi.delete(id).done(() => {
+                fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
+            }).fail(() => modal.buildErrorWindow(texts.error.deleteTemplate));
+        }
+
+        function confirmDeleteTemplate(onConfirm) {
+            modal.buildModalWindow(texts.template.boundDocumentsWarn, confirmed => {
+                if (confirmed) {
+                    onConfirm();
+                }
+            });
+        }
+
+        function showDeleteTemplateModalWindow(template) {
+            templatesRestApi.read().done(templates => {
+
+                deleteTemplateFromArrayById(templates, template.id);
+                const templatesRadioButtons = templates
+                    .map(template => components.radios.imcmsRadio("<div>", {
+                        text: template.name,
+                        name: 'template',
+                        value: template.id,
+                    }));
+
+                const templatesRadioButtonsGroup = components.radios.group.apply(null, templatesRadioButtons);
+
+                const $templatesRadioButtonsContainer = components.radios.radioContainer('<div>', templatesRadioButtons, {
+                    class: 'templates-radios-container'
+                });
+
+                templatesRadioButtons[0].setChecked(true); // todo: if templates array is empty?
+
+                modal.buildOptionalModalWindow(texts.title.replaceTemplate, $templatesRadioButtonsContainer, confirmed => {
+                    if (confirmed) {
+                        const transferData = {
+                            oldTemplate: template.name,
+                            newTemplate: getTemplateFromArrayById(templates, templatesRadioButtonsGroup.getCheckedValue()).name
+                        };
+
+                        fileRestApi.replaceTemplateOnDoc(transferData).done(() => {
+                            deleteTemplate(template.id);
+                        }).fail(() => modal.buildErrorWindow(texts.error.replaceTemplate));
+                    }
+                });
+            }).fail(() => modal.buildErrorWindow(texts.error.loadTemplates));
+        }
+
+        function getIndexOfTemplateInArrayById(array, id) {
+            return array.findIndex(template => template.id == id);
+        }
+
+        function getTemplateFromArrayById(array, id) {
+            return array[getIndexOfTemplateInArrayById(array, id)];
+        }
+
+        function deleteTemplateFromArrayById(array, id) {
+            array.splice(getIndexOfTemplateInArrayById(array, id), 1);
+            return array;
         }
 
         function getTemplateGroupEditor() {
@@ -535,10 +615,10 @@ define(
         function confirmEditFile(onRenameFile, onEditFileContent) {
             return modal.buildEditFileModalWindow(
                 texts.editorFile, newFileNameField, checkBoxIsDirectory, contentTextArea, editCheckBox, confirmed => {
-                    if (!confirmed && !editCheckBox.isChecked()) {
+                    if (confirmed && !editCheckBox.isChecked()) {
                         onRenameFile()
                     }
-                    if (!confirmed && editCheckBox.isChecked()) {
+                    if (confirmed && editCheckBox.isChecked()) {
                         onEditFileContent()
                     }
                 });
@@ -557,6 +637,10 @@ define(
             fileRestApi.change(fileToSaveWithContent).done(file => {
                 currentFile.contents = file.contents;
                 contentTextArea.setValue(file.contents);
+
+                if ($templatesTable.css('display') !== 'none') {
+                    fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
+                }
             }).fail(() => modal.buildErrorWindow(texts.error.editFailed));
         }
 
@@ -633,7 +717,7 @@ define(
             checkBoxIsDirectory.$input.removeAttr('disabled');
             return modal.buildCreateFileModalWindow(
                 texts.createFile, newFileNameField, checkBoxIsDirectory, confirmed => {
-                    if (!confirmed) {
+                    if (confirmed) {
                         onConfirm();
                     }
                 });
@@ -802,8 +886,8 @@ define(
             const editFileContent = onEditFileContent.bind({
                 getTargetDirectoryPath: () => getDirPathByIndex(subFilesContainerIndex)
             });
-            const buildConfirmEditIn = () => confirmEditFile(renameFile, editFileContent);
-            return () => prepareOnEditFile(buildConfirmEditIn);
+            const buildConfirmEdit = () => confirmEditFile(renameFile, editFileContent);
+            return () => prepareOnEditFile(buildConfirmEdit);
         }
 
         function bindMoveFile(subFilesContainerIndex) {
