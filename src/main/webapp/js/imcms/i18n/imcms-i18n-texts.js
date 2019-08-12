@@ -576,7 +576,8 @@ const texts = {
                     titleByMove: 'Knappar för flyttfil',
                     titleByCopy: 'Knappar för kopieringsfilen',
                     titleContent: 'Filinnehåll',
-                    titleEditContent: 'Redigera filinnehåll!'
+                    titleEditContent: 'Redigera filinnehåll!',
+                    replaceTemplate: 'Välj mall'
                 },
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
@@ -594,7 +595,10 @@ const texts = {
                     createGroup: 'Det gick inte att skapa mallgrupp!',
                     editGroup: 'Det gick inte att redigera mallgruppen!',
                     loadGroup: 'Det gick inte att mallgrupp!',
-                    addTemplateToGroup: 'Det gick inte att lägga till mall i mallgruppen!'
+                    addTemplateToGroup: 'Det gick inte att lägga till mall i mallgruppen!',
+                    deleteTemplate: 'Det gick inte att ta bort mallen!',
+                    replaceTemplate: 'Det gick inte att ersätta mallen!',
+                    loadTemplates: 'Det gick inte att ladda mallar!'
                 },
                 documentData: {
                     docId: 'Dokument-id',
@@ -612,6 +616,9 @@ const texts = {
                     saveConfirm: 'Vill du verkligen spara mallgrupp?',
                     cancelConfirm: 'Vill du verkligen avbryta ändringar?',
                     addToGroupConfirm: 'Vill du verkligen lägga till den här mallen i den aktuella mallgruppen?'
+                },
+                template: {
+                    boundDocumentsWarn: 'Vissa dokument relaterade till den här mallen. Vill du ersätta den med en annan mall?',
                 }
             },
             search: {
@@ -1330,7 +1337,8 @@ const texts = {
                     titleByMove: 'Buttons for move file',
                     titleByCopy: 'Buttons for copy file',
                     titleContent: 'File content',
-                    titleEditContent: 'Edit file content!'
+                    titleEditContent: 'Edit file content!',
+                    replaceTemplate: 'Choose template'
                 },
                 error: {
                     loadError: 'Failed to load files. Try again!',
@@ -1348,7 +1356,10 @@ const texts = {
                     createGroup: 'Failed to create template group!',
                     editGroup: 'Failed to edit template group!',
                     loadGroup: 'Failed to load template group!',
-                    addTemplateToGroup: 'Failed to add template to template group!'
+                    addTemplateToGroup: 'Failed to add template to template group!',
+                    deleteTemplate: 'Failed to delete template!',
+                    replaceTemplate: 'Failed to replace template!',
+                    loadTemplates: 'Failed to load templates!'
                 },
                 documentData: {
                     docId: 'Document id',
@@ -1366,6 +1377,9 @@ const texts = {
                     saveConfirm: 'Do you really want to save template group?',
                     cancelConfirm: 'Do you really want to cancel changes?',
                     addToGroupConfirm: 'Do you really want to add this template to the current template group?'
+                },
+                template: {
+                    boundDocumentsWarn: 'Some documents related to this template. Do you want to replace it to another template?',
                 }
             },
             search: {
