@@ -91,7 +91,8 @@ public class DefaultFileService implements FileService {
             }
         }
 
-        if (countMatches > 0) {
+        final Template receivedByTemplate = templateRepository.findByName(normalizedPath);
+        if (countMatches > 0 || receivedByTemplate != null) {
             return true;
         } else {
             log.error("File access denied ! Got path: " + path);
@@ -323,7 +324,9 @@ public class DefaultFileService implements FileService {
 
     @Override
     public void replaceDocsOnNewTemplate(Path oldTemplate, Path newTemplate) {
-        templateService.replaceTemplateFile(oldTemplate, newTemplate);
+        if (isAllowableToAccess(oldTemplate) && isAllowableToAccess(newTemplate)) {
+            templateService.replaceTemplateFile(oldTemplate, newTemplate);
+        }
     }
 }
 
