@@ -227,10 +227,9 @@ public class MainConfig {
                                           TemplateRepository templateRepository,
                                           TemplateGroupRepository templateGroupRepository,
                                           ModelMapper modelMapper,
-                                          TemplateService templateService,
-                                          TextDocumentTemplateService textDocumentTemplateService) {
+                                          TemplateService templateService) {
         return new DefaultFileService(documentService, templateRepository,
-                templateGroupRepository, modelMapper, templateService, textDocumentTemplateService);
+                templateGroupRepository, modelMapper, templateService);
     }
 
     @Bean
