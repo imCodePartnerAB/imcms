@@ -1,7 +1,7 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.api.exception.AloneTemplateInDbException;
+import com.imcode.imcms.api.exception.AloneTemplateException;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.domain.dto.TemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
@@ -146,7 +146,7 @@ public class TemplateServiceTest extends WebAppSpringTestConfig {
         dataInitializer.cleanRepositories();
         final List<Template> template = dataInitializer.createData(1);
         assertEquals(1, templateService.getAll().size());
-        assertThrows(AloneTemplateInDbException.class, () -> templateService.delete(template.get(0).getId()));
+        assertThrows(AloneTemplateException.class, () -> templateService.delete(template.get(0).getId()));
         assertEquals(1, templateService.getAll().size());
     }
 

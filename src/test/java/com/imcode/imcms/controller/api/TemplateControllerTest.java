@@ -1,6 +1,6 @@
 package com.imcode.imcms.controller.api;
 
-import com.imcode.imcms.api.exception.AloneTemplateInDbException;
+import com.imcode.imcms.api.exception.AloneTemplateException;
 import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
 import com.imcode.imcms.controller.AbstractControllerTest;
 import com.imcode.imcms.domain.service.TemplateService;
@@ -75,7 +75,7 @@ public class TemplateControllerTest extends AbstractControllerTest {
         final Integer templateId = template.get(0).getId();
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.delete(
                 controllerPath() + "/" + templateId);
-        performRequestBuilderExpectException(AloneTemplateInDbException.class, requestBuilder);
+        performRequestBuilderExpectException(AloneTemplateException.class, requestBuilder);
         assertEquals(1, templateService.getAll().size());
     }
 }
