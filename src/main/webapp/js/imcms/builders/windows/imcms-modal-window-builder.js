@@ -116,6 +116,16 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function buildOptionalBody(message, optionalBox) {
+            return new BEM({
+                block: 'imcms-modal-body',
+                elements: {
+                    'text': components.texts.infoText("<div>", message),
+                    'optional-box': optionalBox
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function buildHTMLBody(htmlText) {
             return new BEM({
                 block: "imcms-modal-body",
@@ -153,6 +163,17 @@ define(
                 elements: {
                     "modal-head": buildHead(texts.title), //need rename
                     "modal-body": buildEditBody(question, textField, checkBoxIsDir, textarea, editCheckBox),
+                    "modal-footer": buildFooter(onConfirmed, onDeclined)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function createModalOptionalWindow(message, optionalBox, onConfirmed, onDeclined) {
+            return new BEM({
+                block: 'imcms-modal-optional-window',
+                elements: {
+                    "modal-head": buildHead(texts.title),
+                    "modal-body": buildOptionalBody(message, optionalBox),
                     "modal-footer": buildFooter(onConfirmed, onDeclined)
                 }
             }).buildBlockStructure("<div>");
@@ -200,6 +221,12 @@ define(
             );
         };
 
+        const ModalOptionalWindow = function (message, optionalBox, callback) {
+            this.onConfirmed = this.buildOnDecide(true, callback);
+            this.onDeclined = this.buildOnDecide(false, callback);
+            this.$modal = createModalOptionalWindow(message, optionalBox, this.onConfirmed, this.onDeclined);
+        };
+
         const ModalWarningWindow = function (message, callback) {
             this.onConfirmed = this.confirmAction(callback);
             this.$modal = createModalWarningWindow(message, this.onConfirmed);
@@ -239,64 +266,11 @@ define(
             }
         };
 
-        CreateModalWindow.prototype = {
-            buildOnDecide: function (isConfirm, callback) {
-                const context = this;
+        CreateModalWindow.prototype = Object.create(ModalWindow.prototype);
 
-                return () => {
-                    callback(isConfirm);
-                    context.closeModal();
-                    return false;
-                };
-            },
+        CreateModalWindowEditor.prototype = Object.create(ModalWindow.prototype);
 
-            addShadow: function () {
-                this.$shadow = createLayout();
-                return this;
-            },
-
-            closeModal: function () {
-                windowKeysController.unRegister();
-                this.$modal.remove();
-                this.$shadow && this.$shadow.remove();
-            },
-
-            appendTo: function ($appendToMe) {
-                $appendToMe.append(this.$modal, this.$shadow);
-                windowKeysController.registerWindow(this.onDeclined, this.onConfirmed);
-                return this;
-            }
-        };
-
-        CreateModalWindowEditor.prototype = {
-            buildOnDecide: function (isConfirm, callback) {
-                const context = this;
-
-                return () => {
-                    callback(isConfirm);
-                    context.closeModal();
-                    return false;
-                };
-            },
-
-            addShadow: function () {
-                this.$shadow = createLayout();
-                return this;
-            },
-
-            closeModal: function () {
-                windowKeysController.unRegister();
-                this.$modal.remove();
-                this.$shadow && this.$shadow.remove();
-            },
-
-            appendTo: function ($appendToMe) {
-                $appendToMe.append(this.$modal, this.$shadow);
-                windowKeysController.registerWindow(this.onDeclined, this.onConfirmed);
-                return this;
-            }
-        };
-
+        ModalOptionalWindow.prototype = Object.create(ModalWindow.prototype);
 
         ModalWarningWindow.prototype = Object.create(ModalWindow.prototype);
         ModalWarningWindow.prototype.confirmAction = function (callback) {
@@ -340,6 +314,12 @@ define(
                 .appendTo($("body"));
         }
 
+        function buildOptionalModalWindow(message, optionalBox, callback) {
+            return new ModalOptionalWindow(message, optionalBox, callback)
+                .addShadow()
+                .appendTo($('body'));
+        }
+
         function buildWarningWindow(message, callback) {
             return new ModalWarningWindow(message, callback)
                 .addShadow()
@@ -352,7 +332,12 @@ define(
         }
 
         module.exports = {
-            buildModalWindow: buildModalWindow,
+            buildModalWindow,
+            buildWarningWindow,
+            buildErrorWindow,
+            buildOptionalModalWindow,
+            buildCreateFileModalWindow: buildCreateModalWindow,
+            buildEditFileModalWindow: buildEditModalWindow,
             buildConfirmWindow: (question, onConfirm) => {
                 buildModalWindow(question, confirm => {
                     confirm && onConfirm.call();
@@ -381,26 +366,6 @@ define(
                 });
 
                 modalWindow.$modal.find('.imcms-modal-body').append($checkbox);
-            },
-            buildWarningWindow: (message, callback) => {
-                buildWarningWindow(message, callback);
-            },
-            buildErrorWindow: (message, callback) => {
-                buildErrorWindow(message, callback);
-            },
-            buildCreateFileModalWindow: (question, textField, checkBoxIsDir, onConfirm) => {
-                buildCreateModalWindow(question, textField, checkBoxIsDir, confirm => {
-                    if (confirm) {
-                        onConfirm.call();
-                    }
-                });
-            },
-            buildEditFileModalWindow: (question, textField, checkBoxIsDir, textarea, editCheckBox, onConfirm) => {
-                buildEditModalWindow(question, textField, checkBoxIsDir, textarea, editCheckBox, confirm => {
-                    if (confirm) {
-                        onConfirm.call();
-                    }
-                });
             },
         }
     }
