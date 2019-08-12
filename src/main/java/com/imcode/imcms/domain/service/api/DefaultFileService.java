@@ -4,12 +4,10 @@ import com.imcode.imcms.api.SourceFile;
 import com.imcode.imcms.api.exception.FileAccessDeniedException;
 import com.imcode.imcms.domain.dto.DocumentDTO;
 import com.imcode.imcms.domain.dto.TemplateDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.exception.EmptyFileNameException;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.FileService;
 import com.imcode.imcms.domain.service.TemplateService;
-import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.model.TemplateGroup;
 import com.imcode.imcms.persistence.entity.TemplateGroupJPA;
@@ -22,7 +20,6 @@ import org.apache.uima.util.FileUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,9 +55,6 @@ public class DefaultFileService implements FileService {
 
     private final TemplateService templateService;
 
-    private final TextDocumentTemplateService textDocumentTemplateService;
-
-
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
@@ -72,16 +66,15 @@ public class DefaultFileService implements FileService {
                               TemplateRepository templateRepository,
                               TemplateGroupRepository templateGroupRepository,
                               ModelMapper modelMapper,
-                              TemplateService templateService, TextDocumentTemplateService textDocumentTemplateService) {
+                              TemplateService templateService) {
         this.documentService = documentService;
         this.templateRepository = templateRepository;
         this.templateGroupRepository = templateGroupRepository;
         this.modelMapper = modelMapper;
         this.templateService = templateService;
-        this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
-    private boolean isAllowablePath(Path path) {
+    private boolean isAllowableToAccess(Path path) {
         String normalizedPath = path.normalize().toString();
         final String finalNormalize = StringUtils.isBlank(normalizedPath)
                 ? rootPath.toString()
@@ -133,7 +126,7 @@ public class DefaultFileService implements FileService {
     @Override
     public List<SourceFile> getFiles(Path path) throws IOException {
         List<Path> paths;
-        if (isAllowablePath(path) && Files.isDirectory(path)) {
+        if (isAllowableToAccess(path) && Files.isDirectory(path)) {
             paths = Files.list(path)
                     .collect(Collectors.toList());
         } else {
@@ -147,7 +140,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public Path getFile(Path file) throws IOException {
-        if (isAllowablePath(file) && Files.exists(file)) {
+        if (isAllowableToAccess(file) && Files.exists(file)) {
             return file;
         } else {
             log.error("File doesn't exist: " + file);
@@ -161,7 +154,7 @@ public class DefaultFileService implements FileService {
         final Template receivedTemplate = templateRepository.findByName(templateName);
         if (receivedTemplate != null && template.getParent() == null) {
             return documentService.getDocumentsByTemplateName(templateName);
-        } else if (isAllowablePath(template) && Files.exists(template)) {
+        } else if (isAllowableToAccess(template) && Files.exists(template)) {
             final String originalTemplateName = getPathWithoutExtension(templateName);
             return documentService.getDocumentsByTemplateName(originalTemplateName);
         } else {
@@ -172,7 +165,7 @@ public class DefaultFileService implements FileService {
 
     @Override
     public void deleteFile(Path file) throws IOException {
-        if (isAllowablePath(file) && Files.isDirectory(file)) {
+        if (isAllowableToAccess(file) && Files.isDirectory(file)) {
             Files.list(file)
                     .map(Path::toFile)
                     .forEach(FileUtils::deleteRecursive);
@@ -195,7 +188,7 @@ public class DefaultFileService implements FileService {
     public List<SourceFile> moveFile(List<Path> src, Path target) throws IOException {
         final List<SourceFile> files = new ArrayList<>();
         for (Path srcPath : src) {
-            if (isAllowablePath(srcPath) && isAllowablePath(target)) {
+            if (isAllowableToAccess(srcPath) && isAllowableToAccess(target)) {
                 files.add(toSourceFile(
                         Files.move(srcPath, target.resolve(srcPath.getFileName()))
                 ));
@@ -213,7 +206,7 @@ public class DefaultFileService implements FileService {
         final String originalTargetName = getPathWithoutExtension(targetFileName);
         final Template receivedTemplate = templateRepository.findByName(originalSrcName);
         final Path physicalTemplatePath = templateService.getPhysicalPath(originalSrcName);
-        if (isAllowablePath(src) && isAllowablePath(target) && StringUtils.isNotBlank(targetFileName)) {
+        if (isAllowableToAccess(src) && isAllowableToAccess(target) && StringUtils.isNotBlank(targetFileName)) {
             if (null != receivedTemplate && src.equals(physicalTemplatePath)) {
                 TemplateGroup gotTemplateGroup = receivedTemplate.getTemplateGroup();
                 if (gotTemplateGroup != null) {
@@ -238,7 +231,7 @@ public class DefaultFileService implements FileService {
     public List<SourceFile> copyFile(List<Path> src, Path target) throws IOException {
         final List<SourceFile> files = new ArrayList<>();
         for (Path srcPath : src) {
-            if (isAllowablePath(srcPath) && isAllowablePath(target)) {
+            if (isAllowableToAccess(srcPath) && isAllowableToAccess(target)) {
                 files.add(toSourceFile(
                         Files.copy(srcPath, target.resolve(srcPath.getFileName()))
                 ));
@@ -250,7 +243,7 @@ public class DefaultFileService implements FileService {
     @Override
     public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
         Path writeFilePath = null;
-        if (isAllowablePath(location)) {
+        if (isAllowableToAccess(location)) {
             if (null == writeMode) {
                 writeFilePath = Files.write(location, content);
             } else {
@@ -264,7 +257,7 @@ public class DefaultFileService implements FileService {
     @Override
     public SourceFile saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
         Path writeFilePath;
-        if (isAllowablePath(location)) {
+        if (isAllowableToAccess(location)) {
             if (null == writeMode) {
                 writeFilePath = Files.write(location, content);
             } else {
@@ -282,7 +275,7 @@ public class DefaultFileService implements FileService {
     public Template saveTemplateInGroup(Path template, String templateGroupName) throws IOException {
         final String templateName = template.getFileName().normalize().toString();
         final String originalTemplateName = getPathWithoutExtension(templateName);
-        if (isAllowablePath(template) && StringUtils.isNotBlank(templateName)) {
+        if (isAllowableToAccess(template) && StringUtils.isNotBlank(templateName)) {
             final TemplateJPA receivedTemplate = templateRepository.findByName(originalTemplateName);
             final TemplateGroupJPA receivedTemplateGroup = templateGroupRepository.findByName(templateGroupName);
             byte[] contentTemplate = Files.readAllBytes(template);
@@ -313,7 +306,7 @@ public class DefaultFileService implements FileService {
         final Path filePath = Paths.get(file.getFullPath());
         final String fileName = FilenameUtils.removeExtension(filePath.getFileName().normalize().toString());
 
-        if (isAllowablePath(filePath) && StringUtils.isNotBlank(fileName)) {
+        if (isAllowableToAccess(filePath) && StringUtils.isNotBlank(fileName)) {
             Path newSrcFilePath;
             if (isDirectory) {
                 newSrcFilePath = Files.createDirectory(filePath);
@@ -329,28 +322,8 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public void replaceTemplateFile(Path deletingTemplate, Path newTemplate) {
-        final String deleteTemplateName = deletingTemplate.getFileName().toString();
-        final String orgDeleteTemplateName = getPathWithoutExtension(deleteTemplateName);
-        final String newTemplateName = newTemplate.getFileName().toString();
-        final String orgNewTemplateName = getPathWithoutExtension(newTemplateName);
-        final Template deletedTemplate = templateRepository.findByName(orgDeleteTemplateName);
-        final Template replaceReceivedTemplate = templateRepository.findByName(orgNewTemplateName);
-        if (deletedTemplate != null && replaceReceivedTemplate != null) {
-            List<TextDocumentTemplateDTO> docsDeletedTemplate = textDocumentTemplateService.getByTemplateName(deleteTemplateName);
-
-            docsDeletedTemplate.forEach(textDoc -> {
-                textDoc.setTemplateName(orgNewTemplateName);
-                textDoc.setChildrenTemplateName(orgNewTemplateName);
-                textDocumentTemplateService.save(textDoc);
-            });
-
-            templateService.delete(deletedTemplate.getId());
-        } else {
-            final String errorMessage = "Template not exist " + orgDeleteTemplateName + " " + orgNewTemplateName;
-            log.error(errorMessage);
-            throw new EmptyResultDataAccessException(errorMessage, -1);
-        }
+    public void replaceDocsOnNewTemplate(Path oldTemplate, Path newTemplate) {
+        templateService.replaceTemplateFile(oldTemplate, newTemplate);
     }
 }
 

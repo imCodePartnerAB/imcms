@@ -71,13 +71,5 @@ public interface FileService {
 
     SourceFile createFile(SourceFile file, boolean isDirectory) throws IOException;
 
-    /**
-     * replaceTemplateFile provide replace all documents which uses old template on newTemplate!
-     * And also replaceTemplateFile don't delete path file in directory, it only delete template from group;
-     * if You want to delete everywhere template, you have to use @method - deleteFile
-     *
-     * @param oldTemplate - file template or data template which will delete
-     * @param newTemplate - file template or data template which will replace on
-     */
-    void replaceTemplateFile(Path oldTemplate, Path newTemplate);
+    void replaceDocsOnNewTemplate(Path oldTemplate, Path newTemplate);
 }
