@@ -75,6 +75,27 @@
     display: table-cell;
 }
 
+.imcms-modal-optional-window {
+    -webkit-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    -moz-box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    box-shadow: 0 0 29px 13px rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+    position: fixed;
+    top: -webkit-calc(50% - 250px);
+    top: -moz-calc(50% - 250px);
+    top: -ms-calc(50% - 250px);
+    top: -o-calc(50% - 250px);
+    top: calc(50% - 250px);
+    left: -webkit-calc(50% - 400px);
+    left: -moz-calc(50% - 400px);
+    left: -ms-calc(50% - 400px);
+    left: -o-calc(50% - 400px);
+    left: calc(50% - 400px);
+    width: 800px;
+    z-index: 65535;
+    background-color: #d9edf7;
+}
+
 .imcms-modal-body__content {
     margin-left: 5%
 }
@@ -94,6 +115,17 @@
     padding-left: 30px;
 }
 
+.imcms-modal-body__edit-content {
+    margin-left: 73%;
+}
+
+.imcms-modal-body__optional-box {
+    height: 200px;
+    margin: 0px 15px;
+    border: 1px solid gainsboro;
+    overflow-y: auto;
+    overflow-x: auto;
+}
 
 .imcms-modal-window--warning,
 .imcms-modal-window--error {
@@ -104,7 +136,8 @@
 
 .imcms-modal-window__modal-head,
 .imcms-edit-modal-window__modal-head,
-.imcms-create-modal-window__modal-head {
+.imcms-create-modal-window__modal-head,
+.imcms-modal-optional-window__modal-head {
     background-color: #389ecf;
 }
 
