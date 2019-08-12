@@ -1,13 +1,16 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.api.exception.AloneTemplateInDbException;
+import com.imcode.imcms.api.exception.AloneTemplateException;
 import com.imcode.imcms.domain.dto.TemplateDTO;
+import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
 import com.imcode.imcms.domain.service.TemplateService;
+import com.imcode.imcms.domain.service.TextDocumentTemplateService;
 import com.imcode.imcms.model.Template;
 import com.imcode.imcms.persistence.entity.TemplateJPA;
 import com.imcode.imcms.persistence.repository.TemplateRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,12 +36,15 @@ public class DefaultTemplateService implements TemplateService {
     private final TemplateRepository templateRepository;
     private final File templateDirectory;
     private final Set<String> templateExtensions = new HashSet<>(Arrays.asList("jsp", "jspx", "html"));
+    private final TextDocumentTemplateService textDocumentTemplateService;
 
     DefaultTemplateService(TemplateRepository templateRepository,
-                           @Value("WEB-INF/templates/text") File templateDirectory) {
+                           @Value("WEB-INF/templates/text") File templateDirectory,
+                           TextDocumentTemplateService textDocumentTemplateService) {
 
         this.templateRepository = templateRepository;
         this.templateDirectory = templateDirectory;
+        this.textDocumentTemplateService = textDocumentTemplateService;
     }
 
     @Override
@@ -102,7 +108,31 @@ public class DefaultTemplateService implements TemplateService {
         } else {
             String errorMessage = "Templates less then 1 count in db!";
             log.error(errorMessage);
-            throw new AloneTemplateInDbException(errorMessage);
+            throw new AloneTemplateException(errorMessage);
+        }
+    }
+
+    @Override
+    public void replaceTemplateFile(Path oldTemplate, Path newTemplate) {
+        final String deleteTemplateName = oldTemplate.getFileName().toString();
+        final String orgDeleteTemplateName = getPathWithoutExtension(deleteTemplateName);
+        final String newTemplateName = newTemplate.getFileName().toString();
+        final String orgNewTemplateName = getPathWithoutExtension(newTemplateName);
+        final Template deletedTemplate = templateRepository.findByName(orgDeleteTemplateName);
+        final Template replaceReceivedTemplate = templateRepository.findByName(orgNewTemplateName);
+        if (deletedTemplate != null && replaceReceivedTemplate != null) {
+            List<TextDocumentTemplateDTO> docsDeletedTemplate = textDocumentTemplateService.getByTemplateName(deleteTemplateName);
+
+            docsDeletedTemplate.forEach(textDoc -> {
+                textDoc.setTemplateName(orgNewTemplateName);
+                textDoc.setChildrenTemplateName(orgNewTemplateName);
+                textDocumentTemplateService.save(textDoc);
+            });
+
+        } else {
+            final String errorMessage = "Template not exist " + orgDeleteTemplateName + " " + orgNewTemplateName;
+            log.error(errorMessage);
+            throw new EmptyResultDataAccessException(errorMessage, -1);
         }
     }
 
@@ -153,6 +183,10 @@ public class DefaultTemplateService implements TemplateService {
         }
 
         return false;
+    }
+
+    private String getPathWithoutExtension(String fileName) {
+        return FilenameUtils.removeExtension(fileName);
     }
 
 }
