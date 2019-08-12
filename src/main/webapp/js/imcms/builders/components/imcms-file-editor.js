@@ -60,13 +60,14 @@ define(
         }
 
         function getDirPathByIndex(index) {
-            return getPathRowByIndex(index).text();
+            return getPathRowByIndex(index).attr('full-path');
         }
 
-        function createBackDir(currentPath) {
+        function createBackDir(fullPath, physicalPath) {
             return {
                 fileName: '/..',
-                fullPath: getDirPathFromFullPath(currentPath),
+                fullPath: getDirPathFromFullPath(fullPath, physicalPath),
+                physicalPath: getDirPathFromFullPath(physicalPath),
                 fileType: 'DIRECTORY'
             }
         }
@@ -524,10 +525,12 @@ define(
 
                 const index = getIndexOfSubFilesContainer($subFilesContainer);
 
-                getPathRowByIndex(index).text(path);
+                const pathRow = getPathRowByIndex(index);
+                pathRow.text(file.physicalPath);
+                pathRow.attr('full-path', path);
 
                 const transformFileToRow = fileToRow.transformFileToRow.bind({subFilesContainerIndex: index});
-                    $subFilesContainer.append(transformFileToRow(createBackDir(path), fileEditor));
+                $subFilesContainer.append(transformFileToRow(createBackDir(path, file.physicalPath), fileEditor));
 
                     files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
                 }
