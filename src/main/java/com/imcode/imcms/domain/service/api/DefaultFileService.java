@@ -100,8 +100,13 @@ public class DefaultFileService implements FileService {
         }
     }
 
+    private String getPhysicalPath(Path path) {
+        return path.toString().substring(rootPath.toString().length());
+    }
+
     private SourceFile toSourceFile(Path path) {
         final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
+        final String physicalPath = getPhysicalPath(path);
         List<String> contents;
         try {
             contents = Files.readAllLines(path);
@@ -109,7 +114,7 @@ public class DefaultFileService implements FileService {
             log.info("File has not content!!!");
             contents = null;
         }
-        return new SourceFile(path.getFileName().toString(), path.toString(), fileType, contents);
+        return new SourceFile(path.getFileName().toString(), physicalPath, path.toString(), fileType, contents);
     }
 
     private String getPathWithoutExtension(String fileName) {
