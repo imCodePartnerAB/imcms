@@ -13,6 +13,7 @@ import java.util.List;
 public class SourceFile implements Cloneable, Serializable {
 
     private String fileName;
+    private String physicalPath;
     private String fullPath;
     private FileType fileType;
     private List<String> contents;
