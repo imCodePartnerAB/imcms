@@ -8,6 +8,13 @@ define(
 
         texts = texts.modal;
 
+        function buildOkButton(callback) {
+            return components.buttons.positiveButton({
+                text: texts.ok,
+                click: callback
+            });
+        }
+
         function buildYesButton(callback) {
             return components.buttons.positiveButton({
                 text: texts.yes,
@@ -44,6 +51,17 @@ define(
                 block: "imcms-modal-footer",
                 elements: {
                     "button": [$yesButton, $noButton]
+                }
+            }).buildBlockStructure("<div>");
+        }
+
+        function buildOkFooter(onConfirmed) {
+            const $okButton = buildOkButton(onConfirmed);
+
+            return new BEM({
+                block: "imcms-modal-footer",
+                elements: {
+                    "button": [$okButton]
                 }
             }).buildBlockStructure("<div>");
         }
@@ -126,6 +144,15 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function buildViewBody(viewBox) {
+            return new BEM({
+                block: 'imcms-modal-body',
+                elements: {
+                    'view-box': viewBox
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function buildHTMLBody(htmlText) {
             return new BEM({
                 block: "imcms-modal-body",
@@ -179,6 +206,16 @@ define(
             }).buildBlockStructure("<div>");
         }
 
+        function createModalViewWindow(viewBox, onConfirmed) {
+            return new BEM({
+                block: 'imcms-modal-view-window',
+                elements: {
+                    "modal-body": buildViewBody(viewBox),
+                    "modal-footer": buildOkFooter(onConfirmed)
+                }
+            }).buildBlockStructure("<div>");
+        }
+
         function createModalWarningWindow(message, onConfirmed) {
             return new BEM({
                 block: "imcms-modal-window",
@@ -225,6 +262,11 @@ define(
             this.onConfirmed = this.buildOnDecide(true, callback);
             this.onDeclined = this.buildOnDecide(false, callback);
             this.$modal = createModalOptionalWindow(message, optionalBox, this.onConfirmed, this.onDeclined);
+        };
+
+        const ModalViewWindow = function (viewBox, callback) {
+            this.onConfirmed = this.confirmAction(callback);
+            this.$modal = createModalViewWindow(viewBox, this.onConfirmed);
         };
 
         const ModalWarningWindow = function (message, callback) {
@@ -284,17 +326,9 @@ define(
             };
         };
 
-        ModalErrorWindow.prototype = Object.create(ModalWindow.prototype);
-        ModalErrorWindow.prototype.confirmAction = function (callback) {
-            const context = this;
-            return () => {
-                if (callback) {
-                    callback();
-                }
-                context.closeModal();
-                return false;
-            };
-        };
+        ModalErrorWindow.prototype = Object.create(ModalWarningWindow.prototype);
+
+        ModalViewWindow.prototype = Object.create(ModalWarningWindow.prototype);
 
         function buildModalWindow(question, callback) {
             return new ModalWindow(question, callback)
@@ -320,11 +354,18 @@ define(
                 .appendTo($('body'));
         }
 
+        function buildViewModalWindow(viewBow, callback) {
+            return new ModalViewWindow(viewBow, callback)
+                .addShadow()
+                .appendTo($('body'));
+        }
+
         function buildWarningWindow(message, callback) {
             return new ModalWarningWindow(message, callback)
                 .addShadow()
                 .appendTo($("body"));
         }
+
         function buildErrorWindow(message, callback) {
             return new ModalErrorWindow(message, callback)
                 .addShadow()
@@ -336,6 +377,7 @@ define(
             buildWarningWindow,
             buildErrorWindow,
             buildOptionalModalWindow,
+            buildViewModalWindow,
             buildCreateFileModalWindow: buildCreateModalWindow,
             buildEditFileModalWindow: buildEditModalWindow,
             buildConfirmWindow: (question, onConfirm) => {
