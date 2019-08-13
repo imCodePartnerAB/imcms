@@ -232,6 +232,15 @@
     padding: 5px 10px;
 }
 
+.text-preview {
+    padding: 0;
+}
+
+.text-preview textarea {
+    width: 100%;
+    height: 100%;
+}
+
 .first-sub-files,
 .second-sub-files {
     height: 200px;
@@ -312,12 +321,6 @@
 .directory-row__edit,
 .directory-row__delete {
     width: 10%;
-}
-
-.template-row__download,
-.file-row__download {
-    display: flex;
-    justify-content: center;
 }
 
 .files-table__file-row--selected,
