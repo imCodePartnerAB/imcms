@@ -28,7 +28,8 @@
 .second-sub-files::-webkit-scrollbar-track,
 .templates-data::-webkit-scrollbar-track,
 .documents-data::-webkit-scrollbar-track,
-.imcms-modal-body__optional-box::-webkit-scrollbar-track {
+.imcms-modal-body__optional-box::-webkit-scrollbar-track,
+.imcms-modal-body__view-box::-webkit-scrollbar-track {
     background-color: transparent;
 }
 
@@ -36,16 +37,19 @@
 .second-sub-files::-webkit-scrollbar,
 .templates-data::-webkit-scrollbar,
 .documents-data::-webkit-scrollbar,
-.imcms-modal-body__optional-box::-webkit-scrollbar {
+.imcms-modal-body__optional-box::-webkit-scrollbar,
+.imcms-modal-body__view-box::-webkit-scrollbar {
     background-color: transparent;
     width: 6px;
+    height: 6px;
 }
 
 .first-sub-files::-webkit-scrollbar-thumb,
 .second-sub-files::-webkit-scrollbar-thumb,
 .templates-data::-webkit-scrollbar-thumb,
 .documents-data::-webkit-scrollbar-thumb,
-.imcms-modal-body__optional-box::-webkit-scrollbar-thumb {
+.imcms-modal-body__optional-box::-webkit-scrollbar-thumb,
+.imcms-modal-body__view-box::-webkit-scrollbar-thumb {
     background-color: #abacad;
 }
 
