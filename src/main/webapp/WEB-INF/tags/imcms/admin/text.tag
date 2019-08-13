@@ -112,7 +112,9 @@
         <c:set var="externalPart"
                value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-        ${pre}
+        <c:if test="${not empty placeholder}">
+            ${pre}
+        </c:if>
         <div class="imcms-editor-area imcms-editor-area--text">
             <c:if test="${not empty label}">
                 <div class="imcms-editor-area__text-label">${label}</div>
@@ -131,7 +133,9 @@
                 </div>
             </div>
         </div>
-        ${post}
+        <c:if test="${not empty placeholder}">
+            ${post}
+        </c:if>
     </c:if>
 </c:if>
 
