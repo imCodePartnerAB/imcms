@@ -39,53 +39,37 @@ define(
                     return new BEM({
                         block: "template-row",
                         elements: {
-                            'file-name': $('<div>', {
-                                text: file.fileName
-                            }),
+                            'file-name': $('<div>', {text: file.fileName}),
                             'add-to-group': components.controls.plus(fileEditor.addTemplateToGroup).attr("title", texts.addToGroup),
-                            'download': $('<a>', {
-                                html: components.controls.download(),
-                                href: imcms.contextPath + contextUrl + file.fullPath,
-                                title: texts.download
-                            }),
+                            'download': components.controls.download(() => fileEditor.downloadFile(file)).attr('title', texts.download),
                             'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file.fileType === 'FILE') {
                     return new BEM({
                         block: "file-row",
                         elements: {
-                            'file-name': $('<div>', {
-                                text: file.fileName
-                            }),
-                            'download': $('<a>', {
-                                html: components.controls.download(),
-                                href: imcms.contextPath + contextUrl + file.fullPath,
-                                title: texts.download
-                            }),
+                            'file-name': $('<div>', {text: file.fileName}),
+                            'download': components.controls.download(() => fileEditor.downloadFile(file)).attr('title', texts.download),
                             'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file.fileType === 'DIRECTORY' && file.fileName === "/..") {
                     return new BEM({
                         block: "directory-row",
                         elements: {
-                            'file-name': $('<div>', {
-                                text: file.fileName
-                            }),
+                            'file-name': $('<div>', {text: file.fileName}),
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else {
                     return new BEM({
                         block: "directory-row",
                         elements: {
-                            'file-name': $('<div>', {
-                                text: file.fileName
-                            }),
+                            'file-name': $('<div>', {text: file.fileName}),
                             'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                         }
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 }
@@ -102,10 +86,8 @@ define(
                 return new BEM({
                     block: 'root-directory-row',
                     elements: {
-                        'file-name': $('<div>', {
-                            text: file.fileName,
-                        }),
-                        'delete': components.controls.remove(fileEditor.deleteFile).attr("title", texts.delete)
+                        'file-name': $('<div>', {text: file.fileName}),
+                        'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                     },
                 }).buildBlockStructure("<div>", infoRowAttributes);
             },

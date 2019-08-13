@@ -2,10 +2,13 @@ define(
     'imcms-file-editor',
     ['imcms-modal-window-builder', 'imcms-i18n-texts', 'imcms-bem-builder', 'imcms-components-builder',
         'imcms-files-rest-api', 'imcms-file-to-row-transformer', 'jquery', 'imcms-document-transformer',
-        'imcms-template-groups-rest-api', "imcms-templates-rest-api", 'imcms-super-admin-page-builder', 'imcms'],
-    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, groupsRestApi, templatesRestApi) {
+        'imcms-template-groups-rest-api', "imcms-templates-rest-api", 'imcms', 'imcms-super-admin-page-builder'],
+    function (modal, texts, BEM, components, fileRestApi, fileToRow, $, docToRow, groupsRestApi, templatesRestApi, imcms) {
 
         texts = texts.superAdmin.files;
+
+        const CONTEXT_URL = '/api/files/file/';
+        const FILE_SRC_URL = imcms.contextPath + CONTEXT_URL;
 
         const selectedFileHighlightingClassName = 'files-table__file-row--selected';
         const selectedDirHighlightingClassName = 'files-table__directory-row--selected';
@@ -538,12 +541,51 @@ define(
         }
 
         function onFileDblClick(file) {
+            const fileName = file.fileName;
 
+            if (isImage(fileName)) {
+                const $image = fileToImgElement(file);
+                const $imageContainer = $('<div>');
+                $imageContainer.append($image);
+
+                modal.buildViewModalWindow($imageContainer);
+            } else if (isTextFormat(fileName)) {
+                const $textViewBox = fileToTextView(file);
+
+                modal.buildViewModalWindow($textViewBox);
+            } else {
+                downloadFile(file);
+            }
+        }
+
+        function isImage(fileName) {
+            const pattern = new RegExp('.(GIF|JPE?G|PNG)$', 'gi');
+            return pattern.test(fileName);
+        }
+
+        function isTextFormat(fileName) {
+            const pattern = new RegExp('.(HTML?|CSS|JS|VBS|TXT|INC|JSP|ASP|FRAG|LOG)$', 'gi');
+            return pattern.test(fileName);
         }
 
         function isTemplate(fileName) {
-            const templatePattern = new RegExp('.(JSP|HTML)$', 'gi');
-            return templatePattern.test(fileName);
+            const pattern = new RegExp('.(JSP|HTML)$', 'gi');
+            return pattern.test(fileName);
+        }
+
+        function fileToImgElement(file) {
+            return $('<img>').attr('src', FILE_SRC_URL + file.fullPath);
+        }
+
+        function fileToTextView(file) {
+            const $textArea = components.texts.textAreaField('<div>', {readonly: 'readonly'});
+            $textArea.addClass('text-preview');
+            $textArea.setValue(file.contents.join("\n"));
+            return $textArea;
+        }
+
+        function downloadFile(file) {
+            window.location.replace(FILE_SRC_URL + file.fullPath);
         }
 
         function onTemplateClick(file) {
@@ -667,19 +709,18 @@ define(
             }).fail(() => modal.buildErrorWindow(texts.error.renameFailed));
         }
 
-        function deleteFile() {
+        function deleteFile(file) {
             modal.buildModalWindow(texts.warnDeleteMessage, confirmed => {
                 if (!confirmed) return;
 
                 let sourceFile = {
-                    fileName: currentFile.fileName,
-                    fullPath: currentFile.fullPath
+                    fileName: file.fileName,
+                    fullPath: file.fullPath
                 };
 
                 fileRestApi.deleteFile(sourceFile).done(() => {
                     $documentsContainer.remove();
                     $fileSourceRow.remove();
-                    currentFile = null;
 
                     if ($templatesTable.css('display') !== 'none') {
                         fillTemplatesTableByTemplateGroup($templateGroupSelect.selectedText());
@@ -911,6 +952,7 @@ define(
             bindMoveFile,
             bindCopyFile,
             deleteFile,
+            downloadFile,
             getTemplateGroupEditor,
             addTemplateToGroup,
             displayDocs: buildDocumentsContainer,
