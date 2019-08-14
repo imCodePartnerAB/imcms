@@ -80,7 +80,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         templateDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
         testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
-        Files.deleteIfExists(templateDirectory.resolve(testTemplateName));
+        Files.deleteIfExists(templateDirectory.resolve(testFileName));
     }
 
     private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
