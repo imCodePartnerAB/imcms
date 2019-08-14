@@ -24,16 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
@@ -58,7 +50,7 @@ public class DefaultFileService implements FileService {
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> rootPaths;
 
-    @Value(".")
+    @Value("${rootPath}")
     private Path rootPath;
 
     @Autowired
@@ -101,7 +93,7 @@ public class DefaultFileService implements FileService {
     }
 
     private String getPhysicalPath(Path path) {
-        return path.toString().substring(rootPath.toString().length());
+        return path.toAbsolutePath().toString().substring(rootPath.toString().length());
     }
 
     private SourceFile toSourceFile(Path path) {
