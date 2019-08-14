@@ -1,9 +1,8 @@
 define(
-    'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts', 'imcms'],
-    function (BEM, $, components, texts, imcms) {
+    'imcms-file-to-row-transformer', ['imcms-bem-builder', 'jquery', 'imcms-components-builder', 'imcms-i18n-texts'],
+    function (BEM, $, components, texts) {
 
         texts = texts.superAdmin.files.title;
-        const contextUrl = '/api/files/file/';
 
         function getOnFileDblClicked(file, buildViewFunc) {
             return function () {
@@ -28,7 +27,6 @@ define(
                 const buildViewFunc = fileEditor.bindViewSubFilesContainer(this.subFilesContainerIndex);
 
                 const infoRowAttributes = {
-                    name: file.fileName,
                     dblclick: getOnFileDblClicked(file, buildViewFunc),
                     click: getOnFileClicked(file, buildViewFunc),
                 };
@@ -67,7 +65,7 @@ define(
                     return new BEM({
                         block: "directory-row",
                         elements: {
-                            'file-name': $('<div>', {text: file.fileName}),
+                            'file-name': $('<div>', {text: file.fileName + '/'}),
                             'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
                             'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                         }
@@ -77,8 +75,7 @@ define(
             transformRootDirToRow: function (file, fileEditor) {
                 const buildViewFunc = fileEditor.bindViewSubFilesContainer(this.subFilesContainerIndex);
 
-                let infoRowAttributes = {
-                    name: file.fileName,
+                const infoRowAttributes = {
                     dblclick: getOnFileDblClicked(file, buildViewFunc),
                     click: getOnFileClicked(file, buildViewFunc)
                 };
@@ -86,7 +83,7 @@ define(
                 return new BEM({
                     block: 'root-directory-row',
                     elements: {
-                        'file-name': $('<div>', {text: file.fileName}),
+                        'file-name': $('<div>', {text: file.fileName + '/'}),
                         'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                     },
                 }).buildBlockStructure("<div>", infoRowAttributes);

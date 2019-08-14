@@ -149,11 +149,17 @@ define(
             style: 'display: none'
         });
 
+        const $docsNumberLabel = $('<div>', {
+            class: 'imcms-label',
+            style: 'display: none',
+        });
+
         function buildDocumentsContainer() {
             $documentsContainer = new BEM({
                 block: 'table-documents',
                 elements: {
-                    'loading-animation': $loadingAnimation
+                    'loading-animation': $loadingAnimation,
+                    'docs-number': $docsNumberLabel,
                 }
             }).buildBlockStructure('<div>');
 
@@ -600,6 +606,9 @@ define(
                     $documentsContainer.find('.documents-data').remove();
 
                     if (documents.length > 0) {
+                        $docsNumberLabel.show();
+                        $docsNumberLabel.text(texts.documentData.docsNumber + documents.length);
+
                         const $documentsData = $('<div>').addClass('documents-data');
                         $documentsData.append(buildTitleRow());
 
@@ -607,8 +616,11 @@ define(
                         $documentsData.append(documentsRows);
 
                         $documentsContainer.append($documentsData).show();
+                    } else {
+                        $docsNumberLabel.hide();
                     }
-                    $loadingAnimation.hide();
+
+                $loadingAnimation.hide();
                 }
             ).fail(() => modal.buildErrorWindow(texts.error.loadDocError));
         }

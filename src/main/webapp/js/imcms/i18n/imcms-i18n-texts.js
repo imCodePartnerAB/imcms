@@ -573,8 +573,8 @@ const texts = {
                     download: 'Ladda ner',
                     edit: 'Redigera',
                     addToGroup: 'Lägg till i gruppen',
-                    titleByMove: 'Knappar för flyttfil',
-                    titleByCopy: 'Knappar för kopieringsfilen',
+                    titleByMove: 'Flytta fil',
+                    titleByCopy: 'Kopiera fil',
                     titleContent: 'Filinnehåll',
                     titleEditContent: 'Redigera filinnehåll!',
                     replaceTemplate: 'Välj mall'
@@ -603,6 +603,7 @@ const texts = {
                 documentData: {
                     docId: 'Dokument-id',
                     docType: 'Dokumenttyp',
+                    docsNumber: 'Antal dokument: ',
                 },
                 groupData: {
                     title: 'Mallgrupp',
@@ -1364,6 +1365,7 @@ const texts = {
                 documentData: {
                     docId: 'Document id',
                     docType: 'Document Type',
+                    docsNumber: 'Number of documents: ',
                 },
                 groupData: {
                     title: 'Template group',
