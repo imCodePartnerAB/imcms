@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -55,27 +56,11 @@ public class FileControllerTest extends AbstractControllerTest {
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
+    @Value("WEB-INF/templates/text")
+    private Path templateDirectory;
+
     @Value("${rootPath}")
     private Path rootPath;
-
-    private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
-        return new SourceFile(
-                filePath.getFileName().toString(),
-                getRelatedPath(filePath),
-                filePath.toString(),
-                fileType,
-                fileType == DIRECTORY ? null : Collections.EMPTY_LIST
-        );
-    }
-
-    private SourceFile toSourceFile(Path filePath) {
-        final SourceFile.FileType fileType = filePath.toFile().isDirectory() ? DIRECTORY : FILE;
-        return toSourceFile(filePath, fileType);
-    }
-
-    private String getRelatedPath(Path path) {
-        return path.toAbsolutePath().toString().substring(rootPath.toString().length());
-    }
 
     @Autowired
     private FileController fileController;
@@ -91,9 +76,10 @@ public class FileControllerTest extends AbstractControllerTest {
 
     @BeforeEach
     @AfterEach
-    public void setUp() {
+    public void setUp() throws IOException {
         templateDataInitializer.cleanRepositories();
         testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
+        Files.deleteIfExists(templateDirectory.resolve(testTemplateName));
     }
 
     @Override
@@ -533,5 +519,24 @@ public class FileControllerTest extends AbstractControllerTest {
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
 
         Files.delete(pathTemplateFile);
+    }
+
+    private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
+        return new SourceFile(
+                filePath.getFileName().toString(),
+                getRelatedPath(filePath),
+                filePath.toString(),
+                fileType,
+                fileType == DIRECTORY ? null : Collections.EMPTY_LIST
+        );
+    }
+
+    private SourceFile toSourceFile(Path filePath) {
+        final SourceFile.FileType fileType = filePath.toFile().isDirectory() ? DIRECTORY : FILE;
+        return toSourceFile(filePath, fileType);
+    }
+
+    private String getRelatedPath(Path path) {
+        return path.toAbsolutePath().toString().substring(rootPath.toString().length());
     }
 }

@@ -25,7 +25,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -63,15 +68,19 @@ public class FileServiceTest extends WebAppSpringTestConfig {
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
+    @Value("WEB-INF/templates/text")
+    private Path templateDirectory;
+
     @Value("${rootPath}")
     private Path rootPath;
 
     @BeforeEach
     @AfterEach
-    public void setUp() {
+    public void setUp() throws IOException {
         templateDataInitializer.cleanRepositories();
         documentDataInitializer.cleanRepositories();
         testRootPaths.stream().map(Path::toFile).forEach(FileUtils::deleteRecursive);
+        Files.deleteIfExists(templateDirectory.resolve(testTemplateName));
     }
 
     private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
