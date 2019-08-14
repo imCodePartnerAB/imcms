@@ -56,6 +56,28 @@ public class FileControllerTest extends AbstractControllerTest {
     @Value("#{'${FileAdminRootPaths}'.split(';')}")
     private List<Path> testRootPaths;
 
+    @Value("${rootPath}")
+    private Path rootPath;
+
+    private SourceFile toSourceFile(Path filePath, SourceFile.FileType fileType) {
+        return new SourceFile(
+                filePath.getFileName().toString(),
+                getRelatedPath(filePath),
+                filePath.toString(),
+                fileType,
+                fileType == DIRECTORY ? null : Collections.EMPTY_LIST
+        );
+    }
+
+    private SourceFile toSourceFile(Path filePath) {
+        final SourceFile.FileType fileType = filePath.toFile().isDirectory() ? DIRECTORY : FILE;
+        return toSourceFile(filePath, fileType);
+    }
+
+    private String getRelatedPath(Path path) {
+        return path.toAbsolutePath().toString().substring(rootPath.toString().length());
+    }
+
     @Autowired
     private FileController fileController;
 
@@ -210,11 +232,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         assertFalse(Files.exists(pathFile));
 
-        SourceFile sourceFile = new SourceFile(
-                pathFile.getFileName().toString(),
-                pathFile.toString(),
-                FILE,
-                Collections.EMPTY_LIST);
+        SourceFile sourceFile = toSourceFile(pathFile, FILE);
 
         performPostWithContentExpectOk(sourceFile);
 
@@ -229,11 +247,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Files.createDirectory(firstRootPath);
 
-        SourceFile sourceFile = new SourceFile(
-                pathDir.getFileName().toString(),
-                pathDir.toString(),
-                DIRECTORY,
-                null);
+        SourceFile sourceFile = toSourceFile(pathDir, DIRECTORY);
 
         assertFalse(Files.exists(pathDir));
         performPostWithContentExpectOk(sourceFile);
@@ -279,9 +293,7 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createDirectory(firstRootPath);
         Files.createFile(pathFile);
 
-        final SourceFile file = new SourceFile(
-                pathFile.getFileName().toString(), pathFile.toString(), FILE, Collections.EMPTY_LIST
-        );
+        final SourceFile file = toSourceFile(pathFile);
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(file);
 
@@ -297,9 +309,7 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Files.createDirectories(pathDir);
 
-        final SourceFile directory = new SourceFile(
-                pathDir.getFileName().toString(), pathDir.toString(), DIRECTORY, null
-        );
+        final SourceFile directory = toSourceFile(pathDir);
 
         final MockHttpServletRequestBuilder requestBuilder = getDeleteRequestBuilderWithContent(directory);
 
