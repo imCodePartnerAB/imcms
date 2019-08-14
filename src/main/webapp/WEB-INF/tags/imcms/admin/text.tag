@@ -1,4 +1,4 @@
-
+<%@ tag import="imcode.server.Imcms" %>
 <%@ tag trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -14,6 +14,7 @@
 <%@ attribute name="pre" required="false" %>
 <%@ attribute name="post" required="false" %>
 <%@ attribute name="showlabel" required="false" %>
+<%@ attribute name="showEditToSuperAdmin" required="false" %>
 
 <c:if test="${!isDocNew || editOptions.editText}">
     <c:if test="${empty index}">
@@ -115,24 +116,42 @@
         <c:if test="${not empty placeholder}">
             ${pre}
         </c:if>
-        <div class="imcms-editor-area imcms-editor-area--text">
-            <c:if test="${not empty label}">
-                <div class="imcms-editor-area__text-label">${label}</div>
-            </c:if>
-            <div class="imcms-editor-area__text-toolbar"></div>
-            <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
-            data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
-            data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
+
+        <%--fixed scripled use, maybe use something else ? --%>
+        <c:set var="isSuperAdmin" value="<%=Imcms.getUser().isSuperAdmin()%>"/>
+
+        <c:if test="${showEditToSuperAdmin.equals('true') && !isSuperAdmin}">
             <c:if test="${not empty content}">
-                    ${content}
+                <c:if test="${'text'.equalsIgnoreCase(type)}">
+                    <c:set var="newLine" value="\n"/>
+                    <c:set var="content" value="${content.replaceAll(newLine, '<br>')}"/>
+                </c:if>
+                ${pre}${content}${post}
             </c:if>
-                ${tagEnd}
-            <div class="imcms-editor-area__control-wrap">
-                <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
-                    <div class="imcms-editor-area__control-title">${editingLabel}</div>
+            <c:if test="${empty content}">
+                ${placeholder}
+            </c:if>
+        </c:if>
+        <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
+            <div class="imcms-editor-area imcms-editor-area--text">
+                <c:if test="${not empty label}">
+                    <div class="imcms-editor-area__text-label">${label}</div>
+                </c:if>
+                <div class="imcms-editor-area__text-toolbar"></div>
+                <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
+                data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
+                data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
+                <c:if test="${not empty content}">
+                    ${content}
+                </c:if>
+                    ${tagEnd}
+                <div class="imcms-editor-area__control-wrap">
+                    <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
+                        <div class="imcms-editor-area__control-title">${editingLabel}</div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </c:if>
         <c:if test="${not empty placeholder}">
             ${post}
         </c:if>

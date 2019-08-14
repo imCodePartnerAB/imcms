@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,7 +111,7 @@ public class FileControllerTest extends AbstractControllerTest {
         Files.createFile(pathFile);
 
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(
+        final MockHttpServletRequestBuilder requestBuilder = get(
                 controllerPath() + pathDir);
 
         performRequestBuilderExpectedOk(requestBuilder);
@@ -132,13 +131,13 @@ public class FileControllerTest extends AbstractControllerTest {
 
         Files.createDirectory(firstRootPath);
 
-        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + testPath.toString());
-        final MockHttpServletRequestBuilder requestBuilder2 = MockMvcRequestBuilders.get(controllerPath() + testPath2.toString());
-        final MockHttpServletRequestBuilder requestBuilder3 = MockMvcRequestBuilders.get(controllerPath() + testPath3.toString());
-        final MockHttpServletRequestBuilder requestBuilder4 = MockMvcRequestBuilders.get(controllerPath() + testPath4.toString());
-        final MockHttpServletRequestBuilder requestBuilder5 = MockMvcRequestBuilders.get(controllerPath() + testPath5.toString());
-        final MockHttpServletRequestBuilder requestBuilder6 = MockMvcRequestBuilders.get(controllerPath() + testPath6.toString());
-        final MockHttpServletRequestBuilder requestBuilder7 = MockMvcRequestBuilders.get(controllerPath() + testPath7.toString());
+        final MockHttpServletRequestBuilder requestBuilder = get(controllerPath() + testPath.toString());
+        final MockHttpServletRequestBuilder requestBuilder2 = get(controllerPath() + testPath2.toString());
+        final MockHttpServletRequestBuilder requestBuilder3 = get(controllerPath() + testPath3.toString());
+        final MockHttpServletRequestBuilder requestBuilder4 = get(controllerPath() + testPath4.toString());
+        final MockHttpServletRequestBuilder requestBuilder5 = get(controllerPath() + testPath5.toString());
+        final MockHttpServletRequestBuilder requestBuilder6 = get(controllerPath() + testPath6.toString());
+        final MockHttpServletRequestBuilder requestBuilder7 = get(controllerPath() + testPath7.toString());
 
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
         performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder2);

@@ -78,8 +78,8 @@
         <imcms:text no="6" label="HTML format 1 row example" formats="html" rows="1" post="<br/>" placeholder="text2"/>
 
         <br/>
-        <div>Text editor, rows="1" example:</div>
-        <imcms:text no="7" label="1 row text example" formats="text" post="<br/>" rows="1"/>
+        <div>Text editor, rows="1" with param showEditToSuperAdmin=true example:</div>
+        <imcms:text no="7" label="1 row text example" formats="text" post="<br/>" rows="1" showEditToSuperAdmin="true"/>
 
         <br/>
         <div>Text for doc 1001:</div>
