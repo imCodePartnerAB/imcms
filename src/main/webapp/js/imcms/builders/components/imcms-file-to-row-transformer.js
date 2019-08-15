@@ -31,17 +31,17 @@ define(
                     click: getOnFileClicked(file, buildViewFunc),
                 };
 
-                const templatePattern = new RegExp('.(JSP|HTML)$', 'gi');
+                // const templatePattern = new RegExp('.(JSP|HTML)$', 'gi');
 
-                if (file.fileType === 'FILE' && templatePattern.test(file.fullPath)) {
+                if (file.fileType === 'FILE' /*&& templatePattern.test(file.fullPath)*/) {
                     return new BEM({
                         block: "template-row",
                         elements: {
                             'file-name': $('<div>', {text: file.fileName}),
-                            'add-to-group': components.controls.plus(fileEditor.addTemplateToGroup).attr("title", texts.addToGroup),
-                            'download': components.controls.download(() => fileEditor.downloadFile(file)).attr('title', texts.download),
-                            'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
-                            'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
+                            // 'add-to-group': components.controls.plus(fileEditor.addTemplateToGroup).attr("title", texts.addToGroup),
+                            // 'download': components.controls.download(() => fileEditor.downloadFile(file)).attr('title', texts.download),
+                            // 'edit': components.controls.edit(fileEditor.bindEditFile(this.subFilesContainerIndex)).attr("title", texts.edit),
+                            // 'delete': components.controls.remove(() => fileEditor.deleteFile(file)).attr("title", texts.delete)
                         },
                     }).buildBlockStructure("<div>", infoRowAttributes);
                 } else if (file.fileType === 'FILE') {
