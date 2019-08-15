@@ -11,7 +11,7 @@ module.exports = new WindowTabsBuilder({
         require('imcms-roles-tab-builder'),
         require('imcms-ip-access-tab-builder'),
         require('imcms-delete-docs-tab-builder'),
-        require('imcms-templates-admin-tab-builder'),
+        require('imcms-data-version-admin-tab-builder'),
         require('imcms-files-tab-builder'),
         require('imcms-link-validator-tab-builder'),
         require('imcms-categories-admin-tab-builder'),

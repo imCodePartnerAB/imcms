@@ -546,8 +546,8 @@ const texts = {
                 deleteConfirmation: 'VARNING: Dokumentet och dess data kommer att raderas. Är du säker?',
                 deleteDocButton: 'Radera!'
             },
-            templates: {
-                name: 'Mallar'
+            dataVersion: {
+                name: 'Data-Version'
             },
             files: {
                 name: 'Filer',
@@ -1308,8 +1308,8 @@ const texts = {
                 deleteConfirmation: 'WARNING: Document and it\'s data will be deleted. Are you sure?',
                 deleteDocButton: 'Delete!'
             },
-            templates: {
-                name: 'Templates'
+            dataVersion: {
+                name: 'Data-Version'
             },
             files: {
                 name: 'Files',

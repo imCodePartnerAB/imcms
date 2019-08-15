@@ -3,11 +3,11 @@
  * 23.06.18
  */
 define(
-    'imcms-templates-admin-tab-builder',
+    'imcms-data-version-admin-tab-builder',
     ['imcms-super-admin-tab', 'imcms-i18n-texts'],
     function (SuperAdminTab, texts) {
 
-        texts = texts.superAdmin.templates;
+        texts = texts.superAdmin.dataVersion;
 
         return new SuperAdminTab(texts.name, []);
     }

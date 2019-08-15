@@ -150,7 +150,7 @@ module.exports = {
                                 'imcms-roles-tab-builder',
                                 'imcms-ip-access-tab-builder',
                                 'imcms-delete-docs-tab-builder',
-                                'imcms-templates-admin-tab-builder',
+                                'imcms-data-version-admin-tab-builder',
                                 'imcms-files-tab-builder',
                                 'imcms-link-validator-tab-builder',
                                 'imcms-categories-admin-tab-builder',
