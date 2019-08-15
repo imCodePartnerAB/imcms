@@ -560,7 +560,7 @@ const texts = {
                 moveLeft: 'Flytta vänster',
                 copyRight: 'Kopiera till höger',
                 copyLeft: 'Kopiera till vänster',
-                warnChangeMessage: 'Vill du verkligen ändra fil?',
+                warnChangeMessage: 'Vill du verkligen redigera?',
                 warnDeleteMessage: 'Ta du verkligen bort fil?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
