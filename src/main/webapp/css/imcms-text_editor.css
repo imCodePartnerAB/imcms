@@ -245,6 +245,7 @@
 .imcms-editor-content--text {
     font-family: Verdana, sans-serif;
     font-size: 14px;
+    color: #000000;
 }
 
 textarea.imcms-editor-content--text[data-type="TEXT"],
