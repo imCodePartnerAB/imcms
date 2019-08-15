@@ -527,6 +527,8 @@ define(
             const path = file.fullPath;
 
             fileRestApi.get(path).done(files => {
+                console.log('Request done.');
+
                 const $subFilesContainer = $('<div>').addClass(this.subFilesClassName);
                     const $filesContainer = $('.' + this.columnClassName);
                     $filesContainer.find('.' + this.subFilesClassName).remove();
@@ -541,7 +543,9 @@ define(
                 const transformFileToRow = fileToRow.transformFileToRow.bind({subFilesContainerIndex: index});
                 $subFilesContainer.append(transformFileToRow(createBackDir(path, file.physicalPath), fileEditor));
 
+                console.log('Start transform files.');
                     files.forEach(file => integrateFileInContainerAsRow(file, $subFilesContainer, transformFileToRow));
+                console.log('Finished transform files.');
                 }
             ).fail(() => modal.buildErrorWindow(texts.error.loadError));
         }
