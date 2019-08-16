@@ -24,8 +24,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.api.SourceFile.FileType.DIRECTORY;
@@ -96,12 +104,12 @@ public class DefaultFileService implements FileService {
         return path.toAbsolutePath().toString().substring(rootPath.toString().length());
     }
 
-    private SourceFile toSourceFile(Path path) {
+    private SourceFile toSourceFile(Path path, boolean withContent) {
         final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
         final String physicalPath = getPhysicalPath(path);
-        List<String> contents;
+        List<String> contents = fileType == DIRECTORY ? null : Collections.EMPTY_LIST;
         try {
-            contents = Files.readAllLines(path);
+            if (withContent) contents = Files.readAllLines(path);
         } catch (IOException e) {
             log.info("File has not content!!!");
             contents = null;
@@ -117,7 +125,7 @@ public class DefaultFileService implements FileService {
     public List<SourceFile> getRootFiles() {
         return rootPaths.stream()
                 .filter(path -> Files.exists(Paths.get(path.toString())))
-                .map(this::toSourceFile)
+                .map(path -> toSourceFile(path, false))
                 .collect(Collectors.toList());
     }
 
@@ -131,15 +139,15 @@ public class DefaultFileService implements FileService {
             paths = Collections.EMPTY_LIST;
         }
         return paths.stream()
-                .map(this::toSourceFile)
+                .map(filePath -> toSourceFile(filePath, false))
                 .sorted(Comparator.comparing(SourceFile::getFileType))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public Path getFile(Path file) throws IOException {
+    public SourceFile getFile(Path file) throws IOException {
         if (isAllowableToAccess(file) && Files.exists(file)) {
-            return file;
+            return toSourceFile(file, true);
         } else {
             log.error("File doesn't exist: " + file);
             throw new NoSuchFileException("File is not exist!");
@@ -188,7 +196,7 @@ public class DefaultFileService implements FileService {
         for (Path srcPath : src) {
             if (isAllowableToAccess(srcPath) && isAllowableToAccess(target)) {
                 files.add(toSourceFile(
-                        Files.move(srcPath, target.resolve(srcPath.getFileName()))
+                        Files.move(srcPath, target.resolve(srcPath.getFileName())), false
                 ));
             }
         }
@@ -217,7 +225,7 @@ public class DefaultFileService implements FileService {
                 templateRepository.saveAndFlush(modelMapper.map(receivedTemplate, TemplateJPA.class));
             }
             final Path path = Files.move(src, target);
-            return toSourceFile(path);
+            return toSourceFile(path, false);
         } else {
             final String errorMessage = "File couldn't has empty Name !";
             log.error(errorMessage);
@@ -231,7 +239,7 @@ public class DefaultFileService implements FileService {
         for (Path srcPath : src) {
             if (isAllowableToAccess(srcPath) && isAllowableToAccess(target)) {
                 files.add(toSourceFile(
-                        Files.copy(srcPath, target.resolve(srcPath.getFileName()))
+                        Files.copy(srcPath, target.resolve(srcPath.getFileName())), false
                 ));
             }
         }
@@ -249,7 +257,7 @@ public class DefaultFileService implements FileService {
             }
         }
 
-        return toSourceFile(writeFilePath);
+        return toSourceFile(writeFilePath, true);
     }
 
     @Override
@@ -261,7 +269,7 @@ public class DefaultFileService implements FileService {
             } else {
                 writeFilePath = Files.write(location, content, writeMode);
             }
-            return toSourceFile(writeFilePath);
+            return toSourceFile(writeFilePath, true);
         } else {
             final String errorMessage = "File name is empty! Can't save empty file name!";
             log.error(errorMessage);
@@ -311,7 +319,7 @@ public class DefaultFileService implements FileService {
             } else {
                 newSrcFilePath = Files.createFile(filePath);
             }
-            return toSourceFile(newSrcFilePath);
+            return toSourceFile(newSrcFilePath, false);
         } else {
             final String errorMessage = "File name is empty! Can't create empty file name!";
             log.error(errorMessage);
