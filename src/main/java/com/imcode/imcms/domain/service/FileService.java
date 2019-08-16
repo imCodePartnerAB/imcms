@@ -15,7 +15,7 @@ public interface FileService {
 
     List<SourceFile> getFiles(Path file) throws IOException;
 
-    Path getFile(Path file) throws IOException;
+    SourceFile getFile(Path file) throws IOException;
 
     List<DocumentDTO> getDocumentsByTemplatePath(Path template) throws IOException;
 

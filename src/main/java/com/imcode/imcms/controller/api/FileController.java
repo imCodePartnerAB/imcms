@@ -91,12 +91,12 @@ public class FileController {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");
         final Path pathFile = Paths.get(getDecodePath(fileURI));
         byte[] content = Files.readAllBytes(pathFile);
-        final Path path = defaultFileService.getFile(pathFile);
+        final SourceFile sourceFile = defaultFileService.getFile(pathFile);
 
         return ResponseEntity.ok()
                 .contentLength(content.length)
-                .header(HttpHeaders.CONTENT_TYPE, new MimetypesFileTypeMap().getContentType(path.toFile()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + path.getFileName())
+                .header(HttpHeaders.CONTENT_TYPE, new MimetypesFileTypeMap().getContentType(sourceFile.getFullPath()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + sourceFile.getFileName())
                 .body(content);
     }
 
@@ -140,7 +140,7 @@ public class FileController {
 
     @PutMapping("/**")
     public SourceFile saveFile(@RequestBody Properties propertiesFile) throws IOException {
-        final Path path = defaultFileService.getFile(Paths.get(propertiesFile.getProperty("fullPath")));
+        final Path path = Paths.get(propertiesFile.getProperty("fullPath"));
         final String newContent = propertiesFile.getProperty("content");
         return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
     }
