@@ -40,7 +40,7 @@
         ${pre}${content}${post}
     </c:if>
     <c:if test="${empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">
-        ${placeholder}
+        ${pre}${placeholder}${post}
     </c:if>
 
     <c:if test="${isEditMode and editOptions.editText and mode ne 'read'}">
@@ -129,7 +129,7 @@
                 ${pre}${content}${post}
             </c:if>
             <c:if test="${empty content}">
-                ${placeholder}
+                ${pre}${placeholder}${post}
             </c:if>
         </c:if>
         <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
