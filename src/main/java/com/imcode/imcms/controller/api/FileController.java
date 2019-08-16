@@ -86,6 +86,11 @@ public class FileController {
         return files;
     }
 
+    @GetMapping("/get-file")
+    public SourceFile getFile(@RequestParam Path path) throws IOException {
+        return defaultFileService.getFile(path);
+    }
+
     @GetMapping("/file/**")
     public ResponseEntity<byte[]> downloadFile(HttpServletRequest request) throws IOException {
         final String fileURI = getFileName(request.getRequestURI(), "/file/");

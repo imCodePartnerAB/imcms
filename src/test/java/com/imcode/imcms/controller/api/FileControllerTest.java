@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
@@ -88,6 +89,37 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void getFile_When_FilesExist_Expected_HttpStatusOkAndCorrectFile() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        final SourceFile sourceFileTest = toSourceFile(pathFile);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/get-file")
+                .param("path", pathFile.toString());
+
+        performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(sourceFileTest));
+    }
+
+    @Test
+    public void getFile_When_FilesInOutSideRootDir_Expected_CorrectException() throws Exception {
+        final Path firstRootPath = testRootPaths.get(0);
+        final Path pathFile = firstRootPath.getParent().resolve(testFileName);
+
+        Files.createDirectory(firstRootPath);
+        Files.createFile(pathFile);
+
+        final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath() + "/get-file")
+                .param("path", pathFile.toString());
+
+        performRequestBuilderExpectException(FileAccessDeniedException.class, requestBuilder);
+        Files.delete(pathFile);
+    }
+
+    @Test
     public void getFiles_When_FilesExist_Expected_HttpStatusOk() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path pathDir = firstRootPath.resolve(testDirectoryName);
@@ -104,7 +136,7 @@ public class FileControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getFile_When_FileOutSideRoot_Expected_CorrectException() throws Exception {
+    public void getFiles_When_FileOutSideRoot_Expected_CorrectException() throws Exception {
         final Path firstRootPath = testRootPaths.get(0);
         final Path testPath = Paths.get("../");
         final Path testPath2 = Paths.get("./");
