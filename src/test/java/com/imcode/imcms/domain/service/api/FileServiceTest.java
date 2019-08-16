@@ -326,7 +326,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createDirectories(pathDir);
         Files.createFile(pathFile);
 
-        assertEquals(pathFile.toString(), fileService.getFile(pathFile).toString());
+        assertEquals(pathFile.toString(), fileService.getFile(pathFile).getFullPath());
     }
 
     @Test
@@ -354,7 +354,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath7));
         assertThrows(FileAccessDeniedException.class, () -> fileService.getFile(testPath8));
 
-        assertTrue(Files.exists(fileService.getFile(testPath6)));
+        assertTrue(Files.exists(Paths.get(fileService.getFile(testPath6).getFullPath())));
     }
 
     @Test
