@@ -581,6 +581,7 @@ const texts = {
                 },
                 error: {
                     loadError: 'Misslyckades med att ladda filer. Försök igen!',
+                    loadFileError: 'Misslyckades med att ladda filen. Försök igen!',
                     deleteFailed: 'Misslyckades radera!',
                     renameFailed: 'Misslyckades med att byta namn på filen. Försök igen!',
                     editFailed: 'Misslyckades med att redigera filinnehåll. Försök igen!',
@@ -1343,6 +1344,7 @@ const texts = {
                 },
                 error: {
                     loadError: 'Failed to load files. Try again!',
+                    loadFileError: 'Failed to load files. Try again!',
                     deleteFailed: 'Failed delete!',
                     renameFailed: 'Failed to rename file. Try again!',
                     editFailed: 'Failed to edit file content. Try again!',
