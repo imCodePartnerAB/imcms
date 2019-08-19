@@ -7,6 +7,8 @@ define("imcms-files-rest-api", ["imcms-rest-api"], function (rest) {
 
     api.get = file => rest.ajax.call({url: `${url}/${file}`, type: 'GET', json: false});
 
+    api.getFile = path => rest.ajax.call({url: `${url}/get-file`, type: 'GET', json: false}, path);
+
     api.upload = formData => rest.ajax.call({
         url: `${url}/upload/`,
         type: "POST",

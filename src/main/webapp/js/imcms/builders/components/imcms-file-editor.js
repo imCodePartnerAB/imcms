@@ -585,8 +585,13 @@ define(
 
         function fileToTextView(file) {
             const $textArea = components.texts.textAreaField('<div>', {readonly: 'readonly'});
-            $textArea.addClass('text-preview');
-            $textArea.setValue(file.contents.join("\n"));
+            const pathFile = {
+                path: file.fullPath
+            };
+            fileRestApi.getFile(pathFile).done(file => {
+                $textArea.addClass('text-preview');
+                $textArea.setValue(file.contents.join("\n"));
+            }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
             return $textArea;
         }
 
@@ -656,14 +661,14 @@ define(
                 newFileNameField.setValue(currentFile.fileName);
                 checkBoxIsDirectory.setChecked(isDirectory).$input.attr('disabled', 'disabled');
                 setEnableEditContent();
-                let contentsLine = currentFile.contents;
-                if (contentsLine) {
+                const pathFile = {
+                    path: currentFile.fullPath
+                };
+                fileRestApi.getFile(pathFile).done(file => {
                     contentTextArea.setValue(
-                        contentsLine.join("\n")
+                        file.contents.join("\n")
                     );
-                } else {
-                    contentTextArea.setValue(contentsLine);
-                }
+                }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
 
                 confirmEditFile();
             });
