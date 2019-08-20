@@ -547,7 +547,10 @@ const texts = {
                 deleteDocButton: 'Radera!'
             },
             dataVersion: {
-                name: 'Data-Version'
+                name: 'Data-Version',
+                error: {
+                    loadVersion: 'Det gick inte att ladda versionen!'
+                }
             },
             files: {
                 name: 'Filer',
@@ -1310,7 +1313,10 @@ const texts = {
                 deleteDocButton: 'Delete!'
             },
             dataVersion: {
-                name: 'Data-Version'
+                name: 'Data-Version',
+                error: {
+                    loadVersion: 'Failed version load!'
+                }
             },
             files: {
                 name: 'Files',
