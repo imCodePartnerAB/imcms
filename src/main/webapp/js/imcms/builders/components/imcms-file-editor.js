@@ -590,7 +590,7 @@ define(
             };
             fileRestApi.getFile(pathFile).done(file => {
                 $textArea.addClass('text-preview');
-                $textArea.setValue(file.contents.join("\n"));
+                $textArea.setValue(window.atob(file.contents));
             }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
             return $textArea;
         }
@@ -665,9 +665,7 @@ define(
                     path: currentFile.fullPath
                 };
                 fileRestApi.getFile(pathFile).done(file => {
-                    contentTextArea.setValue(
-                        file.contents.join("\n")
-                    );
+                    contentTextArea.setValue(window.atob(file.contents));
                 }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
 
                 confirmEditFile();
