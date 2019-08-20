@@ -28,7 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -125,7 +124,7 @@ public class FileController {
 
             sourceFiles.add(sourceFile);
         }
-        return sourceFiles;//todo upload only file? Check!
+        return sourceFiles;
     }
 
     @PostMapping("/**")
@@ -146,8 +145,8 @@ public class FileController {
     @PutMapping("/**")
     public SourceFile saveFile(@RequestBody Properties propertiesFile) throws IOException {
         final Path path = Paths.get(propertiesFile.getProperty("fullPath"));
-        final String newContent = propertiesFile.getProperty("content");
-        return defaultFileService.saveFile(path, Collections.singletonList(newContent), null);
+        final byte[] newContent = propertiesFile.getProperty("content").getBytes();
+        return defaultFileService.saveFile(path, newContent, null);
     }
 
     @PutMapping("/template/replace")

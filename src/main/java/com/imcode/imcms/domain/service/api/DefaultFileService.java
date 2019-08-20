@@ -247,20 +247,6 @@ public class DefaultFileService implements FileService {
     }
 
     @Override
-    public SourceFile saveFile(Path location, List<String> content, OpenOption writeMode) throws IOException {
-        Path writeFilePath = null;
-        if (isAllowableToAccess(location)) {
-            if (null == writeMode) {
-                writeFilePath = Files.write(location, content);
-            } else {
-                writeFilePath = Files.write(location, content, writeMode);
-            }
-        }
-
-        return toSourceFile(writeFilePath, true);
-    }
-
-    @Override
     public SourceFile saveFile(Path location, byte[] content, OpenOption writeMode) throws IOException {
         Path writeFilePath;
         if (isAllowableToAccess(location)) {
