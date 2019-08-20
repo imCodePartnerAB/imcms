@@ -18,5 +18,6 @@ module.exports = new WindowTabsBuilder({
         require('imcms-profiles-tab-builder'),
         require('imcms-system-properties-tab-builder'),
         require('imcms-temporal-data-tab-builder'),
+        require('imcms-menu-tab-builder'),
     ]
 });
