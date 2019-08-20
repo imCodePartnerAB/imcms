@@ -43,14 +43,7 @@ public class DefaultVersionDataService implements VersionDataService {
 
     @Override
     public VersionData getVersionData() {
-        VersionData versionData = new VersionData();
-        versionData.setImcmsVersion(getImcmsVersion());
-        versionData.setJavaVersion(getJavaVersion());
-        versionData.setDbVersion(getDbVersion());
-        versionData.setServerInfo(getServerInfo());
-        versionData.setDbNameVersion(getProductNameVersionData());
-
-        return versionData;
+        return initVersion();
     }
 
     private String getImcmsVersion() {
@@ -88,5 +81,16 @@ public class DefaultVersionDataService implements VersionDataService {
             log.error(errorMessage);
             throw new DatabaseException(errorMessage, e);
         }
+    }
+
+    private VersionData initVersion() {
+        VersionData versionData = new VersionData();
+        versionData.setImcmsVersion(getImcmsVersion());
+        versionData.setJavaVersion(getJavaVersion());
+        versionData.setDbVersion(getDbVersion());
+        versionData.setServerInfo(getServerInfo());
+        versionData.setDbNameVersion(getProductNameVersionData());
+
+        return versionData;
     }
 }
