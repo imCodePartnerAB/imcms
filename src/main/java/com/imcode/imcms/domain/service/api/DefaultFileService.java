@@ -107,9 +107,9 @@ public class DefaultFileService implements FileService {
     private SourceFile toSourceFile(Path path, boolean withContent) {
         final SourceFile.FileType fileType = Files.isDirectory(path) ? DIRECTORY : FILE;
         final String physicalPath = getPhysicalPath(path);
-        List<String> contents = fileType == DIRECTORY ? null : Collections.EMPTY_LIST;
+        byte[] contents = null;
         try {
-            if (withContent) contents = Files.readAllLines(path);
+            if (withContent) contents = Files.readAllBytes(path);
         } catch (IOException e) {
             log.info("File has not content!!!");
             contents = null;
