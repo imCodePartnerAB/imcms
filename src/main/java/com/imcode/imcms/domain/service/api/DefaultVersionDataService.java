@@ -26,6 +26,7 @@ import static ucar.httpservices.HTTPAuthStore.log;
 public class DefaultVersionDataService implements VersionDataService {
 
     private final DatabaseService databaseService;
+    private final ServletContext servletContext;
 
     @Value("/WEB-INF/version.txt")
     private Path versionFile;
@@ -33,12 +34,11 @@ public class DefaultVersionDataService implements VersionDataService {
     @Value("schema.xml")
     private Path schema;
 
-    @Autowired
-    private ServletContext servletContext;
 
     @Autowired
-    public DefaultVersionDataService(DatabaseService databaseService) {
+    public DefaultVersionDataService(DatabaseService databaseService, ServletContext servletContext) {
         this.databaseService = databaseService;
+        this.servletContext = servletContext;
     }
 
     @Override
