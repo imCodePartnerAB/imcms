@@ -160,6 +160,22 @@
     vertical-align: top;
 }
 
+.versions-container {
+    background-color: ghostwhite;
+    border: 1px solid gainsboro;
+    display: inline-flex;
+    width: 80%;
+}
+
+.data-versions__imcms-version,
+.data-versions__java-version,
+.data-versions__server-info,
+.data-versions__db-version,
+.data-versions__db-name-version {
+    margin: 10px;
+    font-size: 18px;
+}
+
 .files-table {
     width: 100%;
     background-color: ghostwhite;
