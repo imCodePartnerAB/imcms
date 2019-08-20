@@ -67,7 +67,7 @@ public class DefaultVersionDataService implements VersionDataService {
         return System.getProperty("java.vm.vendor") +
                 " " + System.getProperty("java.vm.name") +
                 " " + System.getProperty("java.vm.version") +
-                "Java version: " + System.getProperty("java.specification.version");
+                " Java version: " + System.getProperty("java.specification.version");
     }
 
     private String getDbVersion() { //todo: rewrite get required db version!
