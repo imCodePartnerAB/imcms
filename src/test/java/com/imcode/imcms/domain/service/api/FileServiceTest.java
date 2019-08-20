@@ -291,7 +291,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
 
         final String testText = "bla-bla-bla";
-        final SourceFile saved = fileService.saveFile(pathFile, Collections.singletonList(testText), null);
+        final SourceFile saved = fileService.saveFile(pathFile, testText.getBytes(), null);
 
         assertNotNull(saved);
         assertTrue(Files.exists(Paths.get(saved.getFullPath())));
@@ -311,7 +311,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         final String testText = "bla-bla-bla";
         assertThrows(FileAlreadyExistsException.class, () -> fileService.saveFile(
-                pathFile2, Collections.singletonList(testText), StandardOpenOption.CREATE_NEW));
+                pathFile2, testText.getBytes(), StandardOpenOption.CREATE_NEW));
     }
 
     @Test
