@@ -589,6 +589,7 @@ define(
                 path: file.fullPath
             };
             fileRestApi.getFile(pathFile).done(file => {
+                alert(file.contents);
                 $textArea.addClass('text-preview');
                 $textArea.setValue(file.contents.join("\n"));
             }).fail(() => modal.buildErrorWindow(texts.error.loadFileError));
@@ -665,6 +666,7 @@ define(
                     path: currentFile.fullPath
                 };
                 fileRestApi.getFile(pathFile).done(file => {
+                    alert(file.contents);
                     contentTextArea.setValue(
                         file.contents.join("\n")
                     );
