@@ -25,7 +25,7 @@ define(
 
         function buildVersionDataContainer(dataVersion) {
             return new BEM({
-                block: 'data-version',
+                block: 'data-versions',
                 elements: {
                     'imcms-version': $('<div>', {
                         text: dataVersion.imcmsVersion
