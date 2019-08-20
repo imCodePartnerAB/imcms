@@ -756,7 +756,7 @@ const texts = {
                 }
             },
             temporalContent: {
-                name: 'Temporalt innehåll',
+                name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Indexera om innehållet',
                     deletePublicDocCache: 'Radera publik dokumentcache',
@@ -764,14 +764,17 @@ const texts = {
                     deleteStaticCache: 'Radera statisk cache',
                 },
                 init: 'Verkställ'
-            }
+            },
+            menuTab: {
+                name: 'Meny'
+            },
         },
         login: {
             alternativeLogin: "Alternativ inloggning:",
             error: {
                 loadProvidersFailed: 'Misslyckades med auth leverantörer. Försök igen'
             }
-        }
+        },
     },
     "en": {
         panel: {
@@ -1522,7 +1525,7 @@ const texts = {
                 }
             },
             temporalContent: {
-                name: 'Temporal Content',
+                name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Reindex documents',
                     deletePublicDocCache: 'Delete public documents cache',
@@ -1530,14 +1533,17 @@ const texts = {
                     deleteStaticCache: 'Delete static web cache',
                 },
                 init: 'Init'
-            }
+            },
+            menuTab: {
+                name: 'Menu'
+            },
         },
         login: {
             alternativeLogin: "Alternative login:",
             error: {
                 loadProvidersFailed: 'Failed to auth providers. Try again'
             }
-        }
+        },
     }
 };
 
