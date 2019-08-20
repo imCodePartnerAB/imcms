@@ -89,7 +89,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
                 getRelatedPath(filePath),
                 filePath.toString(),
                 fileType,
-                fileType == DIRECTORY ? null : Collections.EMPTY_LIST
+                null
         );
     }
 
@@ -295,9 +295,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
 
         assertNotNull(saved);
         assertTrue(Files.exists(Paths.get(saved.getFullPath())));
-        List<String> line = saved.getContents();
-        assertEquals(1, line.size());
-        String savedContent = line.get(0);
+        String savedContent = new String(saved.getContents()).trim();
         assertEquals(testText, savedContent);
     }
 
@@ -327,6 +325,7 @@ public class FileServiceTest extends WebAppSpringTestConfig {
         Files.createFile(pathFile);
 
         assertEquals(pathFile.toString(), fileService.getFile(pathFile).getFullPath());
+        assertEquals(new String(Files.readAllBytes(pathFile)), new String(fileService.getFile(pathFile).getContents()));
     }
 
     @Test

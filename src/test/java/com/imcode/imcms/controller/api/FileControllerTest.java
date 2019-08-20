@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -559,7 +558,7 @@ public class FileControllerTest extends AbstractControllerTest {
                 getRelatedPath(filePath),
                 filePath.toString(),
                 fileType,
-                fileType == DIRECTORY ? null : Collections.EMPTY_LIST
+                fileType == DIRECTORY ? null : new byte[0]
         );
     }
 
