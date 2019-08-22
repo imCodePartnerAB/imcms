@@ -272,10 +272,6 @@ define(
 
         function buildRuleEditButtons() {
             $ruleEditButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.saveButton({
-                    text: texts.saveChanges,
-                    click: onSaveRule
-                }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
                     click: getOnDiscardChanges(() => {
@@ -289,7 +285,11 @@ define(
                             $container.slideUp();
                         }
                     })
-                })
+                }),
+                components.buttons.saveButton({
+                    text: texts.saveChanges,
+                    click: onSaveRule
+                }),
             ], {
                 style: 'display: none;'
             });

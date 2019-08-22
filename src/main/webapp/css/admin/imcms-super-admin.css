@@ -33,6 +33,21 @@
     height: 905px;
 }
 
+.category-admin .imcms-buttons,
+.roles-editor .imcms-buttons,
+.rules-editor .imcms-buttons,
+.group-editor .imcms-buttons,
+.profiles-editor .imcms-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.category-admin .imcms-buttons *:nth-child(2),
+.roles-editor__role-view-buttons *:nth-child(2),
+.group-editor__template-group-default-buttons *:nth-child(2) {
+    margin-left: auto;
+}
+
 .imcms-search-row > * {
     width: 25%;
     display: inline-block;
@@ -155,7 +170,7 @@
 }
 
 .roles-editor {
-    width: 40%;
+    width: 50%;
     margin-left: 2%;
     vertical-align: top;
 }
@@ -466,6 +481,56 @@
     }
 }
 
+.success-animation {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: 5px solid green;
+    border-radius: 50%;
+}
+
+.success-animation::before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 15px;
+    top: 17px;
+    left: 8px;
+    background: green;
+    transform: rotate(-45deg);
+    animation: 1s leftSuccessPart linear;
+}
+
+@keyframes leftSuccessPart {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 15px;
+    }
+}
+
+.success-animation::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 30px;
+    top: 4px;
+    left: 21px;
+    background: green;
+    transform: rotate(45deg);
+    animation: 1s rightSuccessPart linear;
+}
+
+@keyframes rightSuccessPart {
+    0% {
+        height: 0;
+    }
+    50% {
+        height: 30px;
+    }
+}
+
 .link-title-row__page-alias,
 .link-info-row__link-page-alias {
     width: 10%;
@@ -559,7 +624,8 @@
 }
 
 .category-type__type-create-button {
-    margin-top: 32px;
+    margin-top: auto;
+    margin-bottom: 10px;
     margin-left: 15px;
 }
 
@@ -569,6 +635,10 @@
 
 .type-create-block__field-name {
     width: 65%;
+}
+
+.type-create-block__ctg-type-edit-button {
+    width: 200%;
 }
 
 .category-create-block__row-name {
@@ -670,6 +740,13 @@
 
 .imcms-content-action-row > .imcms-title {
     margin-bottom: 5px;
+}
+
+.imcms-content-action-row__actions {
+    width: 200px;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
 }
 
 .auth-provider-icon {
@@ -831,12 +908,4 @@
     content: "";
     clear: both;
     display: table;
-}
-
-.rules-editor__rule-edit-buttons > .imcms-button--negative {
-    float: left;
-}
-
-.rules-editor__rule-edit-buttons > .imcms-button--save {
-    float: right;
 }

@@ -132,10 +132,6 @@ define(
 
         function buildProfileEditButtons() {
             return $profileEditButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.saveButton({
-                    text: texts.createNewProfile.buttonSave,
-                    click: onSaveProfile
-                }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
                     click: getOnWarnCancel(() => {
@@ -151,7 +147,11 @@ define(
                             $container.slideUp();
                         }
                     })
-                })
+                }),
+                components.buttons.saveButton({
+                    text: texts.createNewProfile.buttonSave,
+                    click: onSaveProfile
+                }),
             ]);
         }
 
