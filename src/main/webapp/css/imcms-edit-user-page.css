@@ -1,5 +1,9 @@
 @import url("imcms-info-page.css");
 
+* {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
 .imcms-info-page__edit-user {
     position: absolute;
     margin: 0 0 2%;

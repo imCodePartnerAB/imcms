@@ -1,5 +1,9 @@
 @import url("../imcms-info-page.css");
 
+* {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
 .imcms-info-page {
     position: absolute;
     margin: 0;
@@ -380,7 +384,6 @@
 .title-copy {
     width: 100%;
     text-align: center;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
 }
 
@@ -752,6 +755,7 @@
     text-align: center;
     margin: auto 30px;
     font-weight: normal;
+    cursor: auto;
 }
 
 .auth-provider-icon {
