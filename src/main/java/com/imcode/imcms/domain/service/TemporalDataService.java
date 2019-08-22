@@ -4,12 +4,20 @@ import java.io.IOException;
 
 public interface TemporalDataService {
 
-    String invalidatePublicDocumentCache() throws IOException;
+    void invalidatePublicDocumentCache();
 
-    String invalidateStaticContentCache() throws IOException;
+    void invalidateStaticContentCache();
 
-    String invalidateOtherContentCache() throws IOException;
+    void invalidateOtherContentCache();
 
-    String rebuildDocumentIndex() throws IOException;
+    void rebuildDocumentIndex();
+
+    String getDateInvalidateDocumentCache() throws IOException;
+
+    String getDateStaticContentCache() throws IOException;
+
+    String getDateInvalidateContentCache() throws IOException;
+
+    String getDateDocumentReIndex() throws IOException;
 
 }

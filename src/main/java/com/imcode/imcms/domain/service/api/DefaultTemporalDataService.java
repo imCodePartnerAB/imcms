@@ -51,30 +51,46 @@ public class DefaultTemporalDataService implements TemporalDataService {
     }
 
     @Override
-    public String invalidatePublicDocumentCache() throws IOException {
+    public void invalidatePublicDocumentCache() {
         publicDocumentsCache.invalidateCache();
         logger.info("Public-document-invalidate-cache-date: " + formatter.format(new Date()));
+    }
+
+    @Override
+    public void invalidateStaticContentCache() {
+        getCacheManager(null).getEhcache(STATIC_CACHE_NAME).removeAll();
+        logger.info("Static-content-invalidate-cache-date: " + formatter.format(new Date()));
+    }
+
+    @Override
+    public void invalidateOtherContentCache() {
+        getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
+        logger.info("Content-invalidate-cache-date: " + formatter.format(new Date()));
+    }
+
+    @Override
+    public void rebuildDocumentIndex() {
+        resolvingQueryIndex.rebuild();
+        logger.info("Last-date-reindex: " + formatter.format(new Date()));
+    }
+
+    @Override
+    public String getDateInvalidateDocumentCache() throws IOException {
         return getLastDateModification(patternDocCacheDate);
     }
 
     @Override
-    public String invalidateStaticContentCache() throws IOException {
-        getCacheManager(null).getEhcache(STATIC_CACHE_NAME).removeAll();
-        logger.info("Static-content-invalidate-cache-date: " + formatter.format(new Date()));
+    public String getDateStaticContentCache() throws IOException {
         return getLastDateModification(patternStaticContentCacheDate);
     }
 
     @Override
-    public String invalidateOtherContentCache() throws IOException {
-        getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
-        logger.info("Content-invalidate-cache-date: " + formatter.format(new Date()));
+    public String getDateInvalidateContentCache() throws IOException {
         return getLastDateModification(patternContentCacheDate);
     }
 
     @Override
-    public String rebuildDocumentIndex() throws IOException {
-        resolvingQueryIndex.rebuild();
-        logger.info("Last-date-reindex: " + formatter.format(new Date()));
+    public String getDateDocumentReIndex() throws IOException {
         return getLastDateModification(patternReindexDate);
     }
 
