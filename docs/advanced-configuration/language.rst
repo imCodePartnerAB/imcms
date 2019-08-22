@@ -30,3 +30,10 @@ General actions with language
 
         Imcms.getUser().getDocGetterCallback().setLanguage(DocumentLanguage language, boolean isDefaultLang);
 
+*
+    set only one(or more, doesn't matter) language on admin panel in ``server.properties`` file:
+
+    You have to set in value ``AvailableLanguages``, language which you would want to see in admin panel.
+    Currently, necessary use 2 letters language codes (en;sv) with ';' delimiter
+
+

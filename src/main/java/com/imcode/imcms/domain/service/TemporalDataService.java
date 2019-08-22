@@ -1,13 +1,15 @@
 package com.imcode.imcms.domain.service;
 
+import java.io.IOException;
+
 public interface TemporalDataService {
 
-    void invalidatePublicDocumentCache();
+    String invalidatePublicDocumentCache() throws IOException;
 
-    void invalidateStaticContentCache();
+    String invalidateStaticContentCache() throws IOException;
 
-    void invalidateOtherContentCache();
+    String invalidateOtherContentCache() throws IOException;
 
-    void rebuildDocumentIndex();
+    String rebuildDocumentIndex() throws IOException;
 
 }
