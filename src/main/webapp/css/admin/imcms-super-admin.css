@@ -743,10 +743,15 @@
 }
 
 .imcms-content-action-row__actions {
-    width: 200px;
     height: 50px;
     display: flex;
-    justify-content: space-between;
+}
+
+.actions__date {
+    width: 300px;
+    text-align: center;
+    margin: auto 30px;
+    font-weight: normal;
 }
 
 .auth-provider-icon {
