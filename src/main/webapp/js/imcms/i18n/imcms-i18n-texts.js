@@ -570,7 +570,7 @@ const texts = {
                 title: {
                     createFileName: 'Ny fil / katalognamn',
                     createDirectory: 'Katalog',
-                    delete: 'Ta bort',
+                    delete: 'Radera',
                     move: 'Flytta',
                     copy: 'Kopiera',
                     download: 'Ladda ner',
@@ -612,10 +612,10 @@ const texts = {
                 groupData: {
                     title: 'Mallgrupp',
                     templatesTableTitle: 'Mallar i gruppen:',
-                    edit: 'Redigera grupp',
-                    delete: 'Radera grupp',
-                    save: 'Spara grupp',
-                    cancel: 'Annullera',
+                    edit: 'Redigera',
+                    delete: 'Radera',
+                    save: 'Spara',
+                    cancel: 'Avbryt',
                     create: 'Skapa mallgrupp',
                     deleteConfirm: 'Vill du verkligen ta bort mallgrupp?',
                     saveConfirm: 'Vill du verkligen spara mallgrupp?',
@@ -654,7 +654,7 @@ const texts = {
             categories: {
                 name: 'Kategorier',
                 createButtonName: "Skapa",
-                removeButtonName: "Ta bort",
+                removeButtonName: "Radera",
                 saveButton: 'Spara',
                 cancelButton: 'Avbryt',
                 warnCancelMessage: 'Vill du verkligen avbryta detta?',
@@ -708,7 +708,7 @@ const texts = {
                     name: "Namn",
                     docName: 'Dokumentnamn',
                     buttonEdit: 'Redigera profil',
-                    buttonDelete: 'Ta bort profil'
+                    buttonDelete: 'Radera profil'
                 },
                 error: {
                     createFailed: 'Misslyckades med att skapa profil. Försök igen',
@@ -1381,9 +1381,9 @@ const texts = {
                 groupData: {
                     title: 'Template group',
                     templatesTableTitle: 'Templates in the group:',
-                    edit: 'Edit group',
-                    delete: 'Delete group',
-                    save: 'Save group',
+                    edit: 'Edit',
+                    delete: 'Delete',
+                    save: 'Save',
                     cancel: 'Cancel',
                     create: 'Create template group',
                     deleteConfirm: 'Do you really want to delete template group?',
