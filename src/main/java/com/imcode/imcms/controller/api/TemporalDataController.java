@@ -2,6 +2,7 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.TemporalDataService;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,22 +19,42 @@ public class TemporalDataController {
     }
 
     @DeleteMapping("/document-index")
-    public String rebuildDocumentIndex() throws IOException {
-        return temporalDataService.rebuildDocumentIndex();
+    public void rebuildDocumentIndex() {
+        temporalDataService.rebuildDocumentIndex();
     }
 
     @DeleteMapping("/public-document")
-    public String removePublicDocumentCache() throws IOException {
-        return temporalDataService.invalidatePublicDocumentCache();
+    public void removePublicDocumentCache() {
+        temporalDataService.invalidatePublicDocumentCache();
     }
 
     @DeleteMapping("/static-content")
-    public String removeStaticContentCache() throws IOException {
-        return temporalDataService.invalidateStaticContentCache();
+    public void removeStaticContentCache() {
+        temporalDataService.invalidateStaticContentCache();
     }
 
     @DeleteMapping("/other-content")
-    public String removeOtherContentCache() throws IOException {
-        return temporalDataService.invalidateOtherContentCache();
+    public void removeOtherContentCache() {
+        temporalDataService.invalidateOtherContentCache();
+    }
+
+    @GetMapping("/date-reindex")
+    public String getDateDocumentReindex() throws IOException {
+        return temporalDataService.getDateDocumentReIndex();
+    }
+
+    @GetMapping("/date-public-document")
+    public String getDateRemoveDocumentCache() throws IOException {
+        return temporalDataService.getDateDocumentReIndex();
+    }
+
+    @GetMapping("/date-static-content")
+    public String getDateRemoveStaticContentCache() throws IOException {
+        return temporalDataService.getDateDocumentReIndex();
+    }
+
+    @GetMapping("/date-other-content")
+    public String getDateRemoveOtherContentCache() throws IOException {
+        return temporalDataService.getDateDocumentReIndex();
     }
 }
