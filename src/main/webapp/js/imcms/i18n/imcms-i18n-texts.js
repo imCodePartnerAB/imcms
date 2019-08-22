@@ -663,7 +663,7 @@ const texts = {
                     createCategoryType: {
                         title: 'Skapa kategori typ',
                         name: 'Kategori typnamn',
-                        inherited: 'Erfaren av nya dokument',
+                        inherited: 'Ärvs till nya dokument',
                         singleSelect: 'Singel välj',
                         multiSelect: 'Flera val',
                         chooseType: 'Välj kategori Typ',
