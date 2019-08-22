@@ -54,7 +54,7 @@ function onReset() {
 }
 
 function onCancel() {
-    window.location.href = imcms.contextPath || "/";
+    window.close();
 }
 
 function loadLanguages() {
@@ -183,6 +183,8 @@ $(function () {
     loadLanguages();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
+
+    $('.imcms-info-head__close').click(onCancel);
 
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);
