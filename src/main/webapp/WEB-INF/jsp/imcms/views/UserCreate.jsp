@@ -36,6 +36,7 @@ ${"-->"}
     <div class="imcms-info-head">
         <a href="https://www.imcms.net/" class="imcms-info__logo"></a>
         <div class="imcms-title imcms-head__title"><fmt:message key="global/imcms_administration"/></div>
+        <div class="imcms-control imcms-control--remove imcms-info-head__close"></div>
     </div>
     <div class="imcms-info-body">
         <div class="imcms-field">
