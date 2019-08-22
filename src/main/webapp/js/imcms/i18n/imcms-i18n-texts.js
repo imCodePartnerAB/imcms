@@ -763,7 +763,8 @@ const texts = {
                     deleteOtherCache: 'Ta bort annan cache',
                     deleteStaticCache: 'Radera statisk cache',
                 },
-                init: 'Verkställ'
+                init: 'Verkställ',
+                lastUpdate: 'Senaste uppdateringen',
             },
             menuTab: {
                 name: 'Meny'
@@ -1532,7 +1533,8 @@ const texts = {
                     deleteOtherCache: 'Delete other web cache',
                     deleteStaticCache: 'Delete static web cache',
                 },
-                init: 'Init'
+                init: 'Init',
+                lastUpdate: 'Last update',
             },
             menuTab: {
                 name: 'Menu'
