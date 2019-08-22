@@ -238,14 +238,14 @@ define(
         const $templateGroupNameTextField = components.texts.textField('<div>', {});
 
         const $templateGroupDefaultButtons = components.buttons.buttonsContainer('<div>', [
+            components.buttons.errorButton({
+                text: texts.groupData.delete,
+                click: onDeleteTemplateGroup
+            }),
             components.buttons.positiveButton({
                 text: texts.groupData.edit,
                 click: onEditTemplateGroup
             }),
-            components.buttons.errorButton({
-                text: texts.groupData.delete,
-                click: onDeleteTemplateGroup
-            })
         ], {
             style: 'display: none'
         });
@@ -276,14 +276,14 @@ define(
         }
 
         const $templateGroupEditButtons = components.buttons.buttonsContainer('<div>', [
+            components.buttons.negativeButton({
+                text: texts.groupData.cancel,
+                click: onCancelTemplateGroup
+            }),
             components.buttons.saveButton({
                 text: texts.groupData.save,
                 click: onSaveTemplateGroup
             }),
-            components.buttons.negativeButton({
-                text: texts.groupData.cancel,
-                click: onCancelTemplateGroup
-            })
         ], {
             style: 'display: none;'
         });

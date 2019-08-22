@@ -269,9 +269,9 @@ define(
 
         function buildCategoryTypeEditButtons() {
             return $categoryTypeSaveButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.saveButton({
-                    text: texts.saveButton,
-                    click: onSaveCategoryType
+                components.buttons.errorButton({
+                    text: texts.removeButtonName,
+                    click: onDeleteCategoryType
                 }),
                 components.buttons.negativeButton({
                     text: texts.cancelButton,
@@ -279,10 +279,10 @@ define(
                         $categoryTypeCreateContainer.slideUp();
                     })
                 }),
-                components.buttons.errorButton({
-                    text: texts.removeButtonName,
-                    click: onDeleteCategoryType
-                })
+                components.buttons.saveButton({
+                    text: texts.saveButton,
+                    click: onSaveCategoryType
+                }),
             ]);
         }
 
@@ -472,9 +472,9 @@ define(
 
             function buildEditCategoryButtonContainer() {
                 return categorySaveButtons = components.buttons.buttonsContainer('<div>', [
-                    components.buttons.saveButton({
-                        text: texts.saveButton,
-                        click: onSaveCategory
+                    components.buttons.errorButton({
+                        text: texts.removeButtonName,
+                        click: onRemoveCategory
                     }),
                     components.buttons.negativeButton({
                         text: texts.cancelButton,
@@ -482,10 +482,10 @@ define(
                             categoryCreateContainer.slideUp();
                         })
                     }),
-                    components.buttons.errorButton({
-                        text: texts.removeButtonName,
-                        click: onRemoveCategory
-                    })
+                    components.buttons.saveButton({
+                        text: texts.saveButton,
+                        click: onSaveCategory
+                    }),
                 ])
             }
 

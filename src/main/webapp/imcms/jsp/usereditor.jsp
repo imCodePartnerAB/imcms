@@ -272,13 +272,13 @@
                 </div>
             </c:if>
             <div class="imcms-info-footer imcms-info-footer__user-edit">
+                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2009"/></button>
+                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
+                        key="templates/sv/AdminUserResp.htm/2008"/></button>
                 <button id="edit-user-submit-button" type="submit" name="<%= OkCancelPage.REQUEST_PARAMETER__OK %>"
                         class="imcms-button imcms-button--save imcms-info-footer__button"><fmt:message
                         key="templates/sv/AdminUserResp.htm/2007"/></button>
-                <button type="submit" class="imcms-button imcms-button--positive imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2008"/></button>
-                <button type="submit" class="imcms-button imcms-button--negative imcms-info-footer__button"><fmt:message
-                        key="templates/sv/AdminUserResp.htm/2009"/></button>
             </div>
         </form>
     </div>

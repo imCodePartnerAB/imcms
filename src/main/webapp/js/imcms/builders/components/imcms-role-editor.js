@@ -90,14 +90,14 @@ define(
 
         function buildRoleViewButtons() {
             return $roleViewButtons = components.buttons.buttonsContainer('<div>', [
+                components.buttons.errorButton({
+                    text: texts.deleteRole,
+                    click: onDeleteRole
+                }),
                 components.buttons.positiveButton({
                     text: texts.editRole,
                     click: onEditRole
                 }),
-                components.buttons.negativeButton({
-                    text: texts.deleteRole,
-                    click: onDeleteRole
-                })
             ]);
         }
 
@@ -159,10 +159,6 @@ define(
 
         function buildRoleEditButtons() {
             return $roleEditButtons = components.buttons.buttonsContainer('<div>', [
-                components.buttons.saveButton({
-                    text: texts.saveChanges,
-                    click: onSaveRole
-                }),
                 components.buttons.negativeButton({
                     text: texts.cancel,
                     click: getOnDiscardChanges(() => {
@@ -177,7 +173,11 @@ define(
                             $container.slideUp();
                         }
                     })
-                })
+                }),
+                components.buttons.saveButton({
+                    text: texts.saveChanges,
+                    click: onSaveRole
+                }),
             ], {
                 style: 'display: none;'
             });
