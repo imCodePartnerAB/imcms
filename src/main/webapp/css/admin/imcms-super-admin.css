@@ -33,6 +33,21 @@
     height: 905px;
 }
 
+.category-admin .imcms-buttons,
+.roles-editor .imcms-buttons,
+.rules-editor .imcms-buttons,
+.group-editor .imcms-buttons,
+.profiles-editor .imcms-buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.category-admin .imcms-buttons *:nth-child(2),
+.roles-editor__role-view-buttons *:nth-child(2),
+.group-editor__template-group-default-buttons *:nth-child(2) {
+    margin-left: auto;
+}
+
 .imcms-search-row > * {
     width: 25%;
     display: inline-block;
@@ -155,7 +170,7 @@
 }
 
 .roles-editor {
-    width: 40%;
+    width: 50%;
     margin-left: 2%;
     vertical-align: top;
 }
@@ -609,7 +624,8 @@
 }
 
 .category-type__type-create-button {
-    margin-top: 32px;
+    margin-top: auto;
+    margin-bottom: 10px;
     margin-left: 15px;
 }
 
@@ -619,6 +635,10 @@
 
 .type-create-block__field-name {
     width: 65%;
+}
+
+.type-create-block__ctg-type-edit-button {
+    width: 200%;
 }
 
 .category-create-block__row-name {
@@ -888,12 +908,4 @@
     content: "";
     clear: both;
     display: table;
-}
-
-.rules-editor__rule-edit-buttons > .imcms-button--negative {
-    float: left;
-}
-
-.rules-editor__rule-edit-buttons > .imcms-button--save {
-    float: right;
 }
