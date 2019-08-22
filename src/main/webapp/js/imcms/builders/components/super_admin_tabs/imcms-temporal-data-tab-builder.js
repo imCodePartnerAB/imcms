@@ -12,15 +12,39 @@ define(
 
         texts = texts.superAdmin.temporalContent;
 
-        function buildActions($button, $loading, $success) {
+        function buildActions($button, $date, $loading, $success) {
             return new BEM({
                 block: 'actions',
                 elements: {
                     'button': $button,
+                    'date': $date,
                     'loading': $loading,
                     'success': $success,
                 },
             }).buildBlockStructure('<div>');
+        }
+        
+        class DateLabel {
+            constructor(dateRequest, title) {
+                this.dateRequest = dateRequest;
+                this.title = title;
+                this.$label = $('<div>', {
+                    class: 'imcms-label',
+                    text: title,
+                });
+
+                this.updateDate();
+            }
+
+            updateDate() {
+                this.dateRequest().done(dateString => {
+                    this.$label.text(this.title + ': ' + dateString);
+                })
+            }
+
+            getLabel() {
+                return this.$label;
+            }
         }
 
         function buildLoadingAnimation() {
@@ -37,10 +61,11 @@ define(
             });
         }
 
-        function animateRequest(request, $loading, $success) {
+        function animateRequest(request, date, $loading, $success) {
             $success.hide();
             $loading.show();
             request().done(() => {
+                date.updateDate();
                 $loading.hide();
                 $success.show();
             });
@@ -56,13 +81,15 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
+                const lastUpdate = new DateLabel(temporalDataApi.getDateDocumentIndex, texts.lastUpdate);
+
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.rebuildDocumentIndex, $loading, $success),
+                    click: () => animateRequest(temporalDataApi.rebuildDocumentIndex, lastUpdate, $loading, $success),
                 });
 
-                return buildActions($button, $loading, $success);
+                return buildActions($button, lastUpdate.getLabel(), $loading, $success);
             }
 
             return new BEM({
@@ -83,13 +110,15 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
+                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveDocumentCache, texts.lastUpdate);
+
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.deletePublicDocumentCache, $loading, $success),
+                    click: () => animateRequest(temporalDataApi.deletePublicDocumentCache, lastUpdate, $loading, $success),
                 });
 
-                return buildActions($button, $loading, $success);
+                return buildActions($button, lastUpdate.getLabel(), $loading, $success);
             }
 
             return new BEM({
@@ -110,13 +139,15 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
+                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveStaticContentCache, texts.lastUpdate);
+
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.deleteStaticContentCache, $loading, $success),
+                    click: () => animateRequest(temporalDataApi.deleteStaticContentCache, lastUpdate, $loading, $success),
                 });
 
-                return buildActions($button, $loading, $success);
+                return buildActions($button, lastUpdate.getLabel(), $loading, $success);
             }
 
             return new BEM({
@@ -137,13 +168,15 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
+                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveOtherContentCache, texts.lastUpdate);
+
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.deleteOtherContentCache, $loading, $success),
+                    click: () => animateRequest(temporalDataApi.deleteOtherContentCache, lastUpdate, $loading, $success),
                 });
 
-                return buildActions($button, $loading, $success);
+                return buildActions($button, lastUpdate.getLabel(), $loading, $success);
             }
 
             return new BEM({
