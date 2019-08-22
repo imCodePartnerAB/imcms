@@ -45,16 +45,16 @@ public class TemporalDataController {
 
     @GetMapping("/date-public-document")
     public String getDateRemoveDocumentCache() throws IOException {
-        return temporalDataService.getDateDocumentReIndex();
+        return temporalDataService.getDateInvalidateDocumentCache();
     }
 
     @GetMapping("/date-static-content")
     public String getDateRemoveStaticContentCache() throws IOException {
-        return temporalDataService.getDateDocumentReIndex();
+        return temporalDataService.getDateStaticContentCache();
     }
 
     @GetMapping("/date-other-content")
     public String getDateRemoveOtherContentCache() throws IOException {
-        return temporalDataService.getDateDocumentReIndex();
+        return temporalDataService.getDateInvalidateContentCache();
     }
 }
