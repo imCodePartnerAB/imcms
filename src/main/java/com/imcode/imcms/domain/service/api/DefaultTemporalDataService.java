@@ -104,6 +104,10 @@ public class DefaultTemporalDataService implements TemporalDataService {
             }
         }
         final long amountValidLines = validLines.size();
-        return validLines.stream().skip(amountValidLines - 1).findFirst().get();
+        String validDateLine = null;
+        if (amountValidLines > 1) {
+            validDateLine = validLines.stream().skip(amountValidLines - 1).findFirst().get();
+        }
+        return validDateLine;
     }
 }
