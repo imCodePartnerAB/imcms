@@ -34,6 +34,14 @@
     width: 69px;
 }
 
+.imcms-info-head__close {
+    background: url("/images_new/controls/icon_folder_controll_remove.png") no-repeat center;
+    position: absolute;
+    height: 100%;
+    top: 0;
+    right: 20px;
+}
+
 .imcms-info-body {
     display: block;
     padding: 20px 20px 0;
