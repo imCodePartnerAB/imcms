@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @RestController
 @RequestMapping("/temporal-data")
 public class TemporalDataController {
@@ -16,22 +18,22 @@ public class TemporalDataController {
     }
 
     @DeleteMapping("/document-index")
-    public void rebuildDocumentIndex() {
-        temporalDataService.rebuildDocumentIndex();
+    public String rebuildDocumentIndex() throws IOException {
+        return temporalDataService.rebuildDocumentIndex();
     }
 
     @DeleteMapping("/public-document")
-    public void removePublicDocumentCache() {
-        temporalDataService.invalidatePublicDocumentCache();
+    public String removePublicDocumentCache() throws IOException {
+        return temporalDataService.invalidatePublicDocumentCache();
     }
 
     @DeleteMapping("/static-content")
-    public void removeStaticContentCache() {
-        temporalDataService.invalidateStaticContentCache();
+    public String removeStaticContentCache() throws IOException {
+        return temporalDataService.invalidateStaticContentCache();
     }
 
     @DeleteMapping("/other-content")
-    public void removeOtherContentCache() {
-        temporalDataService.invalidateOtherContentCache();
+    public String removeOtherContentCache() throws IOException {
+        return temporalDataService.invalidateOtherContentCache();
     }
 }
