@@ -42,7 +42,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
     private final Pattern patternStaticContentCacheDate = Pattern.compile(STATIC_CONTENT_CACHE_DATE_REGEX);
     private final Pattern patternContentCacheDate = Pattern.compile(CONTENT_CACHE_DATE_REGEX);
 
-    @Value("/WEB-INF/logs/all.log")
+    @Value("/WEB-INF/logs/error.log")
     private Path path;
 
     public DefaultTemporalDataService(PublicDocumentsCache publicDocumentsCache, ResolvingQueryIndex resolvingQueryIndex) {
