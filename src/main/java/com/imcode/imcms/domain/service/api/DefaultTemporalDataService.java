@@ -25,10 +25,10 @@ import static net.sf.ehcache.CacheManager.getCacheManager;
 @Service
 public class DefaultTemporalDataService implements TemporalDataService {
 
-    private static final String REINDEX_DATE_REGEX = "(Last-date-reindex:)\\s+(([\\d|-]*)\\s+([\\d|:]*))";
-    private static final String PUBLIC_DOC_CACHE_DATE_REGEX = "(Public-document-invalidate-cache-date:)\\s+(([\\d|-]*)\\s+([\\d|:]*))";
-    private static final String STATIC_CONTENT_CACHE_DATE_REGEX = "(Static-content-invalidate-cache-date:)\\s+(([\\d|-]*)\\s+([\\d|:]*))";
-    private static final String CONTENT_CACHE_DATE_REGEX = "(Content-invalidate-cache-date:)\\s+(([\\d|-]*)\\s+([\\d|:]*))";
+    private static final String REINDEX_DATE_REGEX = "(Last-date-reindex:)\\s+([\\d|-]*\\s+[\\d|:]*)";
+    private static final String PUBLIC_DOC_CACHE_DATE_REGEX = "(Public-document-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
+    private static final String STATIC_CONTENT_CACHE_DATE_REGEX = "(Static-content-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
+    private static final String CONTENT_CACHE_DATE_REGEX = "(Content-invalidate-cache-date:)\\s+([\\d|-]*\\s+[\\d|:]*)";
 
     private final static Logger logger = Logger.getLogger(DefaultTemporalDataService.class);
 
@@ -105,7 +105,9 @@ public class DefaultTemporalDataService implements TemporalDataService {
         }
         final long amountValidLines = validLines.size();
         String validDateLine = null;
-        if (amountValidLines > 1) {
+        if (amountValidLines == 1) {
+            validDateLine = validLines.get(0);
+        } else if (amountValidLines > 1) {
             validDateLine = validLines.stream().skip(amountValidLines - 1).findFirst().get();
         }
         return validDateLine;
