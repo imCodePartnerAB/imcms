@@ -765,6 +765,7 @@ const texts = {
                 },
                 init: 'Verkställ',
                 lastUpdate: 'Senast uppdaterad',
+                lastDeleteCache: 'Raderad',
             },
             menuTab: {
                 name: 'Meny'
@@ -1535,6 +1536,7 @@ const texts = {
                 },
                 init: 'Init',
                 lastUpdate: 'Last updated',
+                lastDeleteCache: 'Last updated',
             },
             menuTab: {
                 name: 'Menu'
