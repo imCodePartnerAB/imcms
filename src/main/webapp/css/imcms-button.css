@@ -113,7 +113,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 /*****************************************/
 .imcms-button--drop-down {
-    background: url("../images_new/icon_arrow_down.png") no-repeat center;
+    background: url("/images_new/icon_arrow_down.png") no-repeat center;
     display: block;
     padding: 0;
     position: absolute;
