@@ -764,7 +764,7 @@ const texts = {
                     deleteStaticCache: 'Radera statisk cache',
                 },
                 init: 'Verkställ',
-                lastUpdate: 'Senaste uppdateringen',
+                lastUpdate: 'Senast uppdaterad',
             },
             menuTab: {
                 name: 'Meny'
@@ -1534,7 +1534,7 @@ const texts = {
                     deleteStaticCache: 'Delete static web cache',
                 },
                 init: 'Init',
-                lastUpdate: 'Last update',
+                lastUpdate: 'Last updated',
             },
             menuTab: {
                 name: 'Menu'
