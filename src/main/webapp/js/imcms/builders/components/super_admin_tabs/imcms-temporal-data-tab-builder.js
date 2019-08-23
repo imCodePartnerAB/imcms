@@ -110,7 +110,7 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
-                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveDocumentCache, texts.lastUpdate);
+                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveDocumentCache, texts.lastDeleteCache);
 
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
@@ -139,7 +139,7 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
-                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveStaticContentCache, texts.lastUpdate);
+                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveStaticContentCache, texts.lastDeleteCache);
 
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
@@ -168,7 +168,7 @@ define(
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
 
-                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveOtherContentCache, texts.lastUpdate);
+                const lastUpdate = new DateLabel(temporalDataApi.getDateRemoveOtherContentCache, texts.lastDeleteCache);
 
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
