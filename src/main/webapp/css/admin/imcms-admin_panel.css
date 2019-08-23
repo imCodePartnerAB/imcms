@@ -7,7 +7,7 @@
     -moz-transition: all .3s;
     -o-transition: all .3s;
     transition: all .3s;
-    z-index: 100;
+    z-index: 1000;
 }
 
 .imcms-admin-panel {
@@ -26,7 +26,7 @@
     -o-transition: all .3s;
     transition: all .3s;
     position: absolute;
-    z-index: 2;
+    /*z-index: 2;*/
     border-bottom: 0 solid #ccc;
 }
 
