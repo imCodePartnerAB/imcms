@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.core;
 
 import com.imcode.imcms.api.exception.DocumentLanguageDisabledException;
+import com.imcode.imcms.domain.component.PublicDocumentsCache;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.service.AccessService;
 import com.imcode.imcms.domain.service.CommonContentService;
@@ -30,7 +31,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.imcode.imcms.mapping.DocumentMeta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
-import static imcode.server.ImcmsConstants.*;
+import static imcode.server.ImcmsConstants.REQUEST_PARAM__WORKING_PREVIEW;
+import static imcode.server.ImcmsConstants.VIEW_DOC_PATH;
 import static javax.servlet.RequestDispatcher.FORWARD_REQUEST_URI;
 
 /**
@@ -51,6 +53,7 @@ public class ViewDocumentController {
     private final String imagesPath;
     private final String version;
     private final boolean isVersioningAllowed;
+    private final PublicDocumentsCache publicDocumentsCache;
 
     ViewDocumentController(DocumentMapper documentMapper,
                            VersionService versionService,
@@ -59,7 +62,8 @@ public class ViewDocumentController {
                            PathMatcher pathMatcher,
                            @Value("${ImagePath}") String imagesPath,
                            @Value("${imcms.version}") String version,
-                           @Value("${document.versioning:true}") boolean isVersioningAllowed) {
+                           @Value("${document.versioning:true}") boolean isVersioningAllowed,
+                           PublicDocumentsCache publicDocumentsCache) {
 
         this.documentMapper = documentMapper;
         this.versionService = versionService;
@@ -69,6 +73,7 @@ public class ViewDocumentController {
         this.imagesPath = imagesPath;
         this.version = version;
         this.isVersioningAllowed = isVersioningAllowed;
+        this.publicDocumentsCache = publicDocumentsCache;
     }
 
     @RequestMapping({"", "/"})
@@ -108,6 +113,7 @@ public class ViewDocumentController {
         }
 
         final int docId = textDocument.getId();
+        final String alias = textDocument.getAlias();
 
         final RestrictedPermission userEditPermission = accessService.getEditPermission(user, docId);
 
@@ -116,6 +122,10 @@ public class ViewDocumentController {
 
         final boolean isPreviewMode = isVersioningAllowed
                 && Boolean.parseBoolean(request.getParameter(REQUEST_PARAM__WORKING_PREVIEW));
+
+        if (!isVersioningAllowed) {
+            publicDocumentsCache.invalidateDoc(docId, alias);
+        }
 
         if ((isEditMode || isPreviewMode) && !hasUserContentEditAccess(userEditPermission)) {
 
