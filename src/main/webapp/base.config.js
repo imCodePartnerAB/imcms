@@ -263,6 +263,7 @@ module.exports = {
                         'imcms-link-validator-rest-api',
                         'imcms-temporal-data-rest-api',
                         'imcms-version-data-rest-api',
+                        'imcms-cache-document-rest-api',
                     ]
                 },
             }
