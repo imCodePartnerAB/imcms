@@ -12,6 +12,7 @@ module.exports = new WindowTabsBuilder({
         require('imcms-access-tab-builder'),
         require('imcms-permissions-tab-builder'),
         require('imcms-status-tab-builder'),
+        require('imcms-cache-tab-builder'),
     ]
 });
 
