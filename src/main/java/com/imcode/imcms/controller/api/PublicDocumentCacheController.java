@@ -17,8 +17,8 @@ public class PublicDocumentCacheController {
     }
 
 
-    @GetMapping
-    public void invalidateCache(@RequestParam Integer docId, @RequestParam(required = false) String alias) {
+    @GetMapping("/invalidate")
+    public void invalidateCache(@RequestParam int docId, @RequestParam(required = false) String alias) {
         documentsCache.invalidateDoc(docId, alias);
     }
 }
