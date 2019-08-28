@@ -6,7 +6,6 @@ define("imcms-access-tab-builder",
     function (BEM, components, rolesRestApi, uuidGenerator, $, texts, PageInfoTab, modal) {
 
         texts = texts.pageInfo.access;
-        console.log('PAGE INFO', texts);
 
         let storedRoleIdsPerRoles;
         let storedRoles;
