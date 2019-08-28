@@ -202,8 +202,9 @@ const texts = {
                 name: 'Cache',
                 invalidateButton: 'Ogiltig',
                 invalidateTitle: 'Ogiltig cache',
-                warning: {
-                    warningClear: 'Vill du verkligen ogiltiga den aktuella dokumentcachen ?'
+                success: 'Rensad cache lyckades',
+                error: {
+                    failedClear: 'Det gick inte att rensa det aktuella dokumentcachen!'
                 }
             },
             file: {
@@ -984,8 +985,9 @@ const texts = {
                 name: 'Cache',
                 invalidateButton: 'Clear cache',
                 invalidateTitle: 'Invalidate cache',
-                warning: {
-                    warningClear: 'Are you really want to invalidate current document cache ?'
+                success: 'Cleared cache successful',
+                error: {
+                    failedClear: 'Failed clear current document cache! '
                 }
             },
             file: {
