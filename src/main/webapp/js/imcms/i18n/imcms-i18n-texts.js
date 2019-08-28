@@ -552,7 +552,10 @@ const texts = {
                 name: 'Radera dokument',
                 title: 'Ta bort dokument med id',
                 deleteConfirmation: 'VARNING: Dokumentet och dess data kommer att raderas. Är du säker?',
-                deleteDocButton: 'Radera!'
+                deleteDocButton: 'Radera!',
+                error: {
+                    missedDoc: 'Dokument finns inte!'
+                },
             },
             dataVersion: {
                 name: 'Data-Version',
@@ -1331,7 +1334,10 @@ const texts = {
                 name: 'Delete Documents',
                 title: 'Delete document by id',
                 deleteConfirmation: 'WARNING: Document and it\'s data will be deleted. Are you sure?',
-                deleteDocButton: 'Delete!'
+                deleteDocButton: 'Delete!',
+                error: {
+                    missedDoc: 'Document does not exist!'
+                },
             },
             dataVersion: {
                 name: 'Data-Version',

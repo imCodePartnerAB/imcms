@@ -37,7 +37,7 @@ define(
                     'input': $inputBlock = components.texts.textNumber('<div>', {
                         placeholder: '1001',
                         text: texts.title,
-                        error: 'Document does not exist!'
+                        error: texts.error.missedDoc
                     }),
                     'confirm': components.buttons.negativeButton({
                         text: texts.deleteDocButton,
