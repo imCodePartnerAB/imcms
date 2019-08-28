@@ -7,7 +7,7 @@ define('imcms-cache-tab-builder',
 
         function buildCacheData($title, $button, $cacheSuccess) {
             return new BEM({
-                block: 'load-actions',
+                block: 'init-data',
                 elements: {
                     'title': $title,
                     'button': $button,
@@ -19,7 +19,7 @@ define('imcms-cache-tab-builder',
         function clearCacheRequest(request, $cacheSuccess) {
             $cacheSuccess.hide();
             request.done(() => {
-                $cacheSuccess.show();
+                $cacheSuccess.slideDown();
             }).fail(() => modal.buildErrorWindow(texts.error.failedClear));
         }
 
@@ -31,12 +31,13 @@ define('imcms-cache-tab-builder',
                     alias: imcms.document.alias
                 };
                 const $cacheTitle = $('<div>', {
-                    text: texts.invalidateTitle
+                    text: texts.invalidateTitle,
+                    style: 'margin: 12px'
                 });
 
                 const $cacheSuccess = $('<div>', {
                     text: texts.success,
-                    style: 'display: none'
+                    style: 'display: none; margin:12px; color:green'
                 });
 
                 const $button = components.buttons.positiveButton({
