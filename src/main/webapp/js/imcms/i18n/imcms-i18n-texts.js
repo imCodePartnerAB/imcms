@@ -198,6 +198,14 @@ const texts = {
                 publicationEnd: "Publicering avslutad",
                 by: "Av"
             },
+            cache: {
+                name: 'Cache',
+                invalidateButton: 'Ogiltig',
+                invalidateTitle: 'Ogiltig cache',
+                warning: {
+                    warningClear: 'Vill du verkligen ogiltiga den aktuella dokumentcachen ?'
+                }
+            },
             file: {
                 name: "Filer",
                 upload: "Ladda upp",
@@ -968,6 +976,14 @@ const texts = {
                 published: "Published",
                 publicationEnd: "Publication end",
                 by: "By"
+            },
+            cache: {
+                name: 'Cache',
+                invalidateButton: 'Clear cache',
+                invalidateTitle: 'Invalidate cache',
+                warning: {
+                    warningClear: 'Are you really want to invalidate current document cache ?'
+                }
             },
             file: {
                 name: "Files",
