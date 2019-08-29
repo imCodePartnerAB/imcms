@@ -31,6 +31,11 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
     }
 
     @Override
+    public long countDocuments() {
+        return defaultDelegatingByTypeDocumentService.countDocuments();
+    }
+
+    @Override
     public Document get(int docId) throws DocumentNotExistException {
         return defaultDelegatingByTypeDocumentService.get(docId);
     }

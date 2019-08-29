@@ -29,6 +29,11 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
     }
 
     @Override
+    public long countDocuments() {
+        return defaultDocumentService.countDocuments();
+    }
+
+    @Override
     public UrlDocumentDTO createFromParent(Integer parentDocId) {
         return Value.with(
                 new UrlDocumentDTO(defaultDocumentService.createFromParent(parentDocId)),

@@ -62,6 +62,11 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
     }
 
     @Override
+    public long countDocuments() {
+        return defaultDocumentService.countDocuments();
+    }
+
+    @Override
     public FileDocumentDTO get(int docId) {
         final FileDocumentDTO fileDocument = new FileDocumentDTO(defaultDocumentService.get(docId));
 

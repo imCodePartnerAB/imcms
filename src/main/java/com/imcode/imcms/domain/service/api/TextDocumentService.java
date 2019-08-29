@@ -47,6 +47,11 @@ public class TextDocumentService implements DocumentService<TextDocumentDTO> {
     }
 
     @Override
+    public long countDocuments() {
+        return defaultDocumentService.countDocuments();
+    }
+
+    @Override
     public TextDocumentDTO createFromParent(Integer parentDocId) {
         TextDocumentDTO parentClone = get(parentDocId).clone();
         parentClone.setLatestVersion(parentClone.getCurrentVersion());

@@ -41,6 +41,11 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
     }
 
     @Override
+    public long countDocuments() {
+        return metaRepository.count();
+    }
+
+    @Override
     public Document createNewDocument(DocumentType type, Integer parentDocId) {
         return getCorrespondingDocumentService(type).createFromParent(parentDocId);
     }

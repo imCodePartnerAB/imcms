@@ -90,6 +90,11 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     }
 
     @Override
+    public long countDocuments() {
+        return metaRepository.count();
+    }
+
+    @Override
     public DocumentDTO createFromParent(Integer parentDocId) {
         DocumentDTO parentClone = get(parentDocId).clone();
         parentClone.setLatestVersion(parentClone.getCurrentVersion());
