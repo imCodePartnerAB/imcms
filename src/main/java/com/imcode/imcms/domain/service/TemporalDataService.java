@@ -10,7 +10,9 @@ public interface TemporalDataService {
 
     void invalidateOtherContentCache();
 
-    void rebuildDocumentIndex();
+    long rebuildDocumentIndexAndGetDocumentsAmount();
+
+    long getAmountOfIndexedDocuments();
 
     String getDateInvalidateDocumentCache() throws IOException;
 

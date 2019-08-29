@@ -10,6 +10,8 @@ import org.apache.solr.common.SolrInputDocument;
  */
 public interface BasicDocumentService<D extends Document> extends DeleterByDocumentId {
 
+    long countDocuments();
+
     D get(int docId) throws DocumentNotExistException;
 
     boolean publishDocument(int docId, int userId);
