@@ -1,6 +1,7 @@
 @import url("imcms-reset.css");
 @import url("grid/imcms-grid.css");
-@import url("imcms-access_tabs_page.css");
+@import url("page-info/imcms-access_page_info.css");
+@import url("page-info/imcms-cache_page_info.css");
 @import url("imcms-button.css");
 @import url("imcms-buttons.css");
 @import url("imcms-calendar.css");
@@ -18,6 +19,7 @@
 @import url("imcms-form.css");
 @import url("imcms-messages.css");
 @import url("imcms-head.css");
+@import url("imcms-loading.css");
 @import url("imcms-keyword.css");
 @import url("imcms-label.css");
 @import url("imcms-number_box.css");
