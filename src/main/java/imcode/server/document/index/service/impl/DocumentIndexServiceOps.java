@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 /**
@@ -30,6 +31,8 @@ public class DocumentIndexServiceOps {
 
     private final DocumentMapper documentMapper;
     private final DocumentIndexer documentIndexer;
+
+    private AtomicLong indexedDocumentsAmount = new AtomicLong();
 
     @Autowired
     public DocumentIndexServiceOps(DocumentMapper documentMapper,
@@ -95,6 +98,8 @@ public class DocumentIndexServiceOps {
 
         progressCallback.accept(new IndexRebuildProgress(rebuildStartTime, rebuildStartTime, docsCount, docNo));
 
+        indexedDocumentsAmount.set(0);
+
         for (int id : ids) {
             if (Thread.interrupted()) {
                 solrClient.rollback();
@@ -106,6 +111,7 @@ public class DocumentIndexServiceOps {
                 solrClient.add(solrInputDoc);
                 logger.debug("Added input doc with id " + id + " to index.");
             }
+            indexedDocumentsAmount.incrementAndGet();
 
             docNo += 1;
             progressCallback.accept(new IndexRebuildProgress(rebuildStartTime, System.currentTimeMillis(), docsCount, docNo));
@@ -115,7 +121,12 @@ public class DocumentIndexServiceOps {
 
         solrClient.deleteByQuery(String.format("timestamp:{* TO %s}", rebuildStartDt.toInstant().toString()));
         solrClient.commit();
+        indexedDocumentsAmount.set(-1);
 
         logger.debug("Index rebuild is complete.");
+    }
+
+    public long getAmountOfIndexedDocuments() {
+        return indexedDocumentsAmount.get();
     }
 }
