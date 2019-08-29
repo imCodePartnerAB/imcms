@@ -1,8 +1,11 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.component.PublicDocumentsCache;
+import com.imcode.imcms.domain.dto.DocumentDTO;
+import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemporalDataService;
 import imcode.server.document.index.ResolvingQueryIndex;
+import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -42,12 +45,17 @@ public class DefaultTemporalDataService implements TemporalDataService {
     private final Pattern patternStaticContentCacheDate = Pattern.compile(STATIC_CONTENT_CACHE_DATE_REGEX);
     private final Pattern patternContentCacheDate = Pattern.compile(CONTENT_CACHE_DATE_REGEX);
 
+    private final DocumentIndexServiceOps documentIndexServiceOps;
+    private final DocumentService<DocumentDTO> defaultDocumentService;
+
     @Value("/WEB-INF/logs/error.log")
     private Path path;
 
-    public DefaultTemporalDataService(PublicDocumentsCache publicDocumentsCache, ResolvingQueryIndex resolvingQueryIndex) {
+    public DefaultTemporalDataService(PublicDocumentsCache publicDocumentsCache, ResolvingQueryIndex resolvingQueryIndex, DocumentIndexServiceOps documentIndexServiceOps, DocumentService<DocumentDTO> defaultDocumentService) {
         this.publicDocumentsCache = publicDocumentsCache;
         this.resolvingQueryIndex = resolvingQueryIndex;
+        this.documentIndexServiceOps = documentIndexServiceOps;
+        this.defaultDocumentService = defaultDocumentService;
     }
 
     @Override
@@ -69,9 +77,16 @@ public class DefaultTemporalDataService implements TemporalDataService {
     }
 
     @Override
-    public void rebuildDocumentIndex() {
+    public long rebuildDocumentIndexAndGetDocumentsAmount() {
         resolvingQueryIndex.rebuild();
         logger.info("Last-date-reindex: " + formatter.format(new Date()));
+
+        return defaultDocumentService.countDocuments();
+    }
+
+    @Override
+    public long getAmountOfIndexedDocuments() {
+        return documentIndexServiceOps.getAmountOfIndexedDocuments();
     }
 
     @Override
