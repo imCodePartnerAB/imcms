@@ -19,8 +19,13 @@ public class TemporalDataController {
     }
 
     @DeleteMapping("/document-index")
-    public void rebuildDocumentIndex() {
-        temporalDataService.rebuildDocumentIndex();
+    public long rebuildDocumentIndex() {
+        return temporalDataService.rebuildDocumentIndexAndGetDocumentsAmount();
+    }
+
+    @GetMapping("/indexed-documents-amount")
+    public long getAmountOfIndexedDocuments() {
+        return temporalDataService.getAmountOfIndexedDocuments();
     }
 
     @DeleteMapping("/public-document")
