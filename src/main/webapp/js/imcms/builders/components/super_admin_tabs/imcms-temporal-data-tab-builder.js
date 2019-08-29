@@ -23,7 +23,7 @@ define(
                 },
             }).buildBlockStructure('<div>');
         }
-        
+
         class DateLabel {
             constructor(dateRequest, title) {
                 this.dateRequest = dateRequest;
@@ -61,7 +61,7 @@ define(
             });
         }
 
-        function animateRequest(request, date, $loading, $success) {
+        function deleteCacheRequest(request, date, $loading, $success) {
             $success.hide();
             $loading.show();
             request().done(() => {
@@ -86,10 +86,39 @@ define(
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.rebuildDocumentIndex, lastUpdate, $loading, $success),
+                    click: () => reindexRequest(lastUpdate, $loading, $success),
                 });
 
                 return buildActions($button, lastUpdate.getLabel(), $loading, $success);
+            }
+
+            function reindexRequest(date, $loading, $success) {
+                $success.hide();
+                $loading.text('0%');
+                $loading.show();
+
+                temporalDataApi.rebuildDocumentIndex().done(totalAmount => {
+                    const interval = setInterval(() => updateLoading($loading, $success, interval, totalAmount, date), 2000);
+                });
+            }
+
+            function updateLoading($loading, $success, interval, totalAmount, date) {
+                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                    if (currentAmount === -1) {
+                        clearInterval(interval);
+                        date.updateDate();
+                        $loading.hide();
+                        $success.show();
+                        return;
+                    }
+
+                    const percent = getPercent(totalAmount, currentAmount);
+                    $loading.text(percent + '%');
+                });
+            }
+
+            function getPercent(totalAmount, currentAmount) {
+                return Math.round(100 / totalAmount * currentAmount);
             }
 
             return new BEM({
@@ -115,7 +144,7 @@ define(
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.deletePublicDocumentCache, lastUpdate, $loading, $success),
+                    click: () => deleteCacheRequest(temporalDataApi.deletePublicDocumentCache, lastUpdate, $loading, $success),
                 });
 
                 return buildActions($button, lastUpdate.getLabel(), $loading, $success);
@@ -144,7 +173,7 @@ define(
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.deleteStaticContentCache, lastUpdate, $loading, $success),
+                    click: () => deleteCacheRequest(temporalDataApi.deleteStaticContentCache, lastUpdate, $loading, $success),
                 });
 
                 return buildActions($button, lastUpdate.getLabel(), $loading, $success);
@@ -173,7 +202,7 @@ define(
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => animateRequest(temporalDataApi.deleteOtherContentCache, lastUpdate, $loading, $success),
+                    click: () => deleteCacheRequest(temporalDataApi.deleteOtherContentCache, lastUpdate, $loading, $success),
                 });
 
                 return buildActions($button, lastUpdate.getLabel(), $loading, $success);
