@@ -202,7 +202,6 @@ const texts = {
                 name: 'Cache',
                 invalidateButton: 'Ogiltig',
                 invalidateTitle: 'Ogiltig cache',
-                success: 'Rensad cache lyckades',
                 error: {
                     failedClear: 'Det gick inte att rensa det aktuella dokumentcachen!'
                 }
@@ -984,8 +983,7 @@ const texts = {
             cache: {
                 name: 'Cache',
                 invalidateButton: 'Clear cache',
-                invalidateTitle: 'Invalidate cache',
-                success: 'Cleared cache successful',
+                invalidateTitle: 'Invalidate public',
                 error: {
                     failedClear: 'Failed clear current document cache! '
                 }
