@@ -461,6 +461,11 @@
     padding-right: 10px;
 }
 
+.link-params-block__loading-animation {
+    margin-top: 30px;
+    margin-left: 50px;
+}
+
 .link-title-row__page-alias,
 .link-info-row__link-page-alias {
     width: 10%;

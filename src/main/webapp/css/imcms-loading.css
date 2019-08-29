@@ -7,11 +7,6 @@
     animation: spin 1.5s linear infinite;
 }
 
-.link-params-block__loading-animation {
-    margin-top: 30px;
-    margin-left: 50px;
-}
-
 @keyframes spin {
     0% {
         transform: rotate(0deg);
