@@ -1,0 +1,13 @@
+.init-data__title {
+    margin: 12px;
+}
+
+.cache-remove-document-row {
+    display: flex;
+}
+
+.cache-remove-document-row__loading,
+.cache-remove-document-row__success {
+    margin-left: 60px;
+    margin-top: 30px;
+}
