@@ -84,8 +84,12 @@ define(
                 return;
             }
 
-            modal.buildConfirmWindow(texts.confirmSave, () => {
-                saveContent(editor);
+            modal.buildModalWindow(texts.confirmSave, confirmed => {
+                if (!confirmed) {
+                    editor.setContent(editor.startContent);
+                } else {
+                    saveContent(editor);
+                }
             });
         }
 
