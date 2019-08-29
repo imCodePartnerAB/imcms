@@ -5,53 +5,62 @@ define('imcms-cache-tab-builder',
 
         texts = texts.pageInfo.cache;
 
-        function buildCacheData($title, $button, $cacheSuccess) {
+        function buildCacheData($title, $button) {
             return new BEM({
                 block: 'init-data',
                 elements: {
                     'title': $title,
                     'button': $button,
-                    'success': $cacheSuccess
                 },
             }).buildBlockStructure('<div>');
         }
 
-        function clearCacheRequest(request, $cacheSuccess) {
-            $cacheSuccess.hide();
-            request.done(() => {
-                $cacheSuccess.slideDown();
+        function clearCacheRequest(request, $loading, $success) {
+            $success.hide();
+            $loading.show();
+            request().done(() => {
+                $loading.hide();
+                $success.show();
             }).fail(() => modal.buildErrorWindow(texts.error.failedClear));
         }
 
         function buildDeleteDocsBlock() {
 
+            const $loading = $('<div>', {
+                class: 'loading-animation',
+                style: 'display: none',
+            });
+            const $success = $('<div>', {
+                class: 'success-animation',
+                style: 'display: none',
+            });
+
             function buildCacheActions() {
-                let dataParam = {
+                const dataParam = {
                     docId: imcms.document.id,
                     alias: imcms.document.alias
                 };
                 const $cacheTitle = $('<div>', {
                     text: texts.invalidateTitle,
-                    style: 'margin: 12px'
+                    class: 'imcms-title',
                 });
 
-                const $cacheSuccess = $('<div>', {
-                    text: texts.success,
-                    style: 'display: none; margin:12px; color:green'
-                });
+                const request = () => documentCacheRest.invalidate(dataParam);
 
                 const $button = components.buttons.positiveButton({
                     text: texts.invalidateButton,
-                    click: () => clearCacheRequest(documentCacheRest.invalidate(dataParam), $cacheSuccess)
+                    click: () => clearCacheRequest(request, $loading, $success)
                 });
 
-                return buildCacheData($cacheTitle, $button, $cacheSuccess)
+                return buildCacheData($cacheTitle, $button)
             }
 
             return new BEM({
                 block: 'cache-remove-document-row',
                 elements: {
-                    'build-data': buildCacheActions()
+                    'build-data': buildCacheActions(),
+                    'loading': $loading,
+                    'success': $success,
                 }
             }).buildBlockStructure('<div>')
         }
