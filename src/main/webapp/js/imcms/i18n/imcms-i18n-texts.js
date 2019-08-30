@@ -776,6 +776,7 @@ const texts = {
                 },
                 init: 'Verkställ',
                 lastUpdate: 'Raderad',
+                timeLeft: 'Tid kvar',
                 lastDeleteCache: 'Raderad',
             },
             menuTab: {
@@ -1558,6 +1559,7 @@ const texts = {
                 },
                 init: 'Init',
                 lastUpdate: 'Last updated',
+                timeLeft: 'Time left',
                 lastDeleteCache: 'Last updated',
             },
             menuTab: {
