@@ -770,9 +770,9 @@ const texts = {
                 name: 'Index / Cache',
                 actions: {
                     rebuildIndex: 'Indexera om innehållet',
-                    deletePublicDocCache: 'Radera publik dokumentcache',
-                    deleteOtherCache: 'Ta bort annan cache',
-                    deleteStaticCache: 'Radera statisk cache',
+                    deletePublicDocCache: 'Töm publik dokumentcahce',
+                    deleteOtherCache: 'Töm annan cache',
+                    deleteStaticCache: 'Töm statisk cache',
                 },
                 init: 'Verkställ',
                 lastUpdate: 'Raderad',
