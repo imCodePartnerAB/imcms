@@ -82,7 +82,7 @@ define(
                 return number < 10 ? '0' + number : '' + number;
             }
 
-            getLabel(label) {
+            getLabel() {
                 return this.$label;
             }
         }
@@ -148,7 +148,7 @@ define(
                 $loading.show();
 
                 temporalDataApi.rebuildDocumentIndex().done(totalAmount => {
-                    time.setMillis(calculateTimeByAmount(totalAmount, totalAmount, TIME_PER_ONE_REINDEX));
+                    time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_REINDEX));
                     time.getLabel().show();
 
                     const interval = setInterval(
