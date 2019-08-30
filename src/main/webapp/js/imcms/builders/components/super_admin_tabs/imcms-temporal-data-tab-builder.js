@@ -12,6 +12,9 @@ define(
 
         texts = texts.superAdmin.temporalContent;
 
+        const LOADING_INTERVAL = 2000;
+        const TIME_PER_ONE_REINDEX = 13;
+
         function buildActions($button, $date, $loading, $success) {
             return new BEM({
                 block: 'actions',
@@ -30,7 +33,7 @@ define(
                 this.title = title;
                 this.$label = $('<div>', {
                     class: 'imcms-label',
-                    text: title,
+                    text: title + ':',
                 });
 
                 this.updateDate();
@@ -43,6 +46,43 @@ define(
             }
 
             getLabel() {
+                return this.$label;
+            }
+        }
+
+        class TimeLabel {
+            constructor(title) {
+                this.title = title;
+                this.$label = $('<div>', {
+                    class: 'imcms-label',
+                    text: title + ': ',
+                });
+            }
+
+            setMillis(millis) {
+                this.$label.text(this.title + ': ' + this.millisToTimeString(millis));
+            }
+
+            millisToTimeString(millis) {
+                let seconds = (millis / 1000);
+                let minutes = seconds / 60;
+                let hours = minutes / 60;
+
+                seconds = seconds % 60;
+                minutes = minutes % 60;
+
+                const correctS = this.numberToCorrectString(Math.round(seconds));
+                const correctM = this.numberToCorrectString(Math.round(minutes));
+                const correctH = Math.round(hours);
+
+                return correctH + ':' + correctM + ':' + correctS;
+            }
+
+            numberToCorrectString(number) {
+                return number < 10 ? '0' + number : '' + number;
+            }
+
+            getLabel(label) {
                 return this.$label;
             }
         }
@@ -74,7 +114,6 @@ define(
         function buildReindexRow() {
             function buildReindexTitleMessage() {
                 return components.texts.titleText('<div>', texts.actions.rebuildIndex, {});
-
             }
 
             function buildReindexActions() {
@@ -82,39 +121,64 @@ define(
                 const $success = buildSuccessAnimation();
 
                 const lastUpdate = new DateLabel(temporalDataApi.getDateDocumentIndex, texts.lastUpdate);
+                const timeLeft = new TimeLabel(texts.timeLeft);
+                timeLeft.getLabel().hide();
 
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => reindexRequest(lastUpdate, $loading, $success),
+                    click: () => reindexRequest($loading, $success, lastUpdate, timeLeft),
                 });
 
-                return buildActions($button, lastUpdate.getLabel(), $loading, $success);
+                return new BEM({
+                    block: 'actions',
+                    elements: {
+                        'button': $button,
+                        'date': lastUpdate.getLabel(),
+                        'loading': $loading,
+                        'success': $success,
+                        'time': timeLeft.getLabel(),
+                    },
+                }).buildBlockStructure('<div>');
             }
 
-            function reindexRequest(date, $loading, $success) {
+            function reindexRequest($loading, $success, date, time) {
                 $success.hide();
                 $loading.text('0%');
                 $loading.show();
 
                 temporalDataApi.rebuildDocumentIndex().done(totalAmount => {
-                    const interval = setInterval(() => updateLoading($loading, $success, interval, totalAmount, date), 2000);
+                    time.setMillis(calculateTimeByAmount(totalAmount, totalAmount, TIME_PER_ONE_REINDEX));
+                    time.getLabel().show();
+
+                    const interval = setInterval(
+                        () => updateLoading($loading, $success, interval, totalAmount, date, time),
+                        LOADING_INTERVAL
+                    );
                 });
             }
 
-            function updateLoading($loading, $success, interval, totalAmount, date) {
+            function updateLoading($loading, $success, interval, totalAmount, date, time) {
                 temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+
                     if (currentAmount === -1) {
                         clearInterval(interval);
                         date.updateDate();
                         $loading.hide();
                         $success.show();
+                        time.getLabel().hide();
+
                         return;
                     }
 
+                    time.setMillis(calculateTimeByAmount(totalAmount, currentAmount, TIME_PER_ONE_REINDEX));
                     const percent = getPercent(totalAmount, currentAmount);
                     $loading.text(percent + '%');
                 });
+            }
+
+            function calculateTimeByAmount(totalAmount, currentAmount, timePerOne) {
+                return (totalAmount - currentAmount) * timePerOne;
             }
 
             function getPercent(totalAmount, currentAmount) {
