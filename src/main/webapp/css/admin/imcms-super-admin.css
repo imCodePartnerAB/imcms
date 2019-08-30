@@ -682,7 +682,8 @@
     display: flex;
 }
 
-.actions__date {
+.actions__date,
+.actions__time {
     width: 300px;
     text-align: center;
     margin: auto 30px;
