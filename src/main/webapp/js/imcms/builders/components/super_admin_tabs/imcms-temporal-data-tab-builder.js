@@ -13,7 +13,7 @@ define(
         texts = texts.superAdmin.temporalContent;
 
         const LOADING_INTERVAL = 2000;
-        const TIME_PER_ONE_REINDEX = 13;
+        const TIME_PER_ONE_REINDEX = 45;
 
         function buildActions($button, $date, $loading, $success) {
             return new BEM({
