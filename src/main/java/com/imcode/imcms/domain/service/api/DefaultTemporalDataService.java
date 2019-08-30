@@ -106,6 +106,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public String getDateDocumentReIndex() throws IOException {
+        getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
         return getLastDateModification(patternReindexDate);
     }
 
