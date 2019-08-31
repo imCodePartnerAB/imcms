@@ -6,6 +6,7 @@ import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.TemporalDataService;
 import imcode.server.document.index.ResolvingQueryIndex;
 import imcode.server.document.index.service.impl.DocumentIndexServiceOps;
+import net.sf.ehcache.Ehcache;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     private final DocumentIndexServiceOps documentIndexServiceOps;
     private final DocumentService<DocumentDTO> defaultDocumentService;
+    private Ehcache cache;
 
     @Value("/WEB-INF/logs/error.log")
     private Path path;
@@ -106,7 +108,7 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public String getDateDocumentReIndex() throws IOException {
-        getCacheManager(null).getEhcache(OTHER_CACHE_NAME).removeAll();
+        cache.setDisabled(true);
         return getLastDateModification(patternReindexDate);
     }
 
