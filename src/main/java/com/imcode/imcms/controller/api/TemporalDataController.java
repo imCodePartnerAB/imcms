@@ -44,6 +44,7 @@ public class TemporalDataController {
         temporalDataService.invalidateOtherContentCache();
     }
 
+    // TODO: 01.09.19 fixed disk cache, and remove this random number from parameter
     @GetMapping("/date-reindex")
     public String getDateDocumentReindex(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateDocumentReIndex();

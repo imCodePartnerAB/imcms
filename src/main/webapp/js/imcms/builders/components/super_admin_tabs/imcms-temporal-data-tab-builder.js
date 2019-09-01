@@ -39,6 +39,7 @@ define(
                 this.updateDate();
             }
 
+            //todo fixed this work with random number
             updateDate() {
                 const randomNum = {
                     randomNumber: Math.random()
