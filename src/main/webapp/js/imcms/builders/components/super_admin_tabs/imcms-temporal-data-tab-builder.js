@@ -41,7 +41,7 @@ define(
 
             updateDate() {
                 const randomNum = {
-                    randomNumber: Math.floor(Math.random() * 10)
+                    randomNumber: Math.random()
                 };
 
                 this.dateRequest(randomNum).done(dateString => {

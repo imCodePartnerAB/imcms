@@ -45,22 +45,22 @@ public class TemporalDataController {
     }
 
     @GetMapping("/date-reindex")
-    public String getDateDocumentReindex(@RequestParam int randomNumber) throws IOException {
+    public String getDateDocumentReindex(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateDocumentReIndex();
     }
 
     @GetMapping("/date-public-document")
-    public String getDateRemoveDocumentCache(@RequestParam int randomNumber) throws IOException {
+    public String getDateRemoveDocumentCache(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateInvalidateDocumentCache();
     }
 
     @GetMapping("/date-static-content")
-    public String getDateRemoveStaticContentCache(@RequestParam int randomNumber) throws IOException {
+    public String getDateRemoveStaticContentCache(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateStaticContentCache();
     }
 
     @GetMapping("/date-other-content")
-    public String getDateRemoveOtherContentCache(@RequestParam int randomNumber) throws IOException {
+    public String getDateRemoveOtherContentCache(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateInvalidateContentCache();
     }
 }
