@@ -40,7 +40,11 @@ define(
             }
 
             updateDate() {
-                this.dateRequest().done(dateString => {
+                const randomNum = {
+                    randomNumber: Math.floor(Math.random() * 10)
+                };
+
+                this.dateRequest(randomNum).done(dateString => {
                     this.$label.text(this.title + ': ' + dateString);
                 })
             }
