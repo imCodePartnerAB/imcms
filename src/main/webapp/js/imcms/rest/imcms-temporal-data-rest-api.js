@@ -9,10 +9,22 @@ define('imcms-temporal-data-rest-api', ['imcms-rest-api'], function (rest) {
 
     api.getAmountOfIndexedDocuments = () => rest.ajax.call({url: `${url}/indexed-documents-amount`, type: 'GET', json: false});
 
-    api.getDateDocumentIndex = () => rest.ajax.call({url: `${url}/date-reindex`, type: 'GET', json: false});
-    api.getDateRemoveDocumentCache = () => rest.ajax.call({url: `${url}/date-public-document`, type: 'GET', json: false});
-    api.getDateRemoveStaticContentCache = () => rest.ajax.call({url: `${url}/date-static-content`, type: 'GET', json: false});
-    api.getDateRemoveOtherContentCache = () => rest.ajax.call({url: `${url}/date-other-content`, type: 'GET', json: false});
+    api.getDateDocumentIndex = () => rest.ajax.call({url: `${url}/date-reindex`, type: 'GET', json: true});
+    api.getDateRemoveDocumentCache = () => rest.ajax.call({
+        url: `${url}/date-public-document`,
+        type: 'GET',
+        json: true
+    });
+    api.getDateRemoveStaticContentCache = () => rest.ajax.call({
+        url: `${url}/date-static-content`,
+        type: 'GET',
+        json: true
+    });
+    api.getDateRemoveOtherContentCache = () => rest.ajax.call({
+        url: `${url}/date-other-content`,
+        type: 'GET',
+        json: true
+    });
 
     return api;
 });
