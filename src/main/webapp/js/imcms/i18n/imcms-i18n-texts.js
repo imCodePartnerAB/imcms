@@ -454,6 +454,7 @@ const texts = {
         contentSaveWarningMessage: "Din session löper ut på 2 min. Var god, spara det nödvändiga innehållet. Sessionen fortsätter efter att du har sparat.",
         superAdmin: {
             head: 'SuperAdmin',
+            oldInterface: 'Äldre gränssnitt',
             users: {
                 name: 'Användare',
                 searchFilter: {
@@ -1237,6 +1238,7 @@ const texts = {
         contentSaveWarningMessage: "Your session will expire in 2 min. Please, save necessary content. Session will be continued after saving.",
         superAdmin: {
             head: 'SuperAdmin',
+            oldInterface: 'Old interface',
             users: {
                 name: 'Users',
                 searchFilter: {
