@@ -5,9 +5,10 @@
 define(
     'imcms-super-admin-page-builder',
     [
-        'imcms-bem-builder', 'imcms-components-builder', 'imcms-super-admin-tabs-builder', 'imcms-i18n-texts', 'jquery'
+        'imcms-bem-builder', 'imcms-components-builder', 'imcms-super-admin-tabs-builder', 'imcms-i18n-texts',
+        'jquery', 'imcms'
     ],
-    function (BEM, components, superAdminTabs, texts, $) {
+    function (BEM, components, superAdminTabs, texts, $, imcms) {
 
         texts = texts.superAdmin;
 
@@ -34,9 +35,9 @@ define(
                         'class': 'imcms-title',
                         text: texts.head
                     }),
-                    'old-admin': components.buttons.neutralButton({
+                    'old-admin': $('<a>', {
+                        href: imcms.contextPath + '/servlet/AdminManager',
                         text: texts.oldInterface + ' \u2b95',
-                        click: () => window.location = '/servlet/AdminManager',
                     }),
                 }
             }).buildBlockStructure('<div>', {
