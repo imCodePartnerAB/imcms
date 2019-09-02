@@ -9,7 +9,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
-@Deprecated
+// TODO: 02.09.19 check, how to use it class and methods, because it all will be deprecated !!!
 public class TextDocumentViewing {
 
     private final TextDocument textDocument;
@@ -22,7 +22,6 @@ public class TextDocumentViewing {
         this.isEditMode = isEditMode;
     }
 
-    @Deprecated
     public static TextDocumentViewing fromRequest(HttpServletRequest request) {
         final TextDocumentDomainObject currentDocument =
                 (TextDocumentDomainObject) request.getAttribute("currentDocument");
