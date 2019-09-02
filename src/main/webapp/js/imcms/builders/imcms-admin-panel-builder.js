@@ -115,7 +115,7 @@ define("imcms-admin-panel-builder",
                 }, {
                     name: 'admin',
                     tag: "<a>",
-                    href: imcms.contextPath + "/servlet/AdminManager",
+                    href: imcms.contextPath + "/api/admin/manager",
                     content: texts.admin,
                     title: texts.adminTitle,
                     modifiers: ["admin"],
