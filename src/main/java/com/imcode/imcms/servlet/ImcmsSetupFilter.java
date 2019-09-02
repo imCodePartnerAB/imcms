@@ -51,6 +51,7 @@ public class ImcmsSetupFilter implements Filter {
     public static final String USER_LANGUAGE_IN_COOKIE_NAME = "userLanguage";
 
     private static final String USER_REMOTE_ADDRESS = "userRemoteAddress";
+    private static final String USER_AGENT_BROWSER = "User-Agent";
 
     private final Logger logger = Logger.getLogger(getClass());
     private FilterDelegate filterDelegate;
@@ -154,6 +155,7 @@ public class ImcmsSetupFilter implements Filter {
 
             if (session.isNew()) {
                 session.setAttribute(USER_REMOTE_ADDRESS, request.getRemoteAddr());
+                session.setAttribute(USER_AGENT_BROWSER, request.getHeader(USER_AGENT_BROWSER));
                 service.incrementSessionCounter();
                 setDomainSessionCookie(response, session);
 
@@ -314,10 +316,13 @@ public class ImcmsSetupFilter implements Filter {
         boolean invalidRemoteAddress = false;
 
         final String cookieUserRemoteAddress = (String) request.getSession().getAttribute(USER_REMOTE_ADDRESS);
+        final String cookieUserAgentBrowser = (String) request.getSession().getAttribute(USER_AGENT_BROWSER);
 
         if (null == cookieUserRemoteAddress) return false;
 
-        if (!request.getRemoteAddr().equals(cookieUserRemoteAddress)) {
+        if (null == cookieUserAgentBrowser) return false;
+
+        if (!request.getRemoteAddr().equals(cookieUserRemoteAddress) || !request.getHeader(USER_AGENT_BROWSER).equals(cookieUserAgentBrowser)) {
 
             Arrays.stream(request.getCookies())
                     .filter(cookie -> {

@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.service.TemporalDataService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
@@ -43,23 +44,24 @@ public class TemporalDataController {
         temporalDataService.invalidateOtherContentCache();
     }
 
+    // TODO: 01.09.19 fixed disk cache, and remove this random number from parameter
     @GetMapping("/date-reindex")
-    public String getDateDocumentReindex() throws IOException {
+    public String getDateDocumentReindex(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateDocumentReIndex();
     }
 
     @GetMapping("/date-public-document")
-    public String getDateRemoveDocumentCache() throws IOException {
+    public String getDateRemoveDocumentCache(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateInvalidateDocumentCache();
     }
 
     @GetMapping("/date-static-content")
-    public String getDateRemoveStaticContentCache() throws IOException {
+    public String getDateRemoveStaticContentCache(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateStaticContentCache();
     }
 
     @GetMapping("/date-other-content")
-    public String getDateRemoveOtherContentCache() throws IOException {
+    public String getDateRemoveOtherContentCache(@RequestParam double randomNumber) throws IOException {
         return temporalDataService.getDateInvalidateContentCache();
     }
 }

@@ -39,8 +39,13 @@ define(
                 this.updateDate();
             }
 
+            //todo fixed this work with random number
             updateDate() {
-                this.dateRequest().done(dateString => {
+                const randomNum = {
+                    randomNumber: Math.random()
+                };
+
+                this.dateRequest(randomNum).done(dateString => {
                     this.$label.text(this.title + ': ' + dateString);
                 })
             }
