@@ -776,7 +776,7 @@ const texts = {
                     deleteStaticCache: 'Töm statisk cache',
                 },
                 init: 'Verkställ',
-                lastUpdate: 'Raderad',
+                lastUpdate: 'Indexerad',
                 timeLeft: 'Tid kvar',
                 lastDeleteCache: 'Raderad',
             },
