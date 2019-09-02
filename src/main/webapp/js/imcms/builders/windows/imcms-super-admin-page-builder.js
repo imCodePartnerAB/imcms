@@ -33,7 +33,11 @@ define(
                     'title': $('<div>', {
                         'class': 'imcms-title',
                         text: texts.head
-                    })
+                    }),
+                    'old-admin': components.buttons.neutralButton({
+                        text: texts.oldInterface + ' \u2b95',
+                        click: () => window.location = '/servlet/AdminManager',
+                    }),
                 }
             }).buildBlockStructure('<div>', {
                 'class': 'imcms-info-head'
