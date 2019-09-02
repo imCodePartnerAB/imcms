@@ -33,6 +33,13 @@
     }
 }
 
+.imcms-head__old-admin {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: white;
+}
+
 .imcms-pop-up-modal {
     height: 905px;
 }
