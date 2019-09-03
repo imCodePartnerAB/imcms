@@ -78,8 +78,10 @@ public class DefaultTemporalDataService implements TemporalDataService {
 
     @Override
     public long rebuildDocumentIndexAndGetDocumentsAmount() {
-        resolvingQueryIndex.rebuild();
-        logger.info("Last-date-reindex: " + formatter.format(new Date()));
+        if (getAmountOfIndexedDocuments() == -1) {
+            resolvingQueryIndex.rebuild();
+            logger.info("Last-date-reindex: " + formatter.format(new Date()));
+        }
 
         return defaultDocumentService.countDocuments();
     }
