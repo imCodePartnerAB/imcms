@@ -32,7 +32,7 @@ public class DocumentIndexServiceOps {
     private final DocumentMapper documentMapper;
     private final DocumentIndexer documentIndexer;
 
-    private AtomicLong indexedDocumentsAmount = new AtomicLong();
+    private AtomicLong indexedDocumentsAmount = new AtomicLong(-1);
 
     @Autowired
     public DocumentIndexServiceOps(DocumentMapper documentMapper,
