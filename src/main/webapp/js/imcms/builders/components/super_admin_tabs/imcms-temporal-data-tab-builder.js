@@ -161,7 +161,7 @@ define(
 
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
-                    text: texts.init,
+                    text: texts.initIndexing,
                     click: () => reindexRequest($button, $loading, $success, lastUpdate, timeLeft),
                 });
 
@@ -185,17 +185,27 @@ define(
                     .text(texts.indexing)
                     .addClass(DISABLED_BUTTON_CLASS_NAME);
                 $success.hide();
-                $loading.text('0%');
-                $loading.show();
 
-                temporalDataApi.rebuildDocumentIndex().done(totalAmount => {
-                    time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_REINDEX));
-                    time.getLabel().show();
+                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                    if (currentAmount === -1) {
+                        $loading.text('0%');
+                        $loading.show();
 
-                    const interval = setInterval(
-                        () => updateLoading($button, $loading, $success, interval, totalAmount, date, time),
-                        LOADING_INTERVAL
-                    );
+                        temporalDataApi.rebuildDocumentIndex().done(totalAmount => {
+                            time.setMillis(calculateTimeByAmount(totalAmount, 0, TIME_PER_ONE_REINDEX));
+                            time.getLabel().show();
+
+                            const interval = setInterval(
+                                () => updateLoading($button, $loading, $success, interval, totalAmount, date, time),
+                                LOADING_INTERVAL
+                            );
+                        });
+                    } else {
+                        const interval = setInterval(
+                            () => disableButtonWhileIndexing($button, date, interval),
+                            LOADING_INTERVAL
+                        );
+                    }
                 });
             }
 
@@ -208,7 +218,7 @@ define(
                         $button
                             .removeAttr('disabled')
                             .removeClass(DISABLED_BUTTON_CLASS_NAME)
-                            .text(texts.init);
+                            .text(texts.initIndexing);
                         $loading.hide();
                         $success.show();
                         time.getLabel().hide();
