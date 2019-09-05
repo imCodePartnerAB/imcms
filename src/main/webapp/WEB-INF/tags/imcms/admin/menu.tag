@@ -6,6 +6,7 @@
 <%@ attribute name="document" required="false" type="java.lang.String" %>
 <%@ attribute name="pre" required="false" type="java.lang.String" %>
 <%@ attribute name="post" required="false" type="java.lang.String" %>
+<%@ attribute name="isMenuLooped" required="false" type="java.lang.String" %>
 
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
@@ -29,10 +30,22 @@
          : menuService.getPublicMenuItems(index, targetDocId, language)
      }" scope="request"/>
 
+
     <c:set var="menuContent">
-        ${pre}
-        <jsp:doBody/>
-        ${post}
+        <c:choose>
+            <c:when test="${isMenuLooped.equals('true') || not empty isMenuLooped}">
+                <imcms:menuLoop>
+                    ${pre}
+                    <jsp:doBody/>
+                    ${post}
+                </imcms:menuLoop>
+            </c:when>
+            <c:otherwise>
+                ${pre}
+                <jsp:doBody/>
+                ${post}
+            </c:otherwise>
+        </c:choose>
     </c:set>
     <c:remove var="menuItems"/>
 
