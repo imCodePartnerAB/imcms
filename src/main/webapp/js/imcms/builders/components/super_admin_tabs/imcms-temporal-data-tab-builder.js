@@ -14,6 +14,7 @@ define(
 
         const LOADING_INTERVAL = 2000;
         const TIME_PER_ONE_REINDEX = 45;
+        const DISABLED_BUTTON_CLASS_NAME = 'imcms-button--disabled';
 
         function buildActions($button, $date, $loading, $success) {
             return new BEM({
@@ -121,6 +122,35 @@ define(
                 return components.texts.titleText('<div>', texts.actions.rebuildIndex, {});
             }
 
+            function init($button, date) {
+                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                    if (currentAmount !== -1) {
+                        $button
+                            .attr('disabled', '')
+                            .text(texts.indexing)
+                            .addClass(DISABLED_BUTTON_CLASS_NAME);
+
+                        const interval = setInterval(
+                            () => disableButtonWhileIndexing($button, date, interval),
+                            LOADING_INTERVAL
+                        );
+                    }
+                });
+            }
+
+            function disableButtonWhileIndexing($button, date, interval) {
+                temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
+                    if (currentAmount === -1) {
+                        clearInterval(interval);
+                        date.updateDate();
+                        $button
+                            .removeAttr('disabled')
+                            .removeClass(DISABLED_BUTTON_CLASS_NAME)
+                            .text(texts.init);
+                    }
+                });
+            }
+
             function buildReindexActions() {
                 const $loading = buildLoadingAnimation();
                 const $success = buildSuccessAnimation();
@@ -132,8 +162,10 @@ define(
                 const $button = components.buttons.warningButton({
                     'class': 'imcms-buttons imcms-form__field',
                     text: texts.init,
-                    click: () => reindexRequest($loading, $success, lastUpdate, timeLeft),
+                    click: () => reindexRequest($button, $loading, $success, lastUpdate, timeLeft),
                 });
+
+                init($button, lastUpdate);
 
                 return new BEM({
                     block: 'actions',
@@ -147,7 +179,11 @@ define(
                 }).buildBlockStructure('<div>');
             }
 
-            function reindexRequest($loading, $success, date, time) {
+            function reindexRequest($button, $loading, $success, date, time) {
+                $button
+                    .attr('disabled', '')
+                    .text(texts.indexing)
+                    .addClass(DISABLED_BUTTON_CLASS_NAME);
                 $success.hide();
                 $loading.text('0%');
                 $loading.show();
@@ -157,18 +193,22 @@ define(
                     time.getLabel().show();
 
                     const interval = setInterval(
-                        () => updateLoading($loading, $success, interval, totalAmount, date, time),
+                        () => updateLoading($button, $loading, $success, interval, totalAmount, date, time),
                         LOADING_INTERVAL
                     );
                 });
             }
 
-            function updateLoading($loading, $success, interval, totalAmount, date, time) {
+            function updateLoading($button, $loading, $success, interval, totalAmount, date, time) {
                 temporalDataApi.getAmountOfIndexedDocuments().done(currentAmount => {
 
                     if (currentAmount === -1) {
                         clearInterval(interval);
                         date.updateDate();
+                        $button
+                            .removeAttr('disabled')
+                            .removeClass(DISABLED_BUTTON_CLASS_NAME)
+                            .text(texts.init);
                         $loading.hide();
                         $success.show();
                         time.getLabel().hide();
