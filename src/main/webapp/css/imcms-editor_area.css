@@ -28,6 +28,10 @@
     display: block;
 }
 
+.imcms-editor-area--menu:hover .imcms-editor-area__text-label {
+    display: block;
+}
+
 .imcms-editor-area--text.imcms-editor-area--active .imcms-editor-area__text-label {
     display: none;
 }
