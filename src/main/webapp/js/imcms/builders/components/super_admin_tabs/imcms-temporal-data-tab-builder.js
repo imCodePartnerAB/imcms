@@ -46,7 +46,7 @@ define(
                     randomNumber: Math.random()
                 };
 
-                this.dateRequest(randomNum).done(dateString => {
+                this.dateRequest().done(dateString => {
                     this.$label.text(this.title + ': ' + dateString);
                 })
             }
