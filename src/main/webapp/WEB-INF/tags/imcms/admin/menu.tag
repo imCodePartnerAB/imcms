@@ -7,6 +7,8 @@
 <%@ attribute name="pre" required="false" type="java.lang.String" %>
 <%@ attribute name="post" required="false" type="java.lang.String" %>
 <%@ attribute name="isMenuLooped" required="false" type="java.lang.String" %>
+<%@ attribute name="label" required="false" %>
+<%@ attribute name="showlabel" required="false" %>
 
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
@@ -52,19 +54,22 @@
     <c:choose>
         <c:when test="${isEditMode && editOptions.editMenu}">
             <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
-            <c:set var="label"
+            <c:set var="editLabel"
                    value="${isInternal ? (language.equals('en') ? 'Menu Editor' : 'Redigera Meny') : 'This menu is edited on page '.concat(document)}"/>
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
             <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
                  data-menu-index="${index}">
+                <c:if test="${not empty label && not empty showlabel && showlabel.equals('true')}">
+                    <div class="imcms-editor-area__text-label">${label}</div>
+                </c:if>
                 <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
                      data-menu-index="${index}">${menuContent}</div>
                     <%-- attributes used as unique identifier while reload --%>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
-                        <div class="imcms-editor-area__control-title">${label}</div>
+                        <div class="imcms-editor-area__control-title">${editLabel}</div>
                     </div>
                 </div>
             </div>
