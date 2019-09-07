@@ -1,6 +1,7 @@
 package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.service.TemporalDataService;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,22 +44,22 @@ public class TemporalDataController {
         temporalDataService.invalidateOtherContentCache();
     }
 
-    @GetMapping(value = "/date-reindex", produces = "application/x-www-form-urlencoded")
+    @GetMapping(value = "/date-reindex", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String getDateDocumentReindex() throws IOException {
         return temporalDataService.getDateDocumentReIndex();
     }
 
-    @GetMapping("/date-public-document")
+    @GetMapping(value = "/date-public-document", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String getDateRemoveDocumentCache() throws IOException {
         return temporalDataService.getDateInvalidateDocumentCache();
     }
 
-    @GetMapping("/date-static-content")
+    @GetMapping(value = "/date-static-content", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String getDateRemoveStaticContentCache() throws IOException {
         return temporalDataService.getDateStaticContentCache();
     }
 
-    @GetMapping("/date-other-content")
+    @GetMapping(value = "/date-other-content", produces = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public String getDateRemoveOtherContentCache() throws IOException {
         return temporalDataService.getDateInvalidateContentCache();
     }
