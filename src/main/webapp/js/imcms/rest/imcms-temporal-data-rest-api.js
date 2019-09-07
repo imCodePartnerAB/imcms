@@ -12,7 +12,7 @@ define('imcms-temporal-data-rest-api', ['imcms-rest-api'], function (rest) {
     api.getDateDocumentIndex = () => rest.ajax.call({
         url: `${url}/date-reindex`,
         type: 'GET',
-        json: true
+        json: false,
     });
     api.getDateRemoveDocumentCache = () => rest.ajax.call({
         url: `${url}/date-public-document`,
