@@ -66,6 +66,16 @@ Available list of tag attributes:
 | post               | String       | Text or html tag that would be added after menu  |
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
++--------------------+--------------+--------------------------------------------------+
+| isMenuLooped       | String       | boolean value means that menu is looped, and has |
+|                    |              | to use without tag menuLoop inside itself        |
++--------------------+--------------+--------------------------------------------------+
+| label              | String       | Text label that is connected to current menu tag |
+|                    |              | only if showlabel will - true!                   |
++--------------------+--------------+--------------------------------------------------+
+| showlabel          | Boolean      | Set true if you want to see text label near menu |
+|                    |              | tag content in admin edit mode                   |
++--------------------+--------------+--------------------------------------------------+
 
 Example:
 """"""""
@@ -105,4 +115,29 @@ Example:
         </imcms:menu>
     </body>
     </html>
+
+Second example: with use isMenuLooped, label, showlabel and pre/post attributes:
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+When we use attribute isMenuLooped - true, we mustn't use menuLooped inside tag menu!
+
+.. code-block:: jsp
+
+<%@taglib prefix="imcms" uri="imcms" %>
+
+    <!DOCTYPE html>
+    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Template</title>
+        <meta charset="utf-8"/>
+    </head>
+    <body>
+        <imcms:menu no='1' docId="1001" pre="<div><ul>" post="</ul></div>" isMenuLooped="true" label="something" showlabel="true">
+            <li><imcms:menuitemlink>
+                                ${menuitem.document.headline}
+            </imcms:menuitemlink></li>
+        </imcms:menu>
+    </body>
+    </html>
+
 
