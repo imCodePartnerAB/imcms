@@ -123,21 +123,18 @@ When we use attribute isMenuLooped - true, we mustn't use menuLooped inside tag 
 
 .. code-block:: jsp
 
-<%@taglib prefix="imcms" uri="imcms" %>
-
-    <!DOCTYPE html>
-    <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        <title>Template</title>
-        <meta charset="utf-8"/>
-    </head>
-    <body>
-        <imcms:menu no='1' docId="1001" pre="<div><ul>" post="</ul></div>" isMenuLooped="true" label="something" showlabel="true">
-            <li><imcms:menuitemlink>
-                                ${menuitem.document.headline}
-            </imcms:menuitemlink></li>
-        </imcms:menu>
-    </body>
-    </html>
+         <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+          <head>
+             <title>Template</title>
+             <meta charset="utf-8"/>
+           </head>
+         <body>
+             <imcms:menu no='1' docId="1001" pre="<div><ul>" post="</ul></div>" isMenuLooped="true" label="something" showlabel="true">
+                    <li><imcms:menuitemlink>
+                                ${menuitem.title}
+                         </imcms:menuitemlink></li>
+             </imcms:menu>
+         </body>
+         </html>
 
 
