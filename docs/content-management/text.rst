@@ -34,6 +34,9 @@ There are several ways to open **Text Editor** :
     Over *direct editing* feature - go to /api/admin/text?meta-id={id-of-doc-here}&index={index-number-of-text},
     example: http://imcms.dev.imcode.com/api/admin/text?meta-id=1001&index=1
 
+#.
+    Currently, instead `no`, we have to use `index`
+
 ---------------
 Editor Features
 ---------------
