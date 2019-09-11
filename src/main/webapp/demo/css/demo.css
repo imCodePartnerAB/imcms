@@ -56,13 +56,18 @@
     width: 100%;
 }
 
+.imcms-document-list,
+.imcms-menu-list {
+    -webkit-user-select: none;
+}
+
 .imcms-demo-menu__menu-item--parent > .imcms-demo-menu-item__text {
     padding-right: 20px;
 }
 
 .imcms-demo-menu__menu-item--parent > .imcms-demo-menu-item__text:after {
     content: "";
-    background: url(../images_new/controls/icon_sub_open_dark.png) no-repeat center;
+    background: url(/images_new/controls/icon_sub_open_dark.png) no-repeat center;
     display: block;
     position: absolute;
     right: 10px;
