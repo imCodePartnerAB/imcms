@@ -64,13 +64,16 @@ define("imcms-menu-editor-builder",
             };
 
             menusRestApi.create(menuDTO)
-                .done(onMenuSaved)
+                .done(items => {
+                    onMenuSaved();
+                    menuWindowBuilder.closeWindow();
+                })
                 .fail(() => modal.buildErrorWindow(texts.error.createFailed));
+
         }
 
         function saveAndClose() {
             saveMenuElements();
-            menuWindowBuilder.closeWindow();
         }
 
         function buildHead() {
