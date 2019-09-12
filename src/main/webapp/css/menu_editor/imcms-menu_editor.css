@@ -88,6 +88,11 @@
     padding-left: 20%;
 }
 
+.imcms-menu-list {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
 @media screen and (max-height: 800px) {
     .imcms-menu-editor__footer {
         padding: 15px 27px;
