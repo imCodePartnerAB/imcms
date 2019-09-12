@@ -391,7 +391,10 @@ define("imcms-document-editor-builder",
 
             if (!checkDocInMenuEditor(original)) {
                 event.preventDefault();
+                original.find(".imcms-control--move").css({"cursor": "not-allowed"});
                 return
+            } else {
+                original.find(".imcms-control--move").css({"cursor": "pointer"});
             }
 
             isMouseDown = true;
