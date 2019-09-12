@@ -82,6 +82,11 @@
     width: 100%;
 }
 
+.imcms-document-items--is-drag {
+    background: #858585;
+    opacity: .5;
+}
+
 .imcms-menu-editor-body__right-side .imcms-document-list {
     height: 92%;
     height: -webkit-calc(100% - 55px);

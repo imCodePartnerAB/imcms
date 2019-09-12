@@ -374,6 +374,7 @@ define("imcms-document-editor-builder",
                 frameItem = $frame.find(".imcms-document-item")
             ;
 
+
             $menuArea = $(".imcms-menu-items-tree");
             $frameLayout.addClass("imcms-frame-layout")
                 .css({
@@ -388,6 +389,8 @@ define("imcms-document-editor-builder",
                     "z-index": 10101
                 });
             $frameLayout.appendTo($("body"));
+
+            original.addClass("imcms-document-items--is-drag");
 
             if (!checkDocInMenuEditor(original)) {
                 event.preventDefault();
@@ -433,6 +436,8 @@ define("imcms-document-editor-builder",
 
         $(document).on("mousemove", event => {
             if (!isMouseDown) {
+                const $dragDoc = $(".imcms-document-items--is-drag");
+                $dragDoc.removeClass("imcms-document-items--is-drag");
                 return;
             }
             moveFrame(event);
@@ -737,6 +742,7 @@ define("imcms-document-editor-builder",
 
         /** @namespace document.documentStatus */
         function buildDocItem(document, opts) {
+
             const $docItemId = components.texts.titleText("<div>", "");
 
             $docItemId.append(new BEM({
