@@ -56,10 +56,6 @@
     width: 100%;
 }
 
-.imcms-document-list,
-.imcms-menu-list {
-    -webkit-user-select: none;
-}
 
 .imcms-demo-menu__menu-item--parent > .imcms-demo-menu-item__text {
     padding-right: 20px;

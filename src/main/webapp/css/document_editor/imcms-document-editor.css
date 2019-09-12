@@ -37,6 +37,12 @@
     height: 95%;
 }
 
+.imcms-document-list,
+.imcms-menu-list {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
 .imcms-document-list__titles {
     padding: 0 27px 0 70px;
     width: 100%;
