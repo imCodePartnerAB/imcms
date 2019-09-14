@@ -498,6 +498,8 @@ define("imcms-document-editor-builder",
             const $frame = $(".imcms-document-items--frame");
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
+            const frameItem = $frame.find(".imcms-document-item");
+            const itemId = frameItem.attr("data-id");
 
             if (isMouseDown) {
                 $frame.css({
@@ -531,6 +533,17 @@ define("imcms-document-editor-builder",
             $(".imcms-menu-items").each(function () {
                 if (parseInt($(this).attr("data-document-id")) === originalId) {
                     status = false;
+                }
+            });
+
+            return status;
+        }
+
+        function checkByDocIdInMenuEditor(documentId) {
+            let status = false;
+            $(".imcms-menu-items").each(function () {
+                if (parseInt($(this).attr("data-document-id")) === documentId) {
+                    status = true;
                 }
             });
 
@@ -797,8 +810,16 @@ define("imcms-document-editor-builder",
                 {"controls": buildDocItemControls(document, opts)}
             ];
 
+            const $moveControl = components.controls.move();
+
+            if (checkByDocIdInMenuEditor(document.id)) {
+                $moveControl.css({"cursor": "not-allowed"});
+            } else {
+                $moveControl.css({"cursor": "pointer"});
+            }
+
             if (opts && opts.moveEnable) {
-                const $moveControl = components.controls.move().on("mousedown", createFrame);
+                $moveControl.on("mousedown", createFrame);
                 const $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
                 elements.unshift({controls: $controlsBlock});
             }
