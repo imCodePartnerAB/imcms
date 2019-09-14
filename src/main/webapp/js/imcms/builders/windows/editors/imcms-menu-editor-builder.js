@@ -7,11 +7,11 @@ define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder"
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-documents-rest-api"
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder) {
+              docProfileSelectBuilder, docRestApi) {
 
         texts = texts.editors.menu;
 
@@ -467,6 +467,7 @@ define("imcms-menu-editor-builder",
         function removeMenuItem() {
             const currentMenuItem = $(this).closest(".imcms-menu-item"),
                 currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
+            const menuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
             modal.buildModalWindow(question, answer => {
@@ -475,7 +476,17 @@ define("imcms-menu-editor-builder",
                 }
 
                 removeMenuItemFromEditor(currentMenuItem);
+                refreshCheck(menuItemId);
             });
+        }
+
+        function refreshCheck(itemId) {
+            const requestDocId = {
+                docId: itemId
+            };
+            docRestApi.read(requestDocId).done(doc => {
+                documentEditorBuilder.refreshDocumentInList(doc);
+            }).fail(() => 'sdsddfssfffs');
         }
 
         function getMenuElementTree(document) {
@@ -499,6 +510,7 @@ define("imcms-menu-editor-builder",
 
         function appendNewMenuItem(document) {
             $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1));
+            refreshCheck(document.id);
         }
 
         function refreshMenuItem(document) {
@@ -630,6 +642,8 @@ define("imcms-menu-editor-builder",
             });
 
             elements.push({controls: buildMenuItemControls(menuElementTree)});
+
+            refreshCheck(menuElementTree.documentId);
 
             return new BEM({
                 block: "imcms-menu-item",
