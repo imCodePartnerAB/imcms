@@ -435,6 +435,7 @@ define("imcms-document-editor-builder",
         });
 
         function refreshDocumentInList(document) {
+            if ($documentsList === undefined) return;
             const $oldDocumentElement = $documentsList.find("[data-doc-id=" + document.id + "]");
 
             if ($oldDocumentElement.length === 1) {
