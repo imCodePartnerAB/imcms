@@ -468,6 +468,7 @@ define("imcms-menu-editor-builder",
             const currentMenuItem = $(this).closest(".imcms-menu-item"),
                 currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
             const menuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
+            let document = documentEditorBuilder.getDocumentById(menuItemId);
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
             modal.buildModalWindow(question, answer => {
@@ -476,17 +477,8 @@ define("imcms-menu-editor-builder",
                 }
 
                 removeMenuItemFromEditor(currentMenuItem);
-                refreshCheck(menuItemId);
+                documentEditorBuilder.refreshDocumentInList(document);
             });
-        }
-
-        function refreshCheck(itemId) {
-            const requestDocId = {
-                docId: itemId
-            };
-            docRestApi.read(requestDocId).done(doc => {
-                documentEditorBuilder.refreshDocumentInList(doc);
-            }).fail(() => 'sdsddfssfffs');
         }
 
         function getMenuElementTree(document) {
@@ -510,7 +502,7 @@ define("imcms-menu-editor-builder",
 
         function appendNewMenuItem(document) {
             $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1));
-            refreshCheck(document.id);
+            documentEditorBuilder.refreshDocumentInList(document)
         }
 
         function refreshMenuItem(document) {
@@ -643,7 +635,14 @@ define("imcms-menu-editor-builder",
 
             elements.push({controls: buildMenuItemControls(menuElementTree)});
 
-            refreshCheck(menuElementTree.documentId);
+            //todo must use without request on the server! Use function from document-editor!
+            const requestData = {
+                docId: menuElementTree.documentId
+            };
+
+            docRestApi.read(requestData).done(doc =>
+                documentEditorBuilder.refreshDocumentInList(doc)
+            );
 
             return new BEM({
                 block: "imcms-menu-item",

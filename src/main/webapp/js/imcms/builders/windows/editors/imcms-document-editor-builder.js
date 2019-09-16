@@ -88,7 +88,6 @@ define("imcms-document-editor-builder",
                         errorMsg.slideUp();
                     }
                     incrementDocumentNumber(documentList.length);
-
                     documentList.forEach(document => {
                         $documentsList.append(buildDocument(document, currentEditorOptions));
                     });
@@ -901,10 +900,29 @@ define("imcms-document-editor-builder",
                     $editorBody = buildEditorBody(documentList, opts);
                     $documentsContainer.append($editorBody);
                     highlightDefaultSorting();
+                    pushDocumentsInArray(documentList);
                 })
                 .fail(() => {
                     errorMsg.slideDown();
                 });
+        }
+
+        let docs = [];
+
+        function pushDocumentsInArray(documentList) {
+            documentList.forEach(document => docs.push(document));
+            return docs;
+        }
+
+        function getDocumentById(documentId) {
+            let document = null;
+            docs.forEach(doc => {
+                if (doc.id === parseInt(documentId)) {
+                    return document = doc;
+                }
+            });
+
+            return document;
         }
 
         function buildDocumentEditor() {
@@ -988,6 +1006,7 @@ define("imcms-document-editor-builder",
             addDocumentToList: addDocumentToList,
             getDocumentStatusText: getDocumentStatusText,
             refreshDocumentInList: refreshDocumentInList,
+            getDocumentById: getDocumentById,
             build: function () {
                 documentWindowBuilder.buildWindow.apply(documentWindowBuilder, arguments);
             }
