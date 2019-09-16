@@ -392,14 +392,6 @@ define("imcms-document-editor-builder",
 
             original.addClass("imcms-document-items--is-drag");
 
-            if (!checkDocInMenuEditor(original)) {
-                event.preventDefault();
-                original.find(".imcms-control--move").css({"cursor": "not-allowed"});
-                return
-            } else {
-                original.find(".imcms-control--move").css({"cursor": "pointer"});
-            }
-
             isMouseDown = true;
             mouseCoords = {
                 pageX: event.clientX,
@@ -498,8 +490,6 @@ define("imcms-document-editor-builder",
             const $frame = $(".imcms-document-items--frame");
             mouseCoords.newPageX = event.clientX;
             mouseCoords.newPageY = event.clientY;
-            const frameItem = $frame.find(".imcms-document-item");
-            const itemId = frameItem.attr("data-id");
 
             if (isMouseDown) {
                 $frame.css({
@@ -524,19 +514,6 @@ define("imcms-document-editor-builder",
                 }
 
             }
-        }
-
-        function checkDocInMenuEditor(original) {
-            let status = true;
-            const originalId = parseInt(original.find(".imcms-title").first().text())
-            ;
-            $(".imcms-menu-items").each(function () {
-                if (parseInt($(this).attr("data-document-id")) === originalId) {
-                    status = false;
-                }
-            });
-
-            return status;
         }
 
         function checkByDocIdInMenuEditor(documentId) {
@@ -811,16 +788,17 @@ define("imcms-document-editor-builder",
             ];
 
             const $moveControl = components.controls.move();
-
-            if (checkByDocIdInMenuEditor(document.id)) {
-                $moveControl.css({"cursor": "not-allowed"});
-            } else {
-                $moveControl.css({"cursor": "pointer"});
-            }
+            const $unMoveArrow = components.controls.left();
 
             if (opts && opts.moveEnable) {
                 $moveControl.on("mousedown", createFrame);
-                const $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
+                let $controlsBlock;
+                if (checkByDocIdInMenuEditor(document.id)) {
+                    $controlsBlock = components.controls.buildControlsBlock("<div>",
+                        [$unMoveArrow.css({"cursor": "not-allowed"})]);
+                } else {
+                    $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
+                }
                 elements.unshift({controls: $controlsBlock});
             }
 
@@ -830,14 +808,17 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildDocumentItemContainer(document, opts) {
+        function buildDocumentItemContainer(document, opts, isUsed) {
             return new BEM({
                 block: "imcms-document-items",
                 elements: [{
                     "document-item": buildDocItem(document, opts),
                     modifiers: [document.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
-            }).buildBlockStructure("<div>", {"data-doc-id": document.id});
+            }).buildBlockStructure("<div>", {
+                "data-doc-id": document.id,
+                style: (isUsed) ? 'background-color: #b6b6b6; opacity: 0.4;' : ""
+            });
         }
 
         const documentsListBEM = new BEM({
@@ -848,12 +829,12 @@ define("imcms-document-editor-builder",
         });
 
         function buildDocument(document, opts) {
-            const $documentItem = buildDocumentItemContainer(document, opts);
+            const $documentItem = buildDocumentItemContainer(document, opts, checkByDocIdInMenuEditor(document.id));
             return documentsListBEM.makeBlockElement("document-items", $documentItem);
         }
 
         function buildDocumentList(documentList) {
-            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions));
+            const $blockElements = documentList.map(document => buildDocumentItemContainer(document, currentEditorOptions, checkByDocIdInMenuEditor(document.id)));
 
             return new BEM({
                 block: "imcms-document-items-list",
