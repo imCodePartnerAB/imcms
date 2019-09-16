@@ -434,6 +434,8 @@ define("imcms-menu-editor-builder",
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
+            let doc = documentEditorBuilder.getDocumentById($menuElement.attr('data-document-id'));
+            documentEditorBuilder.refreshDocumentInList(doc);
         }
 
         function buildFooter() {
@@ -634,15 +636,6 @@ define("imcms-menu-editor-builder",
             });
 
             elements.push({controls: buildMenuItemControls(menuElementTree)});
-
-            //todo must use without request on the server! Use function from document-editor!
-            const requestData = {
-                docId: menuElementTree.documentId
-            };
-
-            docRestApi.read(requestData).done(doc =>
-                documentEditorBuilder.refreshDocumentInList(doc)
-            );
 
             return new BEM({
                 block: "imcms-menu-item",
