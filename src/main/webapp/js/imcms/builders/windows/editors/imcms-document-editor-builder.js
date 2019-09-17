@@ -788,18 +788,18 @@ define("imcms-document-editor-builder",
             ];
 
             const $moveControl = components.controls.move();
-            const $unMoveArrow = components.controls.left();
+            const $unMoveArrow = components.controls.left().css({"cursor": "not-allowed"});
 
             if (opts && opts.moveEnable) {
                 $moveControl.on("mousedown", createFrame);
-                let $controlsBlock;
-                if (checkByDocIdInMenuEditor(document.id)) {
-                    $controlsBlock = components.controls.buildControlsBlock("<div>",
-                        [$unMoveArrow.css({"cursor": "not-allowed"})]);
-                } else {
-                    $controlsBlock = components.controls.buildControlsBlock("<div>", [$moveControl]);
-                }
-                elements.unshift({controls: $controlsBlock});
+                let isExistDocInMenu = checkByDocIdInMenuEditor(document.id);
+                let $controlsBlock = components.controls.buildControlsBlock("<div>",
+                    (isExistDocInMenu) ? [$unMoveArrow] : [$moveControl]);
+                elements.unshift({
+                    controls: (isExistDocInMenu)
+                        ? $controlsBlock.css({"display": "block"})
+                        : $controlsBlock
+                });
             }
 
             return new BEM({
