@@ -40,6 +40,13 @@
                     ${pre}
                     <jsp:doBody/>
                     ${post}
+                    <c:if test="${hasChildren}">
+                        <imcms:menuLoop>
+                            ${pre}
+                            <jsp:doBody/>
+                            ${post}
+                        </imcms:menuLoop>
+                    </c:if>
                 </imcms:menuLoop>
             </c:when>
             <c:otherwise>
