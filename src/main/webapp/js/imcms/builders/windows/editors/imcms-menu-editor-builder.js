@@ -456,6 +456,12 @@ define("imcms-menu-editor-builder",
             const submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
                 parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
                 currentMenuItemWrap = parentMenuItem.parent();
+            const currentMenuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
+            let submenuDocIds = [];
+
+            submenuItem.each(index => {
+                submenuDocIds.push(parseInt(submenuItem[index].dataset.documentId));
+            });
 
             submenuItem.remove();
             currentMenuItem.remove();
@@ -464,13 +470,24 @@ define("imcms-menu-editor-builder",
             if (currentMenuItemWrap.children().length === 1) {
                 currentMenuItemWrap.find(".imcms-menu-item__btn").remove();
             }
+
+            refreshDocuments(submenuDocIds, currentMenuItemId);
+        }
+
+        function refreshDocuments(submenuDocIds, currentMenuItemId) {
+            submenuDocIds.forEach(id => {
+                let document = documentEditorBuilder.getDocumentById(id);
+                documentEditorBuilder.refreshDocumentInList(document);
+            });
+
+            let parentDoc = documentEditorBuilder.getDocumentById(currentMenuItemId);
+            documentEditorBuilder.refreshDocumentInList(parentDoc);
         }
 
         function removeMenuItem() {
             const currentMenuItem = $(this).closest(".imcms-menu-item"),
                 currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
-            const menuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
-            let document = documentEditorBuilder.getDocumentById(menuItemId);
+
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
             modal.buildModalWindow(question, answer => {
@@ -479,7 +496,7 @@ define("imcms-menu-editor-builder",
                 }
 
                 removeMenuItemFromEditor(currentMenuItem);
-                documentEditorBuilder.refreshDocumentInList(document);
+
             });
         }
 
