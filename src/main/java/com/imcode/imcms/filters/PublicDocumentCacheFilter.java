@@ -103,6 +103,7 @@ public class PublicDocumentCacheFilter extends SimpleCachingHeadersPageCachingFi
                     }
                 }
             }
+            documentsCache.setDisableCachesByProperty();
         }
 
         chain.doFilter(request, response);
