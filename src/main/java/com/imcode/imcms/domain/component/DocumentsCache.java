@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
+ * @author Victor Pavlenko from Ubrainians for imCode
  * 06.09.18.
  */
 public interface DocumentsCache {
@@ -26,4 +27,6 @@ public interface DocumentsCache {
     void invalidateCache();
 
     boolean isDocumentAlreadyCached(String cacheKey);
+
+    void setDisableCachesByProperty();
 }

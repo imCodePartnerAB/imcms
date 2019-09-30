@@ -9,6 +9,7 @@ import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
+ * @author Victor Pavlenko from Ubrainians for imCode
  * 06.09.18.
  */
 @Component
@@ -25,6 +27,9 @@ public class PublicDocumentsCache implements DocumentsCache {
     private final List<String> languages;
 
     private Ehcache cache;
+
+    @Value("${cacheDisable}")
+    private boolean isDisableCache;
 
     @Autowired
     public PublicDocumentsCache(LanguageService languageService) {
@@ -111,5 +116,11 @@ public class PublicDocumentsCache implements DocumentsCache {
         if (cache == null) return false;
 
         return cache.isKeyInCache(cacheKey);
+    }
+
+    @Override
+    public void setDisableCachesByProperty() {
+        cache.setDisabled(isDisableCache);
+        if (isDisableCache) invalidateCache();
     }
 }
