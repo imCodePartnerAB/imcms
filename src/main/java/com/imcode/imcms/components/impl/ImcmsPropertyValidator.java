@@ -23,7 +23,6 @@ class ImcmsPropertyValidator implements Validator<Properties> {
     final static String[] REQUIRED_PROPERTIES = {
             "DefaultLanguage",
             "AvailableLanguages",
-            "cacheDisable",
             "JdbcDriver",
             "JdbcUrl",
             "User",
