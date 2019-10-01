@@ -28,8 +28,9 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     private Ehcache cache;
 
+    //set on String because may has default value empty line - false
     @Value("${cacheDisable}")
-    private boolean isDisableCache;
+    private String isDisableCache;
 
     @Autowired
     public PublicDocumentsCache(LanguageService languageService) {
@@ -120,7 +121,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Override
     public void setDisableCachesByProperty() {
-        cache.setDisabled(isDisableCache);
-        if (isDisableCache) invalidateCache();
+        cache.setDisabled(Boolean.parseBoolean(isDisableCache));
+        if (Boolean.parseBoolean(isDisableCache)) invalidateCache();
     }
 }
