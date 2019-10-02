@@ -32,13 +32,7 @@
          : menuService.getPublicMenuItems(index, targetDocId, language)
      }" scope="request"/>
 
-    <c:if test="${empty showlabel}">
-        <c:set var="isShowlabel" value="${true}"/>
-    </c:if>
-
-    <c:if test="${not empty showlabel}">
-        <c:set var="isShowlabel" value="${showlabel.booleanValue()}"/>
-    </c:if>
+    <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
     <c:set var="menuContent">
         <c:choose>

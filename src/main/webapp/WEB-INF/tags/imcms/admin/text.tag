@@ -50,13 +50,7 @@
                 data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
         </c:set>
 
-        <c:if test="${empty showlabel}">
-            <c:set var="isShowlabel" value="${true}"/>
-        </c:if>
-
-        <c:if test="${not empty showlabel}">
-            <c:set var="isShowlabel" value="${showlabel}"/>
-        </c:if>
+        <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
         <c:set var="tag">${'textarea wrap="hard"'}</c:set>
         <c:set var="tagClose">${'>'}</c:set>

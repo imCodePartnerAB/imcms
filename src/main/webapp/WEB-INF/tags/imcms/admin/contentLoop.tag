@@ -49,13 +49,7 @@
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-            <c:if test="${empty showlabel}">
-                <c:set var="isShowlabel" value="${true}"/>
-            </c:if>
-
-            <c:if test="${not empty showlabel}">
-                <c:set var="isShowlabel" value="${showlabel}"/>
-            </c:if>
+            <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
             <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
                  data-index="${index}">

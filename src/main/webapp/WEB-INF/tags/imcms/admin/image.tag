@@ -101,13 +101,7 @@
 
             <c:if test="${not empty style}"><c:set var="style" value=" data-style=\"${style}\""/></c:if>
 
-            <c:if test="${empty showlabel}">
-                <c:set var="isShowlabel" value="${true}"/>
-            </c:if>
-
-            <c:if test="${not empty showlabel}">
-                <c:set var="isShowlabel" value="${showlabel}"/>
-            </c:if>
+            <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
             <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"${externalPart}${style}
                  data-lang-code="${language}" data-index="${no}"${loopPart}>
