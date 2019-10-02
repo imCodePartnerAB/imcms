@@ -7,6 +7,7 @@
 <%@ attribute name="label" %>
 <%@ attribute name="pre" %>
 <%@ attribute name="post" %>
+<%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 
 <%@ variable name-given="loop" scope="NESTED" variable-class="com.imcode.imcms.model.Loop" %>
 <%@ variable name-given="loopIndex" scope="NESTED" variable-class="java.lang.Integer" %>
@@ -43,16 +44,28 @@
     <c:choose>
         <c:when test="${isEditMode && editOptions.editLoop}">
             <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
-            <c:set var="label" value="${isInternal ? 'Loop Editor' : 'This loop is edited on page '.concat(document)}"/>
+            <c:set var="editLabel"
+                   value="${isInternal ? 'Loop Editor' : 'This loop is edited on page '.concat(document)}"/>
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
+            <c:if test="${empty showlabel}">
+                <c:set var="isShowlabel" value="${true}"/>
+            </c:if>
+
+            <c:if test="${not empty showlabel}">
+                <c:set var="isShowlabel" value="${showlabel}"/>
+            </c:if>
+
             <div class="imcms-editor-area imcms-editor-area--loop" data-doc-id="${targetDocId}"${externalPart}
                  data-index="${index}">
+                <c:if test="${not empty label && isShowlabel}">
+                    <div class="imcms-editor-area__text-label">${label}</div>
+                </c:if>
                 <div class="imcms-editor-area__content imcms-editor-content">${loopContent}</div>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--loop">
-                        <div class="imcms-editor-area__control-title">${label}</div>
+                        <div class="imcms-editor-area__control-title">${editLabel}</div>
                     </div>
                 </div>
             </div>

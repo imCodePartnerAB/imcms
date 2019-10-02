@@ -9,6 +9,7 @@
 <%@ attribute name="pre" required="false" %>
 <%@ attribute name="post" required="false" %>
 <%@ attribute name="label" required="false" %>
+<%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 
 <%-- do not remove - it helps Idea to understand var types --%>
 <%--@elvariable id="currentDocument" type="imcode.server.document.textdocument.TextDocumentDomainObject"--%>
@@ -91,7 +92,7 @@
         <c:when test="${isEditMode && editOptions.editImage}">
             <c:set var="isInternal" value="${disableExternal or document eq null or document eq currentDocument.id}"/>
             <c:set value="${isInternal ? (language.equals('en') ? 'Image Editor' : 'Redigera Bild') : 'This image is edited on page '.concat(document)}"
-                   var="label"/>
+                   var="editLabel"/>
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\"'))}"/>
             <c:set var="loopPart" value="${empty loopEntryRef ? ''
@@ -100,12 +101,23 @@
 
             <c:if test="${not empty style}"><c:set var="style" value=" data-style=\"${style}\""/></c:if>
 
+            <c:if test="${empty showlabel}">
+                <c:set var="isShowlabel" value="${true}"/>
+            </c:if>
+
+            <c:if test="${not empty showlabel}">
+                <c:set var="isShowlabel" value="${showlabel}"/>
+            </c:if>
+
             <div class="imcms-editor-area imcms-editor-area--image" data-doc-id="${targetDocId}"${externalPart}${style}
                  data-lang-code="${language}" data-index="${no}"${loopPart}>
+                <c:if test="${not empty label && isShowlabel}">
+                    <div class="imcms-editor-area__text-label">${label}</div>
+                </c:if>
                 <div class="imcms-editor-area__content imcms-editor-content">${imageContent}</div>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--image">
-                        <div class="imcms-editor-area__control-title">${label}</div>
+                        <div class="imcms-editor-area__control-title">${editLabel}</div>
                     </div>
                 </div>
             </div>

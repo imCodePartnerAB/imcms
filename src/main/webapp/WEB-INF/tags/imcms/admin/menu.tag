@@ -8,7 +8,7 @@
 <%@ attribute name="post" required="false" type="java.lang.String" %>
 <%@ attribute name="isMenuLooped" required="false" type="java.lang.String" %>
 <%@ attribute name="label" required="false" %>
-<%@ attribute name="showlabel" required="false" %>
+<%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
@@ -32,6 +32,13 @@
          : menuService.getPublicMenuItems(index, targetDocId, language)
      }" scope="request"/>
 
+    <c:if test="${empty showlabel}">
+        <c:set var="isShowlabel" value="${true}"/>
+    </c:if>
+
+    <c:if test="${not empty showlabel}">
+        <c:set var="isShowlabel" value="${showlabel.booleanValue()}"/>
+    </c:if>
 
     <c:set var="menuContent">
         <c:choose>
@@ -68,7 +75,7 @@
 
             <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
                  data-menu-index="${index}">
-                <c:if test="${not empty label && not empty showlabel && showlabel.equals('true')}">
+                <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
                 <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"

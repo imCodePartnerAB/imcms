@@ -13,7 +13,7 @@
 <%@ attribute name="formats" required="false" %>
 <%@ attribute name="pre" required="false" %>
 <%@ attribute name="post" required="false" %>
-<%@ attribute name="showlabel" required="false" %>
+<%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 <%@ attribute name="showEditToSuperAdmin" required="false" %>
 
 <c:if test="${!isDocNew || editOptions.editText}">
@@ -49,6 +49,14 @@
             <c:if test="${loopEntryRef ne null}"> data-loop-entry-ref.loop-entry-index="${loopEntryRef.loopEntryIndex}"
                 data-loop-entry-ref.loop-index="${loopEntryRef.loopIndex}"</c:if>
         </c:set>
+
+        <c:if test="${empty showlabel}">
+            <c:set var="isShowlabel" value="${true}"/>
+        </c:if>
+
+        <c:if test="${not empty showlabel}">
+            <c:set var="isShowlabel" value="${showlabel}"/>
+        </c:if>
 
         <c:set var="tag">${'textarea wrap="hard"'}</c:set>
         <c:set var="tagClose">${'>'}</c:set>
@@ -134,7 +142,7 @@
         </c:if>
         <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
             <div class="imcms-editor-area imcms-editor-area--text">
-                <c:if test="${not empty label}">
+                <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
                 <div class="imcms-editor-area__text-toolbar"></div>
