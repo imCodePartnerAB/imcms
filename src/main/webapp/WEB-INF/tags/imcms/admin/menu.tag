@@ -6,7 +6,6 @@
 <%@ attribute name="document" required="false" type="java.lang.String" %>
 <%@ attribute name="pre" required="false" type="java.lang.String" %>
 <%@ attribute name="post" required="false" type="java.lang.String" %>
-<%@ attribute name="isMenuLooped" required="false" type="java.lang.String" %>
 <%@ attribute name="label" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
 
@@ -35,27 +34,13 @@
     <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
 
     <c:set var="menuContent">
-        <c:choose>
-            <c:when test="${isMenuLooped.equals('true') || not empty isMenuLooped}">
-                <imcms:menuLoop>
-                    ${pre}
-                    <jsp:doBody/>
-                    ${post}
-                    <c:if test="${hasChildren}">
-                        <imcms:menuLoop>
-                            ${pre}
-                            <jsp:doBody/>
-                            ${post}
-                        </imcms:menuLoop>
-                    </c:if>
-                </imcms:menuLoop>
-            </c:when>
-            <c:otherwise>
-                ${pre}
-                <jsp:doBody/>
-                ${post}
-            </c:otherwise>
-        </c:choose>
+        <c:if test="${not empty menuItems}">
+            ${pre}
+        </c:if>
+        <jsp:doBody/>
+        <c:if test="${not empty menuItems}">
+            ${post}
+        </c:if>
     </c:set>
     <c:remove var="menuItems"/>
 
