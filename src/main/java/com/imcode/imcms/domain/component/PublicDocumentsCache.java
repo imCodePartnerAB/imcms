@@ -4,6 +4,7 @@ import com.imcode.imcms.domain.service.LanguageService;
 import com.imcode.imcms.model.Language;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
+import lombok.Getter;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.constructs.web.PageInfo;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
  * 06.09.18.
  */
 @Component
+@Getter
 public class PublicDocumentsCache implements DocumentsCache {
 
     private final List<String> languages;
