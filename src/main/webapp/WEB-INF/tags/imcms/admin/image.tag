@@ -81,11 +81,14 @@
             </c:otherwise>
         </c:choose>
 
-        ${pre}
-        <a${href}>
-            <img src="${empty imgPath ? '' : contextPath}${imgPath}"${classes}${alt}/>
-        </a>
-        ${post}
+        <c:if test="${not empty imgPath}">
+            ${pre}
+            <a${href}>
+                <img src="${contextPath}${imgPath}"${classes}${alt}/>
+            </a>
+            ${post}
+        </c:if>
+
     </c:set>
 
     <c:choose>
