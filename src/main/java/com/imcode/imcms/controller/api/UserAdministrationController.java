@@ -62,7 +62,7 @@ class UserAdministrationController {
         try {
             userEditorService.editUser(userData);
             final String contextPath = request.getContextPath();
-            modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/" : contextPath));
+            modelAndView.setView(new RedirectView(contextPath.isEmpty() ? "/api/admin/manager" : contextPath));
 
         } catch (UserValidationException e) {
             modelAndView.setViewName("UserEdit");
