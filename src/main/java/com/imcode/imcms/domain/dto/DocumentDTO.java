@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
 
 import java.beans.ConstructorProperties;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class DocumentDTO extends Document implements Cloneable {
     private Integer id;
     private String target;
     private String alias;
+    private String name;
     private List<CommonContentDTO> commonContents;
     private Meta.PublicationStatus publicationStatus;
     private AuditDTO published;
@@ -80,6 +82,10 @@ public class DocumentDTO extends Document implements Cloneable {
     public void setCommonContents(List<CommonContent> commonContents) {
         this.commonContents = (commonContents == null) ? null
                 : commonContents.stream().map(CommonContentDTO::new).collect(Collectors.toList());
+    }
+
+    public String getName() {
+        return StringUtils.defaultString(getAlias(), getId() + "");
     }
 
     public Set<Category> getCategories() {

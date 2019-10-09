@@ -30,6 +30,7 @@ public abstract class Document implements Serializable {
         setType(from.getType());
         setTarget(from.getTarget());
         setAlias(from.getAlias());
+        setName(from.getName());
         setCommonContents(from.getCommonContents());
         setPublicationStatus(from.getPublicationStatus());
         setPublished(from.getPublished());
@@ -64,6 +65,10 @@ public abstract class Document implements Serializable {
     public abstract String getAlias();
 
     public abstract void setAlias(String alias);
+
+    public abstract String getName();
+
+    public abstract void setName(String name);
 
     public abstract List<CommonContent> getCommonContents();
 
