@@ -60,7 +60,7 @@ define(
 
             function getOnEditUser(user) {
                 return () => {
-                    window.open(imcms.contextPath + '/api/user/edition/' + user.id, '_blank').focus();
+                    window.open(imcms.contextPath + '/api/user/edition/' + user.id, '_self').focus();
                 };
             }
 
@@ -209,7 +209,7 @@ define(
 
         function buildCreateNewUserButton() {
             function onCreateNewUserClicked() {
-                window.open(imcms.contextPath + '/api/user/creation', '_blank').focus();
+                window.open(imcms.contextPath + '/api/user/creation', '_self').focus();
             }
 
             const $button = components.buttons.positiveButton({

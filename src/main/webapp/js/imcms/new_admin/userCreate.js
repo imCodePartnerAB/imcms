@@ -70,6 +70,10 @@ function onCancel() {
     window.close();
 }
 
+function onRedirectSuperAdminPage() {
+    window.location.replace(imcms.contextPath + "/api/admin/manager")
+}
+
 function loadLanguages() {
     const $langSelectContainer = $('#languages-select-container');
 
@@ -201,7 +205,7 @@ $(function () {
 
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);
-    $('#edit-user-cancel').click(onCancel);
+    $('#edit-user-cancel').click(onRedirectSuperAdminPage);
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
