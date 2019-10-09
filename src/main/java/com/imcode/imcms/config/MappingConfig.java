@@ -47,6 +47,7 @@ import imcode.util.image.Format;
 import imcode.util.image.Resize;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.hadoop.fs.Path;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -221,7 +222,8 @@ class MappingConfig {
 
     @Bean
     public Function<ImageJPA, ImageDTO> imageJPAToImageDTO(@Value("${ImageUrl}") String imagesPath) {
-        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator;
+        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + Path.SEPARATOR;
+        // Path.SEPARATOR slashes use in everywhere, for different OS
 
         return image -> {
             final ImageDTO dto = new ImageDTO();
@@ -267,7 +269,8 @@ class MappingConfig {
 
     @Bean
     public Function<ImageHistoryJPA, ImageHistoryDTO> imageHistoryJPAToImageHistoryDTO(@Value("${ImageUrl}") String imagesPath) {
-        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + File.separator;
+        final String generatedImagesPath = imagesPath + ImcmsConstants.IMAGE_GENERATED_FOLDER + Path.SEPARATOR;
+        // Path.SEPARATOR slashes use in everywhere, for different OS
 
         return image -> {
             final ImageHistoryDTO dto = new ImageHistoryDTO();
