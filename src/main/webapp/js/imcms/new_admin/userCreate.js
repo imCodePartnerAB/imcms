@@ -201,7 +201,7 @@ $(function () {
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
-    $('.imcms-info-head__close').click(onCancel);
+    $('.imcms-info-head__close').click(onRedirectSuperAdminPage);
 
     $('#edit-user-submit-button').click(onSubmit);
     $('#edit-user-reset').click(onReset);
