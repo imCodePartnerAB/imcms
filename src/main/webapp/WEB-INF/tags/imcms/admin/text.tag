@@ -39,7 +39,7 @@
         </c:if>
         ${pre}${content}${post}
     </c:if>
-    <c:if test="${empty content and (not isEditMode or not editOptions.editText) and mode ne 'write'}">
+    <c:if test="${empty content and not empty placeholder and (not isEditMode or not editOptions.editText) and mode ne 'write'}">
         ${pre}${placeholder}${post}
     </c:if>
 

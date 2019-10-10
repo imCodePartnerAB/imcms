@@ -36,9 +36,7 @@
     <c:set var="menuContent">
         <c:if test="${not empty menuItems}">
             ${pre}
-        </c:if>
-        <jsp:doBody/>
-        <c:if test="${not empty menuItems}">
+            <jsp:doBody/>
             ${post}
         </c:if>
     </c:set>
