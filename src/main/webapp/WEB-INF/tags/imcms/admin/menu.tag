@@ -8,6 +8,7 @@
 <%@ attribute name="post" required="false" type="java.lang.String" %>
 <%@ attribute name="label" required="false" %>
 <%@ attribute name="showlabel" required="false" type="java.lang.Boolean" %>
+<%@ attribute name="nested" required="false" type="java.lang.Boolean" %>
 
 <%@ variable name-given="menuItems" scope="NESTED" variable-class="java.util.Collection" %>
 
@@ -27,8 +28,8 @@
 
     <c:set var="menuItems" value="${
     (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuItems(index, targetDocId, language)
-         : menuService.getPublicMenuItems(index, targetDocId, language)
+         ? menuService.getVisibleMenuItems(index, targetDocId, language, nested)
+         : menuService.getPublicMenuItems(index, targetDocId, language, nested)
      }" scope="request"/>
 
     <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
