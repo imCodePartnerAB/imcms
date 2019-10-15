@@ -66,15 +66,14 @@ Available list of tag attributes:
 | post               | String       | Text or html tag that would be added after menu  |
 |                    |              | tag                                              |
 +--------------------+--------------+--------------------------------------------------+
-+--------------------+--------------+--------------------------------------------------+
-| isMenuLooped       | String       | boolean value means that menu is looped, and has |
-|                    |              | to use without tag menuLoop inside itself        |
-+--------------------+--------------+--------------------------------------------------+
 | label              | String       | Text label that is connected to current menu tag |
 |                    |              | only if showlabel will - true!                   |
 +--------------------+--------------+--------------------------------------------------+
 | showlabel          | Boolean      | Set true if you want to see text label near menu |
 |                    |              | tag content in admin edit mode                   |
++--------------------+--------------+--------------------------------------------------+
+| nested             | Boolean      | boolean value means disable nested in menu. So,  |
+|                    |              | show menuItem without nested,like just list links|
 +--------------------+--------------+--------------------------------------------------+
 
 Example:
@@ -96,14 +95,14 @@ Example:
                     <imcms:menuitem>
                         <li>
                             <imcms:menuitemlink>
-                                ${menuitem.document.headline}
+                                ${menuitem.title}
                             </imcms:menuitemlink>
                             <!-- sub menu definition -->
                             <imcms:menuloop>
                                 <imcms:menuitem>
                                     <div>
                                         <imcms:menuitemlink>
-                                            ${menuitem.document.headline}
+                                            ${menuitem.title}
                                         </imcms:menuitemlink>
                                     </div>
                                 </imcms:menuitem>
@@ -116,14 +115,13 @@ Example:
     </body>
     </html>
 
-Second example: with use isMenuLooped, label, showlabel and pre/post attributes:
+Second example: with use nested, disable nested in the menu and in each menuItem
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-When we use attribute isMenuLooped - true, we mustn't use menuLooped inside tag menu!
 
 .. code-block:: jsp
 
-     <imcms:menu no='1' docId="1001" pre="<div><ul>" post="</ul></div>" isMenuLooped="true" label="something" showlabel="true">
+     <imcms:menu no='1' docId="1001" pre="<div><ul>" post="</ul></div>" nested="true" label="something" showlabel="true">
                     <li><imcms:menuitemlink>${menuitem.title}</imcms:menuitemlink></li>
      </imcms:menu>
 
