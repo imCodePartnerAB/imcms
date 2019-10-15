@@ -19,6 +19,7 @@ import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -76,13 +77,31 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language) {
-        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
+    public List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language, boolean disableNested) {
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
+        List<MenuItemDTO> allMenuItems = new ArrayList<>();
+        if (disableNested) {
+            for (MenuItemDTO menuItemDTO : menuItemsOf) {
+                allMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
+            }
+            menuItemsOf.addAll(allMenuItems);
+        }
+
+        return menuItemsOf;
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language) {
-        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
+    public List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language, boolean disableNested) {
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
+        List<MenuItemDTO> allMenuItems = new ArrayList<>();
+        if (disableNested) {
+            for (MenuItemDTO menuItemDTO : menuItemsOf) {
+                allMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
+            }
+            menuItemsOf.addAll(allMenuItems);
+        }
+
+        return menuItemsOf;
     }
 
     @Override
@@ -212,5 +231,18 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     private boolean isPublicMenuItem(MenuItemDTO menuItemDTO) {
         return documentMenuService.isPublicMenuItem(menuItemDTO.getDocumentId());
+    }
+
+    private List<MenuItemDTO> getAllNestedMenuItems(MenuItemDTO menuItemDTO) {
+        List<MenuItemDTO> nestedMenuItems = new ArrayList<>();
+        for (MenuItemDTO menuItem : menuItemDTO.getChildren()) {
+            if (!menuItem.getChildren().isEmpty()) {
+                nestedMenuItems.add(menuItem);
+                nestedMenuItems.addAll(getAllNestedMenuItems(menuItem));
+            } else {
+                nestedMenuItems.add(menuItem);
+            }
+        }
+        return nestedMenuItems;
     }
 }
