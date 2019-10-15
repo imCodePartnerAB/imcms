@@ -330,7 +330,7 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getVisibleMenuItems() {
             final List<MenuItemDTO> visibleMenuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getVisibleMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage());
+                    .getVisibleMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage(), false);
 
             return convertToMenuItem(visibleMenuItems);
         }
@@ -354,7 +354,7 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getPublishedMenuItems() {
             final List<MenuItemDTO> publicMenuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getPublicMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage());
+                    .getPublicMenuItems(menuIndex, internalTextDocument.getId(), Imcms.getUser().getLanguage(), false);
 
             return convertToMenuItem(publicMenuItems);
         }

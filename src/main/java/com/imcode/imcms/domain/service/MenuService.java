@@ -11,9 +11,14 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
 
     List<MenuItemDTO> getMenuItems(int menuIndex, int docId, String language);
 
-    List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language);
+    /**
+     * @param disableNested - false/true show nested in menu.
+     *                      disableNested (true) - will get all menu items recursive, include children from the menuItem.
+     *                      disableNested (false) - will get just menu items.
+     */
+    List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language, boolean disableNested);
 
-    List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language);
+    List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language, boolean disableNested);
 
     List<Menu> getAll();
 
