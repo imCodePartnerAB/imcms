@@ -84,9 +84,9 @@ const texts = {
             textEditor: 'Textredigerare',
             imageEditor: 'Bildredigerare',
             filterPolicy: {
-                restricted: 'Regränsad',
-                relaxed: 'Avslappnad',
-                allowedAll: 'Allt är tillåtet',
+                restricted: 'Begränsad',
+                relaxed: 'Medel',
+                allowedAll: 'Ingen',
                 titleRestricted: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll, ej tillåtna taggar (html, body, doctype) kommer att tas bort men innehållet hålls. Ej tillåtna attribut (klass, stil, etc.) tas bort.',
                 titleRelaxed: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll, ej tillåtna taggar (html, body, doctype) kommer att tas bort men innehållet hålls. Alla attribut är tillåtna.',
                 titleAllowedAll: 'Allt är tillåtet'
