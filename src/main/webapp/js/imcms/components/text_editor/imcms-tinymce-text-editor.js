@@ -67,6 +67,8 @@ define(
             content_css: imcms.contextPath + '/css/imcms-text_editor.css',
             menubar: false,
             statusbar: false,
+            force_br_newlines: false,
+            force_p_newlines: true,
             forced_root_block: false,
             init_instance_callback: prepareEditor,
             save_onsavecallback: textEditorUtils.saveContent,
