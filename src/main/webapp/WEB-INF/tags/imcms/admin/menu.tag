@@ -28,8 +28,8 @@
 
     <c:set var="menuItems" value="${
     (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuItems(index, targetDocId, language, nested)
-         : menuService.getPublicMenuItems(index, targetDocId, language, nested)
+         ? menuService.getVisibleMenuItems(targetDocId, index, language, nested)
+         : menuService.getPublicMenuItems(targetDocId, index, language, nested)
      }" scope="request"/>
 
     <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
