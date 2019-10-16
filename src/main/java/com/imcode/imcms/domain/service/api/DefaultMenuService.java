@@ -72,12 +72,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItems(int menuIndex, int docId, String language) {
+    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language) {
         return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
     }
 
     @Override
-    public List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language, boolean disableNested) {
+    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         List<MenuItemDTO> allMenuItems = new ArrayList<>();
         if (disableNested) {
@@ -91,7 +91,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language, boolean disableNested) {
+    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
         List<MenuItemDTO> allMenuItems = new ArrayList<>();
         if (disableNested) {

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MenuService extends VersionedContentService, DeleterByDocumentId {
 
-    List<MenuItemDTO> getMenuItems(int menuIndex, int docId, String language);
+    List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language);
 
     /**
      * @param disableNested - false/true show nested in menu.
@@ -17,9 +17,9 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
      * ********************************************************************************
      * disableNested (false) - will get just the menu items of the first level. Nested items are in sub levels.
      */
-    List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language, boolean disableNested);
+    List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested);
 
-    List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language, boolean disableNested);
+    List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean disableNested);
 
     List<Menu> getAll();
 

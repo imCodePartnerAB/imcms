@@ -29,25 +29,25 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItems(int menuIndex, int docId, String language) {
+    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language) {
         return documentLoaderCachingProxy.getMenuItems(
-                getKey(menuIndex, docId, language), () -> defaultMenuService.getMenuItems(menuIndex, docId, language)
+                getKey(menuIndex, docId, language), () -> defaultMenuService.getMenuItems(docId, menuIndex, language)
         );
     }
 
     @Override
-    public List<MenuItemDTO> getVisibleMenuItems(int menuIndex, int docId, String language, boolean disableNested) {
+    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         return documentLoaderCachingProxy.getVisibleMenuItems(
                 getKey(menuIndex, docId, language),
-                () -> defaultMenuService.getVisibleMenuItems(menuIndex, docId, language, disableNested)
+                () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, disableNested)
         );
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItems(int menuIndex, int docId, String language, boolean disableNested) {
+    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         return documentLoaderCachingProxy.getPublicMenuItems(
                 getKey(menuIndex, docId, language),
-                () -> defaultMenuService.getPublicMenuItems(menuIndex, docId, language, disableNested)
+                () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, disableNested)
         );
     }
 
