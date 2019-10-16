@@ -80,7 +80,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         List<MenuItemDTO> allMenuItems = new ArrayList<>();
-        if (disableNested) {
+        if (!disableNested) {
             for (MenuItemDTO menuItemDTO : menuItemsOf) {
                 allMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
             }
@@ -94,7 +94,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
         List<MenuItemDTO> allMenuItems = new ArrayList<>();
-        if (disableNested) {
+        if (!disableNested) {
             for (MenuItemDTO menuItemDTO : menuItemsOf) {
                 allMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
             }

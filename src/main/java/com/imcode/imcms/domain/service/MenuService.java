@@ -13,9 +13,9 @@ public interface MenuService extends VersionedContentService, DeleterByDocumentI
 
     /**
      * @param disableNested - false/true show nested in menu.
-     * disableNested (true) - Will return all the items in the menu, no matter what level. All sub levels are empty.
+     * disableNested (true) - will get just the menu items of the first level. Nested items are in sub levels.
      * ********************************************************************************
-     * disableNested (false) - will get just the menu items of the first level. Nested items are in sub levels.
+     * disableNested (false) - Will return all the items in the menu, no matter what level. All sub levels are empty.
      */
     List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested);
 
