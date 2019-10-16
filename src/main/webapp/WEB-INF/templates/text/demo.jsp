@@ -21,7 +21,7 @@
 <div class="imcms-info-msg">Implemented admin panel buttons: "Public", "Edit", "Page Info" and "Document"</div>
 
 <div class="imcms-demo-page">
-    <imcms:menu index='1' nested="true">
+    <imcms:menu index='1' flat="false">
         <div class="imcms-demo-page__menu imcms-demo-menu">
             <imcms:menuLoop>
                 <div class="imcms-demo-menu__menu-item imcms-demo-menu-item${hasChildren?' imcms-demo-menu__menu-item--parent':''}${isCurrent?' imcms-demo-menu__menu-item--active':''}">
