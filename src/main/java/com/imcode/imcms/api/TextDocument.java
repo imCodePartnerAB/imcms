@@ -330,7 +330,7 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getVisibleMenuItems() {
             final List<MenuItemDTO> visibleMenuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getVisibleMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), false);
+                    .getVisibleMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true);
 
             return convertToMenuItem(visibleMenuItems);
         }
@@ -345,7 +345,7 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getMenuItems() {
             final List<MenuItemDTO> menuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage());
+                    .getMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true);
 
             return convertToMenuItem(menuItems);
         }
@@ -354,7 +354,7 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getPublishedMenuItems() {
             final List<MenuItemDTO> publicMenuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getPublicMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), false);
+                    .getPublicMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true);
 
             return convertToMenuItem(publicMenuItems);
         }

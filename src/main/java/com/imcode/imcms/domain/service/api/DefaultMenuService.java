@@ -72,19 +72,19 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language) {
+    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
     }
 
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
-        List<MenuItemDTO> allMenuItems = new ArrayList<>();
+        List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
         if (disableNested) {
             for (MenuItemDTO menuItemDTO : menuItemsOf) {
-                allMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
+                childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
             }
-            menuItemsOf.addAll(allMenuItems);
+            menuItemsOf.addAll(childrenMenuItems);
         }
 
         return menuItemsOf;
@@ -93,12 +93,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
-        List<MenuItemDTO> allMenuItems = new ArrayList<>();
+        List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
         if (disableNested) {
             for (MenuItemDTO menuItemDTO : menuItemsOf) {
-                allMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
+                childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
             }
-            menuItemsOf.addAll(allMenuItems);
+            menuItemsOf.addAll(childrenMenuItems);
         }
 
         return menuItemsOf;
