@@ -73,7 +73,16 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
-        return getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
+        List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
+        List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
+        if (disableNested) {
+            for (MenuItemDTO menuItemDTO : menuItemsOf) {
+                childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
+            }
+            menuItemsOf.addAll(childrenMenuItems);
+        }
+
+        return menuItemsOf;
     }
 
     @Override
