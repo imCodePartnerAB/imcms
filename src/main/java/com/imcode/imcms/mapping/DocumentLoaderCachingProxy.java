@@ -277,6 +277,7 @@ public class DocumentLoaderCachingProxy {
         private int menuIndex;
         private int docId;
         private String language;
+        private boolean disableNested;
     }
 }
 
