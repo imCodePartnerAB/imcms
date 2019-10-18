@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -82,7 +83,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             menuItemsOf.addAll(childrenMenuItems);
         }
 
-        return menuItemsOf;
+        return getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
     }
 
     @Override
@@ -96,7 +97,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             menuItemsOf.addAll(childrenMenuItems);
         }
 
-        return menuItemsOf;
+        return getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             menuItemsOf.addAll(childrenMenuItems);
         }
 
-        return menuItemsOf;
+        return getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
     }
 
     @Override
@@ -253,5 +254,15 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         }
         return nestedMenuItems;
+    }
+
+    private List<MenuItemDTO> getAndSetUpEmptyChildrenMenuItems(List<MenuItemDTO> menuItemDTOs) {
+        return menuItemDTOs.stream()
+                .peek(menuItem -> {
+                    if (!menuItem.getChildren().isEmpty()) {
+                        menuItem.setChildren(Collections.emptyList());
+                    }
+                })
+                .collect(Collectors.toList());
     }
 }
