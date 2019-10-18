@@ -83,7 +83,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             menuItemsOf.addAll(childrenMenuItems);
         }
 
-        return getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
+        return disableNested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             menuItemsOf.addAll(childrenMenuItems);
         }
 
-        return getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
+        return disableNested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             menuItemsOf.addAll(childrenMenuItems);
         }
 
-        return getAndSetUpEmptyChildrenMenuItems(menuItemsOf);
+        return disableNested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
     }
 
     @Override
