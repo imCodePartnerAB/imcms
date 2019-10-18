@@ -200,7 +200,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetEnLangAndMenuDisableEnNestedOff_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSize() {
+    public void getMenuItems_When_UserSetEnLangAndMenuDisableEnNestedOff_ShowModeSHOW_IN_DEFAULT_LANGUAGE_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
 
         final String langUser = Imcms.getUser().getLanguage();
@@ -218,11 +218,13 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(8, menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true).size());
+        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true);
+        assertEquals(8, expectedMenuItems.size());
+        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
-    public void getMenuItems_When_NestedOff_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
+    public void getMenuItems_When_NestedOff_UserSetEnLangAndMenuDisableEn_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final String langUser = Imcms.getUser().getLanguage();
         final List<MenuItemDTO> menuItems = menu.getMenuItems();
@@ -239,7 +241,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(7, menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true).size());
+        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true);
+        assertEquals(7, expectedMenuItems.size());
+        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -307,7 +311,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSize() {
+    public void getMenuItems_When_UserSetSvLangAndMenuDisableEN_ShowModeDO_NOT_SHOW_Expect_CorrectEntitiesSizeAndChildrenEmpty() {
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2(SWE_CODE_ISO_639_2);
         Imcms.setUser(user);
@@ -327,7 +331,9 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.saveFrom(menu);
 
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
-        assertEquals(8, menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true).size());
+        List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true);
+        assertEquals(8, expectedMenuItems.size());
+        expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
@@ -376,7 +382,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void getPublicMenuItems_When_NestedMenuItemsDisable_Expect_CorrectEntitiesSize() {
+    public void getPublicMenuItems_When_NestedMenuItemsDisable_Expect_CorrectEntitiesSizeAndEmptyChildren() {
         final MenuDTO menu = menuDataInitializer.createData(true, 1);
         final DocumentDTO documentDTO = documentService.get(menu.getDocId());
         documentDTO.setDisabledLanguageShowMode(SHOW_IN_DEFAULT_LANGUAGE);
@@ -389,7 +395,12 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.createVersionedContent(workingVersion, latestVersionDoc);
         menuService.saveFrom(menu);
 
-        assertEquals(8, menuService.getPublicMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true).size());
+        assertFalse(menu.getMenuItems().get(0).getChildren().isEmpty());
+
+        List<MenuItemDTO> publicMenuItems = menuService.getPublicMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, true);
+
+        assertEquals(8, publicMenuItems.size());
+        publicMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
     @Test
