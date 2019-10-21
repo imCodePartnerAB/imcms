@@ -26,10 +26,12 @@
 <c:if test="${!isDocNew || editOptions.editMenu}">
     <c:set var="targetDocId" value="${empty document ? currentDocument.id : document}"/>
 
+    <c:set var="isNested" value="${empty nested ? false : nested}"/>
+
     <c:set var="menuItems" value="${
     (isEditMode && editOptions.editMenu || isPreviewMode)
-         ? menuService.getVisibleMenuItems(targetDocId, index, language, !nested)
-         : menuService.getPublicMenuItems(targetDocId, index, language, !nested)
+         ? menuService.getVisibleMenuItems(targetDocId, index, language, isNested)
+         : menuService.getPublicMenuItems(targetDocId, index, language, isNested)
      }" scope="request"/>
 
     <c:set var="isShowlabel" value="${empty showlabel ? 'true' : showlabel}"/>
@@ -51,7 +53,8 @@
             <c:set var="externalPart"
                    value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-            <div class="imcms-editor-area imcms-editor-area--menu" data-doc-id="${targetDocId}"${externalPart}
+            <div class="imcms-editor-area imcms-editor-area--menu" data-nested="${isNested}"
+                 data-doc-id="${targetDocId}"${externalPart}
                  data-menu-index="${index}">
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
