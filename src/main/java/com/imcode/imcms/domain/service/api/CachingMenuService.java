@@ -29,26 +29,26 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
+    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getMenuItems(
-                getKey(menuIndex, docId, language, disableNested),
-                () -> defaultMenuService.getMenuItems(docId, menuIndex, language, disableNested)
+                getKey(menuIndex, docId, language, nested),
+                () -> defaultMenuService.getMenuItems(docId, menuIndex, language, nested)
         );
     }
 
     @Override
-    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
+    public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getVisibleMenuItems(
-                getKey(menuIndex, docId, language, disableNested),
-                () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, disableNested)
+                getKey(menuIndex, docId, language, nested),
+                () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, nested)
         );
     }
 
     @Override
-    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean disableNested) {
+    public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getPublicMenuItems(
-                getKey(menuIndex, docId, language, disableNested),
-                () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, disableNested)
+                getKey(menuIndex, docId, language, nested),
+                () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, nested)
         );
     }
 

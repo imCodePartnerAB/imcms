@@ -30,8 +30,8 @@ public class MenuController {
 
     @GetMapping
     public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu,
-                                          @RequestParam(value = "nested", defaultValue = "false") boolean disableNested) {
-        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), !disableNested);
+                                          @RequestParam(defaultValue = "false") boolean nested) {
+        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), nested);
     }
 
     @PostMapping
