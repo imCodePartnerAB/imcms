@@ -187,6 +187,7 @@ class MappingConfig {
             final MenuDTO menuDTO = new MenuDTO();
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
+            menuDTO.setNested(menu.isNested());
             menuDTO.setMenuItems(menu.getMenuItems()
                     .stream()
                     .map(menuItem -> menuItemToDTO.apply(menuItem, language)).collect(Collectors.toList()));
