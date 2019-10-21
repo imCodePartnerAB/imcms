@@ -41,6 +41,9 @@ public class Menu extends VersionedContent {
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<MenuItem> menuItems;
 
+    @NotNull
+    private boolean nested;
+
     public Set<MenuItem> getMenuItems() {
         if (menuItems == null) menuItems = new LinkedHashSet<>();
         return menuItems;
