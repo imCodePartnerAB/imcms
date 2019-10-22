@@ -16,7 +16,8 @@ define("imcms-menu-editor-builder",
         texts = texts.editors.menu;
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
-        let docId, menuIndex;
+        let docId, menuIndex, nested;
+        let typesSortSelected;
         let $title = $('<span>');
         // variables for drag
         let mouseCoords = {
@@ -60,11 +61,12 @@ define("imcms-menu-editor-builder",
             const menuDTO = {
                 menuIndex: menuIndex,
                 docId: docId,
-                menuItems: menuItems
+                menuItems: menuItems,
+                nested: nested
             };
 
             menusRestApi.create(menuDTO)
-                .done(items => {
+                .done(item => {
                     onMenuSaved();
                     menuWindowBuilder.closeWindow();
                 })
@@ -750,10 +752,38 @@ define("imcms-menu-editor-builder",
             return toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
         }
 
-        function fillEditorContent(menuElementsTree) {
+        function buildTypeSortingSelect(opts) {
+            let typesSortSelect = components.selects.selectContainer('<div>', {
+                emptySelect: false,
+                text: 'test',
+                onSelected: buildOnSelectedTypeSort
+            });
+
+            typesSortSelected = typesSortSelect.getSelect();
+
+            let nested = {
+                nested: opts.nested
+            };
+
+            menusRestApi.getSortTypes(nested).done(items => {
+                let typesSortDataMapped = items.map(type => ({
+                    text: type
+                }));
+                components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort());
+            }).fail(() => modal.buildErrorWindow('failde'));
+
+            return typesSortSelect;
+        }
+
+        function buildOnSelectedTypeSort() {
+            alert("Ha!")
+        }
+
+        function fillEditorContent(menuElementsTree, opts) {
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree);
 
             $menuElementsContainer.append(buildMenuItemNewButton());
+            $menuElementsContainer.append(buildTypeSortingSelect(opts));
             $menuElementsContainer.append($menuElementsTree);
 
             $documentEditor = documentEditorBuilder.buildBody();
@@ -761,10 +791,14 @@ define("imcms-menu-editor-builder",
             documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
         }
 
+        let item;
+
         function loadMenuEditorContent(opts) {
             addHeadData(opts);
             menusRestApi.read(opts)
-                .done(fillEditorContent)
+                .done(items => {
+                    fillEditorContent(items, opts)
+                })
                 .fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
@@ -777,6 +811,7 @@ define("imcms-menu-editor-builder",
         function buildMenuEditor(opts) {
             docId = opts.docId;
             menuIndex = opts.menuIndex;
+            nested = opts.nested;
 
             return new BEM({
                 block: "imcms-menu-editor",
