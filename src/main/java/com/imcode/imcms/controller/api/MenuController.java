@@ -34,20 +34,14 @@ public class MenuController {
 
     @GetMapping
     public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu,
-                                          @RequestParam(defaultValue = "false") boolean nested,
                                           @RequestParam(required = false) String typeSort) {
-        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), nested, typeSort);
+        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), menu.isNested(), typeSort);
     }
 
     @GetMapping("/sort-types")
     public List<TypeSort> getSortTypes(@RequestParam boolean nested) {
         return typeSorterMenuService.typesSortByNested(nested);
     }
-
-//    @GetMapping
-//    public List<MenuItemDTO> getMenuItemsByTypeSort(@RequestParam String typeSort) {
-//
-//    }
 
     @PostMapping
     @CheckAccess(AccessType.MENU)
