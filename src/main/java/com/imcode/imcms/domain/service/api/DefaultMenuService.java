@@ -14,6 +14,7 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
+import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import imcode.server.user.UserDomainObject;
 import org.springframework.stereotype.Service;
@@ -122,9 +123,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         final Menu menu = Optional.ofNullable(getMenu(menuDTO.getMenuIndex(), docId))
                 .orElseGet(() -> createMenu(menuDTO));
 
+        menu.setNested(menuDTO.isNested());
+
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
+
+        if (menuDTO.isNested()) {
+            savedMenu.setTypeSorts(Collections.singletonList(TypeSort.TREE_SORT));
+        } else {
+            savedMenu.setTypeSorts(Arrays.asList(TypeSort.values()));
+        }
 
         super.updateWorkingVersion(docId);
 
