@@ -345,7 +345,7 @@ public class TextDocument extends Document {
         public TextDocument.MenuItem[] getMenuItems() {
             final List<MenuItemDTO> menuItems = contentManagementSystem.getInternal()
                     .getMenuService()
-                    .getMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true);
+                    .getMenuItems(internalTextDocument.getId(), menuIndex, Imcms.getUser().getLanguage(), true, null);
 
             return convertToMenuItem(menuItems);
         }

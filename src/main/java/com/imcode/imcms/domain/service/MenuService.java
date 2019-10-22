@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface MenuService extends VersionedContentService, DeleterByDocumentId {
 
-    List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested);
+    List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort);
 
     /**
      * @param nested - false/true show nested in menu.

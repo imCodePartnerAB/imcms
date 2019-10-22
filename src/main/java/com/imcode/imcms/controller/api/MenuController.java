@@ -3,6 +3,7 @@ package com.imcode.imcms.controller.api;
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
 import com.imcode.imcms.domain.service.MenuService;
+import com.imcode.imcms.domain.service.TypeSorterMenuService;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import com.imcode.imcms.sorted.TypeSort;
@@ -16,35 +17,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/menus")
 public class MenuController {
 
     private final MenuService menuService;
+    private final TypeSorterMenuService typeSorterMenuService;
 
     @Autowired
-    MenuController(MenuService menuService) {
+    MenuController(MenuService menuService, TypeSorterMenuService typeSorterMenuService) {
         this.menuService = menuService;
+        this.typeSorterMenuService = typeSorterMenuService;
     }
 
     @GetMapping
     public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu,
-                                          @RequestParam(defaultValue = "false") boolean nested) {
-        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), nested);
+                                          @RequestParam(defaultValue = "false") boolean nested,
+                                          @RequestParam(required = false) String typeSort) {
+        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), nested, typeSort);
     }
 
     @GetMapping("/sort-types")
     public List<TypeSort> getSortTypes(@RequestParam boolean nested) {
-        if (nested) {
-            return Arrays.asList(TypeSort.values());
-        } else {
-            return Arrays.stream(TypeSort.values()).skip(1).collect(Collectors.toList());
-        }
+        return typeSorterMenuService.typesSortByNested(nested);
     }
+
+//    @GetMapping
+//    public List<MenuItemDTO> getMenuItemsByTypeSort(@RequestParam String typeSort) {
+//
+//    }
 
     @PostMapping
     @CheckAccess(AccessType.MENU)
