@@ -67,7 +67,7 @@ public class MenuControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndHasNotNestedParam_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
+    public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParam_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
         final MenuDTO menu = menuDataInitializer.createData(true);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
@@ -79,7 +79,8 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        List<MenuItemDTO> menuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), true);
+        List<MenuItemDTO> menuItems = menuService.getMenuItems(
+                menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), false, null);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menuItems));
     }
@@ -134,7 +135,7 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        List<MenuItemDTO> menuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), true);
+        List<MenuItemDTO> menuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), false, null);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menuItems));
     }
