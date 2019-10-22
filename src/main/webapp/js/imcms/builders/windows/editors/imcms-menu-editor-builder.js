@@ -776,7 +776,7 @@ define("imcms-menu-editor-builder",
         }
 
         function buildOnSelectedTypeSort() {
-            alert("Ha!")
+
         }
 
         function fillEditorContent(menuElementsTree, opts) {
@@ -790,8 +790,6 @@ define("imcms-menu-editor-builder",
             $documentsContainer.append($documentEditor);
             documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
         }
-
-        let item;
 
         function loadMenuEditorContent(opts) {
             addHeadData(opts);
