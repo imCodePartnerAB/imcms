@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
@@ -77,26 +78,47 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
-        List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
         if (!nested) {
-            for (MenuItemDTO menuItemDTO : menuItemsOf) {
-                childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
-            }
-            menuItemsOf.addAll(childrenMenuItems);
+            pullAndAddAllMenuItems(menuItemsOf);
         }
 
-        return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
+        return getSortingMenuItemsByTypeSort(typeSort, menuItemsOf);
+    }
+
+    private void pullAndAddAllMenuItems(List<MenuItemDTO> menuItems) {
+        final List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
+
+        for (MenuItemDTO menuItemDTO : menuItems) {
+            childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
+        }
+
+        menuItems.addAll(childrenMenuItems);
+    }
+
+    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
+        switch (TypeSort.valueOf(typeSort.toUpperCase())) {
+            case TREE_SORT:
+                return menuItems;
+            case MANUAL:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems);
+            case ALPHABETICAL_ASC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getTitle))
+                        .collect(Collectors.toList());
+            case ALPHABETICAL_DESC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getTitle).reversed())
+                        .collect(Collectors.toList());
+            default:
+                return Collections.EMPTY_LIST;
+        }
     }
 
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
-        List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
         if (!nested) {
-            for (MenuItemDTO menuItemDTO : menuItemsOf) {
-                childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
-            }
-            menuItemsOf.addAll(childrenMenuItems);
+            pullAndAddAllMenuItems(menuItemsOf);
         }
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
@@ -105,12 +127,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
-        List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
         if (!nested) {
-            for (MenuItemDTO menuItemDTO : menuItemsOf) {
-                childrenMenuItems.addAll(getAllNestedMenuItems(menuItemDTO));
-            }
-            menuItemsOf.addAll(childrenMenuItems);
+            pullAndAddAllMenuItems(menuItemsOf);
         }
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
