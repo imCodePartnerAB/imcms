@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
@@ -80,6 +79,14 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
         if (!nested) {
             pullAndAddAllMenuItems(menuItemsOf);
+        }
+
+        if (typeSort == null) {
+            if (nested) {
+                typeSort = String.valueOf(TypeSort.TREE_SORT);
+            } else {
+                typeSort = String.valueOf(TypeSort.MANUAL);
+            }
         }
 
         return getSortingMenuItemsByTypeSort(typeSort, menuItemsOf);
@@ -146,12 +153,6 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
-
-        if (menuDTO.isNested()) {
-            savedMenu.setTypeSorts(Collections.singletonList(TypeSort.TREE_SORT));
-        } else {
-            savedMenu.setTypeSorts(Arrays.asList(TypeSort.values()));
-        }
 
         super.updateWorkingVersion(docId);
 
