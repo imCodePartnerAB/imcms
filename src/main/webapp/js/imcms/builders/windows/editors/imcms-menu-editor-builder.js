@@ -17,7 +17,7 @@ define("imcms-menu-editor-builder",
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let docId, menuIndex, nested;
-        let typesSortSelected;
+        let typeSortSelected;
         let $title = $('<span>');
         // variables for drag
         let mouseCoords = {
@@ -759,13 +759,13 @@ define("imcms-menu-editor-builder",
                 onSelected: buildOnSelectedTypeSort
             });
 
-            typesSortSelected = typesSortSelect.getSelect();
+            typeSortSelected = typesSortSelect.getSelect();
 
-            let nested = {
+            let isNested = {
                 nested: opts.nested
             };
 
-            menusRestApi.getSortTypes(nested).done(items => {
+            menusRestApi.getSortTypes(isNested).done(items => {
                 let typesSortDataMapped = items.map(type => ({
                     text: type
                 }));
