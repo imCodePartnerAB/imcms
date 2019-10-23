@@ -10,7 +10,6 @@ import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.sorted.TypeSort;
 import imcode.server.Imcms;
 import lombok.val;
 import org.springframework.stereotype.Component;
@@ -53,21 +52,21 @@ public class MenuDataInitializer extends TestDataCleaner {
         this.documentService = documentService;
     }
 
-    public MenuDTO createData(boolean withMenuItems, boolean nested, TypeSort typeSort) {
+    public MenuDTO createData(boolean withMenuItems, boolean nested, String typeSort) {
         cleanRepositories();
         return createData(withMenuItems, MENU_INDEX, nested, typeSort);
     }
 
-    public MenuDTO createData(boolean withMenuItems, int menuIndex, boolean nested, TypeSort typeSort) {
+    public MenuDTO createData(boolean withMenuItems, int menuIndex, boolean nested, String typeSort) {
         return createData(withMenuItems, menuIndex, VERSION_INDEX, DOC_ID, nested, typeSort);
     }
 
-    public MenuDTO createData(boolean withMenuItems, int menuIndex, int versionIndex, int docId, boolean nested, TypeSort typeSort) {
+    public MenuDTO createData(boolean withMenuItems, int menuIndex, int versionIndex, int docId, boolean nested, String typeSort) {
         version = versionDataInitializer.createData(versionIndex, docId);
         return createData(withMenuItems, menuIndex, version, nested, typeSort);
     }
 
-    public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version, boolean nested, TypeSort typeSort) {
+    public MenuDTO createData(boolean withMenuItems, int menuIndex, Version version, boolean nested, String typeSort) {
         val menu = createDataEntity(withMenuItems, menuIndex, version, nested, typeSort);
         return menuToMenuDTO.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
     }
@@ -90,17 +89,17 @@ public class MenuDataInitializer extends TestDataCleaner {
         super.cleanRepositories();
     }
 
-    public Menu createDataEntity(boolean withMenuItems, boolean nested, TypeSort typeSort) {
+    public Menu createDataEntity(boolean withMenuItems, boolean nested, String typeSort) {
         version = versionDataInitializer.createData(VERSION_INDEX, DOC_ID);
         return createDataEntity(withMenuItems, MENU_INDEX, version, nested, typeSort);
     }
 
-    private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version, boolean nested, TypeSort typeSort) {
+    private Menu createDataEntity(boolean withMenuItems, int menuIndex, Version version, boolean nested, String typeSort) {
         final Menu menu = new Menu();
         menu.setVersion(version);
         menu.setNo(menuIndex);
         menu.setNested(nested);
-        menu.setTypeSort(String.valueOf(typeSort));
+        menu.setTypeSort(typeSort);
         savedMenu = menuRepository.saveAndFlush(menu);
 
         if (withMenuItems) {
