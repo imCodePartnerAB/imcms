@@ -76,21 +76,21 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, TypeSort typeSort) {
+    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
         if (typeSort == null) {
             if (nested) {
-                typeSort = TypeSort.TREE_SORT;
+                typeSort = String.valueOf(TypeSort.TREE_SORT);
             } else {
-                typeSort = TypeSort.MANUAL;
+                typeSort = String.valueOf(TypeSort.MANUAL);
             }
         }
 
-        if (!nested || !typeSort.equals(TypeSort.TREE_SORT)) {
+        if (!nested || !typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
             pullAndAddAllMenuItems(menuItemsOf);
         }
 
-        if (!nested && typeSort.equals(TypeSort.TREE_SORT)) {
+        if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
             throw new SortNotSupportedException("Current sorting don't support in menuIndex: " + menuIndex);
         }
 
@@ -107,8 +107,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menuItems.addAll(childrenMenuItems);
     }
 
-    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(TypeSort typeSort, List<MenuItemDTO> menuItems) {
-        switch (typeSort) {
+    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
+        switch (TypeSort.valueOf(typeSort)) {
             case TREE_SORT:
                 return menuItems;
             case MANUAL:
