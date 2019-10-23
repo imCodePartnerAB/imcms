@@ -304,6 +304,7 @@ const texts = {
                 docTitle: "Rubrik",
                 status: "Status",
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
+                typeSort: "Sortera på",
                 saveAndClose: "Spara och stäng",
                 error: {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
@@ -1091,6 +1092,7 @@ const texts = {
                 status: "Status",
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
+                typeSort: "Sort on",
                 error: {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
