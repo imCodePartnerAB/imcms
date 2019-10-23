@@ -37,7 +37,6 @@ import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
 import com.imcode.imcms.persistence.entity.TextHistoryJPA;
 import com.imcode.imcms.persistence.entity.User;
 import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.sorted.TypeSort;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -189,7 +188,7 @@ class MappingConfig {
             menuDTO.setDocId(menu.getVersion().getDocId());
             menuDTO.setMenuIndex(menu.getNo());
             menuDTO.setNested(menu.isNested());
-            menuDTO.setTypeSort(Enum.valueOf(TypeSort.class, menu.getTypeSort()));
+            menuDTO.setTypeSort(menu.getTypeSort());
             menuDTO.setMenuItems(menu.getMenuItems()
                     .stream()
                     .map(menuItem -> menuItemToDTO.apply(menuItem, language)).collect(Collectors.toList()));
