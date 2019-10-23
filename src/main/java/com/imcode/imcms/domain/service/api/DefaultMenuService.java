@@ -154,7 +154,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .orElseGet(() -> createMenu(menuDTO));
 
         menu.setNested(menuDTO.isNested());
-        menu.setTypeSort(String.valueOf(menuDTO.getTypeSort()));
+        menu.setTypeSort(menuDTO.getTypeSort());
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
