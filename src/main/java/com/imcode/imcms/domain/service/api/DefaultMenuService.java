@@ -121,8 +121,24 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle).reversed())
                         .collect(Collectors.toList());
+            case PUBLISHED_DATE_ASC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate))
+                        .collect(Collectors.toList());
+            case PUBLISHED_DATE_DESC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate).reversed())
+                        .collect(Collectors.toList());
+            case MODIFIED_DATE_ASC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate))
+                        .collect(Collectors.toList());
+            case MODIFIED_DATE_DESC:
+                return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
+                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate).reversed())
+                        .collect(Collectors.toList());
             default:
-                return Collections.EMPTY_LIST;
+                return Collections.EMPTY_LIST;//never come true...
         }
     }
 
