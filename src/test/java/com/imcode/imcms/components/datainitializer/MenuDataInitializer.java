@@ -100,7 +100,7 @@ public class MenuDataInitializer extends TestDataCleaner {
         menu.setVersion(version);
         menu.setNo(menuIndex);
         menu.setNested(nested);
-        menu.setTypeSort(typeSort);
+        menu.setTypeSort(String.valueOf(typeSort));
         savedMenu = menuRepository.saveAndFlush(menu);
 
         if (withMenuItems) {

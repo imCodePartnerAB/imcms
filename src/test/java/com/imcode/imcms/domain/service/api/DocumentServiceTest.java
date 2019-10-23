@@ -56,6 +56,7 @@ import com.imcode.imcms.persistence.repository.MenuRepository;
 import com.imcode.imcms.persistence.repository.MetaRepository;
 import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
 import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.sorted.TypeSort;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Config;
 import imcode.server.Imcms;
@@ -642,7 +643,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
         loopDataInitializer.createData(testLoop, workingVersion);
 
-        menuDataInitializer.createData(false, index, workingVersion, false, null);
+        menuDataInitializer.createData(false, index, workingVersion, false, TypeSort.TREE_SORT);
 
         final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
@@ -713,7 +714,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         final LoopDTO testLoop = new LoopDTO(createdDoc.getId(), index, Collections.emptyList());
         loopDataInitializer.createData(testLoop, workingVersion);
 
-        menuDataInitializer.createData(false, index, workingVersion, true, null);
+        menuDataInitializer.createData(false, index, workingVersion, true, TypeSort.TREE_SORT);
 
         final ImageJPA image = imageDataInitializer.createData(index, workingVersion);
 
