@@ -75,7 +75,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     }
 
     @Override
-    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
+    public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, TypeSort typeSort) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
         if (!nested) {
             pullAndAddAllMenuItems(menuItemsOf);
@@ -83,9 +83,9 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
 
         if (typeSort == null) {
             if (nested) {
-                typeSort = String.valueOf(TypeSort.TREE_SORT);
+                typeSort = TypeSort.TREE_SORT;
             } else {
-                typeSort = String.valueOf(TypeSort.MANUAL);
+                typeSort = TypeSort.MANUAL;
             }
         }
 
@@ -102,8 +102,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menuItems.addAll(childrenMenuItems);
     }
 
-    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(String typeSort, List<MenuItemDTO> menuItems) {
-        switch (TypeSort.valueOf(typeSort.toUpperCase())) {
+    private List<MenuItemDTO> getSortingMenuItemsByTypeSort(TypeSort typeSort, List<MenuItemDTO> menuItems) {
+        switch (typeSort) {
             case TREE_SORT:
                 return menuItems;
             case MANUAL:
@@ -149,7 +149,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .orElseGet(() -> createMenu(menuDTO));
 
         menu.setNested(menuDTO.isNested());
-
+        menu.setTypeSort(menuDTO.getTypeSort());
         menu.setMenuItems(menuItemDtoListToMenuItemList.apply(menuDTO.getMenuItems()));
 
         final MenuDTO savedMenu = menuSaver.apply(menu, languageService.findByCode(Imcms.getUser().getLanguage()));
@@ -177,6 +177,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         menu.setId(null);
         menu.setNo(jpa.getNo());
         menu.setVersion(newVersion);
+        menu.setNested(jpa.isNested());
+        menu.setTypeSort(jpa.getTypeSort());
 
         final Set<MenuItem> newMenuItems = jpa.getMenuItems()
                 .stream()
