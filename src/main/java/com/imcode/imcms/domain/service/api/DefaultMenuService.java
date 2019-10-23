@@ -2,6 +2,7 @@ package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.domain.dto.MenuDTO;
 import com.imcode.imcms.domain.dto.MenuItemDTO;
+import com.imcode.imcms.domain.exception.SortNotSupportedException;
 import com.imcode.imcms.domain.service.AbstractVersionedContentService;
 import com.imcode.imcms.domain.service.CommonContentService;
 import com.imcode.imcms.domain.service.DocumentMenuService;
@@ -77,16 +78,20 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, TypeSort typeSort) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, false);
-        if (!nested) {
-            pullAndAddAllMenuItems(menuItemsOf);
-        }
-
         if (typeSort == null) {
             if (nested) {
                 typeSort = TypeSort.TREE_SORT;
             } else {
                 typeSort = TypeSort.MANUAL;
             }
+        }
+
+        if (!nested || !typeSort.equals(TypeSort.TREE_SORT)) {
+            pullAndAddAllMenuItems(menuItemsOf);
+        }
+
+        if (!nested && typeSort.equals(TypeSort.TREE_SORT)) {
+            throw new SortNotSupportedException("Current sorting don't support in menuIndex: " + menuIndex);
         }
 
         return getSortingMenuItemsByTypeSort(typeSort, menuItemsOf);
