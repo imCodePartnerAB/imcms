@@ -11,6 +11,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -47,7 +48,7 @@ public class Menu extends VersionedContent {
     @NotNull
     private boolean nested;
 
-    @NotNull
+    @Column(name = "type_sort")
     @Enumerated(EnumType.STRING)
     private TypeSort typeSort;
 
