@@ -1,5 +1,6 @@
 package com.imcode.imcms.persistence.entity;
 
+import com.imcode.imcms.sorted.TypeSort;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,8 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -43,6 +46,10 @@ public class Menu extends VersionedContent {
 
     @NotNull
     private boolean nested;
+
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TypeSort typeSort;
 
     public Set<MenuItem> getMenuItems() {
         if (menuItems == null) menuItems = new LinkedHashSet<>();
