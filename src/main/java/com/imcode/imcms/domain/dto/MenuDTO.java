@@ -21,5 +21,5 @@ public class MenuDTO implements Documentable, Serializable {
 
     private boolean nested;
 
-    private List<TypeSort> typeSorts;
+    private TypeSort typeSorts;
 }
