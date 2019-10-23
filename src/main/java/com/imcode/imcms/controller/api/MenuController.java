@@ -33,9 +33,14 @@ public class MenuController {
     }
 
     @GetMapping
-    public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu,
-                                          @RequestParam(required = false) String typeSort) {
-        return menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), menu.isNested(), typeSort);
+    public List<MenuItemDTO> getMenuItems(@ModelAttribute MenuDTO menu) {
+        return menuService.getMenuItems(
+                menu.getDocId(),
+                menu.getMenuIndex(),
+                Imcms.getUser().getLanguage(),
+                menu.isNested(),
+                menu.getTypeSort()
+        );
     }
 
     @GetMapping("/sort-types")
