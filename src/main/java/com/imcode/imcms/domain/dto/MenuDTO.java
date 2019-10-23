@@ -1,6 +1,5 @@
 package com.imcode.imcms.domain.dto;
 
-import com.imcode.imcms.sorted.TypeSort;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,5 +20,5 @@ public class MenuDTO implements Documentable, Serializable {
 
     private boolean nested;
 
-    private TypeSort typeSort;
+    private String typeSort;
 }
