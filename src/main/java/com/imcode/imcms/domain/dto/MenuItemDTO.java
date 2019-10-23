@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -23,6 +24,10 @@ public class MenuItemDTO implements Serializable {
     private String link;
 
     private DocumentStatus documentStatus;
+
+    private Date publishedDate;
+
+    private Date modifiedDate;
 
     private List<MenuItemDTO> children = new ArrayList<>();
 
