@@ -57,7 +57,7 @@
     padding-bottom: 0;
 }
 
-.imcms-menu-editor-body__left-side .imcms-menu-new-button {
+.imcms-menu-editor-body__left-side .imcms-menu-new-button .imcms-menu-sort-container {
     padding: 0 27px 16px 14px;
     display: block;
 }
@@ -68,6 +68,14 @@
     padding: 13px 0;
     width: 30%;
 }
+
+.imcms-menu-sort-container__types-sort {
+    margin-top: 27px;
+    margin-bottom: 10px;
+    width: 30%;
+    padding: 13px 0;
+}
+
 
 .imcms-menu-new-button__button {
     text-align: center;
