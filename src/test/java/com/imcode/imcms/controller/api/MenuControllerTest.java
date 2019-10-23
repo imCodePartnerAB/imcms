@@ -68,7 +68,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNotNestedParam_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true, false, null);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
@@ -80,14 +80,14 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("docId", String.valueOf(menu.getDocId()));
 
         List<MenuItemDTO> menuItems = menuService.getMenuItems(
-                menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), false, null);
+                menu.getDocId(), menu.getMenuIndex(), Imcms.getUser().getLanguage(), menu.isNested(), menu.getTypeSort());
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menuItems));
     }
 
     @Test
     public void getMenuItems_When_MenuExistInModeSHOWINDEFAULTLANGAndNestedOn_Expect_MenuItemsDtosJson() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
         final DocumentDTO document = documentService.get(menu.getDocId());
         document.setDisabledLanguageShowMode(Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE);
         documentService.save(document);
@@ -97,14 +97,14 @@ public class MenuControllerTest extends AbstractControllerTest {
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()))
-                .param("nested", String.valueOf(true));
+                .param("nested", String.valueOf(menu.isNested()));
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menu.getMenuItems()));
     }
 
     @Test
     public void getMenuItems_When_MenuExistAndMenuItemsHasModeDONOTSHOW_Expect_EmptyResult() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true, false, null);
         final DocumentDTO document = documentService.get(menu.getMenuItems().get(0).getDocumentId());
         final DocumentDTO document2 = documentService.get(menu.getMenuItems().get(1).getDocumentId());
         DocumentDTO setUpDocDTO = setUpMenuDoc(document, SWE_CODE, Meta.DisabledLanguageShowMode.DO_NOT_SHOW);
@@ -123,7 +123,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When_UserSuperAdminMenuExistInModeDONOTSHOWHasNotNested_Expect_CorrectEntitiesSizeAndEmptyChildren() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true, false, null);
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
         user.addRoleId(Roles.SUPER_ADMIN.getId());
@@ -135,7 +135,8 @@ public class MenuControllerTest extends AbstractControllerTest {
                 .param("menuIndex", String.valueOf(menu.getMenuIndex()))
                 .param("docId", String.valueOf(menu.getDocId()));
 
-        List<MenuItemDTO> menuItems = menuService.getMenuItems(menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), false, null);
+        List<MenuItemDTO> menuItems = menuService.getMenuItems(
+                menu.getDocId(), menu.getMenuIndex(), user.getLanguage(), menu.isNested(), null);
 
         performRequestBuilderExpectedOkAndJsonContentEquals(requestBuilder, asJson(menuItems));
     }
@@ -161,7 +162,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void getMenuItems_When_MenuMissing_Expect_Expect_EmptyArray() throws Exception {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
         versionDataInitializer.createData(0, 1001);
         menuService.deleteByDocId(menu.getDocId());
         final MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get(controllerPath())
@@ -173,7 +174,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void postMenu_When_MenuExistWithMenuItems_Expect_Ok() throws Exception {
-        final MenuDTO menuDTO = menuDataInitializer.createData(true);
+        final MenuDTO menuDTO = menuDataInitializer.createData(true, true, null);
 
         final UserDomainObject user = new UserDomainObject(1);
         user.setLanguageIso639_2("eng");
@@ -185,7 +186,7 @@ public class MenuControllerTest extends AbstractControllerTest {
 
     @Test
     public void postMenu_When_MenuMissing_Expect_EmptyArray() throws Exception {
-        final MenuDTO menuDTO = menuDataInitializer.createData(true);
+        final MenuDTO menuDTO = menuDataInitializer.createData(true, true, null);
 
         versionDataInitializer.createData(0, 1001);
         menuService.deleteByDocId(menuDTO.getDocId());

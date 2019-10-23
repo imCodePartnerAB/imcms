@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class MenuRepositoryTest extends WebAppSpringTestConfig {
@@ -63,8 +66,8 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findOne_When_menuWithoutMenuItems_Expect_theSameMenuNoAndVersion() {
-        final MenuDTO menu = menuDataInitializer.createData(false);
+    public void findOne_When_menuWithoutMenuItems_NestedOff_Expect_theSameMenuNoAndVersion() {
+        final MenuDTO menu = menuDataInitializer.createData(false, false, null);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -76,8 +79,8 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithoutMenuItems_Expect_notNullMenu() {
-        final MenuDTO menu = menuDataInitializer.createData(false);
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_NestedOff_menuWithoutMenuItems_Expect_notNullMenu() {
+        final MenuDTO menu = menuDataInitializer.createData(false, false, null);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -86,8 +89,8 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsCapacity() {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_NestedOn_Expect_correctItemsCapacity() {
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -101,8 +104,8 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
     }
 
     @Test
-    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_Expect_correctItemsOrder() {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+    public void findByNoAndVersionAndFetchMenuItemsEagerly_When_menuWithMenuItems_NestedOn_Expect_correctItemsOrder() {
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -120,7 +123,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteMenuItems() {
-        final MenuDTO menu = menuDataInitializer.createData(true);
+        final MenuDTO menu = menuDataInitializer.createData(true, true, null);
         final Version version = menuDataInitializer.getVersion();
 
         final Menu menuPersisted = menuRepository.findByNoAndVersionAndFetchMenuItemsEagerly(menu.getMenuIndex(), version);
@@ -143,7 +146,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
             versionDataInitializer.createData(versionIndex, docId);
 
             IntStream.range(1, 5).forEach((menuIndex) ->
-                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId, true, null)
             );
         });
 
@@ -162,7 +165,7 @@ public class MenuRepositoryTest extends WebAppSpringTestConfig {
             versionDataInitializer.createData(versionIndex, docId);
 
             IntStream.range(1, 5).forEach((menuIndex) ->
-                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId)
+                    menuDataInitializer.createData(true, menuIndex, versionIndex, docId, true, null)
             );
         });
 
