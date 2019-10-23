@@ -755,9 +755,10 @@ define("imcms-menu-editor-builder",
         function buildTypeSortingSelect(opts) {
             let typesSortSelect = components.selects.selectContainer('<div>', {
                 emptySelect: false,
-                text: 'test',
+                text: texts.typeSort,
                 onSelected: buildOnSelectedTypeSort
             });
+
 
             typeSortSelected = typesSortSelect.getSelect();
 
@@ -765,12 +766,12 @@ define("imcms-menu-editor-builder",
                 nested: opts.nested
             };
 
-            menusRestApi.getSortTypes(isNested).done(items => {
-                let typesSortDataMapped = items.map(type => ({
+            menusRestApi.getSortTypes(isNested).done(types => {
+                let typesSortDataMapped = types.map(type => ({
                     text: type
                 }));
                 components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort());
-            }).fail(() => modal.buildErrorWindow('failde'));
+            }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
             return typesSortSelect;
         }
@@ -779,11 +780,29 @@ define("imcms-menu-editor-builder",
 
         }
 
+        function buildTypeSortingContainer(opts) {
+            const toolBEM = new BEM({
+                block: "imcms-menu-sort-container"
+            });
+
+            return toolBEM.buildBlock("<div>", [{"types-sort": buildTypeSortingSelect(opts)}]);
+        }
+
+        function buildEditorContainer(opts) {
+            return new BEM({
+                block: 'imcms-menu-editor-block',
+                elements: {
+                    'new-button': buildMenuItemNewButton(),
+                    'type-sort-block': buildTypeSortingSelect(opts)
+                }
+            });
+        }
+
         function fillEditorContent(menuElementsTree, opts) {
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree);
 
             $menuElementsContainer.append(buildMenuItemNewButton());
-            $menuElementsContainer.append(buildTypeSortingSelect(opts));
+            $menuElementsContainer.append(buildTypeSortingContainer(opts));
             $menuElementsContainer.append($menuElementsTree);
 
             $documentEditor = documentEditorBuilder.buildBody();
