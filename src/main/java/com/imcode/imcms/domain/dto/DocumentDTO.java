@@ -85,7 +85,7 @@ public class DocumentDTO extends Document implements Cloneable {
     }
 
     public String getName() {
-        return StringUtils.defaultString(getAlias(), getId() + "");
+        return StringUtils.defaultIfEmpty(getAlias(), getId() + "");
     }
 
     public Set<Category> getCategories() {
