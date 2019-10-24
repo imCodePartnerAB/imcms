@@ -780,29 +780,20 @@ define("imcms-menu-editor-builder",
 
         }
 
-        function buildTypeSortingContainer(opts) {
-            const toolBEM = new BEM({
-                block: "imcms-menu-sort-container"
-            });
-
-            return toolBEM.buildBlock("<div>", [{"types-sort": buildTypeSortingSelect(opts)}]);
-        }
-
         function buildEditorContainer(opts) {
             return new BEM({
-                block: 'imcms-menu-editor-block',
+                block: 'imcms-menu-editor-head',
                 elements: {
                     'new-button': buildMenuItemNewButton(),
                     'type-sort-block': buildTypeSortingSelect(opts)
                 }
-            });
+            }).buildBlockStructure('<div>')
         }
 
         function fillEditorContent(menuElementsTree, opts) {
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree);
 
-            $menuElementsContainer.append(buildMenuItemNewButton());
-            $menuElementsContainer.append(buildTypeSortingContainer(opts));
+            $menuElementsContainer.append(buildEditorContainer(opts));
             $menuElementsContainer.append($menuElementsTree);
 
             $documentEditor = documentEditorBuilder.buildBody();
