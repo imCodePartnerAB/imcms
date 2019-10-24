@@ -83,6 +83,7 @@
     margin-left: 10%;
     width: 30%;
     padding: 13px 0;
+    min-width: fit-content;
 }
 
 .imcms-menu-editor-head {
