@@ -19,6 +19,17 @@ define("imcms-menu-editor-builder",
         let docId, menuIndex, nested;
         let typeSortSelected;
         let $title = $('<span>');
+        let localizeTypesSort = [
+            texts.typesSort.treeSort,
+            texts.typesSort.manual,
+            texts.typesSort.alphabeticalAsc,
+            texts.typesSort.alphabeticalDesc,
+            texts.typesSort.publishedDateAsc,
+            texts.typesSort.publishedDateDesc,
+            texts.typesSort.modifiedDateAsc,
+            texts.typesSort.modifiedDateDesc,
+        ];
+        let typesSort;
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -766,10 +777,29 @@ define("imcms-menu-editor-builder",
                 nested: opts.nested
             };
 
+            function defineListLocalizeTypesByNested(localizeTypes, nested) {
+
+                if (nested) {
+                    return localizeTypes;
+                } else {
+                    return localizeTypes.slice(1);
+                }
+            }
+
             menusRestApi.getSortTypes(isNested).done(types => {
-                let typesSortDataMapped = types.map(type => ({
-                    text: type
+                let mapTypesSort = new Map();
+                types.map(typeOriginal => {
+                    defineListLocalizeTypesByNested(localizeTypesSort, opts.nested).map(localizeType => {
+                        mapTypesSort.set(localizeType, typeOriginal)
+                    })
+                });
+
+                let keys = [...mapTypesSort.keys()];
+
+                let typesSortDataMapped = keys.map(typeKey => ({
+                    text: typeKey
                 }));
+
                 components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort());
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
