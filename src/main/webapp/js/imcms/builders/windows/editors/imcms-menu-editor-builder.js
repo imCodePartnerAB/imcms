@@ -778,7 +778,6 @@ define("imcms-menu-editor-builder",
             };
 
             function defineListLocalizeTypesByNested(localizeTypes, nested) {
-
                 if (nested) {
                     return localizeTypes;
                 } else {
@@ -787,6 +786,7 @@ define("imcms-menu-editor-builder",
             }
 
             menusRestApi.getSortTypes(isNested).done(types => {
+                typesSort = types;
                 let mapTypesSort = new Map();
                 types.map(typeOriginal => {
                     defineListLocalizeTypesByNested(localizeTypesSort, opts.nested).map(localizeType => {
