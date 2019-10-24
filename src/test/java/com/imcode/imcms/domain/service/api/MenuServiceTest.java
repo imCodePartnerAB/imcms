@@ -222,7 +222,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(SHOW_IN_DEFAULT_LANGUAGE, changedMenuItemDoc.getDisabledLanguageShowMode());
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
-        assertEquals(8, expectedMenuItems.size());
+        assertEquals(2, expectedMenuItems.size());
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
@@ -246,7 +246,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
-        assertEquals(7, expectedMenuItems.size());
+        assertEquals(1, expectedMenuItems.size());
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
@@ -340,7 +340,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         assertEquals(DO_NOT_SHOW, changedMenuItemDoc.getDisabledLanguageShowMode());
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested(), menu.getTypeSort());
-        assertEquals(8, expectedMenuItems.size());
+        assertEquals(2, expectedMenuItems.size());
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
@@ -383,11 +383,11 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.createVersionedContent(workingVersion, latestVersionDoc);
         menuService.saveFrom(menu);
 
-        assertFalse(menu.getMenuItems().get(0).getChildren().isEmpty());
+        assertTrue(menu.getMenuItems().get(0).getChildren().isEmpty());
 
         List<MenuItemDTO> publicMenuItems = menuService.getPublicMenuItems(menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested());
 
-        assertEquals(8, publicMenuItems.size());
+        assertEquals(2, publicMenuItems.size());
         publicMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
@@ -439,7 +439,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         menuService.createVersionedContent(workingVersion, latestVersionDoc);
         menuService.saveFrom(menu);
 
-        assertEquals(8, menuService.getVisibleMenuItems(
+        assertEquals(2, menuService.getVisibleMenuItems(
                 menu.getDocId(), menu.getMenuIndex(), langUser, menu.isNested()).size());
     }
 
@@ -526,16 +526,16 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
-//    @Test
-//    public void getMenuItems_When_TypeNullAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
-//        final MenuDTO menuDTO = setUpMenu(null, true);
-//        final String langUser = Imcms.getUser().getLanguage();
-//
-//        final List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-//                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
-//
-//        assertEquals(2, expectedMenuItems.size());
-//    }
+    @Test
+    public void getMenuItems_When_TypeNullAndNestedOn_Expected_CorrectSize() {
+        final MenuDTO menuDTO = setUpMenu(null, true);
+        final String langUser = Imcms.getUser().getLanguage();
+
+        final List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+
+        assertEquals(2, expectedMenuItems.size());
+    }
 
     @Test
     public void getMenuItems_When_TypeAlphabeticalASCAndNestedOn_Expected_CorrectSizeEntitiesAndEmptyChild() {
@@ -580,21 +580,22 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
 
-        assertEquals(8, expectedMenuItems.size());
+        assertEquals(2, expectedMenuItems.size());
 
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
 
-//    @Test
-//    public void getMenuItems_When_TypeNullAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
-//        final MenuDTO menuDTO = setUpMenu(null, false);
-//        final String langUser = Imcms.getUser().getLanguage();
-//
-//        final List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
-//                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
-//
-//        assertEquals(8, expectedMenuItems.size());
-//    }
+    @Test
+    public void getMenuItems_When_TypeNullAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
+        final MenuDTO menuDTO = setUpMenu(null, false);
+        final String langUser = Imcms.getUser().getLanguage();
+
+        final List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
+                menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
+
+        assertEquals(2, expectedMenuItems.size());
+        expectedMenuItems.forEach(menuItemDTO -> assertTrue(menuItemDTO.getChildren().isEmpty()));
+    }
 
     @Test
     public void getMenuItems_When_TypeAlphabeticalASCAndNestedOff_Expected_CorrectSizeEntitiesAndEmptyChild() {
@@ -604,7 +605,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
 
-        assertEquals(8, expectedMenuItems.size());
+        assertEquals(2, expectedMenuItems.size());
 
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }
@@ -617,7 +618,7 @@ public class MenuServiceTest extends WebAppSpringTestConfig {
         List<MenuItemDTO> expectedMenuItems = menuService.getMenuItems(
                 menuDTO.getDocId(), menuDTO.getMenuIndex(), langUser, menuDTO.isNested(), menuDTO.getTypeSort());
 
-        assertEquals(8, expectedMenuItems.size());
+        assertEquals(2, expectedMenuItems.size());
 
         expectedMenuItems.forEach(item -> assertTrue(item.getChildren().isEmpty()));
     }

@@ -103,7 +103,7 @@ public class MenuDataInitializer extends TestDataCleaner {
         savedMenu = menuRepository.saveAndFlush(menu);
 
         if (withMenuItems) {
-            addMenuItemsTo(savedMenu);
+            addNestedMenuItemsTo(savedMenu, nested);
 
 //        } else {
 //            savedMenu.setMenuItems(null);
@@ -122,26 +122,28 @@ public class MenuDataInitializer extends TestDataCleaner {
         return menuItemDTO;
     }
 
-    private void addMenuItemsTo(Menu menu) {
+    private void addNestedMenuItemsTo(Menu menu, boolean nested) {
         final List<MenuItem> menuItems = new ArrayList<>();
         menuItems.add(createMenuItem(1));
         menuItems.add(createMenuItem(2));
 
-        final MenuItem menuItem0 = menuItems.get(0);
+        if (nested) {
+            final MenuItem menuItem0 = menuItems.get(0);
 
-        final List<MenuItem> menuItems1 = Arrays.asList(
-                createMenuItem(1),
-                createMenuItem(2),
-                createMenuItem(3)
-        );
-        menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
+            final List<MenuItem> menuItems1 = Arrays.asList(
+                    createMenuItem(1),
+                    createMenuItem(2),
+                    createMenuItem(3)
+            );
+            menuItem0.setChildren(new LinkedHashSet<>(menuItems1));
 
-        final List<MenuItem> menuItems2 = Arrays.asList(
-                createMenuItem(1),
-                createMenuItem(2),
-                createMenuItem(3)
-        );
-        new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
+            final List<MenuItem> menuItems2 = Arrays.asList(
+                    createMenuItem(1),
+                    createMenuItem(2),
+                    createMenuItem(3)
+            );
+            new ArrayList<>(menuItem0.getChildren()).get(0).setChildren(new LinkedHashSet<>(menuItems2));
+        }
 
         menu.setMenuItems(new LinkedHashSet<>(menuItems));
 

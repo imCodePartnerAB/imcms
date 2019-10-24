@@ -29,8 +29,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
 public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
@@ -256,5 +259,7 @@ public class DocumentMenuServiceTest extends WebAppSpringTestConfig {
         assertThat(menuItemDTO.getTarget(), is(documentDTO.getTarget()));
         assertThat(menuItemDTO.getDocumentStatus(), is(documentDTO.getDocumentStatus()));
         assertThat(menuItemDTO.getChildren(), empty());
+        assertThat(menuItemDTO.getPublishedDate(), is(documentDTO.getPublished().getFormattedDate()));
+        assertThat(menuItemDTO.getModifiedDate(), is(documentDTO.getModified().getFormattedDate()));
     }
 }
