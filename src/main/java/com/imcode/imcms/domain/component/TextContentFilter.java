@@ -1,6 +1,7 @@
 package com.imcode.imcms.domain.component;
 
 import com.imcode.imcms.model.Text;
+import org.jsoup.safety.Whitelist;
 
 /**
  * Text content filter, based on tags whitelist and cleaning text feature.
@@ -12,9 +13,9 @@ import com.imcode.imcms.model.Text;
  */
 public interface TextContentFilter {
 
-    void addHtmlTagsToWhiteList(String[] newWhiteListTags);
-
     String cleanText(String cleanMe);
+
+    String cleanText(String cleanMe, Whitelist whitelist);
 
     String cleanText(String cleanMe, Text.HtmlFilteringPolicy filteringPolicy);
 
