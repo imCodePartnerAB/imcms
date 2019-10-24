@@ -310,6 +310,17 @@ const texts = {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
                     loadFailed: 'Misslyckades att ladda. Försök igen'
+                },
+                typesSort: {
+                    treeSort: 'TRE SORT',
+                    manual: 'MANUELL',
+                    alphabeticalAsc: 'ALFABETISK ASC',
+                    alphabeticalDesc: 'ALFABETISK DESC',
+                    publishedDateAsc: 'PUBLICERAD DATUM ASC',
+                    publishedDateDesc: 'PUBLICERAD DATUM DESC',
+                    modifiedDateAsc: 'ÄNDRAD DATUM ASC',
+                    modifiedDateDesc: 'ÄNDRAD DATUM DESC',
+
                 }
             },
             loop: {
@@ -1097,6 +1108,17 @@ const texts = {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
                     loadFailed: 'Failed to load. Try again'
+                },
+                typesSort: {
+                    treeSort: 'TREE SORT',
+                    manual: 'MANUAL',
+                    alphabeticalAsc: 'ALPHABETICALLY ASC',
+                    alphabeticalDesc: 'ALPHABETICALLY DESC',
+                    publishedDateAsc: 'PUBLISHED DATE ASC',
+                    publishedDateDesc: 'PUBLISHED DATE DESC',
+                    modifiedDateAsc: 'MODIFIED DATE ASC',
+                    modifiedDateDesc: 'MODIFIED DATE DESC',
+
                 }
             },
             loop: {
