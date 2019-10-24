@@ -243,8 +243,8 @@
 }
 
 .imcms-editor-content--text {
-    font-family: Verdana, sans-serif;
-    font-size: 14px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-size: 16px;
     color: #000000;
 }
 
@@ -256,6 +256,7 @@ input.imcms-editor-content--text[data-type="TEXT"] {
 
 textarea.imcms-editor-content--text[data-type="HTML"],
 input.imcms-editor-content--text[data-type="HTML"] {
+    font-size: 14px;
     font-family: monospace;
 }
 
