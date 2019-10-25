@@ -16,7 +16,7 @@ define("imcms-menu-editor-builder",
         texts = texts.editors.menu;
 
         let $menuElementsContainer, $documentsContainer, $documentEditor;
-        let docId, menuIndex, nested;
+        let docId, menuIndex, nested, typeSort;
         let typeSortSelected;
         let $title = $('<span>');
         let localizeTypesSort = [
@@ -768,7 +768,7 @@ define("imcms-menu-editor-builder",
         function buildTypeSortingSelect(opts) {
             let typesSortSelect = components.selects.selectContainer('<div>', {
                 emptySelect: false,
-                text: texts.typeSort,
+                text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
             });
 
@@ -800,16 +800,24 @@ define("imcms-menu-editor-builder",
                     'data-value': mapTypesSort.get(typeKey)
                 }));
 
-                components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort());
+                components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort(opts));
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
 
             return typesSortSelect;
         }
 
-        function buildOnSelectedTypeSort() {
+        function buildOnSelectedTypeSort(opts) {
             return type => {
-                alert(type)
-            }
+                let menuData = {
+                    docId: opts.docId,
+                    menuIndex: opts.menuIndex,
+                    nested: opts.nested,
+                    typeSort: type
+                };
+                menusRestApi.read(menuData).done(menuItems => {
+
+                }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+            };
         }
 
         function buildEditorContainer(opts) {
