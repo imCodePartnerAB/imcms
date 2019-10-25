@@ -29,7 +29,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let typesSort;
+        let typesSortOrigin;
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -763,6 +763,8 @@ define("imcms-menu-editor-builder",
             return toolBEM.buildBlock("<div>", [{"button": buildNewDocButton()}]);
         }
 
+        let mapTypesSort = new Map();
+
         function buildTypeSortingSelect(opts) {
             let typesSortSelect = components.selects.selectContainer('<div>', {
                 emptySelect: false,
@@ -786,18 +788,16 @@ define("imcms-menu-editor-builder",
             }
 
             menusRestApi.getSortTypes(isNested).done(types => {
-                typesSort = types;
-                let mapTypesSort = new Map();
-                types.map(typeOriginal => {
-                    defineListLocalizeTypesByNested(localizeTypesSort, opts.nested).map(localizeType => {
-                        mapTypesSort.set(localizeType, typeOriginal)
-                    })
+                typesSortOrigin = types;
+                types.map((typeOriginal, index) => {
+                    mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, nested)[index], typeOriginal)
                 });
 
                 let keys = [...mapTypesSort.keys()];
 
                 let typesSortDataMapped = keys.map(typeKey => ({
-                    text: typeKey
+                    text: typeKey,
+                    'data-value': mapTypesSort.get(typeKey)
                 }));
 
                 components.selects.addOptionsToSelect(typesSortDataMapped, typesSortSelect.getSelect(), buildOnSelectedTypeSort());
@@ -807,7 +807,9 @@ define("imcms-menu-editor-builder",
         }
 
         function buildOnSelectedTypeSort() {
-
+            return type => {
+                alert(type)
+            }
         }
 
         function buildEditorContainer(opts) {
