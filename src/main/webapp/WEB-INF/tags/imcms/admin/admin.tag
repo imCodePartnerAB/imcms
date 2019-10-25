@@ -11,4 +11,7 @@
 
 <imcms:ifAdmin>
     <script src="${contextPath}/dist/imcms_start.js"></script>
+
+    <%-- Custom styles --%>
+    <link href="${contextPath}/css/imcms-text_editor_custom.css" rel="stylesheet">
 </imcms:ifAdmin>
