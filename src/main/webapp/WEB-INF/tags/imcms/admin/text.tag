@@ -144,7 +144,7 @@
                 data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
                 data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
                 <c:if test="${not empty content}">
-                    ${content}
+                    ${pre}${content}${post}
                 </c:if>
                     ${tagEnd}
                 <div class="imcms-editor-area__control-wrap">
