@@ -31,7 +31,7 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
         return documentLoaderCachingProxy.getMenuItems(
-                getKey(menuIndex, docId, language, nested),
+                getKey(menuIndex, docId, language, nested, typeSort),
                 () -> defaultMenuService.getMenuItems(docId, menuIndex, language, nested, typeSort)
         );
     }
@@ -39,7 +39,7 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getVisibleMenuItems(
-                getKey(menuIndex, docId, language, nested),
+                getKey(menuIndex, docId, language, nested, null),
                 () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, nested)
         );
     }
@@ -47,7 +47,7 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getPublicMenuItems(
-                getKey(menuIndex, docId, language, nested),
+                getKey(menuIndex, docId, language, nested, null),
                 () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, nested)
         );
     }
@@ -81,7 +81,11 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
         return defaultMenuService.removeId(menu, version);
     }
 
-    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex, final int docId, final String language, final boolean disableNested) {
-        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, disableNested);
+    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
+                                                           final int docId,
+                                                           final String language,
+                                                           final boolean nested,
+                                                           final String typeSort) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort);
     }
 }

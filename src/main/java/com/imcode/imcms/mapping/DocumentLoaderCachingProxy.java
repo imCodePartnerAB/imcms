@@ -278,6 +278,7 @@ public class DocumentLoaderCachingProxy {
         private int docId;
         private String language;
         private boolean disableNested;
+        private String typeSort;
     }
 }
 
