@@ -815,7 +815,9 @@ define("imcms-menu-editor-builder",
                     typeSort: type
                 };
                 menusRestApi.read(menuData).done(menuItems => {
-
+                    $menuElementsContainer.find('.imcms-menu-list').remove();
+                    let $menuItemsSortedList = buildMenuEditorContent(menuItems);
+                    $menuElementsContainer.append($menuItemsSortedList);
                 }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
             };
         }
