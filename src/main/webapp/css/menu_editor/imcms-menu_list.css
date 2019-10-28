@@ -22,6 +22,7 @@
     width: 100%;
     border-bottom: 1px solid #d3d8de;
     float: left;
+    display: flex;
 }
 
 .imcms-menu-list__title,
