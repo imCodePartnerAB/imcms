@@ -653,8 +653,10 @@ define("imcms-menu-editor-builder",
                 elements.push({btn: buildChildrenTriangle()});
             }
 
-            const titleText = menuElementTree.documentId + " - "
-                + menuElementTree.title;
+            const idTitleText = menuElementTree.documentId + " - " + menuElementTree.title;
+            const idText = menuElementTree.documentId;
+            const titleText = menuElementTree.title;
+
             let publishedDate = '';
             let modifiedDate = '';
 
@@ -678,6 +680,18 @@ define("imcms-menu-editor-builder",
                 case PUBLISHED_DATE_ASC:
                 case PUBLISHED_DATE_DESC:
                     elements.push({
+                        id: components.texts.titleText('<a>', idText, {
+                            title: idText,
+                            href: '/' + idText,
+                            target: '_blank'
+                        })
+                    });
+                    elements.push({
+                        title: components.texts.titleText('<div>', titleText, {
+                            title: titleText
+                        })
+                    });
+                    elements.push({
                         published: components.texts.titleText('<div>', getConvertedDate(publishedDate), {
                             title: texts.publishDate
                         })
@@ -686,20 +700,32 @@ define("imcms-menu-editor-builder",
                 case MODIFIED_DATE_ASC:
                 case MODIFIED_DATE_DESC:
                     elements.push({
+                        id: components.texts.titleText('<a>', idText, {
+                            title: idText,
+                            href: '/' + idText,
+                            target: '_blank'
+                        })
+                    });
+                    elements.push({
+                        title: components.texts.titleText('<div>', titleText, {
+                            title: titleText
+                        })
+                    });
+                    elements.push({
                         modified: components.texts.titleText('<div>', getConvertedDate(modifiedDate), {
                             title: texts.modifiedDate
                         })
                     });
                     break;
+                default:
+                    elements.push({
+                        info: components.texts.titleText("<a>", idTitleText, {
+                            title: menuElementTree.title,
+                            href: '/' + menuElementTree.documentId,
+                            target: '_blank'
+                        })
+                    });
             }
-
-            elements.push({
-                info: components.texts.titleText("<a>", titleText, {
-                    title: menuElementTree.title,
-                    href: '/' + menuElementTree.documentId,
-                    target: '_blank'
-                })
-            });
 
             elements.push({
                 status: components.texts.titleText(
