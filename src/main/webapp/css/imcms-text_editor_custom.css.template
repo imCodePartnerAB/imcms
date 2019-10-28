@@ -1,0 +1,119 @@
+/* *******************************************************************************************
+ *         Default style for the imCMS editor                                                *
+ *         Rename this file to 'imcms-text_editor_custom.css', and it will be used           *
+ ******************************************************************************************* *
+
+ If you want to use your own font in the CSS, just use an @import statment. Eg:
+ 
+ @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
+
+*/
+
+/* *******************************************************************************************
+ *         Base font and color                                                               *
+ ******************************************************************************************* */
+
+.imcms-editor-area body {
+	background-color: #fff;
+}
+
+.imcms-editor-area body,
+.imcms-editor-area p,
+.imcms-editor-area td,
+.imcms-editor-area li {
+	font: normal 12px/1.4em Verdana, sans-serif;
+	color: #000;
+}
+
+/* *******************************************************************************************
+ *         Links                                                                             *
+ ******************************************************************************************* */
+
+.imcms-editor-area a:link,
+.imcms-editor-area a:visited {
+	color: #007caf;
+	text-decoration: underline;
+}
+.imcms-editor-area a:hover,
+.imcms-editor-area a:focus,
+.imcms-editor-area a:active {
+	color: #009cdd;
+	text-decoration: underline;
+}
+
+.imcms-editor-area h1, .imcms-editor-area h1 a,
+.imcms-editor-area h2, .imcms-editor-area h2 a,
+.imcms-editor-area h3, .imcms-editor-area h3 a,
+.imcms-editor-area h4, .imcms-editor-area h4 a {
+	color: #000 !important;
+}
+
+
+/* *******************************************************************************************
+ *         Font sizes and margins                                                            *
+ ******************************************************************************************* */
+
+.imcms-editor-area h1,
+.imcms-editor-area p {
+	margin: 0 0 0.8em 0;
+}
+.imcms-editor-area h2,
+.imcms-editor-area h3,
+.imcms-editor-area h4,
+.imcms-editor-area h5,
+.imcms-editor-area h6 {
+	margin: 1.5em 0 0.8em 0;
+}
+
+.imcms-editor-area li {
+	padding-bottom: 0.4em;
+}
+
+.imcms-editor-area h1 {
+	font-weight: 400;
+	font-size: 32px;
+	line-height: 1.2em;
+	color: #333;
+}
+.imcms-editor-area h2 {
+	font-weight: 600;
+	font-size: 22px;
+	line-height: 1.2em;
+	color: #333;
+}
+.imcms-editor-area h3 {
+	font-weight: 600;
+	font-size: 19px;
+	line-height: 1.2em;
+	color: #333;
+}
+.imcms-editor-area h4 {
+	font-weight: 600;
+	font-size: 17px;
+	line-height: 1.2em;
+	color: #333;
+}
+.imcms-editor-area h5 {
+	font-weight: 600;
+	font-size: 15px;
+	line-height: 1.2em;
+	color: #333;
+}
+.imcms-editor-area h6 {
+	font-weight: 600;
+	font-size: 14px;
+	line-height: 1.2em;
+	color: #333;
+}
+
+/* *******************************************************************************************
+ *         No margin-top for first heading in div                                            *
+ ******************************************************************************************* */
+
+.imcms-editor-area div > h2,
+.imcms-editor-area div > h3,
+.imcms-editor-area div > h4,
+.imcms-editor-area div > h5,
+.imcms-editor-area div > h6 {
+	margin-top: 0;
+}

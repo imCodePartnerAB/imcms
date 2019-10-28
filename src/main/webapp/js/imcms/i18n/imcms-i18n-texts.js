@@ -84,11 +84,11 @@ const texts = {
             textEditor: 'Textredigerare',
             imageEditor: 'Bildredigerare',
             filterPolicy: {
-                restricted: 'Begränsad',
-                relaxed: 'Medel',
-                allowedAll: 'Ingen',
-                titleRestricted: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll, ej tillåtna taggar (html, body, doctype) kommer att tas bort men innehållet hålls. Ej tillåtna attribut (klass, stil, etc.) tas bort.',
-                titleRelaxed: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll, ej tillåtna taggar (html, body, doctype) kommer att tas bort men innehållet hålls. Alla attribut är tillåtna.',
+                restricted: 'Endast text',
+                relaxed: 'Kraftigt filter',
+                allowedAll: 'Inget filter',
+                titleRestricted: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll. Alla taggar istället för <p> och <br> kommer att tas bort men innehållet bevaras.',
+                titleRelaxed: 'Olagliga taggar (huvud, skript, inbäddad stil) kommer att tas bort med innehåll. Alla taggar istället för basic (b, i, li, sub, a) kommer att tas bort men innehåll bevaras.',
                 titleAllowedAll: 'Allt är tillåtet'
             }
         },
@@ -882,11 +882,11 @@ const texts = {
             textEditor: 'Text Editor',
             imageEditor: 'Image Editor',
             filterPolicy: {
-                restricted: 'Restricted',
-                relaxed: 'Relaxed',
-                allowedAll: 'Everything is allowed',
-                titleRestricted: 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. Not allowed attributes (class, style, etc.) are removed.',
-                titleRelaxed: 'Illegal tags (head, script, embed, style) will be removed with content, not allowed tags (html, body, doctype) will be removed but content kept. All attributes are allowed.',
+                restricted: 'Text only',
+                relaxed: 'Strong filter',
+                allowedAll: 'No filter',
+                titleRestricted: 'Illegal tags (head, script, embed, style) will be removed with content. All tags instead of <p> and <br> will be removed but content kept.',
+                titleRelaxed: 'Illegal tags (head, script, embed, style) will be removed with content. All tags instead of basic (b, i, li, sub, a) will be removed but content kept.',
                 titleAllowedAll: 'Everything is allowed'
             }
         },

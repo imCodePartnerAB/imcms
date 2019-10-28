@@ -5,11 +5,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Properties;
 
 /**
  * Text content filter, based on Jsoup's tags whitelist and cleaning text feature.
@@ -22,67 +20,67 @@ import java.util.Properties;
 @Component
 class PropertyBasedTextContentFilter implements TextContentFilter {
 
-    private static final String[] WHITE_LIST_ATTRIBUTES = {"class", "data-no", "data-meta", "data-cke-saved-src", "src"};
-    private final Whitelist htmlTagsWhitelist = Whitelist.none().addAttributes("img", WHITE_LIST_ATTRIBUTES);
-    private final Properties imcmsProperties;
+    private static final String[] WHITE_LIST_IMG_ATTRIBUTES = {
+            "class", "data-no", "data-meta", "data-cke-saved-src", "src"
+    };
+    private static final String[] WHITE_LIST_COMMON_ATTRIBUTES = {
+            "src", "href", "rel", "alt", "align", "width", "height", "border",
+            "cellspacing", "cellpadding", "target", "title", "data-doc-id", "data-lang-code",
+            "data-in-text", "data-index", "data-mce-style", "data-mce-src"
+    };
 
-    @Autowired
-    PropertyBasedTextContentFilter(Properties imcmsProperties) {
-        this.imcmsProperties = imcmsProperties;
-    }
+    private final Whitelist plainTextWhitelist = Whitelist.none().addTags("br", "p");
+    private final Whitelist basicHtmlTagsWhiteList = Whitelist.basic().removeTags("span");
 
     @PostConstruct
-    private void init() {
-        final String[] whiteListTags = imcmsProperties.getProperty("text.editor.html.tags.whitelist").split(";");
-        addHtmlTagsToWhiteList(whiteListTags);
+    public void init() {
+        addCommonAttributesToWhiteLists(plainTextWhitelist, basicHtmlTagsWhiteList);
     }
 
-    @Override
-    public void addHtmlTagsToWhiteList(String[] newWhiteListTags) {
-        htmlTagsWhitelist.addTags(newWhiteListTags)
-                .removeTags("head", "script", "embed", "style")
-                .addAttributes(":all", "src", "href", "rel", "alt", "align", "width", "height", "border",
-                        "cellspacing", "cellpadding", "target", "title", "class", "data-doc-id", "data-lang-code",
-                        "data-in-text", "data-index", "data-mce-style", "data-mce-src");
+    private void addCommonAttributesToWhiteLists(Whitelist... whitelists) {
+        for (Whitelist whitelist : whitelists) {
+            whitelist
+                    .addAttributes("img", WHITE_LIST_IMG_ATTRIBUTES)
+                    .addAttributes(":all", WHITE_LIST_COMMON_ATTRIBUTES);
+        }
     }
 
+    // TODO: Need to delete this method when TextDocument will be removed
     @Override
     public String cleanText(String cleanMe) {
         cleanMe = StringUtils.trimToEmpty(cleanMe);
-        return StringEscapeUtils.unescapeXml(Jsoup.clean(cleanMe, htmlTagsWhitelist))
+        return StringEscapeUtils.unescapeXml(Jsoup.clean(cleanMe, plainTextWhitelist))
                 .replaceAll(">\\n ", ">")
                 .replaceAll("\\n<", "<")
                 .replaceAll("(<br>*){2,}", "<br>");
     }
 
     @Override
-    public String cleanText(String cleanMe, Text.HtmlFilteringPolicy filteringPolicy) {
-        switch (filteringPolicy) {
-            case RESTRICTED:
-                return cleanText(cleanMe);
-            case RELAXED:
-                return unwrapNotAllowedTags(removeIllegalTags(cleanMe));
-            case ALLOW_ALL:
-            default:
-                return cleanMe; // no changes
-        }
-    }
-
-    private String unwrapNotAllowedTags(String cleanMe) {
-        return cleanMe.replaceAll("<html>", "")
-                .replaceAll("</html>", "")
-                .replaceAll("<body>", "")
-                .replaceAll("</body>", "")
-                .replaceAll("<doctype>", "")
-                .replaceAll("</doctype>", "");
+    public String cleanText(String cleanMe, Whitelist whitelist) {
+        cleanMe = StringUtils.trimToEmpty(cleanMe);
+        cleanMe = removeIllegalTags(cleanMe);
+        return StringEscapeUtils.unescapeXml(Jsoup.clean(cleanMe, whitelist));
     }
 
     private String removeIllegalTags(String cleanMe) {
-        return cleanMe.replaceAll("<head>.+?</head>", "")
+        return cleanMe
+                .replaceAll("<head>.+?</head>", "")
                 .replaceAll("<script>.+?</script>", "")
                 .replaceAll("<script.+?/>", "")
                 .replaceAll("<embed>.+?</embed>", "")
                 .replaceAll("<embed.+?/>", "")
                 .replaceAll("<style>.+?</style>", "");
+    }
+
+    @Override
+    public String cleanText(String cleanMe, Text.HtmlFilteringPolicy filteringPolicy) {
+        switch (filteringPolicy) {
+            case RESTRICTED:
+                return cleanText(cleanMe, plainTextWhitelist);
+            case RELAXED:
+                return cleanText(cleanMe, basicHtmlTagsWhiteList);
+            default:
+                return cleanMe; // no changes
+        }
     }
 }
