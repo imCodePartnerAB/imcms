@@ -641,6 +641,7 @@ define("imcms-menu-editor-builder",
         }
 
         function buildMenuItems(menuElementTree) {
+
             const elements = [{controls: buildMoveControl()}];
 
             if (menuElementTree.children.length) {
@@ -649,6 +650,28 @@ define("imcms-menu-editor-builder",
 
             const titleText = menuElementTree.documentId + " - "
                 + menuElementTree.title;
+
+            let publishedDate = new Date(menuElementTree.publishedDate);
+            let modifiedDate = new Date(menuElementTree.modifiedDate);
+
+            function getConvertedDate(date) {
+                return date.getFullYear() +
+                    "-" + ("0" + (date.getMonth() + 1)).slice(-2) +
+                    "-" + ("0" + date.getDate()).slice(-2) +
+                    " " + date.getHours() + ":" + date.getMinutes();
+            }
+
+            elements.push({
+                published: components.texts.titleText('<div>', getConvertedDate(publishedDate), {
+                    title: texts.publishDate
+                })
+            });
+
+            elements.push({
+                modified: components.texts.titleText('<div>', getConvertedDate(modifiedDate), {
+                    title: texts.modifiedDate
+                })
+            });
 
             elements.push({
                 info: components.texts.titleText("<a>", titleText, {
@@ -677,6 +700,7 @@ define("imcms-menu-editor-builder",
             menuElementTree.children = menuElementTree.children || [];
 
             const treeBlock = new BEM({
+
                 block: "imcms-menu-items",
                 elements: [{
                     "menu-item": buildMenuItems(menuElementTree),
