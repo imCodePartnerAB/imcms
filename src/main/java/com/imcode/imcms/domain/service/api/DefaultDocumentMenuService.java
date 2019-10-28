@@ -97,7 +97,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setLink("/" + (StringUtils.isBlank(documentDTOAlias) ? docId : documentDTOAlias));
         menuItemDTO.setTarget(documentDTO.getTarget());
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
-        menuItemDTO.setPublishedDate(documentDTO.getPublished().getFormattedDate()); // mustn't be null for sorting!
+        menuItemDTO.setPublishedDate(documentDTO.getPublished().getFormattedDate());
         menuItemDTO.setModifiedDate(documentDTO.getModified().getFormattedDate());
 
         return menuItemDTO;

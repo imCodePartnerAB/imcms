@@ -115,27 +115,33 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 return getAndSetUpEmptyChildrenMenuItems(menuItems);
             case ALPHABETICAL_ASC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getTitle))
+                        .sorted(Comparator.comparing(MenuItemDTO::getTitle,
+                                Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
             case ALPHABETICAL_DESC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getTitle).reversed())
+                        .sorted(Comparator.comparing(MenuItemDTO::getTitle,
+                                Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_ASC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate))
+                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
+                                Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_DESC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate).reversed())
+                        .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
+                                Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                         .collect(Collectors.toList());
             case MODIFIED_DATE_ASC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate))
+                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
+                                Comparator.nullsLast(Comparator.naturalOrder())))
                         .collect(Collectors.toList());
             case MODIFIED_DATE_DESC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
-                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate).reversed())
+                        .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
+                                Comparator.nullsLast(Comparator.naturalOrder())).reversed())
                         .collect(Collectors.toList());
             default:
                 return Collections.EMPTY_LIST;//never come true...
