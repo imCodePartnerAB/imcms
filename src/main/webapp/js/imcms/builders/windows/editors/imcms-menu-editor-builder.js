@@ -655,12 +655,20 @@ define("imcms-menu-editor-builder",
 
             const titleText = menuElementTree.documentId + " - "
                 + menuElementTree.title;
+            let publishedDate = '';
+            let modifiedDate = '';
 
-            let publishedDate = new Date(menuElementTree.publishedDate);
-            let modifiedDate = new Date(menuElementTree.modifiedDate);
+            if (menuElementTree.publishedDate !== null) {
+                publishedDate = new Date(menuElementTree.publishedDate);
+            }
+            if (menuElementTree.modifiedDate !== null) {
+                modifiedDate = new Date(menuElementTree.modifiedDate);
+            }
 
             function getConvertedDate(date) {
-                return date.getFullYear() +
+                return date === ''
+                    ? texts.publishedTimePrompt
+                    : date.getFullYear() +
                     "-" + ("0" + (date.getMonth() + 1)).slice(-2) +
                     "-" + ("0" + date.getDate()).slice(-2) +
                     " " + date.getHours() + ":" + date.getMinutes();
