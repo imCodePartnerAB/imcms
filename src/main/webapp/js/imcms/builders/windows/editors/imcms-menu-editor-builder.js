@@ -15,6 +15,10 @@ define("imcms-menu-editor-builder",
 
         texts = texts.editors.menu;
 
+        let PUBLISHED_DATE_ASC = 'PUBLISHED_DATE_ASC';
+        let PUBLISHED_DATE_DESC = 'PUBLISHED_DATE_DESC';
+        let MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
+        let MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let docId, menuIndex, nested, typeSort;
         let typeSortSelected;
@@ -640,9 +644,10 @@ define("imcms-menu-editor-builder",
             return components.controls.buildControlsBlock("<div>", [$controlMove]);
         }
 
-        function buildMenuItems(menuElementTree) {
+        function buildMenuItems(menuElementTree, typeSort) {
 
             const elements = [{controls: buildMoveControl()}];
+
 
             if (menuElementTree.children.length) {
                 elements.push({btn: buildChildrenTriangle()});
@@ -659,6 +664,10 @@ define("imcms-menu-editor-builder",
                     "-" + ("0" + (date.getMonth() + 1)).slice(-2) +
                     "-" + ("0" + date.getDate()).slice(-2) +
                     " " + date.getHours() + ":" + date.getMinutes();
+            }
+
+            switch (typeSort) {
+
             }
 
             elements.push({
@@ -696,14 +705,14 @@ define("imcms-menu-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        function buildMenuItemTree(menuElementTree, level) {
+        function buildMenuItemTree(menuElementTree, level, typeSort) {
             menuElementTree.children = menuElementTree.children || [];
 
             const treeBlock = new BEM({
 
                 block: "imcms-menu-items",
                 elements: [{
-                    "menu-item": buildMenuItems(menuElementTree),
+                    "menu-item": buildMenuItems(menuElementTree, typeSort),
                     modifiers: [menuElementTree.documentStatus.replace(/_/g, "-").toLowerCase()]
                 }]
             }).buildBlockStructure("<div>", {
@@ -722,7 +731,7 @@ define("imcms-menu-editor-builder",
 
         function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
-                const $menuItems = menuElements.map(menuElement => buildMenuItemTree(menuElement, 1));
+                const $menuItems = menuElements.map(menuElement => buildMenuItemTree(menuElement, 1, typeSort));
                 return new BEM({
                     block: "imcms-menu-items-tree",
                     elements: {
@@ -764,16 +773,16 @@ define("imcms-menu-editor-builder",
                 let containerHeadTitle;
 
                 switch (typeSort) {
-                    case 'PUBLISHED_DATE_ASC':
+                    case PUBLISHED_DATE_ASC:
                         containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
                         break;
-                    case 'PUBLISHED_DATE_DESC':
+                    case PUBLISHED_DATE_DESC:
                         containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
                         break;
-                    case 'MODIFIED_DATE_ASC':
+                    case MODIFIED_DATE_ASC:
                         containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
                         break;
-                    case 'MODIFIED_DATE_DESC':
+                    case MODIFIED_DATE_DESC:
                         containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
                         break;
                     default:
