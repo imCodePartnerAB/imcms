@@ -28,7 +28,9 @@
     background: url("/images_new/controls/icon_sub_open_dark.png") no-repeat center;
 }
 
-.imcms-menu-item__info {
+.imcms-menu-item__info,
+.imcms-menu-item__published,
+.imcms-menu-item__modified {
     width: 63%;
     cursor: pointer;
     max-height: 45px;
