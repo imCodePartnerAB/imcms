@@ -20,7 +20,7 @@ define("imcms-menu-editor-builder",
         let MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
         let MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         let $menuElementsContainer, $documentsContainer, $documentEditor;
-        let docId, menuIndex, nested, typeSort;
+        let docId, menuIndex, nested;
         let typeSortSelected;
         let $title = $('<span>');
         let localizeTypesSort = [
@@ -433,7 +433,7 @@ define("imcms-menu-editor-builder",
 
             if ($dataInput.attr("data-parent-id") !== "") {
                 if ($dataInput.attr("data-insert-place") === "true") {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1);
+                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1, null);
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
                     const parent = $menuElement.parent();
@@ -443,11 +443,11 @@ define("imcms-menu-editor-builder",
                         );
                     }
                 } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level);
+                    $menuElement = buildMenuItemTree(menuElementsTree, level, null);
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
                 }
             } else {
-                $menuElement = buildMenuItemTree(menuElementsTree, level);
+                $menuElement = buildMenuItemTree(menuElementsTree, level, null);
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
@@ -537,7 +537,7 @@ define("imcms-menu-editor-builder",
         }
 
         function appendNewMenuItem(document) {
-            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1));
+            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1, null));
             documentEditorBuilder.refreshDocumentInList(document)
         }
 
@@ -667,20 +667,23 @@ define("imcms-menu-editor-builder",
             }
 
             switch (typeSort) {
-
+                case PUBLISHED_DATE_ASC:
+                case PUBLISHED_DATE_DESC:
+                    elements.push({
+                        published: components.texts.titleText('<div>', getConvertedDate(publishedDate), {
+                            title: texts.publishDate
+                        })
+                    });
+                    break;
+                case MODIFIED_DATE_ASC:
+                case MODIFIED_DATE_DESC:
+                    elements.push({
+                        modified: components.texts.titleText('<div>', getConvertedDate(modifiedDate), {
+                            title: texts.modifiedDate
+                        })
+                    });
+                    break;
             }
-
-            elements.push({
-                published: components.texts.titleText('<div>', getConvertedDate(publishedDate), {
-                    title: texts.publishDate
-                })
-            });
-
-            elements.push({
-                modified: components.texts.titleText('<div>', getConvertedDate(modifiedDate), {
-                    title: texts.modifiedDate
-                })
-            });
 
             elements.push({
                 info: components.texts.titleText("<a>", titleText, {
@@ -696,6 +699,7 @@ define("imcms-menu-editor-builder",
                     documentEditorBuilder.getDocumentStatusText(menuElementTree.documentStatus)
                 )
             });
+
 
             elements.push({controls: buildMenuItemControls(menuElementTree)});
 
@@ -722,7 +726,7 @@ define("imcms-menu-editor-builder",
 
             ++level;
 
-            const $childElements = menuElementTree.children.map(childElement => buildMenuItemTree(childElement, level).addClass("imcms-submenu-items--close"));
+            const $childElements = menuElementTree.children.map(childElement => buildMenuItemTree(childElement, level, typeSort).addClass("imcms-submenu-items--close"));
 
             return treeBlock.append($childElements);
         }
@@ -774,14 +778,10 @@ define("imcms-menu-editor-builder",
 
                 switch (typeSort) {
                     case PUBLISHED_DATE_ASC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
-                        break;
                     case PUBLISHED_DATE_DESC:
                         containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
                         break;
                     case MODIFIED_DATE_ASC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
-                        break;
                     case MODIFIED_DATE_DESC:
                         containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
                         break;
