@@ -696,7 +696,7 @@ define("imcms-menu-editor-builder",
 
         var $menuItemsBlock;
 
-        function buildMenuEditorContent(menuElementsTree) {
+        function buildMenuEditorContent(menuElementsTree, typeSort) {
             function buildMenuElements(menuElements) {
                 const $menuItems = menuElements.map(menuElement => buildMenuItemTree(menuElement, 1));
                 return new BEM({
@@ -708,19 +708,58 @@ define("imcms-menu-editor-builder",
             }
 
             function buildMenuTitlesRow() {
-                const $idColumnHead = $("<div>", {
+                const $idTitleColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-8",
                     text: texts.id + " - " + texts.docTitle
                 });
-                const $statusColumnHead = $("<div>", {
+
+                const $idColumnHead = $("<div>", {
+                    "class": "imcms-grid-coll-15",
+                    text: texts.id
+                });
+
+                const $titleColumnHead = $("<div>", {
+                    "class": "imcms-grid-coll-16",
+                    text: texts.docTitle
+                });
+
+                let $publishedHead = $("<div>", {
+                    "class": "imcms-grid-coll-13",
+                    text: texts.publishDate
+                });
+
+                let $modifiedHead = $("<div>", {
+                    "class": "imcms-grid-coll-14",
+                    text: texts.modifiedDate
+                });
+
+                let $statusColumnHead = $("<div>", {
                     "class": "imcms-grid-coll-2",
                     text: texts.status
                 });
+                let containerHeadTitle;
+
+                switch (typeSort) {
+                    case 'PUBLISHED_DATE_ASC':
+                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
+                        break;
+                    case 'PUBLISHED_DATE_DESC':
+                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
+                        break;
+                    case 'MODIFIED_DATE_ASC':
+                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
+                        break;
+                    case 'MODIFIED_DATE_DESC':
+                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
+                        break;
+                    default:
+                        containerHeadTitle = [$idTitleColumnHead, $statusColumnHead];
+                }
 
                 return new BEM({
                     block: "imcms-menu-list-titles",
                     elements: {
-                        "title": [$idColumnHead, $statusColumnHead]
+                        "title": containerHeadTitle
                     }
                 }).buildBlockStructure("<div>");
             }
@@ -816,7 +855,7 @@ define("imcms-menu-editor-builder",
                 };
                 menusRestApi.read(menuData).done(menuItems => {
                     $menuElementsContainer.find('.imcms-menu-list').remove();
-                    let $menuItemsSortedList = buildMenuEditorContent(menuItems);
+                    let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
                     $menuElementsContainer.append($menuItemsSortedList);
                 }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
             };
@@ -833,7 +872,7 @@ define("imcms-menu-editor-builder",
         }
 
         function fillEditorContent(menuElementsTree, opts) {
-            const $menuElementsTree = buildMenuEditorContent(menuElementsTree);
+            const $menuElementsTree = buildMenuEditorContent(menuElementsTree, null);
 
             $menuElementsContainer.append(buildEditorContainer(opts));
             $menuElementsContainer.append($menuElementsTree);
