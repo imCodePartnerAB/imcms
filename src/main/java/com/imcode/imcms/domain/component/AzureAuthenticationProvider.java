@@ -37,17 +37,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -82,7 +72,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
                 "https://login.microsoftonline.com/",
                 EXTERNAL_AUTHENTICATOR_AZURE_AD,
                 "Azure Active Directory",
-                "/images_new/external_identifiers/azure-active-directory.svg"
+                "/images_gui/external_identifiers/azure-active-directory.svg"
         );
 
         tenant = properties.getProperty("aad.tenant.name");

@@ -10,7 +10,7 @@
 
 .imcms-menu-item__btn {
     padding-left: 70px;
-    background: url("/images_new/controls/icon_sub_close_dark.png") no-repeat center;
+    background: url("/images_gui/controls/icon_sub_close_dark.png") no-repeat center;
 }
 
 .imcms-menu-item__btn {
@@ -25,7 +25,7 @@
 }
 
 .imcms-menu-item-btn--open {
-    background: url("/images_new/controls/icon_sub_open_dark.png") no-repeat center;
+    background: url("/images_gui/controls/icon_sub_open_dark.png") no-repeat center;
 }
 
 .imcms-menu-item__info {

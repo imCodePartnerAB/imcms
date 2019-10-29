@@ -531,13 +531,13 @@
 .imcms-control.imcms-control--check.link-info-row__link-host-found,
 .imcms-control.imcms-control--check.link-info-row__link-host-reachable,
 .imcms-control.imcms-control--check.link-info-row__link-page-found {
-    background-image: url("/images_new/controls/icon_folder_controll_check_hover.svg");
+    background-image: url("/images_gui/controls/icon_folder_controll_check_hover.svg");
 }
 
 .imcms-control.imcms-control--remove.link-info-row__link-host-reachable,
 .imcms-control.imcms-control--remove.link-info-row__link-page-found,
 .imcms-control.imcms-control--remove.link-info-row__link-host-found {
-    background-image: url("/images_new/controls/icon_folder_controll_remove_hover.png");
+    background-image: url("/images_gui/controls/icon_folder_controll_remove_hover.png");
 }
 
 .category-type-editor,
