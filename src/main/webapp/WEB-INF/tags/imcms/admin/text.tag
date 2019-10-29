@@ -115,10 +115,6 @@
         <c:set var="externalPart"
                value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-        <c:if test="${not empty placeholder || not empty content}">
-            ${pre}
-        </c:if>
-
         <%--fixed scripled use, maybe use something else ? --%>
         <c:set var="isSuperAdmin" value="<%=Imcms.getUser().isSuperAdmin()%>"/>
 
@@ -139,6 +135,9 @@
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
+                <c:if test="${not empty placeholder || not empty content}">
+                    ${pre}
+                </c:if>
                 <div class="imcms-editor-area__text-toolbar"></div>
                 <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
                 data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
@@ -147,15 +146,15 @@
                     ${content}
                 </c:if>
                     ${tagEnd}
+                <c:if test="${not empty placeholder || not empty content}">
+                    ${post}
+                </c:if>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                         <div class="imcms-editor-area__control-title">${editingLabel}</div>
                     </div>
                 </div>
             </div>
-        </c:if>
-        <c:if test="${not empty placeholder || not empty content}">
-            ${post}
         </c:if>
     </c:if>
 </c:if>
