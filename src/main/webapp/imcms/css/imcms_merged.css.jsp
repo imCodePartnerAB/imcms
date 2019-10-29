@@ -210,7 +210,7 @@ editor theme
 }
 
 .editor-form .imcms-content .imcms-negative {
-    background: #dc0000 url("<%= cp %>/images/remove.png") no-repeat center;
+    background: #dc0000 url("<%= cp %>/images_gui/remove.png") no-repeat center;
     line-height: 20px;
     display: none;
     padding: 0;
@@ -475,7 +475,7 @@ editor theme
 .admin-panel-draggable {
     width: 14px;
     margin-right: 3px;
-    background: url("<%=cp%>/images/bg_draggable.png") 0 0 no-repeat;
+    background: url("<%=cp%>/images_gui/bg_draggable.png") 0 0 no-repeat;
     cursor: move;
 }
 
@@ -531,71 +531,71 @@ editor theme
 
 .admin-panel-content-section[data-mode=readonly] .admin-panel-button-image,
 .admin-panel-content-section[data-mode=preview] .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_readonly.png") no-repeat;
+    background: url("<%=cp%>/images_gui/ic_readonly.png") no-repeat;
 }
 
 .admin-panel-content-section[data-mode=edit] .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_edit.png") no-repeat;
+    background: url("<%=cp%>/images_gui/ic_documents.png") no-repeat;
 }
 
 .admin-panel-content-section[data-mode=info] .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_pageinfo.png") no-repeat;
+    background: url("<%=cp%>/images_gui/ic_pageinfo.png") no-repeat;
 }
 
 .admin-panel-content-section[data-mode=docs] .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_documents.png") no-repeat;
+    background: url("<%=cp%>/images_gui/ic_documents.png") no-repeat;
 }
 
 .admin-panel-content-section[data-mode=admin] .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_adminmanager.png") no-repeat;
+    background: url("<%=cp%>/images_gui/ic_adminmanager.png") no-repeat;
 }
 
 .admin-panel-content-section[data-mode=logout] .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_logout.png") no-repeat;
+    background: url("<%=cp%>/images_gui/ic_logout.png") no-repeat;
 }
 
 .admin-panel-content-section.active[data-mode=readonly] .admin-panel-button .admin-panel-button-image,
 .admin-panel-content-section[data-mode=readonly] .admin-panel-button:hover .admin-panel-button-image,
 .admin-panel-content-section.active[data-mode=preview] .admin-panel-button .admin-panel-button-image,
 .admin-panel-content-section[data-mode=preview] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_readonly.png") 0 -32px no-repeat;
+    background: url("<%=cp%>/images_gui/ic_readonly.png") 0 -32px no-repeat;
 }
 
 .admin-panel-content-section.active[data-mode=edit] .admin-panel-button .admin-panel-button-image,
 .admin-panel-content-section[data-mode=edit] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_edit.png") 0 -32px no-repeat;
+    background: url("<%=cp%>/images_gui/ic_documents.png") 0 -32px no-repeat;
 }
 
 .admin-panel-content-section[data-mode=info] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_pageinfo.png") 0 -32px no-repeat;
+    background: url("<%=cp%>/images_gui/ic_pageinfo.png") 0 -32px no-repeat;
 }
 
 .admin-panel-content-section[data-mode=docs] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_documents.png") 0 -32px no-repeat;
+    background: url("<%=cp%>/images_gui/ic_documents.png") 0 -32px no-repeat;
 }
 
 .admin-panel-content-section[data-mode=admin] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_adminmanager.png") 0 -32px no-repeat;
+    background: url("<%=cp%>/images_gui/ic_adminmanager.png") 0 -32px no-repeat;
 }
 
 .admin-panel-content-section[data-mode=logout] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_logout.png") 0 -32px no-repeat;
+    background: url("<%=cp%>/images_gui/ic_logout.png") 0 -32px no-repeat;
 }
 
 .admin-panel-content-section-disabled[data-mode=info] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_pageinfo.png") 0 0 no-repeat;
+    background: url("<%=cp%>/images_gui/ic_pageinfo.png") 0 0 no-repeat;
 }
 
 .admin-panel-content-section-disabled[data-mode=docs] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_documents.png") 0 0 no-repeat;
+    background: url("<%=cp%>/images_gui/ic_documents.png") 0 0 no-repeat;
 }
 
 .admin-panel-content-section-disabled[data-mode=admin] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_adminmanager.png") 0 0 no-repeat;
+    background: url("<%=cp%>/images_gui/ic_adminmanager.png") 0 0 no-repeat;
 }
 
 .admin-panel-content-section-disabled[data-mode=logout] .admin-panel-button:hover .admin-panel-button-image {
-    background: url("<%=cp%>/images/ic_logout.png") 0 0 no-repeat;
+    background: url("<%=cp%>/images_gui/ic_logout.png") 0 0 no-repeat;
 }
 
 .admin-panel-button-image {
@@ -838,7 +838,7 @@ editor theme
     border: none;
     width: 20px;
     height: 20px;
-    background: rgba(220, 0, 0, 0) url("<%=cp%>/images/close_button.png") no-repeat center;
+    background: rgba(220, 0, 0, 0) url("<%=cp%>/images_gui/close_button.png") no-repeat center;
 }
 
 .editor-form .imcms-footer .imcms-save-and-close {
@@ -1080,7 +1080,7 @@ editor theme
 .loop-editor-content__button_negative {
     font-size: 13px;
     line-height: 25px;
-    background: #dc0000 url("<%= cp %>/images/remove.png") no-repeat center;
+    background: #dc0000 url("<%= cp %>/images_gui/remove.png") no-repeat center;
     display: none;
     padding: 0;
     width: 20px;
@@ -1308,7 +1308,7 @@ ul.jqtree-tree ul.jqtree_common {
 }
 
 .editor-form .imcms-content ul.jqtree-tree .jqtree_common span .imcms-negative {
-    background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
+    background: #dc0000 url("<%=cp%>/images_gui/remove.png") no-repeat center;
     line-height: 20px;
     display: block;
     padding: 0;
@@ -1318,7 +1318,7 @@ ul.jqtree-tree ul.jqtree_common {
 
 .editor-form .imcms-content ul.jqtree-tree .jqtree_common:hover span .imcms-negative {
     display: block;
-    background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
+    background: #dc0000 url("<%=cp%>/images_gui/remove.png") no-repeat center;
 }
 
 .clear {
@@ -1483,7 +1483,7 @@ ul.jqtree-tree ul.jqtree_common {
     display: block;
     width: 100%;
     height: 100%;
-    background: rgba(0, 145, 225, 0.8) url("<%=cp%>/images/dropzone.png") 50% 50% no-repeat;
+    background: rgba(0, 145, 225, 0.8) url("<%=cp%>/images_gui/dropzone.png") 50% 50% no-repeat;
     z-index: 99999;
 }
 
@@ -1662,7 +1662,7 @@ ul.jqtree-tree ul.jqtree_common {
 .document-viewer .imcms-content .file-page tr button,
 .document-viewer .imcms-content .access-page tr button {
     visibility: hidden;
-    background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
+    background: #dc0000 url("<%=cp%>/images_gui/remove.png") no-repeat center;
     line-height: 20px;
     padding: 0;
     width: 20px;
@@ -1723,7 +1723,7 @@ ul.jqtree-tree ul.jqtree_common {
 }
 
 .editor-document .imcms-content table tr td .imcms-negative {
-    background-image: url("<%=cp%>/images/remove.png");
+    background-image: url("<%=cp%>/images_gui/remove.png");
     background-position: center;
     background-repeat: no-repeat;
     line-height: 20px;
@@ -1736,7 +1736,7 @@ ul.jqtree-tree ul.jqtree_common {
 }
 
 .editor-document .imcms-content .imcms-negative {
-    background: #dc0000 url("<%=cp%>/images/remove.png") no-repeat center;
+    background: #dc0000 url("<%=cp%>/images_gui/remove.png") no-repeat center;
     line-height: 20px;
     display: none;
     padding: 0;
@@ -1761,7 +1761,7 @@ ul.jqtree-tree ul.jqtree_common {
 
 .waiter {
     padding: 10px;
-    background: url("<%=cp%>/images/upload.gif") no-repeat center;
+    background: url("<%=cp%>/images_gui/upload.gif") no-repeat center;
 }
 
 <%--DOCUMENT--%>
