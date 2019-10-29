@@ -315,14 +315,14 @@ const texts = {
                     loadFailed: 'Misslyckades att ladda. Försök igen'
                 },
                 typesSort: {
-                    treeSort: 'Träd sortering',
+                    treeSort: 'Trädsortering',
                     manual: 'Manuell',
-                    alphabeticalAsc: 'Alfabetisk (A-Ö)',
-                    alphabeticalDesc: 'Alfabetisk (Ö-A)',
-                    publishedDateAsc: 'Publicerade (ny först)',
+                    alphabeticalAsc: 'Alfabetiskt (A-Ö)',
+                    alphabeticalDesc: 'Alfabetiskt (Ö-A)',
+                    publishedDateAsc: 'Publicerade (nya först)',
                     publishedDateDesc: 'Publicerade (gamla först)',
-                    modifiedDateAsc: 'Modifierade (nya först)',
-                    modifiedDateDesc: 'Modifierade (gamla först)',
+                    modifiedDateAsc: 'Ändrade (nya först)',
+                    modifiedDateDesc: 'Ändrade (gamla först)',
 
                 }
             },
