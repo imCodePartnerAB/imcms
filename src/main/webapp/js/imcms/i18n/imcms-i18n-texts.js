@@ -315,14 +315,14 @@ const texts = {
                     loadFailed: 'Misslyckades att ladda. Försök igen'
                 },
                 typesSort: {
-                    treeSort: 'TRE SORT',
-                    manual: 'MANUELL',
-                    alphabeticalAsc: 'ALFABETISK ASC',
-                    alphabeticalDesc: 'ALFABETISK DESC',
-                    publishedDateAsc: 'PUBLICERAD DATUM ASC',
-                    publishedDateDesc: 'PUBLICERAD DATUM DESC',
-                    modifiedDateAsc: 'ÄNDRAD DATUM ASC',
-                    modifiedDateDesc: 'ÄNDRAD DATUM DESC',
+                    treeSort: 'Träd sortering',
+                    manual: 'Manuell',
+                    alphabeticalAsc: 'Alfabetisk (A-Ö)',
+                    alphabeticalDesc: 'Alfabetisk (Ö-A)',
+                    publishedDateAsc: 'Publicerade (ny först)',
+                    publishedDateDesc: 'Publicerade (gamla först)',
+                    modifiedDateAsc: 'Modifierade (nya först)',
+                    modifiedDateDesc: 'Modifierade (gamla först)',
 
                 }
             },
@@ -1116,14 +1116,14 @@ const texts = {
                     loadFailed: 'Failed to load. Try again'
                 },
                 typesSort: {
-                    treeSort: 'TREE SORT',
-                    manual: 'MANUAL',
-                    alphabeticalAsc: 'ALPHABETICALLY ASC',
-                    alphabeticalDesc: 'ALPHABETICALLY DESC',
-                    publishedDateAsc: 'PUBLISHED DATE ASC',
-                    publishedDateDesc: 'PUBLISHED DATE DESC',
-                    modifiedDateAsc: 'MODIFIED DATE ASC',
-                    modifiedDateDesc: 'MODIFIED DATE DESC',
+                    treeSort: 'Tree sort',
+                    manual: 'Manual',
+                    alphabeticalAsc: 'Alphabetical (A-Z)',
+                    alphabeticalDesc: 'Alphabetical (Z-A)',
+                    publishedDateAsc: 'Published (new first)',
+                    publishedDateDesc: 'Published (old first)',
+                    modifiedDateAsc: 'Modified (new first)',
+                    modifiedDateDesc: 'Modified (old first)',
 
                 }
             },
