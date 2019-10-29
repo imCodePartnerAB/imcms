@@ -139,9 +139,10 @@
                     ${pre}
                 </c:if>
                 <div class="imcms-editor-area__text-toolbar"></div>
-                <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
-                data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
-                data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
+                <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}" ${externalPart}
+                data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
+                data-lang-code="${language}" placeholder="<c:if
+                    test="${empty content}">${placeholder}</c:if>"${tagClose}
                 <c:if test="${not empty content}">
                     ${content}
                 </c:if>
