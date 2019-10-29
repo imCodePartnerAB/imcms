@@ -10,6 +10,10 @@
     background-image: url("/images_new/controls/icon_folder_controll_reverse_move.png");
 }
 
+.imcms-control--vertical_move {
+    background-image: url("/images_new/controls/icon_up_down_move_control.svg");
+}
+
 .imcms-control--download {
     background-image: url("/images_new/controls/icon_download.svg");
 }
