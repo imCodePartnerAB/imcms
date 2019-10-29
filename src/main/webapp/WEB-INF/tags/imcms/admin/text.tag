@@ -115,7 +115,7 @@
         <c:set var="externalPart"
                value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
 
-        <c:if test="${not empty placeholder}">
+        <c:if test="${not empty placeholder || not empty content}">
             ${pre}
         </c:if>
 
@@ -144,7 +144,7 @@
                 data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
                 data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
                 <c:if test="${not empty content}">
-                    ${pre}${content}${post}
+                    ${content}
                 </c:if>
                     ${tagEnd}
                 <div class="imcms-editor-area__control-wrap">
@@ -154,7 +154,7 @@
                 </div>
             </div>
         </c:if>
-        <c:if test="${not empty placeholder}">
+        <c:if test="${not empty placeholder || not empty content}">
             ${post}
         </c:if>
     </c:if>
