@@ -680,14 +680,14 @@ define("imcms-menu-editor-builder",
                 case PUBLISHED_DATE_ASC:
                 case PUBLISHED_DATE_DESC:
                     elements.push({
-                        id: components.texts.titleText('<a>', idText, {
+                        docId: components.texts.titleText('<a>', idText, {
                             title: idText,
                             href: '/' + idText,
                             target: '_blank'
                         })
                     });
                     elements.push({
-                        title: components.texts.titleText('<div>', titleText, {
+                        docTitle: components.texts.titleText('<div>', titleText, {
                             title: titleText
                         })
                     });
@@ -700,14 +700,14 @@ define("imcms-menu-editor-builder",
                 case MODIFIED_DATE_ASC:
                 case MODIFIED_DATE_DESC:
                     elements.push({
-                        id: components.texts.titleText('<a>', idText, {
+                        docId: components.texts.titleText('<a>', idText, {
                             title: idText,
                             href: '/' + idText,
                             target: '_blank'
                         })
                     });
                     elements.push({
-                        title: components.texts.titleText('<div>', titleText, {
+                        docTitle: components.texts.titleText('<div>', titleText, {
                             title: titleText
                         })
                     });
