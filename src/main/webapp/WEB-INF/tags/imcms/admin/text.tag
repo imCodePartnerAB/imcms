@@ -131,9 +131,7 @@
             </c:if>
         </c:if>
         <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
-            <c:if test="${not empty placeholder || not empty content}">
-                ${pre}
-            </c:if>
+            ${pre}
             <div class="imcms-editor-area imcms-editor-area--text">
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
@@ -153,9 +151,7 @@
                     </div>
                 </div>
             </div>
-            <c:if test="${not empty placeholder || not empty content}">
-                ${post}
-            </c:if>
+            ${post}
         </c:if>
     </c:if>
 </c:if>
