@@ -1,8 +1,8 @@
 .imcms-menu-item {
     cursor: pointer;
-    display: block;
+    display: inline-flex;
     overflow: hidden;;
-    padding-left: 70px;
+    padding-left: 40px;
     padding-right: 35px;
     position: relative;
     width: 100%;
@@ -28,9 +28,33 @@
     background: url("/images_new/controls/icon_sub_open_dark.png") no-repeat center;
 }
 
-.imcms-menu-item__info,
+.imcms-menu-item__docId {
+    width: 10%;
+    cursor: pointer;
+    text-transform: none;
+    max-height: 45px;
+    line-height: 45px;
+
+}
+
+.imcms-menu-item__docTitle {
+    width: 35%;
+    text-transform: none;
+    max-height: 45px;
+    line-height: 45px;
+    min-width: fit-content;
+
+}
+
 .imcms-menu-item__published,
 .imcms-menu-item__modified {
+    width: 20%;
+    max-height: 45px;
+    line-height: 45px;
+    min-width: fit-content;
+}
+
+.imcms-menu-item__info {
     width: 63%;
     cursor: pointer;
     max-height: 45px;
