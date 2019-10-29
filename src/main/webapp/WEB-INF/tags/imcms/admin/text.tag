@@ -135,10 +135,10 @@
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
+                <div class="imcms-editor-area__text-toolbar"></div>
                 <c:if test="${not empty placeholder || not empty content}">
                     ${pre}
                 </c:if>
-                <div class="imcms-editor-area__text-toolbar"></div>
                 <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}" ${externalPart}
                 data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
                 data-lang-code="${language}" placeholder="<c:if
