@@ -19,6 +19,7 @@ define("imcms-menu-editor-builder",
         let PUBLISHED_DATE_DESC = 'PUBLISHED_DATE_DESC';
         let MODIFIED_DATE_ASC = 'MODIFIED_DATE_ASC';
         let MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
+        let TREE_SORT = 'TREE_SORT';
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let docId, menuIndex, nested;
         let typeSortSelected;
@@ -637,8 +638,13 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function buildMoveControl() {
-            const $controlMove = components.controls.move();
+        function buildMoveControl(typeSort) {
+            let $controlMove;
+            if (typeSort === TREE_SORT) {
+                $controlMove = components.controls.move();
+            } else {
+                $controlMove = components.controls.vertical_move();
+            }
             $controlMove.on("mousedown", dragMenuItem);
 
             return components.controls.buildControlsBlock("<div>", [$controlMove]);
@@ -646,7 +652,7 @@ define("imcms-menu-editor-builder",
 
         function buildMenuItems(menuElementTree, typeSort) {
 
-            const elements = [{controls: buildMoveControl()}];
+            const elements = [{controls: buildMoveControl(typeSort)}];
 
 
             if (menuElementTree.children.length) {
