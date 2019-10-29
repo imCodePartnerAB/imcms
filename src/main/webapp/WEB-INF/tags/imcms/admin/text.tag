@@ -131,12 +131,12 @@
             </c:if>
         </c:if>
         <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
+            <c:if test="${not empty placeholder || not empty content}">
+                ${pre}
+            </c:if>
             <div class="imcms-editor-area imcms-editor-area--text">
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
-                </c:if>
-                <c:if test="${not empty placeholder || not empty content}">
-                    ${pre}
                 </c:if>
                 <div class="imcms-editor-area__text-toolbar"></div>
                 <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}" ${externalPart}
@@ -147,15 +147,15 @@
                     ${content}
                 </c:if>
                     ${tagEnd}
-                <c:if test="${not empty placeholder || not empty content}">
-                    ${post}
-                </c:if>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--text">
                         <div class="imcms-editor-area__control-title">${editingLabel}</div>
                     </div>
                 </div>
             </div>
+            <c:if test="${not empty placeholder || not empty content}">
+                ${post}
+            </c:if>
         </c:if>
     </c:if>
 </c:if>
