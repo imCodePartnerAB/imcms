@@ -308,6 +308,7 @@ const texts = {
                 status: "Status",
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
                 titleTypeSort: "Sortera på",
+                confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
                 saveAndClose: "Spara och stäng",
                 error: {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
@@ -1110,6 +1111,7 @@ const texts = {
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
                 titleTypeSort: "Sort on",
+                confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 error: {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',

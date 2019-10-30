@@ -936,7 +936,7 @@ define("imcms-menu-editor-builder",
                 };
 
                 if (menuData.nested === true && menuData.typeSort !== TREE_SORT) {
-                    modal.buildModalWindow('Change sort on: ' + type, confirmed => {
+                    modal.buildModalWindow(texts.confirmFlatSortMessage, confirmed => {
                         if (!confirmed) return;
 
                         buildMenuItemsBySelectedType(menuData)
