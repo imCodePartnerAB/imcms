@@ -16,10 +16,9 @@
 .imcms-menu-item__btn {
     cursor: pointer;
     display: block;
-    padding: 10px;
     position: absolute;
-    top: 12px;
-    left: 45px;
+    top: 35px;
+    left: 7px;
     width: 10px;
     height: 10px;
 }
@@ -42,8 +41,6 @@
     text-transform: none;
     max-height: 45px;
     line-height: 45px;
-    min-width: fit-content;
-
 }
 
 .imcms-menu-item__published,
