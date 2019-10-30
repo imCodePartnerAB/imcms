@@ -918,6 +918,14 @@ define("imcms-menu-editor-builder",
             return typesSortSelect;
         }
 
+        function buildMenuItemsBySelectedType(menuData) {
+            menusRestApi.read(menuData).done(menuItems => {
+                $menuElementsContainer.find('.imcms-menu-list').remove();
+                let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
+                $menuElementsContainer.append($menuItemsSortedList);
+            }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+        }
+
         function buildOnSelectedTypeSort(opts) {
             return type => {
                 let menuData = {
@@ -926,11 +934,16 @@ define("imcms-menu-editor-builder",
                     nested: opts.nested,
                     typeSort: type
                 };
-                menusRestApi.read(menuData).done(menuItems => {
-                    $menuElementsContainer.find('.imcms-menu-list').remove();
-                    let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
-                    $menuElementsContainer.append($menuItemsSortedList);
-                }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
+
+                if (menuData.nested === true && menuData.typeSort !== TREE_SORT) {
+                    modal.buildModalWindow('Change sort on: ' + type, confirmed => {
+                        if (!confirmed) return;
+
+                        buildMenuItemsBySelectedType(menuData)
+                    });
+                } else {
+                    buildMenuItemsBySelectedType(menuData)
+                }
             };
         }
 
