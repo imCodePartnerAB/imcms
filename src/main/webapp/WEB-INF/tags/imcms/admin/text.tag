@@ -113,7 +113,7 @@
                              .replaceAll('>', '&gt;')
                              .replaceAll('&lt;br /&gt;', '<br />')
                              .replaceAll('&lt;br&gt;', '<br />')
-                             .replaceAll('\"', '&quot;')}}
+                             .replaceAll('\"', '&quot;')}
                 </c:set>
             </c:if>
         </c:if>
