@@ -34,7 +34,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let typesSortOrigin;
+        let typesSortOrigin = [];
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -229,16 +229,16 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function changeDataDocumentLevel(menuDoc, $origin, placeStatus) {
+        function changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort) {
             let menuDocLvl = parseInt(menuDoc.attr("data-menu-items-lvl"));
 
-            if (placeStatus) {
+            if (placeStatus && typeSort === TREE_SORT) {
                 menuDocLvl++
             }
             $origin.attr("data-menu-items-lvl", menuDocLvl);
             $origin.children().each(function () {
                 if ($(this).attr("data-menu-items-lvl")) {
-                    changeDataDocumentLevel($origin, $(this), true);
+                    changeDataDocumentLevel($origin, $(this), true, typeSort);
                 }
             });
         }
@@ -251,10 +251,17 @@ define("imcms-menu-editor-builder",
             }
         }
 
+        function currectSelectedTypeSortIsTreeSort() {
+            const typeSort = document.getElementById('type-sort').defaultValue;
+
+            return typeSort === TREE_SORT;
+        }
+
         function insertMenuCopyFrame(menuDoc, placeStatus) {
             const $frame = $(".imcms-menu-items--frame"),
                 $origin = $(".imcms-menu-items--is-drag").clone(true)
             ;
+            const typeSort = $('#type-sort')[0].defaultValue;
 
             removedPreviousItemFrame();
 
@@ -265,14 +272,14 @@ define("imcms-menu-editor-builder",
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
 
-            if (placeStatus) {
+            if (placeStatus && typeSort === TREE_SORT) {
                 slideUpMenuDocIfItClose(menuDoc);
                 menuDoc.append($origin);
-                changeDataDocumentLevel(menuDoc, $origin, placeStatus);
+                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
                 addShowHideBtn(menuDoc);
             } else {
                 menuDoc.after($origin);
-                changeDataDocumentLevel(menuDoc, $origin, placeStatus);
+                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
             }
 
             isPasted = true;
@@ -434,7 +441,7 @@ define("imcms-menu-editor-builder",
 
             if ($dataInput.attr("data-parent-id") !== "") {
                 if ($dataInput.attr("data-insert-place") === "true") {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1, null);
+                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1, $dataInput.attr("data-type-sort"));
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
                     const parent = $menuElement.parent();
@@ -444,11 +451,11 @@ define("imcms-menu-editor-builder",
                         );
                     }
                 } else {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level, null);
+                    $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
                     $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
                 }
             } else {
-                $menuElement = buildMenuItemTree(menuElementsTree, level, null);
+                $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
                 $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
@@ -538,7 +545,8 @@ define("imcms-menu-editor-builder",
         }
 
         function appendNewMenuItem(document) {
-            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1, null));
+            const typeSort = $('#type-sort')[0].defaultValue;
+            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1, typeSort));
             documentEditorBuilder.refreshDocumentInList(document)
         }
 
@@ -557,8 +565,11 @@ define("imcms-menu-editor-builder",
                     });
 
                     const $info = $oldMenuItem.find(".imcms-menu-item__info").first();
+                    // const $docTitle = $oldMenuItem.find(".imcms-menu-item__docTitle").first();
                     $info.text(document.id + " - " + titleValue);
                     $info.attr("title", titleValue);
+                    // $docTitle.text(titleValue);
+                    // $docTitle.attr("title", titleValue)
                 }
 
                 function changeStatus() {
@@ -879,6 +890,7 @@ define("imcms-menu-editor-builder",
 
         function buildTypeSortingSelect(opts) {
             let typesSortSelect = components.selects.selectContainer('<div>', {
+                id: 'type-sort',
                 emptySelect: false,
                 text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
@@ -900,7 +912,6 @@ define("imcms-menu-editor-builder",
             }
 
             menusRestApi.getSortTypes(isNested).done(types => {
-                typesSortOrigin = types;
                 types.map((typeOriginal, index) => {
                     mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, nested)[index], typeOriginal)
                 });
@@ -958,7 +969,8 @@ define("imcms-menu-editor-builder",
         }
 
         function fillEditorContent(menuElementsTree, opts) {
-            const $menuElementsTree = buildMenuEditorContent(menuElementsTree, null);
+            const typeSort = opts.nested ? TREE_SORT : 'MANUAL';
+            const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
 
             $menuElementsContainer.append(buildEditorContainer(opts));
             $menuElementsContainer.append($menuElementsTree);
