@@ -7,11 +7,11 @@ define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-documents-rest-api"
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder"
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder, docRestApi) {
+              docProfileSelectBuilder) {
 
         texts = texts.editors.menu;
 
@@ -34,7 +34,6 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
-        let typesSortOrigin = [];
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -249,12 +248,6 @@ define("imcms-menu-editor-builder",
             if (!showHidBtn.hasClass("imcms-menu-item-btn--open")) {
                 showHidBtn.trigger("click");
             }
-        }
-
-        function currectSelectedTypeSortIsTreeSort() {
-            const typeSort = document.getElementById('type-sort').defaultValue;
-
-            return typeSort === TREE_SORT;
         }
 
         function insertMenuCopyFrame(menuDoc, placeStatus) {
@@ -565,11 +558,11 @@ define("imcms-menu-editor-builder",
                     });
 
                     const $info = $oldMenuItem.find(".imcms-menu-item__info").first();
-                    // const $docTitle = $oldMenuItem.find(".imcms-menu-item__docTitle").first();
+                    const $docTitle = $oldMenuItem.find(".imcms-menu-item__docTitle").first();
                     $info.text(document.id + " - " + titleValue);
                     $info.attr("title", titleValue);
-                    // $docTitle.text(titleValue);
-                    // $docTitle.attr("title", titleValue)
+                    $docTitle.text(titleValue);
+                    $docTitle.attr("title", titleValue)
                 }
 
                 function changeStatus() {
