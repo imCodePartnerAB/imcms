@@ -17,6 +17,8 @@ define("imcms-document-editor-builder",
 
         texts = texts.editors.document;
 
+        let treeTypeSort = 'TREE_SORT';
+
         let isMouseDown = false,
             mouseCoords = {
                 pageX: undefined,
@@ -663,13 +665,21 @@ define("imcms-document-editor-builder",
 
         function setDataInputParams(insertedParent, frameItem) {
             const dataInput = $("#dataInput");
+            const typeSort = $("#type-sort")[0].defaultValue;
 
-            if (insertedParent.parent !== null) {
+            if (typeSort !== treeTypeSort && insertedParent.parent !== null) {
                 dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
-                dataInput.attr("data-insert-place", insertedParent.status);
-            } else {
-                dataInput.attr("data-parent-id", "");
+                dataInput.attr("data-type-sort", typeSort);
                 dataInput.attr("data-insert-place", "");
+
+            } else {
+                if (insertedParent.parent !== null) {
+                    dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
+                    dataInput.attr("data-insert-place", insertedParent.status);
+                } else {
+                    dataInput.attr("data-parent-id", "");
+                    dataInput.attr("data-insert-place", "");
+                }
             }
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
