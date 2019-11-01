@@ -17,7 +17,7 @@ define("imcms-document-editor-builder",
 
         texts = texts.editors.document;
 
-        let treeTypeSort = 'TREE_SORT';
+        let TREE_SORT = 'TREE_SORT';
 
         let isMouseDown = false,
             mouseCoords = {
@@ -367,6 +367,8 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
+        let doc;
+
         function createFrame(event) {
             const $this = $(this),
                 original = $this.closest(".imcms-document-items"),
@@ -410,6 +412,8 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
+            frameItem.attr("data-publishedDate", doc.publishedDate);
+            frameItem.attr("data-modifiedDate", doc.modifiedDate);
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
 
@@ -667,12 +671,11 @@ define("imcms-document-editor-builder",
             const dataInput = $("#dataInput");
             const typeSort = $("#type-sort")[0].defaultValue;
 
-            if (typeSort !== treeTypeSort && insertedParent.parent !== null) {
+            if (typeSort !== TREE_SORT && insertedParent.parent !== null) {
                 dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
-                dataInput.attr("data-type-sort", typeSort);
                 dataInput.attr("data-insert-place", "");
-
-            } else {
+            }
+            else {
                 if (insertedParent.parent !== null) {
                     dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
                     dataInput.attr("data-insert-place", insertedParent.status);
@@ -683,9 +686,12 @@ define("imcms-document-editor-builder",
             }
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
+            dataInput.attr("data-type-sort", typeSort);
             dataInput.attr("data-type", frameItem.attr("data-type"));
             dataInput.attr("data-status", frameItem.attr("data-status"));
             dataInput.attr("data-original-status", frameItem.attr("data-original-status"));
+            dataInput.attr("data-publishedDate", frameItem.attr("data-publishedDate"));
+            dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 
@@ -799,6 +805,8 @@ define("imcms-document-editor-builder",
 
             const $moveControl = components.controls.move();
             const $unMoveArrow = components.controls.left().css({"cursor": "not-allowed"});
+            const selectedTypeSort = $("#type-sort")[0].defaultValue;
+            doc = document;
 
             if (opts && opts.moveEnable) {
                 $moveControl.on("mousedown", createFrame);
