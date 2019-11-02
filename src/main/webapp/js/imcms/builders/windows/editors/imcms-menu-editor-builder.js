@@ -477,9 +477,14 @@ define("imcms-menu-editor-builder",
                 parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
                 currentMenuItemWrap = parentMenuItem.parent();
             const typeSort = $('#type-sort')[0].defaultValue;
-            let currentMenuItemId = (typeSort === TREE_SORT || typeSort === 'MANUAL')
-                ? parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text())
-                : parseInt(currentMenuItem.find(".imcms-menu-item__docId").text());
+            let currentMenuItemId;
+
+            if (typeSort === PUBLISHED_DATE_ASC || typeSort === PUBLISHED_DATE_DESC ||
+                typeSort === MODIFIED_DATE_ASC || typeSort === MODIFIED_DATE_DESC) {
+                currentMenuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__docId").text());
+            } else {
+                currentMenuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
+            }
 
             let submenuDocIds = [];
 
@@ -510,10 +515,14 @@ define("imcms-menu-editor-builder",
 
         function removeMenuItem() {
             const typeSort = $('#type-sort')[0].defaultValue;
-            const currentMenuItem = $(this).closest(".imcms-menu-item"),
-                currentMenuItemName = (typeSort === TREE_SORT || typeSort === 'MANUAL')
-                    ? currentMenuItem.find(".imcms-menu-item__info").text()
-                    : currentMenuItem.find(".imcms-menu-item__docTitle").text();
+            const currentMenuItem = $(this).closest(".imcms-menu-item");
+            let currentMenuItemName;
+            if (typeSort === PUBLISHED_DATE_ASC || typeSort === PUBLISHED_DATE_DESC ||
+                typeSort === MODIFIED_DATE_ASC || typeSort === MODIFIED_DATE_DESC) {
+                currentMenuItemName = currentMenuItem.find(".imcms-menu-item__docTitle").text();
+            } else {
+                currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
+            }
 
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
