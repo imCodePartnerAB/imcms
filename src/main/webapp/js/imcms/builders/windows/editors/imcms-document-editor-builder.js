@@ -367,8 +367,6 @@ define("imcms-document-editor-builder",
             }).buildBlockStructure("<div>");
         }
 
-        let doc;
-
         function createFrame(event) {
             const $this = $(this),
                 original = $this.closest(".imcms-document-items"),
@@ -377,6 +375,10 @@ define("imcms-document-editor-builder",
                 frameItem = $frame.find(".imcms-document-item")
             ;
 
+            const frameItemDocId = frameItem.find(".imcms-document-item__info--id").text();
+            const requestDataId = {
+                docId: parseInt(frameItemDocId)
+            };
 
             $menuArea = $(".imcms-menu-items-tree");
             $frameLayout.addClass("imcms-frame-layout")
@@ -409,11 +411,21 @@ define("imcms-document-editor-builder",
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
 
+            docRestApi.read(requestDataId).done(docById => {
+                let publishedDate = docById.published.date && docById.published.time !== null
+                    ? docById.published.date + ' ' + docById.published.time
+                    : null;
+
+                let modifiedDate = docById.modified.date && docById.modified.time !== null
+                    ? docById.modified.date + ' ' + docById.modified.time
+                    : null;
+                frameItem.attr("data-publishedDate", publishedDate);
+                frameItem.attr("data-modifiedDate", modifiedDate);
+            });
+
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
-            frameItem.attr("data-publishedDate", doc.publishedDate);
-            frameItem.attr("data-modifiedDate", doc.modifiedDate);
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
 
@@ -805,8 +817,6 @@ define("imcms-document-editor-builder",
 
             const $moveControl = components.controls.move();
             const $unMoveArrow = components.controls.left().css({"cursor": "not-allowed"});
-            const selectedTypeSort = $("#type-sort")[0].defaultValue;
-            doc = document;
 
             if (opts && opts.moveEnable) {
                 $moveControl.on("mousedown", createFrame);
