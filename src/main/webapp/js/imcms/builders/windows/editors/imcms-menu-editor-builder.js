@@ -424,7 +424,9 @@ define("imcms-menu-editor-builder",
                     type: $dataInput.attr("data-type"),
                     documentId: $dataInput.attr("data-id"),
                     title: $dataInput.attr("data-title"),
-                    documentStatus: $dataInput.attr("data-original-status")
+                    documentStatus: $dataInput.attr("data-original-status"),
+                    publishedDate: $dataInput.attr('data-publishedDate'),
+                    modifiedDate: $dataInput.attr('data-modifiedDate')
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
                     ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
@@ -474,7 +476,11 @@ define("imcms-menu-editor-builder",
             const submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
                 parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
                 currentMenuItemWrap = parentMenuItem.parent();
-            const currentMenuItemId = parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text());
+            const typeSort = $('#type-sort')[0].defaultValue;
+            let currentMenuItemId = (typeSort === TREE_SORT || typeSort === 'MANUAL')
+                ? parseInt(currentMenuItem.find(".imcms-menu-item__info").first().text())
+                : parseInt(currentMenuItem.find(".imcms-menu-item__docId").text());
+
             let submenuDocIds = [];
 
             submenuItem.each(index => {
@@ -503,8 +509,11 @@ define("imcms-menu-editor-builder",
         }
 
         function removeMenuItem() {
+            const typeSort = $('#type-sort')[0].defaultValue;
             const currentMenuItem = $(this).closest(".imcms-menu-item"),
-                currentMenuItemName = currentMenuItem.find(".imcms-menu-item__info").text();
+                currentMenuItemName = (typeSort === TREE_SORT || typeSort === 'MANUAL')
+                    ? currentMenuItem.find(".imcms-menu-item__info").text()
+                    : currentMenuItem.find(".imcms-menu-item__docTitle").text();
 
 
             const question = texts.removeConfirmation + currentMenuItemName + "\"?";
@@ -669,12 +678,17 @@ define("imcms-menu-editor-builder",
 
             let publishedDate = '';
             let modifiedDate = '';
+            let regexIsOnlyNumber = new RegExp('^[0-9]+$');
 
-            if (menuElementTree.publishedDate !== null) {
-                publishedDate = new Date(menuElementTree.publishedDate);
+            if (menuElementTree.publishedDate !== null && menuElementTree.publishedDate !== undefined) {
+                publishedDate = regexIsOnlyNumber.test(menuElementTree.publishedDate)
+                    ? new Date(parseInt(menuElementTree.publishedDate))
+                    : new Date(menuElementTree.publishedDate);
             }
-            if (menuElementTree.modifiedDate !== null) {
-                modifiedDate = new Date(menuElementTree.modifiedDate);
+            if (menuElementTree.modifiedDate !== null && menuElementTree.modifiedDate !== undefined) {
+                modifiedDate = regexIsOnlyNumber.test(menuElementTree.modifiedDate)
+                    ? new Date(parseInt(menuElementTree.modifiedDate))
+                    : new Date(menuElementTree.modifiedDate);
             }
 
             function getConvertedDate(date) {
