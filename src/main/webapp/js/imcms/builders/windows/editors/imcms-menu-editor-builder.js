@@ -947,9 +947,14 @@ define("imcms-menu-editor-builder",
 
         function buildMenuItemsBySelectedType(menuData) {
             menusRestApi.read(menuData).done(menuItems => {
+                const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
                 $menuElementsContainer.find('.imcms-menu-list').remove();
                 let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
                 $menuElementsContainer.append($menuItemsSortedList);
+                menuDocs.each(function () {
+                    let doc = documentEditorBuilder.getDocumentById($(this).attr("data-document-id"));
+                    documentEditorBuilder.refreshDocumentInList(doc);
+                });
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
