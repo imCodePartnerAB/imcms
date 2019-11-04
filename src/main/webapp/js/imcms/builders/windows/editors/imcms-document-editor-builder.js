@@ -82,6 +82,7 @@ define("imcms-document-editor-builder",
 
             docSearchRestApi.read(searchQueryObj)
                 .done(documentList => {
+                    pushDocumentsInArray(documentList);
                     if (!documentList || (documentList.length === 0)) {
                         sendSearchDocRequest = false;
                         errorMsg.slideDown();
