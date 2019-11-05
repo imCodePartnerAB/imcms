@@ -415,11 +415,11 @@ define("imcms-document-editor-builder",
             docRestApi.read(requestDataId).done(docById => {
                 let publishedDate = docById.published.date && docById.published.time !== null
                     ? docById.published.date + ' ' + docById.published.time
-                    : null;
+                    : '';
 
                 let modifiedDate = docById.modified.date && docById.modified.time !== null
                     ? docById.modified.date + ' ' + docById.modified.time
-                    : null;
+                    : '';
                 frameItem.attr("data-publishedDate", publishedDate);
                 frameItem.attr("data-modifiedDate", modifiedDate);
             });

@@ -689,12 +689,12 @@ define("imcms-menu-editor-builder",
             let modifiedDate = '';
             let regexIsOnlyNumber = new RegExp('^[0-9]+$');
 
-            if (menuElementTree.publishedDate !== null && menuElementTree.publishedDate !== undefined) {
+            if (menuElementTree.publishedDate !== null && menuElementTree.publishedDate !== '') {
                 publishedDate = regexIsOnlyNumber.test(menuElementTree.publishedDate)
                     ? new Date(parseInt(menuElementTree.publishedDate))
                     : new Date(menuElementTree.publishedDate);
             }
-            if (menuElementTree.modifiedDate !== null && menuElementTree.modifiedDate !== undefined) {
+            if (menuElementTree.modifiedDate !== null && menuElementTree.modifiedDate !== '') {
                 modifiedDate = regexIsOnlyNumber.test(menuElementTree.modifiedDate)
                     ? new Date(parseInt(menuElementTree.modifiedDate))
                     : new Date(menuElementTree.modifiedDate);
