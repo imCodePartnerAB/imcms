@@ -51,6 +51,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToDTO;
     private final BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang;
     private final CommonContentService commonContentService;
+    private final Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem;
 
     DefaultMenuService(MenuRepository menuRepository,
                        VersionService versionService,
@@ -61,7 +62,8 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                        BiFunction<Menu, Language, MenuDTO> menuToMenuDTO,
                        UnaryOperator<MenuItem> toMenuItemsWithoutId,
                        BiFunction<MenuItem, Language, MenuItemDTO> menuItemToMenuItemDtoWithLang,
-                       CommonContentService commonContentService) {
+                       CommonContentService commonContentService,
+                       Function<MenuItemDTO, MenuItem> menuItemDtoToMenuItem) {
 
         super(menuRepository);
         this.versionService = versionService;
@@ -72,6 +74,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         this.languageService = languageService;
         this.toMenuItemsWithoutId = toMenuItemsWithoutId;
         this.commonContentService = commonContentService;
+        this.menuItemDtoToMenuItem = menuItemDtoToMenuItem;
         this.menuSaver = (menu, language) -> menuToMenuDTO.apply(menuRepository.save(menu), language);
     }
 
@@ -103,9 +106,14 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             throw new SortNotSupportedException("Current sorting don't support in flat menu!");
         }
 
+        if (!menuDTO.isNested() || !menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
+            getAllChildrenInSimpleList(menuDTO.getMenuItems());
+        }
+
         final Language userLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
         final List<MenuItemDTO> menuItemsDTO = menuDTO.getMenuItems().stream()
-                .map(menuItemDTO -> documentMenuService.getMenuItemDTO(menuItemDTO.getDocumentId(), userLanguage))
+                .map(menuItemDtoToMenuItem)
+                .map(menuItem -> menuItemToDTO.apply(menuItem, userLanguage))
                 .collect(Collectors.toList());
 
         return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
