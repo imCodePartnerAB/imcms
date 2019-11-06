@@ -87,7 +87,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         if (!nested || !typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
-            pullAndAddAllMenuItems(menuItemsOf);
+            getAllChildrenInSimpleList(menuItemsOf);
         }
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
@@ -97,7 +97,21 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         return getSortingMenuItemsByTypeSort(typeSort, menuItemsOf);
     }
 
-    private void pullAndAddAllMenuItems(List<MenuItemDTO> menuItems) {
+    @Override
+    public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO) {
+        if (!menuDTO.isNested() && menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
+            throw new SortNotSupportedException("Current sorting don't support in flat menu!");
+        }
+
+        final Language userLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
+        final List<MenuItemDTO> menuItemsDTO = menuDTO.getMenuItems().stream()
+                .map(menuItemDTO -> documentMenuService.getMenuItemDTO(menuItemDTO.getDocumentId(), userLanguage))
+                .collect(Collectors.toList());
+
+        return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
+    }
+
+    private void getAllChildrenInSimpleList(List<MenuItemDTO> menuItems) {
         final List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
 
         for (MenuItemDTO menuItemDTO : menuItems) {
@@ -152,7 +166,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         if (!nested) {
-            pullAndAddAllMenuItems(menuItemsOf);
+            getAllChildrenInSimpleList(menuItemsOf);
         }
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
@@ -162,7 +176,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
         if (!nested) {
-            pullAndAddAllMenuItems(menuItemsOf);
+            getAllChildrenInSimpleList(menuItemsOf);
         }
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
