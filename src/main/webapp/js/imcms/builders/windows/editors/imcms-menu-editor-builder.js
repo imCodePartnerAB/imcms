@@ -946,23 +946,24 @@ define("imcms-menu-editor-builder",
         }
 
         function buildMenuItemsBySelectedType(menuData) {
-            menusRestApi.read(menuData).done(menuItems => {
-                const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
+            menusRestApi.getSortedItems(menuData).done(menuItems => {
                 $menuElementsContainer.find('.imcms-menu-list').remove();
                 let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
                 $menuElementsContainer.append($menuItemsSortedList);
-                menuDocs.each(function () {
-                    let doc = documentEditorBuilder.getDocumentById($(this).attr("data-document-id"));
-                    documentEditorBuilder.refreshDocumentInList(doc);
-                });
             }).fail(() => modal.buildErrorWindow(texts.error.loadFailed));
         }
 
         function buildOnSelectedTypeSort(opts) {
             return type => {
+
+                const menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
+                    .map(mapToMenuItem)
+                    .toArray();
+
                 let menuData = {
                     docId: opts.docId,
                     menuIndex: opts.menuIndex,
+                    menuItems: menuItems,
                     nested: opts.nested,
                     typeSort: type
                 };
