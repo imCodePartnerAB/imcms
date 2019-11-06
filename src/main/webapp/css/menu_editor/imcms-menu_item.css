@@ -2,14 +2,14 @@
     cursor: pointer;
     display: inline-flex;
     overflow: hidden;;
-    padding-left: 40px;
+    padding-left: 60px;
     padding-right: 35px;
     position: relative;
     width: 100%;
 }
 
 .imcms-menu-item__btn {
-    padding-left: 70px;
+    padding-left: 50px;
     background: url("/images_new/controls/icon_sub_close_dark.png") no-repeat center;
 }
 
@@ -17,8 +17,8 @@
     cursor: pointer;
     display: block;
     position: absolute;
-    top: 35px;
-    left: 7px;
+    top: 20px;
+    left: 15px;
     width: 10px;
     height: 10px;
 }
