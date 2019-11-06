@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +42,11 @@ public class MenuController {
                 menu.isNested(),
                 menu.getTypeSort()
         );
+    }
+
+    @PutMapping("/sorting")
+    public List<MenuItemDTO> getSortedMenuItems(@RequestBody MenuDTO menuDTO) {
+        return menuService.getSortedMenuItems(menuDTO);
     }
 
     @GetMapping("/sort-types")
