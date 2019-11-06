@@ -7,11 +7,11 @@ define("imcms-menu-editor-builder",
         "imcms-bem-builder", "imcms-components-builder", "imcms-document-editor-builder", "imcms-modal-window-builder",
         "imcms-window-builder", "imcms-menus-rest-api", "imcms-page-info-builder", "jquery", "imcms-primitives-builder",
         "imcms-jquery-element-reload", "imcms-events", "imcms-i18n-texts", "imcms-document-copy-rest-api", "imcms",
-        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder"
+        "imcms-document-type-select-window-builder", "imcms-document-profile-select-window-builder", "imcms-sort-types-rest-api"
     ],
     function (BEM, components, documentEditorBuilder, modal, WindowBuilder, menusRestApi, pageInfoBuilder, $,
               primitivesBuilder, reloadElement, events, texts, docCopyRestApi, imcms, docTypeSelectBuilder,
-              docProfileSelectBuilder) {
+              docProfileSelectBuilder, typesSortRestAPI) {
 
         texts = texts.editors.menu;
 
@@ -927,7 +927,7 @@ define("imcms-menu-editor-builder",
                 }
             }
 
-            menusRestApi.getSortTypes(isNested).done(types => {
+            typesSortRestAPI.getSortTypes(isNested).done(types => {
                 types.map((typeOriginal, index) => {
                     mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, nested)[index], typeOriginal)
                 });
