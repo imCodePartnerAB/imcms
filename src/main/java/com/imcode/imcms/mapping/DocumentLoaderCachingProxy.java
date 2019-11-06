@@ -43,6 +43,7 @@ public class DocumentLoaderCachingProxy {
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> allMenuItems;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> visibleMenuItems;
     private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> publicMenuItems;
+    private final CacheWrapper<MenuCacheKey, List<MenuItemDTO>> sortedMenuItems;
     private final CacheManager cacheManager = CacheManager.create();
 
     private final List<Ehcache> menuCaches;
@@ -67,17 +68,19 @@ public class DocumentLoaderCachingProxy {
         allMenuItems = CacheWrapper.of(cacheConfiguration("allMenuItems"));
         visibleMenuItems = CacheWrapper.of(cacheConfiguration("visibleMenuItems"));
         publicMenuItems = CacheWrapper.of(cacheConfiguration("publicMenuItems"));
+        sortedMenuItems = CacheWrapper.of(cacheConfiguration("sortedMenuItems"));
 
         Stream.of(
                 metas, versionInfos, workingDocs, defaultDocs, aliasesToIds, idsToAliases,
-                allMenuItems, visibleMenuItems, publicMenuItems
+                allMenuItems, visibleMenuItems, publicMenuItems, sortedMenuItems
         )
                 .forEach(cacheWrapper -> cacheManager.addCache(cacheWrapper.cache()));
 
         menuCaches = Arrays.asList(
                 allMenuItems.cache(),
                 visibleMenuItems.cache(),
-                publicMenuItems.cache()
+                publicMenuItems.cache(),
+                sortedMenuItems.cache()
         );
     }
 
@@ -214,6 +217,13 @@ public class DocumentLoaderCachingProxy {
         return allMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
     }
 
+
+    public List<MenuItemDTO> getSortedMenuItems(final MenuCacheKey menuCacheKey,
+                                                final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
+
+        return sortedMenuItems.getOrPut(menuCacheKey, menuDtoSupplier);
+    }
+
     public List<MenuItemDTO> getVisibleMenuItems(final MenuCacheKey menuCacheKey,
                                                  final Supplier<List<MenuItemDTO>> menuDtoSupplier) {
 
@@ -277,8 +287,18 @@ public class DocumentLoaderCachingProxy {
         private int menuIndex;
         private int docId;
         private String language;
-        private boolean disableNested;
+        private boolean nested;
         private String typeSort;
+        private List<MenuItemDTO> menuItems;
+
+
+        public MenuCacheKey(int menuIndex, int docId, String language, boolean nested, String typeSort) {
+            this.menuIndex = menuIndex;
+            this.docId = docId;
+            this.language = language;
+            this.nested = nested;
+            this.typeSort = typeSort;
+        }
     }
 }
 
