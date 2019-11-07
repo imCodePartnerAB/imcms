@@ -138,17 +138,17 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             case ALPHABETICAL_ASC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle,
-                                Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                                Comparator.nullsLast(String::compareToIgnoreCase)))
                         .collect(Collectors.toList());
             case ALPHABETICAL_DESC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getTitle,
-                                Comparator.nullsLast(Comparator.naturalOrder())))
+                                Comparator.nullsLast(String::compareToIgnoreCase)).reversed())
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_ASC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getPublishedDate,
-                                Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                                Comparator.nullsLast(Comparator.reverseOrder())))
                         .collect(Collectors.toList());
             case PUBLISHED_DATE_DESC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
@@ -158,7 +158,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             case MODIFIED_DATE_ASC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
                         .sorted(Comparator.comparing(MenuItemDTO::getModifiedDate,
-                                Comparator.nullsLast(Comparator.naturalOrder())).reversed())
+                                Comparator.nullsLast(Comparator.reverseOrder())))
                         .collect(Collectors.toList());
             case MODIFIED_DATE_DESC:
                 return getAndSetUpEmptyChildrenMenuItems(menuItems).stream()
