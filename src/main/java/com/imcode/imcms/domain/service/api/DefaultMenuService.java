@@ -111,20 +111,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         final Language userLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
-        final List<MenuItemDTO> menuItemsDTO;
-
-        if (menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
-            menuItemsDTO = getMenuItemsOf(
-                    menuDTO.getMenuIndex(),
-                    menuDTO.getDocId(),
-                    MenuItemsStatus.ALL,
-                    Imcms.getUser().getLanguage(), false);
-        } else {
-            menuItemsDTO = menuDTO.getMenuItems().stream()
-                    .map(menuItemDtoToMenuItem)
-                    .map(menuItem -> menuItemToDTO.apply(menuItem, userLanguage))
-                    .collect(Collectors.toList());
-        }
+        final List<MenuItemDTO> menuItemsDTO = menuDTO.getMenuItems().stream()
+                .map(menuItemDtoToMenuItem)
+                .map(menuItem -> menuItemToDTO.apply(menuItem, userLanguage))
+                .collect(Collectors.toList());
 
         return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
     }
