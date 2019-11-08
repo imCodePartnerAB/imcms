@@ -17,6 +17,8 @@ define("imcms-document-editor-builder",
 
         texts = texts.editors.document;
 
+        let TREE_SORT = 'TREE_SORT';
+
         let isMouseDown = false,
             mouseCoords = {
                 pageX: undefined,
@@ -80,6 +82,7 @@ define("imcms-document-editor-builder",
 
             docSearchRestApi.read(searchQueryObj)
                 .done(documentList => {
+                    pushDocumentsInArray(documentList);
                     if (!documentList || (documentList.length === 0)) {
                         sendSearchDocRequest = false;
                         errorMsg.slideDown();
@@ -373,6 +376,10 @@ define("imcms-document-editor-builder",
                 frameItem = $frame.find(".imcms-document-item")
             ;
 
+            const frameItemDocId = frameItem.find(".imcms-document-item__info--id").text();
+            const requestDataId = {
+                docId: parseInt(frameItemDocId)
+            };
 
             $menuArea = $(".imcms-menu-items-tree");
             $frameLayout.addClass("imcms-frame-layout")
@@ -404,6 +411,18 @@ define("imcms-document-editor-builder",
                 right: menuAreaProp.left + $menuArea.outerWidth(),
                 bottom: menuAreaProp.top + $menuArea.outerHeight()
             };
+
+            docRestApi.read(requestDataId).done(docById => {
+                let publishedDate = docById.published.date && docById.published.time !== null
+                    ? docById.published.date + ' ' + docById.published.time
+                    : '';
+
+                let modifiedDate = docById.modified.date && docById.modified.time !== null
+                    ? docById.modified.date + ' ' + docById.modified.time
+                    : '';
+                frameItem.attr("data-publishedDate", publishedDate);
+                frameItem.attr("data-modifiedDate", modifiedDate);
+            });
 
             frameItem.attr("data-id", frameItem.find(".imcms-document-item__info--id").text());
             frameItem.attr("data-title", frameItem.find(".imcms-document-item__info--title").text());
@@ -663,19 +682,29 @@ define("imcms-document-editor-builder",
 
         function setDataInputParams(insertedParent, frameItem) {
             const dataInput = $("#dataInput");
+            const typeSort = $("#type-sort")[0].defaultValue;
 
-            if (insertedParent.parent !== null) {
+            if (typeSort !== TREE_SORT && insertedParent.parent !== null) {
                 dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
-                dataInput.attr("data-insert-place", insertedParent.status);
-            } else {
-                dataInput.attr("data-parent-id", "");
                 dataInput.attr("data-insert-place", "");
+            }
+            else {
+                if (insertedParent.parent !== null) {
+                    dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));
+                    dataInput.attr("data-insert-place", insertedParent.status);
+                } else {
+                    dataInput.attr("data-parent-id", "");
+                    dataInput.attr("data-insert-place", "");
+                }
             }
 
             dataInput.attr("data-id", frameItem.attr("data-id"));
+            dataInput.attr("data-type-sort", typeSort);
             dataInput.attr("data-type", frameItem.attr("data-type"));
             dataInput.attr("data-status", frameItem.attr("data-status"));
             dataInput.attr("data-original-status", frameItem.attr("data-original-status"));
+            dataInput.attr("data-publishedDate", frameItem.attr("data-publishedDate"));
+            dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
         }
 

@@ -8,6 +8,7 @@ import com.imcode.imcms.mapping.DocumentLoaderCachingProxy;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.Version;
 import com.imcode.imcms.persistence.repository.MenuRepository;
+import imcode.server.Imcms;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -31,15 +32,28 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getMenuItems(int docId, int menuIndex, String language, boolean nested, String typeSort) {
         return documentLoaderCachingProxy.getMenuItems(
-                getKey(menuIndex, docId, language, nested),
+                getKey(menuIndex, docId, language, nested, typeSort),
                 () -> defaultMenuService.getMenuItems(docId, menuIndex, language, nested, typeSort)
+        );
+    }
+
+    @Override
+    public List<MenuItemDTO> getSortedMenuItems(MenuDTO menuDTO) {
+        return documentLoaderCachingProxy.getSortedMenuItems(
+                getKey(menuDTO.getMenuIndex(),
+                        menuDTO.getDocId(),
+                        Imcms.getUser().getLanguage(),
+                        menuDTO.isNested(),
+                        menuDTO.getTypeSort(),
+                        menuDTO.getMenuItems()),
+                () -> defaultMenuService.getSortedMenuItems(menuDTO)
         );
     }
 
     @Override
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getVisibleMenuItems(
-                getKey(menuIndex, docId, language, nested),
+                getKey(menuIndex, docId, language, nested, null),
                 () -> defaultMenuService.getVisibleMenuItems(docId, menuIndex, language, nested)
         );
     }
@@ -47,7 +61,7 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
     @Override
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         return documentLoaderCachingProxy.getPublicMenuItems(
-                getKey(menuIndex, docId, language, nested),
+                getKey(menuIndex, docId, language, nested, null),
                 () -> defaultMenuService.getPublicMenuItems(docId, menuIndex, language, nested)
         );
     }
@@ -81,7 +95,20 @@ public class CachingMenuService extends AbstractVersionedContentService<Menu, Me
         return defaultMenuService.removeId(menu, version);
     }
 
-    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex, final int docId, final String language, final boolean disableNested) {
-        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, disableNested);
+    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
+                                                           final int docId,
+                                                           final String language,
+                                                           final boolean nested,
+                                                           final String typeSort) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort);
+    }
+
+    private DocumentLoaderCachingProxy.MenuCacheKey getKey(final int menuIndex,
+                                                           final int docId,
+                                                           final String language,
+                                                           final boolean nested,
+                                                           final String typeSort,
+                                                           final List<MenuItemDTO> menuItems) {
+        return new DocumentLoaderCachingProxy.MenuCacheKey(menuIndex, docId, language, nested, typeSort, menuItems);
     }
 }

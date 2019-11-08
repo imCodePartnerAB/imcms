@@ -18,10 +18,11 @@
 }
 
 .imcms-menu-list__titles {
-    padding: 0 27px 0 70px;
+    padding: 0 27px 0 40px;
     width: 100%;
     border-bottom: 1px solid #d3d8de;
     float: left;
+    display: flex;
 }
 
 .imcms-menu-list__title,
@@ -31,6 +32,7 @@
     font-size: 13px;
     font-weight: 600;
     line-height: 24px;
+    padding-left: 20px;
     text-transform: uppercase;
 }
 

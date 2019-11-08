@@ -42,5 +42,7 @@ module.exports = {
 
     right: onclick => buildControl("right", onclick),
 
+    vertical_move: onclick => buildControl('vertical_move', onclick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };

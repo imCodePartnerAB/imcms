@@ -302,14 +302,29 @@ const texts = {
                 edit: "Redigera Sid-info",
                 id: "ID",
                 docTitle: "Rubrik",
+                publishDate: 'Publicerad',
+                publishedTimePrompt: 'Aldrig publicerad!',
+                modifiedDate: 'Ändrad',
                 status: "Status",
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
-                typeSort: "Sortera på",
+                titleTypeSort: "Sortera på",
+                confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',
                 saveAndClose: "Spara och stäng",
                 error: {
                     createFailed: 'Det gick inte att spara menyn. Försök igen',
                     copyDocumentFailed: 'Det gick inte att kopiera dokumentet. Försök igen',
                     loadFailed: 'Misslyckades att ladda. Försök igen'
+                },
+                typesSort: {
+                    treeSort: 'Trädsortering',
+                    manual: 'Manuell',
+                    alphabeticalAsc: 'Alfabetiskt (A-Ö)',
+                    alphabeticalDesc: 'Alfabetiskt (Ö-A)',
+                    publishedDateAsc: 'Publicerade (nya först)',
+                    publishedDateDesc: 'Publicerade (gamla först)',
+                    modifiedDateAsc: 'Ändrade (nya först)',
+                    modifiedDateDesc: 'Ändrade (gamla först)',
+
                 }
             },
             loop: {
@@ -1089,14 +1104,29 @@ const texts = {
                 edit: "Edit",
                 id: "ID",
                 docTitle: "Title",
+                publishDate: 'Published',
+                modifiedDate: 'Modified',
+                publishedTimePrompt: 'Never published!',
                 status: "Status",
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
-                typeSort: "Sort on",
+                titleTypeSort: "Sort on",
+                confirmFlatSortMessage: 'If you change to another sorting, your TreeSort will be resetted to a flat menu! Do you wish to proceed?',
                 error: {
                     createFailed: 'Failed to save menu. Try again',
                     copyDocumentFailed: 'Failed to copy document. Try again',
                     loadFailed: 'Failed to load. Try again'
+                },
+                typesSort: {
+                    treeSort: 'Tree sort',
+                    manual: 'Manual',
+                    alphabeticalAsc: 'Alphabetical (A-Z)',
+                    alphabeticalDesc: 'Alphabetical (Z-A)',
+                    publishedDateAsc: 'Published (new first)',
+                    publishedDateDesc: 'Published (old first)',
+                    modifiedDateAsc: 'Modified (new first)',
+                    modifiedDateDesc: 'Modified (old first)',
+
                 }
             },
             loop: {

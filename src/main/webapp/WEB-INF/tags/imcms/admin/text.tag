@@ -77,7 +77,13 @@
                 <c:if test="${'unset'.equalsIgnoreCase(filteringPolicy)}">
                     <c:set var="filteringPolicy" value="ALLOW_ALL"/>
                 </c:if>
-                <c:set var="content">${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</c:set>
+                <c:set var="content">
+                    ${content.replaceAll('<', '&lt;')
+                             .replaceAll('>', '&gt;')
+                             .replaceAll('&lt;br /&gt;', '<br />')
+                             .replaceAll('&lt;br&gt;', '<br />')
+                             .replaceAll('\"', '&quot;')}
+                </c:set>
                 <c:set var="format" value="HTML_FROM_EDITOR"/>
             </c:if>
         </c:if>
@@ -102,7 +108,13 @@
                 <c:if test="${'unset'.equalsIgnoreCase(filteringPolicy)}">
                     <c:set var="filteringPolicy" value="ALLOW_ALL"/>
                 </c:if>
-                <c:set var="content">${content.replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('&lt;br /&gt;', '<br />')}</c:set>
+                <c:set var="content">
+                    ${content.replaceAll('<', '&lt;')
+                             .replaceAll('>', '&gt;')
+                             .replaceAll('&lt;br /&gt;', '<br />')
+                             .replaceAll('&lt;br&gt;', '<br />')
+                             .replaceAll('\"', '&quot;')}
+                </c:set>
             </c:if>
         </c:if>
 
@@ -114,10 +126,6 @@
                value="${isInternal ? (language.equals('en') ? 'Text Editor' : 'Redigera Text') : 'This text is edited on page '.concat(document)}"/>
         <c:set var="externalPart"
                value="${(isInternal) ? '' : (' data-external=\"'.concat(document).concat('\" '))}"/>
-
-        <c:if test="${not empty placeholder}">
-            ${pre}
-        </c:if>
 
         <%--fixed scripled use, maybe use something else ? --%>
         <c:set var="isSuperAdmin" value="<%=Imcms.getUser().isSuperAdmin()%>"/>
@@ -135,14 +143,16 @@
             </c:if>
         </c:if>
         <c:if test="${showEditToSuperAdmin.equals('false') or empty showEditToSuperAdmin or isSuperAdmin}">
+            ${pre}
             <div class="imcms-editor-area imcms-editor-area--text">
                 <c:if test="${not empty label && isShowlabel}">
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
                 <div class="imcms-editor-area__text-toolbar"></div>
-                <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}"${externalPart}
-                data-doc-id="${targetDocId}"${rowsData}${typeData}${loopData}${filterType}
-                data-lang-code="${language}"placeholder="<c:if test="${empty content}">${placeholder}</c:if>"${tagClose}
+                <${tag} class="imcms-editor-content imcms-editor-content--text" data-index="${index}" ${externalPart}
+                data-doc-id="${targetDocId}" ${rowsData} ${typeData} ${loopData} ${filterType}
+                data-lang-code="${language}" placeholder="<c:if
+                    test="${empty content}">${placeholder}</c:if>" ${tagClose}
                 <c:if test="${not empty content}">
                     ${content}
                 </c:if>
@@ -153,8 +163,6 @@
                     </div>
                 </div>
             </div>
-        </c:if>
-        <c:if test="${not empty placeholder}">
             ${post}
         </c:if>
     </c:if>
