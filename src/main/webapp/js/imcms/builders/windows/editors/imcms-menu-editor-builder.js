@@ -22,7 +22,6 @@ define("imcms-menu-editor-builder",
         let TREE_SORT = 'TREE_SORT';
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let docId, menuIndex, nested;
-        let typeSortSelected;
         let $title = $('<span>');
         let localizeTypesSort = [
             texts.typesSort.treeSort,
@@ -911,9 +910,6 @@ define("imcms-menu-editor-builder",
                 text: texts.titleTypeSort,
                 onSelected: buildOnSelectedTypeSort
             });
-
-
-            typeSortSelected = typesSortSelect.getSelect();
 
             let isNested = {
                 nested: opts.nested
