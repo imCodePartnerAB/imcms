@@ -81,13 +81,24 @@
             </c:otherwise>
         </c:choose>
 
-        <c:if test="${not empty imgPath}">
-            ${pre}
-            <a${href}>
-                <img src="${contextPath}${imgPath}"${classes}${alt}/>
-            </a>
-            ${post}
-        </c:if>
+        <c:choose>
+            <c:when test="${not empty imgPath}">
+                ${pre}
+                <c:if test="${not empty href}">
+                    <a${href}>
+                </c:if>
+                    <img src="${contextPath}${imgPath}"${classes}${alt}/>
+                <c:if test="${not empty href}">
+                    </a>
+                </c:if>
+                ${post}
+            </c:when>
+            <c:otherwise>
+                ${pre}
+                    <img src="${contextPath}/images_gui/icon_missing_image.png"/>
+                ${post}
+            </c:otherwise>
+        </c:choose>
 
     </c:set>
 
