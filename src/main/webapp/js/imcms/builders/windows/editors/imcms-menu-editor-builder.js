@@ -941,8 +941,11 @@ define("imcms-menu-editor-builder",
             return typesSortSelect;
         }
 
+        let prevType;
+
         function buildMenuItemsBySelectedType(menuData) {
             menusRestApi.getSortedItems(menuData).done(menuItems => {
+                prevType = menuData.typeSort;
                 $menuElementsContainer.find('.imcms-menu-list').remove();
                 let $menuItemsSortedList = buildMenuEditorContent(menuItems, menuData.typeSort);
                 $menuElementsContainer.append($menuItemsSortedList);
@@ -964,9 +967,22 @@ define("imcms-menu-editor-builder",
                     typeSort: type
                 };
 
+                function getKeyByValue(mapObjects, prevType) {
+                    for (let [key, value] of mapObjects.entries()) {
+                        if (value === prevType) {
+                            return key;
+                        }
+                    }
+                }
+
                 if (menuData.nested === true && menuData.typeSort !== TREE_SORT) {
                     modal.buildModalWindow(texts.confirmFlatSortMessage, confirmed => {
-                        if (!confirmed) return;
+                        if (!confirmed) {
+                            let prevKeySelected = getKeyByValue(mapTypesSort, prevType);
+                            $('#type-sort').attr('value', prevType);
+                            $editorHeadContainer.find('.imcms-drop-down-list__select-item-value').text(prevKeySelected);
+                            return;
+                        }
 
                         buildMenuItemsBySelectedType(menuData)
                     });
@@ -976,8 +992,10 @@ define("imcms-menu-editor-builder",
             };
         }
 
+        let $editorHeadContainer;
+
         function buildEditorContainer(opts) {
-            return new BEM({
+            return $editorHeadContainer = new BEM({
                 block: 'imcms-menu-editor-head',
                 elements: {
                     'new-button': buildMenuItemNewButton(),
@@ -988,6 +1006,7 @@ define("imcms-menu-editor-builder",
 
         function fillEditorContent(menuElementsTree, opts) {
             const typeSort = opts.nested ? TREE_SORT : 'MANUAL';
+            prevType = typeSort;
             const $menuElementsTree = buildMenuEditorContent(menuElementsTree, typeSort);
 
             $menuElementsContainer.append(buildEditorContainer(opts));
