@@ -111,6 +111,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         final Language userLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
+        //double map because from client to fetch itemsDTO which have only doc id and no more info..
         final List<MenuItemDTO> menuItemsDTO = menuDTO.getMenuItems().stream()
                 .map(menuItemDtoToMenuItem)
                 .map(menuItem -> menuItemToDTO.apply(menuItem, userLanguage))
