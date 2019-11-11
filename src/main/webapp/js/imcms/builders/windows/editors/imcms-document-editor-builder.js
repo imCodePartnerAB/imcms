@@ -430,12 +430,14 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
 
+            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '60%';
+
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
                 "background-color": "#e9e9f5",
                 "position": "absolute",
                 "z-index": 11001,
-                "width": "450px",
+                "width": widthValue,
                 "top": mouseCoords.top,
                 "left": mouseCoords.left
             });
