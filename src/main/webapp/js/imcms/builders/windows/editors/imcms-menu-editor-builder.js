@@ -975,7 +975,7 @@ define("imcms-menu-editor-builder",
                     }
                 }
 
-                if (menuData.nested === true && menuData.typeSort !== TREE_SORT) {
+                if (menuData.nested === true && prevType === TREE_SORT) {
                     modal.buildModalWindow(texts.confirmFlatSortMessage, confirmed => {
                         if (!confirmed) {
                             let prevKeySelected = getKeyByValue(mapTypesSort, prevType);
