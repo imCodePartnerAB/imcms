@@ -20,7 +20,7 @@
 
 .imcms-menu-item__controls {
     display: none;
-    padding: 14px 0;
+    padding: 14px 5px;
     position: absolute;
     top: 0;
     right: 27px;
