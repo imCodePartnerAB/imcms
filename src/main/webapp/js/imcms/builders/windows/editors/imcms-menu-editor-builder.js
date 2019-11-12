@@ -180,11 +180,11 @@ define("imcms-menu-editor-builder",
 
         function highlightMenuDoc(param, elem, origin, isTree) {
             disableHighlightingMenuDoc();
-            if (param && isTree) {
+            if (param && isTree && origin === null) {
                 elem.css({
                     'border': '2px dashed blue'
                 });
-            } else if (origin !== undefined) {
+            } else {
                 origin.css({
                     'border': '2px dashed red'
                 });
@@ -302,12 +302,8 @@ define("imcms-menu-editor-builder",
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
-                    $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+                    insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
-                    menuDoc = getMenuDocByObjId(obj);
-                    placeStatus = false;
-                    $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
-                } else if (frameTop < 221 && frameTop > ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = false;
                     $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
