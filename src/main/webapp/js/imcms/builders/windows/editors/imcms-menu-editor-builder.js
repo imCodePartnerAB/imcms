@@ -1,5 +1,6 @@
 /**
  * Created by Serhii Maksymchuk from Ubrainians for imCode
+ * And Pavlenko Victor from Ubrainians for imCode
  * 10.08.17.
  */
 define("imcms-menu-editor-builder",
@@ -140,6 +141,7 @@ define("imcms-menu-editor-builder",
                 $(".imcms-frame-layout").css({"display": "block"});
             } else {
                 $(".imcms-frame-layout").remove();
+                disableHighlightingMenuDoc();
             }
         }
 
@@ -176,17 +178,16 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function highlightMenuDoc(param, elem) {
+        function highlightMenuDoc(param, elem, origin, isTree) {
             disableHighlightingMenuDoc();
-            if (param) {
+            if (param && isTree) {
                 elem.css({
-                    "border-top": "1px solid #51aeea",
-                    "border-bottom": "1px solid #51aeea"
+                    'border': '2px dashed blue'
                 });
-            } else {
-                elem.css({
-                    "border-bottom": "1px solid #51aeea"
-                })
+            } else if (origin !== undefined) {
+                origin.css({
+                    'border': '2px dashed red'
+                });
             }
         }
 
@@ -249,11 +250,12 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function insertMenuCopyFrame(menuDoc, placeStatus) {
+        function insertMenuCopyFrame(menuDoc, placeStatus, frameTop) {
             const $frame = $(".imcms-menu-items--frame"),
                 $origin = $(".imcms-menu-items--is-drag").clone(true)
             ;
-            const typeSort = $('#type-sort')[0].defaultValue;
+
+            const typeSort = document.getElementById('type-sort').value;
 
             removedPreviousItemFrame();
 
@@ -264,7 +266,9 @@ define("imcms-menu-editor-builder",
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
 
-            if (placeStatus && typeSort === TREE_SORT) {
+            if (frameTop < 221) { // top point in first item frame menu
+                menuDoc.before($origin);
+            } else if (placeStatus && typeSort === TREE_SORT) {
                 slideUpMenuDocIfItClose(menuDoc);
                 menuDoc.append($origin);
                 changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
@@ -275,6 +279,7 @@ define("imcms-menu-editor-builder",
             }
 
             isPasted = true;
+            return $origin;
         }
 
         function detectPasteArea($frame) {
@@ -290,22 +295,28 @@ define("imcms-menu-editor-builder",
             let menuDoc = null,
                 placeStatus = null
             ;
+            let $origin = null;
+            let isTree = TREE_SORT === document.getElementById('type-sort').value;
 
             $.each(allMenuDocObjArray, (obj, param) => {
                 if (frameTop > param.top && frameTop < ((param.bottom + param.top) / 2)) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
-                    insertMenuCopyFrame(menuDoc, placeStatus);
+                    $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = false;
-                    insertMenuCopyFrame(menuDoc, placeStatus);
+                    $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+                } else if (frameTop < 221 && frameTop > ((param.bottom + param.top) / 2)) {
+                    menuDoc = getMenuDocByObjId(obj);
+                    placeStatus = false;
+                    $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
             });
 
             // highlightingMenuDoc
             if (placeStatus !== null) {
-                highlightMenuDoc(placeStatus, menuDoc);
+                highlightMenuDoc(placeStatus, menuDoc, $origin, isTree);
             } else {
                 disableHighlightingMenuDoc();
             }
