@@ -274,6 +274,7 @@ define("imcms-menu-editor-builder",
 
             if (frameTop < topPointMenu) { // top point in first item frame menu
                 menuDoc.before($origin);
+                changeDataLevelTheTopDoc($origin, 0, null)
             } else {
                 if (placeStatus && typeSort === TREE_SORT) {
                     slideUpMenuDocIfItClose(menuDoc);
@@ -287,6 +288,27 @@ define("imcms-menu-editor-builder",
             }
 
             isPasted = true;
+        }
+
+        function changeDataLevelTheTopDoc($origin, functionUsages, diff) { //todo re-build improve this shit!
+            let menuDocLvl = parseInt($origin.attr("data-menu-items-lvl"));
+            let difference;
+            if (functionUsages === 0) {
+                difference = menuDocLvl - 1;
+                menuDocLvl = 1;
+            }
+            if (functionUsages > 0) {
+                menuDocLvl = menuDocLvl - diff;
+                difference = diff;
+            }
+            functionUsages++;
+
+            $origin.attr("data-menu-items-lvl", menuDocLvl);
+            $origin.children().each(function () {
+                if ($(this).attr("data-menu-items-lvl")) {
+                    changeDataLevelTheTopDoc($(this), functionUsages, difference);
+                }
+            });
         }
 
         function detectPasteArea($frame) {
