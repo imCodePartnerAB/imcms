@@ -9,7 +9,6 @@
 }
 
 .imcms-menu-item__btn {
-    padding-left: 50px;
     background: url("/images_gui/controls/icon_sub_close_dark.png") no-repeat center;
 }
 
@@ -18,7 +17,7 @@
     display: block;
     position: absolute;
     top: 20px;
-    left: 15px;
+    left: 40px;
     width: 10px;
     height: 10px;
 }
