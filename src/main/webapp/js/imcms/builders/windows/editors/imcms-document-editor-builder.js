@@ -430,7 +430,7 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
 
-            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '60%';
+            let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
 
             $frame.addClass("imcms-document-items--frame");
             $frame.css({
