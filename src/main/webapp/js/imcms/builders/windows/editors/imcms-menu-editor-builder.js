@@ -311,7 +311,6 @@ define("imcms-menu-editor-builder",
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
                 if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
-
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = false;
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
@@ -456,24 +455,29 @@ define("imcms-menu-editor-builder",
             let $menuElement
             ;
 
-            if ($dataInput.attr("data-parent-id") !== "") {
-                if ($dataInput.attr("data-insert-place") === "true") {
-                    $menuElement = buildMenuItemTree(menuElementsTree, level + 1, $dataInput.attr("data-type-sort"));
-                    $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
+            if ($dataInput.attr('data-frame-top') < topPointMenu) {
+                $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
+                $menuElementsContainer.find("[data-menu-items-lvl=1]").first().before($menuElement);
+            } else {
+                if ($dataInput.attr("data-parent-id") !== "") {
+                    if ($dataInput.attr("data-insert-place") === "true") {
+                        $menuElement = buildMenuItemTree(menuElementsTree, level + 1, $dataInput.attr("data-type-sort"));
+                        $menuElementsContainer.find("[data-document-id=" + parentId + "]").append($menuElement);
 
-                    const parent = $menuElement.parent();
-                    if (parent.find(".children-triangle").length === 0) {
-                        parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
-                            buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
-                        );
+                        const parent = $menuElement.parent();
+                        if (parent.find(".children-triangle").length === 0) {
+                            parent.find(".imcms-menu-item").first().find(".imcms-controls").first().after(
+                                buildChildrenTriangle().addClass("imcms-menu-item__btn imcms-menu-item-btn--open")
+                            );
+                        }
+                    } else {
+                        $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
+                        $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
                     }
                 } else {
                     $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
-                    $menuElementsContainer.find("[data-document-id=" + parentId + "]").after($menuElement);
+                    $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
                 }
-            } else {
-                $menuElement = buildMenuItemTree(menuElementsTree, level, $dataInput.attr("data-type-sort"));
-                $menuElementsContainer.find(".imcms-menu-items-tree").append($menuElement);
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
             let doc = documentEditorBuilder.getDocumentById($menuElement.attr('data-document-id'));
