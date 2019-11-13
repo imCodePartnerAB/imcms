@@ -18,6 +18,7 @@ define("imcms-document-editor-builder",
         texts = texts.editors.document;
 
         let TREE_SORT = 'TREE_SORT';
+        let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
 
         let isMouseDown = false,
             mouseCoords = {
@@ -593,10 +594,11 @@ define("imcms-document-editor-builder",
             }
         }
 
-        function createMenuItemFrame(menuDoc, placeStatus) {
+        function createMenuItemFrame(menuDoc, placeStatus, frameTop) {
             const insertedParent = {
-                    parent: menuDoc,
-                    status: placeStatus
+                    parent: frameTop < topPointMenu ? null : menuDoc,
+                    status: placeStatus,
+                    frameTopPos: frameTop
                 },
                 $menuItemFrame = $(".imcms-document-items--frame").find(".imcms-document-item")
             ;
@@ -619,17 +621,18 @@ define("imcms-document-editor-builder",
                 placeStatus = null
             ;
 
+            let isTree = TREE_SORT === document.getElementById('type-sort').value;
+
             // false -> under parent; true -> in parent; null -> under all
-            function highlightMenuDoc(param, elem) {
+            function highlightMenuDoc(param, elem, isTree) {
                 disableHighlightingMenuDoc();
-                if (param) {
+                if (param && isTree) {
                     elem.css({
-                        "border-top": "1px solid #51aeea",
-                        "border-bottom": "1px solid #51aeea"
+                        'border': '2px dashed blue'
                     });
                 } else {
-                    elem.css({
-                        "border-bottom": "1px solid #51aeea"
+                    $(".imcms-document-items--frame").find(".imcms-document-item").css({
+                        'border': '2px dashed red'
                     });
                 }
             }
@@ -639,24 +642,26 @@ define("imcms-document-editor-builder",
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
                     // todo copy-frame append
-                    createMenuItemFrame(menuDoc, placeStatus);
-                } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+                    createMenuItemFrame(menuDoc, placeStatus, frameTop);
+                }
+                if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = false;
-                    createMenuItemFrame(menuDoc, placeStatus);
+                    createMenuItemFrame(menuDoc, placeStatus, frameTop);
                 }
             });
 
             // highlightingMenuDoc
             if (placeStatus !== null) {
-                highlightMenuDoc(placeStatus, menuDoc);
+                highlightMenuDoc(placeStatus, menuDoc, isTree);
             } else {
                 disableHighlightingMenuDoc();
             }
 
             return {
                 parent: menuDoc,
-                status: placeStatus
+                status: placeStatus,
+                frameTopPos: frameTop
             }
         }
 
@@ -708,6 +713,7 @@ define("imcms-document-editor-builder",
             dataInput.attr("data-publishedDate", frameItem.attr("data-publishedDate"));
             dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
+            dataInput.attr("data-frame-top", insertedParent.frameTopPos);
         }
 
         function toggleUserSelect(flag) {
@@ -715,6 +721,7 @@ define("imcms-document-editor-builder",
                 $(".imcms-frame-layout").css({"display": "block"});
             } else {
                 $(".imcms-frame-layout").remove();
+                disableHighlightingMenuDoc();
             }
         }
 
