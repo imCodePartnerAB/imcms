@@ -34,6 +34,7 @@ define("imcms-menu-editor-builder",
             texts.typesSort.modifiedDateAsc,
             texts.typesSort.modifiedDateDesc,
         ];
+        let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
         // variables for drag
         let mouseCoords = {
                 pageX: undefined,
@@ -271,7 +272,7 @@ define("imcms-menu-editor-builder",
 
             $origin.removeClass("imcms-menu-items--is-drag").addClass("imcms-menu-items--is-drop");
 
-            if (frameTop < 221) { // top point in first item frame menu
+            if (frameTop < topPointMenu) { // top point in first item frame menu
                 menuDoc.before($origin);
             } else {
                 if (placeStatus && typeSort === TREE_SORT) {
@@ -317,7 +318,7 @@ define("imcms-menu-editor-builder",
                 }
             });
 
-            if (frameTop < 221) {
+            if (frameTop < topPointMenu) {
                 menuDoc = getFirstItemInMenuArea();
                 placeStatus = false;
                 insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
@@ -326,9 +327,6 @@ define("imcms-menu-editor-builder",
             // highlightingMenuDoc
             if (placeStatus !== null) {
                 highlightMenuDoc(placeStatus, menuDoc, isTree);
-            } else if (placeStatus === null) {
-                placeStatus = false;
-                highlightMenuDoc(placeStatus, null, isTree)
             } else {
                 disableHighlightingMenuDoc();
             }
