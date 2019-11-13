@@ -631,7 +631,7 @@ define("imcms-document-editor-builder",
                         'border': '2px dashed blue'
                     });
                 } else {
-                    $(".imcms-document-items--frame").find(".imcms-document-item").css({
+                    $(".imcms-menu-items-tree").find(".imcms-doc-item-copy").css({
                         'border': '2px dashed red'
                     });
                 }
@@ -650,6 +650,10 @@ define("imcms-document-editor-builder",
                     createMenuItemFrame(menuDoc, placeStatus, frameTop);
                 }
             });
+
+            if (frameTop < topPointMenu) {
+                placeStatus = false;
+            }
 
             // highlightingMenuDoc
             if (placeStatus !== null) {
@@ -747,6 +751,7 @@ define("imcms-document-editor-builder",
                 $menuArea.css({
                     "border-color": "transparent"
                 });
+                $(".imcms-menu-items-tree").find(".imcms-doc-item-copy").removeClass("imcms-doc-item-copy");
                 disableHighlightingMenuDoc();
             }
 
