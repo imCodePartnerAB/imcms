@@ -159,6 +159,11 @@ define("imcms-menu-editor-builder",
             return menuDoc;
         }
 
+        function getFirstItemInMenuArea() {
+            const menuDocs = $(".imcms-menu-items-tree").find(".imcms-menu-items");
+            return menuDocs.first();
+        }
+
         function getMenuItemsParam(menuDocs) {
             const allMenuDocObjArray = {};
             menuDocs.each(function () {
@@ -178,14 +183,14 @@ define("imcms-menu-editor-builder",
             });
         }
 
-        function highlightMenuDoc(param, elem, origin, isTree) {
+        function highlightMenuDoc(param, elem, isTree) {
             disableHighlightingMenuDoc();
-            if (param && isTree && origin === null) {
+            if (param && isTree) {
                 elem.css({
                     'border': '2px dashed blue'
                 });
             } else {
-                origin.css({
+                $(".imcms-menu-items-tree").find('.imcms-menu-items--is-drop').css({
                     'border': '2px dashed red'
                 });
             }
@@ -268,18 +273,19 @@ define("imcms-menu-editor-builder",
 
             if (frameTop < 221) { // top point in first item frame menu
                 menuDoc.before($origin);
-            } else if (placeStatus && typeSort === TREE_SORT) {
-                slideUpMenuDocIfItClose(menuDoc);
-                menuDoc.append($origin);
-                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
-                addShowHideBtn(menuDoc);
             } else {
-                menuDoc.after($origin);
-                changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
+                if (placeStatus && typeSort === TREE_SORT) {
+                    slideUpMenuDocIfItClose(menuDoc);
+                    menuDoc.append($origin);
+                    changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
+                    addShowHideBtn(menuDoc);
+                } else {
+                    menuDoc.after($origin);
+                    changeDataDocumentLevel(menuDoc, $origin, placeStatus, typeSort);
+                }
             }
 
             isPasted = true;
-            return $origin;
         }
 
         function detectPasteArea($frame) {
@@ -295,7 +301,6 @@ define("imcms-menu-editor-builder",
             let menuDoc = null,
                 placeStatus = null
             ;
-            let $origin = null;
             let isTree = TREE_SORT === document.getElementById('type-sort').value;
 
             $.each(allMenuDocObjArray, (obj, param) => {
@@ -303,16 +308,27 @@ define("imcms-menu-editor-builder",
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = true;
                     insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
-                } else if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+                }
+                if (frameTop > ((param.bottom + param.top) / 2) && frameTop < param.bottom) {
+
                     menuDoc = getMenuDocByObjId(obj);
                     placeStatus = false;
-                    $origin = insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+                    insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
                 }
             });
 
+            if (frameTop < 221) {
+                menuDoc = getFirstItemInMenuArea();
+                placeStatus = false;
+                insertMenuCopyFrame(menuDoc, placeStatus, frameTop);
+            }
+
             // highlightingMenuDoc
             if (placeStatus !== null) {
-                highlightMenuDoc(placeStatus, menuDoc, $origin, isTree);
+                highlightMenuDoc(placeStatus, menuDoc, isTree);
+            } else if (placeStatus === null) {
+                placeStatus = false;
+                highlightMenuDoc(placeStatus, null, isTree)
             } else {
                 disableHighlightingMenuDoc();
             }
