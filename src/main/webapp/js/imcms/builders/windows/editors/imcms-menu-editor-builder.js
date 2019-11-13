@@ -296,8 +296,7 @@ define("imcms-menu-editor-builder",
             if (functionUsages === 0) {
                 difference = menuDocLvl - 1;
                 menuDocLvl = 1;
-            }
-            if (functionUsages > 0) {
+            } else {
                 menuDocLvl = menuDocLvl - diff;
                 difference = diff;
             }
