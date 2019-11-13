@@ -480,6 +480,7 @@ define("imcms-menu-editor-builder",
                 }
             }
             $menuElement.addClass("imcms-menu-items-tree__menu-items");
+            $menuElement.addClass("imcms-doc-item-copy");
             let doc = documentEditorBuilder.getDocumentById($menuElement.attr('data-document-id'));
             documentEditorBuilder.refreshDocumentInList(doc);
         }
