@@ -69,7 +69,7 @@ define("imcms-categories-tab-builder",
                     ? createMultiSelectCategoryType(categoryType, document, tabData.multiSelects$)
                     : createSingleSelectCategoryType(categoryType, document, tabData.singleSelects$);
 
-                categoriesBlockElements.push($categoryType);
+                (categoryType.visible) ? categoriesBlockElements.push($categoryType) : categoriesBlockElements;
             });
 
             tabData.$categoriesContainer.append(categoriesBlockElements);
