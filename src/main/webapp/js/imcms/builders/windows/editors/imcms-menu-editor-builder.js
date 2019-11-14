@@ -188,11 +188,11 @@ define("imcms-menu-editor-builder",
             disableHighlightingMenuDoc();
             if (param && isTree) {
                 elem.css({
-                    'border': '2px dashed blue'
+                    'border': '1px dashed blue'
                 });
             } else {
                 $(".imcms-menu-items-tree").find('.imcms-menu-items--is-drop').css({
-                    'border': '2px dashed red'
+                    'border': '1px dashed red'
                 });
             }
         }
