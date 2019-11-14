@@ -36,7 +36,7 @@ public class CategoryTypeDomainObject extends CategoryType implements Comparable
      * @param name       name
      * @param maxChoices max number of choices but sensitive values are 1 (single select) or any non-1 (multi select)
      * @param inherited  inherited
-     * @deprecated use {@link CategoryTypeDomainObject#CategoryTypeDomainObject(int, java.lang.String, boolean, boolean)}
+     * @deprecated use {@link CategoryTypeDomainObject#CategoryTypeDomainObject(int, java.lang.String, boolean, boolean, boolean)}
      */
     @Deprecated
     public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited, boolean isVisible) {
