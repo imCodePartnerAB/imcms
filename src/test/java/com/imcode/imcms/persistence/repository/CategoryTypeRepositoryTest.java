@@ -66,7 +66,7 @@ public class CategoryTypeRepositoryTest extends WebAppSpringTestConfig {
         categoryDataInitializer.createData(COUNT_DATA);
         final String testTypeName = "test_type_name";
         final CategoryTypeJPA categoryType = new CategoryTypeJPA(
-                null, testTypeName, false, false
+                null, testTypeName, false, true, false
         );
         final CategoryTypeJPA savedType = categoryTypeRepository.save(categoryType);
 

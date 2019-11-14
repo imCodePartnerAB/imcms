@@ -81,7 +81,7 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
         assertTrue(categoryTypeController.getCategoryTypes().isEmpty());
 
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
-                null, "name", false, false
+                null, "name", false, true, false
         ));
 
         performPostWithContentExpectOk(categoryType);
@@ -97,7 +97,7 @@ public class CategoryTypeControllerTest extends AbstractControllerTest {
         assertFalse(categoryTypes.isEmpty());
 
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
-                null, categoryTypes.get(0).getName(), false, false
+                null, categoryTypes.get(0).getName(), false, true, false
         ));
 
         final MockHttpServletRequestBuilder requestBuilder = getPostRequestBuilderWithContent(categoryType);

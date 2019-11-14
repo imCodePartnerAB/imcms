@@ -38,7 +38,7 @@ public class CategoryTypeDataInitializer extends TestDataCleaner { //todo create
 
     private List<CategoryTypeJPA> categoriesTypesInit() {
         return IntStream.range(0, elementsCount)
-                .mapToObj(i -> new CategoryTypeJPA(null, "CategoryTypeName" + i + "DESC", false, false))
+                .mapToObj(i -> new CategoryTypeJPA(null, "CategoryTypeName" + i + "DESC", false, true, false))
                 .map(categoryTypeRepository::saveAndFlush)
                 .collect(Collectors.toList());
     }

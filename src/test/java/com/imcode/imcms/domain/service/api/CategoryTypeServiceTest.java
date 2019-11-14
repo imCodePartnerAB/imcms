@@ -70,7 +70,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         final List<CategoryTypeJPA> typesData = categoryTypeDataInitializer.createTypeData(COUNT_DATA);
         assertEquals(3, typesData.size());
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
-                null, "name", false, false
+                null, "name", false, true, false
         ));
         assertNotNull(categoryTypeService.create(categoryType));
         assertEquals(COUNT_DATA + 1, categoryTypeService.getAll().size());
@@ -82,7 +82,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
         assertEquals(3, typesData.size());
 
         final CategoryType categoryType = new CategoryTypeJPA(null,
-                typesData.get(0).getName(), false, false
+                typesData.get(0).getName(), false, true, false
         );
         assertThrows(DataIntegrityViolationException.class, () -> categoryTypeService.create(categoryType));
     }
@@ -90,7 +90,7 @@ public class CategoryTypeServiceTest extends WebAppSpringTestConfig {
     @Test
     public void create_When_CategoryTypeNameEmpty_Expected_CorrectException() {
         final CategoryType categoryType = new CategoryTypeJPA(
-                null, "", false, false
+                null, "", false, true, false
         );
         assertThrows(IllegalArgumentException.class, () -> categoryTypeService.create(categoryType));
     }

@@ -118,7 +118,7 @@ public class CategoryControllerTest extends AbstractControllerTest {
         assertTrue(categoryController.getCategories().isEmpty());
         categoryDataInitializer.createData(2);
         final CategoryTypeDTO categoryType = new CategoryTypeDTO(new CategoryTypeJPA(
-                null, "other", false, true
+                null, "other", false, true, true
         ));
         final CategoryType createdCategoryType = categoryTypeService.create(categoryType);
         final int categoryTypeId = createdCategoryType.getId();
