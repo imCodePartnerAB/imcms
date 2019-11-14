@@ -237,7 +237,7 @@ public class DocumentService {
                                               int maxChoices) throws NoPermissionException, CategoryTypeAlreadyExistsException {
         if (getCategoryMapper().isUniqueCategoryTypeName(name)) {
             boolean multiselect = maxChoices == 0;
-            CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject(0, name, multiselect, false);
+            CategoryTypeDomainObject newCategoryTypeDO = new CategoryTypeDomainObject(0, name, multiselect, false, true);
             newCategoryTypeDO = getCategoryMapper().addCategoryTypeToDb(newCategoryTypeDO);
             return new CategoryType(newCategoryTypeDO);
         } else {

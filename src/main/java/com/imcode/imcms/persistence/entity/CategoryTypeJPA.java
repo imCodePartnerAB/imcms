@@ -39,6 +39,9 @@ public class CategoryTypeJPA extends CategoryType {
     @Column(name = "is_multi_select", nullable = false)
     private boolean isMultiSelect;
 
+    @Column(name = "is_visible", nullable = false) // is visible in page info doc, default value true
+    private boolean isVisible;
+
     @NotNull
     private boolean inherited;
 

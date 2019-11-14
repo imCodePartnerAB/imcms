@@ -173,7 +173,8 @@ public class CategoryMapper {
                 jpaType.getId(),
                 jpaType.getName(),
                 jpaType.isMultiSelect(),
-                jpaType.isInherited());
+                jpaType.isInherited(),
+                jpaType.isVisible());
     }
 
     private CategoryDomainObject toDomainObject(Category jpaCategory) {
@@ -188,7 +189,7 @@ public class CategoryMapper {
 
     private CategoryTypeJPA toJpaObject(CategoryType typeDO) {
         return new CategoryTypeJPA(
-                typeDO.getId(), typeDO.getName(), typeDO.isMultiSelect(), typeDO.isInherited());
+                typeDO.getId(), typeDO.getName(), typeDO.isMultiSelect(), typeDO.isInherited(), typeDO.isVisible());
     }
 
     private CategoryJPA toJpaObject(CategoryDomainObject categoryDO) {

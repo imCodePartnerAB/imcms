@@ -67,6 +67,7 @@ class DefaultCategoryTypeService implements CategoryTypeService {
         receivedCategoryType.setName(updateMe.getName());
         receivedCategoryType.setInherited(updateMe.isInherited());
         receivedCategoryType.setMultiSelect(updateMe.isMultiSelect());
+        receivedCategoryType.setVisible(updateMe.isVisible());
         final CategoryTypeJPA updatedCategoryType = categoryTypeRepository.saveAndFlush(modelMapper.map(
                 receivedCategoryType, CategoryTypeJPA.class
         ));

@@ -40,6 +40,7 @@ public class AdminCategories extends HttpServlet {
     public static final String PARAMETER_MODE__DEFAULT = "default_mode";
     public static final String PARAMETER_BUTTON__CANCEL = "cancel";
     public static final String PARAMETER__MULTI_SELECT = "is_multi_select";
+    public static final String PARAMETER__VISIBLE_CATEGORY_TYPE = "is_visible";
     public static final String PARAMETER_CATEGORY_TYPE_SAVE = "category_type_save";
     public static final String PARAMETER_CATEGORY_TYPE_ADD = "category_type_add";
     public static final String PARAMETER__INHERITED = "inherited";
@@ -331,7 +332,9 @@ public class AdminCategories extends HttpServlet {
         String categoryTypeName = req.getParameter(PARAMETER__NAME).trim();
         boolean multiselect = Integer.parseInt(req.getParameter(PARAMETER__MULTI_SELECT)) == 0;
         boolean inherited = getInheritedParameterFromRequest(req);
-        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(0, categoryTypeName, multiselect, inherited);
+        boolean isVisibleInPageInfo = Integer.parseInt(req.getParameter(PARAMETER__VISIBLE_CATEGORY_TYPE)) == 1;
+        CategoryTypeDomainObject categoryType = new CategoryTypeDomainObject(
+                0, categoryTypeName, multiselect, inherited, isVisibleInPageInfo);
         return categoryType;
     }
 

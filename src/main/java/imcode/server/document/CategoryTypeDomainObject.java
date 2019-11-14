@@ -20,13 +20,15 @@ public class CategoryTypeDomainObject extends CategoryType implements Comparable
     private String name;
     private boolean multiSelect;
     private boolean inherited;
+    private boolean isVisible;
     private boolean imageArchive;
 
-    public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited) {
+    public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited, boolean isVisible) {
         this.id = id;
         this.name = name;
         this.multiSelect = multiSelect;
         this.inherited = inherited;
+        this.isVisible = isVisible;
     }
 
     /**
@@ -37,16 +39,18 @@ public class CategoryTypeDomainObject extends CategoryType implements Comparable
      * @deprecated use {@link CategoryTypeDomainObject#CategoryTypeDomainObject(int, java.lang.String, boolean, boolean)}
      */
     @Deprecated
-    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited) {
-        this(id, name, (maxChoices != 1), inherited);
+    public CategoryTypeDomainObject(int id, String name, int maxChoices, boolean inherited, boolean isVisible) {
+        this(id, name, (maxChoices != 1), inherited, isVisible);
     }
 
-    public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited, boolean imageArchive) {
+    public CategoryTypeDomainObject(int id, String name, boolean multiSelect, boolean inherited,
+                                    boolean imageArchive, boolean isVisible) {
         this.id = id;
         this.name = name;
         this.multiSelect = multiSelect;
         this.inherited = inherited;
         this.imageArchive = imageArchive;
+        this.isVisible = isVisible;
     }
 
     public int compareTo(Object o) {
