@@ -16,6 +16,7 @@ define(
 
         let $typeNameRow;
         let $isInherited;
+        let $isVisible;
         let $isSingleSelect;
         let $isMultiSelect;
         let $categoryTypeSaveButtons;
@@ -33,10 +34,16 @@ define(
         }
 
         function buildCategoryTypeProperty() {
+            let valuesCheckBox = [
+                $isInherited = components.checkboxes.imcmsCheckbox("<div>", {
+                    text: texts.sections.createCategoryType.inherited
+                }),
+                $isVisible = components.checkboxes.imcmsCheckbox("<div>", {
+                    text: texts.sections.createCategoryType.visible
+                })
+            ];
 
-            return $isInherited = components.checkboxes.imcmsCheckbox("<div>", {
-                text: texts.sections.createCategoryType.inherited
-            })
+            return components.checkboxes.checkboxContainer('<div>', valuesCheckBox, {});
         }
 
         function buildCategoryTypeSelectionModes() {
@@ -71,7 +78,8 @@ define(
                             name: $typeNameRow.setValue(ctgType.name),
                             singleSelect: $isSingleSelect.setChecked(ctgType.multiSelect === false),
                             multiSelect: $isMultiSelect.setChecked(ctgType.multiSelect),
-                            inherited: $isInherited.setChecked(ctgType.inherited)
+                            inherited: $isInherited.setChecked(ctgType.inherited),
+                            visible: $isVisible.setChecked(ctgType.visible)
                         };
 
                         categoryCreateContainer.slideUp();
@@ -157,13 +165,15 @@ define(
                 name: '',
                 singleSelect: true,
                 multiSelect: false,
-                inherited: false
+                inherited: false,
+                visible: true
             };
 
             $typeNameRow.setValue(createCategoryType.name);
             $isSingleSelect.setChecked(createCategoryType.singleSelect);
             $isMultiSelect.setChecked(createCategoryType.multiSelect);
             $isInherited.setChecked(createCategoryType.inherited);
+            $isVisible.setChecked(createCategoryType.visible);
 
             $categoryTypeSaveButtons.find('.imcms-button--error').hide();
             hideCategoriesContainer();
@@ -207,6 +217,7 @@ define(
 
             let name = $typeNameRow.getValue();
             let inherited = $isInherited.isChecked();
+            let visible = $isVisible.isChecked();
 
             if (!name) {
                 modal.buildErrorWindow(texts.error.invalidName);
@@ -219,6 +230,7 @@ define(
                 singleSelect: (checkValue === 'single-select'),
                 multiSelect: (checkValue === 'multi-select'),
                 inherited: inherited,
+                visible: visible
             };
 
             if (currentCtgTypeToSave.id) {
@@ -234,7 +246,7 @@ define(
 
                         categoryTypeSelected.find(`[data-value='${savedCategoryType.id}']`).remove();
                         components.selects.addOptionsToSelect(categoriesTypesDataMapped, categoryTypeSelected, buildOnCategoryTypeSelected());
-
+                        $categoryTypeCreateContainer.slideUp();
                     })
                     .fail(() => {
                         modal.buildErrorWindow(texts.error.invalidName);
