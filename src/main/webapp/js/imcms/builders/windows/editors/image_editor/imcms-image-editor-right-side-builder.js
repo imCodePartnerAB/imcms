@@ -385,7 +385,18 @@ define(
                     }
                 }
 
-                function setOrRemoveHrefAttribute($image, imageDTO) {
+                function addOrRemoveLinkElementIfNeeded($image, imageDTO) {
+                    const linkUrl = imageDTO.linkUrl;
+                    const isParentLink = $image.parent().is('a');
+
+                    if (linkUrl && !isParentLink) {
+                        $image.wrap('<a></a>');
+                    } else if (!linkUrl && isParentLink) {
+                        $image.unwrap();
+                    }
+                }
+
+                function setHrefAttribute($image, imageDTO) {
                     let linkUrl = imageDTO.linkUrl;
                     if (linkUrl) {
                         if (!linkUrl.startsWith("//") && !linkUrl.startsWith("http")) {
@@ -393,8 +404,6 @@ define(
                         }
 
                         $image.parent().attr("href", linkUrl);
-                    } else {
-                        $image.parent().removeAttr("href");
                     }
                 }
 
@@ -448,7 +457,7 @@ define(
 
                 function reloadImageOnPage(imageDTO) {
 
-                    const $image = $tag.find(".imcms-editor-content>a>img").first();
+                    const $image = $tag.find(".imcms-editor-content img").first();
 
                     /** @namespace imageDTO.generatedFilePath */
                     let filePath = imageDTO.generatedFilePath;
@@ -457,7 +466,8 @@ define(
                         filePath = location.origin + imcms.contextPath + filePath;
 
                         setOrRemoveAltAttribute($image, imageDTO);
-                        setOrRemoveHrefAttribute($image, imageDTO);
+                        addOrRemoveLinkElementIfNeeded($image, imageDTO);
+                        setHrefAttribute($image, imageDTO);
                     } else {
                         $image.removeAttr("alt");
                         $image.parent().removeAttr("href");
