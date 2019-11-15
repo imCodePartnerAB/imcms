@@ -328,7 +328,7 @@ const texts = {
                 }
             },
             loop: {
-                title: ";odul-redigerare",
+                title: "Redaktörslinga",
                 createNew: "Skapa ny",
                 saveAndClose: "Spara och stäng",
                 id: "ID",
