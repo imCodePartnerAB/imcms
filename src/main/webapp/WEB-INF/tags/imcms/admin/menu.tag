@@ -60,7 +60,7 @@
                     <div class="imcms-editor-area__text-label">${label}</div>
                 </c:if>
                 <div class="imcms-editor-area__content imcms-editor-content" data-doc-id="${targetDocId}"
-                     data-menu-index="${index}">${menuContent}</div>
+                     data-menu-index="${index}" data-nested="${isNested}">${menuContent}</div>
                     <%-- attributes used as unique identifier while reload --%>
                 <div class="imcms-editor-area__control-wrap">
                     <div class="imcms-editor-area__control-edit imcms-control imcms-control--edit imcms-control--menu">
