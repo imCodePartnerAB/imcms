@@ -60,5 +60,5 @@ $(function () {
         .done(onAuthProvidersLoaded)
         .fail(() => modal.buildErrorWindow(texts.error.loadProvidersFailed));
 
-    $('#Användarnamn').focus();
+    $('#username').focus();
 });
