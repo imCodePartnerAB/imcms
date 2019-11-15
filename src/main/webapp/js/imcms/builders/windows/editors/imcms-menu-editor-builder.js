@@ -1081,11 +1081,11 @@ define("imcms-menu-editor-builder",
                 + "&index=" + opts.menuIndex
                 + "&nested=" + opts.nested;
 
-            $title.text(linkData)
-                .css({
+            $title.text(linkData).css({
                     'text-transform': 'lowercase',
                     'color': '#0b94d8'
                 });
+
             $title.attr('href', linkData)
         }
 
