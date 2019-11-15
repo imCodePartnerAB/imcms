@@ -5,9 +5,9 @@
 define("imcms-loop-editor-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-loops-rest-api", "imcms-window-builder", "jquery",
-        "imcms-events", "imcms-i18n-texts", "imcms-modal-window-builder"
+        "imcms-events", "imcms-i18n-texts", "imcms-modal-window-builder", "imcms-jquery-element-reload"
     ],
-    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal) {
+    function (BEM, components, loopREST, WindowBuilder, $, events, texts, modal, reloadElement) {
         let $title, $body, $listItems;
 
         texts = texts.editors.loop;
@@ -58,7 +58,7 @@ define("imcms-loop-editor-builder",
         }
 
         function onLoopSaved() {
-            // todo: implement reloading saved loop on page
+            reloadElement($($tag.children()[0]));
             loopWindowBuilder.closeWindow();
             events.trigger("imcms-version-modified");
         }
