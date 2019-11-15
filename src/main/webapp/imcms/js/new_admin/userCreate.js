@@ -1,55 +1,58 @@
+import '../../css/imcms_admin.css';
+import '../../../css/imcms-imports_files.css';
+import '../../../css/imcms-edit-user-page.css';
+
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode
  * 18.06.18
  */
-
-import '../../../imcms/css/imcms_admin.css';
-import '../../../css/imcms-imports_files.css';
-import '../../../css/imcms-edit-user-page.css';
-
 const $ = require('jquery');
 const components = require('imcms-components-builder');
 const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
-const modal = require('imcms-modal-window-builder');
-let texts = require('imcms-i18n-texts');
+const modal = require("imcms-modal-window-builder");
+let texts = require("imcms-i18n-texts");
 
 function activateUserAdminRoles() {
+
     texts = texts.languageFlags;
     const $form = $('#user-edit-form');
-    const $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
+    const $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
 
-    if (!$userAdminRoleIds.length) return;
+    const onUserAdminRoleClicked = function () {
+        const $checkbox = $(this);
 
-    $userAdminRoleIds.attr('disabled', 'disabled');
+        if ($checkbox.is(':checked')) {
+            $userAdminRoleIds.removeAttr('disabled');
 
-    const isUserAdminSelected = $form.find('input[name=role_ids]')
-        .find("option")
-        .filter(function () {
-            const $option = $(this);
-            return ($option.text() === 'Useradmin' && $option.is(':selected'));
-        })
-        .length;
+        } else {
+            $userAdminRoleIds.removeAttr('checked');
+            $userAdminRoleIds.attr('disabled', 'disabled');
+        }
+    };
 
-    if (isUserAdminSelected) {
-        $userAdminRoleIds.removeAttr('disabled');
-    }
+    const $userAdminRole = $form.find('#role-1');
+    $userAdminRole.click(onUserAdminRoleClicked);
+
+    onUserAdminRoleClicked.call($userAdminRole);
 }
 
 function onSubmit(e) {
     const $form = $('#user-edit-form');
+    const $pass1 = $form.find('input[name=password]');
+    const $pass2 = $form.find('input[name=password2]');
 
-    if ($form.find('input[name=login_name]').val() === "") {
+    if (!$form.find('input[name=login]').val()
+        || !$pass1.val()
+        || !$pass2.val()
+        || !$form.find('#email').val()) {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;
     }
 
-    const $pass1 = $form.find('input[name=password1]');
-    const $pass2 = $form.find('input[name=password2]');
-
     if ($pass1.val() === $pass2.val()) {
-        $('[name=user_phone_number]').removeAttr('disabled');
+        $('[name=userPhoneNumber]').removeAttr('disabled');
         return;
     }
 
@@ -59,12 +62,24 @@ function onSubmit(e) {
     alert($('#pass-verification-failed-text').val());
 }
 
+function onReset() {
+    window.location.reload(true);
+}
+
+function onCancel() {
+    window.close();
+}
+
+function onRedirectSuperAdminPage() {
+    window.location.replace(imcms.contextPath + "/api/admin/manager")
+}
+
 function loadLanguages() {
     const $langSelectContainer = $('#languages-select-container');
 
     const selectAttributes = {
         text: $langSelectContainer.attr('data-text'),
-        name: 'lang_id'
+        name: 'langCode'
     };
 
     const $select = components.selects.imcmsSelect("<div>", selectAttributes);
@@ -72,6 +87,7 @@ function loadLanguages() {
 
     languagesRestApi.read()
         .done(languages => {
+
             languages = languages.map(lang => ({
                 'data-value': lang.code,
                 text: lang.name
@@ -149,12 +165,12 @@ function addPhone(e) {
         .end()
         .find('#phone-type-selected')
         .removeAttr('id')
-        .attr('name', 'user_phone_number_type')
+        .attr('name', 'userPhoneNumberType')
         .end()
         .find('#phone')
         .removeAttr('id')
         .attr('disabled', 'disabled')
-        .attr('name', 'user_phone_number')
+        .attr('name', 'userPhoneNumber')
         .val(phone)
         .end()
         .find('#phone-type-select')
@@ -179,19 +195,23 @@ function filterNonDigits(e) {
 }
 
 $(function () {
-    $('input[name=login_name]').focus();
+    $('input[name=login]').focus();
     activateUserAdminRoles();
     loadLanguages();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
-    $('#select-role-ids').change(activateUserAdminRoles);
+    $('.imcms-info-head__close').click(onRedirectSuperAdminPage);
+
     $('#edit-user-submit-button').click(onSubmit);
+    $('#edit-user-reset').click(onReset);
+    $('#edit-user-cancel').click(onRedirectSuperAdminPage);
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
         e.preventDefault();
     });
+
 
     $('.imcms-text-box--existing-phone-box').each(function () {
         const $row = $(this);

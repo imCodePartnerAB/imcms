@@ -1,4 +1,4 @@
-import '../../../imcms/css/imcms_admin.css';
+import '../../css/imcms_admin.css';
 import '../../../css/imcms-imports_files.css';
 import '../../../css/imcms-login-page.css';
 

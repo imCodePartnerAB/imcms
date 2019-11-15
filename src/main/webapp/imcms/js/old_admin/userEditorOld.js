@@ -3,7 +3,7 @@
  * 18.06.18
  */
 
-import '../../../imcms/css/imcms_admin.css';
+import '../../css/imcms_admin.css';
 import '../../../css/imcms-imports_files.css';
 import '../../../css/imcms-edit-user-page.css';
 
@@ -11,54 +11,52 @@ const $ = require('jquery');
 const components = require('imcms-components-builder');
 const languagesRestApi = require('imcms-languages-rest-api');
 const imcms = require('imcms');
-const modal = require("imcms-modal-window-builder");
-let texts = require("imcms-i18n-texts");
+const modal = require('imcms-modal-window-builder');
+let texts = require('imcms-i18n-texts');
 
 function activateUserAdminRoles() {
     texts = texts.languageFlags;
     const $form = $('#user-edit-form');
-    const $userAdminRoleIds = $form.find('input[name=userAdminRoleIds]');
+    const $userAdminRoleIds = $form.find('input[name=user_admin_role_ids]');
 
-    const onUserAdminRoleClicked = function () {
-        const $checkbox = $(this);
+    if (!$userAdminRoleIds.length) return;
 
-        if ($checkbox.is(':checked')) {
-            $userAdminRoleIds.removeAttr('disabled');
+    $userAdminRoleIds.attr('disabled', 'disabled');
 
-        } else {
-            $userAdminRoleIds.removeAttr('checked');
-            $userAdminRoleIds.attr('disabled', 'disabled');
-        }
-    };
+    const isUserAdminSelected = $form.find('input[name=role_ids]')
+        .find("option")
+        .filter(function () {
+            const $option = $(this);
+            return ($option.text() === 'Useradmin' && $option.is(':selected'));
+        })
+        .length;
 
-    const $userAdminRole = $form.find('#role-1');
-    $userAdminRole.click(onUserAdminRoleClicked);
-
-    onUserAdminRoleClicked.call($userAdminRole);
+    if (isUserAdminSelected) {
+        $userAdminRoleIds.removeAttr('disabled');
+    }
 }
 
 function onSubmit(e) {
     const $form = $('#user-edit-form');
 
-    if (!$form.find('input[name=login]').val() || !$form.find('#email').val()) {
+    if ($form.find('input[name=login_name]').val() === "") {
         e.preventDefault();
         alert($('#must-fill-mandatory-fields-text').val());
         return;
     }
 
-    $('[name=userPhoneNumber]').removeAttr('disabled');
-}
+    const $pass1 = $form.find('input[name=password1]');
+    const $pass2 = $form.find('input[name=password2]');
 
-function onReset() {
-    window.location.reload(true);
-}
+    if ($pass1.val() === $pass2.val()) {
+        $('[name=user_phone_number]').removeAttr('disabled');
+        return;
+    }
 
-function onCancel() {
-    window.close();
-}
-
-function onRedirectSuperAdminPage() {
-    window.location.replace(imcms.contextPath + "/api/admin/manager")
+    e.preventDefault();
+    $pass2.val("");
+    $pass1.val("").focus();
+    alert($('#pass-verification-failed-text').val());
 }
 
 function loadLanguages() {
@@ -66,7 +64,7 @@ function loadLanguages() {
 
     const selectAttributes = {
         text: $langSelectContainer.attr('data-text'),
-        name: 'langCode'
+        name: 'lang_id'
     };
 
     const $select = components.selects.imcmsSelect("<div>", selectAttributes);
@@ -74,7 +72,6 @@ function loadLanguages() {
 
     languagesRestApi.read()
         .done(languages => {
-
             languages = languages.map(lang => ({
                 'data-value': lang.code,
                 text: lang.name
@@ -152,12 +149,12 @@ function addPhone(e) {
         .end()
         .find('#phone-type-selected')
         .removeAttr('id')
-        .attr('name', 'userPhoneNumberType')
+        .attr('name', 'user_phone_number_type')
         .end()
         .find('#phone')
         .removeAttr('id')
         .attr('disabled', 'disabled')
-        .attr('name', 'userPhoneNumber')
+        .attr('name', 'user_phone_number')
         .val(phone)
         .end()
         .find('#phone-type-select')
@@ -182,23 +179,19 @@ function filterNonDigits(e) {
 }
 
 $(function () {
-    $('input[name=login]').focus();
+    $('input[name=login_name]').focus();
     activateUserAdminRoles();
     loadLanguages();
 
     components.selects.makeImcmsSelect($('#phone-type-select'));
 
-    $('.imcms-info-head__close').click(onRedirectSuperAdminPage);
-
+    $('#select-role-ids').change(activateUserAdminRoles);
     $('#edit-user-submit-button').click(onSubmit);
-    $('#edit-user-reset').click(onReset);
-    $('#edit-user-cancel').click(onRedirectSuperAdminPage);
     $('#button-add-phone').click(addPhone);
 
     $('.imcms-input--phone').keydown(filterNonDigits).on('paste', e => {
         e.preventDefault();
     });
-
 
     $('.imcms-text-box--existing-phone-box').each(function () {
         const $row = $(this);
