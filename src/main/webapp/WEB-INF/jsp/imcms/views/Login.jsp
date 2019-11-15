@@ -58,21 +58,22 @@ ${"-->"}
                     </c:if>
                     <div class="imcms-field">
                         <div class="imcms-text-box">
-                            <label for="<fmt:message key="templates/login/index.html/5"/>"
-                                   class="imcms-label imcms-text-box__label"><fmt:message
-                                    key="templates/login/index.html/5"/></label>
-                            <input id="<fmt:message key="templates/login/index.html/5"/>" type="text"
+                            <label for="username"
+                                   class="imcms-label imcms-text-box__label">
+                                <fmt:message key="templates/login/index.html/5"/>
+                            </label>
+                            <input id="username" type="text"
                                    name="<%=VerifyUser.REQUEST_PARAMETER__USERNAME%>"
                                    class="imcms-input imcms-text-box__input">
                         </div>
                     </div>
                     <div class="imcms-field">
                         <div class="imcms-text-box">
-                            <label for="<fmt:message key="templates/login/index.html/6"/>"
+                            <label for="password"
                                    class="imcms-label imcms-text-box__label">
                                 <fmt:message key="templates/login/index.html/6"/>
                             </label>
-                            <input id="<fmt:message key="templates/login/index.html/6"/>" type="password"
+                            <input id="password" type="password"
                                    name="<%=VerifyUser.REQUEST_PARAMETER__PASSWORD%>"
                                    class="imcms-input imcms-text-box__input">
                         </div>
