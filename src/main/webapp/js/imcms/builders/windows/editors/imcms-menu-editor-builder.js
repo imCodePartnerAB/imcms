@@ -23,7 +23,7 @@ define("imcms-menu-editor-builder",
         let TREE_SORT = 'TREE_SORT';
         let $menuElementsContainer, $documentsContainer, $documentEditor;
         let docId, menuIndex, nested;
-        let $title = $('<span>');
+        let $title = $('<a>');
         let localizeTypesSort = [
             texts.typesSort.treeSort,
             texts.typesSort.manual,
@@ -94,8 +94,8 @@ define("imcms-menu-editor-builder",
             saveMenuElements();
         }
 
-        function buildHead() {
-            const $head = menuWindowBuilder.buildHead(texts.title);
+        function buildHead(opts) {
+            const $head = menuWindowBuilder.buildHead(texts.title + ": " + opts.docId + "-" + opts.menuIndex);
             $head.find('.imcms-title').append($title);
 
             return $head;
@@ -1076,9 +1076,17 @@ define("imcms-menu-editor-builder",
         }
 
         function addHeadData(opts) {
-            $title.text(opts.docId + "-" + opts.menuIndex +
-                ": /api/admin/menu?meta-id=" + opts.docId + "&index=" + opts.menuIndex)
-                .css({'text-transform': 'lowercase'});
+            let linkData = "/api/admin/menu?meta-id="
+                + opts.docId
+                + "&index=" + opts.menuIndex
+                + "&nested=" + opts.nested;
+
+            $title.text(linkData)
+                .css({
+                    'text-transform': 'lowercase',
+                    'color': '#0b94d8'
+                });
+            $title.attr('href', linkData)
         }
 
         function buildMenuEditor(opts) {
@@ -1089,7 +1097,7 @@ define("imcms-menu-editor-builder",
             return new BEM({
                 block: "imcms-menu-editor",
                 elements: {
-                    "head": buildHead(),
+                    "head": buildHead(opts),
                     "body": buildBody(),
                     "footer": buildFooter()
                 }
