@@ -7,7 +7,7 @@
 
 <imcms:ifAdmin>
     <script>
-        <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+        <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>
 
     <script src="${contextPath}/dist/imcms_start.js"></script>

@@ -9,11 +9,7 @@
 <%@ page import="javax.servlet.http.HttpServletRequest" %>
 <%@ page import="javax.servlet.http.HttpServletResponse" %>
 <%@ page import="java.io.IOException" %>
-<%@ page import="java.util.Arrays" %>
-<%@ page import="java.util.HashSet" %>
-<%@ page import="java.util.Iterator" %>
-<%@ page import="java.util.Set" %>
-<%@ page import="java.util.TreeSet" %>
+<%@ page import="java.util.*" %>
 <%@ taglib prefix="ui" tagdir="/WEB-INF/tags/imcms/ui" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -78,7 +74,7 @@ if ( buttonPressed(request, ACTION_CANCEL) ) {
 <title><? install/htdocs/sv/adminuser/changeexternaluser.jsp/1 ?></title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+    <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body>

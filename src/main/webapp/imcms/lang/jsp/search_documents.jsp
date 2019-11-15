@@ -19,7 +19,7 @@
 <title><? templates/sv/search/search_documents.html/1 ?></title>
 
     <link rel="stylesheet" href="${contextPath}/imcms/css/imcms_admin.css" type="text/css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+    <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 <%= jsCalendar.getHeadTagScripts() %>
 
 <style type="text/css">

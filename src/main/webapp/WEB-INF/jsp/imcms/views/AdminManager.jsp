@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><fmt:message key="webapp/imcms/lang/jsp/admin/admin_manager.jsp/6"/></title>
     <script>
-        <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+        <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>
     <script src="${contextPath}/dist/imcms_admin_manager_start.js"></script>
 </head>

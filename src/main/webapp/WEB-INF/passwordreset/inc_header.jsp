@@ -13,7 +13,7 @@
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-imports_files.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/css/modal_window/imcms-modal-admin.css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+    <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 </head>
 <body>
 <div class="imcms-modal-admin">
