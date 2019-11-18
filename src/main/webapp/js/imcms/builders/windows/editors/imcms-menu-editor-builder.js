@@ -974,6 +974,7 @@ define("imcms-menu-editor-builder",
             }
 
             typesSortRestAPI.getSortTypes(requestNested).done(types => {
+                mapTypesSort.clear();
                 types.map((typeOriginal, index) => {
                     mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, requestNested.nested)[index], typeOriginal)
                 });
