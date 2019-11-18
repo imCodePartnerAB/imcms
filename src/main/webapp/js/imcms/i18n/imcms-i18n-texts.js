@@ -367,8 +367,8 @@ const texts = {
             },
             image: {
                 title: "Bild-redigerare",
-                proportion: "Läs proportioner",
-                presetCrop: "Förinställd gröda",
+                proportion: "Lås proportioner",
+                presetCrop: "Förinställt beskärnings",
                 crop: "Förinställt",
                 panels: {
                     bottom: {
@@ -418,7 +418,7 @@ const texts = {
                 bottom: "botten",
                 left: "vänster",
                 spaceAround: "Luft runt bild",
-                cropCoords: "Krop-koordinater",
+                cropCoords: "Beskärningskoordinater",
                 fileFormat: "Filformat",
                 alignment: "Textjustering",
                 altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
@@ -592,7 +592,7 @@ const texts = {
                 copyRight: 'Kopiera till höger',
                 copyLeft: 'Kopiera till vänster',
                 warnChangeMessage: 'Vill du verkligen redigera?',
-                warnDeleteMessage: 'Ta du verkligen bort fil?',
+                warnDeleteMessage: 'Vill du verkligen ta bort filen?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
                 title: {
@@ -1395,7 +1395,7 @@ const texts = {
                 copyRight: 'Copy right',
                 copyLeft: 'Copy left',
                 warnChangeMessage: 'Do you really want to change file?',
-                warnDeleteMessage: 'Do you really delete file?',
+                warnDeleteMessage: 'Do you really want to delete the file?',
                 warnEditMessage: 'Do you really edit content file?',
                 warnViewDocMessage: 'Do you want to redirect on current document?',
                 title: {
