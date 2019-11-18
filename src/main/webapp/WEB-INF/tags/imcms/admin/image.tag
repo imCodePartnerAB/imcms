@@ -95,7 +95,7 @@
             </c:when>
             <c:otherwise>
                 ${pre}
-                    <img src="${contextPath}/images_gui/icon_missing_image.png"/>
+                    <img src="${contextPath}/imcms/images/icon_missing_image.png"/>
                 ${post}
             </c:otherwise>
         </c:choose>

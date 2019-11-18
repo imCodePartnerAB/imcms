@@ -23,7 +23,7 @@
 }
 
 .imcms-info__logo, .imcms-head__logo {
-    background: url(/images_gui/icon_logo_main.png) no-repeat 0 0;
+    background: url(/imcms/images/icon_logo_main.png) no-repeat 0 0;
     background-size: contain;
     text-indent: -99999px;
     display: block;
@@ -35,7 +35,7 @@
 }
 
 .imcms-info-head__close {
-    background: url("/images_gui/controls/icon_folder_controll_remove.png") no-repeat center;
+    background: url("/imcms/images/controls/icon_folder_controll_remove.png") no-repeat center;
     position: absolute;
     height: 100%;
     top: 0;
