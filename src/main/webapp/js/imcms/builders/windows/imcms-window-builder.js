@@ -75,9 +75,8 @@ module.exports = class WindowBuilder {
             this._pageOverflow = $("body").css("overflow") || "auto";
             setBodyScrollingRule("hidden");
 
-            if (!this.$editor) {
-                this.$editor = this.factory.apply(null, arguments).appendTo("body");
-            }
+
+            this.$editor = this.factory.apply(null, arguments).appendTo("body");
 
             this.loadDataStrategy && setTimeout(() => this.loadDataStrategy.apply(null, arguments));
             this.$editor.css("display", "block");
