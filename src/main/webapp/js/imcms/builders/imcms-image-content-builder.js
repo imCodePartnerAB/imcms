@@ -663,9 +663,10 @@ define("imcms-image-content-builder",
                     .done(uploadedImageFiles => {
                         const $newImages = uploadedImageFiles.map(imageFile => buildImage(imageFile).css("display", "block"));
                         activeFolder.files = (activeFolder.files || []).concat(uploadedImageFiles);
-                        $imagesContainer.append($newImages);
+                        $imagesContainer.prepend($newImages);
                         activeFolder.$images = activeFolder.$images.concat($newImages);
                         viewModel.$images = viewModel.$images.concat($newImages);
+                        selectImage.call($newImages[0], uploadedImageFiles[0]);
                     })
                     .fail(() => modal.buildErrorWindow(texts.error.uploadImagesFailed));
             },
