@@ -93,7 +93,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
         final SolrQuery solrQuery = documentSearchQueryConverter.convertToSolrQuery(searchQueryDTO);
 
         assertThat(solrQuery.get(CommonParams.START), is("0"));
-        assertThat(solrQuery.get(CommonParams.ROWS), is("100"));
+        assertThat(solrQuery.get(CommonParams.ROWS), is(String.valueOf(Integer.MAX_VALUE)));
     }
 
     @Test
