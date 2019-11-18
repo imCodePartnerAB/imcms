@@ -809,6 +809,10 @@ const texts = {
                 loadProvidersFailed: 'Misslyckades med auth leverantörer. Försök igen'
             }
         },
+        dateTime: {
+            yearMonthDay: 'åååå-mm-dd',
+            hourMinute: 'tt:mm',
+        },
     },
     "en": {
         panel: {
@@ -1611,6 +1615,10 @@ const texts = {
             error: {
                 loadProvidersFailed: 'Failed to auth providers. Try again'
             }
+        },
+        dateTime: {
+            yearMonthDay: 'yyyy-mm-dd',
+            hourMinute: 'hh:mm',
         },
     }
 };
