@@ -22,7 +22,6 @@ define("imcms-menu-editor-builder",
         let MODIFIED_DATE_DESC = 'MODIFIED_DATE_DESC';
         let TREE_SORT = 'TREE_SORT';
         let $menuElementsContainer, $documentsContainer, $documentEditor;
-        let docId, menuIndex, nested;
         let $title = $('<a>');
         let localizeTypesSort = [
             texts.typesSort.treeSort,
@@ -69,16 +68,16 @@ define("imcms-menu-editor-builder",
             }
         }
 
-        function saveMenuElements() {
+        function saveMenuElements(opts) {
             const menuItems = $menuElementsContainer.find("[data-menu-items-lvl=1]")
                 .map(mapToMenuItem)
                 .toArray();
 
             const menuDTO = {
-                menuIndex: menuIndex,
-                docId: docId,
+                menuIndex: opts.menuIndex,
+                docId: opts.docId,
                 menuItems: menuItems,
-                nested: nested
+                nested: opts.nested
             };
 
             menusRestApi.create(menuDTO)
@@ -90,8 +89,8 @@ define("imcms-menu-editor-builder",
 
         }
 
-        function saveAndClose() {
-            saveMenuElements();
+        function saveAndClose(opts) {
+            saveMenuElements(opts);
         }
 
         function buildHead(opts) {
@@ -506,10 +505,12 @@ define("imcms-menu-editor-builder",
             documentEditorBuilder.refreshDocumentInList(doc);
         }
 
-        function buildFooter() {
+        function buildFooter(opts) {
             const $saveAndClose = components.buttons.saveButton({
                     text: texts.saveAndClose,
-                    click: saveAndClose
+                    click: () => {
+                        saveAndClose(opts)
+                    }
                 }),
                 $dataInput = primitivesBuilder.imcmsInput({
                     "type": "hidden",
@@ -960,7 +961,7 @@ define("imcms-menu-editor-builder",
                 onSelected: buildOnSelectedTypeSort
             });
 
-            let isNested = {
+            let requestNested = {
                 nested: opts.nested
             };
 
@@ -972,9 +973,9 @@ define("imcms-menu-editor-builder",
                 }
             }
 
-            typesSortRestAPI.getSortTypes(isNested).done(types => {
+            typesSortRestAPI.getSortTypes(requestNested).done(types => {
                 types.map((typeOriginal, index) => {
-                    mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, nested)[index], typeOriginal)
+                    mapTypesSort.set(defineListLocalizeTypesByNested(localizeTypesSort, requestNested.nested)[index], typeOriginal)
                 });
 
                 let keys = [...mapTypesSort.keys()];
@@ -1089,17 +1090,15 @@ define("imcms-menu-editor-builder",
             $title.attr('href', linkData)
         }
 
-        function buildMenuEditor(opts) {
-            docId = opts.docId;
-            menuIndex = opts.menuIndex;
-            nested = opts.nested;
+        let $menuEditorContainer;
 
-            return new BEM({
+        function buildMenuEditor(opts) {
+            return $menuEditorContainer = new BEM({
                 block: "imcms-menu-editor",
                 elements: {
                     "head": buildHead(opts),
                     "body": buildBody(),
-                    "footer": buildFooter()
+                    "footer": buildFooter(opts)
                 }
             }).buildBlockStructure("<div>", {"class": "imcms-editor-window"});
         }
