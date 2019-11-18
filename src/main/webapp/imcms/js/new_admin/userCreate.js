@@ -1,6 +1,6 @@
 import '../../css/imcms_admin.css';
-import '../../../css/imcms-imports_files.css';
-import '../../../css/imcms-edit-user-page.css';
+import '../../css/imcms-imports_files.css';
+import '../../css/imcms-edit-user-page.css';
 
 /**
  * @author Serhii Maksymchuk from Ubrainians for imCode

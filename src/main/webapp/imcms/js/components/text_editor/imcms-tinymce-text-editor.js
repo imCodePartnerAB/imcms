@@ -56,7 +56,7 @@ define(
         ].join(' | ');
 
         const inlineEditorConfig = {
-            skin_url: imcms.contextPath + '/css/tinymce/skins/white',
+            skin_url: imcms.contextPath + '/imcms/css/tinymce/skins/white',
             convert_urls: false,
             cache_suffix: '?v=0.0.1',
             branding: false,
@@ -64,7 +64,7 @@ define(
             inline: true,
             inline_boundaries: false,
             toolbar_items_size: 'small',
-            content_css: imcms.contextPath + '/css/imcms-text_editor.css',
+            content_css: imcms.contextPath + '/imcms/css/imcms-text_editor.css',
             menubar: false,
             statusbar: false,
             force_br_newlines: false,

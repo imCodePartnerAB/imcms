@@ -1,4 +1,4 @@
-import '../../../css/imcms-imports_files.css';
+import '../../css/imcms-imports_files.css';
 
 /**
  * Starter for menu edit view.

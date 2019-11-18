@@ -10,8 +10,8 @@
     <title><fmt:message key="templates/sv/no_page.html/1"/></title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css/imcms-imports_files.css">
-    <link rel="stylesheet" type="text/css" href="${contextPath}/css/404/imcms-page-error.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms-imports_files.css">
+    <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/404/imcms-page-error.css">
 
 </head>
 <body bgcolor="#FFFFFF">
