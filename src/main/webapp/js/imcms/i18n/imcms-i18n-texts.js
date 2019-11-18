@@ -498,7 +498,11 @@ const texts = {
                     loadRolesFailed: 'Misslyckades med att hämta roller. Försök igen',
                     updateFailed: 'Misslyckades med att uppdatera användaren. Försök igen',
                     searchFailed: 'Misslyckades med att söka efter användare. Försök igen'
-                }
+                },
+                tooltip: {
+                    archiveUser: 'Till arkivanvändare',
+                    editUser: 'Redigera',
+                },
             },
             roles: {
                 name: 'Roller',
@@ -1305,7 +1309,11 @@ const texts = {
                     loadRolesFailed: 'Failed to fetch roles. Try again',
                     updateFailed: 'Failed to update user. Try again',
                     searchFailed: 'Failed to search for users. Try again'
-                }
+                },
+                tooltip: {
+                    archiveUser: 'Archive user',
+                    editUser: 'Edit',
+                },
             },
             roles: {
                 name: 'Roles',
