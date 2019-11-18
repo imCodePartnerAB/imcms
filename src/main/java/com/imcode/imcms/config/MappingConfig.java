@@ -1,42 +1,15 @@
 package com.imcode.imcms.config;
 
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageCropRegionDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.ImageData;
-import com.imcode.imcms.domain.dto.ImageFileDTO;
-import com.imcode.imcms.domain.dto.ImageFolderDTO;
-import com.imcode.imcms.domain.dto.ImageHistoryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.dto.TextHistoryDTO;
-import com.imcode.imcms.domain.dto.UserDTO;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentMenuService;
-import com.imcode.imcms.domain.service.LanguageService;
-import com.imcode.imcms.domain.service.UserService;
-import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.dto.*;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.jpa.doc.Property;
 import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.model.Category;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.model.Language;
-import com.imcode.imcms.persistence.entity.CategoryJPA;
-import com.imcode.imcms.persistence.entity.ImageCropRegionJPA;
-import com.imcode.imcms.persistence.entity.ImageHistoryJPA;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.LoopEntryRefJPA;
 import com.imcode.imcms.persistence.entity.Menu;
 import com.imcode.imcms.persistence.entity.MenuItem;
-import com.imcode.imcms.persistence.entity.Meta;
-import com.imcode.imcms.persistence.entity.RestrictedPermissionJPA;
-import com.imcode.imcms.persistence.entity.TextHistoryJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Imcms;
 import imcode.server.ImcmsConstants;
@@ -56,21 +29,15 @@ import org.springframework.core.io.Resource;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.imcode.imcms.persistence.entity.Meta.DisabledLanguageShowMode.SHOW_IN_DEFAULT_LANGUAGE;
 import static imcode.server.document.DocumentDomainObject.DOCUMENT_PROPERTIES__IMCMS_DOCUMENT_ALIAS;
@@ -579,14 +546,16 @@ class MappingConfig {
                     return imageFolderDTO;
                 }
 
-                for (File file : files) {
-                    if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
-                        subFolders.add(this.apply(file, false));
+                Stream.of(files)
+                        .sorted()
+                        .forEach(file -> {
+                            if (file.isDirectory() && !file.getPath().equals(generatedImagesPath)) {
+                                subFolders.add(this.apply(file, false));
 
-                    } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
-                        folderFiles.add(fileToImageFileDTO.apply(file));
-                    }
-                }
+                            } else if (isRoot && Format.isImage(FilenameUtils.getExtension(file.getName()))) {
+                                folderFiles.add(fileToImageFileDTO.apply(file));
+                            }
+                        });
 
                 imageFolderDTO.setFiles(folderFiles);
                 imageFolderDTO.setFolders(subFolders);
