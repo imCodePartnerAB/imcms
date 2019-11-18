@@ -164,7 +164,7 @@ const texts = {
             categories: {
                 name: "Kategorier",
                 error: {
-                    loadFailed: "Misslyckades med att hämta kategorier. Försök få vinst"
+                    loadFailed: "Misslyckades med att hämta kategorier. Vänligen försök igen."
                 }
             },
             access: {
@@ -178,7 +178,7 @@ const texts = {
                 linkableByOtherUsers: "Länkbar av andra användare",
                 linkableForUnauthorizedUsers: "Länkbar för obehöriga användare",
                 error: {
-                    loadFailed: "Misslyckades med att hämta roller. Försök få vinst"
+                    loadFailed: "Misslyckades med att hämta roller. Vänligen försök igen."
                 }
             },
             permissions: {
