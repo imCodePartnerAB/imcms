@@ -8,14 +8,14 @@
     overflow: visible;
     padding: 10px;
     position: relative;
-    max-width: 170px;
+    max-width: 180px;
     min-width: 94px;
 }
 
 .imcms-date-time .imcms-date-time__date-picker {
     display: inline-block;
     float: left;
-    width: 70%;
+    width: 65%;
 }
 
 .imcms-date-time .imcms-date-picker__current-date input {
@@ -29,7 +29,7 @@
 .imcms-date-time .imcms-date-time__time-picker {
     display: inline-block;
     float: left;
-    width: 30%;
+    width: 35%;
 }
 
 .imcms-date-time--without-label {

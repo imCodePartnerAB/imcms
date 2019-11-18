@@ -7,6 +7,7 @@
 .imcms-field__item--col-3 .imcms-item__input {
     display: inline-block;
     margin-right: 5px;
+    height: 43px;
 }
 
 .imcms-field__item--col-3 .imcms-item__label {
