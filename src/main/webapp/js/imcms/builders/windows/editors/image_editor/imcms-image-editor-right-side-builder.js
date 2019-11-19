@@ -490,6 +490,7 @@ define(
 
                         if ($tag.hasClass("imcms-image-in-text") && alignNameToAction[imageDTO.align]) {
                             alignNameToAction[imageDTO.align].call($tag);
+                            $('.imcms-image-in-text').parent().focus();
                         }
                     }
                 }
