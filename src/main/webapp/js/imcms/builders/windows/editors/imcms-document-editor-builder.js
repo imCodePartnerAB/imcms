@@ -693,7 +693,7 @@ define("imcms-document-editor-builder",
 
         function setDataInputParams(insertedParent, frameItem) {
             const dataInput = $("#dataInput");
-            const typeSort = $("#type-sort")[0].defaultValue;
+            const typeSort = document.getElementById("type-sort").value;
 
             if (typeSort !== TREE_SORT && insertedParent.parent !== null) {
                 dataInput.attr("data-parent-id", insertedParent.parent.attr("data-document-id"));

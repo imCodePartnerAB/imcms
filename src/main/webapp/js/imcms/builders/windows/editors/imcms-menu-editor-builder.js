@@ -525,7 +525,7 @@ define("imcms-menu-editor-builder",
             const submenuItem = currentMenuItem.parent().find(".imcms-menu-items"),
                 parentMenuItem = currentMenuItem.closest(".imcms-menu-items"),
                 currentMenuItemWrap = parentMenuItem.parent();
-            const typeSort = $('#type-sort')[0].defaultValue;
+            const typeSort = document.getElementById("type-sort").value;
             let currentMenuItemId;
 
             if (typeSort === PUBLISHED_DATE_ASC || typeSort === PUBLISHED_DATE_DESC ||
@@ -563,7 +563,7 @@ define("imcms-menu-editor-builder",
         }
 
         function removeMenuItem() {
-            const typeSort = $('#type-sort')[0].defaultValue;
+            const typeSort = document.getElementById("type-sort").value;
             const currentMenuItem = $(this).closest(".imcms-menu-item");
             let currentMenuItemName;
             if (typeSort === PUBLISHED_DATE_ASC || typeSort === PUBLISHED_DATE_DESC ||
@@ -605,7 +605,7 @@ define("imcms-menu-editor-builder",
         }
 
         function appendNewMenuItem(document) {
-            const typeSort = $('#type-sort')[0].defaultValue;
+            const typeSort = document.getElementById("type-sort").value;
             $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1, typeSort));
             documentEditorBuilder.refreshDocumentInList(document)
         }
