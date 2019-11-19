@@ -21,6 +21,7 @@ import static org.springframework.data.domain.Sort.Order;
 public class DocumentSearchQueryConverter {
 
     private static final Sort DEFAULT_SORT = new Sort(new Order(Direction.DESC, DocumentIndex.FIELD__META_ID));
+    private static final Integer DEFAULT_MAX_SIZE = Integer.MAX_VALUE;
 
     public SolrQuery convertToSolrQuery(SearchQueryDTO searchQuery) {
         final UserDomainObject searchingUser = Imcms.getUser();
@@ -76,9 +77,11 @@ public class DocumentSearchQueryConverter {
     }
 
     private void prepareSolrQueryPaging(SearchQueryDTO searchQuery, SolrQuery solrQuery) {
-        PageRequestDTO page = null;
+        PageRequestDTO page;
         if (searchQuery != null) {
             page = searchQuery.getPage();
+        } else {
+            page = new PageRequestDTO(DEFAULT_MAX_SIZE);
         }
 
         if (page == null) {
