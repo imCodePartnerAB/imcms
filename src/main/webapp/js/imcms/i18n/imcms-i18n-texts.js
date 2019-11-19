@@ -164,7 +164,7 @@ const texts = {
             categories: {
                 name: "Kategorier",
                 error: {
-                    loadFailed: "Misslyckades med att hämta kategorier. Försök få vinst"
+                    loadFailed: "Misslyckades med att hämta kategorier. Vänligen försök igen."
                 }
             },
             access: {
@@ -178,7 +178,7 @@ const texts = {
                 linkableByOtherUsers: "Länkbar av andra användare",
                 linkableForUnauthorizedUsers: "Länkbar för obehöriga användare",
                 error: {
-                    loadFailed: "Misslyckades med att hämta roller. Försök få vinst"
+                    loadFailed: "Misslyckades med att hämta roller. Vänligen försök igen."
                 }
             },
             permissions: {
@@ -367,8 +367,8 @@ const texts = {
             },
             image: {
                 title: "Bild-redigerare",
-                proportion: "Läs proportioner",
-                presetCrop: "Förinställd gröda",
+                proportion: "Lås proportioner",
+                presetCrop: "Förinställt beskärnings",
                 crop: "Förinställt",
                 panels: {
                     bottom: {
@@ -418,7 +418,7 @@ const texts = {
                 bottom: "botten",
                 left: "vänster",
                 spaceAround: "Luft runt bild",
-                cropCoords: "Krop-koordinater",
+                cropCoords: "Beskärningskoordinater",
                 fileFormat: "Filformat",
                 alignment: "Textjustering",
                 altTextConfirm: "Alternativ text saknas. Vill du verkligen fortsätta?",
@@ -498,7 +498,11 @@ const texts = {
                     loadRolesFailed: 'Misslyckades med att hämta roller. Försök igen',
                     updateFailed: 'Misslyckades med att uppdatera användaren. Försök igen',
                     searchFailed: 'Misslyckades med att söka efter användare. Försök igen'
-                }
+                },
+                tooltip: {
+                    archiveUser: 'Till arkivanvändare',
+                    editUser: 'Redigera',
+                },
             },
             roles: {
                 name: 'Roller',
@@ -592,7 +596,7 @@ const texts = {
                 copyRight: 'Kopiera till höger',
                 copyLeft: 'Kopiera till vänster',
                 warnChangeMessage: 'Vill du verkligen redigera?',
-                warnDeleteMessage: 'Ta du verkligen bort fil?',
+                warnDeleteMessage: 'Vill du verkligen ta bort filen?',
                 warnEditMessage: 'Redigerar du verkligen innehållsfilen?',
                 warnViewDocMessage: 'Vill du omdirigera på nuvarande dokument?',
                 title: {
@@ -808,6 +812,10 @@ const texts = {
             error: {
                 loadProvidersFailed: 'Misslyckades med auth leverantörer. Försök igen'
             }
+        },
+        dateTime: {
+            yearMonthDay: 'åååå-mm-dd',
+            hourMinute: 'tt:mm',
         },
     },
     "en": {
@@ -1301,7 +1309,11 @@ const texts = {
                     loadRolesFailed: 'Failed to fetch roles. Try again',
                     updateFailed: 'Failed to update user. Try again',
                     searchFailed: 'Failed to search for users. Try again'
-                }
+                },
+                tooltip: {
+                    archiveUser: 'Archive user',
+                    editUser: 'Edit',
+                },
             },
             roles: {
                 name: 'Roles',
@@ -1395,7 +1407,7 @@ const texts = {
                 copyRight: 'Copy right',
                 copyLeft: 'Copy left',
                 warnChangeMessage: 'Do you really want to change file?',
-                warnDeleteMessage: 'Do you really delete file?',
+                warnDeleteMessage: 'Do you really want to delete the file?',
                 warnEditMessage: 'Do you really edit content file?',
                 warnViewDocMessage: 'Do you want to redirect on current document?',
                 title: {
@@ -1611,6 +1623,10 @@ const texts = {
             error: {
                 loadProvidersFailed: 'Failed to auth providers. Try again'
             }
+        },
+        dateTime: {
+            yearMonthDay: 'yyyy-mm-dd',
+            hourMinute: 'hh:mm',
         },
     }
 };

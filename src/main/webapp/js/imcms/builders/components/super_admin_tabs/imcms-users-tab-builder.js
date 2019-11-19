@@ -117,9 +117,9 @@ define(
                             'email': $('<div>', {
                                 text: user.email
                             }),
-                            'edit': components.controls.edit(getOnEditUser(user)),
+                            'edit': components.controls.edit(getOnEditUser(user)).attr('title', texts.tooltip.editUser),
                             'archive': user.active
-                                ? components.controls.archive(getOnArchiveUser(user))
+                                ? components.controls.archive(getOnArchiveUser(user)).attr('title', texts.tooltip.archiveUser)
                                 : $('<div>', {text: texts.searchResult.archived})
                         }
                     }).buildBlockStructure('<div>', infoRowAttributes);

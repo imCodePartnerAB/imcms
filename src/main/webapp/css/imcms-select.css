@@ -44,7 +44,7 @@
 .imcms-drop-down-list__select-item {
     cursor: pointer;
     position: relative;
-    padding: 10px 20px 10px 15px;
+    padding: 8px 20px 8px 15px;
     display: block;
 }
 
@@ -63,7 +63,6 @@
     font-weight: 400;
     font-family: 'Source Sans Pro', sans-serif;
     font-size: 15px;
-    line-height: 15px;
     display: inline-block;
 }
 

@@ -3,8 +3,11 @@
  * 28.07.17.
  */
 define("imcms-date-time-builder",
-    ["imcms-bem-builder", "imcms-buttons-builder", "imcms-validator", "imcms-date-picker", "imcms-time-picker"],
-    function (BEM, buttons, Validator, DatePicker, TimePicker) {
+    ["imcms-bem-builder", "imcms-buttons-builder", "imcms-validator", "imcms-date-picker", "imcms-time-picker", "imcms-i18n-texts"],
+    function (BEM, buttons, Validator, DatePicker, TimePicker, texts) {
+
+        texts = texts.dateTime;
+
         const datePickerBEM = new BEM({
                 block: "imcms-date-picker",
                 elements: {
@@ -111,7 +114,7 @@ define("imcms-date-time-builder",
 
         function createDateBox(attributes, withCalendar) {
             attributes = attributes || {};
-            attributes.placeholder = "yyyy-mm-dd";
+            attributes.placeholder = texts.yearMonthDay;
 
             if (!withCalendar) {
                 attributes.readonly = "readonly";
@@ -222,7 +225,7 @@ define("imcms-date-time-builder",
 
         function createTimeBox(attributes, withClock) {
             attributes = attributes || {};
-            attributes.placeholder = "HH:mm";
+            attributes.placeholder = texts.hourMinute;
 
             if (!withClock) {
                 attributes.readonly = "readonly";
