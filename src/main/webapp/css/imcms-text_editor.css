@@ -65,7 +65,7 @@
 }
 
 .imcms-editor-area__text-toolbar .mce-i-imcms-image--in-text-editor-icon {
-    background: url("../images_gui/text_editor/ic_images.png") no-repeat;
+    background: url("/images_gui/text_editor/ic_images.png") no-repeat;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-switch-to-html-mode-icon,
@@ -75,31 +75,31 @@
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-processing-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-processing-icon {
-    background: url("../images_gui/text_editor/ic_loader.gif") no-repeat center;
+    background: url("/images_gui/text_editor/ic_loader.gif") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-valid-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-valid-icon {
-    background: url("../images_gui/text_editor/ic_valid.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_valid.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .text-toolbar__button .html-validation-button__icon.imcms-w3c-text-validation-invalid-icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-w3c-text-validation-invalid-icon {
-    background: url("../images_gui/text_editor/ic_invalid.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_invalid.png") no-repeat center;
 }
 
 .text-editor-fullscreen-button__icon {
-    background: url("../images_gui/text_editor/ic_fullscreen.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_fullscreen.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-imcms-discard-changes-icon,
 .imcms-editor-area__text-toolbar .text-editor-discard-changes-button__icon {
-    background: url("../images_gui/text_editor/ic_cancel.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_cancel.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-html-filtering-policy-icon,
 .imcms-editor-area__text-toolbar .html-filtering-policy-button__icon {
-    background: url("../images_gui/text_editor/ic_filter.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_filter.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-imcms-discard-changes-icon {
@@ -107,27 +107,27 @@
 }
 
 .text-editor-save-button__icon {
-    background: url("../images_gui/text_editor/ic_save.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_save.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .text-history-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-imcms-text-history-icon {
-    background: url("../images_gui/text_editor/text_history.png") no-repeat center;
+    background: url("/images_gui/text_editor/text_history.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .switch-to-plain-text-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-switch-to-plain-text-icon {
-    background: url("../images_gui/text_editor/ic_plain_text.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_plain_text.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .switch-to-html-mode-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-switch-to-html-mode-icon {
-    background: url("../images_gui/text_editor/ic_html.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_html.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .switch-to-text-editor-button__icon,
 .imcms-editor-area__text-toolbar .mce-i-switch-to-text-editor-icon {
-    background: url("../images_gui/text_editor/ic_text_editor.png") no-repeat center;
+    background: url("/images_gui/text_editor/ic_text_editor.png") no-repeat center;
 }
 
 .imcms-editor-area__text-toolbar .mce-i-switch-to-text-editor-icon,
@@ -222,6 +222,7 @@
 
 .mce-fullscreen-toolbar {
     height: 33px !important;
+    padding-top: 20px;
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
@@ -274,6 +275,10 @@ input.imcms-editor-content--text {
 
 .imcms-editor-content--text.mce-content-body > * {
     margin: 0;
+}
+
+.imcms-editor-content--text.mce-content-body {
+    position: sticky;
 }
 
 .filtering-policies {

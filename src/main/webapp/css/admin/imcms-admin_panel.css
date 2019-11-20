@@ -252,35 +252,35 @@
 }
 
 .imcms-panel__item--settings:hover {
-    background-image: url("../images_gui/admin_panel/icon_settings_active.png");
+    background-image: url("/images_gui/admin_panel/icon_settings_active.png");
 }
 
 .imcms-panel__item--admin:hover {
-    background-image: url("../images_gui/admin_panel/icon_admin_active.png");
+    background-image: url("/images_gui/admin_panel/icon_admin_active.png");
 }
 
 .imcms-panel__item--document:hover {
-    background-image: url("../images_gui/admin_panel/icon_doc_active.png");
+    background-image: url("/images_gui/admin_panel/icon_doc_active.png");
 }
 
 .imcms-panel__item--page-info:hover {
-    background-image: url("../images_gui/admin_panel/icon_pageinfo_active.png");
+    background-image: url("/images_gui/admin_panel/icon_pageinfo_active.png");
 }
 
 .imcms-panel__item--publish-of:hover {
-    background-image: url("../images_gui/admin_panel/icon_publish_active.png");
+    background-image: url("/images_gui/admin_panel/icon_publish_active.png");
 }
 
 .imcms-panel__item--preview:hover {
-    background-image: url("../images_gui/admin_panel/icon_preview_active.png");
+    background-image: url("/images_gui/admin_panel/icon_preview_active.png");
 }
 
 .imcms-panel__item--edit:hover {
-    background-image: url("../images_gui/admin_panel/icon_edit_active.png");
+    background-image: url("/images_gui/admin_panel/icon_edit_active.png");
 }
 
 .imcms-panel__item--public:hover {
-    background-image: url("../images_gui/admin_panel/icon_public_active.png");
+    background-image: url("/images_gui/admin_panel/icon_public_active.png");
 }
 
 /* small panel mode */
@@ -406,7 +406,7 @@
     opacity: 0.7;
     background-repeat: no-repeat;
     background-position-x: center;
-    background-image: url("../images_gui/admin_panel/icon_unlocked.png");
+    background-image: url("/images_gui/admin_panel/icon_unlocked.png");
     background-color: #0b94d8;
 }
 
