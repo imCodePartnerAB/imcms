@@ -1065,7 +1065,13 @@ define("imcms-menu-editor-builder",
 
             $documentEditor = documentEditorBuilder.buildBody();
             $documentsContainer.append($documentEditor);
-            documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
+            documentEditorBuilder.loadDocumentEditorContent($documentEditor,
+                {
+                    moveEnable: true,
+                    removeEnable: true,
+                    copyEnable: true,
+                    editEnable: true
+                });
         }
 
         function loadMenuEditorContent(opts) {
@@ -1084,9 +1090,9 @@ define("imcms-menu-editor-builder",
                 + "&nested=" + opts.nested;
 
             $title.text(linkData).css({
-                    'text-transform': 'lowercase',
-                    'color': '#0b94d8'
-                });
+                'text-transform': 'lowercase',
+                'color': '#0b94d8'
+            });
 
             $title.attr('href', linkData)
         }
