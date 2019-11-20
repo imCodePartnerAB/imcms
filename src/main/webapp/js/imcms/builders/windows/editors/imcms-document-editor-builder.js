@@ -916,10 +916,16 @@ define("imcms-document-editor-builder",
         function buildHead() {
             let $head = documentWindowBuilder.buildHead(texts.title);
 
-            const titleUrl = $('<span>');
-            titleUrl.text(' : /api/admin/documents').css({'text-transform': 'lowercase'});
+            const linkData = '/api/admin/documents';
+            const titleUrl = $('<a>', {
+                text: ' : ' + linkData,
+                href: linkData
+            });
 
-            $head.find('.imcms-title').append(titleUrl);
+            $head.find('.imcms-title').append(titleUrl.css({
+                'text-transform': 'lowercase',
+                'color': '#0b94d8'
+            }));
 
             return $head;
         }

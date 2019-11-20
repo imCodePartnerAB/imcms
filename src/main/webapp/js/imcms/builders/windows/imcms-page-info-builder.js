@@ -14,10 +14,10 @@ define("imcms-page-info-builder",
         texts = texts.pageInfo;
 
         let panels$, documentDTO, $saveAndPublishBtn;
-        let $title = $('<span>');
+        let $title = $('<a>');
 
         function buildPageInfoHead() {
-            const $head = pageInfoWindowBuilder.buildHead(texts.document, closePageInfo);
+            const $head = pageInfoWindowBuilder.buildHead(texts.document + ': ', closePageInfo);
             $head.find(".imcms-head__title").append($title);
 
             return $head;
@@ -157,9 +157,12 @@ define("imcms-page-info-builder",
             documentsRestApi.read(requestData)
                 .done((document) => {
                     documentDTO = document;
+                    const linkData = '/api/admin/page-info?meta-id=' + document.id;
                     $title.text((document.id)
-                        ? (`: /api/admin/page-info?meta-id=${document.id}`)
-                        : texts.newDocument).css({'text-transform': 'lowercase'});
+                        ? linkData
+                        : texts.newDocument).css({'text-transform': 'lowercase', 'color': '#fff2f9'});
+
+                    $title.attr('href', linkData);
 
                     pageInfoTabs.tabBuilders.forEach((tab) => {
                         if (tab.isDocumentTypeSupported(document.type)) {
