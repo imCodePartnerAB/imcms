@@ -1065,13 +1065,7 @@ define("imcms-menu-editor-builder",
 
             $documentEditor = documentEditorBuilder.buildBody();
             $documentsContainer.append($documentEditor);
-            documentEditorBuilder.loadDocumentEditorContent($documentEditor,
-                {
-                    moveEnable: true,
-                    removeEnable: true,
-                    copyEnable: true,
-                    editEnable: true
-                });
+            documentEditorBuilder.loadDocumentEditorContent($documentEditor, {moveEnable: true});
         }
 
         function loadMenuEditorContent(opts) {
