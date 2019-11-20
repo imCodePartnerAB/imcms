@@ -5,14 +5,15 @@ const texts = require('imcms-i18n-texts').editors.image;
 const bodyHeadBuilder = require('imcms-image-editor-body-head-builder');
 const BEM = require('imcms-bem-builder');
 
-const $imageInfo = $('<span>');
+const $imageInfo = $('<a>');
 
 module.exports = {
     buildEditor: opts => {
         const $rightSidePanel = rightSideBuilder.build(opts);
         const $leftSide = leftSideBuilder.build();
         const $bodyHead = bodyHeadBuilder.build($rightSidePanel, opts.imageData);
-        const $head = opts.imageWindowBuilder.buildHead(texts.title);
+        const $head = opts.imageWindowBuilder.buildHead(texts.title + ": " + opts.$tag.attr('data-doc-id')
+            + "-" + opts.$tag.attr('data-index') + " ");
 
         $head.find('.imcms-title').append($imageInfo);
 
@@ -28,17 +29,29 @@ module.exports = {
     },
     updateImageData: ($tag, imageData) => {
         if ($tag.attr('data-loop-index')) {
-            $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index')
-                + ': '
-                + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
+            const linkData = '/api/admin/image?meta-id=' + $tag.attr('data-doc-id')
                 + '&index=' + $tag.attr('data-index')
                 + '&loop-index=' + $tag.attr('data-loop-index')
-                + '&loop-entry-index=' + $tag.attr('data-loop-entry-index'))
-                .css({'text-transform': 'lowercase'});
+                + '&loop-entry-index=' + $tag.attr('data-loop-entry-index');
+
+            $imageInfo.text(linkData).css({
+                'text-transform': 'lowercase',
+                'color': '#0b94d8'
+            });
+
+            $imageInfo.attr('href', linkData)
+
         } else {
-            $imageInfo.text(': ' + $tag.attr('data-doc-id') + '-' + $tag.attr('data-index')
-                + ': ' + '/api/admin/image?meta-id=' + $tag.attr('data-doc-id') + '&index=' + $tag.attr('data-index'))
-                .css({'text-transform': 'lowercase'});
+            const linkData = '/api/admin/image?meta-id='
+                + $tag.attr('data-doc-id')
+                + '&index=' + $tag.attr('data-index');
+
+            $imageInfo.text(linkData).css({
+                'text-transform': 'lowercase',
+                'color': '#0b94d8'
+            });
+
+            $imageInfo.attr('href', linkData)
         }
         rightSideBuilder.updateImageData($tag, imageData);
     }

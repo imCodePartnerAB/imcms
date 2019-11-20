@@ -12,14 +12,7 @@ define(
 
         const title = texts.fullScreen;
 
-        function setEnablingStrategy() {
-            if (imcms.textEditorFullScreenEnabled) {
-                this.disabled(true);
-                this.active(true);
-            }
-        }
-
-        let viewUrl = $('<div>', {
+        let viewUrl = $('<a>', {
             'class': 'title-url-text-editor'
         });
 
@@ -48,15 +41,20 @@ define(
                         }
 
                         if ($editorBody.attr('data-loop-entry-ref.loop-index')) {
-                            viewUrl.text(texts.textEditor
-                                + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                            const linkData = '/api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
                                 + '&index=' + $editorBody.attr('data-index')
                                 + '&loop-index=' + $editorBody.attr('data-loop-entry-ref.loop-index')
-                                + '&loop-entry-index=' + $editorBody.attr('data-loop-entry-ref.loop-entry-index'));
+                                + '&loop-entry-index=' + $editorBody.attr('data-loop-entry-ref.loop-entry-index');
+                            viewUrl.text(texts.textEditor + ': ' + linkData);
+
+                            viewUrl.attr('href', linkData)
+
                         } else {
-                            viewUrl.text(texts.textEditor
-                                + ': /api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
-                                + '&index=' + $editorBody.attr('data-index'));
+                            const linkData = '/api/admin/text?meta-id=' + $editorBody.attr('data-doc-id')
+                                + '&index=' + $editorBody.attr('data-index');
+                            viewUrl.text(texts.textEditor + ': ' + linkData);
+
+                            viewUrl.attr('href', linkData)
                         }
 
                         $editorBody.addClass('imcms-mce-fullscreen-inline');
@@ -74,9 +72,8 @@ define(
                     title: title,
                     onPostRender: () => {
                         if (imcms.textEditorFullScreenEnabled) {
-                            onClick();
+
                         }
-                        setEnablingStrategy();
                     }
                 });
             },
@@ -94,15 +91,19 @@ define(
                         : $textEditor.toggleClass('imcms-mce-fullscreen-inline');
 
                     if ($textEditor.attr('data-loop-entry-ref.loop-index')) {
-                        viewUrl.text(texts.textEditor
-                            + ': /api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                        const linkData = '/api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
                             + '&index=' + $textEditor.attr('data-index')
                             + '&loop-index=' + $textEditor.attr('data-loop-entry-ref.loop-index')
-                            + '&loop-entry-index=' + $textEditor.attr('data-loop-entry-ref.loop-entry-index'));
+                            + '&loop-entry-index=' + $textEditor.attr('data-loop-entry-ref.loop-entry-index');
+                        viewUrl.text(texts.textEditor + ': ' + linkData);
+
+                        viewUrl.attr('href', linkData)
                     } else {
-                        viewUrl.text(texts.textEditor
-                            + ': /api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
-                            + '&index=' + $textEditor.attr('data-index'));
+                        const linkData = '/api/admin/text?meta-id=' + $textEditor.attr('data-doc-id')
+                            + '&index=' + $textEditor.attr('data-index');
+                        viewUrl.text(texts.textEditor + ': ' + linkData);
+
+                        viewUrl.attr('href', linkData)
                     }
 
                     if ($toolbar.hasClass('mce-fullscreen-toolbar')) {

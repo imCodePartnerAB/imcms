@@ -94,7 +94,7 @@ define("imcms-menu-editor-builder",
         }
 
         function buildHead(opts) {
-            const $head = menuWindowBuilder.buildHead(texts.title + ": " + opts.docId + "-" + opts.menuIndex);
+            const $head = menuWindowBuilder.buildHead(texts.title + ": " + opts.docId + "-" + opts.menuIndex + " ");
             $head.find('.imcms-title').append($title);
 
             return $head;
