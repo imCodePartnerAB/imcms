@@ -178,22 +178,22 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void saveImage_When_InLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() {
-        saveImageWhenAllLanguagesFlagIsSet(true);
+        saveImageWhenAllAvailableLanguagesFlagIsSet(true);
     }
 
     @Test
     public void saveImage_When_NotInLoopAndAllLanguagesFlagIsSet_Expect_ImageSavedForAllLanguages() {
-        saveImageWhenAllLanguagesFlagIsSet(false);
+        saveImageWhenAllAvailableLanguagesFlagIsSet(false);
     }
 
     @Test
     public void saveImage_When_InLoopAndFlagAllLanguagesIsFalse_Expect_ImagesWithDiffLangCodeHaveFalseFlag() {
-        saveImageWhenAllLanguagesFlagIsNotSet(true);
+        saveImageWhenAllAvailableLanguagesFlagIsNotSet(true);
     }
 
     @Test
     public void saveImage_When_NotInLoopAndFlagAllLanguagesIsFalse_Expect_ImagesWithDiffLangCodeHaveFalseFlag() {
-        saveImageWhenAllLanguagesFlagIsNotSet(false);
+        saveImageWhenAllAvailableLanguagesFlagIsNotSet(false);
     }
 
     @Test
@@ -462,25 +462,25 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
     @Test
     public void deleteImage_When_InLoopAndAllLanguagesFlagIsSet_Expect_AllImagesWithDiffLangCodeAreDeleted() {
-        deleteImageWhenAllLanguagesFlagIsSet(true);
+        deleteImageWhenAllAvailableLanguagesFlagIsSet(true);
     }
 
     @Test
     public void deleteImage_When_NotInLoopAndAllLanguagesFlagIsSet_Expect_AllImagesWithDiffLangCodeAreDeleted() {
-        deleteImageWhenAllLanguagesFlagIsSet(false);
+        deleteImageWhenAllAvailableLanguagesFlagIsSet(false);
     }
 
     @Test
     public void deleteImage_When_InLoopAndAllLanguagesIsNotSet_Expect_AllImagesWithDiffLangCodeHaveFalseFlag() {
-        deleteImageWhenAllLanguagesFlagIsNotSet(true);
+        deleteImageWhenAllAvailableLanguagesFlagIsNotSet(true);
     }
 
     @Test
     public void deleteImage_When_NotInLoopAndAllLanguagesIsNotSet_Expect_AllImagesWithDiffLangCodeHaveFalseFlag() {
-        deleteImageWhenAllLanguagesFlagIsNotSet(false);
+        deleteImageWhenAllAvailableLanguagesFlagIsNotSet(false);
     }
 
-    private void saveImageWhenAllLanguagesFlagIsSet(boolean inLoop) {
+    private void saveImageWhenAllAvailableLanguagesFlagIsSet(boolean inLoop) {
         final LoopEntryRefJPA loopEntryRef = inLoop
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
@@ -492,7 +492,7 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
 
         imageService.saveImage(expected);
 
-        final List<Language> languages = languageService.getAll();
+        final List<Language> languages = languageService.getAvailableLanguages();
 
         assertEquals(2, languages.size());
 
@@ -506,14 +506,14 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         });
     }
 
-    private void saveImageWhenAllLanguagesFlagIsNotSet(boolean inLoop) {
+    private void saveImageWhenAllAvailableLanguagesFlagIsNotSet(boolean inLoop) {
         final LoopEntryRefJPA loopEntryRef = inLoop
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
         final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
-        languageService.getAll().forEach(language -> {
+        languageService.getAvailableLanguages().forEach(language -> {
             final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRef);
 
@@ -532,14 +532,14 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         imageRepository.findAll().forEach(image -> assertFalse(image.isAllLanguages()));
     }
 
-    private void deleteImageWhenAllLanguagesFlagIsSet(boolean inLoop) {
+    private void deleteImageWhenAllAvailableLanguagesFlagIsSet(boolean inLoop) {
         final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         final LoopEntryRefJPA loopEntryRefJPA = inLoop
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        languageService.getAll().forEach(language -> {
+        languageService.getAvailableLanguages().forEach(language -> {
             final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
 
@@ -556,14 +556,14 @@ public class ImageServiceTest extends WebAppSpringTestConfig {
         assertEquals(0, imageRepository.findAll().size());
     }
 
-    private void deleteImageWhenAllLanguagesFlagIsNotSet(boolean inLoop) {
+    private void deleteImageWhenAllAvailableLanguagesFlagIsNotSet(boolean inLoop) {
         final Version version = versionDataInitializer.createData(VERSION_INDEX, TEST_DOC_ID);
 
         final LoopEntryRefJPA loopEntryRefJPA = inLoop
                 ? new LoopEntryRefJPA(1, 1)
                 : null;
 
-        languageService.getAll().forEach(language -> {
+        languageService.getAvailableLanguages().forEach(language -> {
             final ImageJPA image = imageDataInitializer
                     .generateImage(TEST_IMAGE_INDEX, new LanguageJPA(language), version, loopEntryRefJPA);
 

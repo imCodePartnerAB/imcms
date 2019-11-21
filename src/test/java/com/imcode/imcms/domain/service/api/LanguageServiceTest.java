@@ -29,8 +29,14 @@ public class LanguageServiceTest extends WebAppSpringTestConfig {
     private LanguageDataInitializer languageDataInitializer;
 
     @Test
-    public void getAll_When_TwoLanguagesAvailable_Expected_CorrectResult() {
-        assertEquals(languageDataInitializer.createData(availableLanguages), languageService.getAll());
+    public void getAvailableLngs_When_TwoLanguagesAvailable_Expected_CorrectResult() {
+        assertEquals(languageDataInitializer.createData(availableLanguages), languageService.getAvailableLanguages());
+    }
+
+    @Test
+    public void getAll_Expected_CorrectResultAndSize() {
+        assertEquals(languageDataInitializer.createData(), languageService.getAll());
+        assertEquals(languageDataInitializer.createData().size(), languageService.getAll().size());
     }
 
     @Test
