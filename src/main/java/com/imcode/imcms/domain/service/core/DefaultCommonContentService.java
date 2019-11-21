@@ -57,7 +57,7 @@ public class DefaultCommonContentService
             return lang1.getCode().compareTo(lang2.getCode());
         };
 
-        return languageService.getAll()
+        return languageService.getAvailableLanguages()
                 .stream()
                 .sorted(languageComparator)
                 .map(language -> getOrCreate(docId, versionNo, language))

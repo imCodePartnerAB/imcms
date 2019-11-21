@@ -31,7 +31,7 @@ public class CommonContentFactory {
      * languages with {@link Version#WORKING_VERSION_INDEX}.
      */
     public List<CommonContent> createCommonContents() {
-        return languageService.getAll()
+        return languageService.getAvailableLanguages()
                 .stream()
                 .map(this::createFrom)
                 .collect(Collectors.toList());

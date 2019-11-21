@@ -150,7 +150,7 @@ public class DefaultLinkValidationService implements LinkValidationService {
                 }
             }
 
-            for (Language language : languageService.getAll()) {
+            for (Language language : languageService.getAvailableLanguages()) {
                 Set<Text> publicTexts = textService.getPublicTexts(doc.getId(), language);
                 Set<ImageJPA> images = imageService.getImagesAllVersionAndLanguages(doc.getId(), language);
                 for (Text text : publicTexts) {

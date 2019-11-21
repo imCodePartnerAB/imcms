@@ -29,7 +29,10 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.maxBy;
+import static java.util.stream.Collectors.toList;
 
 @Transactional
 @Service("imageService")
@@ -122,7 +125,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
         generateImage(imageDTO);
 
         if (imageDTO.isAllLanguages()) {
-            languageService.getAll().forEach(language -> saveImage(imageDTO, new LanguageJPA(language), version));
+            languageService.getAvailableLanguages().forEach(language -> saveImage(imageDTO, new LanguageJPA(language), version));
         } else {
             final LanguageJPA language = new LanguageJPA(languageService.findByCode(imageDTO.getLangCode()));
             saveImage(imageDTO, language, version);
@@ -177,7 +180,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
                 final LoopEntryRefDTO loopEntryRef = imageDTO.getLoopEntryRef();
                 final Integer index = imageDTO.getIndex();
 
-                languageService.getAll()
+                languageService.getAvailableLanguages()
                         .stream()
                         .map(LanguageJPA::new)
                         .forEach(languageJPA -> {
@@ -198,7 +201,7 @@ class DefaultImageService extends AbstractVersionedContentService<ImageJPA, Imag
     }
 
     private void updateImagesWithDifferentLangCode(ImageDTO imageDTO, Version version) {
-        languageService.getAll().forEach(language -> {
+        languageService.getAvailableLanguages().forEach(language -> {
             final LanguageJPA languageJPA = new LanguageJPA(language);
             final ImageJPA image = getImage(imageDTO.getIndex(), version, languageJPA, imageDTO.getLoopEntryRef());
 

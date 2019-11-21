@@ -38,7 +38,7 @@ public class PublicDocumentsCache implements DocumentsCache {
 
     @Autowired
     public PublicDocumentsCache(LanguageService languageService) {
-        languages = languageService.getAll().stream().map(Language::getCode).collect(Collectors.toList());
+        languages = languageService.getAvailableLanguages().stream().map(Language::getCode).collect(Collectors.toList());
     }
 
     @Override
