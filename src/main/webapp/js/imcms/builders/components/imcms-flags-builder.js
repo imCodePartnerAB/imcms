@@ -79,7 +79,7 @@ define("imcms-flags-builder",
             flagsContainer: function (flagBuilderDataProducer) {
                 const $result = flagsBEM.buildBlock("<div>", [], "flag");
 
-                languagesRestApi.read()
+                languagesRestApi.getAvailableLangs()
                     .done(languages => {
                         const flags = mapLanguagesToFlags(languages, flagBuilderDataProducer);
                         $result.append(flags);
