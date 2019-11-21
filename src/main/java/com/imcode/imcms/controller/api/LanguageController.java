@@ -22,4 +22,9 @@ public class LanguageController {
     public List<Language> getLanguages() {
         return languageService.getAll();
     }
+
+    @GetMapping("/available")
+    public List<Language> getAvailableLanguages() {
+        return languageService.getAvailableLanguages();
+    }
 }
