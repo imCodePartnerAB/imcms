@@ -13,4 +13,6 @@ public interface LanguageService {
     Language findByCode(String code);
 
     List<Language> getAll();
+
+    List<Language> getAvailableLanguages();
 }

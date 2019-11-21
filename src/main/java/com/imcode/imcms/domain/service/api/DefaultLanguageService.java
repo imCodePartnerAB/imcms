@@ -35,6 +35,14 @@ class DefaultLanguageService implements LanguageService {
     public List<Language> getAll() {
         return languageRepository.findAll()
                 .stream()
+                .map(LanguageDTO::new)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Language> getAvailableLanguages() {
+        return languageRepository.findAll()
+                .stream()
                 .filter(lang -> availableLanguages.contains(lang.getCode()))
                 .map(LanguageDTO::new)
                 .collect(Collectors.toList());
