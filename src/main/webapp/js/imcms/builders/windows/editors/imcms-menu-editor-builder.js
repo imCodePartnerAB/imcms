@@ -604,10 +604,10 @@ define("imcms-menu-editor-builder",
             return menuElementTree;
         }
 
-        function appendNewMenuItem(document) {
+        function appendNewMenuItem(doc) {
             const typeSort = document.getElementById("type-sort").value;
-            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(document), 1, typeSort));
-            documentEditorBuilder.refreshDocumentInList(document)
+            $menuItemsBlock.append(buildMenuItemTree(getMenuElementTree(doc), 1, typeSort));
+            documentEditorBuilder.refreshDocumentInList(doc)
         }
 
         function refreshMenuItem(document) {
