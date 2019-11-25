@@ -140,10 +140,15 @@ define("imcms-selects-builder",
             return selectBEM.makeBlockElement("drop-down-list", $dropDownList);
         }
 
-        function buildSelectOptions(options, onSelected) {
+        function buildSelectOptions(options, onSelected, styleAttributes) {
             const $itemsContainer = dropDownListBEM.buildElement("items", "<div>").append(
                 mapOptionsToItemsArr(options, onSelected)
             );
+            if (styleAttributes) {
+                styleAttributes.forEach(style => {
+                    $itemsContainer.css(style)
+                });
+            }
 
             const $button = dropDownListBEM.makeBlockElement("button", buttons.dropDownButton());
 
@@ -296,7 +301,7 @@ define("imcms-selects-builder",
                 }
 
                 if (options && options.length) {
-                    $selectElements.push(buildSelectOptions(options, attributes.onSelected));
+                    $selectElements.push(buildSelectOptions(options, attributes.onSelected, attributes.style));
                 }
 
                 const $selectedValInput = $("<input>", {
