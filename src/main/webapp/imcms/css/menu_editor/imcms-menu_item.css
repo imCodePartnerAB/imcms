@@ -1,0 +1,86 @@
+.imcms-menu-item {
+    cursor: pointer;
+    display: inline-flex;
+    overflow: hidden;;
+    padding-left: 60px;
+    padding-right: 35px;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-menu-item__btn {
+    background: url("/imcms/images/controls/icon_sub_close_dark.png") no-repeat center;
+}
+
+.imcms-menu-item__btn {
+    cursor: pointer;
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 40px;
+    width: 10px;
+    height: 10px;
+}
+
+.imcms-menu-item-btn--open {
+    background: url("/imcms/images/controls/icon_sub_open_dark.png") no-repeat center;
+}
+
+.imcms-menu-item__docId {
+    width: 10%;
+    cursor: pointer;
+    text-transform: none;
+    max-height: 45px;
+    line-height: 45px;
+
+}
+
+.imcms-menu-item__docTitle {
+    width: 35%;
+    text-transform: none;
+    max-height: 45px;
+    line-height: 45px;
+}
+
+.imcms-menu-item__published,
+.imcms-menu-item__modified {
+    width: 20%;
+    max-height: 45px;
+    line-height: 45px;
+    min-width: fit-content;
+}
+
+.imcms-menu-item__info {
+    width: 63%;
+    cursor: pointer;
+    max-height: 45px;
+    line-height: 45px;
+    text-transform: none;
+    text-align: left;
+    float: left;
+    text-overflow: ellipsis;
+    overflow: inherit;
+}
+
+.imcms-menu-item__status {
+    float: left;
+    text-align: right;
+    width: 22%;
+    height: 100%;
+    max-height: 45px;
+    min-width: fit-content;
+    line-height: 45px;
+}
+
+.imcms-menu-item:hover {
+    background: #d0e9f9;
+}
+
+.imcms-menu-item:hover .imcms-menu-item__controls {
+    display: block;
+}
+
+.imcms-menu-items--is-drag {
+    background: #d0e9f9;
+    opacity: .5;
+}

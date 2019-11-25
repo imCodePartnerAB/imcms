@@ -1,0 +1,372 @@
+.imcms-button {
+    border: 1px solid transparent;
+    -webkit-border-radius: 23px;
+    -moz-border-radius: 23px;
+    border-radius: 23px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    cursor: pointer;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    line-height: 13px;
+    text-transform: uppercase;
+    display: block;
+    outline: none;
+    padding: 15px 28px;
+    -webkit-transition: color .3s, background-color .3s;
+    -moz-transition: color .3s, background-color .3s;
+    -o-transition: color .3s, background-color .3s;
+    transition: color .3s, background-color .3s;
+}
+
+.imcms-button:hover {
+    -webkit-transition: color .3s, background-color .3s;
+    -moz-transition: color .3s, background-color .3s;
+    -o-transition: color .3s, background-color .3s;
+    transition: color .3s, background-color .3s;
+}
+
+.imcms-button--negative {
+    background-color: #fbfbfe;
+    border-color: #d3d8de;
+    color: #587380;
+    opacity: 0.8;
+}
+
+.imcms-button--negative:hover {
+    background-color: #fff;
+    color: #2f4047;
+}
+
+.imcms-button--locked {
+    background: url("/imcms/images/admin_panel/icon_locked.png") CENTER CENTER NO-REPEAT;
+}
+
+.imcms-button--unlocked {
+    background: url("/imcms/images/admin_panel/icon_unlocked.png") CENTER CENTER NO-REPEAT;
+}
+
+.imcms-button--up {
+    background: url("/imcms/images/admin_panel/icon_up.png") CENTER CENTER NO-REPEAT;
+}
+
+.imcms-button--positive {
+    background-color: #0b94d8;
+    border-color: #0b94d8;
+    color: #fff;
+}
+
+.imcms-button--positive:hover {
+    background-color: transparent;
+    color: #2f4047;
+}
+
+.imcms-button--warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #fff;
+}
+
+.imcms-button--warning:hover {
+    background-color: transparent;
+    color: #d39e00;
+}
+
+.imcms-button--error {
+    background-color: #ff4b45;
+    border-color: #ff4b45;
+    color: #fff;
+}
+
+.imcms-button--error:hover {
+    background-color: transparent;
+    color: #ed4337;
+}
+
+.imcms-button--neutral,
+a[class^="imcms"].imcms-button--neutral {
+    background-color: transparent;
+    border-color: transparent;
+    color: #0b94d8;
+    padding: 0;
+}
+
+.imcms-button--neutral:hover,
+a[class^="imcms"].imcms-button--neutral:hover {
+    color: #2f4047;
+}
+
+.imcms-button--save {
+    background-color: #27b864;
+    border-color: #27b864;
+    color: #fff;
+}
+
+.imcms-button--save:hover {
+    background-color: transparent;
+    color: #2f4047;
+}
+
+/***********************************/
+
+/*****************************************/
+.imcms-button--drop-down {
+    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    display: block;
+    padding: 0;
+    position: absolute;
+    width: 25px;
+    height: 100%;
+}
+
+.imcms-button--increment {
+    background: url("/imcms/images/icon_arrow_up.png") no-repeat center;
+    padding: 0;
+    position: absolute;
+    width: 6px;
+    height: 20px;
+}
+
+.imcms-button--decrement {
+    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    padding: 0;
+    position: absolute;
+    width: 6px;
+    height: 20px;
+}
+
+.imcms-button--close {
+    background-color: transparent;
+    display: block;
+    float: right;
+    margin: 0 0 0 11px;
+    padding: 0;
+    position: relative;
+    width: 15px;
+    height: 15px;
+}
+
+.imcms-button--close:before {
+    content: "";
+    background-color: #2f4047;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 13px;
+    height: 1px;
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.imcms-button--close:after {
+    content: "";
+    background-color: #2f4047;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 13px;
+    height: 1px;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+.imcms-button--close:hover:before,
+.imcms-button--close:hover:after {
+    background-color: #da1a1a;
+}
+
+.imcms-button--prev {
+    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    display: block;
+    padding: 0;
+    width: 6px;
+    height: 4px;
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.imcms-button--next {
+    background: url("/imcms/images/icon_arrow_down.png") no-repeat center;
+    display: block;
+    padding: 0;
+    width: 6px;
+    height: 4px;
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+}
+
+.imcms-button--proportions {
+    background: transparent url("/imcms/images/image_editor/icon_lock_proportions.png") no-repeat center;
+    border: 1px solid transparent;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--proportions[data-state="active"] {
+    background-color: #fff;
+    border-color: #0b94d8;
+}
+
+.imcms-button--open-in-new-window {
+    background: #fff url("/imcms/images/image_editor/icon_open_in_new.svg") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--open-in-new-window:hover {
+    background: url("/imcms/images/image_editor/icon_open_in_new_hover.svg") no-repeat center;
+}
+
+.imcms-button--zoom-plus {
+    background: #fff url("/imcms/images/image_editor/icon_zoom_plus.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--zoom-minus {
+    background: #fff url("/imcms/images/image_editor/icon_zoom_minus.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--zoom-reset {
+    background: #fff url("/imcms/images/image_editor/icon_zoom_reset.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--rotation {
+    background: #fff url("/imcms/images/image_editor/icon_rotate.png") no-repeat center;
+    background-size: contain;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--rotate-left {
+    background: #fff url("/imcms/images/image_editor/icon_rotation_left.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--rotate-right {
+    background: #fff url("/imcms/images/image_editor/icon_rotation_right.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--align {
+    background: #fff no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--revert {
+    background: #fff url("/imcms/images/image_editor/icon_revert.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--crop {
+    background: #fff url("/imcms/images/image_editor/icon_crop.png") no-repeat center;
+    border: 1px solid #d3d8de;
+    border-radius: 5px;
+    display: block;
+    padding: 0;
+    width: 35px;
+    height: 35px;
+}
+
+.imcms-button--align:hover,
+.imcms-button--align-active {
+    border-color: #0b94d8;
+}
+
+.imcms-button--align-none {
+    background-image: none;
+    text-transform: capitalize;
+    font-size: 11px;
+    font-weight: 400;
+}
+
+.imcms-button--align-center {
+    background-image: url("/imcms/images/image_editor/icon_text-decoration_center.png");
+}
+
+.imcms-button--align-left {
+    background-image: url("/imcms/images/image_editor/icon_text-decoration_left.png");
+}
+
+.imcms-button--align-right {
+    background-image: url("/imcms/images/image_editor/icon_text-decoration_right.png");
+}
+
+.imcms-button--search {
+    background: url("/imcms/images/icon_search.png") no-repeat center center;
+    display: block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 22px;
+    height: 22px;
+    cursor: auto;
+}
+
+.imcms-button--disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

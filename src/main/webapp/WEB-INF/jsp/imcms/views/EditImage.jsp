@@ -23,7 +23,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Direct Image Editor</title>
     <script>
-        <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+        <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>
     <script src="${contextPath}/dist/imcms_image_edit_start.js"></script>
 </head>

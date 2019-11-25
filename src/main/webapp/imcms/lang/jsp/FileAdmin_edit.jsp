@@ -4,18 +4,10 @@
                  imcode.server.user.UserDomainObject,
                  imcode.util.Utility,
                  org.apache.oro.text.perl.Perl5Util,
-                 java.io.BufferedReader"
+                 java.io.*"
          contentType="text/html; charset=UTF-8"
 
 %>
-<%@ page import="java.io.File" %>
-<%@ page import="java.io.FileInputStream" %>
-<%@ page import="java.io.FileNotFoundException" %>
-<%@ page import="java.io.FileOutputStream" %>
-<%@ page import="java.io.IOException" %>
-<%@ page import="java.io.InputStreamReader" %>
-<%@ page import="java.io.OutputStreamWriter" %>
-<%@ page import="java.io.Writer" %>
 <%@ page import="java.nio.charset.StandardCharsets" %>
 <%
 
@@ -276,7 +268,7 @@ if (isHelpWin) { %>
 <title>:: imCMS ::</title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <script src="${contextPath}/js/imcms/imcms_admin.js" type="text/javascript"></script>
+    <script src="${contextPath}/imcms/js/imcms_admin.js" type="text/javascript"></script>
 
 <script language="JavaScript">
 <!--

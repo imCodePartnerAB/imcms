@@ -27,7 +27,7 @@
 <title><? imcms/lang/jsp/document_list.jsp/title ?></title>
 
     <link rel="stylesheet" type="text/css" href="${contextPath}/imcms/css/imcms_admin.css">
-    <script src="<%= request.getContextPath() %>/js/imcms/imcms_admin.js" type="text/javascript"></script>
+    <script src="<%= request.getContextPath() %>/imcms/js/imcms_admin.js" type="text/javascript"></script>
 
 </head>
 <body bgcolor="#FFFFFF">

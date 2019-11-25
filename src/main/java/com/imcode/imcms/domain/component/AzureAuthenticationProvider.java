@@ -72,7 +72,7 @@ public class AzureAuthenticationProvider extends AuthenticationProvider
                 "https://login.microsoftonline.com/",
                 EXTERNAL_AUTHENTICATOR_AZURE_AD,
                 "Azure Active Directory",
-                "/images_gui/external_identifiers/azure-active-directory.svg"
+                "/imcms/images/external_identifiers/azure-active-directory.svg"
         );
 
         tenant = properties.getProperty("aad.tenant.name");

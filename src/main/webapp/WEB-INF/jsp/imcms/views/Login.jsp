@@ -14,7 +14,7 @@ ${"-->"}
 <head>
     <title><fmt:message key="templates/login/index.html/1"/></title>
     <script>
-        <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+        <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
     </script>
     <script src="${cp}/dist/imcms_login_start.js"></script>
 </head>

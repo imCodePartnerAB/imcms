@@ -1,0 +1,38 @@
+.imcms-flag {
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    opacity: 0.5;
+    outline: none;
+    display: inline-block;
+    padding: 0 0 0 40px;
+    position: relative;
+    width: 29px;
+    height: 17px;
+    -webkit-transition: all .3s;
+    -moz-transition: all .3s;
+    -o-transition: all .3s;
+    transition: all .3s;
+    text-transform: uppercase;
+    color: #2e3f47;
+    font-size: 15px;
+    font-family: 'Source Sans Pro', sans-serif;
+    font-weight: 600;
+    line-height: 100%;
+    text-align: center;
+}
+
+.imcms-flag--en {
+    background: url("/imcms/images/icon_flag_en_active.png") no-repeat left top;
+    background-size: 29px 17px;
+}
+
+.imcms-flag--sv {
+    background: url("/imcms/images/icon_flag_sw_active.png") no-repeat left top;
+    background-size: 29px 17px;
+}
+
+.imcms-flag--active {
+    opacity: 1;
+}
+

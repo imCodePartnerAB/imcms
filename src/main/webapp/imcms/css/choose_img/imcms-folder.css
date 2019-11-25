@@ -1,0 +1,77 @@
+.imcms-folder {
+    cursor: pointer;
+    display: block;
+    overflow: hidden;;
+    padding-left: 70px;
+    padding-right: 35px;
+    position: relative;
+    width: 100%;
+}
+
+.imcms-folder__btn {
+    padding-left: 70px;
+    background: url("/imcms/images/controls/icon_sub_close.png") no-repeat center;
+}
+
+.imcms-folder--active {
+    background-color: #f3f3fc;
+}
+
+.imcms-folder--active .imcms-main-folders-controls__name,
+.imcms-folder--active .imcms-folder__name {
+    color: #2f4047;
+}
+
+.imcms-folder__btn {
+    cursor: pointer;
+    display: block;
+    padding: 10px;
+    position: absolute;
+    top: 23px;
+    left: 37px;
+    width: 10px;
+    height: 10px;
+}
+
+.imcms-folder-btn--open {
+    background: url("/imcms/images/controls/icon_sub_open.png") no-repeat center;
+}
+
+.imcms-folder--active .imcms-folder__btn {
+    background-image: url("/imcms/images/controls/icon_sub_close_dark.png");
+}
+
+.imcms-folder--active .imcms-folder-btn--open {
+    background-image: url("/imcms/images/controls/icon_sub_open_dark.png");
+}
+
+.imcms-folder__name {
+    color: #fff;
+    cursor: pointer;
+    line-height: 70px;
+    text-transform: uppercase;
+    text-align: left;
+    float: left;
+}
+
+.imcms-main-folders-controls:hover,
+.imcms-folder:hover {
+    background: #4b5366;
+}
+
+.imcms-folder:hover .imcms-folder__controls {
+    display: block;
+}
+
+.imcms-folder--active:hover .imcms-folder__btn.imcms-folder-btn--open {
+    background-image: url("/imcms/images/controls/icon_sub_open.png");
+}
+
+.imcms-folder--active:hover .imcms-folder__btn {
+    background-image: url("/imcms/images/controls/icon_sub_close.png");
+}
+
+.imcms-folder--active:hover .imcms-main-folders-controls__name,
+.imcms-folder--active:hover .imcms-folder__name {
+    color: #fff;
+}

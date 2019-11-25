@@ -21,7 +21,7 @@ ${"-->"}
     <title><fmt:message key="templates/sv/AdminUserResp.htm/1"/></title>
     <imcms:ifAdmin>
         <script>
-            <jsp:include page="/js/imcms/imcms_config.js.jsp"/>
+            <jsp:include page="/imcms/js/imcms_config.js.jsp"/>
         </script>
         <script src="${contextPath}/dist/userEditorNew.js"></script>
     </imcms:ifAdmin>

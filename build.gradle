@@ -288,9 +288,6 @@ war {
     exclude "webpack.config.js"
     exclude "prod.config.js"
 
-    from("src/main/webapp/js/imcms/imcms_admin.js", { into "js/imcms" })
-    from("src/main/webapp/js/imcms/imcms_config.js.jsp", { into "js/imcms" })
-
     manifest {
         from sharedManifest
     }
