@@ -2,12 +2,14 @@ package com.imcode.imcms.controller.api;
 
 import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
 import com.imcode.imcms.domain.service.AccessService;
+import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.model.LoopEntryRef;
 import com.imcode.imcms.model.RestrictedPermission;
 import com.imcode.imcms.security.AccessType;
 import com.imcode.imcms.security.CheckAccess;
 import imcode.server.Imcms;
+import imcode.server.document.textdocument.TextDocumentDomainObject;
 import imcode.server.user.UserDomainObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -31,14 +33,16 @@ class SuperAdminController {
     private final String imagesPath;
     private final TextService textService;
     private final AccessService accessService;
+    private final DelegatingByTypeDocumentService documentService;
 
     SuperAdminController(@Value("${ImagePath}") String imagesPath,
                          TextService textService,
-                         AccessService accessService) {
+                         AccessService accessService, DelegatingByTypeDocumentService documentService) {
 
         this.imagesPath = imagesPath;
         this.textService = textService;
         this.accessService = accessService;
+        this.documentService = documentService;
     }
 
     @CheckAccess
@@ -69,13 +73,10 @@ class SuperAdminController {
 
         mav.setViewName("EditText");
 
-        final UserDomainObject user = Imcms.getUser();
-        final RestrictedPermission userEditPermission = accessService.getEditPermission(user, metaId);
+
         final String language = (langCode == null) ? Imcms.getUser().getLanguage() : langCode;
 
-        mav.addObject("isAdmin", user.isSuperAdmin());
-        mav.addObject("editOptions", userEditPermission);
-        mav.addObject("isEditMode", true);
+        addObjectModelViewData(mav, metaId);
         mav.addObject("textService", textService);
         mav.addObject("loopEntryRef", loopEntryRef);
         mav.addObject("language", language);
@@ -83,6 +84,17 @@ class SuperAdminController {
         mav.addObject("userLanguage", language);
 
         return mav;
+    }
+
+    private void addObjectModelViewData(ModelAndView mav, Integer metaId) {
+        final UserDomainObject user = Imcms.getUser();
+        final RestrictedPermission userEditPermission = accessService.getEditPermission(user, metaId);
+
+        mav.addObject("isAdmin", user.isSuperAdmin());
+        mav.addObject("editOptions", userEditPermission);
+        mav.addObject("isEditMode", true);
+        mav.addObject("currentDocument", new TextDocumentDomainObject(metaId));
+
     }
 
     @RequestMapping("/image")
@@ -124,6 +136,7 @@ class SuperAdminController {
                                  ModelAndView mav) {
 
         mav.setViewName("EditMenu");
+        addObjectModelViewData(mav, metaId);
         addCommonModelData(metaId, index, returnUrl, nested, request, mav);
 
         return mav;
