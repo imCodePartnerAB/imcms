@@ -1,0 +1,21 @@
+.imcms-field__item--row {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.imcms-field__item--align-items-baseline {
+    align-items: baseline;
+}
+
+.imcms-field__item--ml-auto {
+    margin-left: auto;
+}
+
+.imcms-field__item--w-50 {
+    width: 50%;
+}
+
+.imcms-field__item--w-100 {
+    width: 100%;
+}
