@@ -77,6 +77,10 @@
     width: 16.66%;
 }
 
+.imcms-document-list-titles__title--col-6 {
+    width: 10%;
+}
+
 .imcms-document-editor-head-tools__tool--grid-col-3,
 .imcms-document-list-titles__title--col-3,
 .imcms-document-item__info--col-3,
@@ -100,7 +104,7 @@
 .imcms-document-item__info--col-5,
 .imcms-loop-item__info--col-5,
 .imcms-grid-coll-5 {
-    width: 41.66%;
+    width: 31.66%;
 }
 
 .imcms-loop-list-titles__title--col-6,

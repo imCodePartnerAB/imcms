@@ -38,6 +38,7 @@
 }
 
 .imcms-document-list__titles {
+    display: flex;
     padding: 0 27px 0 70px;
     width: 100%;
     border-bottom: 1px solid #d3d8de;
@@ -229,6 +230,11 @@
     width: 100%;
     height: 5%;
     border-top: 1px solid #d3d8de;
+}
+
+.imcms-document-item__info--hasNewerVersion {
+    width: 5%;
+    background: url("/imcms/images/icon_newer_version.png") no-repeat center;
 }
 
 @media screen and (max-height: 800px) {

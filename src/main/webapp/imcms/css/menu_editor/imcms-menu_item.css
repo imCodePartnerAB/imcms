@@ -26,6 +26,18 @@
     background: url("/imcms/images/controls/icon_sub_open_dark.png") no-repeat center;
 }
 
+.imcms-menu-item__hasNewerVersion {
+    width: 5%;
+    background: url("/imcms/images/icon_newer_version.png") no-repeat center;
+    max-height: 45px;
+    line-height: 45px;
+    text-transform: none;
+    text-align: left;
+    float: left;
+    text-overflow: ellipsis;
+    overflow: inherit;
+}
+
 .imcms-menu-item__docId {
     width: 10%;
     cursor: pointer;
