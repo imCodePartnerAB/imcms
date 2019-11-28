@@ -3,7 +3,14 @@ package com.imcode.imcms.domain.service.api;
 import com.imcode.imcms.domain.component.DocumentsCache;
 import com.imcode.imcms.domain.dto.AuditDTO;
 import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.service.*;
+import com.imcode.imcms.domain.service.CommonContentService;
+import com.imcode.imcms.domain.service.DeleterByDocumentId;
+import com.imcode.imcms.domain.service.DocumentService;
+import com.imcode.imcms.domain.service.ImageService;
+import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.TextService;
+import com.imcode.imcms.domain.service.VersionService;
+import com.imcode.imcms.domain.service.VersionedContentService;
 import com.imcode.imcms.mapping.DocumentMapper;
 import com.imcode.imcms.model.CommonContent;
 import com.imcode.imcms.persistence.entity.Meta;
@@ -103,12 +110,12 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
+        final Version latestVersion = versionService.getLatestVersion(docId);
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, workingVersion.getNo()
+                docId, latestVersion.getNo()
         );
         final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId), workingVersion, commonContents
+                metaRepository.findOne(docId), latestVersion, commonContents
         );
 
         documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
