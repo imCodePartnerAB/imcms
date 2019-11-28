@@ -99,6 +99,7 @@ public class DefaultDocumentMenuService implements DocumentMenuService {
         menuItemDTO.setDocumentStatus(documentDTO.getDocumentStatus());
         menuItemDTO.setPublishedDate(documentDTO.getPublished().getFormattedDate());
         menuItemDTO.setModifiedDate(documentDTO.getModified().getFormattedDate());
+        menuItemDTO.setHasNewerVersion(versionService.hasNewerVersion(docId));
 
         return menuItemDTO;
     }

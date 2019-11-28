@@ -89,8 +89,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
             }
         }
 
+        setHasNewerVersionsInItems(menuItemsOf);
+
         if (!nested || !typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
-            getAllChildrenInSimpleList(menuItemsOf);
+            convertItemsToFlatList(menuItemsOf);
         }
 
         if (!nested && typeSort.equals(String.valueOf(TypeSort.TREE_SORT))) {
@@ -107,7 +109,7 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
         }
 
         if (!menuDTO.isNested() || !menuDTO.getTypeSort().equals(String.valueOf(TypeSort.TREE_SORT))) {
-            getAllChildrenInSimpleList(menuDTO.getMenuItems());
+            convertItemsToFlatList(menuDTO.getMenuItems());
         }
 
         final Language userLanguage = languageService.findByCode(Imcms.getUser().getLanguage());
@@ -117,10 +119,12 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                 .map(menuItem -> menuItemToDTO.apply(menuItem, userLanguage))
                 .collect(Collectors.toList());
 
+        setHasNewerVersionsInItems(menuItemsDTO);
+
         return getSortingMenuItemsByTypeSort(menuDTO.getTypeSort(), menuItemsDTO);
     }
 
-    private void getAllChildrenInSimpleList(List<MenuItemDTO> menuItems) {
+    private void convertItemsToFlatList(List<MenuItemDTO> menuItems) {
         final List<MenuItemDTO> childrenMenuItems = new ArrayList<>();
 
         for (MenuItemDTO menuItemDTO : menuItems) {
@@ -175,8 +179,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getVisibleMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.ALL, language, true);
         if (!nested) {
-            getAllChildrenInSimpleList(menuItemsOf);
+            convertItemsToFlatList(menuItemsOf);
         }
+
+        setHasNewerVersionsInItems(menuItemsOf);
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
     }
@@ -185,8 +191,10 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
     public List<MenuItemDTO> getPublicMenuItems(int docId, int menuIndex, String language, boolean nested) {
         List<MenuItemDTO> menuItemsOf = getMenuItemsOf(menuIndex, docId, MenuItemsStatus.PUBLIC, language, true);
         if (!nested) {
-            getAllChildrenInSimpleList(menuItemsOf);
+            convertItemsToFlatList(menuItemsOf);
         }
+
+        setHasNewerVersionsInItems(menuItemsOf);
 
         return !nested ? getAndSetUpEmptyChildrenMenuItems(menuItemsOf) : menuItemsOf;
     }
@@ -345,5 +353,14 @@ public class DefaultMenuService extends AbstractVersionedContentService<Menu, Me
                     }
                 })
                 .collect(Collectors.toList());
+    }
+
+    // TODO: 27.11.19 maybe need add new column hasNewerVersion jpa in future?
+    private void setHasNewerVersionsInItems(List<MenuItemDTO> items) {
+        items.stream()
+                .flatMap(MenuItemDTO::flattened)
+                .peek(docItem ->
+                        docItem.setHasNewerVersion(versionService.hasNewerVersion(docItem.getDocumentId()))
+                );
     }
 }
