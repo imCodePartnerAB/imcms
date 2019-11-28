@@ -22,12 +22,15 @@ public class DocumentStoredFieldsDTO {
 
     private String alias;
 
+    private boolean hasNewerVersion;
+
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
         title = from.headline();
         type = from.documentType();
         documentStatus = from.documentStatus();
         alias = from.alias();
+        hasNewerVersion = from.versionNo() == 0; //working version == 0
     }
 
 }
