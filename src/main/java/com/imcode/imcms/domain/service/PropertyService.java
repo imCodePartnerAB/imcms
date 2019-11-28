@@ -16,4 +16,7 @@ public interface PropertyService { //todo need cover tests and repo too?
     List<String> findAllAliases();
 
     List<Property> findByDocId(int docId);
+
+    Boolean existsByAlias(String alias);
+
 }
