@@ -111,14 +111,17 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     @Override
     public DocumentDTO get(int docId) {
         final Version latestVersion = versionService.getLatestVersion(docId);
+        final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
                 docId, latestVersion.getNo()
         );
         final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId), latestVersion, commonContents
+                metaRepository.findOne(docId),
+                versionService.hasNewerVersion(docId) ? workingVersion : latestVersion,
+                commonContents
         );
 
-        documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
+        documentDTO.setLatestVersion(AuditDTO.fromVersion(latestVersion));
 
         return documentDTO;
     }
