@@ -256,7 +256,8 @@ const texts = {
                     title: "Titel",
                     alias: "Alias",
                     type: "Typ",
-                    status: "Status"
+                    status: "Status",
+                    version: 'Version'
                 },
                 status: {
                     published: "Publicerad",
@@ -1067,7 +1068,8 @@ const texts = {
                     title: "Title",
                     alias: "Alias",
                     type: "Type",
-                    status: "Status"
+                    status: "Status",
+                    version: 'Version'
                 },
                 status: {
                     published: "Approved, published",
