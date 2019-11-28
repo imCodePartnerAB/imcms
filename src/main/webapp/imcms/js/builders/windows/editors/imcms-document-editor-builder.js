@@ -355,6 +355,9 @@ define("imcms-document-editor-builder",
             const $statusColumnHead = $("<div>", {text: texts.sort.status});
             $statusColumnHead.modifiers = ["col-2"];
 
+            const $versionColumnHead = $('<div>', {text: texts.sort.version});
+            $versionColumnHead.modifiers = ['col-6'];
+
             return new BEM({
                 block: "imcms-document-list-titles",
                 elements: {
@@ -363,6 +366,7 @@ define("imcms-document-editor-builder",
                         $titleColumnHead,
                         $aliasColumnHead,
                         $typeColumnHead,
+                        $versionColumnHead,
                         $statusColumnHead
                     ]
                 }
@@ -430,6 +434,7 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
+            frameItem.attr("data-newer-version", frameItem.find(".imcms-document-item__info--hasNewerVersion").length > 0);
 
             let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
 
@@ -718,6 +723,7 @@ define("imcms-document-editor-builder",
             dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
             dataInput.attr("data-frame-top", insertedParent.frameTopPos);
+            dataInput.attr('data-newer-version', frameItem.attr('data-newer-version'))
         }
 
         function toggleUserSelect(flag) {
@@ -816,6 +822,9 @@ define("imcms-document-editor-builder",
             $originalDocStatus.modifiers = ["originalStatus"];
             $originalDocStatus.css({"display": "none"});
 
+            const $hasNewerVersion = $('<div>');
+            $hasNewerVersion.modifiers = ['col-6', 'hasNewerVersion'];
+
             const elements = [
                 {
                     "info": [
@@ -829,6 +838,10 @@ define("imcms-document-editor-builder",
                 },
                 {"controls": buildDocItemControls(document, opts)}
             ];
+
+            if (document.hasNewerVersion === true) {
+                elements[0].info.splice(3, 0, $hasNewerVersion);
+            }
 
             const $moveControl = components.controls.move();
             const $unMoveArrow = components.controls.left().css({"cursor": "not-allowed"});
