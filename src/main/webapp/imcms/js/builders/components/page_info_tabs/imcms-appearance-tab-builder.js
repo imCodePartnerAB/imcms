@@ -1,9 +1,9 @@
 define("imcms-appearance-tab-builder",
     [
         "imcms-bem-builder", "imcms-components-builder", "imcms-choose-image-builder", "imcms-i18n-texts", "jquery",
-        "imcms-page-info-tab"
+        "imcms-page-info-tab", "imcms-documents-rest-api", "imcms-modal-window-builder"
     ],
-    function (BEM, components, chooseImage, texts, $, PageInfoTab) {
+    function (BEM, components, chooseImage, texts, $, PageInfoTab, documentRestApi, modal) {
 
         texts = texts.pageInfo.title;
 
@@ -16,11 +16,68 @@ define("imcms-appearance-tab-builder",
                 "choose-image": "imcms-choose-image",
                 "select": "imcms-select",
                 "title": "imcms-title",
+                "button": "imcms-button",
                 "item": ""
             }
         });
 
         const tabData = {};
+
+        function buildDocumentAliasBlock() {
+            const $aliasTitle = components.texts.titleText("<div>", texts.alias);
+
+            const $aliasPrefix = components.texts.titleText("<div>", "/");
+
+            tabData.$documentAlias = components.texts.textBox("<div>", {
+                placeholder: texts.aliasPlaceholder
+            });
+            tabData.$documentAlias.modifiers = ["w-50"];
+
+            const $suggestAliasButton = components.buttons.positiveButton({
+                text: texts.makeSuggestion,
+                click: () => writeSuggestedAliasToTextInput(tabData.$documentAlias),
+            });
+            $suggestAliasButton.modifiers = ["ml-auto"];
+
+            const $aliasRow = new BEM({
+                block: "imcms-field",
+                elements: {
+                    "item": [$aliasPrefix, tabData.$documentAlias, $suggestAliasButton],
+                }
+            }).buildBlockStructure('<div>', {
+                class: "imcms-field__item--row imcms-field__item--align-items-baseline"
+            });
+
+            return pageInfoInnerStructureBEM.buildBlock("<div>", [
+                {"title": $aliasTitle},
+                {"item": $aliasRow},
+            ]);
+        }
+
+        function writeSuggestedAliasToTextInput(textInput) {
+            const content = tabData.commonContents.find(element => element.name === "English")
+                || tabData.commonContents[0];
+
+            const title = content.pageTitle.getValue()
+                .trim()
+                .toLowerCase()
+                .replace(/[äå]/g, "a")
+                .replace(/ö/g, "o")
+                .replace(/é/g, "e")
+                .replace(/ +/g, "-")
+                .replace(/[^\w\-]+/g, "");
+
+            documentRestApi.getUniqueAlias(title).done(uniqueAlias => {
+                modal.buildConfirmWindow(
+                    texts.confirmOverwritingAlias,
+                    () => textInput.setValue(uniqueAlias)
+                );
+            });
+        }
+
+        function buildHorizontalLine() {
+            return $("<hr/>");
+        }
 
         function buildCommonContents(commonContents) {
             tabData.commonContents = [];
@@ -84,18 +141,6 @@ define("imcms-appearance-tab-builder",
             return pageInfoInnerStructureBEM.buildBlock("<div>", [{"select": tabData.$showIn}]);
         }
 
-        function buildDocumentAliasBlock() {
-            tabData.$documentAlias = components.texts.textBox("<div>", {
-                name: "alias",
-                text: texts.alias,
-                placeholder: texts.aliasPlaceholder
-            });
-
-            return pageInfoInnerStructureBEM.buildBlock("<div>", [
-                {"text-box": tabData.$documentAlias}
-            ]);
-        }
-
         function buildBlockForMissingLangSetting() {
             const $languagesTitle = components.texts.titleText("<div>", texts.missingLangRuleTitle);
 
@@ -128,9 +173,11 @@ define("imcms-appearance-tab-builder",
             return true; // all supported
         };
         AppearanceTab.prototype.tabElementsFactory = () => [
-            buildCommonContentsContainer(),
-            buildSelectTargetForDocumentLink(),
             buildDocumentAliasBlock(),
+            buildHorizontalLine(),
+            buildCommonContentsContainer(),
+            buildHorizontalLine(),
+            buildSelectTargetForDocumentLink(),
             buildBlockForMissingLangSetting()
         ];
         AppearanceTab.prototype.fillTabDataFromDocument = document => {
