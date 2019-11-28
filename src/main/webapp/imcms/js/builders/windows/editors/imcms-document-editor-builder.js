@@ -355,7 +355,12 @@ define("imcms-document-editor-builder",
             const $statusColumnHead = $("<div>", {text: texts.sort.status});
             $statusColumnHead.modifiers = ["col-2"];
 
-            const $versionColumnHead = $('<div>', {text: texts.sort.version});
+            const $versionColumnHead = $('<div>', {
+                text: texts.sort.version,
+                click: function () {
+                    onClickSorting('version_no', $(this))
+                }
+            });
             $versionColumnHead.modifiers = ['col-6'];
 
             return new BEM({
