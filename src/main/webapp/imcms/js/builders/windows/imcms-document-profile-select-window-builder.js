@@ -20,7 +20,12 @@ define(
                 id: "doc-profiles",
                 text: texts.selectProfile,
                 name: "profile",
-                emptySelect: true
+                emptySelect: true,
+                style: [
+                    {"height": "100px"},
+                    {"overflow-x": "hidden"},
+                    {"overflow-y": "scroll"}
+                ]
             });
 
             $profilesSelect = $profilesSelectContainer.getSelect();
