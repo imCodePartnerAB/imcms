@@ -85,6 +85,11 @@ public class IndexingDocumentService implements DelegatingByTypeDocumentService 
         return defaultDelegatingByTypeDocumentService.createNewDocument(type, parentDocId);
     }
 
+    @Override
+    public String getUniqueAlias(String alias) {
+        return defaultDelegatingByTypeDocumentService.getUniqueAlias(alias);
+    }
+
     @PostConstruct
     private void init() {
         documentIndexer.setDocumentService(this);

@@ -19,4 +19,7 @@ public interface BasicDocumentService<D extends Document> extends DeleterByDocum
     SolrInputDocument index(int docId);
 
     D copy(int docId);
+
+    String getUniqueAlias(String alias);
+
 }

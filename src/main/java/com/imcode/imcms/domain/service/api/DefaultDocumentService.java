@@ -46,6 +46,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     private final DocumentIndex documentIndex;
     private final DocumentsCache documentsCache;
     private final DocumentMapper documentMapper;
+    private final PropertyService propertyService;
     private final List<VersionedContentService> versionedContentServices;
     private final Function<DocumentDTO, Meta> documentSaver;
 
@@ -62,6 +63,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
                            DocumentIndex documentIndex,
                            DocumentsCache documentsCache,
                            DocumentMapper documentMapper,
+                           PropertyService propertyService,
                            @Qualifier("versionedContentServices") List<VersionedContentService> versionedContentServices) {
 
         this.textDocumentTemplateRepository = textDocumentTemplateRepository;
@@ -75,6 +77,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         this.documentIndex = documentIndex;
         this.documentsCache = documentsCache;
         this.documentMapper = documentMapper;
+        this.propertyService = propertyService;
         this.versionedContentServices = versionedContentServices;
         this.documentSaver = ((Function<Meta, Meta>) metaRepository::save).compose(documentDtoToMeta);
     }
@@ -276,6 +279,18 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         return documentIds.stream()
                 .map(this::get)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String getUniqueAlias(String alias) {
+        if (!propertyService.existsByAlias(alias)) {
+            return alias;
+        }
+
+        int i = 1;
+        while (propertyService.existsByAlias(alias + "-" + i++));
+
+        return alias + "-" + (i - 1);
     }
 
     protected void deleteDocumentContent(Integer docIdToDelete) {

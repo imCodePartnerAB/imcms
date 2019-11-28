@@ -175,4 +175,8 @@ public class FileDocumentService implements DocumentService<FileDocumentDTO> {
         return null;
     }
 
+    @Override
+    public String getUniqueAlias(String alias) {
+        return defaultDocumentService.getUniqueAlias(alias);
+    }
 }
