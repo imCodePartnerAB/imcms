@@ -110,18 +110,15 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
 
     @Override
     public DocumentDTO get(int docId) {
-        final Version latestVersion = versionService.getLatestVersion(docId);
         final Version workingVersion = versionService.getDocumentWorkingVersion(docId);
         final List<CommonContent> commonContents = commonContentService.getOrCreateCommonContents(
-                docId, latestVersion.getNo()
+                docId, workingVersion.getNo()
         );
         final DocumentDTO documentDTO = documentMapping.apply(
-                metaRepository.findOne(docId),
-                versionService.hasNewerVersion(docId) ? workingVersion : latestVersion,
-                commonContents
+                metaRepository.findOne(docId), workingVersion, commonContents
         );
 
-        documentDTO.setLatestVersion(AuditDTO.fromVersion(latestVersion));
+        documentDTO.setLatestVersion(AuditDTO.fromVersion(versionService.getLatestVersion(docId)));
 
         return documentDTO;
     }
@@ -189,6 +186,10 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
     public SolrInputDocument index(int docId) {
 
         final DocumentDTO doc = get(docId);
+        final Meta metaDoc = metaRepository.findOne(docId);
+        final Integer currentVersionDocNo = versionService.hasNewerVersion(docId)
+                ? doc.getCurrentVersion().getId()
+                : metaDoc.getDefaultVersionNo();
 
         SolrInputDocument indexDoc = new SolrInputDocument();
 
@@ -199,7 +200,7 @@ class DefaultDocumentService implements DocumentService<DocumentDTO> {
         indexDoc.addField(DocumentIndex.FIELD__ID, docId);
         indexDoc.addField(DocumentIndex.FIELD__TIMESTAMP, new Date());
         indexDoc.addField(DocumentIndex.FIELD__META_ID, docId);
-        indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, doc.getCurrentVersion().getId());
+        indexDoc.addField(DocumentIndex.FIELD__VERSION_NO, currentVersionDocNo);
         indexDoc.addField(DocumentIndex.FIELD__SEARCH_ENABLED, !doc.isSearchDisabled());
 
         for (CommonContent commonContent : doc.getCommonContents()) {
