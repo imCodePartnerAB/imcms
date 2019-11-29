@@ -22,7 +22,7 @@ public class DocumentStoredFieldsDTO {
 
     private String alias;
 
-    private boolean hasNewerVersion;
+    private Integer currentVersion;
 
     public DocumentStoredFieldsDTO(DocumentStoredFields from) {
         id = from.id();
@@ -30,7 +30,7 @@ public class DocumentStoredFieldsDTO {
         type = from.documentType();
         documentStatus = from.documentStatus();
         alias = from.alias();
-        hasNewerVersion = from.versionNo() == 0; //working version == 0
+        currentVersion = from.versionNo();
     }
 
 }
