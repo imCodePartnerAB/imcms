@@ -371,8 +371,8 @@ define("imcms-document-editor-builder",
                         $idColumnHead,
                         $titleColumnHead,
                         $aliasColumnHead,
-                        $typeColumnHead,
                         $versionColumnHead,
+                        $typeColumnHead,
                         $statusColumnHead
                     ]
                 }
@@ -829,8 +829,8 @@ define("imcms-document-editor-builder",
             $originalDocStatus.css({"display": "none"});
 
             const $currentVersion = document.currentVersion === WORKING_VERSION
-                ? $('<div>').css({'display': 'block'})
-                : $('<div>').css({'display': 'none'});
+                ? $('<div>').css({'opacity': '1'})
+                : $('<div>').css({'opacity': '0'});
             $currentVersion.modifiers = ['col-6', 'currentVersion'];
 
             const elements = [
