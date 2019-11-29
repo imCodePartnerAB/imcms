@@ -30,6 +30,9 @@ import static org.mockito.BDDMockito.*;
 @ExtendWith(MockitoExtension.class)
 class SearchDocumentServiceTest {
 
+    private final static Integer DEFAULT_WORKING_VERSION = 0;
+    private final static Integer DEFAULT_LATEST_VERSION = 1;
+
     @Mock
     private ResolvingQueryIndex documentIndex;
 
@@ -58,6 +61,7 @@ class SearchDocumentServiceTest {
             docFields.setType(Meta.DocumentType.TEXT);
             docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
             docFields.setAlias("test_alias" + i);
+            docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
             expected.add(docFields);
         }
 
@@ -77,6 +81,7 @@ class SearchDocumentServiceTest {
             given(mock.documentType()).willReturn(expected.get(i).getType());
             given(mock.documentStatus()).willReturn(expected.get(i).getDocumentStatus());
             given(mock.alias()).willReturn(expected.get(i).getAlias());
+            given(mock.versionNo()).willReturn(expected.get(i).getCurrentVersion());
         }
 
         given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);
@@ -103,12 +108,14 @@ class SearchDocumentServiceTest {
             docFields.setType(Meta.DocumentType.TEXT);
             docFields.setDocumentStatus(DocumentStatus.PUBLISHED);
             docFields.setAlias("test_alias" + i);
+            docFields.setCurrentVersion(DEFAULT_LATEST_VERSION);
             expected.add(docFields);
         }
 
         final String query = "+doc_type_id:" + TextDocument.TYPE_ID + " " +
                 "+status:" + Document.PublicationStatus.APPROVED + " " +
                 "+text" + DocumentIndex.FIELD__TEXT + ":" + PUBLISHED.toString() + " " +
+                "+version_no:" + DocumentIndex.FIELD__VERSION_NO +
                 "+(category_id:" + DocumentIndex.FIELD__CATEGORY_ID + " category_id:" + DocumentIndex.FIELD__CATEGORY_ID + ")";
 
         given(documentIndex.search(eq(query), any(UserDomainObject.class)))
@@ -125,6 +132,7 @@ class SearchDocumentServiceTest {
             given(mock.documentType()).willReturn(expected.get(i).getType());
             given(mock.documentStatus()).willReturn(expected.get(i).getDocumentStatus());
             given(mock.alias()).willReturn(expected.get(i).getAlias());
+            given(mock.versionNo()).willReturn(expected.get(i).getCurrentVersion());
         }
 
         given(indexSearchResult.documentStoredFieldsList()).willReturn(documentStoredFieldsList);

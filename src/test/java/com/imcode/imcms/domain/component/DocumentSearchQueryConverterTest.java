@@ -71,6 +71,7 @@ public class DocumentSearchQueryConverterTest extends WebAppSpringTestConfig {
                 DocumentIndex.FIELD__META_TEXT,
                 DocumentIndex.FIELD__KEYWORD,
                 DocumentIndex.FIELD__TEXT,
+                DocumentIndex.FIELD__VERSION_NO,
                 DocumentIndex.FIELD__ALIAS,
                 DocumentIndex.FIELD_URL})
                 .map(field -> String.format("%s:*%s*", field, term))

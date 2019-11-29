@@ -22,6 +22,9 @@ import static org.hamcrest.Matchers.equalTo;
 @ExtendWith(MockitoExtension.class)
 public class DocumentStoredFieldsDTOTest {
 
+    private static final Integer WORKING_VERSION = 0;
+    private static final Integer LATEST_VERSION = 1;
+
     @BeforeEach
     public void setUp() {
         final UserDomainObject user = new UserDomainObject(1);
@@ -38,6 +41,7 @@ public class DocumentStoredFieldsDTOTest {
         solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -53,6 +57,7 @@ public class DocumentStoredFieldsDTOTest {
         solrDocument.addField(DocumentIndex.FIELD__META_HEADLINE + "_en", "headline");
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -70,6 +75,7 @@ public class DocumentStoredFieldsDTOTest {
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__ARCHIVED_DATETIME, archivedDate);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -87,6 +93,7 @@ public class DocumentStoredFieldsDTOTest {
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_END_DATETIME, publicationEnd);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -104,6 +111,7 @@ public class DocumentStoredFieldsDTOTest {
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, WORKING_VERSION);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
@@ -121,6 +129,7 @@ public class DocumentStoredFieldsDTOTest {
         solrDocument.addField(DocumentIndex.FIELD__ALIAS, "alias");
         solrDocument.addField(DocumentIndex.FIELD__DOC_TYPE_ID, 2);
         solrDocument.addField(DocumentIndex.FIELD__PUBLICATION_START_DATETIME, published);
+        solrDocument.addField(DocumentIndex.FIELD__VERSION_NO, LATEST_VERSION);
 
         DocumentStoredFields storedFields = new DocumentStoredFields(solrDocument);
         final DocumentStoredFieldsDTO documentStoredFieldsDTO = new DocumentStoredFieldsDTO(storedFields);
