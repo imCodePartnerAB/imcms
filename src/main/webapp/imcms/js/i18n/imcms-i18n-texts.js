@@ -1119,6 +1119,7 @@ const texts = {
                 modifiedDate: 'Modified',
                 publishedTimePrompt: 'Never published!',
                 status: "Status",
+                version: 'Version',
                 removeConfirmation: "Do you want to remove the menu item \"",
                 saveAndClose: "Save and close",
                 titleTypeSort: "Sort on",
