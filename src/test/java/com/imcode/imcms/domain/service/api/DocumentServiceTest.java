@@ -1,61 +1,20 @@
 package com.imcode.imcms.domain.service.api;
 
 import com.imcode.imcms.WebAppSpringTestConfig;
-import com.imcode.imcms.components.datainitializer.CategoryDataInitializer;
-import com.imcode.imcms.components.datainitializer.DocumentDataInitializer;
-import com.imcode.imcms.components.datainitializer.ImageDataInitializer;
-import com.imcode.imcms.components.datainitializer.LoopDataInitializer;
-import com.imcode.imcms.components.datainitializer.MenuDataInitializer;
-import com.imcode.imcms.components.datainitializer.TemplateDataInitializer;
-import com.imcode.imcms.components.datainitializer.UserDataInitializer;
+import com.imcode.imcms.components.datainitializer.*;
 import com.imcode.imcms.domain.component.DocumentsCache;
-import com.imcode.imcms.domain.dto.AuditDTO;
-import com.imcode.imcms.domain.dto.DocumentDTO;
-import com.imcode.imcms.domain.dto.ImageDTO;
-import com.imcode.imcms.domain.dto.LoopDTO;
-import com.imcode.imcms.domain.dto.LoopEntryDTO;
-import com.imcode.imcms.domain.dto.LoopEntryRefDTO;
-import com.imcode.imcms.domain.dto.MenuDTO;
-import com.imcode.imcms.domain.dto.MenuItemDTO;
-import com.imcode.imcms.domain.dto.RestrictedPermissionDTO;
-import com.imcode.imcms.domain.dto.RoleDTO;
-import com.imcode.imcms.domain.dto.TextDTO;
-import com.imcode.imcms.domain.dto.TextDocumentTemplateDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
-import com.imcode.imcms.domain.service.CategoryService;
-import com.imcode.imcms.domain.service.CommonContentService;
-import com.imcode.imcms.domain.service.DocumentService;
-import com.imcode.imcms.domain.service.ImageService;
-import com.imcode.imcms.domain.service.LoopService;
-import com.imcode.imcms.domain.service.MenuService;
-import com.imcode.imcms.domain.service.RoleService;
-import com.imcode.imcms.domain.service.TextService;
-import com.imcode.imcms.domain.service.VersionService;
-import com.imcode.imcms.domain.service.VersionedContentService;
+import com.imcode.imcms.domain.service.*;
 import com.imcode.imcms.mapping.DocumentMapper;
+import com.imcode.imcms.mapping.jpa.doc.Property;
+import com.imcode.imcms.mapping.jpa.doc.PropertyRepository;
 import com.imcode.imcms.mapping.jpa.doc.VersionRepository;
-import com.imcode.imcms.model.Category;
-import com.imcode.imcms.model.CommonContent;
-import com.imcode.imcms.model.Document;
-import com.imcode.imcms.model.Loop;
-import com.imcode.imcms.model.RestrictedPermission;
-import com.imcode.imcms.model.Role;
-import com.imcode.imcms.model.Roles;
-import com.imcode.imcms.model.TextDocumentTemplate;
-import com.imcode.imcms.persistence.entity.ImageJPA;
-import com.imcode.imcms.persistence.entity.LanguageJPA;
-import com.imcode.imcms.persistence.entity.Menu;
-import com.imcode.imcms.persistence.entity.Meta;
+import com.imcode.imcms.model.*;
+import com.imcode.imcms.persistence.entity.*;
 import com.imcode.imcms.persistence.entity.Meta.Permission;
 import com.imcode.imcms.persistence.entity.Meta.PublicationStatus;
-import com.imcode.imcms.persistence.entity.TextJPA;
-import com.imcode.imcms.persistence.entity.User;
-import com.imcode.imcms.persistence.entity.Version;
-import com.imcode.imcms.persistence.repository.ImageRepository;
-import com.imcode.imcms.persistence.repository.MenuRepository;
-import com.imcode.imcms.persistence.repository.MetaRepository;
-import com.imcode.imcms.persistence.repository.TextDocumentTemplateRepository;
-import com.imcode.imcms.persistence.repository.TextRepository;
+import com.imcode.imcms.persistence.repository.*;
 import com.imcode.imcms.sorted.TypeSort;
 import com.imcode.imcms.util.function.TernaryFunction;
 import imcode.server.Config;
@@ -76,14 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -125,7 +77,11 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
     @Autowired
     private LoopService loopService;
     @Autowired
+    private PropertyService propertyService;
+    @Autowired
     private LoopDataInitializer loopDataInitializer;
+    @Autowired
+    private PropertyRepository propertyRepository;
     @Autowired
     private VersionRepository versionRepository;
     @Autowired
@@ -186,7 +142,7 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
                 new MockDocumentIndex(),
                 documentsCache,
                 documentMapper,
-                versionedContentServices
+                propertyService, versionedContentServices
         );
         ((DefaultDocumentService) documentService).init();
     }
@@ -897,6 +853,63 @@ public class DocumentServiceTest extends WebAppSpringTestConfig {
         text.setVersion(version);
 
         textRepository.saveAndFlush(text);
+    }
+
+    @Test
+    public void getUniqueAlias_When_Alias_NotExists_Existed_NotUpdatedAlias() {
+        final String aliasName = "test-alias";
+        assertEquals(aliasName, documentService.getUniqueAlias(aliasName));
+    }
+
+    @Test
+    public void getUniqueAlias_When_Alias_Exists_Existed_AliasWithCounter() {
+        final String aliasName = "test-alias";
+
+        Meta meta = createAndSaveMeta();
+
+        final Property property = new Property();
+        property.setDocId(meta.getId());
+        property.setName("imcms.document.alias");
+        property.setValue(aliasName);
+        propertyRepository.save(property);
+        Imcms.getUser().getId();
+        assertEquals(aliasName + "-1", documentService.getUniqueAlias(aliasName));
+    }
+
+    private Meta createAndSaveMeta() {
+        final Meta meta = new Meta();
+        meta.setCreatedDatetime(new Date());
+        meta.setModifiedDatetime(new Date());
+        meta.setCreatorId(Imcms.getUser().getId());
+        meta.setModifierId(Imcms.getUser().getId());
+        meta.setDocumentType(Meta.DocumentType.URL);
+        meta.setLinkableByOtherUsers(true);
+        meta.setLinkedForUnauthorizedUsers(true);
+        meta.setTarget("");
+        meta.setPublicationStatus(PublicationStatus.NEW);
+        return metaRepository.save(meta);
+    }
+
+    @Test
+    public void getUniqueAlias_When_AliasWithCounter_Exists_Existed_AliasWithAnotherCounter() {
+        final String aliasName = "test-alias";
+
+        final Meta meta1 = createAndSaveMeta();
+        final Meta meta2 = createAndSaveMeta();
+
+        final Property property1 = new Property();
+        property1.setDocId(meta1.getId());
+        property1.setName("imcms.document.alias");
+        property1.setValue(aliasName);
+        propertyRepository.save(property1);
+
+        final Property property2 = new Property();
+        property2.setDocId(meta2.getId());
+        property2.setName("imcms.document.alias");
+        property2.setValue(aliasName + "-1");
+        propertyRepository.save(property2);
+
+        assertEquals(aliasName + "-2", documentService.getUniqueAlias(aliasName));
     }
 
 }

@@ -7,3 +7,8 @@
     display: block;
     clear: both;
 }
+
+.imcms-form hr {
+    border: 0;
+    border-bottom: 1px solid #d3d8de;
+}

@@ -18,4 +18,9 @@ public interface PropertyRepository extends JpaRepository<Property, Integer> {
 
     @Query("SELECT lower(p.value) FROM Property p WHERE p.name = 'imcms.document.alias' ORDER BY 1")
     List<String> findAllAliases();
+
+    @Query("SELECT CASE WHEN count(p) > 0 THEN true ELSE false END " +
+            "FROM Property p WHERE p.name = 'imcms.document.alias' AND p.value=?1")
+    Boolean existsByAlias(String alias);
+
 }

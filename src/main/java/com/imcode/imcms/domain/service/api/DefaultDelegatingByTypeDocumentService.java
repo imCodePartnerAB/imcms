@@ -1,9 +1,6 @@
 package com.imcode.imcms.domain.service.api;
 
-import com.imcode.imcms.domain.dto.FileDocumentDTO;
-import com.imcode.imcms.domain.dto.TextDocumentDTO;
-import com.imcode.imcms.domain.dto.UberDocumentDTO;
-import com.imcode.imcms.domain.dto.UrlDocumentDTO;
+import com.imcode.imcms.domain.dto.*;
 import com.imcode.imcms.domain.exception.DocumentNotExistException;
 import com.imcode.imcms.domain.exception.UnsupportedDocumentTypeException;
 import com.imcode.imcms.domain.service.DelegatingByTypeDocumentService;
@@ -24,16 +21,17 @@ import java.util.Optional;
 @Service
 public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeDocumentService {
 
+    private final DocumentService<DocumentDTO> defaultDocumentService;
     private final DocumentService<TextDocumentDTO> textDocumentService;
     private final DocumentService<FileDocumentDTO> fileDocumentService;
     private final DocumentService<UrlDocumentDTO> urlDocumentService;
     private final MetaRepository metaRepository;
 
-    DefaultDelegatingByTypeDocumentService(DocumentService<TextDocumentDTO> textDocumentService,
+    DefaultDelegatingByTypeDocumentService(DocumentService<DocumentDTO> defaultDocumentService, DocumentService<TextDocumentDTO> textDocumentService,
                                            DocumentService<FileDocumentDTO> fileDocumentService,
                                            DocumentService<UrlDocumentDTO> urlDocumentService,
                                            MetaRepository metaRepository) {
-
+        this.defaultDocumentService = defaultDocumentService;
         this.textDocumentService = textDocumentService;
         this.fileDocumentService = fileDocumentService;
         this.urlDocumentService = urlDocumentService;
@@ -85,6 +83,11 @@ public class DefaultDelegatingByTypeDocumentService implements DelegatingByTypeD
         return Optional.ofNullable(metaRepository.findType(docId))
                 .map(this::getCorrespondingDocumentService)
                 .orElseThrow(DocumentNotExistException::new);
+    }
+
+    @Override
+    public String getUniqueAlias(String alias) {
+        return defaultDocumentService.getUniqueAlias(alias);
     }
 
     private DocumentService<? extends Document> getCorrespondingDocumentService(DocumentType type) {

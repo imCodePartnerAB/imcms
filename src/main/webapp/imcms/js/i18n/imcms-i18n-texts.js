@@ -919,8 +919,10 @@ const texts = {
                 sameFrame: "Same frame",
                 newWindow: "New window",
                 replaceAll: "Replace all",
-                alias: "Document alias",
-                aliasPlaceholder: "this-doc-alias",
+                alias: "Simplified address",
+                aliasPlaceholder: "your-simplified-address",
+                makeSuggestion: 'Make a suggestion',
+                confirmOverwritingAlias: 'Do you want to overwrite current alias?',
                 missingLangRuleTitle: "If requested language is missing:",
                 showInDefault: "Show in default language if enabled",
                 doNotShow: "Don't show at all"

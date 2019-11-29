@@ -101,4 +101,8 @@ public class UrlDocumentService implements DocumentService<UrlDocumentDTO> {
         return null;
     }
 
+    @Override
+    public String getUniqueAlias(String alias) {
+        return defaultDocumentService.getUniqueAlias(alias);
+    }
 }
