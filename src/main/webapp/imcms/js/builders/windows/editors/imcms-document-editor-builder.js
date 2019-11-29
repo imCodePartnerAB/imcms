@@ -439,7 +439,7 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
-            frameItem.attr("data-newer-version", frameItem.find(".imcms-document-item__info--hasNewerVersion").length > 0);
+            frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").text());
 
             let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
 
@@ -728,7 +728,7 @@ define("imcms-document-editor-builder",
             dataInput.attr("data-modifiedDate", frameItem.attr("data-modifiedDate"));
             dataInput.attr("data-title", frameItem.attr("data-title")).trigger("change");
             dataInput.attr("data-frame-top", insertedParent.frameTopPos);
-            dataInput.attr('data-newer-version', frameItem.attr('data-newer-version'))
+            dataInput.attr('data-current-version', frameItem.attr('data-current-version'))
         }
 
         function toggleUserSelect(flag) {
@@ -827,8 +827,8 @@ define("imcms-document-editor-builder",
             $originalDocStatus.modifiers = ["originalStatus"];
             $originalDocStatus.css({"display": "none"});
 
-            const $hasNewerVersion = $('<div>');
-            $hasNewerVersion.modifiers = ['col-6', 'hasNewerVersion'];
+            const $currentVersion = $('<div>');
+            $currentVersion.modifiers = ['col-6', 'currentVersion'];
 
             const elements = [
                 {
@@ -844,8 +844,8 @@ define("imcms-document-editor-builder",
                 {"controls": buildDocItemControls(document, opts)}
             ];
 
-            if (document.hasNewerVersion === true) {
-                elements[0].info.splice(3, 0, $hasNewerVersion);
+            if (document.currentVersion === 0) {
+                elements[0].info.splice(3, 0, $currentVersion);
             }
 
             const $moveControl = components.controls.move();

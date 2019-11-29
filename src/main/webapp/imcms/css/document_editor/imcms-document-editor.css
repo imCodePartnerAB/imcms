@@ -232,7 +232,7 @@
     border-top: 1px solid #d3d8de;
 }
 
-.imcms-document-item__info--hasNewerVersion {
+.imcms-document-item__info--currentVersion {
     width: 5%;
     background: url("/imcms/images/icon_newer_version.png") no-repeat center;
 }
