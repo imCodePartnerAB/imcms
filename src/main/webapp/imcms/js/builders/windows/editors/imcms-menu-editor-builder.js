@@ -593,6 +593,7 @@ define("imcms-menu-editor-builder",
                 target: document.target,
                 type: document.type,
                 documentStatus: document.documentStatus,
+                hasNewerVersion: document.hasNewerVersion,
                 children: []
             };
 
@@ -810,11 +811,13 @@ define("imcms-menu-editor-builder",
                     });
             }
 
-            if (menuElementTree.hasNewerVersion) {
-                elements.push({
-                    hasNewerVersion: $('<div>')
-                });
-            }
+            const $blockVersion = $('<div>');
+
+            elements.push({
+                hasNewerVersion: menuElementTree.hasNewerVersion
+                    ? $blockVersion.css({'opacity': '1'})
+                    : $blockVersion.css({'opacity': '0'})
+            });
 
 
             elements.push({
@@ -884,12 +887,12 @@ define("imcms-menu-editor-builder",
                     text: texts.docTitle
                 });
 
-                let $publishedHead = $("<div>", {
+                let $publishedDateHead = $("<div>", {
                     "class": "imcms-grid-coll-13",
                     text: texts.publishDate
                 });
 
-                let $modifiedHead = $("<div>", {
+                let $modifiedDateHead = $("<div>", {
                     "class": "imcms-grid-coll-14",
                     text: texts.modifiedDate
                 });
@@ -898,19 +901,24 @@ define("imcms-menu-editor-builder",
                     "class": "imcms-grid-coll-2",
                     text: texts.status
                 });
+
+                let $versionColumnHead = $("<div>", {
+                    "class": "imcms-grid-coll-17",
+                    text: texts.version
+                });
                 let containerHeadTitle;
 
                 switch (typeSort) {
                     case PUBLISHED_DATE_ASC:
                     case PUBLISHED_DATE_DESC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedHead, $statusColumnHead];
+                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $publishedDateHead, $versionColumnHead, $statusColumnHead];
                         break;
                     case MODIFIED_DATE_ASC:
                     case MODIFIED_DATE_DESC:
-                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedHead, $statusColumnHead];
+                        containerHeadTitle = [$idColumnHead, $titleColumnHead, $modifiedDateHead, $versionColumnHead, $statusColumnHead];
                         break;
                     default:
-                        containerHeadTitle = [$idTitleColumnHead, $statusColumnHead];
+                        containerHeadTitle = [$idTitleColumnHead, $versionColumnHead, $statusColumnHead];
                 }
 
                 return new BEM({

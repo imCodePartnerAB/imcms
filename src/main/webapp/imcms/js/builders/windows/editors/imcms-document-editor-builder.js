@@ -18,6 +18,7 @@ define("imcms-document-editor-builder",
         texts = texts.editors.document;
 
         let TREE_SORT = 'TREE_SORT';
+        let WORKING_VERSION = 0;
         let topPointMenu = 221; // top point menu for set item before item in the top position. Improve it if you can
 
         let isMouseDown = false,
@@ -827,7 +828,9 @@ define("imcms-document-editor-builder",
             $originalDocStatus.modifiers = ["originalStatus"];
             $originalDocStatus.css({"display": "none"});
 
-            const $currentVersion = $('<div>');
+            const $currentVersion = document.currentVersion === WORKING_VERSION
+                ? $('<div>').css({'display': 'block'})
+                : $('<div>').css({'display': 'none'});
             $currentVersion.modifiers = ['col-6', 'currentVersion'];
 
             const elements = [
@@ -844,9 +847,9 @@ define("imcms-document-editor-builder",
                 {"controls": buildDocItemControls(document, opts)}
             ];
 
-            if (document.currentVersion === 0) {
-                elements[0].info.splice(3, 0, $currentVersion);
-            }
+
+            elements[0].info.splice(3, 0, $currentVersion);
+
 
             const $moveControl = components.controls.move();
             const $unMoveArrow = components.controls.left().css({"cursor": "not-allowed"});

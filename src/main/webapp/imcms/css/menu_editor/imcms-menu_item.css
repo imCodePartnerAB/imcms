@@ -27,7 +27,7 @@
 }
 
 .imcms-menu-item__hasNewerVersion {
-    width: 5%;
+    width: 3%;
     background: url("/imcms/images/icon_newer_version.png") no-repeat center;
     max-height: 45px;
     line-height: 45px;
@@ -56,7 +56,7 @@
 
 .imcms-menu-item__published,
 .imcms-menu-item__modified {
-    width: 20%;
+    width: 17%;
     max-height: 45px;
     line-height: 45px;
     min-width: fit-content;
