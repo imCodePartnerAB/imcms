@@ -8,6 +8,7 @@ import com.imcode.imcms.domain.service.DeleterByDocumentId;
 import com.imcode.imcms.domain.service.DocumentService;
 import com.imcode.imcms.domain.service.ImageService;
 import com.imcode.imcms.domain.service.LoopService;
+import com.imcode.imcms.domain.service.PropertyService;
 import com.imcode.imcms.domain.service.TextService;
 import com.imcode.imcms.domain.service.VersionService;
 import com.imcode.imcms.domain.service.VersionedContentService;
