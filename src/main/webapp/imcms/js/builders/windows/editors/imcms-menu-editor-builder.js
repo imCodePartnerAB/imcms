@@ -468,7 +468,7 @@ define("imcms-menu-editor-builder",
                     documentStatus: $dataInput.attr("data-original-status"),
                     publishedDate: $dataInput.attr('data-publishedDate'),
                     modifiedDate: $dataInput.attr('data-modifiedDate'),
-                    hasNewerVersion: $dataInput.attr('data-current-version') === 0 //simple convert in boolean. if not working version - not exist newer ver
+                    hasNewerVersion: $dataInput.attr('data-current-version') === '0' //simple convert in boolean. if not working version - not exist newer ver
                 },
                 level = ($dataInput.attr("data-parent-id") !== "")
                     ? parseInt($menuElementsContainer.find("[data-document-id=" + parentId + "]").attr("data-menu-items-lvl"))
@@ -593,7 +593,7 @@ define("imcms-menu-editor-builder",
                 target: document.target,
                 type: document.type,
                 documentStatus: document.documentStatus,
-                hasNewerVersion: document.hasNewerVersion,
+                hasNewerVersion: document.currentVersion,
                 children: []
             };
 
