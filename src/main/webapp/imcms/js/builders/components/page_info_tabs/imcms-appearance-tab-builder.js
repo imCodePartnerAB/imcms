@@ -68,10 +68,14 @@ define("imcms-appearance-tab-builder",
                 .replace(/[^\w\-]+/g, "");
 
             documentRestApi.getUniqueAlias(title).done(uniqueAlias => {
-                modal.buildConfirmWindow(
-                    texts.confirmOverwritingAlias,
-                    () => textInput.setValue(uniqueAlias)
-                );
+                if (textInput.getValue()) {
+                    modal.buildConfirmWindow(
+                        texts.confirmOverwritingAlias,
+                        () => textInput.setValue(uniqueAlias)
+                    );
+                } else {
+                    textInput.setValue(uniqueAlias);
+                }
             });
         }
 
