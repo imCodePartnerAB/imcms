@@ -17,7 +17,7 @@ define("imcms-page-info-builder",
         let $title = $('<a>');
 
         function buildPageInfoHead() {
-            const $head = pageInfoWindowBuilder.buildHead(texts.document + ': ', closePageInfo);
+            const $head = pageInfoWindowBuilder.buildHeadWithResizing(texts.document + ': ', closePageInfo);
             $head.find(".imcms-head__title").append($title);
 
             return $head;
