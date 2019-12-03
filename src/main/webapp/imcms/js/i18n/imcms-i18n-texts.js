@@ -107,8 +107,10 @@ const texts = {
                 sameFrame: "Samma ram",
                 newWindow: "Nytt fönster",
                 replaceAll: "Ersätt alla",
-                alias: "Dokumentets alias",
+                alias: "Förenklad adress",
                 aliasPlaceholder: "detta-dokument-alias",
+                makeSuggestion: 'Ge ett förslag',
+                confirmOverwritingAlias: 'Vill du skriva över det aktuella aliaset?',
                 missingLangRuleTitle: "Om det begärda språket saknas:",
                 showInDefault: "Visa i standardspråk om det är aktiverat",
                 doNotShow: "Visa inte alls"
