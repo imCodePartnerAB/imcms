@@ -313,6 +313,7 @@ const texts = {
                 publishedTimePrompt: 'Aldrig publicerad!',
                 modifiedDate: 'Ändrad',
                 status: "Status",
+                version: 'Version',
                 removeConfirmation: "Vill du ta bort menyalternativet \"",
                 titleTypeSort: "Sortera på",
                 confirmFlatSortMessage: 'Om du byter till en annan sortering återställs ditt TreeSort till en platt meny! Vill du fortsätta?',

@@ -120,9 +120,12 @@
 }
 
 .imcms-loop-list-titles__title--col-8,
-.imcms-loop-item__info--col-8,
-.imcms-grid-coll-8 {
+.imcms-loop-item__info--col-8 {
     width: 66.66%;
+}
+
+.imcms-grid-coll-8 {
+    width: 58%;
 }
 
 .imcms-loop-list-titles__title--col-9,
@@ -149,11 +152,9 @@
     width: 100%;
 }
 
-.imcms-grid-coll-13 {
-    width: 12%;
-}
+.imcms-grid-coll-13,
 .imcms-grid-coll-14 {
-    width: 40%;
+    width: 12%;
 }
 
 .imcms-grid-coll-15 {
@@ -165,6 +166,6 @@
 }
 
 .imcms-grid-coll-17 {
-    width: 12%;
+    width: 14%;
 }
 

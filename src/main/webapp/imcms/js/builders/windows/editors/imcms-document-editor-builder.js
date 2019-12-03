@@ -440,7 +440,7 @@ define("imcms-document-editor-builder",
             frameItem.attr("data-type", frameItem.find(".imcms-document-item__info--type").text());
             frameItem.attr("data-status", frameItem.find(".imcms-document-item__info--status").text());
             frameItem.attr("data-original-status", frameItem.find(".imcms-document-item__info--originalStatus").text());
-            frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").text());
+            frameItem.attr("data-current-version", frameItem.find(".imcms-document-item__info--currentVersion").attr('value'));
 
             let widthValue = document.getElementById("type-sort").value === TREE_SORT ? '450px' : '40%';
 
@@ -829,8 +829,14 @@ define("imcms-document-editor-builder",
             $originalDocStatus.css({"display": "none"});
 
             const $currentVersion = document.currentVersion === WORKING_VERSION
-                ? $('<div>').css({'opacity': '1'})
-                : $('<div>').css({'opacity': '0'});
+                ? $('<div>', {
+                    value: document.currentVersion
+                }).css({'opacity': '1'})
+
+                : $('<div>', {
+                    value: document.currentVersion
+                }).css({'opacity': '0'});
+
             $currentVersion.modifiers = ['col-6', 'currentVersion'];
 
             const elements = [
