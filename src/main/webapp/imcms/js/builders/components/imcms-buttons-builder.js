@@ -23,6 +23,9 @@ module.exports = {
     warning: getButtonBuilder("warning"),
     error: getButtonBuilder("error"),
     save: getButtonBuilder('save'),
+    windowNormal: getButtonBuilder('window-normal'),
+    windowAuto: getButtonBuilder('window-auto'),
+    windowMaximize: getButtonBuilder('window-maximize'),
     close: getButtonBuilder('close'),
     increment: getButtonBuilder('increment'),
     decrement: getButtonBuilder('decrement'),
@@ -57,6 +60,15 @@ module.exports = {
     },
     saveButton: function (attributes) {
         return this.save('<button>', attributes);
+    },
+    windowNormalButton: function (attributes) {
+        return this.windowNormal('<button>', attributes);
+    },
+    windowAutoButton: function (attributes) {
+        return this.windowAuto('<button>', attributes);
+    },
+    windowMaximizeButton: function (attributes) {
+        return this.windowMaximize('<button>', attributes);
     },
     closeButton: function (attributes) {
         return this.close('<button>', attributes);
