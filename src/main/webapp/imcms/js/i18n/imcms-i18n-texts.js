@@ -83,6 +83,10 @@ const texts = {
             discardChangesQuestion: 'Ignorera ändringar?',
             textEditor: 'Textredigerare',
             imageEditor: 'Bildredigerare',
+            normal: 'Vanligt',
+            auto: 'Auto',
+            maximize: 'Maximera',
+            close: 'Stänga',
             filterPolicy: {
                 restricted: 'Endast text',
                 relaxed: 'Kraftigt filter',
@@ -897,6 +901,10 @@ const texts = {
             discardChangesQuestion: 'Discard changes?',
             textEditor: 'Text Editor',
             imageEditor: 'Image Editor',
+            normal: 'Normal',
+            auto: 'Auto',
+            maximize: 'Maximize',
+            close: 'Close',
             filterPolicy: {
                 restricted: 'Text only',
                 relaxed: 'Strong filter',
