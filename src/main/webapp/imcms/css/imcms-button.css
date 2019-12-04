@@ -139,7 +139,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--window-normal {
     display: block;
-    background: url("/imcms/images/window/icons_window_size_normal.png") no-repeat center;
+    background: url("/imcms/images/window/icon_window_size_normal.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -148,7 +148,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--window-auto {
     display: block;
-    background: url("/imcms/images/window/icons_window_size_auto.png") no-repeat center;
+    background: url("/imcms/images/window/icon_window_size_auto.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -157,7 +157,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--window-maximize {
     display: block;
-    background: url("/imcms/images/window/icons_window_size_maximize.png") no-repeat center;
+    background: url("/imcms/images/window/icon_window_size_maximize.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
@@ -166,7 +166,7 @@ a[class^="imcms"].imcms-button--neutral:hover {
 
 .imcms-button--close {
     display: block;
-    background: url("/imcms/images/window/icons_window_close.png") no-repeat center;
+    background: url("/imcms/images/window/icon_window_close.png") no-repeat center;
     width: 15px;
     height: 15px;
     opacity: 0.5;
