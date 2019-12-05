@@ -146,3 +146,10 @@
     background-image: url("/imcms/images/controls/icon_upload_file.svg");
 }
 
+.imcms-control--sort-up {
+    background-image: url("/imcms/images/controls/sorting/icon_sort_up.png");
+}
+
+.imcms-control--sort-down {
+    background-image: url("/imcms/images/controls/sorting/icon_sort_down.png");
+}
