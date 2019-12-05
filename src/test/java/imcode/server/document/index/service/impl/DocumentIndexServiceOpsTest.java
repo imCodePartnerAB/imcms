@@ -38,8 +38,10 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentIndexServiceOpsTest {
@@ -383,6 +385,40 @@ class DocumentIndexServiceOpsTest {
         assertEquals(solrDocumentList.size(), 1);
 
         then(documentIndexer).should().index(getDocId(id));
+    }
+
+    @Test
+    public void getDocument_When_HeadLineHasSpaceBetweenWord_Expect_OneDocumentIsReturned() throws Exception {
+        final int id = ++documentSize;
+        final String headLine = "headLine test";
+        final SolrInputDocument solrInputDocument = addRequiredFields(id);
+        solrInputDocument.addField(titleField, headLine);
+        indexDocument(id, solrInputDocument);
+
+        searchQueryDTO.setTerm(headLine);
+
+        final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertEquals(solrDocumentList.size(), 1);
+
+        then(documentIndexer).should().index(getDocId(id));
+    }
+
+    @Test
+    public void getDocument_When_HeadLineHasUnderLineBetweenWord_Expect_EmptyResult() throws Exception {
+        final int id = ++documentSize;
+        final String headLine = "headLine__test";
+        final String inputTest = "headLine test";
+        final SolrInputDocument solrInputDocument = addRequiredFields(id);
+        solrInputDocument.addField(titleField, headLine);
+        indexDocument(id, solrInputDocument);
+
+        searchQueryDTO.setTerm(inputTest);
+
+        final SolrDocumentList solrDocumentList = getSolrDocumentList(searchQueryDTO);
+
+        assertEquals(solrDocumentList.size(), 0);
+        assertTrue(solrDocumentList.isEmpty());
     }
 
     @Test
