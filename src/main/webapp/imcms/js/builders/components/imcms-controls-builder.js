@@ -44,5 +44,9 @@ module.exports = {
 
     vertical_move: onclick => buildControl('vertical_move', onclick),
 
+    sortDown: onclick => buildControl('sort-down', onclick),
+
+    sortUp: onclick => buildControl('sort-up', onclick),
+
     buildControlsBlock: (tag, controls) => controlsBEM.buildBlock(tag, controls, {}, "control")
 };
