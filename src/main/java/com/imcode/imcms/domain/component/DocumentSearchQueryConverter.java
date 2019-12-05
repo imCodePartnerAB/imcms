@@ -39,7 +39,7 @@ public class DocumentSearchQueryConverter {
                         DocumentIndex.FIELD__ALIAS,
                         DocumentIndex.FIELD_URL})
                         .map(field -> String.format("%s:*%s*", field,
-                                searchQuery.getTerm().replaceAll("\\s", "?")))
+                                searchQuery.getTerm().replaceAll("\\s+", "?")))
                         .collect(Collectors.joining(" "))
                         : "*:*"
         );
