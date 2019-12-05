@@ -294,6 +294,18 @@ define("imcms-document-editor-builder",
         }
 
         function highlightSoring($sortingHeader) {
+            if ($sortingHeader.hasClass("imcms-document-list-titles__title--active")) {
+                const sortUpClassName = "imcms-control--sort-up";
+                const sortDownClassName = "imcms-control--sort-down";
+                const $sortingIcon = $sortingHeader.find(".imcms-document-list-title-row__icon");
+
+                if ($sortingIcon.hasClass(sortUpClassName)) {
+                    $sortingIcon.removeClass(sortUpClassName).addClass(sortDownClassName);
+                } else {
+                    $sortingIcon.removeClass(sortDownClassName).addClass(sortUpClassName);
+                }
+            }
+
             $(".imcms-document-list-titles__title--active").removeClass("imcms-document-list-titles__title--active");
             $sortingHeader.addClass("imcms-document-list-titles__title--active");
         }
@@ -326,43 +338,33 @@ define("imcms-document-editor-builder",
         }
 
         function buildDocumentListTitlesRow() {
-            const $idColumnHead = $("<div>", {
+            const $idColumnHead = buildTitleRow({
                 text: texts.sort.id,
-                click: function () {
-                    onClickSorting(defaultSortPropertyValue, $(this));
-                }
+                bySorting: defaultSortPropertyValue,
+                modifiers: ["col-1"],
             });
-            $idColumnHead.modifiers = ["col-1"];
 
-            const $titleColumnHead = $("<div>", {
+            const $titleColumnHead = buildTitleRow({
                 text: texts.sort.title,
-                click: function () {
-                    onClickSorting("meta_headline_" + imcms.userLanguage, $(this));
-                }
+                bySorting: "meta_headline_" + imcms.userLanguage,
+                modifiers: ["col-5"],
             });
-            $titleColumnHead.modifiers = ["col-5"];
 
-            const $aliasColumnHead = $("<div>", {
+            const $aliasColumnHead = buildTitleRow({
                 text: texts.sort.alias,
-                click: function () {
-                    onClickSorting("alias", $(this));
-                }
+                bySorting: "alias",
+                modifiers: ["col-3"],
             });
-            $aliasColumnHead.modifiers = ["col-3"];
 
-            const $typeColumnHead = $("<div>", {text: texts.sort.type});
-            $typeColumnHead.modifiers = ["col-1"];
-
-            const $statusColumnHead = $("<div>", {text: texts.sort.status});
-            $statusColumnHead.modifiers = ["col-2"];
-
-            const $versionColumnHead = $('<div>', {
+            const $versionColumnHead = buildTitleRow({
                 text: texts.sort.version,
-                click: function () {
-                    onClickSorting('version_no', $(this))
-                }
+                bySorting: 'version_no',
+                modifiers: ['col-6'],
             });
-            $versionColumnHead.modifiers = ['col-6'];
+
+            const $typeColumnHead = buildTitleRow({text: texts.sort.type, modifiers: ["col-1"]});
+
+            const $statusColumnHead = buildTitleRow({text: texts.sort.status, modifiers: ["col-2"]});
 
             return new BEM({
                 block: "imcms-document-list-titles",
@@ -377,6 +379,35 @@ define("imcms-document-editor-builder",
                     ]
                 }
             }).buildBlockStructure("<div>");
+        }
+
+        function buildTitleRow({text, bySorting, modifiers}) {
+            const emptyIcon = $('<div>');
+
+            const sortIcon = bySorting
+                ? components.controls.sortDown()
+                : emptyIcon;
+
+            const titleRow = $("<div>", {
+                text: text,
+            });
+
+            const titleRowBem = new BEM({
+                block: "imcms-document-list-title-row",
+                elements: {
+                    "title": titleRow,
+                    "icon": sortIcon,
+                }
+            }).buildBlockStructure("<div>", {
+                click: function () {
+                    if (bySorting) {
+                        onClickSorting(bySorting, $(this))
+                    }
+                },
+            });
+            titleRowBem.modifiers = modifiers;
+
+            return titleRowBem;
         }
 
         function createFrame(event) {
